@@ -16,6 +16,8 @@
 
 package org.jbpm.workflow.instance.node;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.process.instance.ProcessInstance;
@@ -30,8 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EndNodeInstanceTest extends AbstractBaseTest {
 

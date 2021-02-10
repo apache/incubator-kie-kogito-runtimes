@@ -15,6 +15,8 @@
 
 package org.jbpm.compiler.canonical;
 
+import static java.util.Arrays.asList;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +33,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-
-import static java.util.Arrays.asList;
 
 public class ProcessContextMetaModel {
 

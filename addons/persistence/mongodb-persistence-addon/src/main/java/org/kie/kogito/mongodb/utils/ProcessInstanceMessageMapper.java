@@ -15,6 +15,10 @@
 
 package org.kie.kogito.mongodb.utils;
 
+import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
+import static org.kie.kogito.mongodb.utils.DocumentConstants.VARIABLE;
+import static org.kie.kogito.mongodb.utils.DocumentUtils.getObjectMapper;
+
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -28,10 +32,6 @@ import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.util.JsonFormat;
-
-import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
-import static org.kie.kogito.mongodb.utils.DocumentConstants.VARIABLE;
-import static org.kie.kogito.mongodb.utils.DocumentUtils.getObjectMapper;
 
 public class ProcessInstanceMessageMapper
         implements BiFunction<MarshallerReaderContext, ProcessInstanceDocument, JBPMMessages.ProcessInstance> {

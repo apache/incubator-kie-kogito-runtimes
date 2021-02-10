@@ -16,6 +16,14 @@
 
 package org.jbpm.bpmn2;
 
+import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
+import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.bpmn2.xml.XmlBPMNProcessDumper;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -29,14 +37,6 @@ import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-
-import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
-import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
-import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcessFactoryTest extends JbpmBpmn2TestCase {
 

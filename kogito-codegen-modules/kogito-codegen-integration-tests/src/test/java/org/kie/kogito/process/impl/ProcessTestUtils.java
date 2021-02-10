@@ -15,9 +15,9 @@
 
 package org.kie.kogito.process.impl;
 
-import org.kie.kogito.process.ProcessInstance;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.kie.kogito.process.ProcessInstance;
 
 public class ProcessTestUtils {
 

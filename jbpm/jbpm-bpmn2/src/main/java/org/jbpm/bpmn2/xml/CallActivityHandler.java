@@ -16,6 +16,8 @@
 
 package org.jbpm.bpmn2.xml;
 
+import static java.util.Collections.singletonList;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,8 +39,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import static java.util.Collections.singletonList;
 
 public class CallActivityHandler extends AbstractNodeHandler {
 

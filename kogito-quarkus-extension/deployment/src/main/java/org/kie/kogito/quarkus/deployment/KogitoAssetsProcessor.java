@@ -16,6 +16,10 @@
 
 package org.kie.kogito.quarkus.deployment;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -75,10 +79,6 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarningBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 
 /**
  * Main class of the Kogito extension

@@ -15,10 +15,6 @@
 
 package org.kie.kogito.codegen.api.template;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.kie.kogito.codegen.api.template.TemplatedGenerator.Builder;
@@ -26,6 +22,10 @@ import static org.kie.kogito.codegen.api.template.TemplatedGenerator.TEMPLATE_SU
 import static org.kie.kogito.codegen.api.template.TemplatedGenerator.builder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 class TemplatedGeneratorTest {
 

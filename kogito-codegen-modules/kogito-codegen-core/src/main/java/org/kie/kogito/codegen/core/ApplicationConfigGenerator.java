@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.core;
 
+import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,8 +37,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
-
-import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
 

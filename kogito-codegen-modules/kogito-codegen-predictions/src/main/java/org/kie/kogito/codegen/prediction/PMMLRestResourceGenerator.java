@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.prediction;
 
+import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
+
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
 
@@ -32,8 +34,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-
-import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 
 public class PMMLRestResourceGenerator {
 

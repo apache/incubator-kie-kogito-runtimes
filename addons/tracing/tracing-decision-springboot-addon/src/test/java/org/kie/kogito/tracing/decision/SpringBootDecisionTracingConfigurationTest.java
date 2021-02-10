@@ -16,13 +16,13 @@
 
 package org.kie.kogito.tracing.decision;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.Application;
-import org.kie.kogito.conf.ConfigBean;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.conf.ConfigBean;
 
 class SpringBootDecisionTracingConfigurationTest {
 

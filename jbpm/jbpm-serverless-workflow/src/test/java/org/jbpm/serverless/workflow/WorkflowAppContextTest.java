@@ -14,10 +14,10 @@
  */
 package org.jbpm.serverless.workflow;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class WorkflowAppContextTest extends BaseServerlessTest {
 

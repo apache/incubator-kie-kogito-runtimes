@@ -15,6 +15,10 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +41,6 @@ import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.uow.UnitOfWork;
 import org.mockito.ArgumentCaptor;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class SignalEventTest extends AbstractCodegenTest {
 

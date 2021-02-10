@@ -16,6 +16,9 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,9 +42,6 @@ import org.kie.dmn.api.core.event.BeforeInvokeBKMEvent;
 import org.kie.dmn.feel.runtime.FEELFunction;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.tracing.decision.event.trace.TraceResourceId;
-
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
 
 public class EvaluateEvent {
 

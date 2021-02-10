@@ -16,6 +16,9 @@
 
 package org.jbpm.compiler.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.List;
@@ -27,9 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestXml extends AbstractBaseTest {
 

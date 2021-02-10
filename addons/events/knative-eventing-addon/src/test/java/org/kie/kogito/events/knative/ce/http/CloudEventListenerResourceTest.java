@@ -14,6 +14,9 @@
  */
 package org.kie.kogito.events.knative.ce.http;
 
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -29,9 +32,6 @@ import org.junit.jupiter.api.Test;
 import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Testing our use cases on a controlled environment instead of using generated code.

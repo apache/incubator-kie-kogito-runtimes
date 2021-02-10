@@ -14,6 +14,9 @@
  */
 package org.kie.kogito.predictions.smile;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +37,6 @@ import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 
 public class SmileRandomForestPredictionTest {
 

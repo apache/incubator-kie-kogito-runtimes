@@ -16,6 +16,10 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
@@ -26,10 +30,6 @@ import org.kie.kogito.queries.LoanUnit;
 
 import io.quarkus.test.QuarkusUnitTest;
 import io.restassured.http.ContentType;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
 
 public class DecisionTableTest {
 

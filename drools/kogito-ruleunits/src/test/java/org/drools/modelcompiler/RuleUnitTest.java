@@ -16,6 +16,9 @@
 
 package org.drools.modelcompiler;
 
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.drools.modelcompiler.domain.Person;
 import org.drools.modelcompiler.ruleunit.AdultUnit;
 import org.drools.modelcompiler.ruleunit.AdultUnitInstance;
@@ -24,9 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.units.ListDataStream;
-
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled
 public class RuleUnitTest {

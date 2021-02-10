@@ -15,6 +15,14 @@
 
 package org.kie.kogito.process.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
+import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,14 +44,6 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.Milestone;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
-import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 class MilestoneTest extends AbstractCodegenTest {
 

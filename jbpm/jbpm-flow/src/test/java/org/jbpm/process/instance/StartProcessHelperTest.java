@@ -15,6 +15,10 @@
  */
 package org.jbpm.process.instance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,10 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class StartProcessHelperTest extends AbstractBaseTest {
 

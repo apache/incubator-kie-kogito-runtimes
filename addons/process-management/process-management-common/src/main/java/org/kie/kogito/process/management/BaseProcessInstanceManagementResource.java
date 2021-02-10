@@ -16,6 +16,8 @@
 
 package org.kie.kogito.process.management;
 
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +37,6 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 public abstract class BaseProcessInstanceManagementResource<T> implements ProcessInstanceManagement<T> {
 

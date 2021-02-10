@@ -16,6 +16,8 @@
 
 package org.jbpm.integrationtests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -30,8 +32,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessForEachTest extends AbstractBaseTest {
 

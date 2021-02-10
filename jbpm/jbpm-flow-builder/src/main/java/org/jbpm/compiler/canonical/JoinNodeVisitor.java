@@ -16,6 +16,8 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.factory.JoinFactory.METHOD_TYPE;
+
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.workflow.core.node.Join;
@@ -23,8 +25,6 @@ import org.jbpm.workflow.core.node.Join;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-
-import static org.jbpm.ruleflow.core.factory.JoinFactory.METHOD_TYPE;
 
 public class JoinNodeVisitor extends AbstractNodeVisitor<Join> {
 

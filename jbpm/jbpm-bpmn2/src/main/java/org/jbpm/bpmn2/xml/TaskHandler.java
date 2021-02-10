@@ -16,6 +16,8 @@
 
 package org.jbpm.bpmn2.xml;
 
+import static org.jbpm.ruleflow.core.Metadata.CONDITION;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,8 +51,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import static org.jbpm.ruleflow.core.Metadata.CONDITION;
 
 public class TaskHandler extends AbstractNodeHandler {
 

@@ -16,12 +16,12 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import org.kie.dmn.api.core.event.AfterEvaluateContextEntryEvent;
 import org.kie.dmn.api.core.event.BeforeEvaluateContextEntryEvent;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 public class EvaluateContextEntryResult {
 

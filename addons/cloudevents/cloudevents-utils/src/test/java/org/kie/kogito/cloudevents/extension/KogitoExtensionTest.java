@@ -16,6 +16,10 @@
 
 package org.kie.kogito.cloudevents.extension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.net.URI;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -25,10 +29,6 @@ import org.kie.kogito.cloudevents.CloudEventUtils;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class KogitoExtensionTest {
 

@@ -16,6 +16,9 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_DECISION;
+import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_PARAMETER;
+
 import java.text.MessageFormat;
 
 import org.jbpm.process.core.context.variable.Variable;
@@ -48,9 +51,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
-
-import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_DECISION;
-import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_PARAMETER;
 
 public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 

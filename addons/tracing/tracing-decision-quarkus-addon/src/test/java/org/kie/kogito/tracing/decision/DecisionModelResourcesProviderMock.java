@@ -16,6 +16,9 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
+import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAMESPACE;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
@@ -28,9 +31,6 @@ import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
 
 import io.quarkus.test.Mock;
-
-import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
-import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAMESPACE;
 
 @Mock
 public class DecisionModelResourcesProviderMock implements DecisionModelResourcesProvider {

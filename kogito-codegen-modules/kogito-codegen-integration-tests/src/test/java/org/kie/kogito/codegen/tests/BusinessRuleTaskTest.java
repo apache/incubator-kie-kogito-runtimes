@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,8 +42,6 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.uow.UnitOfWork;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class BusinessRuleTaskTest extends AbstractCodegenTest {
 

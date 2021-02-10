@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -31,8 +33,6 @@ import org.kie.kogito.codegen.data.PersonWithAddresses;
 import org.kie.kogito.codegen.data.PersonWithList;
 import org.kie.kogito.codegen.data.Question;
 import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ReflectionProtoGeneratorTest {
 

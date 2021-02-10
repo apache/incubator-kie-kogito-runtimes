@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen.process.persistence;
 
+import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
+import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,9 +64,6 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
-import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
-import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
 
 public class MarshallerGenerator {
 

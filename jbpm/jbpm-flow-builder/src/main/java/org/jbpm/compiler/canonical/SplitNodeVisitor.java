@@ -16,6 +16,9 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_CONSTRAINT;
+import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_TYPE;
+
 import java.util.Map.Entry;
 
 import org.jbpm.process.core.context.variable.Variable;
@@ -33,9 +36,6 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.UnknownType;
-
-import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_CONSTRAINT;
-import static org.jbpm.ruleflow.core.factory.SplitFactory.METHOD_TYPE;
 
 public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
 

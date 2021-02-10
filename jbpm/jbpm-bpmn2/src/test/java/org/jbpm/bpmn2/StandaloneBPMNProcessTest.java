@@ -16,6 +16,8 @@
 
 package org.jbpm.bpmn2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
@@ -58,8 +60,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.w3c.dom.Document;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 

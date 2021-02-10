@@ -16,6 +16,9 @@
 
 package org.jbpm.process.builder;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.StringReader;
 import java.util.Arrays;
 
@@ -35,9 +38,6 @@ import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.instance.node.SplitInstance;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
     @Test

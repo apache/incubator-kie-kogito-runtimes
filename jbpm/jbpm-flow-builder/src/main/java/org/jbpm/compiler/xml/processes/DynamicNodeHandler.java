@@ -16,13 +16,13 @@
 
 package org.jbpm.compiler.xml.processes;
 
+import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
+
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
-import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
 
 public class DynamicNodeHandler extends CompositeNodeHandler {
 

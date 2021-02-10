@@ -15,6 +15,11 @@
 
 package org.kie.kogito.monitoring.core.springboot;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,11 +30,6 @@ import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsIntercept
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
 
 class SpringMetricsInterceptorTest {
 

@@ -16,6 +16,9 @@
 
 package org.jbpm.bpmn2.handler;
 
+import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_STRICT_ENABLED_PROPERTY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,9 +36,6 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-
-import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_STRICT_ENABLED_PROPERTY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkItemHandlerExceptionHandlingTest extends JbpmBpmn2TestCase {
 

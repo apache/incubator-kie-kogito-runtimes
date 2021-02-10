@@ -16,6 +16,8 @@
 
 package org.jbpm.bpmn2.xml;
 
+import static org.jbpm.workflow.core.node.RuleSetNode.DMN_LANG;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,8 +38,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import static org.jbpm.workflow.core.node.RuleSetNode.DMN_LANG;
 
 public class BusinessRuleTaskHandler extends AbstractNodeHandler {
 

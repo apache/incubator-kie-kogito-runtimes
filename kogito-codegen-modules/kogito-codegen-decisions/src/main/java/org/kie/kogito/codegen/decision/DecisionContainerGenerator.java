@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen.decision;
 
+import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
+import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
+
 import java.util.Collection;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -31,9 +34,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
-import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
-import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 

@@ -15,6 +15,10 @@
  */
 package org.kogito.scenariosimulation.runner;
 
+import static java.util.stream.Collectors.toList;
+import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_MODEL;
+import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_RESULT;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,10 +50,6 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.pmml.PMMLKogito;
 import org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils;
-
-import static java.util.stream.Collectors.toList;
-import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_MODEL;
-import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_RESULT;
 
 public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
 

@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,8 +33,6 @@ import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.Processes;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TimerEventTest extends AbstractCodegenTest {
 

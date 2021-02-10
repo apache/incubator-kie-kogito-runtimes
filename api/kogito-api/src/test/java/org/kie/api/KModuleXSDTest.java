@@ -16,6 +16,8 @@
 
 package org.kie.api;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.net.URL;
 
 import javax.xml.transform.Source;
@@ -27,8 +29,6 @@ import javax.xml.validation.Validator;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class KModuleXSDTest {
 

@@ -16,9 +16,9 @@
 
 package org.kie.kogito.jobs;
 
-import java.util.UUID;
-
 import static java.util.Objects.requireNonNull;
+
+import java.util.UUID;
 
 public class ProcessInstanceJobDescription implements JobDescription {
 

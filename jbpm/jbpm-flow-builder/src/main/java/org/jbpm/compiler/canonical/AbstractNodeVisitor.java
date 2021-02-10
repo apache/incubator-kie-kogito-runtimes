@@ -16,6 +16,15 @@
 
 package org.jbpm.compiler.canonical;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.drools.core.util.StringUtils.ucFirst;
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_IN_MAPPING;
+import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_OUT_MAPPING;
+import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_DONE;
+import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_NAME;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -46,15 +55,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
-
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static org.drools.core.util.StringUtils.ucFirst;
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
-import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
-import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_IN_MAPPING;
-import static org.jbpm.ruleflow.core.factory.MappableNodeFactory.METHOD_OUT_MAPPING;
-import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_DONE;
-import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_NAME;
 
 public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisitor {
 

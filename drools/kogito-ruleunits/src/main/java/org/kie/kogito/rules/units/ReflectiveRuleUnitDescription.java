@@ -16,6 +16,9 @@
 
 package org.kie.kogito.rules.units;
 
+import static org.drools.reflective.util.ClassUtils.getSetter;
+import static org.drools.reflective.util.ClassUtils.getter2property;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,9 +32,6 @@ import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.RuleUnitData;
-
-import static org.drools.reflective.util.ClassUtils.getSetter;
-import static org.drools.reflective.util.ClassUtils.getter2property;
 
 public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
 

@@ -16,10 +16,6 @@
 
 package org.kie.kogito.services.event.impl;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
-import org.kie.kogito.process.flexible.Milestone;
-
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
@@ -29,6 +25,10 @@ import static org.kie.kogito.process.flexible.ItemDescription.Status;
 import static org.kie.kogito.services.event.impl.ProcessInstanceEventBody.PROCESS_ID_META_DATA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
+import org.kie.kogito.process.flexible.Milestone;
 
 public class ProcessInstanceEventBatchTest {
 

@@ -14,6 +14,10 @@
  */
 package org.kie.kogito.codegen.prediction;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -36,10 +40,6 @@ import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import com.github.javaparser.ast.CompilationUnit;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PredictionContainerGeneratorTest {
 

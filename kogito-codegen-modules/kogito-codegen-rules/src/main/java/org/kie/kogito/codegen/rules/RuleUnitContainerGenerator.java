@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.rules;
 
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +35,6 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
-
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 

@@ -15,6 +15,10 @@
 
 package org.kie.kogito.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -26,10 +30,6 @@ import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 import org.kie.kogito.mongodb.utils.ProcessInstanceDocumentMapper;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProcessInstanceDocumentMapperTest {
 

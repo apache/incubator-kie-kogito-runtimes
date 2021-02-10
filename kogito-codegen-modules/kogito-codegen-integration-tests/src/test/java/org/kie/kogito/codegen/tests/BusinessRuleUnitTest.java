@@ -15,6 +15,13 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,13 +52,6 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.kie.kogito.uow.UnitOfWork;
-
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BusinessRuleUnitTest extends AbstractCodegenTest {
 

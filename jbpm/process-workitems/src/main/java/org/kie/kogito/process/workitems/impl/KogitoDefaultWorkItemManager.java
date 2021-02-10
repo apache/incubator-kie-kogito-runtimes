@@ -15,6 +15,9 @@
 
 package org.kie.kogito.process.workitems.impl;
 
+import static org.kie.api.runtime.process.WorkItem.ABORTED;
+import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.util.HashMap;
@@ -34,9 +37,6 @@ import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.KogitoWorkItem;
 import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
-
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
 
 public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager {
 

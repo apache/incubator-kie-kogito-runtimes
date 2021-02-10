@@ -16,6 +16,8 @@
 
 package org.kie.kogito.pmml;
 
+import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,8 +35,6 @@ import org.kie.pmml.api.exceptions.KiePMMLException;
 import org.kie.pmml.api.models.PMMLModel;
 import org.kie.pmml.api.runtime.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
-
-import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
 /**
  * Internal Utility class.<br/>

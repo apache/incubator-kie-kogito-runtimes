@@ -16,6 +16,8 @@
 
 package org.jbpm.process;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.jbpm.workflow.core.Node;
@@ -28,8 +30,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubProcessTest extends AbstractBaseTest {
 

@@ -16,6 +16,8 @@
 
 package org.jbpm.integrationtests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -25,8 +27,6 @@ import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessRuleFlowGroupTest extends AbstractBaseTest {
 

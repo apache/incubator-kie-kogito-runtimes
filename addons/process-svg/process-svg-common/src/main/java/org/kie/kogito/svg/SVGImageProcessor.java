@@ -15,6 +15,10 @@
 
 package org.kie.kogito.svg;
 
+import static org.kie.kogito.svg.processor.SVGProcessor.ACTIVE_BORDER_COLOR;
+import static org.kie.kogito.svg.processor.SVGProcessor.COMPLETED_BORDER_COLOR;
+import static org.kie.kogito.svg.processor.SVGProcessor.COMPLETED_COLOR;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -25,10 +29,6 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.kie.kogito.svg.processor.SVGProcessor;
 import org.kie.kogito.svg.processor.SVGProcessorFactory;
 import org.w3c.dom.Document;
-
-import static org.kie.kogito.svg.processor.SVGProcessor.ACTIVE_BORDER_COLOR;
-import static org.kie.kogito.svg.processor.SVGProcessor.COMPLETED_BORDER_COLOR;
-import static org.kie.kogito.svg.processor.SVGProcessor.COMPLETED_COLOR;
 
 public class SVGImageProcessor {
 

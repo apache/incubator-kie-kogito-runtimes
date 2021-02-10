@@ -16,6 +16,14 @@
 
 package org.kie.kogito.explainability;
 
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.explainability.Constants.MODEL_NAME;
+import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +40,6 @@ import org.kie.kogito.explainability.model.PredictOutput;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.explainability.Constants.MODEL_NAME;
-import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
 
 @QuarkusTest
 public class QuarkusExplainableResourceIT {

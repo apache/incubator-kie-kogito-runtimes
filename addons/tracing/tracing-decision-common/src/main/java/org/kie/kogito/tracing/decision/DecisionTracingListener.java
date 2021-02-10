@@ -16,6 +16,8 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,8 +28,6 @@ import org.kie.dmn.api.core.event.BeforeEvaluateBKMEvent;
 import org.kie.dmn.api.core.event.DMNEvent;
 import org.kie.dmn.api.core.event.DMNRuntimeEventListener;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
-
-import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.tracing.decision.DecisionTracingListener</code>

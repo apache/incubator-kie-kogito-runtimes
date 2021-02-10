@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.process;
 
+import static com.github.javaparser.ast.NodeList.nodeList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,8 +43,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
-
-import static com.github.javaparser.ast.NodeList.nodeList;
 
 public class ProcessContainerGenerator extends AbstractApplicationSection {
 

@@ -15,6 +15,9 @@
 
 package org.jbpm.serverless.workflow;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
@@ -30,9 +33,6 @@ import io.serverlessworkflow.api.start.Start;
 import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.InjectState;
 import io.serverlessworkflow.api.workflow.Events;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 
 public abstract class BaseServerlessTest {
 

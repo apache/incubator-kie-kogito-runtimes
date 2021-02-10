@@ -15,6 +15,8 @@
 
 package org.kie.kogito.dmn;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.InputStreamReader;
 
 import org.junit.jupiter.api.Test;
@@ -22,8 +24,6 @@ import org.kie.dmn.api.core.DMNMessage.Severity;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.decision.DecisionModel;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DMNKogitoTest {
 

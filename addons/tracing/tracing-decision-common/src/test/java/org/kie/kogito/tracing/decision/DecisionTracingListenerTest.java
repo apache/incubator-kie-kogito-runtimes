@@ -16,6 +16,23 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForError;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForWarning;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContextForWarning;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,23 +55,6 @@ import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
 import org.mockito.ArgumentCaptor;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
-import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForError;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForWarning;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContextForWarning;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 class DecisionTracingListenerTest {
 

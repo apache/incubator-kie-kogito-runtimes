@@ -16,13 +16,13 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-
-import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 class OneOfEachTypeTest {

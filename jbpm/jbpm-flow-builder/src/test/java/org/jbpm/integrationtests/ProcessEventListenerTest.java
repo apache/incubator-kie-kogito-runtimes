@@ -32,6 +32,8 @@
 
 package org.jbpm.integrationtests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -53,8 +55,6 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessEventListenerTest extends AbstractBaseTest {
 

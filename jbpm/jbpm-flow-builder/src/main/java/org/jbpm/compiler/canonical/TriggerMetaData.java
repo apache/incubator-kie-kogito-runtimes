@@ -15,6 +15,14 @@
 
 package org.jbpm.compiler.canonical;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static com.github.javaparser.StaticJavaParser.parseType;
+import static org.jbpm.compiler.canonical.AbstractVisitor.KCONTEXT_VAR;
+import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
+
 import java.util.Map;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
@@ -41,14 +49,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
-
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static com.github.javaparser.StaticJavaParser.parseType;
-import static org.jbpm.compiler.canonical.AbstractVisitor.KCONTEXT_VAR;
-import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
-import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 
 public class TriggerMetaData {
 

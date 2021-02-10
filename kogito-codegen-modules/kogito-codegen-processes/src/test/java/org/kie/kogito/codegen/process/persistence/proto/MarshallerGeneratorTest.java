@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +39,6 @@ import org.kie.kogito.codegen.process.persistence.MarshallerGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 class MarshallerGeneratorTest {
 

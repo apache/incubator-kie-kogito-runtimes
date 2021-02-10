@@ -16,6 +16,18 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -38,18 +50,6 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
-import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * This is not a real test and should always be annotated with {@link Disabled}.

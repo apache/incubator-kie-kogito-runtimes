@@ -15,6 +15,8 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 
@@ -26,8 +28,6 @@ import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.Decision
 
 import ch.obermuhlner.math.big.stream.BigDecimalStream;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandler> {
     @BeforeEach

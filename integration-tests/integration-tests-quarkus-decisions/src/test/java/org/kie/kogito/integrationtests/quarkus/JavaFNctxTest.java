@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
+import static io.restassured.RestAssured.given;
+import static io.restassured.config.JsonConfig.jsonConfig;
+import static org.hamcrest.Matchers.closeTo;
+
 import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
@@ -23,10 +27,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
-
-import static io.restassured.RestAssured.given;
-import static io.restassured.config.JsonConfig.jsonConfig;
-import static org.hamcrest.Matchers.closeTo;
 
 @QuarkusTest
 class JavaFNctxTest {

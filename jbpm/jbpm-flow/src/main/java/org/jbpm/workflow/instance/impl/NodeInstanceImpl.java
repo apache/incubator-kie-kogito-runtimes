@@ -16,6 +16,12 @@
 
 package org.jbpm.workflow.instance.impl;
 
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.ruleflow.core.Metadata.INCOMING_CONNECTION;
+import static org.jbpm.ruleflow.core.Metadata.OUTGOING_CONNECTION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,12 +61,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
-import static org.jbpm.ruleflow.core.Metadata.INCOMING_CONNECTION;
-import static org.jbpm.ruleflow.core.Metadata.OUTGOING_CONNECTION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
 
 /**
  * Default implementation of a RuleFlow node instance.

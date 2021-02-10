@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.decision;
 
+import static com.github.javaparser.StaticJavaParser.parseStatement;
+
 import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -57,8 +59,6 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
-import static com.github.javaparser.StaticJavaParser.parseStatement;
 
 public class DecisionRestResourceGenerator {
 

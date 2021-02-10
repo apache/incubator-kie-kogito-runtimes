@@ -16,13 +16,13 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
+import static org.kie.kogito.tracing.decision.event.EventUtils.map;
+
 import java.util.List;
 
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.tracing.decision.event.EventUtils;
 import org.kie.kogito.tracing.decision.event.message.Message;
-
-import static org.kie.kogito.tracing.decision.event.EventUtils.map;
 
 public class EvaluateResult {
 

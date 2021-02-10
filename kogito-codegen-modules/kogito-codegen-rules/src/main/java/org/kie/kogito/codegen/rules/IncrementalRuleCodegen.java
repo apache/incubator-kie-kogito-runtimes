@@ -15,6 +15,11 @@
 
 package org.kie.kogito.codegen.rules;
 
+import static java.util.stream.Collectors.toList;
+import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableToCompiler;
+import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
+import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -76,11 +81,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-
-import static java.util.stream.Collectors.toList;
-import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableToCompiler;
-import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
-import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 

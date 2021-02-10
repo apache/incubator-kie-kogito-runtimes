@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen.prediction;
 
+import static java.util.stream.Collectors.toList;
+import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceWithSources;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,9 +56,6 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.stream.Collectors.toList;
-import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKiePMMLModelsFromResourceWithSources;
 
 public class PredictionCodegen extends AbstractGenerator {
 

@@ -15,6 +15,8 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
@@ -24,8 +26,6 @@ import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.Decision
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.LocalDateHandler;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocalDateHandlerTest extends AbstractQuantilesTest<LocalDateHandler> {
 

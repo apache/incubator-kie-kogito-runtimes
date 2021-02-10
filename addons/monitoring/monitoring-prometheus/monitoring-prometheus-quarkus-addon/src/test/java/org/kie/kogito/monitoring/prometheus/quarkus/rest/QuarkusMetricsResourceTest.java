@@ -14,11 +14,11 @@
  */
 package org.kie.kogito.monitoring.prometheus.quarkus.rest;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class QuarkusMetricsResourceTest {
 

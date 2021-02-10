@@ -15,6 +15,10 @@
 
 package org.jbpm.serverless.workflow;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,10 +38,6 @@ import io.serverlessworkflow.api.mapper.JsonObjectMapper;
 import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.InjectState;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WorkflowUtilsTest extends BaseServerlessTest {
 

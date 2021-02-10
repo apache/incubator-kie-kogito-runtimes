@@ -16,6 +16,8 @@
 
 package org.jbpm.workflow.instance.node;
 
+import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
@@ -43,8 +45,6 @@ import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.timer.TimerInstance;
-
-import static org.jbpm.workflow.instance.impl.DummyEventListener.EMPTY_EVENT_LISTENER;
 
 /**
  * Runtime counterpart of an event node.

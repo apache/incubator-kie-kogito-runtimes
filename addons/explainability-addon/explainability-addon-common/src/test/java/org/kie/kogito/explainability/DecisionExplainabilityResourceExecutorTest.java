@@ -16,6 +16,11 @@
 
 package org.kie.kogito.explainability;
 
+import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Assertions;
@@ -30,11 +35,6 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
-
-import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DecisionExplainabilityResourceExecutorTest {
 

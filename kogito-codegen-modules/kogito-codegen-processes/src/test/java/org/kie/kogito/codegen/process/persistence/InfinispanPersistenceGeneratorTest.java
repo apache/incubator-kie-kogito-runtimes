@@ -14,6 +14,10 @@
  */
 package org.kie.kogito.codegen.process.persistence;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.INFINISPAN_PERSISTENCE_TYPE;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.*;
@@ -31,10 +35,6 @@ import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.INFINISPAN_PERSISTENCE_TYPE;
 
 class InfinispanPersistenceGeneratorTest {
 

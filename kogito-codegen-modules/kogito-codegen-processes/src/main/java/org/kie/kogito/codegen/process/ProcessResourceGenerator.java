@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.process;
 
+import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +52,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-
-import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
 /**
  * ProcessResourceGenerator

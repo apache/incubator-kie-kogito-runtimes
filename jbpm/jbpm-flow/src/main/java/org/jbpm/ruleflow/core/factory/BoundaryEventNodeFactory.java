@@ -16,6 +16,8 @@
 
 package org.jbpm.ruleflow.core.factory;
 
+import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
+
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.CompensationHandler;
@@ -29,8 +31,6 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
-
-import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
 
 public class BoundaryEventNodeFactory extends EventNodeFactory {
 

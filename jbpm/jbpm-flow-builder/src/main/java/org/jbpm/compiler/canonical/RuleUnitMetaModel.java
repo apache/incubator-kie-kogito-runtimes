@@ -15,6 +15,8 @@
 
 package org.jbpm.compiler.canonical;
 
+import static com.github.javaparser.StaticJavaParser.parseExpression;
+
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataStore;
@@ -37,8 +39,6 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
-import static com.github.javaparser.StaticJavaParser.parseExpression;
 
 public class RuleUnitMetaModel {
 

@@ -15,6 +15,8 @@
 
 package org.kie.kogito.infinispan;
 
+import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,8 +32,6 @@ import org.kie.kogito.process.ProcessInstanceDuplicatedException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
-
-import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
 @SuppressWarnings({ "rawtypes" })
 public class CacheProcessInstances implements MutableProcessInstances {

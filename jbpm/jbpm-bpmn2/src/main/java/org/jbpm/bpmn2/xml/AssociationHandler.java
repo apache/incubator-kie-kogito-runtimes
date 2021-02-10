@@ -15,6 +15,8 @@
  */
 package org.jbpm.bpmn2.xml;
 
+import static org.jbpm.bpmn2.xml.ProcessHandler.ASSOCIATIONS;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,8 +36,6 @@ import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Process;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import static org.jbpm.bpmn2.xml.ProcessHandler.ASSOCIATIONS;
 
 public class AssociationHandler extends BaseAbstractHandler implements Handler {
 

@@ -16,6 +16,9 @@
 
 package io.quarkus.it.kogito.decision;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.jupiter.api.Test;
@@ -25,9 +28,6 @@ import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
 
 public class SimpleHotReloadTest {
 

@@ -16,6 +16,10 @@
 
 package org.kie.kogito.svg.dataindex;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonMap;
+import static java.util.Objects.nonNull;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,10 +42,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonMap;
-import static java.util.Objects.nonNull;
 
 @ApplicationScoped
 public class QuarkusDataIndexClient implements DataIndexClient {

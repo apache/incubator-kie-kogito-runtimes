@@ -14,6 +14,8 @@
  */
 package org.kie.kogito.events.knative.ce.extensions;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.net.URI;
 import java.util.UUID;
 
@@ -23,8 +25,6 @@ import org.junit.jupiter.api.Test;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class KogitoProcessExtensionTest {
 

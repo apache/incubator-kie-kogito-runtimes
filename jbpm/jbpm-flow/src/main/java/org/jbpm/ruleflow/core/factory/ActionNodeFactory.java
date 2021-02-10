@@ -16,6 +16,8 @@
 
 package org.jbpm.ruleflow.core.factory;
 
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.DroolsAction;
@@ -23,8 +25,6 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
-
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
 
 public class ActionNodeFactory extends ExtendedNodeFactory {
 

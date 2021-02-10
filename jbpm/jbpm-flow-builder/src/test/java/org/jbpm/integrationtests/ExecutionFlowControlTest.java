@@ -16,6 +16,8 @@
 
 package org.jbpm.integrationtests;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +30,6 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExecutionFlowControlTest extends AbstractBaseTest {
 

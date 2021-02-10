@@ -16,6 +16,15 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
+import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
+import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
+
 import java.text.MessageFormat;
 import java.util.Map;
 
@@ -27,15 +36,6 @@ import org.jbpm.workflow.core.node.EventNode;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
-import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
-import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
 
 public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
 

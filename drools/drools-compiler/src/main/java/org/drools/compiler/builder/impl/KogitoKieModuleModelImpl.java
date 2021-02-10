@@ -15,6 +15,8 @@
 
 package org.drools.compiler.builder.impl;
 
+import static org.drools.compiler.builder.impl.KogitoKieModuleMarshaller.MARSHALLER;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -25,8 +27,6 @@ import org.drools.compiler.kproject.models.KieBaseModelImpl;
 import org.drools.core.util.StringUtils;
 import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
-
-import static org.drools.compiler.builder.impl.KogitoKieModuleMarshaller.MARSHALLER;
 
 public class KogitoKieModuleModelImpl implements KieModuleModel {
 

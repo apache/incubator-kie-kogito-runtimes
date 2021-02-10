@@ -16,6 +16,9 @@
 
 package org.jbpm.workflow.instance.impl;
 
+import static org.jbpm.process.core.context.exception.CompensationScope.COMPENSATION_SCOPE;
+import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -35,9 +38,6 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.CompositeNodeInstance;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
-
-import static org.jbpm.process.core.context.exception.CompensationScope.COMPENSATION_SCOPE;
-import static org.jbpm.process.core.context.exception.CompensationScope.IMPLICIT_COMPENSATION_PREFIX;
 
 class CompensationEventListener implements KogitoEventListener {
 

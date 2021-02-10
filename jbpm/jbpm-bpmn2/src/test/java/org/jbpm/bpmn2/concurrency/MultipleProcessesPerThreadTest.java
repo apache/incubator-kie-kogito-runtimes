@@ -16,6 +16,8 @@
 
 package org.jbpm.bpmn2.concurrency;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -42,8 +44,6 @@ import org.kie.internal.io.ResourceFactory;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled("This test costs time and resources, please only run locally for the time being.")
 public class MultipleProcessesPerThreadTest {

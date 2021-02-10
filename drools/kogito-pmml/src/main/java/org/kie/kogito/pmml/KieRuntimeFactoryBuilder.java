@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.pmml;
 
+import static org.kie.pmml.evaluator.assembler.factories.PMMLRuleMappersFactory.KIE_PMML_RULE_MAPPERS_CLASS_NAME;
+import static org.kie.pmml.evaluator.assembler.service.PMMLAssemblerService.getFactoryClassNamePackageName;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +49,6 @@ import org.kie.pmml.evaluator.assembler.service.PMMLCompilerService;
 import org.kie.pmml.evaluator.assembler.service.PMMLLoaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.kie.pmml.evaluator.assembler.factories.PMMLRuleMappersFactory.KIE_PMML_RULE_MAPPERS_CLASS_NAME;
-import static org.kie.pmml.evaluator.assembler.service.PMMLAssemblerService.getFactoryClassNamePackageName;
 
 /**
  * Utility class to replace the <b>Assembler</b> mechanism where this is not available

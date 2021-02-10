@@ -16,31 +16,6 @@
 
 package org.kie.kogito.eventdriven.decision;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.kogito.cloudevents.CloudEventUtils;
-import org.kie.kogito.cloudevents.extension.KogitoExtension;
-import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.decision.DecisionModel;
-import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.decision.DecisionTestUtils;
-import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.event.CloudEventEmitter;
-import org.kie.kogito.event.CloudEventReceiver;
-import org.mockito.ArgumentCaptor;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -65,6 +40,31 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.kogito.cloudevents.CloudEventUtils;
+import org.kie.kogito.cloudevents.extension.KogitoExtension;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.decision.DecisionTestUtils;
+import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.event.CloudEventEmitter;
+import org.kie.kogito.event.CloudEventReceiver;
+import org.mockito.ArgumentCaptor;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 class EventDrivenDecisionControllerTest {
 
