@@ -109,10 +109,6 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
     public static final String ERRORS = "BPMN.Errors";
     public static final String ESCALATIONS = "BPMN.Escalations";
 
-    static final String PROCESS_INSTANCE_SIGNAL_EVENT = "kcontext.getProcessInstance().signalEvent(\"";
-    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKieRuntime().signalEvent(\"";
-    static final String RUNTIME_MANAGER_SIGNAL_EVENT = "kcontext.getKogitoProcessRuntime().signalEvent(\"";
-    		
 	@SuppressWarnings("unchecked")
 	public ProcessHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
