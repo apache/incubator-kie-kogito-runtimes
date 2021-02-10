@@ -14,12 +14,11 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.decorators;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import io.smallrye.reactive.messaging.http.HttpResponseMetadata;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.Test;
 
-import io.smallrye.reactive.messaging.http.HttpResponseMetadata;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CloudEventHttpOutgoingMessageDecoratorTest {
 

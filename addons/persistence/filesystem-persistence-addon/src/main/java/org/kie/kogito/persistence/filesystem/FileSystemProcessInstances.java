@@ -15,8 +15,6 @@
 
 package org.kie.kogito.persistence.filesystem;
 
-import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -39,7 +37,9 @@ import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({ "rawtypes" })
+import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
+
+@SuppressWarnings({"rawtypes"})
 public class FileSystemProcessInstances implements MutableProcessInstances {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemProcessInstances.class);
@@ -86,8 +86,10 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
-        return Optional.of(mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process)
-                : marshaller.unmarshallReadOnlyProcessInstance(data, process));
+        return Optional.of(mode == MUTABLE ?
+                                   marshaller.unmarshallProcessInstance(data, process) :
+                                   marshaller.unmarshallReadOnlyProcessInstance(data, process)
+        );
     }
 
     @Override
@@ -96,8 +98,9 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             return stream
                     .filter(file -> !Files.isDirectory(file))
                     .map(this::readBytesFromFile)
-                    .map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process)
-                            : marshaller.unmarshallReadOnlyProcessInstance(b, process))
+                    .map(b -> mode == MUTABLE ?
+                            marshaller.unmarshallProcessInstance(b, process) :
+                            marshaller.unmarshallReadOnlyProcessInstance(b, process))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException("Unable to read process instances ", e);

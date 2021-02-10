@@ -20,8 +20,7 @@ public class Applicant {
     private String name;
     private int age;
 
-    public Applicant() {
-    }
+    public Applicant() {}
 
     public Applicant(String name, int age) {
         this.name = name;

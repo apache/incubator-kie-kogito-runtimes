@@ -59,8 +59,7 @@ public class DMNKogito {
         return createGenericDMNRuntime(null, readers);
     }
 
-    public static DMNRuntime createGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction,
-            Reader... readers) {
+    public static DMNRuntime createGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction, Reader... readers) {
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
         EvalHelper.clearGenericAccessorCache(); // KOGITO-3325 DMN hot reload manage accessor cache when stronglytyped
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
@@ -85,15 +84,15 @@ public class DMNKogito {
         return evaluate(dmnRuntime, modelByName(dmnRuntime, modelName).getNamespace(), modelName, dmnContext);
     }
 
-    public static KogitoDMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName,
-            Map<String, Object> dmnContext) {
+    public static KogitoDMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName, Map<String,
+            Object> dmnContext) {
         DMNEvaluationResult evaluationResult = DMNEvaluationUtils.evaluate(dmnRuntime,
-                modelNamespace,
-                modelName,
-                dmnContext,
-                null,
-                null,
-                null);
+                                                                           modelNamespace,
+                                                                           modelName,
+                                                                           dmnContext,
+                                                                           null,
+                                                                           null,
+                                                                           null);
         return new KogitoDMNResult(modelNamespace, modelName, evaluationResult.result);
     }
 

@@ -15,27 +15,25 @@
 
 package org.kie.kogito.codegen.core;
 
-import static org.kie.kogito.codegen.core.ApplicationGenerator.APPLICATION_CLASS_NAME;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.kie.kogito.codegen.core.ApplicationGenerator.APPLICATION_CLASS_NAME;
 
 public class ApplicationContainerGenerator {
 
-    private static final GeneratedFileType APPLICATION_TYPE =
-            GeneratedFileType.of("APPLICATION", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType APPLICATION_TYPE = GeneratedFileType.of("APPLICATION", GeneratedFileType.Category.SOURCE);
 
     private final TemplatedGenerator templatedGenerator;
     private final KogitoBuildContext context;
@@ -81,17 +79,16 @@ public class ApplicationContainerGenerator {
 
     private MethodCallExpr getLoadEnginesMethod(ClassOrInterfaceDeclaration cls) {
         return cls.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
-                .orElseThrow(() -> new InvalidTemplateException(
-                        templatedGenerator,
-                        "Impossible to find loadEngines invocation"));
+                    .orElseThrow(() -> new InvalidTemplateException(
+                            templatedGenerator,
+                            "Impossible to find loadEngines invocation"));
     }
 
     /**
      * For each section it produces a new instance follow naming convention and add it to methodCallExpr
-     * e.g. section: Processes
+     *       e.g. section: Processes
      * produce:
-     * e.g.: new Processes(this)
-     * 
+     *       e.g.: new Processes(this)
      * @param methodCallExpr
      * @param sections
      */

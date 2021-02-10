@@ -18,7 +18,6 @@ package org.jbpm.util;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-
 import org.jbpm.process.core.datatype.DataType;
 
 public class CustomDataType implements DataType {
@@ -32,9 +31,9 @@ public class CustomDataType implements DataType {
     }
 
     public boolean verifyDataType(final Object value) {
-        if (value instanceof String) {
+        if ( value instanceof String ) {
             return true;
-        } else if (value == null) {
+        } else if ( value == null ) {
             return true;
         } else {
             return false;

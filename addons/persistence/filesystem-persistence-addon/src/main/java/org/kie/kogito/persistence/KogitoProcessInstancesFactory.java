@@ -26,11 +26,12 @@ import org.kie.kogito.process.ProcessInstancesFactory;
  *
  */
 public abstract class KogitoProcessInstancesFactory implements ProcessInstancesFactory {
-
+   
+	
     public FileSystemProcessInstances createProcessInstances(Process<?> process) {
         return new FileSystemProcessInstances(process, Paths.get(path()));
     }
-
+    
     public abstract String path();
-
+    
 }

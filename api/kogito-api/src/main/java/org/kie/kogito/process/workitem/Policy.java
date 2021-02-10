@@ -26,7 +26,6 @@ public interface Policy<T> {
 
     /**
      * Actual type of policy data used to enforce this policy
-     * 
      * @return policy data
      */
     T value();

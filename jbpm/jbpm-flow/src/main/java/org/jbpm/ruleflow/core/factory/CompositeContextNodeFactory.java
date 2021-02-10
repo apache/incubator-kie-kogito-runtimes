@@ -40,8 +40,7 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
     private long linkedIncomingNodeId = -1;
     private long linkedOutgoingNodeId = -1;
 
-    public CompositeContextNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer,
-            long id) {
+    public CompositeContextNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         this.nodeContainerFactory = nodeContainerFactory;
         this.nodeContainer = nodeContainer;
         CompositeContextNode node = createNode();
@@ -74,8 +73,7 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
 
-    public CompositeContextNodeFactory variable(String name, DataType type, Object value, String metaDataName,
-            Object metaDataValue) {
+    public CompositeContextNodeFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
@@ -83,7 +81,8 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
         }
-        VariableScope variableScope = (VariableScope) getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope = (VariableScope)
+                getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
         if (variableScope == null) {
             variableScope = new VariableScope();
             getCompositeNode().addContext(variableScope);
@@ -94,7 +93,8 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
     }
 
     public CompositeContextNodeFactory exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
-        ExceptionScope exceptionScope = (ExceptionScope) getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        ExceptionScope exceptionScope = (ExceptionScope)
+                getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
         if (exceptionScope == null) {
             exceptionScope = new ExceptionScope();
             getCompositeNode().addContext(exceptionScope);

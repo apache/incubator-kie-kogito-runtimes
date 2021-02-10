@@ -16,15 +16,8 @@
 
 package org.kie.kogito.svg.dataindex;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-
 import java.net.MalformedURLException;
 import java.util.List;
-
-import org.junit.jupiter.api.Test;
 
 import io.quarkus.security.credential.TokenCredential;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -32,6 +25,12 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClientOptions;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 public class QuarkusDataIndexClientTest {
 
@@ -95,7 +94,7 @@ public class QuarkusDataIndexClientTest {
     }
 
     @Test
-    public void testGetTokenWithSecurityIdentity() {
+    public void testGetTokenWithSecurityIdentity(){
         String token = "testToken";
         TokenCredential tokenCredential = new TokenCredential(token, "Bearer");
         SecurityIdentity identity = mock(SecurityIdentity.class);
@@ -105,7 +104,7 @@ public class QuarkusDataIndexClientTest {
     }
 
     @Test
-    public void testGetTokenWithoutSecurityIdentity() {
-        assertThat(client.getToken()).isEmpty();
+    public void testGetTokenWithoutSecurityIdentity(){
+         assertThat(client.getToken()).isEmpty();
     }
 }

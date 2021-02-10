@@ -14,10 +14,6 @@
  */
 package org.drools.statics;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.kie.api.internal.assembler.KieAssemblerService;
 import org.kie.api.internal.assembler.KieAssemblers;
 import org.kie.api.io.Resource;
@@ -26,6 +22,10 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.io.ResourceWithConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StaticKieAssemblers implements KieAssemblers {
 
@@ -41,8 +41,7 @@ public class StaticKieAssemblers implements KieAssemblers {
     }
 
     @Override
-    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration)
-            throws Exception {
+    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
         KieAssemblerService assembler = assemblers.get(type);
         if (assembler != null) {
             assembler.addResource(knowledgeBuilder,
@@ -55,8 +54,7 @@ public class StaticKieAssemblers implements KieAssemblers {
     }
 
     @Override
-    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type)
-            throws Exception {
+    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type) throws Exception {
         KieAssemblerService assembler = assemblers.get(type);
         if (assembler != null) {
             assembler.addResources(knowledgeBuilder, resources, type);

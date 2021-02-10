@@ -16,12 +16,6 @@
 
 package org.jbpm.bpmn2;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,6 +72,12 @@ import org.mvel2.ParserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * Base test case for the jbpm-bpmn2 module.
  */
@@ -101,7 +101,6 @@ public abstract class JbpmBpmn2TestCase {
             ksession = null;
         }
     }
-
     @BeforeEach
     protected void logTestStartAndSetup(TestInfo testInfo) {
         logger.info(" >>> {} <<<", testInfo.getDisplayName());
@@ -131,8 +130,8 @@ public abstract class JbpmBpmn2TestCase {
             resources[i] = (ResourceFactory.newClassPathResource(p));
         }
         return createKnowledgeBaseFromResources(resources);
-    }
-
+    }   
+    
     protected KieBase createKnowledgeBaseFromResources(Resource... process)
             throws Exception {
 
@@ -159,12 +158,12 @@ public abstract class JbpmBpmn2TestCase {
         KieContainer kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
         return kContainer.getKieBase();
     }
-
+    
     protected KieBase createKnowledgeBaseFromDisc(String process) throws Exception {
         KieServices ks = KieServices.Factory.get();
         KieRepository kr = ks.getRepository();
         KieFileSystem kfs = ks.newKieFileSystem();
-
+            
         Resource res = ResourceFactory.newClassPathResource(process);
         kfs.write(res);
 
@@ -179,11 +178,11 @@ public abstract class JbpmBpmn2TestCase {
         }
 
         KieContainer kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
-        KieBase kbase = kContainer.getKieBase();
-
+        KieBase kbase =  kContainer.getKieBase();
+        
         File packageFile = null;
-        for (KiePackage pkg : kbase.getKiePackages()) {
-            packageFile = new File(System.getProperty("java.io.tmpdir") + File.separator + pkg.getName() + ".pkg");
+        for (KiePackage pkg : kbase.getKiePackages() ) {
+            packageFile = new File(System.getProperty("java.io.tmpdir") + File.separator + pkg.getName()+".pkg");
             packageFile.deleteOnExit();
             FileOutputStream out = new FileOutputStream(packageFile);
             try {
@@ -191,11 +190,11 @@ public abstract class JbpmBpmn2TestCase {
             } finally {
                 out.close();
             }
-
+            
             // store first package only
             break;
         }
-
+        
         kfs.delete(res.getSourcePath());
         kfs.write(ResourceFactory.newFileResource(packageFile));
 
@@ -207,12 +206,12 @@ public abstract class JbpmBpmn2TestCase {
             throw new RuntimeException("Build Errors:\n"
                     + kb.getResults().toString());
         }
-
+        
         kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
-        kbase = kContainer.getKieBase();
-
+        kbase =  kContainer.getKieBase();
+        
         return kbase;
-
+        
     }
 
     protected StatefulKnowledgeSession createKnowledgeSession(KieBase kbase)
@@ -231,7 +230,7 @@ public abstract class JbpmBpmn2TestCase {
         if (conf == null) {
             conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         }
-
+       
         if (env == null) {
             env = EnvironmentFactory.newEnvironment();
         }
@@ -245,7 +244,7 @@ public abstract class JbpmBpmn2TestCase {
         conf.setOption(ForceEagerActivationOption.YES);
         result = (StatefulKnowledgeSession) kbase.newKieSession(conf, env);
         workingMemoryLogger = new KogitoWorkingMemoryInMemoryLogger(result);
-
+        
         return result;
     }
 
@@ -254,11 +253,11 @@ public abstract class JbpmBpmn2TestCase {
         KieBase kbase = createKnowledgeBase(process);
         return createKnowledgeSession(kbase);
     }
-
+    
     protected KieSession restoreSession(KieSession ksession, boolean noCache) {
-
+        
         return ksession;
-
+        
     }
 
     protected KieSession restoreSession(KieSession ksession) {
@@ -269,27 +268,28 @@ public abstract class JbpmBpmn2TestCase {
         return ksession;
     }
 
+
     public void assertProcessInstanceCompleted(ProcessInstance processInstance) {
         assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_COMPLETED, processInstance),
-                "Process instance has not been completed.");
+                   "Process instance has not been completed.");
     }
 
     public void assertProcessInstanceAborted(ProcessInstance processInstance) {
         assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_ABORTED, processInstance),
-                "Process instance has not been aborted.");
+                   "Process instance has not been aborted.");
     }
 
     public void assertProcessInstanceActive(ProcessInstance processInstance) {
         assertTrue(assertProcessInstanceState(KogitoProcessInstance.STATE_ACTIVE, processInstance)
                 || assertProcessInstanceState(KogitoProcessInstance.STATE_PENDING, processInstance),
-                "Process instance is not active.");
+                   "Process instance is not active.");
     }
 
     public void assertProcessInstanceFinished(ProcessInstance processInstance,
             KieSession ksession) {
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
-        assertNull(kruntime.getProcessInstance(((KogitoProcessInstance) processInstance).getStringId()),
-                "Process instance has not been finished.");
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        assertNull(kruntime.getProcessInstance( (( KogitoProcessInstance ) processInstance).getStringId()),
+                   "Process instance has not been finished.");
     }
 
     public void assertNodeActive(String processInstanceId, KieSession ksession,
@@ -298,11 +298,11 @@ public abstract class JbpmBpmn2TestCase {
         for (String n : name) {
             names.add(n);
         }
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
         ProcessInstance processInstance = kruntime
                 .getProcessInstance(processInstanceId);
-        if (processInstance instanceof WorkflowProcessInstance) {
-            assertNodeActive((WorkflowProcessInstance) processInstance, names);
+        if (processInstance instanceof WorkflowProcessInstance) {            
+            assertNodeActive((WorkflowProcessInstance) processInstance, names);            
         }
         if (!names.isEmpty()) {
             String s = names.get(0);
@@ -330,7 +330,7 @@ public abstract class JbpmBpmn2TestCase {
         List<String> names = getNotTriggeredNodes(processInstanceId, nodeNames);
         if (!names.isEmpty()) {
             String s = names.get(0);
-            for (int i = 1; i < names.size(); i++) {
+            for(int i = 1; i < names.size(); i++) {
                 s += ", " + names.get(i);
             }
             fail("Node(s) not executed: " + s);
@@ -342,40 +342,40 @@ public abstract class JbpmBpmn2TestCase {
         List<String> names = getNotTriggeredNodes(processInstanceId, nodeNames);
         assertTrue(Arrays.equals(names.toArray(), nodeNames));
     }
-
+    
     public int getNumberOfNodeTriggered(long processInstanceId,
             String node) {
         int counter = 0;
-
+        
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof KogitoRuleFlowNodeLogEvent) {
-                String nodeName = ((KogitoRuleFlowNodeLogEvent) event).getNodeName();
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
+                String nodeName = (( KogitoRuleFlowNodeLogEvent ) event).getNodeName();
                 if (node.equals(nodeName)) {
                     counter++;
                 }
             }
         }
-
+    
         return counter;
     }
-
+    
     public int getNumberOfProcessInstances(String processId) {
-        int counter = 0;
-        LogEvent[] events = workingMemoryLogger.getLogEvents().toArray(new LogEvent[0]);
-        for (LogEvent event : events) {
+        int counter = 0;      
+        LogEvent [] events = workingMemoryLogger.getLogEvents().toArray(new LogEvent[0]);
+        for (LogEvent event : events ) { 
             if (event.getType() == LogEvent.BEFORE_RULEFLOW_CREATED) {
-                if (((KogitoRuleFlowLogEvent) event).getProcessId().equals(processId)) {
-                    counter++;
+                if((( KogitoRuleFlowLogEvent ) event).getProcessId().equals(processId)) {
+                    counter++;                    
                 }
             }
         }
-
+        
         return counter;
     }
-
+    
     protected boolean assertProcessInstanceState(int state, ProcessInstance processInstance) {
-
-        return processInstance.getState() == state;
+        
+        return processInstance.getState() == state;         
     }
 
     private List<String> getNotTriggeredNodes(String processInstanceId,
@@ -384,40 +384,40 @@ public abstract class JbpmBpmn2TestCase {
         for (String nodeName : nodeNames) {
             names.add(nodeName);
         }
-
+        
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof KogitoRuleFlowNodeLogEvent) {
-                String nodeName = ((KogitoRuleFlowNodeLogEvent) event)
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
+                String nodeName = (( KogitoRuleFlowNodeLogEvent ) event)
                         .getNodeName();
                 if (names.contains(nodeName)) {
                     names.remove(nodeName);
                 }
             }
         }
-
+        
         return names;
     }
-
-    protected List<String> getCompletedNodes(long processInstanceId) {
+    
+    protected List<String> getCompletedNodes(long processInstanceId) { 
         List<String> names = new ArrayList<String>();
-
+        
         for (LogEvent event : workingMemoryLogger.getLogEvents()) {
-            if (event instanceof KogitoRuleFlowNodeLogEvent) {
-                if (event.getType() == 27) {
-                    names.add(((KogitoRuleFlowNodeLogEvent) event).getNodeId());
+            if (event instanceof KogitoRuleFlowNodeLogEvent ) {
+                if( event.getType() == 27 ) { 
+                    names.add((( KogitoRuleFlowNodeLogEvent ) event).getNodeId());
                 }
             }
         }
-
+    
         return names;
     }
 
     protected void clearHistory() {
-
+        
         if (workingMemoryLogger != null) {
             workingMemoryLogger.clear();
         }
-
+    
     }
 
     public void assertProcessVarExists(ProcessInstance process,
@@ -443,17 +443,17 @@ public abstract class JbpmBpmn2TestCase {
         }
 
     }
-
+    
     public String getProcessVarValue(ProcessInstance processInstance, String varName) {
-        String actualValue = null;
+        String actualValue = null;        
         Object value = ((WorkflowProcessInstanceImpl) processInstance).getVariable(varName);
         if (value != null) {
             actualValue = value.toString();
         }
-
+    
         return actualValue;
     }
-
+    
     public void assertProcessVarValue(ProcessInstance processInstance, String varName, Object varValue) {
         String actualValue = getProcessVarValue(processInstance, varName);
         assertEquals(varValue, actualValue, "Variable " + varName + " value misatch!");
@@ -568,20 +568,20 @@ public abstract class JbpmBpmn2TestCase {
         return MVELSafeHelper.getEvaluator().executeExpression(MVEL.compileExpression(str, context),
                 vars);
     }
-
+    
     protected void assertProcessInstanceCompleted(String processInstanceId, KieSession ksession) {
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
         ProcessInstance processInstance = kruntime.getProcessInstance(processInstanceId);
         assertNull(processInstance, "Process instance has not completed.");
     }
 
     protected void assertProcessInstanceAborted(String processInstanceId, KieSession ksession) {
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
         assertNull(kruntime.getProcessInstance(processInstanceId));
     }
 
     protected void assertProcessInstanceActive(String processInstanceId, KieSession ksession) {
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
         assertNotNull(kruntime.getProcessInstance(processInstanceId));
     }
 

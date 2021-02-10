@@ -28,14 +28,12 @@ public interface Application {
 
     /**
      * Returns configuration of the application
-     * 
      * @return current configuration
      */
     Config config();
 
     /**
      * Returns the desired KogitoEngine impl or null if not found
-     * 
      * @param clazz of the desired KogitoEngine
      * @return
      */
@@ -44,7 +42,6 @@ public interface Application {
 
     /**
      * Returns unit of work manager that allows to control execution within the application
-     * 
      * @return non null unit of work manager
      */
     UnitOfWorkManager unitOfWorkManager();

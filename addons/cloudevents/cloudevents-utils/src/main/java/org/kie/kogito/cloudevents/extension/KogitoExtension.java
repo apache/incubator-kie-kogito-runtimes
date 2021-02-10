@@ -44,7 +44,8 @@ public class KogitoExtension implements Extension {
             KOGITO_DMN_MODEL_NAMESPACE,
             KOGITO_DMN_EVALUATE_DECISION,
             KOGITO_DMN_FULL_RESULT,
-            KOGITO_DMN_FILTERED_CTX)));
+            KOGITO_DMN_FILTERED_CTX
+    )));
 
     private String executionId;
     private String dmnModelName;

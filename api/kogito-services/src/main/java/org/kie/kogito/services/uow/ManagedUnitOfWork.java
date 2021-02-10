@@ -32,9 +32,8 @@ public class ManagedUnitOfWork implements UnitOfWork {
     private Consumer<UnitOfWork> onStart;
     private Consumer<UnitOfWork> onEnd;
     private Consumer<UnitOfWork> onAbort;
-
-    public ManagedUnitOfWork(UnitOfWork delegate, Consumer<UnitOfWork> onStart, Consumer<UnitOfWork> onEnd,
-            Consumer<UnitOfWork> onAbort) {
+        
+    public ManagedUnitOfWork(UnitOfWork delegate, Consumer<UnitOfWork> onStart, Consumer<UnitOfWork> onEnd, Consumer<UnitOfWork> onAbort) {
         super();
         this.delegate = delegate;
         this.onStart = onStart;

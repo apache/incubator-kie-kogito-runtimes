@@ -18,9 +18,8 @@ package org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
-
 import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
 
 public class LocalDateTimeHandler extends TypeHandlerWithSummary<LocalDateTime> {
 

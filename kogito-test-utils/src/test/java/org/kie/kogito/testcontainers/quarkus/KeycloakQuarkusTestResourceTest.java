@@ -15,14 +15,14 @@
  */
 package org.kie.kogito.testcontainers.quarkus;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.KogitoKeycloakContainer;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.spy;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.KogitoKeycloakContainer;
 
 public class KeycloakQuarkusTestResourceTest {
 

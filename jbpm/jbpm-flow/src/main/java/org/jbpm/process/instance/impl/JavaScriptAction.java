@@ -33,9 +33,9 @@ import org.kie.api.runtime.Globals;
 import org.kie.api.runtime.process.ProcessContext;
 
 public class JavaScriptAction implements Action, Externalizable {
-
+    
     private static final long serialVersionUID = 630l;
-
+    
     private String expr;
 
     public JavaScriptAction() {
@@ -50,17 +50,17 @@ public class JavaScriptAction implements Action, Externalizable {
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeUTF(expr);
+        out.writeUTF( expr );
     }
-
+    
     public void execute(ProcessContext context) throws Exception {
         ScriptEngineManager factory = new ScriptEngineManager();
         ScriptEngine engine = factory.getEngineByName("JavaScript");
         engine.put("kcontext", context);
-
+        
         // insert globals into context
         Globals globals = context.getKieRuntime().getGlobals();
-
+        
         if (globals != null && globals.getGlobalKeys() != null) {
             for (String gKey : globals.getGlobalKeys()) {
                 engine.put(gKey, globals.get(gKey));
@@ -68,12 +68,11 @@ public class JavaScriptAction implements Action, Externalizable {
         }
         if (context.getProcessInstance() != null && context.getProcessInstance().getProcess() != null) {
             // insert process variables
-            VariableScopeInstance variableScope =
-                    (VariableScopeInstance) ((WorkflowProcessInstance) context.getProcessInstance())
-                            .getContextInstance(VariableScope.VARIABLE_SCOPE);
-
+            VariableScopeInstance variableScope = (VariableScopeInstance) ((WorkflowProcessInstance)context.getProcessInstance())
+                    .getContextInstance(VariableScope.VARIABLE_SCOPE);
+    
             Map<String, Object> variables = variableScope.getVariables();
-            if (variables != null) {
+            if (variables != null ) {
                 for (Entry<String, Object> variable : variables.entrySet()) {
                     engine.put(variable.getKey(), variable.getValue());
                 }

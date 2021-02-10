@@ -15,11 +15,6 @@
 
 package org.kie.kogito.quarkus;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,22 +31,23 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
 import org.kie.kogito.quarkus.deployment.JandexProtoGenerator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class JandexProtoGeneratorTest {
 
     @Test
     void testGenerate() {
         List<ClassInfo> dataClasses = new ArrayList<>();
 
-        DotName enumName = DotName.createComponentized(
-                DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
-        ClassInfo enumClassInfo = ClassInfo.create(enumName, DotName.createSimple(Enum.class.getName()), (short) 0,
-                new DotName[0], new HashMap<>(), false);
+        DotName enumName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
+        ClassInfo enumClassInfo = ClassInfo.create(enumName, DotName.createSimple(Enum.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataClasses.add(enumClassInfo);
 
-        DotName objectName = DotName.createComponentized(
-                DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleObject");
-        ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0,
-                new DotName[0], new HashMap<>(), false);
+        DotName objectName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleObject");
+        ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataClasses.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
@@ -68,16 +64,12 @@ class JandexProtoGeneratorTest {
     void testGenerateComments() {
         List<ClassInfo> dataModel = new ArrayList<>();
 
-        DotName enumName = DotName.createComponentized(
-                DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
-        ClassInfo enumClassInfo = ClassInfo.create(enumName, DotName.createSimple(Enum.class.getName()), (short) 0,
-                new DotName[0], new HashMap<>(), false);
+        DotName enumName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleEnum");
+        ClassInfo enumClassInfo = ClassInfo.create(enumName, DotName.createSimple(Enum.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(enumClassInfo);
 
-        DotName objectName = DotName.createComponentized(
-                DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleObject");
-        ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0,
-                new DotName[0], new HashMap<>(), false);
+        DotName objectName = DotName.createComponentized(DotName.createComponentized(DotName.createComponentized(null, "com"), "acme"), "ExampleObject");
+        ClassInfo objectClassName = ClassInfo.create(objectName, DotName.createSimple(Object.class.getName()), (short) 0, new DotName[0], new HashMap<>(), false);
         dataModel.add(objectClassName);
 
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)

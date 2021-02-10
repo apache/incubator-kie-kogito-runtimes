@@ -26,24 +26,24 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 public class ReceiveTaskHandler implements KogitoWorkItemHandler {
-
+    
     // TODO: use correlation instead of message id
     private Map<String, String> waiting = new HashMap<String, String>();
     private KogitoProcessRuntime kruntime;
-
+    
     public ReceiveTaskHandler(KieSession ksession) {
-        this.kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        this.kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
     }
-
+    
     public void setKnowledgeRuntime(KieSession ksession) {
-        this.kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+    	this.kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
     }
 
-    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+    public void executeWorkItem( KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         String messageId = (String) workItem.getParameter("MessageId");
         waiting.put(messageId, workItem.getStringId());
     }
-
+    
     public void messageReceived(String messageId, Object message) {
         String workItemId = waiting.get(messageId);
         if (workItemId == null) {
@@ -55,7 +55,7 @@ public class ReceiveTaskHandler implements KogitoWorkItemHandler {
     }
 
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-        String messageId = (String) workItem.getParameter("MessageId");
+    	String messageId = (String) workItem.getParameter("MessageId");
         waiting.remove(messageId);
     }
 

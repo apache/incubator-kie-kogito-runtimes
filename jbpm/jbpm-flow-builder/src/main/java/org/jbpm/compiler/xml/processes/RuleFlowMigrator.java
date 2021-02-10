@@ -55,25 +55,23 @@ public class RuleFlowMigrator {
      * XSL file that transforms drools 4 .rf (graphical) ruleflow files to
      * version 5
      */
-    private static final String XSL_RF_FROM_4_TO_5 =
-            "/org/drools/compiler/compiler/xml/processes/RuleFlowGraphicalFrom4To5.xsl";
+    private static final String XSL_RF_FROM_4_TO_5 = "/org/drools/compiler/compiler/xml/processes/RuleFlowGraphicalFrom4To5.xsl";
 
     /**
      * String containing namespace header for migrtated ruleflow files
      */
-    private static final String PROCESS_ELEMENT_WITH_NAMESPACE = "<process xmlns=\"http://drools.org/drools-5.0/process\"\n"
-            + "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+    private static final String PROCESS_ELEMENT_WITH_NAMESPACE = "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" + "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
             + "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n";
 
     /*************************************************************************
      * Returns a drools 5 version of a given drools 4 .rf (Graphical) ruleflow
-     * in string format. Note that this method assumes the given ruleflow
+     * in string format. Note that this method assumes the given ruleflow 
      * is a valid version 4 .rf ruleflow - this can be checked using the
      * needToMigrateRF method.
      *
      * @param xml Drools 4 ruleflow (.rf) in xml format
      * @return drools 5 version of a given drools 4 .rf (Graphical) ruleflow
-     *         in string format.
+     * in string format.
      * @throws Exception
      ************************************************************************/
     public static String portRFToCurrentVersion(String xml) throws Exception {
@@ -82,7 +80,7 @@ public class RuleFlowMigrator {
 
     /*************************************************************************
      * Returns a drools 5 version of a given drools 4 .rfm ruleflow
-     * in string format. Note that this method assumes the given ruleflow
+     * in string format. Note that this method assumes the given ruleflow 
      * is a valid version 4 .rfm ruleflow - this can be checked using the
      * needToMigrateRFM method. The return version 5 xml can be used as
      * a .rf (graphical) ruleflow, but its nodes do not contains
@@ -90,7 +88,7 @@ public class RuleFlowMigrator {
      *
      * @param xml Drools 4 ruleflow (.rfm) in xml format
      * @return drools 5 version of a given drools 4 .rfm ruleflow
-     *         in string format.
+     * in string format.
      * @throws Exception
      ************************************************************************/
     public static String portRFMToCurrentVersion(String xml) throws Exception {
@@ -99,13 +97,12 @@ public class RuleFlowMigrator {
 
     /*************************************************************************
      * Returns true if the given .rf (graphical) ruleflow xml is a version
-     * 4 ruleflow that needs to be migrated to version 5, and returns
+     * 4 ruleflow that needs to be migrated to version 5, and returns 
      * false otherwise.
-     * 
      * @param xml a .rf ruleflow in xml format
      * @return true if the given .rf (graphical) ruleflow xml is a version
-     *         4 ruleflow that needs to be migrated to version 5, and returns
-     *         false otherwise.
+     * 4 ruleflow that needs to be migrated to version 5, and returns 
+     * false otherwise.
      * @throws Exception
      ************************************************************************/
     public static boolean needToMigrateRF(String xml) throws Exception {
@@ -115,13 +112,12 @@ public class RuleFlowMigrator {
 
     /*************************************************************************
      * Returns true if the given .rfm ruleflow xml is a version
-     * 4 ruleflow that needs to be migrated to version 5, and returns
+     * 4 ruleflow that needs to be migrated to version 5, and returns 
      * false otherwise.
-     * 
      * @param xml a .rfm ruleflow in xml format
      * @return true if the given .rfm graphical ruleflow xml is a version
-     *         4 ruleflow that needs to be migrated to version 5, and returns
-     *         false otherwise.
+     * 4 ruleflow that needs to be migrated to version 5, and returns 
+     * false otherwise.
      * @throws Exception
      ************************************************************************/
     public static boolean needToMigrateRFM(String xml) throws Exception {
@@ -132,11 +128,10 @@ public class RuleFlowMigrator {
     /*************************************************************************
      * Utility method that applies a given xsl transform to the given xml to
      * transform a drools 4 ruleflow to version 5.
-     * 
      * @param xml the ruleflow to be transformed
      * @param xsl the xsl transform to apply to the ruleflow xml
-     * @return the ruleflow xml transformed from version 4 to 5 using the
-     *         given xsl transformation
+     * @return the ruleflow xml transformed from version 4 to 5 using the 
+     * given xsl transformation
      * @throws Exception
      ************************************************************************/
     private static String portToCurrentVersion(String xml, String xsl) throws Exception {
@@ -149,11 +144,10 @@ public class RuleFlowMigrator {
 
     /*************************************************************************
      * Converts the contents of the given Reader into a string.
-     * WARNING: the given string is not reset (as not all
+     * WARNING: the given string is not reset (as not all 
      * readers support reset). Consequently, anny further
      * attempt to read from the given reader will return nothing,
      * unless you reset the reader.
-     * 
      * @param reader
      * @return he contents of the given Reader into a string.
      * @throws IOException
@@ -166,20 +160,20 @@ public class RuleFlowMigrator {
 
         while ((len = reader.read(buf)) >= 0) {
             text.append(buf,
-                    0,
-                    len);
+                        0,
+                        len);
         }
         return text.toString();
     }
 
     /*************************************************************************
-     * Test application that reads a given source
+     * Test application that reads a given source 
      * file containing a drools 4 .rf and writes it to another given file
      * location as a drools 5 .rf file.
      *
-     * @param args an array whose first element is the source filename and
-     *        the second element is the the destination filename to which the
-     *        transformed ruleflow is written
+     * @param args an array whose first element is the source filename and 
+     * the second element is the the destination filename to which the 
+     * transformed ruleflow is written
      ************************************************************************/
     public static final void main(String[] args) {
         try {
@@ -220,22 +214,22 @@ public class RuleFlowMigrator {
     private static class XSLTransformation {
 
         public static String transform(String stylesheet,
-                String srcXMLString,
-                HashMap<String, String> params) throws Exception {
+                                       String srcXMLString,
+                                       HashMap<String, String> params) throws Exception {
             StringWriter writer = new StringWriter();
             StreamResult result = new StreamResult(writer);
             Source src = new StreamSource(new StringReader(srcXMLString));
             transform(stylesheet,
-                    src,
-                    result,
-                    params);
+                      src,
+                      result,
+                      params);
             return writer.toString();
         }
 
         public static void transform(String stylesheet,
-                Source src,
-                Result res,
-                HashMap<String, String> params) throws Exception {
+                                     Source src,
+                                     Result res,
+                                     HashMap<String, String> params) throws Exception {
 
             Transformer transformer = getTransformer(stylesheet);
 
@@ -248,17 +242,17 @@ public class RuleFlowMigrator {
                     String key = itKeys.next();
                     String value = params.get(key);
                     transformer.setParameter(key,
-                            value);
+                                             value);
                 }
             }
 
             transformer.transform(src,
-                    res);
+                                  res);
         }
 
         private static Transformer getTransformer(String stylesheet) throws IOException, TransformerConfigurationException {
             try (InputStream in = XSLTransformation.class.getResourceAsStream(stylesheet);
-                    InputStream xslStream = new BufferedInputStream(in)) {
+                 InputStream xslStream = new BufferedInputStream(in)) {
                 StreamSource src = new StreamSource(xslStream);
                 src.setSystemId(stylesheet);
                 return TransformerFactory.newInstance().newTransformer(src);

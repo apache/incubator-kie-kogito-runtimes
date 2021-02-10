@@ -68,8 +68,7 @@ public class QuarkusTopicDiscovery extends AbstractTopicDiscovery {
         if (channelName.contains(".")) {
             channelName = channelName.substring(0, channelName.indexOf("."));
         }
-        final Optional<String> topicName =
-                ConfigProvider.getConfig().getOptionalValue(prefix + channelName + TOPIC_SUFFIX, String.class);
+        final Optional<String> topicName = ConfigProvider.getConfig().getOptionalValue(prefix + channelName + TOPIC_SUFFIX, String.class);
         return topicName.orElse(channelName);
     }
 }

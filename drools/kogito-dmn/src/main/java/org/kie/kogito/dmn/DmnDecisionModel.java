@@ -41,8 +41,7 @@ public class DmnDecisionModel implements DecisionModel {
         this.execIdSupplier = execIdSupplier;
         this.dmnModel = dmnRuntime.getModel(namespace, name);
         if (dmnModel == null) {
-            throw new IllegalStateException(
-                    "DMN model '" + name + "' not found with namespace '" + namespace + "' in the inherent DMNRuntime.");
+            throw new IllegalStateException("DMN model '" + name + "' not found with namespace '" + namespace + "' in the inherent DMNRuntime.");
         }
     }
 

@@ -16,12 +16,12 @@
 
 package org.jbpm.bpmn2;
 
-import static org.assertj.core.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
-public class ImportClassTest extends JbpmBpmn2TestCase {
+import static org.assertj.core.api.Assertions.*;
 
+public class ImportClassTest extends JbpmBpmn2TestCase {
+    
     @Test
     public void testResourceType() {
         assertThatExceptionOfType(RuntimeException.class)

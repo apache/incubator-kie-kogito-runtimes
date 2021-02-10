@@ -15,20 +15,11 @@
 
 package org.jbpm.serverless.workflow;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.HashMap;
 import java.util.List;
 
-import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
-import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -38,6 +29,13 @@ import io.serverlessworkflow.api.mapper.JsonObjectMapper;
 import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.InjectState;
+import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
+import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WorkflowUtilsTest extends BaseServerlessTest {
 
@@ -93,8 +91,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
         assertThat(relayStates.get(0)).isInstanceOf(InjectState.class);
         assertThat(relayStates.get(1)).isInstanceOf(InjectState.class);
 
-        List<State> noOperationStates =
-                ServerlessWorkflowUtils.getStatesByType(multiInjectStateWorkflow, DefaultState.Type.OPERATION);
+        List<State> noOperationStates = ServerlessWorkflowUtils.getStatesByType(multiInjectStateWorkflow, DefaultState.Type.OPERATION);
         assertThat(noOperationStates).isNotNull();
         assertThat(noOperationStates).hasSize(0);
     }
@@ -107,8 +104,7 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testGetWorkflowEventFor() {
         assertThat(ServerlessWorkflowUtils.getWorkflowEventFor(eventDefOnlyWorkflow, "sampleEvent")).isNotNull();
-        assertThat(ServerlessWorkflowUtils.getWorkflowEventFor(eventDefOnlyWorkflow, "sampleEvent"))
-                .isInstanceOf(EventDefinition.class);
+        assertThat(ServerlessWorkflowUtils.getWorkflowEventFor(eventDefOnlyWorkflow, "sampleEvent")).isInstanceOf(EventDefinition.class);
     }
 
     @Test
@@ -139,26 +135,24 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     public void testDataConditionScript() {
         assertThat(ServerlessWorkflowUtils.conditionScript("$.customers[?(@.age  > 18)]")).isNotNull();
         assertThat(ServerlessWorkflowUtils.conditionScript("$.customers[?(@.age  > 18)]"))
-                .isEqualTo(
-                        "return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")).toString()).read(\"$.customers[?(@.age  > 18)]\")).isEmpty();");
+                .isEqualTo("return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")).toString()).read(\"$.customers[?(@.age  > 18)]\")).isEmpty();");
     }
 
     @Test
     public void testResolveFunctionMetadata() {
         FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(
-                new HashMap<String, String>() {
-                    {
-                        put("testprop1", "customtestprop1val");
-                    }
-                });
+                new HashMap<String, String>() {{
+                    put("testprop1", "customtestprop1val");
+                }}
+        );
 
         String testProp1Val = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "testprop1",
-                WorkflowAppContext.ofAppResources());
+                                                                              WorkflowAppContext.ofAppResources());
         assertThat(testProp1Val).isNotNull();
         assertThat(testProp1Val).isEqualTo("customtestprop1val");
 
         String testProp2Val = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "testprop2",
-                WorkflowAppContext.ofAppResources());
+                                                                              WorkflowAppContext.ofAppResources());
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
     }
@@ -166,19 +160,18 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveEvenDefinitiontMetadata() {
         EventDefinition eventDefinition = new EventDefinition().withName("testevent1").withMetadata(
-                new HashMap<String, String>() {
-                    {
-                        put("testprop1", "customtestprop1val");
-                    }
-                });
+                new HashMap<String, String>() {{
+                    put("testprop1", "customtestprop1val");
+                }}
+        );
 
         String testProp1Val = ServerlessWorkflowUtils.resolveEvenDefinitiontMetadata(eventDefinition, "testprop1",
-                WorkflowAppContext.ofAppResources());
+                                                                                     WorkflowAppContext.ofAppResources());
         assertThat(testProp1Val).isNotNull();
         assertThat(testProp1Val).isEqualTo("customtestprop1val");
 
         String testProp2Val = ServerlessWorkflowUtils.resolveEvenDefinitiontMetadata(eventDefinition, "testprop2",
-                WorkflowAppContext.ofAppResources());
+                                                                                     WorkflowAppContext.ofAppResources());
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
     }
@@ -186,19 +179,18 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveStatetMetadata() {
         DefaultState defaultState = new DefaultState().withName("teststate1").withMetadata(
-                new HashMap<String, String>() {
-                    {
-                        put("testprop1", "customtestprop1val");
-                    }
-                });
+                new HashMap<String, String>() {{
+                    put("testprop1", "customtestprop1val");
+                }}
+        );
 
         String testProp1Val = ServerlessWorkflowUtils.resolveStatetMetadata(defaultState, "testprop1",
-                WorkflowAppContext.ofAppResources());
+                                                                            WorkflowAppContext.ofAppResources());
         assertThat(testProp1Val).isNotNull();
         assertThat(testProp1Val).isEqualTo("customtestprop1val");
 
         String testProp2Val = ServerlessWorkflowUtils.resolveStatetMetadata(defaultState, "testprop2",
-                WorkflowAppContext.ofAppResources());
+                                                                            WorkflowAppContext.ofAppResources());
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
     }
@@ -206,19 +198,18 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     @Test
     public void testResolveWorkflowMetadata() {
         Workflow workflow = new Workflow().withId("workflowid1").withMetadata(
-                new HashMap<String, String>() {
-                    {
-                        put("testprop1", "customtestprop1val");
-                    }
-                });
+                new HashMap<String, String>() {{
+                    put("testprop1", "customtestprop1val");
+                }}
+        );
 
         String testProp1Val = ServerlessWorkflowUtils.resolveWorkflowMetadata(workflow, "testprop1",
-                WorkflowAppContext.ofAppResources());
+                                                                              WorkflowAppContext.ofAppResources());
         assertThat(testProp1Val).isNotNull();
         assertThat(testProp1Val).isEqualTo("customtestprop1val");
 
         String testProp2Val = ServerlessWorkflowUtils.resolveWorkflowMetadata(workflow, "testprop2",
-                WorkflowAppContext.ofAppResources());
+                                                                              WorkflowAppContext.ofAppResources());
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
     }

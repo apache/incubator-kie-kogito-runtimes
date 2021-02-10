@@ -25,7 +25,6 @@ public class PrometheusRegistryProviderTest {
     @Test
     public void prometheusMetricsAreExported() {
         SystemMetricsCollector.registerElapsedTimeSampleMetrics("endpoint", 1);
-        Assertions.assertTrue(
-                PrometheusRegistryProvider.getPrometheusMeterRegistry().scrape().contains("api_execution_elapsed_seconds"));
+        Assertions.assertTrue(PrometheusRegistryProvider.getPrometheusMeterRegistry().scrape().contains("api_execution_elapsed_seconds"));
     }
 }

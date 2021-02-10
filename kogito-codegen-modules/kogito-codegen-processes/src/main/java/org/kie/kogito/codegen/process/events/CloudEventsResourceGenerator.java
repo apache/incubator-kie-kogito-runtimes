@@ -21,15 +21,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 
 public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator {
 
@@ -40,7 +39,7 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
     private final List<TriggerMetaData> triggers;
 
     public CloudEventsResourceGenerator(final KogitoBuildContext context,
-            final List<ProcessExecutableModelGenerator> generators) {
+                                        final List<ProcessExecutableModelGenerator> generators) {
         super(TemplatedGenerator.builder()
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .build(context, CLASS_NAME));
@@ -66,15 +65,14 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
         final CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate CloudEvents REST Resource");
         final ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(
-                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
         this.addInjection(template);
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
     }
 
     /**
-     * Filter TriggerMetadata to keep only {@link org.jbpm.compiler.canonical.TriggerMetaData.TriggerType#ConsumeMessage}
+     * Filter TriggerMetadata to keep only  {@link org.jbpm.compiler.canonical.TriggerMetaData.TriggerType#ConsumeMessage}
      *
      * @param generators Process generators
      * @return filtered list
@@ -86,15 +84,15 @@ public class CloudEventsResourceGenerator extends AbstractEventResourceGenerator
                     .stream()
                     .filter(m -> m.generate().getTriggers() != null)
                     .forEach(m -> filteredTriggers.addAll(m.generate().getTriggers().stream()
-                            .filter(t -> TriggerMetaData.TriggerType.ConsumeMessage.equals(t.getType()))
-                            .collect(Collectors.toList())));
+                                                                  .filter(t -> TriggerMetaData.TriggerType.ConsumeMessage.equals(t.getType()))
+                                                                  .collect(Collectors.toList())));
             return filteredTriggers;
         }
         return Collections.emptyList();
     }
 
     private void addInjection(final ClassOrInterfaceDeclaration template) {
-        if (context.hasDI()) {
+        if(context.hasDI()) {
             context.getDependencyInjectionAnnotator().withApplicationComponent(template);
             template.findAll(FieldDeclaration.class, fd -> fd.getVariables().get(0).getNameAsString().contains(EMITTER_PREFIX))
                     .forEach(context.getDependencyInjectionAnnotator()::withInjection);

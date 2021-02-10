@@ -16,16 +16,6 @@
 
 package org.kie.kogito.explainability;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.explainability.Constants.MODEL_NAME;
-import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +27,16 @@ import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.explainability.Constants.MODEL_NAME;
+import static org.kie.kogito.explainability.Constants.MODEL_NAMESPACE;
 
 class SpringBootExplainableResourceTest {
 
@@ -64,8 +64,8 @@ class SpringBootExplainableResourceTest {
         Map<String, Object> expectedFine = new HashMap<>();
         expectedFine.put("Points", BigDecimal.valueOf(7));
         expectedFine.put("Amount", BigDecimal.valueOf(1000));
-        assertEquals(expectedFine.get("Points"), ((Map<String, Object>) result.get("Fine")).get("Points"));
-        assertEquals(expectedFine.get("Amount"), ((Map<String, Object>) result.get("Fine")).get("Amount"));
+        assertEquals(expectedFine.get("Points"), ((Map<String, Object>)result.get("Fine")).get("Points"));
+        assertEquals(expectedFine.get("Amount"), ((Map<String, Object>)result.get("Fine")).get("Amount"));
     }
 
     @Test

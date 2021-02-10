@@ -14,12 +14,11 @@
  */
 package org.kie.kogito.quarkus;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-@Generated(value = { "kogito-codegen" }, reference = "generatedPerson", name = "GeneratedPerson")
+@Generated(value = {"kogito-codegen"}, reference = "generatedPerson", name = "GeneratedPerson")
 public class GeneratedPOJO {
     @VariableInfo(tags = "test")
     @JsonProperty("generatedProperty")

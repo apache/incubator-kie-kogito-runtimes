@@ -16,10 +16,6 @@
 
 package org.jbpm.process;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +41,10 @@ import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RuleSetTest extends AbstractBaseTest {
 
@@ -82,15 +82,13 @@ public class RuleSetTest extends AbstractBaseTest {
         String modelName = "wrong-name";
         String decisionName = "isAdult";
 
-        IllegalStateException illegalStateException =
-                assertThrows(IllegalStateException.class, () -> createProcess(namespace, modelName, decisionName));
+        IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> createProcess(namespace, modelName, decisionName));
         assertTrue(illegalStateException.getMessage().contains(namespace));
         assertTrue(illegalStateException.getMessage().contains(modelName));
     }
 
     private RuleFlowProcess createProcess(String namespace, String modelName, String decisionName) {
-        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(
-                new InputStreamReader(RuleSetTest.class.getResourceAsStream("/org/jbpm/process/PersonDecisions.dmn")));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(RuleSetTest.class.getResourceAsStream("/org/jbpm/process/PersonDecisions.dmn")));
         DmnDecisionModel dmnDecisionModel = new DmnDecisionModel(dmnRuntime, namespace, modelName);
 
         RuleFlowProcess process = new RuleFlowProcess();
@@ -135,8 +133,8 @@ public class RuleSetTest extends AbstractBaseTest {
         return process;
     }
 
-    private void connect(Node sourceNode, Node targetNode) {
+    private void connect( Node sourceNode, Node targetNode) {
         new ConnectionImpl(sourceNode, Node.CONNECTION_DEFAULT_TYPE,
-                targetNode, Node.CONNECTION_DEFAULT_TYPE);
+                           targetNode, Node.CONNECTION_DEFAULT_TYPE);
     }
 }
