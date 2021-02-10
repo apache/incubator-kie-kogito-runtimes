@@ -25,7 +25,7 @@
   <properties>
     <checkstyle.header.template>.*</checkstyle.header.template>
     <checkstyle.header.extensions>java</checkstyle.header.extensions>
-   
+
     <!-- container images for testing -->
     <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>jboss/keycloak:${version.org.keycloak}</container.image.keycloak>
@@ -42,7 +42,7 @@
     <quarkus.logging.manager>org.jboss.logmanager.LogManager</quarkus.logging.manager>
     <tests.surefire.include>**/*Test.java</tests.surefire.include>
     <tests.failsafe.include>**/*IT.java</tests.failsafe.include>
-    
+
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
     <version.antrun.plugin>1.8</version.antrun.plugin>
@@ -83,7 +83,7 @@
     <version.surefire.plugin>2.22.2</version.surefire.plugin> <!-- minimum required by JUnit 5 -->
     <version.surefire.report.plugin>2.6</version.surefire.report.plugin>
     <version.taglist.plugin>2.4</version.taglist.plugin>
-    <!-- Versions plugin should stay on version 2.5 
+    <!-- Versions plugin should stay on version 2.5
       until https://github.com/mojohaus/versions-maven-plugin/issues/312 is fixed -->
     <version.versions.plugin>2.5</version.versions.plugin>
     <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
@@ -271,7 +271,7 @@
         <artifactId>slf4j-nop</artifactId>
         <version>${version.org.slf4j}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springdoc</groupId>
         <artifactId>springdoc-openapi-ui</artifactId>
@@ -584,7 +584,7 @@
         <scope>test</scope>
       </dependency>
 
-     <dependency>
+      <dependency>
         <groupId>com.github.tomakehurst</groupId>
         <artifactId>wiremock-jre8</artifactId>
         <version>${version.wiremock}</version>
@@ -688,7 +688,7 @@
         <artifactId>smallrye-reactive-messaging-provider</artifactId>
         <version>${version.io.smallrye.reactive}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-annotations</artifactId>
