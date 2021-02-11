@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>@version.springboot@</version>
+        <version>@version.org.springframework.boot@</version>
     </parent>
     
     <groupId>org.kie.kogito</groupId>
@@ -31,7 +31,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>@version.springboot@</version>
+                <version>@version.org.springframework.boot@</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -135,7 +135,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>@version.springboot@</version>
+                <version>@version.org.springframework.boot@</version>
                 <executions>
                     <execution>
                         <goals>
