@@ -16,13 +16,13 @@
 
 package org.jbpm.compiler.xml.processes;
 
-import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
-
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import static org.jbpm.ruleflow.core.Metadata.COMPLETION_CONDITION;
 
 public class DynamicNodeHandler extends CompositeNodeHandler {
 
@@ -41,8 +41,7 @@ public class DynamicNodeHandler extends CompositeNodeHandler {
     }
 
     @Override
-    protected void handleNode(Node node, Element element, String uri, String localName, ExtensibleXmlParser parser)
-            throws SAXException {
+    protected void handleNode( Node node, Element element, String uri, String localName, ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         DynamicNode dynamicNode = (DynamicNode) node;
         for (int i = 0; i < element.getChildNodes().getLength(); i++) {

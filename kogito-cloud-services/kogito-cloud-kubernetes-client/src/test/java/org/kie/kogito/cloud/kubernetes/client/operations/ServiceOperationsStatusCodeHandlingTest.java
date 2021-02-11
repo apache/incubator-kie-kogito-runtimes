@@ -14,13 +14,6 @@
  */
 package org.kie.kogito.cloud.kubernetes.client.operations;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.net.HttpURLConnection;
 import java.util.Map;
 
@@ -28,6 +21,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClientException;
 import org.kie.kogito.cloud.kubernetes.client.MockKubernetesServerSupport;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Service Operations test cases that integrates with a mock Kubernetes server to validate HTTP Rest API handling.

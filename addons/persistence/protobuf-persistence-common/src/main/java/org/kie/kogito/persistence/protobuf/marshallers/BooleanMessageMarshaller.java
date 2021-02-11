@@ -40,7 +40,7 @@ public class BooleanMessageMarshaller implements MessageMarshaller<Boolean> {
     @Override
     public void writeTo(ProtoStreamWriter writer, Boolean t) throws IOException {
         writer.writeBoolean("data", t);
-
+        
     }
 
 }

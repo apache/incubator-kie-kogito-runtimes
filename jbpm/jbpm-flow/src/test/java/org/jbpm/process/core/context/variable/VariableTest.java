@@ -16,14 +16,14 @@
 
 package org.jbpm.process.core.context.variable;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.stream.Stream;
 
 import javax.lang.model.SourceVersion;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class VariableTest {
 
@@ -66,12 +66,12 @@ class VariableTest {
     @Test
     void testReservedWordsName() {
         Stream.of("abstract", "continue", "for", "new", "switch", "assert", "default",
-                "goto", "package", "synchronized", "boolean", "do", "if", "private",
-                "this", "break", "double", "implements", "protected", "throw", "byte",
-                "else", "import", "public", "throws", "case", "enum", "instanceof",
-                "return", "transient", "catch", "extends", "int", "short", "try", "char",
-                "final", "interface", "static", "void", "class", "finally", "long",
-                "strictfp", "volatile", "const", "float", "native", "super", "while")
+                  "goto", "package", "synchronized", "boolean", "do", "if", "private",
+                  "this", "break", "double", "implements", "protected", "throw", "byte",
+                  "else", "import", "public", "throws", "case", "enum", "instanceof",
+                  "return", "transient", "catch", "extends", "int", "short", "try", "char",
+                  "final", "interface", "static", "void", "class", "finally", "long",
+                  "strictfp", "volatile", "const", "float", "native", "super", "while")
                 .forEach(name -> {
                     tested.setName(name);
                     assertValidSanitizedName(name);

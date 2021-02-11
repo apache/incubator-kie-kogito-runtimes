@@ -40,7 +40,7 @@ public abstract class BaseServiceDiscovery implements ServiceDiscovery {
     }
 
     /**
-     * Should implement the Services API query logic according to the infrastructure.
+     * Should implement the Services API query logic according to the infrastructure.   
      * 
      * @see {@link KubernetesServiceDiscovery} for reference
      * @param namespace the namespace where to query the service from
@@ -72,10 +72,9 @@ public abstract class BaseServiceDiscovery implements ServiceDiscovery {
         LOGGER.debug("Result of services query: {}", services);
 
         if (services.size() > 1) {
-            LOGGER.warn(
-                    "Found more than one endpoint using labels {}:{}. Returning the first one in the list. Try to be more specific in the query search.",
-                    labelKey,
-                    labelValue);
+            LOGGER.warn("Found more than one endpoint using labels {}:{}. Returning the first one in the list. Try to be more specific in the query search.",
+                        labelKey,
+                        labelValue);
         } else if (services.isEmpty()) {
             LOGGER.warn("Haven't found any endpoint in the namespace {} with labels {}:{}", namespace, labelKey, labelValue);
             return Optional.empty();

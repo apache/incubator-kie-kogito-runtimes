@@ -70,7 +70,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             nodeInstance.setLevel(level);
             return nodeInstance;
         } else if (node instanceof ForEachJoinNode) {
-            ForEachJoinNodeInstance nodeInstance = (ForEachJoinNodeInstance) getFirstNodeInstance(node.getId());
+            ForEachJoinNodeInstance nodeInstance = (ForEachJoinNodeInstance)
+                    getFirstNodeInstance(node.getId());
             if (nodeInstance == null) {
                 nodeInstance = new ForEachJoinNodeInstance();
                 nodeInstance.setNodeId(node.getId());
@@ -95,8 +96,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private Collection<?> evaluateCollectionExpression(String collectionExpression) {
         Object collection;
-        VariableScopeInstance variableScopeInstance =
-                (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, collectionExpression);
+        VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                resolveContextInstance(VariableScope.VARIABLE_SCOPE, collectionExpression);
         if (variableScopeInstance != null) {
             collection = variableScopeInstance.getVariable(collectionExpression);
         } else {
@@ -131,21 +132,20 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         }
 
         @Override
-        public void internalTrigger(KogitoNodeInstance fromm, String type) {
+        public void internalTrigger( KogitoNodeInstance fromm, String type) {
             triggerTime = new Date();
             String collectionExpression = getForEachNode().getCollectionExpression();
             Collection<?> collection = evaluateCollectionExpression(collectionExpression);
             ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
             if (collection.isEmpty()) {
-                ForEachNodeInstance.this.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
+                ForEachNodeInstance.this.triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
             } else {
                 List<NodeInstance> nodeInstances = new ArrayList<>();
                 for (Object o : collection) {
                     String variableName = getForEachNode().getVariableName();
-                    NodeInstance nodeInstance = ((NodeInstanceContainer) getNodeInstanceContainer())
-                            .getNodeInstance(getForEachSplitNode().getTo().getTo());
-                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance
-                            .resolveContextInstance(VariableScope.VARIABLE_SCOPE, variableName);
+                    NodeInstance nodeInstance = ((NodeInstanceContainer) getNodeInstanceContainer()).getNodeInstance(getForEachSplitNode().getTo().getTo());
+                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                            nodeInstance.resolveContextInstance(VariableScope.VARIABLE_SCOPE, variableName);
                     variableScopeInstance.setVariable(this, variableName, o);
                     nodeInstances.add(nodeInstance);
                 }
@@ -154,7 +154,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                     nodeInstance.trigger(this, getForEachSplitNode().getTo().getToType());
                 }
                 if (!getForEachNode().isWaitForCompletion()) {
-                    ForEachNodeInstance.this.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, false);
+                    ForEachNodeInstance.this.triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, false);
                 }
             }
         }
@@ -169,7 +169,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         }
 
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings({"unchecked", "rawtypes"})
         public void internalTrigger(KogitoNodeInstance from, String type) {
             triggerTime = new Date();
             Map<String, Object> tempVariables = new HashMap<>();
@@ -177,14 +177,13 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             if (getForEachNode().getOutputVariableName() != null) {
                 subprocessVariableScopeInstance = (VariableScopeInstance) getContextInstance(VariableScope.VARIABLE_SCOPE);
 
-                Collection<Object> outputCollection =
-                        (Collection<Object>) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR);
+                Collection<Object> outputCollection = (Collection<Object>) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR);
                 if (outputCollection == null) {
                     outputCollection = new ArrayList<>();
                 }
 
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) ((NodeInstanceImpl) from)
-                        .resolveContextInstance(VariableScope.VARIABLE_SCOPE, getForEachNode().getOutputVariableName());
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                        ((NodeInstanceImpl) from).resolveContextInstance(VariableScope.VARIABLE_SCOPE, getForEachNode().getOutputVariableName());
                 Object outputVariable = null;
                 if (variableScopeInstance != null) {
                     outputVariable = variableScopeInstance.getVariable(getForEachNode().getOutputVariableName());
@@ -197,13 +196,11 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 String outputCollectionName = getForEachNode().getOutputCollectionExpression();
                 tempVariables.put(outputCollectionName, outputCollection);
             }
-            boolean isCompletionConditionMet =
-                    evaluateCompletionCondition(getForEachNode().getCompletionConditionExpression(), tempVariables);
+            boolean isCompletionConditionMet = evaluateCompletionCondition(getForEachNode().getCompletionConditionExpression(), tempVariables);
             if (getNodeInstanceContainer().getNodeInstances().size() == 1 || isCompletionConditionMet) {
                 String outputCollection = getForEachNode().getOutputCollectionExpression();
                 if (outputCollection != null) {
-                    VariableScopeInstance variableScopeInstance =
-                            (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, outputCollection);
+                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, outputCollection);
                     Collection<?> outputVariable = (Collection<?>) variableScopeInstance.getVariable(outputCollection);
                     if (outputVariable != null) {
                         outputVariable.addAll((Collection) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR));
@@ -220,8 +217,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                         triggerConnection(getForEachJoinNode().getTo());
                     } else {
 
-                        List<Connection> connections =
-                                getForEachJoinNode().getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
+                        List<Connection> connections = getForEachJoinNode().getOutgoingConnections( Node.CONNECTION_DEFAULT_TYPE);
                         for (Connection connection : connections) {
                             triggerConnection(connection);
                         }
@@ -235,11 +231,10 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 return false;
             }
             try {
-                Object result = MVELProcessHelper.evaluator().eval(expression,
-                        new ForEachNodeInstanceResolverFactory(this, tempVariables));
+                Object result = MVELProcessHelper.evaluator().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
                 if (!(result instanceof Boolean)) {
                     throw new RuntimeException("Completion condition expression must return boolean values: " + result
-                            + " for expression " + expression);
+                                                       + " for expression " + expression);
                 }
                 return ((Boolean) result).booleanValue();
             } catch (Throwable t) {

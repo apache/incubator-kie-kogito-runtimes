@@ -16,9 +16,6 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
-import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +39,9 @@ import org.kie.dmn.api.core.event.BeforeInvokeBKMEvent;
 import org.kie.dmn.feel.runtime.FEELFunction;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.tracing.decision.event.trace.TraceResourceId;
+
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE;
+import static org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE;
 
 public class EvaluateEvent {
 
@@ -70,7 +70,8 @@ public class EvaluateEvent {
             Map<String, Object> context,
             EvaluateResult result,
             EvaluateContextEntryResult contextEntryResult,
-            EvaluateDecisionTableResult decisionTableResult) {
+            EvaluateDecisionTableResult decisionTableResult
+    ) {
         this.type = type;
         this.timestamp = timestamp;
         this.nanoTime = nanoTime;
@@ -85,26 +86,22 @@ public class EvaluateEvent {
         this.decisionTableResult = decisionTableResult;
     }
 
-    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String modelNamespace,
-            String modelName) {
+    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String modelNamespace, String modelName) {
         this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), modelNamespace, modelName,
                 null, null, extractContext(result.getContext()), EvaluateResult.from(result), null, null);
     }
 
     public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, DMNNode node) {
-        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), node.getModelNamespace(),
-                node.getModelName(),
+        this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), node.getModelNamespace(), node.getModelName(),
                 node.getId(), node.getName(), extractContext(result.getContext()), EvaluateResult.from(result), null, null);
     }
 
-    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName,
-            EvaluateContextEntryResult contextEntryResult) {
+    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName, EvaluateContextEntryResult contextEntryResult) {
         this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), null, null, null,
                 nodeName, extractContext(result.getContext()), EvaluateResult.from(result), contextEntryResult, null);
     }
 
-    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName,
-            EvaluateDecisionTableResult decisionTableResult) {
+    public EvaluateEvent(EvaluateEventType type, long timestamp, long nanoTime, DMNResult result, String nodeName, EvaluateDecisionTableResult decisionTableResult) {
         this(type, timestamp, nanoTime, DecisionExecutionIdUtils.get(result.getContext()), null, null,
                 null, nodeName, extractContext(result.getContext()), EvaluateResult.from(result), null, decisionTableResult);
     }
@@ -162,78 +159,64 @@ public class EvaluateEvent {
 
     public TraceResourceId toTraceResourceId(String serviceUrl) {
         return getType() == BEFORE_EVALUATE_DECISION_SERVICE || getType() == AFTER_EVALUATE_DECISION_SERVICE
-                ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
-                : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
+               ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
+               : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
     }
 
     public static EvaluateEvent from(BeforeEvaluateAllEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_ALL, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getModelNamespace(), event.getModelName());
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_ALL, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getModelNamespace(), event.getModelName());
     }
 
     public static EvaluateEvent from(AfterEvaluateAllEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_ALL, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getModelNamespace(), event.getModelName());
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_ALL, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getModelNamespace(), event.getModelName());
     }
 
     public static EvaluateEvent from(BeforeEvaluateBKMEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_BKM, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getBusinessKnowledgeModel());
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_BKM, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
     }
 
     public static EvaluateEvent from(AfterEvaluateBKMEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_BKM, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getBusinessKnowledgeModel());
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_BKM, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
     }
 
     public static EvaluateEvent from(BeforeEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getDecision());
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getDecision());
     }
 
     public static EvaluateEvent from(AfterEvaluateDecisionEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getDecision());
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getDecision());
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionServiceEvent event) {
-        return new EvaluateEvent(BEFORE_EVALUATE_DECISION_SERVICE, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getDecisionService());
+        return new EvaluateEvent(BEFORE_EVALUATE_DECISION_SERVICE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getDecisionService());
     }
 
     public static EvaluateEvent from(AfterEvaluateDecisionServiceEvent event) {
-        return new EvaluateEvent(AFTER_EVALUATE_DECISION_SERVICE, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getDecisionService());
+        return new EvaluateEvent(AFTER_EVALUATE_DECISION_SERVICE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getDecisionService());
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(),
-                System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeInvokeBKMEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_INVOKE_BKM, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getBusinessKnowledgeModel());
+        return new EvaluateEvent(EvaluateEventType.BEFORE_INVOKE_BKM, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
     }
 
     public static EvaluateEvent from(AfterInvokeBKMEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_INVOKE_BKM, System.currentTimeMillis(), System.nanoTime(),
-                event.getResult(), event.getBusinessKnowledgeModel());
+        return new EvaluateEvent(EvaluateEventType.AFTER_INVOKE_BKM, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getBusinessKnowledgeModel());
     }
 
     public static Map<String, Object> extractContext(DMNContext context) {

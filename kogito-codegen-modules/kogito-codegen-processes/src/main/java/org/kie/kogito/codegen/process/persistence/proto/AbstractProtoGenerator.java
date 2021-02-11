@@ -25,9 +25,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.kie.kogito.codegen.api.GeneratedFile;
 
 public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
@@ -71,19 +70,18 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
     protected final GeneratedFile generateProtoFiles(final String processId, final Proto modelProto) {
         String protoFileName = processId + ".proto";
         return new GeneratedFile(PROTO_TYPE,
-                GENERATED_PROTO_RES_PATH + protoFileName,
-                modelProto.toString());
+                                 GENERATED_PROTO_RES_PATH + protoFileName,
+                                 modelProto.toString());
     }
 
     /**
      * Iterates over the generated files and extract all the proto files. Then it creates and add to the generated files collection
      * a listing file ({@link #LISTING_FILE}) from its content.
      *
-     * @param generatedFiles The list of generated files.
+     * @param generatedFiles  The list of generated files.
      * @throws IOException if something wrong occurs during I/O
      */
-    protected final Optional<GeneratedFile> generateProtoListingFile(Collection<GeneratedFile> generatedFiles)
-            throws IOException {
+    protected final Optional<GeneratedFile> generateProtoListingFile(Collection<GeneratedFile> generatedFiles) throws IOException {
         List<String> fileNames = generatedFiles.stream()
                 .filter(x -> x.relativePath().contains(GENERATED_PROTO_RES_PATH))
                 .map(x -> x.relativePath().substring(x.relativePath().lastIndexOf("/") + 1))
@@ -91,8 +89,8 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
         if (!fileNames.isEmpty()) {
             return Optional.of(new GeneratedFile(PROTO_TYPE,
-                    GENERATED_PROTO_RES_PATH + LISTING_FILE,
-                    mapper.writeValueAsString(fileNames)));
+                                                 GENERATED_PROTO_RES_PATH + LISTING_FILE,
+                                                 mapper.writeValueAsString(fileNames)));
         }
         return Optional.empty();
     }
@@ -109,8 +107,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
         return persistenceClass;
     }
 
-    protected abstract Proto generate(String messageComment, String fieldComment, String packageName, T dataModel,
-            String... headers);
+    protected abstract Proto generate(String messageComment, String fieldComment, String packageName, T dataModel, String... headers);
 
     protected abstract Optional<GeneratedFile> generateModelClassProto(T modelClazz);
 

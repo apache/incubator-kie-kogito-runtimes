@@ -45,8 +45,7 @@ public abstract class AbstractTopicDiscovery implements TopicDiscovery {
         events.forEach(e -> {
             if (e.getKind() == EventKind.CONSUMED && topics.stream().noneMatch(t -> t.getType() == ChannelType.INCOMING)) {
                 topics.add(DEFAULT_INCOMING_CHANNEL);
-            } else if (e.getKind() == EventKind.PRODUCED
-                    && topics.stream().noneMatch(t -> t.getType() == ChannelType.OUTGOING)) {
+            } else if (e.getKind() == EventKind.PRODUCED && topics.stream().noneMatch(t -> t.getType() == ChannelType.OUTGOING)) {
                 topics.add(DEFAULT_OUTGOING_CHANNEL);
             }
         });

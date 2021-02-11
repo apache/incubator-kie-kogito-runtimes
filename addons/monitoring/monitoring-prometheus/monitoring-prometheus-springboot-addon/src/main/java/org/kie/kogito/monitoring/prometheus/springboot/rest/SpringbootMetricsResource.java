@@ -30,3 +30,4 @@ public class SpringbootMetricsResource extends MetricsResource {
         return ResponseEntity.ok(scrape());
     }
 }
+

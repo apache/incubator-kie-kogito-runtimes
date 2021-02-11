@@ -58,7 +58,7 @@ public class GroupedNamedDataType {
         if (getClass() != obj.getClass())
             return false;
         GroupedNamedDataType other = (GroupedNamedDataType) obj;
-        if (!groupedDataTypes.equals(other.groupedDataTypes))
+         if (!groupedDataTypes.equals(other.groupedDataTypes))
             return false;
         return true;
     }

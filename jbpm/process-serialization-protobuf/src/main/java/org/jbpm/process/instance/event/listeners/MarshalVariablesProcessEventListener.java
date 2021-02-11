@@ -45,18 +45,15 @@ public class MarshalVariablesProcessEventListener extends DefaultProcessEventLis
     private static final Logger logger = LoggerFactory.getLogger(MarshalVariablesProcessEventListener.class);
 
     public void afterProcessCompleted(ProcessCompletedEvent event) {
-        ObjectMarshallingStrategy[] strategies = (ObjectMarshallingStrategy[]) event.getKieRuntime().getEnvironment()
-                .get(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES);
+        ObjectMarshallingStrategy[] strategies = (ObjectMarshallingStrategy[]) event.getKieRuntime().getEnvironment().get(EnvironmentName.OBJECT_MARSHALLING_STRATEGIES);
 
         VariableScopeInstance variableScope =
-                (VariableScopeInstance) ((WorkflowProcessInstance) event.getProcessInstance())
-                        .getContextInstance(VariableScope.VARIABLE_SCOPE);
+                (VariableScopeInstance) ((WorkflowProcessInstance) event.getProcessInstance()).getContextInstance(VariableScope.VARIABLE_SCOPE);
 
         Map<String, Object> variables = variableScope.getVariables();
 
         for (Map.Entry<String, Object> variable : variables.entrySet()) {
-            logger.debug("Searching for applicable strategy to handle variable name '{}' value '{}'", variable.getKey(),
-                    variable.getValue());
+            logger.debug("Searching for applicable strategy to handle variable name '{}' value '{}'", variable.getKey(), variable.getValue());
             for (ObjectMarshallingStrategy strategy : strategies) {
                 // skip default strategy as it requires context and anyway will not make any effect as variables
                 // are removed together with process instance
@@ -66,10 +63,9 @@ public class MarshalVariablesProcessEventListener extends DefaultProcessEventLis
                 if (strategy.accept(variable.getValue())) {
                     logger.debug("Strategy of type {} found to handle variable '{}'", strategy, variable.getKey());
                     try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                        KogitoProcessMarshallerWriteContext context = new KogitoProcessMarshallerWriteContext(baos, null, null,
-                                null, null, event.getKieRuntime().getEnvironment());
-                        context.setProcessInstanceId(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
-                        context.setState(ProtobufProcessMarshallerWriteContext.STATE_COMPLETED);
+                        KogitoProcessMarshallerWriteContext context = new KogitoProcessMarshallerWriteContext(baos, null, null, null, null, event.getKieRuntime().getEnvironment());
+                        context.setProcessInstanceId((( KogitoProcessInstance )event.getProcessInstance()).getStringId());
+                        context.setState( ProtobufProcessMarshallerWriteContext.STATE_COMPLETED);
 
                         strategy.marshal(null, context, variable.getValue());
                         logger.debug("Variable '{}' successfully persisted by strategy {}", variable.getKey(), strategy);

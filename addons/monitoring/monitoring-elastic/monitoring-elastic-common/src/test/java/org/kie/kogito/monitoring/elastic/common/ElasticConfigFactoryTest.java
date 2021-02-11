@@ -17,10 +17,9 @@ package org.kie.kogito.monitoring.elastic.common;
 
 import java.time.Duration;
 
+import io.micrometer.elastic.ElasticConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import io.micrometer.elastic.ElasticConfig;
 
 public class ElasticConfigFactoryTest {
 

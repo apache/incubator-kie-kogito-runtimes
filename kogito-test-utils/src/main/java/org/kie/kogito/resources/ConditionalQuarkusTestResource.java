@@ -21,9 +21,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Quarkus resource to be run if and only if it was enabled.

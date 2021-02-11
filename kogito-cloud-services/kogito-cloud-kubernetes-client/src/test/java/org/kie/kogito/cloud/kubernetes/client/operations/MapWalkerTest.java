@@ -14,13 +14,13 @@
  */
 package org.kie.kogito.cloud.kubernetes.client.operations;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MapWalkerTest {
 

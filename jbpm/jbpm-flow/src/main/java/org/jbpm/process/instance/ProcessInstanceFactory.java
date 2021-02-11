@@ -26,8 +26,8 @@ import org.kie.internal.process.CorrelationKey;
  * 
  */
 public interface ProcessInstanceFactory {
-
-    ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey,
+    
+    ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey, 
             InternalKnowledgeRuntime kruntime, Map<String, Object> parameters);
 
 }

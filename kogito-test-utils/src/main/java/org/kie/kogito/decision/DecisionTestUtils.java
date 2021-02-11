@@ -19,19 +19,17 @@ package org.kie.kogito.decision;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.dmn.DMNKogito;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DecisionTestUtils {
 
     public static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static final String MODEL_RESOURCE = "/Traffic Violation.dmn";
-    public static final String MODEL_NAMESPACE =
-            "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
+    public static final String MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
     public static final String MODEL_NAME = "Traffic Violation";
 
     public static final String FIRST_DECISION_NODE_ID = "_4055D956-1C47-479C-B3F4-BAEB61F1C929";
@@ -59,7 +57,8 @@ public class DecisionTestUtils {
 
     public static DMNRuntime createDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)));
+                DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)
+        ));
     }
 
     public static DMNModel createDMNModel() {

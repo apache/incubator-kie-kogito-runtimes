@@ -16,19 +16,18 @@
 
 package org.kie.kogito.infinispan.health;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.annotation.Resource;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.class)

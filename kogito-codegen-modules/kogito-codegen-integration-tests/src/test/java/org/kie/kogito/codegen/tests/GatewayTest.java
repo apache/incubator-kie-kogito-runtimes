@@ -32,7 +32,7 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.Sig;
 
 public class GatewayTest extends AbstractCodegenTest {
-
+    
     @Test
     public void testEventBasedGatewayWithData() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
@@ -40,41 +40,41 @@ public class GatewayTest extends AbstractCodegenTest {
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/BusinessRuleTask.drl"));
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
-
+                
         Process<? extends Model> p = app.get(Processes.class).processById("EventBasedSplit");
-
+        
         Model m = p.createModel();
-
+        
         ProcessInstance<?> processInstance = p.createInstance(m);
         processInstance.start();
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-
+        
         processInstance.send(Sig.of("First", "test"));
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-
-        Model result = (Model) processInstance.variables();
+        
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("test");
-
+                
         assertThat(p.instances().size()).isZero();
-
+        
         // not test the other branch
         processInstance = p.createInstance(m);
         processInstance.start();
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-
+        
         processInstance.send(Sig.of("Second", "value"));
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-
-        result = (Model) processInstance.variables();
+        
+        result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKey("x");
         assertThat(result.toMap().get("x")).isEqualTo("value");
-
+                
         assertThat(p.instances().size()).isZero();
     }
-
+    
 }

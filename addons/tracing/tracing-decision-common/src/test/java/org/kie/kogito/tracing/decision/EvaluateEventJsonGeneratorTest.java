@@ -16,6 +16,28 @@
 
 package org.kie.kogito.tracing.decision;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.kie.dmn.api.core.DMNContext;
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.kogito.decision.DecisionModel;
+import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
+import org.mockito.ArgumentCaptor;
+
 import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
 import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
 import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
@@ -27,29 +49,6 @@ import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServi
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.kie.dmn.api.core.DMNContext;
-import org.kie.dmn.api.core.DMNModel;
-import org.kie.dmn.api.core.DMNRuntime;
-import org.kie.kogito.decision.DecisionModel;
-import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
-import org.mockito.ArgumentCaptor;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * This is not a real test and should always be annotated with {@link Disabled}.
@@ -74,12 +73,10 @@ class EvaluateEventJsonGeneratorTest {
 
     @Test
     void generateEvaluateDecisionService() throws JsonProcessingException {
-        generate(EVALUATE_DECISION_SERVICE_EXECUTION_ID, getEvaluateDecisionServiceContext(),
-                (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME), 6);
+        generate(EVALUATE_DECISION_SERVICE_EXECUTION_ID, getEvaluateDecisionServiceContext(), (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME), 6);
     }
 
-    private void generate(String executionId, Map<String, Object> contextVariables,
-            BiConsumer<DecisionModel, DMNContext> modelConsumer, int expectedEvents) throws JsonProcessingException {
+    private void generate(String executionId, Map<String, Object> contextVariables, BiConsumer<DecisionModel, DMNContext> modelConsumer, int expectedEvents) throws JsonProcessingException {
         final DMNRuntime runtime = createDMNRuntime();
 
         Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
@@ -109,7 +106,8 @@ class EvaluateEventJsonGeneratorTest {
         }
 
         @Override
-        public void writeEndObject(JsonGenerator g, int nrOfEntries) throws IOException {
+        public void writeEndObject(JsonGenerator g, int nrOfEntries) throws IOException
+        {
             if (!_objectIndenter.isInline()) {
                 --_nesting;
             }
@@ -120,7 +118,8 @@ class EvaluateEventJsonGeneratorTest {
         }
 
         @Override
-        public void writeEndArray(JsonGenerator g, int nrOfValues) throws IOException {
+        public void writeEndArray(JsonGenerator g, int nrOfValues) throws IOException
+        {
             if (!_arrayIndenter.isInline()) {
                 --_nesting;
             }

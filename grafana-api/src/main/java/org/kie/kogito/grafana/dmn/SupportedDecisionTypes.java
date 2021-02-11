@@ -64,8 +64,7 @@ public class SupportedDecisionTypes {
 
     public static SortedMap<Integer, GrafanaFunction> getGrafanaFunction(String dmnType) {
         if (isSupported(dmnType)) {
-            Optional<AbstractDmnType> type =
-                    supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
+            Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()) {
                 return type.get().getGrafanaFunctions();
             }
@@ -75,8 +74,7 @@ public class SupportedDecisionTypes {
 
     public static List<YAxis> getYAxis(String dmnType) {
         if (isSupported(dmnType)) {
-            Optional<AbstractDmnType> type =
-                    supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
+            Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()) {
                 return type.get().getYaxes();
             }
@@ -86,8 +84,7 @@ public class SupportedDecisionTypes {
 
     public static String getNameSuffix(String dmnType) {
         if (isSupported(dmnType)) {
-            Optional<AbstractDmnType> type =
-                    supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
+            Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()) {
                 return type.get().getNameSuffix();
             }

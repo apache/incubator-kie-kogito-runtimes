@@ -33,8 +33,7 @@ public class AddonsConfig {
     private final boolean useKnativeEventing;
     private final boolean useCloudEvents;
 
-    private AddonsConfig(boolean usePersistence, boolean useTracing, boolean useMonitoring, boolean usePrometheusMonitoring,
-            boolean useKnativeEventing, boolean useCloudEvents) {
+    private AddonsConfig(boolean usePersistence, boolean useTracing, boolean useMonitoring, boolean usePrometheusMonitoring, boolean useKnativeEventing, boolean useCloudEvents) {
         this.usePersistence = usePersistence;
         this.useTracing = useTracing;
         this.useMonitoring = useMonitoring;
@@ -125,8 +124,7 @@ public class AddonsConfig {
         }
 
         public AddonsConfig build() {
-            return new AddonsConfig(usePersistence, useTracing, useMonitoring, usePrometheusMonitoring, useKnativeEventing,
-                    useCloudEvents);
+            return new AddonsConfig(usePersistence, useTracing, useMonitoring, usePrometheusMonitoring, useKnativeEventing, useCloudEvents);
         }
     }
 }

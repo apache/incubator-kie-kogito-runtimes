@@ -15,16 +15,14 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.AbstractApplicationSection;
-
 import com.github.javaparser.ast.CompilationUnit;
+import org.kie.kogito.codegen.core.AbstractApplicationSection;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -35,6 +33,8 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
+
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitContainerGenerator extends AbstractApplicationSection {
 
@@ -73,8 +73,7 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         }
 
         SwitchEntry defaultEntry = new SwitchEntry();
-        defaultEntry.getStatements()
-                .add(new ThrowStmt(new ObjectCreationExpr().setType(UnsupportedOperationException.class.getCanonicalName())));
+        defaultEntry.getStatements().add(new ThrowStmt(new ObjectCreationExpr().setType(UnsupportedOperationException.class.getCanonicalName())));
         switchStmt.getEntries().add(defaultEntry);
 
         return new BlockStmt().addStatement(switchStmt);
