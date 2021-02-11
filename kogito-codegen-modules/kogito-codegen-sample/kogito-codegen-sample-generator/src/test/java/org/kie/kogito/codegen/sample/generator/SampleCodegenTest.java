@@ -52,7 +52,7 @@ class SampleCodegenTest {
                 toCollectedResource("src/test/resources/sampleFile1.txt"),
                 toCollectedResource("src/test/resources/sampleFile2.txt"));
 
-        SampleCodegen codegen = new SampleCodegen(context, resources);
+        SampleCodegen codegen = SampleCodegen.ofCollectedResources(context, resources);
 
         Collection<GeneratedFile> generatedFiles = codegen.generate();
 

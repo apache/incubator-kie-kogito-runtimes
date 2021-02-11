@@ -57,7 +57,7 @@ public class SampleCodegen implements Generator {
         return new SampleCodegen(context, rawSampleResource);
     }
 
-    public SampleCodegen(KogitoBuildContext context, Collection<CollectedResource> rawSampleResource) {
+    private SampleCodegen(KogitoBuildContext context, Collection<CollectedResource> rawSampleResource) {
         this.context = context;
         this.sampleResources = parseResources(rawSampleResource);
     }

@@ -114,7 +114,7 @@ You can check sample generator for a full example but in general the rules are:
   ```java
   contextBuilder.withClassAvailabilityResolver(
     mockClassAvailabilityResolver(
-        includerClasses, excludedClasses));
+        includedClasses, excludedClasses));
   ```
 - Avoid (when possible) assertion on full generated statements and prefer more general assertions like:
   the block should contain `this` element, or the method should have an annotation with `this` value
