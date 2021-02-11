@@ -209,7 +209,8 @@ class DocumentMarshallingStrategyTest {
         byte[] data = documentMarshallingStrategy.marshal(null, null, pa);
         assertNotNull(data, "Marshalled content should not be null");
 
-        Object returned = documentMarshallingStrategy.unmarshal("org.kie.kogito.mongodb.PersonWithAddresses", null, null, data, null);
+        Object returned =
+                documentMarshallingStrategy.unmarshal("org.kie.kogito.mongodb.PersonWithAddresses", null, null, data, null);
         assertNotNull(returned, "Unmarshalled value should not be null");
     }
 }

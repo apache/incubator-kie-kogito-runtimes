@@ -1266,6 +1266,7 @@ limitations under the License.
             <!-- keep in sync with kogito-ide-config/src/main/resources/eclipse.importorder -->
             <groups>java.,javax.,org.,com.</groups>
             <staticGroups>*</staticGroups>
+            <staticAfter>true</staticAfter>
             <!-- keep in sync with the formatter-maven-plugin -->
             <skip>${formatter.skip}</skip>
             <removeUnused>true</removeUnused>

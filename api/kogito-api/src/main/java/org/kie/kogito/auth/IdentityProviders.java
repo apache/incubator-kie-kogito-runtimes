@@ -56,6 +56,7 @@ public class IdentityProviders {
         return new DefaultIdentityProvider(name, roles);
     }
 
-    private IdentityProviders() {}
+    private IdentityProviders() {
+    }
 
 }

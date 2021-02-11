@@ -26,6 +26,11 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.svg.ProcessSVGException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.quarkus.security.credential.TokenCredential;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.core.Vertx;
@@ -33,10 +38,6 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.kie.kogito.svg.ProcessSVGException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
@@ -52,9 +53,10 @@ public class QuarkusDataIndexClient implements DataIndexClient {
     private String dataIndexHttpURL;
 
     @Inject
-    public QuarkusDataIndexClient(@ConfigProperty(name = "kogito.dataindex.http.url", defaultValue = "http://localhost:8180") String dataIndexHttpURL,
-                                  SecurityIdentity identity,
-                                  Vertx vertx) {
+    public QuarkusDataIndexClient(
+            @ConfigProperty(name = "kogito.dataindex.http.url", defaultValue = "http://localhost:8180") String dataIndexHttpURL,
+            SecurityIdentity identity,
+            Vertx vertx) {
         this.dataIndexHttpURL = dataIndexHttpURL;
         this.identity = identity;
         this.vertx = vertx;
@@ -78,13 +80,14 @@ public class QuarkusDataIndexClient implements DataIndexClient {
     public List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId) {
         String query = getNodeInstancesQuery(processInstanceId);
         CompletableFuture<List<NodeInstance>> cf = new CompletableFuture<>();
-        client.post("/graphql").putHeader("Authorization", getToken()).sendJson(JsonObject.mapFrom(singletonMap("query", query)), result -> {
-            if (result.succeeded()) {
-                cf.complete(getNodeInstancesFromResponse(result.result().bodyAsJsonObject()));
-            } else {
-                cf.completeExceptionally(result.cause());
-            }
-        });
+        client.post("/graphql").putHeader("Authorization", getToken())
+                .sendJson(JsonObject.mapFrom(singletonMap("query", query)), result -> {
+                    if (result.succeeded()) {
+                        cf.complete(getNodeInstancesFromResponse(result.result().bodyAsJsonObject()));
+                    } else {
+                        cf.completeExceptionally(result.cause());
+                    }
+                });
         try {
             return cf.get();
         } catch (Exception e) {

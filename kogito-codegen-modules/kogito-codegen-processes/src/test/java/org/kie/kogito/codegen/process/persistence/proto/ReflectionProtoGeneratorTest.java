@@ -330,7 +330,8 @@ class ReflectionProtoGeneratorTest {
         ReflectionProtoGenerator generator = ReflectionProtoGenerator.builder()
                 .build(Collections.emptyList());
 
-        Proto proto = generator.generate("@Indexed", ProtoGenerator.INDEX_COMMENT, "org.kie.kogito.test.persons", PersonVarInfo.class);
+        Proto proto = generator.generate("@Indexed", ProtoGenerator.INDEX_COMMENT, "org.kie.kogito.test.persons",
+                PersonVarInfo.class);
         assertThat(proto).isNotNull();
 
         assertThat(proto.getPackageName()).isEqualTo("org.kie.kogito.test.persons");

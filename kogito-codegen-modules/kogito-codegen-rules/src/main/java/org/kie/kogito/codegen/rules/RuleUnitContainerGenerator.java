@@ -18,11 +18,11 @@ package org.kie.kogito.codegen.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javaparser.ast.CompilationUnit;
-import org.kie.kogito.codegen.core.AbstractApplicationSection;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.AbstractApplicationSection;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -73,7 +73,8 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         }
 
         SwitchEntry defaultEntry = new SwitchEntry();
-        defaultEntry.getStatements().add(new ThrowStmt(new ObjectCreationExpr().setType(UnsupportedOperationException.class.getCanonicalName())));
+        defaultEntry.getStatements()
+                .add(new ThrowStmt(new ObjectCreationExpr().setType(UnsupportedOperationException.class.getCanonicalName())));
         switchStmt.getEntries().add(defaultEntry);
 
         return new BlockStmt().addStatement(switchStmt);

@@ -19,12 +19,13 @@ package org.kie.kogito.integrationtests.quarkus;
 import java.util.Arrays;
 import java.util.List;
 
-import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +40,7 @@ public class TopicInformationResourceTest {
         final List<Topic> topics = Arrays.asList(given().get("/messaging/topics").as(Topic[].class));
         LOGGER.info("Topics registered in the service are {}", topics);
         assertThat(topics).isNotEmpty();
-        assertThat(topics.stream().anyMatch(t -> t.getType() == ChannelType.INCOMING && t.getName().equals("pingpong"))).isTrue();
+        assertThat(topics.stream().anyMatch(t -> t.getType() == ChannelType.INCOMING && t.getName().equals("pingpong")))
+                .isTrue();
     }
 }

@@ -18,13 +18,14 @@ package org.kie.kogito.monitoring.core.common.integration;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-import ch.obermuhlner.math.big.stream.BigDecimalStream;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.BigDecimalHandler;
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.DecisionConstants;
+
+import ch.obermuhlner.math.big.stream.BigDecimalStream;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +45,8 @@ public class BigDecimalHandlerTest extends AbstractQuantilesTest<BigDecimalHandl
     @Test
     public void givenSomeSamplesWhenQuantilesAreCalculatedThenTheQuantilesAreCorrect() {
         // Act
-        BigDecimalStream.range(BigDecimal.valueOf(1), BigDecimal.valueOf(10001), BigDecimal.ONE, MathContext.DECIMAL64).forEach(x -> handler.record("decision", ENDPOINT_NAME, x));
+        BigDecimalStream.range(BigDecimal.valueOf(1), BigDecimal.valueOf(10001), BigDecimal.ONE, MathContext.DECIMAL64)
+                .forEach(x -> handler.record("decision", ENDPOINT_NAME, x));
         assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max() >= 10000);
         assertTrue(registry.find(dmnType + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().mean() > 0);
     }

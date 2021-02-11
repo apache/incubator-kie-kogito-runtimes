@@ -17,6 +17,13 @@ package org.kie.kogito.codegen.decision;
 
 import java.util.Collection;
 
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.AbstractApplicationSection;
+import org.kie.kogito.dmn.DmnExecutionIdSupplier;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.InitializerDeclaration;
@@ -24,12 +31,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.kogito.codegen.core.AbstractApplicationSection;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
@@ -42,7 +43,8 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     private final Collection<CollectedResource> resources;
     private final TemplatedGenerator templatedGenerator;
 
-    public DecisionContainerGenerator(KogitoBuildContext context, String applicationCanonicalName, Collection<CollectedResource> cResources) {
+    public DecisionContainerGenerator(KogitoBuildContext context, String applicationCanonicalName,
+            Collection<CollectedResource> cResources) {
         super(context, SECTION_CLASS_NAME);
         this.applicationCanonicalName = applicationCanonicalName;
         this.resources = cResources;
@@ -54,7 +56,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     @Override
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
-
 
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
 
@@ -82,16 +83,15 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     }
 
     private void setupExecIdSupplierVariable(MethodCallExpr initMethod) {
-        Expression execIdSupplier = context.getAddonsConfig().useTracing() ?
-                newObject(DmnExecutionIdSupplier.class) :
-                new NullLiteralExpr();
+        Expression execIdSupplier =
+                context.getAddonsConfig().useTracing() ? newObject(DmnExecutionIdSupplier.class) : new NullLiteralExpr();
         initMethod.addArgument(execIdSupplier);
     }
 
     private void setupDecisionModelTransformerVariable(MethodCallExpr initMethod) {
-        Expression decisionModelTransformerExpr = context.getAddonsConfig().useMonitoring() ?
-                newObject("org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer") :
-                new NullLiteralExpr();
+        Expression decisionModelTransformerExpr = context.getAddonsConfig().useMonitoring()
+                ? newObject("org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer")
+                : new NullLiteralExpr();
         initMethod.addArgument(decisionModelTransformerExpr);
     }
 }

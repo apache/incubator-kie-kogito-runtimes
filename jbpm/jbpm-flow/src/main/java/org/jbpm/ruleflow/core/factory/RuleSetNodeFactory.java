@@ -16,6 +16,8 @@
 
 package org.jbpm.ruleflow.core.factory;
 
+import java.util.function.Supplier;
+
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
@@ -24,8 +26,6 @@ import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.kogito.decision.DecisionModel;
-
-import java.util.function.Supplier;
 
 public class RuleSetNodeFactory extends StateBasedNodeFactory implements MappableNodeFactory {
 

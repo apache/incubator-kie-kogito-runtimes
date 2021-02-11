@@ -33,7 +33,8 @@ public class PmmlPredictionModel implements PredictionModel {
 
     public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName) {
         this.pmmlRuntime = pmmlRuntime;
-        this.pmmlModel = pmmlRuntime.getPMMLModel(modelName).orElseThrow(() -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
+        this.pmmlModel = pmmlRuntime.getPMMLModel(modelName).orElseThrow(
+                () -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
     }
 
     @Override
@@ -41,7 +42,6 @@ public class PmmlPredictionModel implements PredictionModel {
         final PMMLRequestData pmmlRequestData = getPMMLRequestData(pmmlModel.getName(), variables);
         return new PMMLContextImpl(pmmlRequestData);
     }
-
 
     @Override
     public PMML4Result evaluateAll(PMMLContext context) {

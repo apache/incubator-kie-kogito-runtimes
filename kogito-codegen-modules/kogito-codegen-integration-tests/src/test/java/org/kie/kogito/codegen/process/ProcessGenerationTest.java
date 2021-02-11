@@ -87,32 +87,36 @@ import static org.junit.jupiter.api.Assertions.fail;
  * <p>
  * For each process the test will:
  * <ul>
- *     <li>Parse the XML and generate an instance of the process: Expected</li>
- *     <li>Generate the code from this process and instantiate a process definition using the generated code: Current</li>
- *     <li>Iterate over all the process fields and metadata and assert that current and expected are equivalent</li>
- *     <li>Iterate over all the process' nodes fields and metadata and assert that current and expected are equivalent</li>
+ * <li>Parse the XML and generate an instance of the process: Expected</li>
+ * <li>Generate the code from this process and instantiate a process definition using the generated code: Current</li>
+ * <li>Iterate over all the process fields and metadata and assert that current and expected are equivalent</li>
+ * <li>Iterate over all the process' nodes fields and metadata and assert that current and expected are equivalent</li>
  * </ul>
  * <p>
  * Exceptions:
  * <ul>
- *     <li>Version is not set by default in Expected</li>
- *     <li>The node name has a default value for current when not set</li>
- *     <li>Node constraints are ignored</li>
- *     <li>OnEntry/OnExit actions are not yet implemented</li>
- *     <li>Timer Actions are generated differently</li>
+ * <li>Version is not set by default in Expected</li>
+ * <li>The node name has a default value for current when not set</li>
+ * <li>Node constraints are ignored</li>
+ * <li>OnEntry/OnExit actions are not yet implemented</li>
+ * <li>Timer Actions are generated differently</li>
  * </ul>
  */
 public class ProcessGenerationTest extends AbstractCodegenTest {
 
-    private static final Collection<String> IGNORED_PROCESS_META = Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions");
+    private static final Collection<String> IGNORED_PROCESS_META =
+            Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions");
     private static final Path BASE_PATH = Paths.get("src/test/resources");
 
     static Stream<String> processesProvider() throws IOException {
-        Set<String> ignoredFiles = Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
-                .collect(Collectors.toSet());
+        Set<String> ignoredFiles =
+                Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
+                        .collect(Collectors.toSet());
         return Files.find(BASE_PATH, 10, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
-                && (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))
-                || ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet().stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext)))))
+                && (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream()
+                        .anyMatch(ext -> path.getFileName().toString().endsWith(ext))
+                        || ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet().stream()
+                                .anyMatch(ext -> path.getFileName().toString().endsWith(ext)))))
                 .map(BASE_PATH::relativize)
                 .map(Path::toString)
                 .filter(p -> !ignoredFiles.contains(p));
@@ -129,9 +133,10 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
 
         Application app = generateCodeProcessesOnly(processFile);
-        AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.get(Processes.class).processById(expected.getId());
+        AbstractProcess<? extends Model> process =
+                (AbstractProcess<? extends Model>) app.get(Processes.class).processById(expected.getId());
         assertThat(process).isNotNull().isSameAs(app.get(Processes.class).processById(expected.getId()));
-        
+
         RuleFlowProcess current = (RuleFlowProcess) process.process();
 
         assertNotNull(current);
@@ -164,6 +169,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
             assertNotNull(e);
         }
     }
+
     @Test
     public void testDifferentLinkProcess() throws Exception {
         Assertions.assertThatThrownBy(() -> testProcessGeneration("links/DifferentLinkProcess.bpmn2")).isInstanceOf(
@@ -187,7 +193,7 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         Assertions.assertThatThrownBy(() -> testProcessGeneration("links/UnconnectedLinkProcess.bpmn2")).isInstanceOf(
                 ProcessCodegenException.class).hasMessageContaining("not connection");
     }
-  
+
     private static void assertNodes(Node[] expected, Node[] current) {
         assertEquals(expected.length, current.length);
         Stream.of(expected).forEach(eNode -> {
@@ -234,8 +240,8 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                 } else if (!EVENT_NODE_ENTER.equals(actionType) && !EVENT_NODE_EXIT.equals(actionType)) {
                     assertNotNull(current.getActions(actionType));
                     // onEntry and onExit actions are not yet supported
-//                    assertEquals(expected.getActions(actionType).size(), current.getActions(actionType).size());
-//                    assertActions(expected.getActions(actionType), current.getActions(actionType));
+                    //                    assertEquals(expected.getActions(actionType).size(), current.getActions(actionType).size());
+                    //                    assertActions(expected.getActions(actionType), current.getActions(actionType));
                 }
             } catch (Throwable e) {
                 fail("Actions are not equal for type: " + actionType, e);
@@ -391,12 +397,14 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                     try {
                         nodeAsserters.get(clazz).accept(expected, current);
                     } catch (Throwable e) {
-                        fail(String.format("[%s] nodes with name [%s] are not equal", expected.getClass().getSimpleName(), current.getName()), e);
+                        fail(String.format("[%s] nodes with name [%s] are not equal", expected.getClass().getSimpleName(),
+                                current.getName()), e);
                     }
                 });
     }
 
-    private static void assertMetadata(Map<String, Object> expected, Map<String, Object> current, Collection<String> ignoredKeys) {
+    private static void assertMetadata(Map<String, Object> expected, Map<String, Object> current,
+            Collection<String> ignoredKeys) {
         if (expected == null) {
             assertNull(current);
             return;
@@ -412,7 +420,8 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
                 .forEach(k -> assertEquals(expected.get(k), current.get(k), "Metadata " + k));
     }
 
-    private static void assertConnections(Map<String, List<Connection>> expectedConnections, Map<String, List<Connection>> currentConnections) {
+    private static void assertConnections(Map<String, List<Connection>> expectedConnections,
+            Map<String, List<Connection>> currentConnections) {
         assertEquals(expectedConnections.size(), currentConnections.size());
         expectedConnections.forEach((type, expectedByType) -> {
             assertTrue(currentConnections.containsKey(type), "Node does not have connections of type: " + type);
@@ -432,11 +441,11 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     }
 
     private static boolean equalConnectionId(Connection expected, Connection current) {
-        if(expected.getMetaData().isEmpty()) {
+        if (expected.getMetaData().isEmpty()) {
             return current.getMetaData().isEmpty();
         }
         String expectedId = (String) expected.getMetaData().get(Metadata.UNIQUE_ID);
-        if(expectedId == null) {
+        if (expectedId == null) {
             expectedId = "";
         }
         return Objects.equals(expectedId, current.getMetaData().get(Metadata.UNIQUE_ID));
@@ -502,7 +511,8 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
         assertNotNull(current);
         assertEquals(expected.size(), current.size(), "Size");
         expected.forEach((expectedTimer, expectedAction) -> {
-            Optional<Timer> currentTimer = current.keySet().stream().filter(c -> c.getId() == expectedTimer.getId()).findFirst();
+            Optional<Timer> currentTimer =
+                    current.keySet().stream().filter(c -> c.getId() == expectedTimer.getId()).findFirst();
             assertTrue(currentTimer.isPresent());
             assertEquals(expectedTimer.getPeriod(), currentTimer.get().getPeriod(), "Period");
             assertEquals(expectedTimer.getDate(), currentTimer.get().getDate(), "Date");
@@ -524,7 +534,8 @@ public class ProcessGenerationTest extends AbstractCodegenTest {
     }
 
     private static void assertConstraints(NodeImpl eNode, NodeImpl cNode) {
-        if (eNode instanceof Split && ((Split) eNode).getType() != Split.TYPE_OR && ((Split) eNode).getType() != Split.TYPE_XOR) {
+        if (eNode instanceof Split && ((Split) eNode).getType() != Split.TYPE_OR
+                && ((Split) eNode).getType() != Split.TYPE_XOR) {
             return;
         }
         if (eNode.getConstraints() == null) {

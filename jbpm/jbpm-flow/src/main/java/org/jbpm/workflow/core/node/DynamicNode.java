@@ -66,7 +66,8 @@ public class DynamicNode extends CompositeContextNode {
 
     public List<Node> getAutoStartNodes() {
         return Arrays.stream(getNodes())
-                .filter(n -> n.getIncomingConnections().isEmpty() && "true".equalsIgnoreCase((String) n.getMetaData().get(CUSTOM_AUTO_START)))
+                .filter(n -> n.getIncomingConnections().isEmpty()
+                        && "true".equalsIgnoreCase((String) n.getMetaData().get(CUSTOM_AUTO_START)))
                 .collect(Collectors.toList());
     }
 

@@ -117,7 +117,8 @@ public class JGrafanaTest {
 
         // Act
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}");
-        grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
+        grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2",
+                "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
         grafanaObj.addPanel(PanelType.STAT, "My Graph 2", "sum(api_http_stacktrace_exceptions)");
         grafanaObj.addPanel(PanelType.TABLE, "My Graph 2", "api_http_stacktrace_exceptions");
         SortedMap<Integer, GrafanaFunction> map = new TreeMap();
@@ -137,7 +138,8 @@ public class JGrafanaTest {
 
         // Act
         grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}");
-        grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
+        grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2",
+                "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
 
         // Assert
         assertThrows(NoSuchElementException.class, () -> {

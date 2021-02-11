@@ -19,16 +19,17 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Collections;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.drools.modelcompiler.builder.JavaParserCompiler;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
 import org.kie.kogito.rules.units.KogitoRuleUnitVariable;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class RuleUnitPojoGenerator implements RuleFileGenerator {
 
@@ -63,7 +64,7 @@ public class RuleUnitPojoGenerator implements RuleFileGenerator {
             VariableDeclarator vd = new VariableDeclarator(t, v.getName());
             f.getVariables().add(vd);
             if (v.isDataSource()) {
-                t.setTypeArguments( StaticJavaParser.parseType( v.getDataSourceParameterType().getCanonicalName() ) );
+                t.setTypeArguments(StaticJavaParser.parseType(v.getDataSourceParameterType().getCanonicalName()));
                 if (ruleUnitHelper.isAssignableFrom(DataStore.class, v.getType())) {
                     vd.setInitializer("org.kie.kogito.rules.DataSource.createStore()");
                 } else {

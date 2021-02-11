@@ -30,11 +30,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 import org.kie.pmml.commons.model.KiePMMLModel;
+
+import com.github.javaparser.ast.CompilationUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -84,7 +85,8 @@ class PredictionContainerGeneratorTest {
         Path path = getPath();
         String modelPath = "path/to/" + resourceName;
         List<KiePMMLModel> kiePmmlModels =
-                IntStream.range(0, 3).mapToObj(i -> getKiePMMLModelInternal(resourceName + "_Model-" + i)).collect(Collectors.toList());
+                IntStream.range(0, 3).mapToObj(i -> getKiePMMLModelInternal(resourceName + "_Model-" + i))
+                        .collect(Collectors.toList());
         return new PMMLResource(kiePmmlModels, path, modelPath);
     }
 
@@ -182,7 +184,7 @@ class PredictionContainerGeneratorTest {
 
             @Override
             public WatchKey register(WatchService watcher, WatchEvent.Kind<?>[] events,
-                                     WatchEvent.Modifier... modifiers) throws IOException {
+                    WatchEvent.Modifier... modifiers) throws IOException {
                 return null;
             }
 

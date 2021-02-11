@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.LambdaExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.impl.actions.ProcessInstanceCompensationAction;
@@ -35,6 +31,11 @@ import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.EndNode;
 
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.LambdaExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+
 import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
@@ -44,7 +45,6 @@ import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
 import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
 
-
 public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
 
     @Override
@@ -53,8 +53,10 @@ public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
     }
 
     @Override
-    public void visitNode(String factoryField, EndNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+    public void visitNode(String factoryField, EndNode node, BlockStmt body, VariableScope variableScope,
+            ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), getNodeKey(),
+                new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "End"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(node.isTerminate())));
 
@@ -71,8 +73,9 @@ public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
             LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata);
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else if (node.getMetaData(REF) != null && EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String)node.getMetaData(REF),
-                    (String)node.getMetaData(VARIABLE), (String) node.getMetaData(CUSTOM_SCOPE))));
+            body.addStatement(
+                    getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String) node.getMetaData(REF),
+                            (String) node.getMetaData(VARIABLE), (String) node.getMetaData(CUSTOM_SCOPE))));
         }
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));

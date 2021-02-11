@@ -19,10 +19,6 @@ package org.kie.kogito.tracing.decision;
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelResource;
@@ -30,6 +26,12 @@ import org.kie.kogito.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.decision.DecisionModelType;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -39,7 +41,8 @@ import static org.mockito.Mockito.when;
 
 public class SpringBootModelEventEmitterTest {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
+    private static final ObjectMapper OBJECT_MAPPER =
+            new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
     private static final String TEST_TOPIC = "test-topic";
 
     @Test
@@ -49,7 +52,8 @@ public class SpringBootModelEventEmitterTest {
         final List<DecisionModelResource> models = Arrays.asList(makeModel(), makeModel());
         final DecisionModelResourcesProvider mockedDecisionModelResourcesProvider = () -> models;
 
-        final SpringBootModelEventEmitter eventEmitter = new SpringBootModelEventEmitter(mockedDecisionModelResourcesProvider, mockedKarkaTemplate, TEST_TOPIC);
+        final SpringBootModelEventEmitter eventEmitter =
+                new SpringBootModelEventEmitter(mockedDecisionModelResourcesProvider, mockedKarkaTemplate, TEST_TOPIC);
         eventEmitter.publishDecisionModels();
 
         final ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);

@@ -18,9 +18,6 @@ package org.kie.kogito.mongodb.utils;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.protobuf.util.JsonFormat;
 import org.drools.core.marshalling.impl.MarshallerReaderContext;
 import org.jbpm.marshalling.impl.JBPMMessages;
 import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance;
@@ -28,11 +25,16 @@ import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.kogito.mongodb.marshalling.DocumentUnmarshallingException;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.protobuf.util.JsonFormat;
+
 import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.VARIABLE;
 import static org.kie.kogito.mongodb.utils.DocumentUtils.getObjectMapper;
 
-public class ProcessInstanceMessageMapper implements BiFunction<MarshallerReaderContext, ProcessInstanceDocument, JBPMMessages.ProcessInstance> {
+public class ProcessInstanceMessageMapper
+        implements BiFunction<MarshallerReaderContext, ProcessInstanceDocument, JBPMMessages.ProcessInstance> {
 
     @Override
     public ProcessInstance apply(MarshallerReaderContext context, ProcessInstanceDocument doc) {
@@ -44,7 +46,8 @@ public class ProcessInstanceMessageMapper implements BiFunction<MarshallerReader
             String json = getObjectMapper().writeValueAsString(rootNode);
             parser.merge(json, builder);
             for (Map.Entry<String, Integer> entry : doc.getStrategies().entrySet()) {
-                ObjectMarshallingStrategy strategyObject = context.getResolverStrategyFactory().getStrategyObject(entry.getKey());
+                ObjectMarshallingStrategy strategyObject =
+                        context.getResolverStrategyFactory().getStrategyObject(entry.getKey());
                 if (strategyObject != null) {
                     context.getUsedStrategies().put(entry.getValue(), strategyObject);
                 }

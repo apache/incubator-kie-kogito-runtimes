@@ -32,7 +32,8 @@ public class CachedRuleEventListenerConfig implements RuleEventListenerConfig {
         ruleRuntimeListeners = new ArrayList<>();
     }
 
-    public CachedRuleEventListenerConfig(List<AgendaEventListener> agendaListeners, List<RuleRuntimeEventListener> ruleRuntimeListeners) {
+    public CachedRuleEventListenerConfig(List<AgendaEventListener> agendaListeners,
+            List<RuleRuntimeEventListener> ruleRuntimeListeners) {
         this.agendaListeners = agendaListeners;
         this.ruleRuntimeListeners = ruleRuntimeListeners;
     }
@@ -46,14 +47,14 @@ public class CachedRuleEventListenerConfig implements RuleEventListenerConfig {
         ruleRuntimeListeners.add(listener);
         return this;
     }
-    
+
     @Override
     public List<AgendaEventListener> agendaListeners() {
         return agendaListeners;
     }
 
     @Override
-    public List<RuleRuntimeEventListener> ruleRuntimeListeners() {        
+    public List<RuleRuntimeEventListener> ruleRuntimeListeners() {
         return ruleRuntimeListeners;
     }
 

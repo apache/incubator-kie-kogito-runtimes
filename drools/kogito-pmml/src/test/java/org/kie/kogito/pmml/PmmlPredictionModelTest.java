@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PmmlPredictionModelTest {
 
-    private static final PMML4Result  PMML_4_RESULT = new PMML4Result();
+    private static final PMML4Result PMML_4_RESULT = new PMML4Result();
     private final static String MODEL_NAME = "MODEL_NAME";
     private final static PMMLModel PMML_MODEL = new PMMLModelInternal(MODEL_NAME);
     private final static PMMLRuntime PMML_RUNTIME = getPMMLRuntime();
@@ -51,7 +51,6 @@ class PmmlPredictionModelTest {
         assertNotNull(pmmlPredictionModel);
     }
 
-
     @Test
     void newContext() {
         final Map<String, Object> parameters = getParameters();
@@ -59,7 +58,7 @@ class PmmlPredictionModelTest {
         assertNotNull(retrieved);
         PMMLRequestData pmmlRequestData = retrieved.getRequestData();
         assertNotNull(retrieved);
-        assertEquals(MODEL_NAME,  pmmlRequestData.getModelName());
+        assertEquals(MODEL_NAME, pmmlRequestData.getModelName());
         final Map<String, ParameterInfo> parameterInfos = pmmlRequestData.getMappedRequestParams();
         assertEquals(parameters.size(), parameterInfos.size());
         parameters.forEach((key, value) -> {

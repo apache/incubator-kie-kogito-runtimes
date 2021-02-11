@@ -25,26 +25,26 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 public class CancelNodeInstanceAction implements Action, Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private String attachedToNodeId;
-	
-	public CancelNodeInstanceAction(String attachedToNodeId) {
-		super();
-		this.attachedToNodeId = attachedToNodeId;
-	}
 
-	@Override
-	public void execute(KogitoProcessContext context) throws Exception {
-		WorkflowProcessInstance pi = context.getNodeInstance().getProcessInstance();
-		NodeInstance nodeInstance = findNodeByUniqueId(pi.getNodeInstances(), attachedToNodeId);
-		if (nodeInstance != null) {
-		    ((org.jbpm.workflow.instance.NodeInstance)nodeInstance).cancel();
-		}
-	}
-	
-	private NodeInstance findNodeByUniqueId(Collection<NodeInstance> nodeInstances, String uniqueId) {
+    private static final long serialVersionUID = 1L;
+
+    private String attachedToNodeId;
+
+    public CancelNodeInstanceAction(String attachedToNodeId) {
+        super();
+        this.attachedToNodeId = attachedToNodeId;
+    }
+
+    @Override
+    public void execute(KogitoProcessContext context) throws Exception {
+        WorkflowProcessInstance pi = context.getNodeInstance().getProcessInstance();
+        NodeInstance nodeInstance = findNodeByUniqueId(pi.getNodeInstances(), attachedToNodeId);
+        if (nodeInstance != null) {
+            ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).cancel();
+        }
+    }
+
+    private NodeInstance findNodeByUniqueId(Collection<NodeInstance> nodeInstances, String uniqueId) {
 
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
             for (NodeInstance nInstance : nodeInstances) {
@@ -53,7 +53,8 @@ public class CancelNodeInstanceAction implements Action, Serializable {
                     return nInstance;
                 }
                 if (nInstance instanceof CompositeNodeInstance) {
-                    NodeInstance nodeInstance = findNodeByUniqueId(((CompositeNodeInstance) nInstance).getNodeInstances(), uniqueId);
+                    NodeInstance nodeInstance =
+                            findNodeByUniqueId(((CompositeNodeInstance) nInstance).getNodeInstances(), uniqueId);
                     if (nodeInstance != null) {
                         return nodeInstance;
                     }

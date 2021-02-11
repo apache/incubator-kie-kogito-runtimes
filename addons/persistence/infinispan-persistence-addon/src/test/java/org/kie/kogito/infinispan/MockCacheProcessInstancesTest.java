@@ -108,7 +108,8 @@ public class MockCacheProcessInstancesTest {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
+        ProcessInstance<BpmnVariables> mutablePi =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
 
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
@@ -142,7 +143,8 @@ public class MockCacheProcessInstancesTest {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -160,7 +162,8 @@ public class MockCacheProcessInstancesTest {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
@@ -182,7 +185,8 @@ public class MockCacheProcessInstancesTest {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);

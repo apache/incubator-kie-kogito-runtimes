@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.jbpm.workflow.core.Node;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -33,7 +34,6 @@ import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.impl.AbstractProcess;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
@@ -57,11 +57,12 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
 
     public T doGetProcessNodes(String processId) {
         return executeOnProcess(processId, process -> {
-            List<org.kie.api.definition.process.Node> nodes = (( KogitoWorkflowProcess ) ((AbstractProcess<?>) process).process()).getNodesRecursively();
+            List<org.kie.api.definition.process.Node> nodes =
+                    ((KogitoWorkflowProcess) ((AbstractProcess<?>) process).process()).getNodesRecursively();
             List<Map<String, Object>> list = nodes.stream().map(n -> {
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());
-                data.put("uniqueId", (( Node ) n).getUniqueId());
+                data.put("uniqueId", ((Node) n).getUniqueId());
                 data.put("nodeDefinitionId", n.getMetaData().get(UNIQUE_ID));
                 data.put("type", n.getClass().getSimpleName());
                 data.put("name", n.getName());
@@ -102,7 +103,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.error().get().retrigger();
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }
@@ -115,7 +117,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.error().get().skip();
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }
@@ -128,7 +131,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.triggerNode(nodeId);
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }
@@ -141,7 +145,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.retriggerNodeInstance(nodeInstanceId);
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }
@@ -154,7 +159,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.cancelNodeInstance(nodeInstanceId);
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }
@@ -167,7 +173,8 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
             processInstance.abort();
 
             if (processInstance.status() == ProcessInstance.STATE_ERROR) {
-                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(), processInstance.error().get().errorMessage());
+                throw new ProcessInstanceExecutionException(processInstance.id(), processInstance.error().get().failedNodeId(),
+                        processInstance.error().get().errorMessage());
             } else {
                 return buildOkResponse(processInstance.variables());
             }

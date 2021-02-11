@@ -101,7 +101,8 @@ class CacheProcessInstancesIT {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
+        ProcessInstance<BpmnVariables> mutablePi =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
 
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
@@ -135,7 +136,8 @@ class CacheProcessInstancesIT {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
 
@@ -153,7 +155,8 @@ class CacheProcessInstancesIT {
         process.setProcessInstancesFactory(new CacheProcessInstancesFactory(cacheManager));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());

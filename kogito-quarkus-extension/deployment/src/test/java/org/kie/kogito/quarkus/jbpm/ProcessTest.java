@@ -14,8 +14,6 @@
  */
 package org.kie.kogito.quarkus.jbpm;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +30,8 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 
 import io.quarkus.test.QuarkusUnitTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessTest {
 

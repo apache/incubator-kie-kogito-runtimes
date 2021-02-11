@@ -24,6 +24,17 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.drools.core.util.StringUtils;
+import org.jbpm.compiler.canonical.UserTaskModelMetaData;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.core.GeneratorConfig;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
@@ -39,16 +50,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-import org.drools.core.util.StringUtils;
-import org.jbpm.compiler.canonical.UserTaskModelMetaData;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.CodegenUtils;
-import org.kie.kogito.codegen.core.GeneratorConfig;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
@@ -119,8 +120,9 @@ public class ProcessResourceGenerator {
     }
 
     protected String getRestTemplateName() {
-        boolean isReactiveGenerator = "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
-                .orElse(""));
+        boolean isReactiveGenerator =
+                "reactive".equals(context.getApplicationProperty(GeneratorConfig.KOGITO_REST_RESOURCE_TYPE_PROP)
+                        .orElse(""));
         boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
 
         return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
@@ -142,7 +144,8 @@ public class ProcessResourceGenerator {
 
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         template.setName(resourceClazzName);
         AtomicInteger index = new AtomicInteger(0);
@@ -171,12 +174,16 @@ public class ProcessResourceGenerator {
                                             MethodDeclaration cloned = md.clone();
                                             BlockStmt body = cloned.getBody().get();
                                             if (signalType == null) {
-                                                body.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
+                                                body.findAll(NameExpr.class,
+                                                        nameExpr -> "data".equals(nameExpr.getNameAsString()))
+                                                        .forEach(name -> name.replace(new NullLiteralExpr()));
                                             }
                                             template.addMethod(methodName, Keyword.PUBLIC)
                                                     .setType(getSignalResponseType(outputType))
                                                     // Remove data parameter ( payload ) if signalType is null 
-                                                    .setParameters(signalType == null ? NodeList.nodeList(cloned.getParameter(0)) : cloned.getParameters())
+                                                    .setParameters(
+                                                            signalType == null ? NodeList.nodeList(cloned.getParameter(0))
+                                                                    : cloned.getParameters())
                                                     .setBody(body)
                                                     .setAnnotations(cloned.getAnnotations());
                                         });
@@ -208,7 +215,8 @@ public class ProcessResourceGenerator {
 
             ClassOrInterfaceDeclaration userTaskTemplate = userTaskClazz
                     .findFirst(ClassOrInterfaceDeclaration.class)
-                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                    .orElseThrow(() -> new NoSuchElementException(
+                            "Compilation unit doesn't contain a class or interface declaration!"));
             for (UserTaskModelMetaData userTask : userTasks) {
                 String methodSuffix = sanitizeName(userTask.getName()) + "_" + index.getAndIncrement();
                 userTaskTemplate.findAll(MethodDeclaration.class).forEach(md -> {
@@ -222,7 +230,8 @@ public class ProcessResourceGenerator {
                 });
 
                 template.findAll(StringLiteralExpr.class).forEach(s -> interpolateUserTaskStrings(s, userTask));
-                template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c, userTask.getInputModelClassSimpleName(), userTask.getOutputModelClassSimpleName()));
+                template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c,
+                        userTask.getInputModelClassSimpleName(), userTask.getOutputModelClassSimpleName()));
                 template.findAll(NameExpr.class).forEach(c -> interpolateUserTaskNameExp(c, userTask));
                 if (!userTask.isAdHoc()) {
                     template.findAll(MethodDeclaration.class)
@@ -242,10 +251,12 @@ public class ProcessResourceGenerator {
 
         if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isProcessField).forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
+                    CodegenUtils::isProcessField)
+                    .forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
 
             template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
+                    CodegenUtils::isApplicationField)
+                    .forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isProcessField).forEach(this::initializeProcessField);
@@ -256,7 +267,8 @@ public class ProcessResourceGenerator {
 
         // if triggers are not empty remove createResource method as there is another trigger to start process instances
         if ((!startable && !dynamic) || !isPublic()) {
-            Optional<MethodDeclaration> createResourceMethod = template.findFirst(MethodDeclaration.class).filter(md -> md.getNameAsString().equals("createResource_" + processName));
+            Optional<MethodDeclaration> createResourceMethod = template.findFirst(MethodDeclaration.class)
+                    .filter(md -> md.getNameAsString().equals("createResource_" + processName));
             createResourceMethod.ifPresent(template::remove);
         }
 
@@ -273,7 +285,8 @@ public class ProcessResourceGenerator {
     private void securityAnnotated(ClassOrInterfaceDeclaration template) {
         if (context.hasDI() && process.getMetaData().containsKey("securityRoles")) {
             String[] roles = ((String) process.getMetaData().get("securityRoles")).split(",");
-            template.findAll(MethodDeclaration.class).stream().filter(context.getDependencyInjectionAnnotator()::isRestAnnotated)
+            template.findAll(MethodDeclaration.class).stream()
+                    .filter(context.getDependencyInjectionAnnotator()::isRestAnnotated)
                     .forEach(md -> context.getDependencyInjectionAnnotator().withSecurityRoles(md, roles));
         }
     }

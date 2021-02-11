@@ -25,7 +25,8 @@ public class ProcessTestUtils {
         assertThat(processInstance).isInstanceOf(AbstractProcessInstance.class);
         AbstractProcessInstance<?> abstractProcessInstance = (AbstractProcessInstance<?>) processInstance;
         assertThat(abstractProcessInstance.status)
-                .withFailMessage("ProcessInstance [%s] Status - Expected: %s - Got: %s", processInstance.id(), state, processInstance.status())
+                .withFailMessage("ProcessInstance [%s] Status - Expected: %s - Got: %s", processInstance.id(), state,
+                        processInstance.status())
                 .isEqualTo(state);
         assertThat(abstractProcessInstance.processInstance.getState())
                 .withFailMessage(

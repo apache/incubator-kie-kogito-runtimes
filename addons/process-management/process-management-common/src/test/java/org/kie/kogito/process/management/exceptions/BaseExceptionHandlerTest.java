@@ -128,7 +128,7 @@ class BaseExceptionHandlerTest {
     @Test
     void testMapVariableViolationException() {
         Object response = tested.mapException(new VariableViolationException("processInstanceId", "variable",
-                                                                             "message"));
+                "message"));
         assertThat(response).isEqualTo(badRequestResponse);
     }
 }

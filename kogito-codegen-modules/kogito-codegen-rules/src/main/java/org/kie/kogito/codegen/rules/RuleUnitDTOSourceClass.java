@@ -16,6 +16,10 @@
 
 package org.kie.kogito.codegen.rules;
 
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
+import org.kie.kogito.rules.units.KogitoRuleUnitVariable;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -25,9 +29,6 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
-import org.kie.kogito.rules.units.KogitoRuleUnitVariable;
 
 public class RuleUnitDTOSourceClass implements RuleFileGenerator {
 
@@ -38,7 +39,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
     private final String packageName;
     private final RuleUnitHelper ruleUnitHelper;
 
-    public RuleUnitDTOSourceClass(KogitoRuleUnitDescription ruleUnit, RuleUnitHelper ruleUnitHelper ) {
+    public RuleUnitDTOSourceClass(KogitoRuleUnitDescription ruleUnit, RuleUnitHelper ruleUnitHelper) {
         this.ruleUnit = ruleUnit;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "DTO";
@@ -67,7 +68,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
         supplierBlock.addStatement(String.format("%s unit = new %s();", ruleUnit.getSimpleName(), ruleUnit.getSimpleName()));
 
         for (KogitoRuleUnitVariable unitVarDeclaration : ruleUnit.getUnitVarDeclarations()) {
-            FieldProcessor fieldProcessor = new FieldProcessor(unitVarDeclaration, ruleUnitHelper );
+            FieldProcessor fieldProcessor = new FieldProcessor(unitVarDeclaration, ruleUnitHelper);
             FieldDeclaration field = fieldProcessor.createField();
             supplierBlock.addStatement(fieldProcessor.fieldInitializer());
             dtoClass.addMember(field);
@@ -88,7 +89,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
         final boolean isSingletonStore;
         private String genericType;
 
-        public FieldProcessor( KogitoRuleUnitVariable ruleUnitVariable, RuleUnitHelper ruleUnitHelper ) {
+        public FieldProcessor(KogitoRuleUnitVariable ruleUnitVariable, RuleUnitHelper ruleUnitHelper) {
             this.ruleUnitVariable = ruleUnitVariable;
             this.isDataSource = ruleUnitVariable.isDataSource();
             this.ruleUnitHelper = ruleUnitHelper;
@@ -125,7 +126,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
         }
 
         private BlockStmt fieldInitializer() {
-            return ruleUnitHelper.fieldInitializer( ruleUnitVariable, genericType, isDataSource );
+            return ruleUnitHelper.fieldInitializer(ruleUnitVariable, genericType, isDataSource);
         }
     }
 }

@@ -58,7 +58,6 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         assertAdHocFragments(expected, adHocFragments);
     }
 
-
     @Test
     void testStartUserTask() throws Exception {
         String taskName = "AdHoc User Task";
@@ -69,13 +68,15 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         ProcessInstance<? extends Model> processInstance = p.createInstance(p.createModel());
         processInstance.start();
 
-        Optional<WorkItem> workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
+        Optional<WorkItem> workItem = processInstance.workItems().stream()
+                .filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
         assertThat(workItem).isNotPresent();
 
         processInstance.send(Sig.of(taskName, p.createModel()));
 
         assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.status());
-        workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
+        workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName))
+                .findFirst();
         assertThat(workItem).isPresent();
         assertThat(workItem.get().getId()).isNotBlank();
         assertThat(workItem.get().getName()).isNotBlank();
@@ -128,9 +129,10 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         assertThat(current).isNotNull();
         assertThat(current.size()).isEqualTo(expected.size());
         expected.forEach(e -> assertTrue(
-                current.stream().anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType()) && c.isAutoStart() == e.isAutoStart()),
-                "Expected: " + e.toString() + ", Got: " + current.toString())
-        );
+                current.stream()
+                        .anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType())
+                                && c.isAutoStart() == e.isAutoStart()),
+                "Expected: " + e.toString() + ", Got: " + current.toString()));
     }
 
 }

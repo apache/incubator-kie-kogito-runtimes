@@ -17,10 +17,11 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -40,7 +41,7 @@ class PMMLTreeTest {
     @SuppressWarnings("unchecked")
     void testWholeModel() {
         String inputData = "{\"temperature\":30.0, \"humidity\":10.0}";
-        Object resultVariables =  given()
+        Object resultVariables = given()
                 .contentType(ContentType.JSON)
                 .body(inputData)
                 .when()

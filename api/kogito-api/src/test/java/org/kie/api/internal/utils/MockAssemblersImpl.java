@@ -29,11 +29,10 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.io.ResourceWithConfiguration;
 
 public class MockAssemblersImpl implements KieAssemblers,
-                                           Consumer<KieAssemblerService> {
+        Consumer<KieAssemblerService> {
 
     private Map<ResourceType, KieAssemblerService> assemblers = new HashMap();
 
-    
     public Map<ResourceType, KieAssemblerService> getAssemblers() {
         return this.assemblers;
     }
@@ -44,17 +43,20 @@ public class MockAssemblersImpl implements KieAssemblers,
     }
 
     @Override
-    public void addResourceBeforeRules( Object o, Resource resource, ResourceType resourceType, ResourceConfiguration resourceConfiguration ) throws Exception {
+    public void addResourceBeforeRules(Object o, Resource resource, ResourceType resourceType,
+            ResourceConfiguration resourceConfiguration) throws Exception {
 
     }
 
     @Override
-    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
+    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration)
+            throws Exception {
 
     }
 
     @Override
-    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type) throws Exception {
+    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type)
+            throws Exception {
 
     }
 }

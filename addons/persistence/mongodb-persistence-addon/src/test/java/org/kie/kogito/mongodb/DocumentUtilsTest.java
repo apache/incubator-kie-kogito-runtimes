@@ -15,12 +15,13 @@
 
 package org.kie.kogito.mongodb;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mongodb.client.MongoCollection;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.mongodb.marshalling.DocumentUnmarshallingException;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 import org.kie.kogito.mongodb.utils.DocumentUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mongodb.client.MongoCollection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -32,7 +33,8 @@ class DocumentUtilsTest extends TestHelper {
 
     @Test
     void testGetCollection() {
-        MongoCollection<ProcessInstanceDocument> collection = DocumentUtils.getCollection(getMongoClient(), "testCollection", DB_NAME);
+        MongoCollection<ProcessInstanceDocument> collection =
+                DocumentUtils.getCollection(getMongoClient(), "testCollection", DB_NAME);
         assertThat(collection.getDocumentClass().getSimpleName()).isEqualTo(ProcessInstanceDocument.class.getSimpleName());
         assertEquals(DB_NAME, collection.getNamespace().getDatabaseName());
         assertEquals("testCollection", collection.getNamespace().getCollectionName());
@@ -47,7 +49,8 @@ class DocumentUtilsTest extends TestHelper {
     void testFromByteArray() throws JsonProcessingException {
         Object value = DocumentUtils.fromByteArray(getTestObject().getClass().getCanonicalName(), getTestByteArrays());
         assertNotNull(value, "Unmarshalled value should not be null");
-        assertEquals(getTestObject().getClass().getCanonicalName(), value.getClass().getCanonicalName(), "Object should be same.");
+        assertEquals(getTestObject().getClass().getCanonicalName(), value.getClass().getCanonicalName(),
+                "Object should be same.");
     }
 
     @Test

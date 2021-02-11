@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.cloudevents.CloudEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNModel;
@@ -37,6 +36,8 @@ import org.kie.kogito.tracing.decision.terminationdetector.BoundariesTermination
 import org.kie.kogito.tracing.decision.terminationdetector.CounterTerminationDetector;
 import org.kie.kogito.tracing.decision.terminationdetector.TerminationDetector;
 import org.mockito.ArgumentCaptor;
+
+import io.cloudevents.CloudEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,11 +81,11 @@ class DecisionTracingCollectorTest {
                 payloadConsumer,
                 (namespace, name) -> model,
                 terminationDetectorSupplier,
-                configBean
-        );
+                configBean);
 
         List<EvaluateEvent> evaluateAllEvents = readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE);
-        List<EvaluateEvent> evaluateDecisionServiceEvents = readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);
+        List<EvaluateEvent> evaluateDecisionServiceEvents =
+                readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);
 
         for (int i = 0; i < Math.max(evaluateAllEvents.size(), evaluateDecisionServiceEvents.size()); i++) {
             if (i < evaluateAllEvents.size()) {
@@ -100,7 +101,8 @@ class DecisionTracingCollectorTest {
         assertTrue(aggregatorCalls.containsKey(EVALUATE_ALL_EXECUTION_ID));
         assertEquals(evaluateAllEvents.size(), aggregatorCalls.get(EVALUATE_ALL_EXECUTION_ID).getLeft().size());
         assertTrue(aggregatorCalls.containsKey(EVALUATE_DECISION_SERVICE_EXECUTION_ID));
-        assertEquals(evaluateDecisionServiceEvents.size(), aggregatorCalls.get(EVALUATE_DECISION_SERVICE_EXECUTION_ID).getLeft().size());
+        assertEquals(evaluateDecisionServiceEvents.size(),
+                aggregatorCalls.get(EVALUATE_DECISION_SERVICE_EXECUTION_ID).getLeft().size());
 
         ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         verify(payloadConsumer, times(2)).accept(payloadCaptor.capture());

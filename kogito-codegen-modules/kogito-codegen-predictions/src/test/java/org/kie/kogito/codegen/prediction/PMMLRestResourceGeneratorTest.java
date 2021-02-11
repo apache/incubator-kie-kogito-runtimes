@@ -20,6 +20,16 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.drools.core.util.StringUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.di.CDIDependencyInjectionAnnotator;
+import org.kie.pmml.commons.model.KiePMMLModel;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.Expression;
@@ -29,15 +39,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
-import org.drools.core.util.StringUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.core.di.CDIDependencyInjectionAnnotator;
-import org.kie.pmml.commons.model.KiePMMLModel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,7 +51,8 @@ class PMMLRestResourceGeneratorTest {
     private final static String APP_CANONICAL_NAME = "APP_CANONICAL_NAME";
     private final static KiePMMLModel KIE_PMML_MODEL = getKiePMMLModelInternal();
     private static PMMLRestResourceGenerator pmmlRestResourceGenerator;
-    private static ClassOrInterfaceDeclaration template = getClassOrInterfaceDeclaration(QuarkusKogitoBuildContext.builder().build());
+    private static ClassOrInterfaceDeclaration template =
+            getClassOrInterfaceDeclaration(QuarkusKogitoBuildContext.builder().build());
     private static KogitoBuildContext context;
 
     @BeforeAll
@@ -80,7 +82,7 @@ class PMMLRestResourceGeneratorTest {
         return clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface " +
-                                                                      "declaration!"));
+                        "declaration!"));
     }
 
     @Test
@@ -159,7 +161,8 @@ class PMMLRestResourceGeneratorTest {
         BlockStmt retrieved = retrievedOpt.get();
         assertTrue(retrieved.getStatement(0) instanceof ExpressionStmt);
         assertTrue(retrieved.getStatement(0).asExpressionStmt().getExpression() instanceof VariableDeclarationExpr);
-        VariableDeclarationExpr variableDeclarationExpr = retrieved.getStatement(0).asExpressionStmt().getExpression().asVariableDeclarationExpr();
+        VariableDeclarationExpr variableDeclarationExpr =
+                retrieved.getStatement(0).asExpressionStmt().getExpression().asVariableDeclarationExpr();
         Optional<Expression> expressionOpt = variableDeclarationExpr.getVariable(0).getInitializer();
         assertTrue(expressionOpt.isPresent());
         assertTrue(expressionOpt.get() instanceof MethodCallExpr);

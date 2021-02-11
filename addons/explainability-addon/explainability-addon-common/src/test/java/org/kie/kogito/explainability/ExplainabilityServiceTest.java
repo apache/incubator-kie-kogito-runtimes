@@ -16,6 +16,11 @@
 
 package org.kie.kogito.explainability;
 
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
@@ -27,25 +32,21 @@ import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
 
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Collections.singletonList;
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 
 public class ExplainabilityServiceTest {
 
     public static final String MODEL_RESOURCE = "/Traffic Violation.dmn";
-    public static final String MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
+    public static final String MODEL_NAMESPACE =
+            "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
     public static final String MODEL_NAME = "Traffic Violation";
 
     final static String TEST_EXECUTION_ID = "test";
     final static DMNRuntime genericDMNRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(
-            ExplainabilityServiceTest.class.getResourceAsStream(MODEL_RESOURCE)
-    ));
-    final static DmnDecisionModel decisionModel = new DmnDecisionModel(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
+            ExplainabilityServiceTest.class.getResourceAsStream(MODEL_RESOURCE)));
+    final static DmnDecisionModel decisionModel =
+            new DmnDecisionModel(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
 
     @Test
     public void testPerturbedExecution() {

@@ -32,12 +32,15 @@ class SpringBootDecisionTracingConfigurationTest {
         ConfigBean mockedConfigBean = mock(ConfigBean.class);
         Application mockedApplication = mock(Application.class);
 
-        SpringBootDecisionTracingConfiguration config = new SpringBootDecisionTracingConfiguration("localhost:9092", "kogito-tracing-decision", 1, (short) 1);
+        SpringBootDecisionTracingConfiguration config =
+                new SpringBootDecisionTracingConfiguration("localhost:9092", "kogito-tracing-decision", 1, (short) 1);
 
-        SpringBootDecisionTracingCollector asyncCollector = config.collector(mockedEmitter, mockedConfigBean, mockedApplication, true);
+        SpringBootDecisionTracingCollector asyncCollector =
+                config.collector(mockedEmitter, mockedConfigBean, mockedApplication, true);
         assertTrue(asyncCollector instanceof SpringBootDecisionTracingCollectorAsync);
 
-        SpringBootDecisionTracingCollector syncCollector = config.collector(mockedEmitter, mockedConfigBean, mockedApplication, false);
+        SpringBootDecisionTracingCollector syncCollector =
+                config.collector(mockedEmitter, mockedConfigBean, mockedApplication, false);
         assertFalse(syncCollector instanceof SpringBootDecisionTracingCollectorAsync);
     }
 }

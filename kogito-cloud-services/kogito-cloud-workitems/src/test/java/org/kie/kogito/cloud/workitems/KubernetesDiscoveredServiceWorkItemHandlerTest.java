@@ -18,6 +18,8 @@ package org.kie.kogito.cloud.workitems;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.junit.jupiter.api.Test;
+
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LoadBalancerStatus;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
@@ -25,7 +27,6 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.api.model.ServiceStatus;
-import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,13 +34,13 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
 public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseKubernetesDiscoveredServiceTest {
 
     @Test
     public void testGivenServiceExists() {
         final ServiceSpec serviceSpec = new ServiceSpec();
-        serviceSpec.setPorts(Collections.singletonList(new ServicePort("http", "test-kieserver", 0, 8080, "http", new IntOrString(8080))));
+        serviceSpec.setPorts(
+                Collections.singletonList(new ServicePort("http", "test-kieserver", 0, 8080, "http", new IntOrString(8080))));
         serviceSpec.setClusterIP("172.30.158.31");
         serviceSpec.setType("ClusterIP");
         serviceSpec.setSessionAffinity("ClientIP");
@@ -49,7 +50,8 @@ public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseKubernet
         metadata.setNamespace(MOCK_NAMESPACE);
         metadata.setLabels(Collections.singletonMap("test-kieserver", "service"));
 
-        final Service service = new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
+        final Service service =
+                new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
         getClient().services().create(service);
 
         final DiscoveredServiceWorkItemHandler handler = new TestDiscoveredServiceWorkItemHandler(this);

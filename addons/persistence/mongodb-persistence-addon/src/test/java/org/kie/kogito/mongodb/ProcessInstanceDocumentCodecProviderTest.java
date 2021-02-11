@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
-import com.mongodb.MongoClientSettings;
 import org.bson.BsonBinaryReader;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
@@ -35,6 +34,8 @@ import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodec;
 import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodecProvider;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
+import com.mongodb.MongoClientSettings;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -45,7 +46,8 @@ class ProcessInstanceDocumentCodecProviderTest {
 
     @Test
     void providerTest() {
-        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromProviders(new ProcessInstanceDocumentCodecProvider()));
+        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                fromProviders(new ProcessInstanceDocumentCodecProvider()));
         CodecProvider provider = codecRegistry;
         Codec<ProcessInstanceDocument> codec = provider.get(ProcessInstanceDocument.class, codecRegistry);
         assertNotNull(codec, "Codec cannot be null");

@@ -21,9 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
@@ -41,6 +38,11 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,21 +59,28 @@ public class SpringBootDecisionTracingTest {
             .registerModule(JsonFormat.getCloudEventJacksonModule());
 
     private static final String TEST_MODEL_RESOURCE = "/Traffic Violation.dmn";
-    private static final String TEST_MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
+    private static final String TEST_MODEL_NAMESPACE =
+            "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
     private static final String TEST_MODEL_NAME = "Traffic Violation";
 
     private static final String TEST_EXECUTION_ID = "7c50581e-6e5b-407b-91d6-2ffb1d47ebc0";
-    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {{
-        put("Driver", new HashMap<String, Object>() {{
-            put("Age", 25);
-            put("Points", 10);
-        }});
-        put("Violation", new HashMap<String, Object>() {{
-            put("Type", "speed");
-            put("Actual Speed", 105);
-            put("Speed Limit", 100);
-        }});
-    }};
+    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {
+        {
+            put("Driver", new HashMap<String, Object>() {
+                {
+                    put("Age", 25);
+                    put("Points", 10);
+                }
+            });
+            put("Violation", new HashMap<String, Object>() {
+                {
+                    put("Type", "speed");
+                    put("Actual Speed", 105);
+                    put("Speed Limit", 100);
+                }
+            });
+        }
+    };
     private static final String TEST_SERVICE_URL = "localhost:8080";
     private static final String TEST_KAFKA_TOPIC = "kogito-tracing-decision";
 
@@ -93,8 +102,7 @@ public class SpringBootDecisionTracingTest {
 
     private DMNRuntime buildDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                SpringBootDecisionTracingTest.class.getResourceAsStream(TEST_MODEL_RESOURCE)
-        ));
+                SpringBootDecisionTracingTest.class.getResourceAsStream(TEST_MODEL_RESOURCE)));
     }
 
     private DecisionModel buildDecisionModel(DMNRuntime runtime) {
@@ -106,7 +114,8 @@ public class SpringBootDecisionTracingTest {
         final ApplicationEventPublisher mockedEventPublisher = mock(ApplicationEventPublisher.class);
         final SpringBootDecisionTracingCollector mockedCollector = mock(SpringBootDecisionTracingCollector.class);
 
-        SpringBootDecisionTracingListener listener = new SpringBootDecisionTracingListener(mockedEventPublisher, mockedCollector, asyncEnabled);
+        SpringBootDecisionTracingListener listener =
+                new SpringBootDecisionTracingListener(mockedEventPublisher, mockedCollector, asyncEnabled);
         runtime.addListener(listener);
 
         final DMNContext context = model.newContext(TEST_CONTEXT_VARIABLES);
@@ -138,7 +147,8 @@ public class SpringBootDecisionTracingTest {
         final KafkaTemplate<String, String> mockedTemplate = mock(KafkaTemplate.class);
         final SpringBootTraceEventEmitter eventEmitter = new SpringBootTraceEventEmitter(mockedTemplate, TEST_KAFKA_TOPIC);
 
-        SpringBootDecisionTracingCollector collector = new SpringBootDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
+        SpringBootDecisionTracingCollector collector =
+                new SpringBootDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
         events.forEach(collector::onApplicationEvent);
 
         ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);

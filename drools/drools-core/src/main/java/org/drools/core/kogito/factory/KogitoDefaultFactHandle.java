@@ -35,23 +35,28 @@ public class KogitoDefaultFactHandle extends DefaultFactHandle implements Kogito
         super(id, object, recency, wmEntryPoint);
     }
 
-    public KogitoDefaultFactHandle(long id, Object object, long recency, WorkingMemoryEntryPoint wmEntryPoint, boolean isTraitOrTraitable) {
+    public KogitoDefaultFactHandle(long id, Object object, long recency, WorkingMemoryEntryPoint wmEntryPoint,
+            boolean isTraitOrTraitable) {
         super(id, object, recency, wmEntryPoint, isTraitOrTraitable);
     }
 
-    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency, WorkingMemoryEntryPoint wmEntryPoint, boolean isTraitOrTraitable) {
+    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency,
+            WorkingMemoryEntryPoint wmEntryPoint, boolean isTraitOrTraitable) {
         super(id, identityHashCode, object, recency, wmEntryPoint, isTraitOrTraitable);
     }
 
-    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency, EntryPointId entryPointId, boolean isTraitOrTraitable) {
+    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency, EntryPointId entryPointId,
+            boolean isTraitOrTraitable) {
         super(id, identityHashCode, object, recency, entryPointId, isTraitOrTraitable);
     }
 
-    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency, EntryPointId entryPointId, TraitTypeEnum traitType) {
+    public KogitoDefaultFactHandle(long id, int identityHashCode, Object object, long recency, EntryPointId entryPointId,
+            TraitTypeEnum traitType) {
         super(id, identityHashCode, object, recency, entryPointId, traitType);
     }
 
-    public KogitoDefaultFactHandle(long id, String wmEntryPointId, int identityHashCode, int objectHashCode, long recency, Object object) {
+    public KogitoDefaultFactHandle(long id, String wmEntryPointId, int identityHashCode, int objectHashCode, long recency,
+            Object object) {
         super(id, wmEntryPointId, identityHashCode, objectHashCode, recency, object);
     }
 
@@ -74,7 +79,7 @@ public class KogitoDefaultFactHandle extends DefaultFactHandle implements Kogito
     }
 
     @Override
-    public void setDataStore( InternalStoreCallback dataStore ) {
+    public void setDataStore(InternalStoreCallback dataStore) {
         this.dataStore = dataStore;
     }
 }

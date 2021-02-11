@@ -17,7 +17,6 @@ package org.kie.kogito.mongodb.codec;
 
 import java.util.stream.Collectors;
 
-import com.mongodb.MongoClientSettings;
 import org.bson.BsonReader;
 import org.bson.BsonString;
 import org.bson.BsonValue;
@@ -28,6 +27,8 @@ import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
+
+import com.mongodb.MongoClientSettings;
 
 import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.NAME;
@@ -49,7 +50,8 @@ public class ProcessInstanceDocumentCodec implements CollectibleCodec<ProcessIns
         Document doc = new Document();
         doc.put(DOCUMENT_ID, piDoc.getProcessInstance().get(PROCESS_INSTANCE_ID));
         doc.put(PROCESS_INSTANCE, piDoc.getProcessInstance());
-        doc.put(STRATEGIES, piDoc.getStrategies().entrySet().stream().map(e -> new Document().append(NAME, e.getKey()).append(VALUE, e.getValue())).collect(Collectors.toList()));
+        doc.put(STRATEGIES, piDoc.getStrategies().entrySet().stream()
+                .map(e -> new Document().append(NAME, e.getKey()).append(VALUE, e.getValue())).collect(Collectors.toList()));
         documentCodec.encode(writer, doc, encoderContext);
     }
 
@@ -82,7 +84,8 @@ public class ProcessInstanceDocumentCodec implements CollectibleCodec<ProcessIns
         ProcessInstanceDocument piDoc = new ProcessInstanceDocument();
         piDoc.setId(document.getString(DOCUMENT_ID));
         piDoc.setProcessInstance((Document) (document.get(PROCESS_INSTANCE)));
-        piDoc.setStrategies(document.getList(STRATEGIES, Document.class).stream().collect(Collectors.toMap(d -> d.getString(NAME), d -> d.getInteger(VALUE))));
+        piDoc.setStrategies(document.getList(STRATEGIES, Document.class).stream()
+                .collect(Collectors.toMap(d -> d.getString(NAME), d -> d.getInteger(VALUE))));
         return piDoc;
     }
 }

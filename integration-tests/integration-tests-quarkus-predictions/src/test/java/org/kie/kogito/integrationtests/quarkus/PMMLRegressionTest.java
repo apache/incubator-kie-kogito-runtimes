@@ -17,10 +17,11 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -40,8 +41,7 @@ class PMMLRegressionTest {
     void testWholeModel() {
         String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
 
-
-        Object resultVariables =  given()
+        Object resultVariables = given()
                 .contentType(ContentType.JSON)
                 .body(inputData)
                 .when()
@@ -58,7 +58,7 @@ class PMMLRegressionTest {
                 .path("resultVariables");
         assertNotNull(resultVariables);
         assertTrue(resultVariables instanceof Map);
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         Map<String, Object> mappedResultVariables = (Map) resultVariables;
         assertTrue(mappedResultVariables.containsKey("fld4"));
         assertEquals(52.5f, mappedResultVariables.get("fld4"));

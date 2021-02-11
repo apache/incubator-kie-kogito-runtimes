@@ -18,8 +18,6 @@ package org.kie.kogito.codegen.tests;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,12 +30,15 @@ import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-operation.sw.json", "serverless/single-operation.sw.yml"})
+    @ValueSource(strings = { "serverless/single-operation.sw.json", "serverless/single-operation.sw.yml" })
     public void testSingleFunctionCallWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -56,7 +57,8 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-operation-with-delay.sw.json", "serverless/single-operation-with-delay.sw.yml"})
+    @ValueSource(
+            strings = { "serverless/single-operation-with-delay.sw.json", "serverless/single-operation-with-delay.sw.yml" })
     public void testSingleFunctionCallWithDelayWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -64,7 +66,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("SmallDelay", 1);
         app.config().get(ProcessConfig.class).processEventListeners().listeners().add(listener);
-
 
         Process<? extends Model> p = app.get(Processes.class).processById("function");
 
@@ -82,7 +83,8 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-operation-many-functions.sw.json", "serverless/single-operation-many-functions.sw.yml"})
+    @ValueSource(strings = { "serverless/single-operation-many-functions.sw.json",
+            "serverless/single-operation-many-functions.sw.yml" })
     public void testMultipleFunctionsCallWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -101,7 +103,8 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-operation-no-actions.sw.json", "serverless/single-operation-no-actions.sw.yml"})
+    @ValueSource(
+            strings = { "serverless/single-operation-no-actions.sw.json", "serverless/single-operation-no-actions.sw.yml" })
     public void testNoActionOperationStateWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -120,7 +123,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/multiple-operations.sw.json", "serverless/multiple-operations.sw.yml"})
+    @ValueSource(strings = { "serverless/multiple-operations.sw.json", "serverless/multiple-operations.sw.yml" })
     public void testMultipleOperationsWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -139,7 +142,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-service-operation.sw.json", "serverless/single-service-operation.sw.yml"})
+    @ValueSource(strings = { "serverless/single-service-operation.sw.json", "serverless/single-service-operation.sw.yml" })
     public void testBasicServiceWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -156,7 +159,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
@@ -176,7 +178,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/single-inject-state.sw.json", "serverless/single-inject-state.sw.yml"})
+    @ValueSource(strings = { "serverless/single-inject-state.sw.json", "serverless/single-inject-state.sw.yml" })
     public void testSingleInjectWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -191,7 +193,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
@@ -211,7 +212,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/switch-state.sw.json", "serverless/switch-state.sw.yml"})
+    @ValueSource(strings = { "serverless/switch-state.sw.json", "serverless/switch-state.sw.yml" })
     public void testApproveSwitchStateWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -226,7 +227,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
@@ -246,7 +246,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/switch-state-deny.sw.json", "serverless/switch-state-deny.sw.yml"})
+    @ValueSource(strings = { "serverless/switch-state-deny.sw.json", "serverless/switch-state-deny.sw.yml" })
     public void testDenySwitchStateWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -261,7 +261,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
@@ -281,7 +280,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/switch-state-end-condition.sw.json", "serverless/switch-state-end-condition.sw.yml"})
+    @ValueSource(strings = { "serverless/switch-state-end-condition.sw.json", "serverless/switch-state-end-condition.sw.yml" })
     public void testSwitchStateWithEndConditionWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
@@ -296,7 +295,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
@@ -323,7 +321,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
 
-
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
 
@@ -347,7 +344,8 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     @Test
     public void testParallelExecWorkflow() throws Exception {
         try {
-            Application app = generateCodeProcessesOnly("serverless/parallel-state.sw.json", "serverless/parallel-state-branch1.sw.json", "serverless/parallel-state-branch2.sw.json");
+            Application app = generateCodeProcessesOnly("serverless/parallel-state.sw.json",
+                    "serverless/parallel-state-branch1.sw.json", "serverless/parallel-state-branch2.sw.json");
             assertThat(app).isNotNull();
 
             Process<? extends Model> p = app.get(Processes.class).processById("parallelworkflow");
@@ -359,7 +357,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
             parameters.put("workflowdata", jsonParamObj);
             m.fromMap(parameters);
@@ -384,7 +381,7 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"serverless/prchecker.sw.json", "serverless/prchecker.sw.yml"})
+    @ValueSource(strings = { "serverless/prchecker.sw.json", "serverless/prchecker.sw.yml" })
     public void testPrCheckerWorkflow(String processLocation) throws Exception {
         System.setProperty("jbpm.enable.multi.con", "true");
 
@@ -400,7 +397,6 @@ public class ServerlessWorkflowTest extends AbstractCodegenTest {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonParamObj = mapper.readTree(jsonParamStr);
-
 
         parameters.put("workflowdata", jsonParamObj);
         m.fromMap(parameters);
