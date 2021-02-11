@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class KogitoPackageSources extends PackageSources {
 
-    private static final Logger logger = LoggerFactory.getLogger(KogitoPackageSources.class);
+    private static final Logger logger = LoggerFactory.getLogger( KogitoPackageSources.class);
 
     private GeneratedFile reflectConfigSource;
 
@@ -49,12 +49,12 @@ public class KogitoPackageSources extends PackageSources {
 
     private Map<String, Collection<QueryModel>> queries;
 
-    public static KogitoPackageSources dumpSources(PackageModel pkgModel) {
+    public static KogitoPackageSources dumpSources( PackageModel pkgModel) {
         KogitoPackageSources sources = dumpPojos(pkgModel);
 
         PackageModelWriter packageModelWriter = new PackageModelWriter(pkgModel);
 
-        RuleWriter rules = PackageSources.writeRules(pkgModel, sources, packageModelWriter);
+        RuleWriter rules = PackageSources.writeRules( pkgModel, sources, packageModelWriter );
         sources.rulesFileName = pkgModel.getRulesFileName();
 
         sources.ruleUnits = (Collection<KogitoRuleUnitDescription>) (Object) pkgModel.getRuleUnits();
@@ -66,29 +66,27 @@ public class KogitoPackageSources extends PackageSources {
             }
         }
 
-        sources.modelsByUnit.putAll(rules.getModelsByUnit());
+        sources.modelsByUnit.putAll( rules.getModelsByUnit() );
         return sources;
     }
 
-    public static KogitoPackageSources dumpPojos(PackageModel pkgModel) {
+    public static KogitoPackageSources dumpPojos( PackageModel pkgModel) {
         KogitoPackageSources sources = new KogitoPackageSources();
 
         List<String> pojoClasses = new ArrayList<>();
         PackageModelWriter packageModelWriter = new PackageModelWriter(pkgModel);
         for (DeclaredTypeWriter declaredType : packageModelWriter.getDeclaredTypes()) {
-            sources.pojoSources
-                    .add(new GeneratedFile(declaredType.getName(), PackageSources.logSource(declaredType.getSource())));
+            sources.pojoSources.add(new GeneratedFile(declaredType.getName(), PackageSources.logSource( declaredType.getSource() )));
             pojoClasses.add(declaredType.getClassName());
         }
 
         if (!pojoClasses.isEmpty()) {
-            sources.reflectConfigSource =
-                    new GeneratedFile("META-INF/native-image/" + pkgModel.getPathName() + "/reflect-config.json",
-                            reflectConfigSource(pojoClasses));
+            sources.reflectConfigSource = new GeneratedFile("META-INF/native-image/" + pkgModel.getPathName() + "/reflect-config.json", reflectConfigSource(pojoClasses));
         }
 
         return sources;
     }
+
 
     public Map<String, String> getModelsByUnit() {
         return modelsByUnit;
@@ -102,25 +100,25 @@ public class KogitoPackageSources extends PackageSources {
         return rulesFileName;
     }
 
-    public Collection<QueryModel> getQueriesInRuleUnit(String ruleUnitCanonicalName) {
-        return queries.get(ruleUnitCanonicalName);
+    public Collection<QueryModel> getQueriesInRuleUnit( String ruleUnitCanonicalName ) {
+        return queries.get( ruleUnitCanonicalName );
     }
 
     public GeneratedFile getReflectConfigSource() {
         return reflectConfigSource;
     }
 
-    private static String reflectConfigSource(List<String> pojoClasses) {
-        return pojoClasses.stream().collect(Collectors.joining(JSON_DELIMITER, JSON_PREFIX, JSON_SUFFIX));
+    private static String reflectConfigSource( List<String> pojoClasses) {
+        return pojoClasses.stream().collect( Collectors.joining( JSON_DELIMITER, JSON_PREFIX, JSON_SUFFIX ) );
     }
 
     private static final String REFLECTION_PERMISSIONS =
             "        \"allDeclaredConstructors\": true,\n" +
-                    "        \"allPublicConstructors\": true,\n" +
-                    "        \"allDeclaredMethods\": true,\n" +
-                    "        \"allPublicMethods\": true,\n" +
-                    "        \"allDeclaredFields\": true,\n" +
-                    "        \"allPublicFields\": true\n";
+            "        \"allPublicConstructors\": true,\n" +
+            "        \"allDeclaredMethods\": true,\n" +
+            "        \"allPublicMethods\": true,\n" +
+            "        \"allDeclaredFields\": true,\n" +
+            "        \"allPublicFields\": true\n";
 
     private static final String JSON_PREFIX = "[\n" +
             "    {\n" +

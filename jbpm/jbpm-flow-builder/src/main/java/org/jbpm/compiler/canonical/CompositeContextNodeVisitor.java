@@ -15,19 +15,10 @@
 
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory.METHOD_VARIABLE;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
-import org.jbpm.workflow.core.node.CompositeContextNode;
-import org.kie.api.definition.process.Node;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -38,6 +29,14 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
+import org.jbpm.workflow.core.node.CompositeContextNode;
+import org.kie.api.definition.process.Node;
+
+import static org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory.METHOD_VARIABLE;
 
 public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends AbstractCompositeNodeVisitor<T> {
 
@@ -64,8 +63,7 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
 
     @Override
     public void visitNode(String factoryField, T node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(),
-                new LongLiteralExpr(node.getId())))
+        body.addStatement(getAssignedFactoryMethod(factoryField, factoryClass(), getNodeId(node), factoryMethod(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, getDefaultName()));
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         VariableScope variableScopeNode = (VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE);
@@ -79,12 +77,10 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
         // composite context node might not have variable scope
         // in that case inherit it from parent
         VariableScope scope = variableScope;
-        if (node.getDefaultContext(VariableScope.VARIABLE_SCOPE) != null
-                && !((VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE)).getVariables().isEmpty()) {
+        if (node.getDefaultContext(VariableScope.VARIABLE_SCOPE) != null && !((VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE)).getVariables().isEmpty()) {
             scope = (VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE);
         }
-        body.addStatement(getFactoryMethod(getNodeId(node), CompositeContextNodeFactory.METHOD_AUTO_COMPLETE,
-                new BooleanLiteralExpr(node.isAutoComplete())));
+        body.addStatement(getFactoryMethod(getNodeId(node), CompositeContextNodeFactory.METHOD_AUTO_COMPLETE, new BooleanLiteralExpr(node.isAutoComplete())));
         visitNodes(getNodeId(node), node.getNodes(), body, scope, metadata);
         visitConnections(getNodeId(node), node.getNodes(), body);
         body.addStatement(getDoneMethod(getNodeId(node)));
@@ -94,8 +90,7 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
         return Stream.empty();
     }
 
-    protected void visitVariableScope(String contextNode, VariableScope variableScope, BlockStmt body,
-            Set<String> visitedVariables) {
+    protected void visitVariableScope(String contextNode, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables) {
         if (variableScope != null && !variableScope.getVariables().isEmpty()) {
             for (Variable variable : variableScope.getVariables()) {
                 if (!visitedVariables.add(variable.getName())) {
@@ -103,12 +98,10 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
                 }
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
-                ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType,
-                        new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
+                ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType())));
                 body.addStatement(getFactoryMethod(contextNode, METHOD_VARIABLE,
                         new StringLiteralExpr(variable.getName()), variableValue,
-                        new StringLiteralExpr(Variable.VARIABLE_TAGS),
-                        (tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr())));
+                        new StringLiteralExpr(Variable.VARIABLE_TAGS), (tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr())));
             }
         }
     }

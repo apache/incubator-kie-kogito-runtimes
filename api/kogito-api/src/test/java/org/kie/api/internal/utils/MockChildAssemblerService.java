@@ -29,8 +29,7 @@ public class MockChildAssemblerService implements KieAssemblerService {
     }
 
     @Override
-    public void addResource(Object kbuilder, Resource resource, ResourceType type, ResourceConfiguration configuration)
-            throws Exception {
+    public void addResource(Object kbuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
         // Intentionally empty
     }
 }

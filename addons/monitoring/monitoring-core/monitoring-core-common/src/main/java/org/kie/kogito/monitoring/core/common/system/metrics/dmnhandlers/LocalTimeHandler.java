@@ -17,9 +17,8 @@ package org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers;
 
 import java.time.LocalTime;
 
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
-
 import io.micrometer.core.instrument.MeterRegistry;
+import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
 
 public class LocalTimeHandler extends TypeHandlerWithSummary<LocalTime> {
 

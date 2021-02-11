@@ -21,13 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.cloudevents.CloudEvent;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.feel.util.Pair;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.tracing.decision.aggregator.DefaultAggregator;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
-
-import io.cloudevents.CloudEvent;
 
 public class MockDefaultAggregator extends DefaultAggregator {
 
@@ -38,8 +37,7 @@ public class MockDefaultAggregator extends DefaultAggregator {
     }
 
     @Override
-    public Optional<CloudEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events,
-            ConfigBean configBean) {
+    public Optional<CloudEvent> aggregate(DMNModel model, String executionId, List<EvaluateEvent> events, ConfigBean configBean) {
         CloudEvent result = super.aggregate(model, executionId, events, configBean).orElseThrow(IllegalStateException::new);
         calls.put(executionId, new Pair<>(events, result));
         return Optional.of(result);

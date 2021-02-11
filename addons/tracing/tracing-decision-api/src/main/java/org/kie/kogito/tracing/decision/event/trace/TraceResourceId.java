@@ -16,11 +16,11 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceResourceId {
@@ -49,8 +49,7 @@ public class TraceResourceId {
         this(serviceUrl, modelNamespace, modelName, null, null);
     }
 
-    public TraceResourceId(String serviceUrl, String modelNamespace, String modelName, String decisionServiceId,
-            String decisionServiceName) {
+    public TraceResourceId(String serviceUrl, String modelNamespace, String modelName, String decisionServiceId, String decisionServiceName) {
         this.serviceUrl = serviceUrl;
         this.modelNamespace = modelNamespace;
         this.modelName = modelName;

@@ -45,6 +45,5 @@ public interface ProcessInstanceMarshaller {
 
     ProcessInstance readProcessInstance(MarshallerReaderContext context) throws IOException;
 
-    NodeInstance readNodeInstance(MarshallerReaderContext context, NodeInstanceContainer nodeInstanceContainer,
-            WorkflowProcessInstance processInstance) throws IOException;
+    NodeInstance readNodeInstance(MarshallerReaderContext context, NodeInstanceContainer nodeInstanceContainer, WorkflowProcessInstance processInstance) throws IOException;
 }

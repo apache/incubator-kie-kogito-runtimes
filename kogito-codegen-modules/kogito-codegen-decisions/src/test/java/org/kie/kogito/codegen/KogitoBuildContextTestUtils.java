@@ -25,18 +25,16 @@ public class KogitoBuildContextTestUtils {
         // utility class
     }
 
-    public static Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses,
-            Collection<String> excludedClasses) {
-        return mockClassAvailabilityResolver(includedClasses, excludedClasses,
-                KogitoBuildContextTestUtils.class.getClassLoader());
+    public static Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses, Collection<String> excludedClasses) {
+        return mockClassAvailabilityResolver(includedClasses, excludedClasses, KogitoBuildContextTestUtils.class.getClassLoader());
     }
 
-    public static Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses,
-            Collection<String> excludedClasses, ClassLoader classLoader) {
+    public static Predicate<String> mockClassAvailabilityResolver(Collection<String> includedClasses, Collection<String> excludedClasses, ClassLoader classLoader) {
         return className -> {
-            if (includedClasses.contains(className)) {
+            if(includedClasses.contains(className)) {
                 return true;
-            } else if (excludedClasses.contains(className)) {
+            }
+            else if(excludedClasses.contains(className)) {
                 return false;
             }
             try {

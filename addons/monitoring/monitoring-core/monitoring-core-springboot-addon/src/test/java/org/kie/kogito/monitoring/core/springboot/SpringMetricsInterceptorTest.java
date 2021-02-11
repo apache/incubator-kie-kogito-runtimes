@@ -15,21 +15,20 @@
 
 package org.kie.kogito.monitoring.core.springboot;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsInterceptor;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 class SpringMetricsInterceptorTest {
 
@@ -58,8 +57,7 @@ class SpringMetricsInterceptorTest {
 
             interceptor.postHandle(requestMock, responseMock, null, null);
 
-            metricsInterceptor.verify(times(1),
-                    () -> MetricsInterceptor.filter(matchedUrl.capture(), statusCodeCaptor.capture()));
+            metricsInterceptor.verify(times(1), () -> MetricsInterceptor.filter(matchedUrl.capture(), statusCodeCaptor.capture()));
 
             List<String> endpoints = matchedUrl.getAllValues();
             assertThat(endpoints.isEmpty()).isFalse();

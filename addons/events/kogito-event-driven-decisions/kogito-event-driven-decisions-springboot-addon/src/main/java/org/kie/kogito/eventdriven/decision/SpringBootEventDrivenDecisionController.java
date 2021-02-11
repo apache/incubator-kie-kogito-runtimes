@@ -29,8 +29,7 @@ import org.springframework.stereotype.Component;
 public class SpringBootEventDrivenDecisionController extends EventDrivenDecisionController {
 
     @Autowired
-    public SpringBootEventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config,
-            CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+    public SpringBootEventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
         super(decisionModels, config, eventEmitter, eventReceiver);
     }
 

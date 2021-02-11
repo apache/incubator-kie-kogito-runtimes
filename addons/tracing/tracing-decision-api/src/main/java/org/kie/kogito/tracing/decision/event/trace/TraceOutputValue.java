@@ -16,17 +16,16 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
 import java.util.List;
 import java.util.Map;
-
-import org.kie.kogito.tracing.decision.event.message.Message;
-import org.kie.kogito.tracing.typedvalue.TypedValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.kie.kogito.tracing.decision.event.message.Message;
+import org.kie.kogito.tracing.typedvalue.TypedValue;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceOutputValue {
@@ -54,8 +53,7 @@ public class TraceOutputValue {
     private TraceOutputValue() {
     }
 
-    public TraceOutputValue(String id, String name, String status, TypedValue value, Map<String, TypedValue> inputs,
-            List<Message> messages) {
+    public TraceOutputValue(String id, String name, String status, TypedValue value, Map<String, TypedValue> inputs, List<Message> messages) {
         this.id = id;
         this.name = name;
         this.status = status;

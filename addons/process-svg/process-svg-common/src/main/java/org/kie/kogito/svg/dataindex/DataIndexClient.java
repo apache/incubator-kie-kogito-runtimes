@@ -21,10 +21,9 @@ import java.util.List;
 public interface DataIndexClient {
 
     default String getNodeInstancesQuery(String processInstanceId) {
-        return "{ ProcessInstances ( where: { and : {  id: {  equal : \"" + processInstanceId
-                + "\" } } }) { nodes { definitionId exit } } }";
+        return "{ ProcessInstances ( where: { and : {  id: {  equal : \"" + processInstanceId + "\" } } }) { nodes { definitionId exit } } }";
     }
-
+    
     List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId);
-
+    
 }

@@ -18,9 +18,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.LoadBalancerStatus;
@@ -32,6 +29,8 @@ import io.fabric8.kubernetes.api.model.ServiceStatus;
 import io.fabric8.kubernetes.client.dsl.RecreateFromServerGettable;
 import io.fabric8.kubernetes.client.dsl.ServiceResource;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * Base class to test use cases that need to query the API
@@ -84,8 +83,7 @@ public abstract class MockKubernetesServerSupport {
     }
 
     /**
-     * Same as {@link #createMockService()}, but let you choose the namespace.
-     * 
+     * Same as {@link #createMockService()}, but let you choose the namespace. 
      * @param namespace null to not specify where.
      */
     protected void createMockService(final String namespace) {
@@ -98,8 +96,7 @@ public abstract class MockKubernetesServerSupport {
      * @param mockJsonResponse
      */
     protected void createMockService(final InputStream mockJsonResponse, final String namespace) {
-        final ServiceResource<Service> serviceResource =
-                this.server.getClient().inNamespace(namespace).services().load(mockJsonResponse);
+        final ServiceResource<Service> serviceResource = this.server.getClient().inNamespace(namespace).services().load(mockJsonResponse);
         this.server.getClient().inNamespace(namespace).services().create(serviceResource.get());
     }
 
@@ -110,16 +107,13 @@ public abstract class MockKubernetesServerSupport {
      * @param namespace
      */
     protected void createMockServices(final InputStream mockJsonResponse, final String namespace) {
-        final RecreateFromServerGettable<KubernetesList> serviceResource =
-                this.server.getClient().inNamespace(namespace).lists().load(mockJsonResponse);
+        final RecreateFromServerGettable<KubernetesList> serviceResource = this.server.getClient().inNamespace(namespace).lists().load(mockJsonResponse);
         this.server.getClient().inNamespace(namespace).lists().create(serviceResource.get());
     }
 
-    protected void createMockService(final String serviceName, final String ip, final Map<String, String> labels,
-            final String namespace) {
+    protected void createMockService(final String serviceName, final String ip, final Map<String, String> labels, final String namespace) {
         final ServiceSpec serviceSpec = new ServiceSpec();
-        serviceSpec.setPorts(
-                Collections.singletonList(new ServicePort("http", serviceName, 0, 8080, "http", new IntOrString(8080))));
+        serviceSpec.setPorts(Collections.singletonList(new ServicePort("http", serviceName, 0, 8080, "http", new IntOrString(8080))));
         serviceSpec.setClusterIP(ip);
         serviceSpec.setType("ClusterIP");
         serviceSpec.setSessionAffinity("ClientIP");
@@ -129,8 +123,7 @@ public abstract class MockKubernetesServerSupport {
         metadata.setNamespace(MOCK_NAMESPACE);
         metadata.setLabels(labels);
 
-        final Service service =
-                new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
+        final Service service = new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
         if (namespace != null) {
             this.server.getClient().inNamespace(namespace).services().create(service);
         } else {

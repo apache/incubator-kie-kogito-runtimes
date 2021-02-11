@@ -31,16 +31,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.quarkus.deployment.dev.JavaCompilationProvider;
+import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.utils.AppPaths;
-import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.quarkus.deployment.dev.JavaCompilationProvider;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
@@ -58,7 +57,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         // containing all the latest class definitions of user's pojos, eventually recompiled also during the latest
         // hot reload round. It is also necessary to use a null as a parent classloader otherwise this classloader
         // could load the old definition of a class from the parent instead of getting the latest one from the output directory
-        final URLClassLoader cl = new URLClassLoader(getClasspathUrls(quarkusContext), null);
+        final URLClassLoader cl = new URLClassLoader( getClasspathUrls( quarkusContext ), null );
 
         File outputDirectory = quarkusContext.getOutputDirectory();
         try {
@@ -79,8 +78,9 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
                     if (file.category().equals(GeneratedFileType.Category.SOURCE)) {
                         generatedSourceFiles.add(path.toFile());
                     }
-                } else {
-                    if (LOGGER.isDebugEnabled()) {
+                }
+                else {
+                    if(LOGGER.isDebugEnabled()) {
                         LOGGER.debug("Skipping file because cannot hot reload: " + file);
                     }
                 }
@@ -92,7 +92,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
             try {
                 cl.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException( e );
             }
         }
     }
@@ -107,8 +107,8 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
     }
 
     protected abstract Generator getGenerator(KogitoBuildContext context,
-            Set<File> filesToCompile,
-            Context quarkusContext);
+                                              Set<File> filesToCompile,
+                                              Context quarkusContext);
 
     static Path pathOf(String path, String relativePath) {
         Path p = Paths.get(path, relativePath);
@@ -116,9 +116,9 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         return p;
     }
 
-    private URL[] getClasspathUrls(Context context) {
+    private URL[] getClasspathUrls( Context context ) {
         Set<File> elements = context.getClasspath();
-        URL[] urls = new URL[elements.size() + 1];
+        URL[] urls = new URL[elements.size()+1];
 
         try {
             urls[0] = context.getOutputDirectory().toURI().toURL();
@@ -127,7 +127,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
                 urls[i++] = artifact.toURI().toURL();
             }
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException( e );
         }
 
         return urls;

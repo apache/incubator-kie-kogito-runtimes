@@ -23,8 +23,8 @@ import java.util.Set;
 
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 public class DMNCompilationProvider extends KogitoCompilationProvider {
 

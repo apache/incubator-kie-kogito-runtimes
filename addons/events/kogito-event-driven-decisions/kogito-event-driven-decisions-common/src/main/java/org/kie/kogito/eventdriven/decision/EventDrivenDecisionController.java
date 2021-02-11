@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.cloudevents.CloudEventUtils;
@@ -36,9 +38,6 @@ import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
 
 public class EventDrivenDecisionController {
 
@@ -57,16 +56,14 @@ public class EventDrivenDecisionController {
     protected EventDrivenDecisionController() {
     }
 
-    protected EventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter,
-            CloudEventReceiver eventReceiver) {
+    protected EventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
         this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
     }
 
-    protected void setup(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter,
-            CloudEventReceiver eventReceiver) {
+    protected void setup(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
         this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -102,13 +99,11 @@ public class EventDrivenDecisionController {
         Map<String, Object> data = CloudEventUtils.decodeMapData(event, String.class, Object.class).orElse(null);
 
         if (kogitoExtension == null) {
-            LOG.warn("Received CloudEvent(id={} source={} type={}) with null Kogito extension", event.getId(),
-                    event.getSource(), event.getType());
+            LOG.warn("Received CloudEvent(id={} source={} type={}) with null Kogito extension", event.getId(), event.getSource(), event.getType());
         }
 
         if (data == null) {
-            LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource(),
-                    event.getType());
+            LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource(), event.getType());
         }
 
         return Optional.of(new EvaluationContext(event, kogitoExtension, data));
@@ -163,8 +158,7 @@ public class EventDrivenDecisionController {
 
         kogitoExtension.setExecutionId(DecisionExecutionIdUtils.get(ctx.getResponseDmnResult().getContext()));
 
-        KogitoDMNResult restResult =
-                new KogitoDMNResult(ctx.getRequestModelNamespace(), ctx.getRequestModelName(), ctx.getResponseDmnResult());
+        KogitoDMNResult restResult = new KogitoDMNResult(ctx.getRequestModelNamespace(), ctx.getRequestModelName(), ctx.getResponseDmnResult());
 
         if (ctx.isRequestFullResult()) {
             if (ctx.isRequestFilteredContext()) {
@@ -188,8 +182,7 @@ public class EventDrivenDecisionController {
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
         return ctx.isEvaluateDecisionServiceRequest()
-                ? CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getRequestModelName(),
-                        ctx.getRequestDecisionServiceToEvaluate())
+                ? CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getRequestModelName(), ctx.getRequestDecisionServiceToEvaluate())
                 : CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getRequestModelName());
     }
 
@@ -209,8 +202,7 @@ public class EventDrivenDecisionController {
         private DecisionResponseError responseError;
         private DMNResult responseDmnResult;
 
-        public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension,
-                Map<String, Object> requestData) {
+        public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension, Map<String, Object> requestData) {
             this.requestCloudEvent = requestCloudEvent;
             this.requestData = requestData;
 

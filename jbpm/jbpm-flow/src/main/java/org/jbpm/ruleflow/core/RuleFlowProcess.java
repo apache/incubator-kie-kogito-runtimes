@@ -151,8 +151,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
         }
 
         List<Node> nodes = Arrays.stream(getNodes())
-                .filter(n -> n.getIncomingConnections().isEmpty()
-                        && "true".equalsIgnoreCase((String) n.getMetaData().get("customAutoStart")))
+                .filter(n -> n.getIncomingConnections().isEmpty() && "true".equalsIgnoreCase((String)n.getMetaData().get("customAutoStart")))
                 .collect(Collectors.toList());
 
         return nodes;
@@ -165,11 +164,9 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
         protected void validateAddNode(Node node) {
             super.validateAddNode(node);
             StartNode startNode = getStart(null);
-            if ((node instanceof StartNode)
-                    && (startNode != null && startNode.getTriggers() == null && startNode.getTimer() == null)) {
+            if ((node instanceof StartNode) && (startNode != null && startNode.getTriggers() == null && startNode.getTimer() == null)) {
                 // ignore start nodes that are event based
-                if ((((StartNode) node).getTriggers() == null || ((StartNode) node).getTriggers().isEmpty())
-                        && ((StartNode) node).getTimer() == null) {
+                if ((((StartNode) node).getTriggers() == null || ((StartNode) node).getTriggers().isEmpty()) && ((StartNode) node).getTimer() == null) {
                     throw new IllegalArgumentException(
                             "A RuleFlowProcess cannot have more than one start node!");
                 }

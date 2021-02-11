@@ -15,14 +15,6 @@
 
 package org.kie.kogito.process.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
-import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
-import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +37,14 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.Milestone;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.AVAILABLE;
+import static org.kie.kogito.process.flexible.ItemDescription.Status.COMPLETED;
+import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
+
 class MilestoneTest extends AbstractCodegenTest {
 
     @Test
@@ -64,13 +64,10 @@ class MilestoneTest extends AbstractCodegenTest {
         processInstance.start();
         assertState(processInstance, ProcessInstance.STATE_COMPLETED);
 
-        expected = expected.stream()
-                .map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(COMPLETED).build())
-                .collect(Collectors.toList());
+        expected = expected.stream().map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(COMPLETED).build()).collect(Collectors.toList());
         assertMilestones(expected, processInstance.milestones());
 
-        RuleFlowProcessInstance legacyProcessInstance =
-                (RuleFlowProcessInstance) ((AbstractProcessInstance<?>) processInstance).processInstance;
+        RuleFlowProcessInstance legacyProcessInstance = (RuleFlowProcessInstance) ((AbstractProcessInstance<?>) processInstance).processInstance;
         assertThat(legacyProcessInstance.getNodeInstances()).isEmpty();
         assertThat(legacyProcessInstance.getNodeIdInError()).isNullOrEmpty();
         Optional<String> milestoneId = Stream.of(legacyProcessInstance.getNodeContainer().getNodes())
@@ -101,18 +98,14 @@ class MilestoneTest extends AbstractCodegenTest {
         processInstance.start();
         assertState(processInstance, ProcessInstance.STATE_ACTIVE);
 
-        expected = expected.stream()
-                .map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(AVAILABLE).build())
-                .collect(Collectors.toList());
+        expected = expected.stream().map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(AVAILABLE).build()).collect(Collectors.toList());
         assertMilestones(expected, processInstance.milestones());
 
         List<WorkItem> workItems = processInstance.workItems();
         params.put("favouriteColour", "blue");
         processInstance.completeWorkItem(workItems.get(0).getId(), params);
 
-        expected = expected.stream()
-                .map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(COMPLETED).build())
-                .collect(Collectors.toList());
+        expected = expected.stream().map(m -> Milestone.builder().withId(m.getId()).withName(m.getName()).withStatus(COMPLETED).build()).collect(Collectors.toList());
         assertMilestones(expected, processInstance.milestones());
     }
 
@@ -123,8 +116,7 @@ class MilestoneTest extends AbstractCodegenTest {
         assertNotNull(milestones);
         assertThat(milestones).hasSameSizeAs(expected);
         expected.forEach(e -> assertThat(milestones.stream().anyMatch(c -> Objects.equals(c.getName(), e.getName()) &&
-                Objects.equals(c.getStatus(), e.getStatus())))
-                        .withFailMessage("Expected: " + e + " - Not present in: " + milestones).isTrue());
+                Objects.equals(c.getStatus(), e.getStatus()))).withFailMessage("Expected: " + e + " - Not present in: " + milestones).isTrue());
     }
 
 }

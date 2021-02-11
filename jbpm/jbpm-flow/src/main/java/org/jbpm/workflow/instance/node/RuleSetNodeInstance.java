@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  * Runtime counterpart of a ruleset node.
  */
 public class RuleSetNodeInstance extends StateBasedNodeInstance implements EventListener,
-        ContextInstanceContainer {
+                                                                           ContextInstanceContainer {
 
     private static final long serialVersionUID = 510L;
     private static final Logger logger = LoggerFactory.getLogger(RuleSetNodeInstance.class);
@@ -98,7 +98,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     }
 
     @Override
-    public void internalTrigger(KogitoNodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
         try {
             super.internalTrigger(from, type);
             // if node instance was cancelled, abort
@@ -110,8 +110,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             }
             RuleSetNode ruleSetNode = getRuleSetNode();
 
-            KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime())
-                    .orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
+            KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime()).orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
             Map<String, Object> inputs = evaluateParameters(ruleSetNode);
 
             RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
@@ -125,8 +124,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                 .orElse(() -> new DmnDecisionModel(
                                         ((KieSession) kruntime).getKieRuntime(DMNRuntime.class),
                                         namespace,
-                                        model))
-                                .get();
+                                        model)).get();
 
                 DMNContext context = modelInstance.newContext(inputs);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
@@ -172,9 +170,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
                     int fired = ((KieSession) kruntime).fireAllRules(processInstance.getAgendaFilter(), fireLimit);
                     if (fired == fireLimit) {
-                        throw new RuntimeException("Fire rule limit reached " + fireLimit
-                                + ", limit can be set via system property " + FIRE_RULE_LIMIT_PROPERTY
-                                + " or via data input of business rule task named " + FIRE_RULE_LIMIT_PARAMETER);
+                        throw new RuntimeException("Fire rule limit reached " + fireLimit + ", limit can be set via system property " + FIRE_RULE_LIMIT_PROPERTY
+                                                           + " or via data input of business rule task named " + FIRE_RULE_LIMIT_PARAMETER);
                     }
 
                     removeEventListeners();
@@ -257,8 +254,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     public void cancel() {
         super.cancel();
         if (actAsWaitState()) {
-            ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda())
-                    .deactivateRuleFlowGroup(getRuleFlowGroup());
+            ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda()).deactivateRuleFlowGroup(getRuleFlowGroup());
         }
     }
 
@@ -266,8 +262,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     public void signalEvent(String type, Object event) {
         if (getRuleSetEventType().equals(type)) {
             removeEventListeners();
-            KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime())
-                    .orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
+            KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime()).orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
             retractFacts(kruntime);
             triggerCompleted();
         }
@@ -294,16 +289,15 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     private void processOutputs(Map<String, Object> objects) {
         RuleSetNode ruleSetNode = getRuleSetNode();
         if (ruleSetNode != null) {
-            for (Iterator<DataAssociation> iterator = ruleSetNode.getOutAssociations().iterator(); iterator.hasNext();) {
+            for (Iterator<DataAssociation> iterator = ruleSetNode.getOutAssociations().iterator(); iterator.hasNext(); ) {
                 DataAssociation association = iterator.next();
                 if (association.getTransformation() != null) {
                     Transformation transformation = association.getTransformation();
                     DataTransformer transformer = DataTransformerRegistry.get().find(transformation.getLanguage());
                     if (transformer != null) {
                         Object parameterValue = transformer.transform(transformation.getCompiledExpression(), objects);
-                        VariableScopeInstance variableScopeInstance =
-                                (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE,
-                                        association.getTarget());
+                        VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                                resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
                         if (variableScopeInstance != null && parameterValue != null) {
                             variableScopeInstance.setVariable(this, association.getTarget(), parameterValue);
                         } else {
@@ -312,15 +306,13 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         }
                     }
                 } else if (association.getAssignments() == null || association.getAssignments().isEmpty()) {
-                    VariableScopeInstance variableScopeInstance =
-                            (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE,
-                                    association.getTarget());
+                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                            resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
                     if (variableScopeInstance != null) {
                         Object value = objects.get(association.getSources().get(0));
                         if (value == null) {
                             try {
-                                value = MVELProcessHelper.evaluator().eval(association.getSources().get(0),
-                                        new MapVariableResolverFactory(objects));
+                                value = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new MapVariableResolverFactory(objects));
                             } catch (Throwable t) {
                                 // do nothing
                             }
@@ -335,17 +327,17 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     } else {
                         String output = association.getSources().get(0);
                         String target = association.getTarget();
-
+                                                
                         Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(target);
                         if (matcher.find()) {
                             String paramName = matcher.group(1);
-
+                            
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(objects);
                             Serializable compiled = MVELProcessHelper.compileExpression(expression);
                             MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
-                        } else {
+                        } else { 
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                         }
                     }
@@ -357,29 +349,26 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     protected Map<String, Object> evaluateParameters(RuleSetNode ruleSetNode) {
         Map<String, Object> replacements = new HashMap<>();
 
-        for (Iterator<DataAssociation> iterator = ruleSetNode.getInAssociations().iterator(); iterator.hasNext();) {
+        for (Iterator<DataAssociation> iterator = ruleSetNode.getInAssociations().iterator(); iterator.hasNext(); ) {
             DataAssociation association = iterator.next();
             if (association.getTransformation() != null) {
                 Transformation transformation = association.getTransformation();
                 DataTransformer transformer = DataTransformerRegistry.get().find(transformation.getLanguage());
                 if (transformer != null) {
-                    Object parameterValue =
-                            transformer.transform(transformation.getCompiledExpression(), getSourceParameters(association));
+                    Object parameterValue = transformer.transform(transformation.getCompiledExpression(), getSourceParameters(association));
                     if (parameterValue != null) {
                         replacements.put(association.getTarget(), parameterValue);
                     }
                 }
             } else if (association.getAssignments() == null || association.getAssignments().isEmpty()) {
                 Object parameterValue = null;
-                VariableScopeInstance variableScopeInstance =
-                        (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE,
-                                association.getSources().get(0));
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getSources().get(0));
                 if (variableScopeInstance != null) {
                     parameterValue = variableScopeInstance.getVariable(association.getSources().get(0));
                 } else {
                     try {
-                        parameterValue = MVELProcessHelper.evaluator().eval(association.getSources().get(0),
-                                new NodeInstanceResolverFactory(this));
+                        parameterValue = MVELProcessHelper.evaluator().eval(association.getSources().get(0), new NodeInstanceResolverFactory(this));
                     } catch (Throwable t) {
                         logger.error("Could not find variable scope for variable {}", association.getSources().get(0));
                         logger.error("when trying to execute RuleSetNode {}", ruleSetNode.getName());
@@ -412,8 +401,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             while (matcher.find()) {
                 String paramName = matcher.group(1);
 
-                VariableScopeInstance variableScopeInstance =
-                        (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
                 if (variableScopeInstance != null) {
                     Object variableValue = variableScopeInstance.getVariable(paramName);
                     if (variableValue != null) {
@@ -421,8 +410,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     }
                 } else {
                     try {
-                        Object variableValue =
-                                MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                         if (variableValue != null) {
                             return variableValue;
                         }
@@ -440,8 +428,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
         Map<String, Object> parameters = new HashMap<>();
         for (String sourceParam : association.getSources()) {
             Object parameterValue = null;
-            VariableScopeInstance variableScopeInstance =
-                    (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
+            VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
+                    resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
             if (variableScopeInstance != null) {
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {

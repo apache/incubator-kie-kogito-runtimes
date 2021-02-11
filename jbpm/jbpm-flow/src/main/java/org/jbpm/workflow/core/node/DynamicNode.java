@@ -16,8 +16,6 @@
 
 package org.jbpm.workflow.core.node;
 
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
@@ -25,6 +23,8 @@ import java.util.stream.Collectors;
 
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.ProcessContext;
+
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_AUTO_START;
 
 public class DynamicNode extends CompositeContextNode {
 
@@ -66,8 +66,7 @@ public class DynamicNode extends CompositeContextNode {
 
     public List<Node> getAutoStartNodes() {
         return Arrays.stream(getNodes())
-                .filter(n -> n.getIncomingConnections().isEmpty()
-                        && "true".equalsIgnoreCase((String) n.getMetaData().get(CUSTOM_AUTO_START)))
+                .filter(n -> n.getIncomingConnections().isEmpty() && "true".equalsIgnoreCase((String) n.getMetaData().get(CUSTOM_AUTO_START)))
                 .collect(Collectors.toList());
     }
 

@@ -34,7 +34,7 @@ public final class RuleUnitTestUtil {
 
     public static InternalKnowledgePackage createPackage(String name) {
         InternalKnowledgePackage pkg = new KnowledgePackageImpl(name);
-        //        pkg.setTypeResolver( createTypeResolver() );
+//        pkg.setTypeResolver( createTypeResolver() );
         return pkg;
     }
 

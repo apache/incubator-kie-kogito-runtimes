@@ -54,7 +54,7 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
     public ProcessInstance<BpmnVariables> createInstance() {
         return new BpmnProcessInstance(this, createModel(), this.createProcessRuntime());
     }
-
+    
     @Override
     public ProcessInstance<BpmnVariables> createInstance(String businessKey, BpmnVariables variables) {
         BpmnVariables variablesModel = createModel();
@@ -86,8 +86,7 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
 
     @Override
     public BpmnVariables createModel() {
-        VariableScope variableScope =
-                (VariableScope) ((WorkflowProcess) process()).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope = (VariableScope) ((WorkflowProcess) process()).getDefaultContext(VariableScope.VARIABLE_SCOPE);
         return new BpmnVariables(variableScope.getVariables(), new HashMap<>());
     }
 

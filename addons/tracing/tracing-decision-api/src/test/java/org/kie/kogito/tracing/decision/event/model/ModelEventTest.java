@@ -16,11 +16,11 @@
 
 package org.kie.kogito.tracing.decision.event.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ModelEventTest {
 
