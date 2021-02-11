@@ -38,40 +38,6 @@ import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 public class ErrorTest extends AbstractCodegenTest {
 
-    public void addProcessEventListener(Application app, KogitoProcessEventListener listener) {
-        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(listener);
-    }
-
-    @Test
-    void testEndErrorWithEventSubprocess() throws Exception {
-        Application app = generateCodeProcessesOnly("error/EndErrorWithEventSubprocess.bpmn2");
-        assertThat(app).isNotNull();
-
-        List<String> completedNames = completedNodesListener(app);
-
-        Process<? extends Model> p = app.get(Processes.class).processById("EndErrorWithEventSubprocess");
-        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
-
-        assertState(processInstance, ProcessInstance.STATE_PENDING);
-
-        processInstance.start();
-
-        assertState(processInstance, ProcessInstance.STATE_COMPLETED);
-
-        assertTrue(completedNames.containsAll(Arrays.asList("task", "subprocess-task")));
-    }
-
-    private List<String> completedNodesListener(Application app) {
-        List<String> completedIds = new ArrayList<>();
-        addProcessEventListener(app, new DefaultKogitoProcessEventListener() {
-            @Override
-            public void afterNodeLeft(ProcessNodeLeftEvent event) {
-                completedIds.add(event.getNodeInstance().getNodeName());
-            }
-        });
-        return completedIds;
-    }
-
     @Test
     void testEndError() throws Exception {
         Application app = generateCodeProcessesOnly("error/EndError.bpmn2");
@@ -88,5 +54,48 @@ public class ErrorTest extends AbstractCodegenTest {
         assertState(processInstance, ProcessInstance.STATE_ABORTED);
 
         assertTrue(completedNodesNames.contains("task"));
+    }
+
+    @Test
+    void testEndErrorWithEventSubprocess() throws Exception {
+        testErrorInSubprocess("error/EndErrorWithEventSubprocess.bpmn2");
+    }
+
+    @Test
+    void testEndErrorInSubprocessWithEventSubprocess() throws Exception {
+        testErrorInSubprocess("error/EndErrorInSubprocessWithEventSubprocess.bpmn2");
+    }
+
+    private List<String> completedNodesListener(Application app) {
+        List<String> completedIds = new ArrayList<>();
+        addProcessEventListener(app, new DefaultKogitoProcessEventListener() {
+            @Override
+            public void afterNodeLeft(ProcessNodeLeftEvent event) {
+                completedIds.add(event.getNodeInstance().getNodeName());
+            }
+        });
+        return completedIds;
+    }
+
+    private void testErrorInSubprocess(String processPath) throws Exception {
+        Application app = generateCodeProcessesOnly(processPath);
+        assertThat(app).isNotNull();
+
+        List<String> completedNames = completedNodesListener(app);
+
+        Process<? extends Model> p = app.get(Processes.class).processById("EndErrorWithEventSubprocess");
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+
+        assertState(processInstance, ProcessInstance.STATE_PENDING);
+
+        processInstance.start();
+
+        assertState(processInstance, ProcessInstance.STATE_COMPLETED);
+
+        assertTrue(completedNames.containsAll(Arrays.asList("task", "subprocess-task")));
+    }
+
+    public void addProcessEventListener(Application app, KogitoProcessEventListener listener) {
+        app.config().get(ProcessConfig.class).processEventListeners().listeners().add(listener);
     }
 }

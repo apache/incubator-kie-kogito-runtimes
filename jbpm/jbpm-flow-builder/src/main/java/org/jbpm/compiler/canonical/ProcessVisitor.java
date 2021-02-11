@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -43,6 +44,7 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
+import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -294,7 +296,18 @@ public class ProcessVisitor extends AbstractVisitor {
     }
 
     private void visitExceptionScope(Process process, BlockStmt body) {
-        Context context = ((org.jbpm.workflow.core.WorkflowProcess) process).getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        if (!(process instanceof org.jbpm.workflow.core.WorkflowProcess)) {
+            return;
+        }
+        org.jbpm.workflow.core.WorkflowProcess workflowProcess = (org.jbpm.workflow.core.WorkflowProcess) process;
+        Context context = workflowProcess.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        //root process
+        visitContextExceptionScope(context, body);
+        //visit sub-processes
+        visitSubExceptionScope(workflowProcess.getNodes(), body);
+    }
+
+    private void visitContextExceptionScope(Context context, BlockStmt body) {
         if (context instanceof ExceptionScope) {
             ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
                 String faultCode = e.getKey();
@@ -310,5 +323,19 @@ public class ProcessVisitor extends AbstractVisitor {
                                                            .orElse(new NullLiteralExpr())));
             });
         }
+    }
+
+    private void visitSubExceptionScope(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {
+        Stream.of(nodes)
+                .peek(node -> {
+                    //recursively handle subprocesses exception scope
+                    if (node instanceof NodeContainer) {
+                        visitSubExceptionScope(((NodeContainer) node).getNodes(), body);
+                    }
+                })
+                .filter(ContextContainer.class::isInstance)
+                .map(ContextContainer.class::cast)
+                .map(container -> container.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE))
+                .forEach(context -> visitContextExceptionScope(context, body));
     }
 }
