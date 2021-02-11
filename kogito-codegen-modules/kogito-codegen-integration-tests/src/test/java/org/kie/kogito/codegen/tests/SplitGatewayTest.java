@@ -16,6 +16,9 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +31,6 @@ import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-
-import static java.util.Collections.singletonMap;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SplitGatewayTest extends AbstractCodegenTest {
 

@@ -16,11 +16,11 @@
 
 package org.kie.kogito.quarkus.deployment;
 
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.utils.AppPaths;
-
 import java.util.function.Predicate;
+
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.utils.AppPaths;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 
 public class KogitoQuarkusContextProvider {
 
@@ -32,7 +32,8 @@ public class KogitoQuarkusContextProvider {
         return context(appPaths, classLoader, className -> hasClassOnClasspath(classLoader, className));
     }
 
-    public static KogitoBuildContext context(AppPaths appPaths, ClassLoader classLoader, Predicate<String> classAvailabilityResolver) {
+    public static KogitoBuildContext context(AppPaths appPaths, ClassLoader classLoader,
+            Predicate<String> classAvailabilityResolver) {
         return QuarkusKogitoBuildContext.builder()
                 .withApplicationProperties(appPaths.getResourceFiles())
                 .withClassLoader(classLoader)

@@ -16,15 +16,16 @@
 
 package org.jbpm.compiler.canonical;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-
 public class RestTaskDescriptor {
 
-    private RestTaskDescriptor() {}
+    private RestTaskDescriptor() {
+    }
 
     public static String getClassName(ProcessMetaData processMetadata) {
         return processMetadata.getProcessId() + "RestWorkItemHandler";

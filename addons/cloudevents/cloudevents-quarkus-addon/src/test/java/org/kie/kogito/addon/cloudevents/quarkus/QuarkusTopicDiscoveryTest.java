@@ -15,6 +15,8 @@
 
 package org.kie.kogito.addon.cloudevents.quarkus;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,8 +30,6 @@ import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.Topic;
 import org.kie.kogito.event.TopicDiscovery;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class QuarkusTopicDiscoveryTest {
 
@@ -46,7 +46,9 @@ class QuarkusTopicDiscoveryTest {
         final TopicDiscovery discovery = new QuarkusTopicDiscovery();
         final List<Topic> topics = discovery.getTopics(Collections.emptyList());
         assertThat(topics).hasSize(2);
-        expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
+        expectedTopics.forEach(
+                e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType()))
+                        .isTrue());
     }
 
     @Test
@@ -63,7 +65,9 @@ class QuarkusTopicDiscoveryTest {
         final TopicDiscovery discovery = new QuarkusTopicDiscovery();
         final List<Topic> topics = discovery.getTopics(Collections.emptyList());
         assertThat(topics).hasSize(2);
-        expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
+        expectedTopics.forEach(
+                e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType()))
+                        .isTrue());
     }
 
     @Test
@@ -83,7 +87,9 @@ class QuarkusTopicDiscoveryTest {
         final TopicDiscovery discovery = new QuarkusTopicDiscovery();
         final List<Topic> topics = discovery.getTopics(eventsMeta);
         assertThat(topics).hasSize(2);
-        expectedTopics.forEach(e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType())).isTrue());
+        expectedTopics.forEach(
+                e -> assertThat(topics.stream().anyMatch(t -> t.getName().equals(e.getName()) && t.getType() == e.getType()))
+                        .isTrue());
     }
 
     @Test

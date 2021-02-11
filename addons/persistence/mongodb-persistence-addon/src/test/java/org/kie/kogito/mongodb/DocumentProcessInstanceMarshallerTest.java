@@ -15,6 +15,11 @@
 
 package org.kie.kogito.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -33,11 +38,6 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 class DocumentProcessInstanceMarshallerTest {
 
     DocumentProcessInstanceMarshaller marshaller = new DocumentProcessInstanceMarshaller(new DocumentMarshallingStrategy());
@@ -54,7 +54,8 @@ class DocumentProcessInstanceMarshallerTest {
 
     @Test
     void testMarshalProcessInstance() {
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
         processInstance.start();
         doc = marshaller.marshalProcessInstance(processInstance);
         assertNotNull(doc, "Marshalled value should not be null");
@@ -82,10 +83,12 @@ class DocumentProcessInstanceMarshallerTest {
 
     @Test
     void testProcessInstanceReadOnly() {
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
         processInstance.start();
         doc = marshaller.marshalProcessInstance(processInstance);
-        ProcessInstance<BpmnVariables> processInstanceReadOnly = process.createReadOnlyInstance(marshaller.unmarshallWorkflowProcessInstance(doc, process));
+        ProcessInstance<BpmnVariables> processInstanceReadOnly =
+                process.createReadOnlyInstance(marshaller.unmarshallWorkflowProcessInstance(doc, process));
         assertNotNull(processInstanceReadOnly, "Unmarshalled value should not be null");
         ProcessInstance<BpmnVariables> pi = marshaller.unmarshallReadOnlyProcessInstance(doc, process);
         assertNotNull(pi, "Unmarshalled value should not be null");
@@ -93,8 +96,10 @@ class DocumentProcessInstanceMarshallerTest {
 
     @Test
     void testDocumentMarshallingException() {
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
-        assertThatExceptionOfType(DocumentMarshallingException.class).isThrownBy(() -> marshaller.marshalProcessInstance(processInstance));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "testValue")));
+        assertThatExceptionOfType(DocumentMarshallingException.class)
+                .isThrownBy(() -> marshaller.marshalProcessInstance(processInstance));
     }
 
     @Test

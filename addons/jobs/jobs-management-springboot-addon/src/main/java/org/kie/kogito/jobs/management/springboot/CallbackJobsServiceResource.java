@@ -45,11 +45,12 @@ public class CallbackJobsServiceResource {
     @Autowired
     Application application;
 
-    @PostMapping(value = "{processId}/instances/{processInstanceId}/timers/{timerId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "{processId}/instances/{processInstanceId}/timers/{timerId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity triggerTimer(@PathVariable("processId") String processId,
-                                       @PathVariable("processInstanceId") String processInstanceId,
-                                       @PathVariable("timerId") String timerId,
-                                       @RequestParam(value = "limit", defaultValue = "0", required = false) Integer limit) {
+            @PathVariable("processInstanceId") String processInstanceId,
+            @PathVariable("timerId") String timerId,
+            @RequestParam(value = "limit", defaultValue = "0", required = false) Integer limit) {
         if (processId == null || processInstanceId == null) {
             return ResponseEntity.badRequest().body("Process id and Process instance id must be  given");
         }
@@ -66,7 +67,8 @@ public class CallbackJobsServiceResource {
                 String[] ids = timerId.split("_");
                 processInstance.send(Sig.of("timerTriggered", TimerInstance.with(Long.parseLong(ids[1]), timerId, limit)));
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process instance with id " + processInstanceId + " not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Process instance with id " + processInstanceId + " not found");
             }
             return ResponseEntity.ok().build();
         });

@@ -14,12 +14,12 @@
  */
 package org.kie.kogito.rules.units;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListDataStreamTest {
 

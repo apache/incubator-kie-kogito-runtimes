@@ -16,6 +16,9 @@
 
 package org.jbpm.bpmn2;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
@@ -39,9 +43,6 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 public class DataTest extends JbpmBpmn2TestCase {
 
     @Test
@@ -49,7 +50,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("BPMN2-Import.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("Import");
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -60,7 +61,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -76,21 +77,22 @@ public class DataTest extends JbpmBpmn2TestCase {
         assertEquals("employeeStore", dataStore.getName());
         assertEquals(String.class.getCanonicalName(),
                 ((ObjectDataType) dataStore.getType()).getClassName());
-        
+
     }
 
     @Test
     public void testAssociation() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-Association.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation");
-        List<Association> associations = (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
+        List<Association> associations =
+                (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
         assertNotNull(associations);
         assertEquals(1, associations.size());
         Association assoc = associations.get(0);
         assertEquals("_1234", assoc.getId());
         assertEquals("_1", assoc.getSourceRef());
         assertEquals("_2", assoc.getTargetRef());
-        
+
     }
 
     @Test
@@ -105,7 +107,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -118,7 +120,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "com.sample.evaluation", params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -133,7 +135,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -150,7 +152,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("XPathProcess",
                 params);
         assertProcessInstanceCompleted(processInstance);
-        
+
     }
 
     @Test
@@ -160,13 +162,13 @@ public class DataTest extends JbpmBpmn2TestCase {
                 new KogitoWorkItemHandler() {
                     @Override
                     public void abortWorkItem(KogitoWorkItem manager,
-                                              KogitoWorkItemManager mgr) {
+                            KogitoWorkItemManager mgr) {
 
                     }
 
                     @Override
                     public void executeWorkItem(KogitoWorkItem workItem,
-                                                KogitoWorkItemManager mgr) {
+                            KogitoWorkItemManager mgr) {
                         assertEquals("hello world",
                                 workItem.getParameter("coId"));
                     }
@@ -180,7 +182,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         KogitoProcessInstance processInstance = kruntime.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -191,13 +193,13 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     @Override
                     public void abortWorkItem(KogitoWorkItem manager,
-                                              KogitoWorkItemManager mgr) {
+                            KogitoWorkItemManager mgr) {
 
                     }
 
                     @Override
-                    public void executeWorkItem(KogitoWorkItem workItem, 
-                                                KogitoWorkItemManager mgr) {
+                    public void executeWorkItem(KogitoWorkItem workItem,
+                            KogitoWorkItemManager mgr) {
                         assertEquals("hello", workItem.getParameter("coId"));
                     }
 
@@ -206,7 +208,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", "hello");
         KogitoProcessInstance processInstance = kruntime.startProcess("process",
                 params);
-        
+
     }
 
     /**
@@ -251,7 +253,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         KogitoProcessInstance processInstance = kruntime.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -273,7 +275,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -296,7 +298,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -316,13 +318,13 @@ public class DataTest extends JbpmBpmn2TestCase {
                                 .getParameter("coId")).getNodeName());
                         assertEquals("some text", ((org.w3c.dom.Node) workItem
                                 .getParameter("coId")).getFirstChild()
-                                .getTextContent());
+                                        .getTextContent());
                     }
 
                 });
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("process");
-        
+
     }
 
     /**
@@ -362,7 +364,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         params.put("instanceMetadata", document.getFirstChild());
         KogitoProcessInstance processInstance = kruntime.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -408,7 +410,7 @@ public class DataTest extends JbpmBpmn2TestCase {
         Map<String, Object> params = new HashMap<>();
         KogitoProcessInstance processInstance = kruntime.startProcess("process",
                 params);
-        
+
     }
 
     @Test
@@ -443,7 +445,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("process");
-        
+
     }
 
     @Test
@@ -478,7 +480,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 });
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("process");
-        
+
     }
 
 }

@@ -16,16 +16,21 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.jackson.JsonFormat;
-import io.reactivex.subscribers.TestSubscriber;
-import io.vertx.core.eventbus.EventBus;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
@@ -41,32 +46,36 @@ import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
+import io.reactivex.subscribers.TestSubscriber;
+import io.vertx.core.eventbus.EventBus;
 
 public class QuarkusDecisionTracingTest {
 
-    public static final String TEST_MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
+    public static final String TEST_MODEL_NAMESPACE =
+            "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
     public static final String TEST_MODEL_NAME = "Traffic Violation";
 
-    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {{
-        put("Driver", new HashMap<String, Object>() {{
-            put("Age", 25);
-            put("Points", 10);
-        }});
-        put("Violation", new HashMap<String, Object>() {{
-            put("Type", "speed");
-            put("Actual Speed", 105);
-            put("Speed Limit", 100);
-        }});
-    }};
+    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {
+        {
+            put("Driver", new HashMap<String, Object>() {
+                {
+                    put("Age", 25);
+                    put("Points", 10);
+                }
+            });
+            put("Violation", new HashMap<String, Object>() {
+                {
+                    put("Type", "speed");
+                    put("Actual Speed", 105);
+                    put("Speed Limit", 100);
+                }
+            });
+        }
+    };
     private static final String TEST_EXECUTION_ID = "7c50581e-6e5b-407b-91d6-2ffb1d47ebc0";
     private static final String TEST_RESOURCE = "/" + TEST_MODEL_NAME + ".dmn";
     private static final String TEST_SERVICE_URL = "localhost:8080";
@@ -92,8 +101,7 @@ public class QuarkusDecisionTracingTest {
 
     private DMNRuntime buildDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                QuarkusDecisionTracingTest.class.getResourceAsStream(TEST_RESOURCE)
-        ));
+                QuarkusDecisionTracingTest.class.getResourceAsStream(TEST_RESOURCE)));
     }
 
     private DecisionModel buildDecisionModel(DMNRuntime runtime) {
@@ -105,7 +113,8 @@ public class QuarkusDecisionTracingTest {
         final EventBus mockedEventBus = mock(EventBus.class);
         final QuarkusDecisionTracingCollector mockedCollector = mock(QuarkusDecisionTracingCollector.class);
 
-        QuarkusDecisionTracingListener listener = new QuarkusDecisionTracingListener(mockedEventBus, mockedCollector, asyncEnabled);
+        QuarkusDecisionTracingListener listener =
+                new QuarkusDecisionTracingListener(mockedEventBus, mockedCollector, asyncEnabled);
         runtime.addListener(listener);
 
         final DMNContext context = model.newContext(TEST_CONTEXT_VARIABLES);
@@ -134,7 +143,8 @@ public class QuarkusDecisionTracingTest {
         final ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL, true);
         final QuarkusTraceEventEmitter eventEmitter = new QuarkusTraceEventEmitter();
 
-        QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
+        QuarkusDecisionTracingCollector collector =
+                new QuarkusDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
         eventEmitter.getEventPublisher().subscribe(subscriber);
         events.forEach(collector::onEvent);
 

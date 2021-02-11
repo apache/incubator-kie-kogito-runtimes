@@ -15,15 +15,15 @@
 
 package org.kie.kogito.monitoring.core.springboot;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
 
 class SpringMetricsFilterRegisterTest {
 
@@ -44,7 +44,7 @@ class SpringMetricsFilterRegisterTest {
 
         verify(registryMock, times(numberOfTimes)).addInterceptor(registerCaptor.capture());
 
-        if(httpInterceptorUseDefault) {
+        if (httpInterceptorUseDefault) {
             List<HandlerInterceptor> values = registerCaptor.getAllValues();
             assertThat(values.isEmpty()).isFalse();
             assertThat(values.size()).isEqualTo(1);

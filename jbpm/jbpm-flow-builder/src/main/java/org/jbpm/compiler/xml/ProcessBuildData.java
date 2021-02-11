@@ -70,13 +70,14 @@ public class ProcessBuildData {
     public Map<Long, Node> getNodes() {
         return nodes;
     }
-    public boolean addNode( Node node) {
+
+    public boolean addNode(Node node) {
         onNode(node);
-        return( this.nodes.put( node.getId(), node ) != null );
+        return (this.nodes.put(node.getId(), node) != null);
     }
 
-    public Node getNode( Long id) {
-        return this.nodes.get( id );
+    public Node getNode(Long id) {
+        return this.nodes.get(id);
     }
 
     public Object getMetaData(String name) {
@@ -90,7 +91,7 @@ public class ProcessBuildData {
 
     // listener support
 
-    protected void onNode( Node node) {
+    protected void onNode(Node node) {
         for (ProcessDataEventListener listener : listeners) {
             listener.onNodeAdded(node);
         }
@@ -121,7 +122,8 @@ public class ProcessBuildData {
     }
 
     private static List<ProcessDataEventListenerProvider> collectProviders() {
-        ServiceLoader<ProcessDataEventListenerProvider> availableProviders = ServiceLoader.load(ProcessDataEventListenerProvider.class);
+        ServiceLoader<ProcessDataEventListenerProvider> availableProviders =
+                ServiceLoader.load(ProcessDataEventListenerProvider.class);
         List<ProcessDataEventListenerProvider> collected = new ArrayList<ProcessDataEventListenerProvider>();
         try {
             for (ProcessDataEventListenerProvider provider : availableProviders) {

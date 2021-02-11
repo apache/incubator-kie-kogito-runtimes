@@ -15,16 +15,17 @@
 
 package org.kie.kogito.monitoring.core.common.integration;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.LocalDateTime;
 
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.DecisionConstants;
 import org.kie.kogito.monitoring.core.common.system.metrics.dmnhandlers.LocalDateTimeHandler;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 public class LocalDateTimeHandlerTest extends AbstractQuantilesTest<LocalDateTimeHandler> {
 
@@ -43,7 +44,7 @@ public class LocalDateTimeHandlerTest extends AbstractQuantilesTest<LocalDateTim
     public void givenLocalDateTimeMetricsWhenMetricsAreStoredThenTheQuantilesAreCorrect() {
         // Arrange
         LocalDateTime now = LocalDateTime.now();
-        Double[] quantiles = new Double[]{0.1, 0.25, 0.5, 0.75, 0.9, 0.99};
+        Double[] quantiles = new Double[] { 0.1, 0.25, 0.5, 0.75, 0.9, 0.99 };
 
         // Act
         handler.record("decision", ENDPOINT_NAME, now);

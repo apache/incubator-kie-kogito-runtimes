@@ -26,21 +26,22 @@ import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.NodeInstanceContainer;
 
 public class MockNodeInstanceFactory implements NodeInstanceFactory {
-    
+
     private MockNodeInstance instance;
-    
+
     public MockNodeInstanceFactory(MockNodeInstance instance) {
         this.instance = instance;
     }
-    
+
     public MockNodeInstance getMockNodeInstance() {
         return this.instance;
     }
 
-    public NodeInstance getNodeInstance(Node node, WorkflowProcessInstance processInstance, NodeInstanceContainer nodeInstanceContainer) {
+    public NodeInstance getNodeInstance(Node node, WorkflowProcessInstance processInstance,
+            NodeInstanceContainer nodeInstanceContainer) {
         instance.setProcessInstance(processInstance);
         instance.setNodeInstanceContainer(nodeInstanceContainer);
         return instance;
     }
-      
+
 }

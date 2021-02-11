@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
@@ -51,9 +50,9 @@ public class RuleUnitDescriptionTest {
     @Test
     public void getRuleUnitVariable() {
         Assertions.assertThat(ruleUnitDescr.getVar("number")).isNotNull();
-        Assertions.assertThatThrownBy(() -> ruleUnitDescr.getVar("undefinedField")).isInstanceOf(UndefinedRuleUnitVariable.class);
+        Assertions.assertThatThrownBy(() -> ruleUnitDescr.getVar("undefinedField"))
+                .isInstanceOf(UndefinedRuleUnitVariable.class);
     }
-
 
     @Test
     public void getEntryPointId() {
@@ -100,7 +99,8 @@ public class RuleUnitDescriptionTest {
         final Collection<String> unitVars = ruleUnitDescr.getUnitVars();
         Assertions.assertThat(unitVars).isNotEmpty();
         Assertions.assertThat(unitVars).hasSize(6);
-        Assertions.assertThat(unitVars).containsExactlyInAnyOrder("strings", "bound", "number", "numbersArray", "stringList", "simpleFactList");
+        Assertions.assertThat(unitVars).containsExactlyInAnyOrder("strings", "bound", "number", "numbersArray", "stringList",
+                "simpleFactList");
     }
 
     @Test

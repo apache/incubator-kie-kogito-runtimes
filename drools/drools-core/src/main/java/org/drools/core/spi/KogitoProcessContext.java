@@ -21,7 +21,7 @@ import org.kie.api.runtime.process.CaseData;
 
 public class KogitoProcessContext extends AbstractProcessContext {
 
-    public KogitoProcessContext( KieRuntime kruntime ) {
+    public KogitoProcessContext(KieRuntime kruntime) {
         super(kruntime);
     }
 

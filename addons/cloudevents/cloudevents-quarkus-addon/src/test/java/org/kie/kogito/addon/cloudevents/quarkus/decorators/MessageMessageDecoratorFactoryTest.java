@@ -14,9 +14,9 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.decorators;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class MessageMessageDecoratorFactoryTest {
 

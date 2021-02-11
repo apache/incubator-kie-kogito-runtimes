@@ -16,6 +16,8 @@
 
 package org.kie.kogito.quarkus.deployment;
 
+import static java.util.Arrays.asList;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -25,8 +27,6 @@ import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.process.ProcessCodegen;
-
-import static java.util.Arrays.asList;
 
 public class ProcessCompilationProvider extends KogitoCompilationProvider {
 

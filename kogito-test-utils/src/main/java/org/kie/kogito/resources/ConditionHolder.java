@@ -42,6 +42,7 @@ public class ConditionHolder {
     }
 
     private void enableIfSystemPropertyIs(String name, String value) {
-        this.enabled = Optional.ofNullable(System.getProperty(name)).map(property -> StringUtils.equalsIgnoreCase(property, value)).orElse(false);
+        this.enabled = Optional.ofNullable(System.getProperty(name))
+                .map(property -> StringUtils.equalsIgnoreCase(property, value)).orElse(false);
     }
 }

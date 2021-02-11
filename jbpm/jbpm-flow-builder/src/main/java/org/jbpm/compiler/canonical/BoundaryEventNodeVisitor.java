@@ -16,16 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import java.util.Map;
-
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
-import org.jbpm.workflow.core.node.BoundaryEventNode;
-
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_COMPENSATION;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
@@ -39,6 +29,17 @@ import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_SCOPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
 
+import java.util.Map;
+
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
+import org.jbpm.workflow.core.node.BoundaryEventNode;
+
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+
 public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventNode> {
 
     @Override
@@ -47,16 +48,20 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventN
     }
 
     @Override
-    public void visitNode(String factoryField, BoundaryEventNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+    public void visitNode(String factoryField, BoundaryEventNode node, BlockStmt body, VariableScope variableScope,
+            ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, BoundaryEventNodeFactory.class, getNodeId(node), getNodeKey(),
+                new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "BoundaryEvent"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_EVENT_TYPE, new StringLiteralExpr(node.getType())))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO, new StringLiteralExpr(node.getAttachedToNodeId())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_ATTACHED_TO,
+                        new StringLiteralExpr(node.getAttachedToNodeId())))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_SCOPE, getOrNullExpr(node.getScope())));
 
         Variable variable = null;
         if (node.getVariableName() != null) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(node.getVariableName())));
+            body.addStatement(
+                    getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(node.getVariableName())));
             variable = variableScope.findVariable(node.getVariableName());
         }
 
@@ -69,8 +74,10 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventN
                     (String) nodeMetaData.get(MESSAGE_TYPE),
                     node.getVariableName(),
                     String.valueOf(node.getId())).validate());
-        } else if (EVENT_TYPE_COMPENSATION.equalsIgnoreCase((String) node.getMetaData(EVENT_TYPE)) && node.getAttachedToNodeId() != null) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ADD_COMPENSATION_HANDLER, new StringLiteralExpr(node.getAttachedToNodeId())));
+        } else if (EVENT_TYPE_COMPENSATION.equalsIgnoreCase((String) node.getMetaData(EVENT_TYPE))
+                && node.getAttachedToNodeId() != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ADD_COMPENSATION_HANDLER,
+                    new StringLiteralExpr(node.getAttachedToNodeId())));
         }
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));

@@ -75,16 +75,17 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String kogitoAddons;
 
-    public AbstractDataEvent() {}
+    public AbstractDataEvent() {
+    }
 
     public AbstractDataEvent(String type,
-                             String source,
-                             T body,
-                             String kogitoProcessinstanceId,
-                             String kogitoRootProcessinstanceId,
-                             String kogitoProcessId,
-                             String kogitoRootProcessId,
-                             String kogitoAddons) {
+            String source,
+            T body,
+            String kogitoProcessinstanceId,
+            String kogitoRootProcessinstanceId,
+            String kogitoProcessId,
+            String kogitoRootProcessId,
+            String kogitoAddons) {
         this.specVersion = SPEC_VERSION;
         this.id = UUID.randomUUID().toString();
         this.source = source;
@@ -102,17 +103,18 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     public AbstractDataEvent(String type,
-                             String source,
-                             T body,
-                             String kogitoProcessinstanceId,
-                             String kogitoRootProcessinstanceId,
-                             String kogitoProcessId,
-                             String kogitoRootProcessId,
-                             String kogitoAddons,
-                             String subject,
-                             String dataContentType,
-                             String dataSchema) {
-        this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons);
+            String source,
+            T body,
+            String kogitoProcessinstanceId,
+            String kogitoRootProcessinstanceId,
+            String kogitoProcessId,
+            String kogitoRootProcessId,
+            String kogitoAddons,
+            String subject,
+            String dataContentType,
+            String dataSchema) {
+        this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId,
+                kogitoAddons);
         this.subject = subject;
         this.dataContentType = dataContentType;
         this.dataSchema = dataSchema;

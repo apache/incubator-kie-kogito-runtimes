@@ -30,7 +30,9 @@ public interface DataSource<T> extends Iterable<T> {
 
     interface Factory {
         <T> DataStream<T> createStream();
+
         <T> DataStore<T> createStore();
+
         <T> SingletonStore<T> createSingleton();
     }
 

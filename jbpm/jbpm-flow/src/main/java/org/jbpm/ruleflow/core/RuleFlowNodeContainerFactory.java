@@ -16,6 +16,10 @@
 
 package org.jbpm.ruleflow.core;
 
+import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
 import org.jbpm.ruleflow.core.factory.CatchLinkNodeFactory;
@@ -40,10 +44,6 @@ import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-
-import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
-import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 public abstract class RuleFlowNodeContainerFactory {
 

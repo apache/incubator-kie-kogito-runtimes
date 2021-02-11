@@ -16,6 +16,8 @@
 
 package org.jbpm.workflow.instance.node;
 
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,21 +52,20 @@ import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.rule.Match;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.internal.process.event.KogitoEventListener;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
-
-public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl implements EventBasedNodeInstanceInterface, KogitoEventListener {
+public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl
+        implements EventBasedNodeInstanceInterface, KogitoEventListener {
 
     private static final long serialVersionUID = 510l;
 
@@ -88,16 +89,18 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         if (timers != null) {
             addTimerListener();
             timerInstances = new ArrayList<>(timers.size());
-            JobsService jobService = (( KogitoProcessRuntime.Provider ) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getKogitoProcessRuntime().getJobsService();
+            JobsService jobService =
+                    ((KogitoProcessRuntime.Provider) getProcessInstance().getKnowledgeRuntime().getProcessRuntime())
+                            .getKogitoProcessRuntime().getJobsService();
             for (Timer timer : timers.keySet()) {
                 ProcessInstanceJobDescription jobDescription =
                         ProcessInstanceJobDescription.of(timer.getId(),
-                                                         createTimerInstance(timer),
-                                                         getProcessInstance().getStringId(),
-                                                         getProcessInstance().getRootProcessInstanceId(),
-                                                         getProcessInstance().getProcessId(),
-                                                         getProcessInstance().getRootProcessId(),
-                                                         Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                                createTimerInstance(timer),
+                                getProcessInstance().getStringId(),
+                                getProcessInstance().getRootProcessInstanceId(),
+                                getProcessInstance().getProcessId(),
+                                getProcessInstance().getRootProcessId(),
+                                Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
                 timerInstances.add(jobService.scheduleProcessInstanceJob(jobDescription));
             }
         }
@@ -115,7 +118,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             }
         }
 
-        ((WorkflowProcessInstanceImpl) getProcessInstance()).addActivatingNodeId((String) getNode().getMetaData().get("UniqueId"));
+        ((WorkflowProcessInstanceImpl) getProcessInstance())
+                .addActivatingNodeId((String) getNode().getMetaData().get("UniqueId"));
     }
 
     @Override
@@ -157,7 +161,9 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                                     repeatLimit = Integer.MAX_VALUE;
                                 }
 
-                                return DurationExpirationTime.repeat(businessCalendar.calculateBusinessTimeAsDuration(tempDelay), businessCalendar.calculateBusinessTimeAsDuration(tempPeriod), repeatLimit);
+                                return DurationExpirationTime.repeat(
+                                        businessCalendar.calculateBusinessTimeAsDuration(tempDelay),
+                                        businessCalendar.calculateBusinessTimeAsDuration(tempPeriod), repeatLimit);
                             } catch (NumberFormatException e) {
                                 // ignore
                             }
@@ -167,7 +173,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     if (tempPeriod == null) {
                         return DurationExpirationTime.repeat(actualDelay, actualDelay, Integer.MAX_VALUE);
                     } else {
-                        return DurationExpirationTime.repeat(actualDelay, businessCalendar.calculateBusinessTimeAsDuration(tempPeriod), Integer.MAX_VALUE);
+                        return DurationExpirationTime.repeat(actualDelay,
+                                businessCalendar.calculateBusinessTimeAsDuration(tempPeriod), Integer.MAX_VALUE);
                     }
 
                 case Timer.TIME_DURATION:
@@ -197,7 +204,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                     if (timer.getPeriod() == null) {
                         return DurationExpirationTime.repeat(actualDelay, actualDelay, Integer.MAX_VALUE);
                     } else {
-                        return DurationExpirationTime.repeat(actualDelay, DateTimeUtils.parseDuration(resolveVariable(timer.getPeriod())), Integer.MAX_VALUE);
+                        return DurationExpirationTime.repeat(actualDelay,
+                                DateTimeUtils.parseDuration(resolveVariable(timer.getPeriod())), Integer.MAX_VALUE);
                     }
                 } else {
                     String resolvedDelay = resolveVariable(timer.getDelay());
@@ -257,15 +265,16 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         while (matcher.find()) {
             String paramName = matcher.group(1);
             if (replacements.get(paramName) == null) {
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
+                VariableScopeInstance variableScopeInstance =
+                        (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
                 if (variableScopeInstance != null) {
                     Object variableValue = variableScopeInstance.getVariable(paramName);
                     String variableValueString = variableValue == null ? "" : variableValue.toString();
                     replacements.put(paramName, variableValueString);
                 } else {
                     try {
-                        Object variableValue = MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
+                        Object variableValue =
+                                MVELProcessHelper.evaluator().eval(paramName, new NodeInstanceResolverFactory(this));
                         String variableValueString = variableValue == null ? "" : variableValue.toString();
                         replacements.put(paramName, variableValueString);
                     } catch (Throwable t) {
@@ -285,12 +294,15 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     protected void handleSLAViolation() {
         if (slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
-            InternalProcessRuntime processRuntime = ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
-            processRuntime.getProcessEventSupport().fireBeforeSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());
+            InternalProcessRuntime processRuntime =
+                    ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime());
+            processRuntime.getProcessEventSupport().fireBeforeSLAViolated(getProcessInstance(), this,
+                    getProcessInstance().getKnowledgeRuntime());
             logger.debug("SLA violated on node instance {}", getStringId());
             this.slaCompliance = org.kie.api.runtime.process.ProcessInstance.SLA_VIOLATED;
             this.slaTimerId = null;
-            processRuntime.getProcessEventSupport().fireAfterSLAViolated(getProcessInstance(), this, getProcessInstance().getKnowledgeRuntime());
+            processRuntime.getProcessEventSupport().fireAfterSLAViolated(getProcessInstance(), this,
+                    getProcessInstance().getKnowledgeRuntime());
         }
     }
 
@@ -328,7 +340,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public String[] getEventTypes() {
-        return new String[]{"timerTriggered", getActivationType()};
+        return new String[] { "timerTriggered", getActivationType() };
     }
 
     public void triggerCompleted() {
@@ -337,7 +349,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     @Override
     public void addEventListeners() {
-        if (timerInstances != null && (!timerInstances.isEmpty()) || (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty())) {
+        if (timerInstances != null && (!timerInstances.isEmpty())
+                || (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty())) {
             addTimerListener();
         }
         if (slaCompliance == org.kie.api.runtime.process.ProcessInstance.SLA_PENDING) {
@@ -403,8 +416,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
     private void cancelTimers() {
         // deactivate still active timers
         if (timerInstances != null) {
-            JobsService jobService = ((InternalProcessRuntime)
-                    getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
+            JobsService jobService =
+                    ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
             for (String id : timerInstances) {
                 jobService.cancelJob(id);
             }
@@ -413,8 +426,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     private void cancelSlaTimer() {
         if (this.slaTimerId != null && !this.slaTimerId.trim().isEmpty()) {
-            JobsService jobService = ((InternalProcessRuntime)
-                    getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
+            JobsService jobService =
+                    ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
             jobService.cancelJob(this.slaTimerId);
             logger.debug("SLA Timer {} has been canceled", this.slaTimerId);
         }
@@ -434,7 +447,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     protected boolean checkProcessInstance(Activation activation) {
         final Map<?, ?> declarations = activation.getSubRule().getOuterDeclarations();
-        for (Iterator<?> it = declarations.values().iterator(); it.hasNext(); ) {
+        for (Iterator<?> it = declarations.values().iterator(); it.hasNext();) {
             Declaration declaration = (Declaration) it.next();
             if ("processInstance".equals(declaration.getIdentifier())
                     || "org.kie.api.runtime.process.WorkflowProcessInstance".equals(declaration.getTypeName())) {
@@ -455,7 +468,8 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             return true;
         }
 
-        Object dec = match.getDeclarationIds().contains("$" + matchVariable) ? match.getDeclarationValue("$" + matchVariable) : match.getDeclarationValue(matchVariable);
+        Object dec = match.getDeclarationIds().contains("$" + matchVariable) ? match.getDeclarationValue("$" + matchVariable)
+                : match.getDeclarationValue(matchVariable);
         Object var = getVariable(matchVariable);
 
         return var.equals(dec);
@@ -463,13 +477,16 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
 
     protected void mapDynamicOutputData(Map<String, Object> results) {
         if (results != null && !results.isEmpty()) {
-            VariableScope variableScope = (VariableScope) ((ContextContainer) getProcessInstance().getProcess()).getDefaultContext(VariableScope.VARIABLE_SCOPE);
-            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
+            VariableScope variableScope = (VariableScope) ((ContextContainer) getProcessInstance().getProcess())
+                    .getDefaultContext(VariableScope.VARIABLE_SCOPE);
+            VariableScopeInstance variableScopeInstance =
+                    (VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
             for (Entry<String, Object> result : results.entrySet()) {
                 String variableName = result.getKey();
                 Variable variable = variableScope.findVariable(variableName);
                 if (variable != null) {
-                    variableScopeInstance.getVariableScope().validateVariable(getProcessInstance().getProcessName(), variableName, result.getValue());
+                    variableScopeInstance.getVariableScope().validateVariable(getProcessInstance().getProcessName(),
+                            variableName, result.getValue());
                     variableScopeInstance.setVariable(this, variableName, result.getValue());
                 }
             }

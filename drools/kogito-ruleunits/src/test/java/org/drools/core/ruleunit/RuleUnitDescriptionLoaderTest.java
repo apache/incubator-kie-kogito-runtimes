@@ -16,6 +16,9 @@
 
 package org.drools.core.ruleunit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import java.util.Optional;
 
 import org.drools.core.definitions.rule.impl.RuleImpl;
@@ -25,9 +28,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.mockito.Mockito;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @Disabled
 public class RuleUnitDescriptionLoaderTest {

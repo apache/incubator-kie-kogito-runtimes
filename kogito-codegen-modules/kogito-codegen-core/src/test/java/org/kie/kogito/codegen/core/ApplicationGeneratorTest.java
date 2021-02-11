@@ -15,25 +15,26 @@
 
 package org.kie.kogito.codegen.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationGeneratorTest {
 
@@ -125,8 +126,9 @@ public class ApplicationGeneratorTest {
     private void assertApplicationPlaceholderReplace(ApplicationContainerGenerator appGenerator, long expectedParams) {
         CompilationUnit compilationUnit = appGenerator.getCompilationUnitOrThrow();
 
-        Optional<NodeList<Expression>> expressions = compilationUnit.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
-                .map(MethodCallExpr::getArguments);
+        Optional<NodeList<Expression>> expressions =
+                compilationUnit.findFirst(MethodCallExpr.class, mtd -> "loadEngines".equals(mtd.getNameAsString()))
+                        .map(MethodCallExpr::getArguments);
         assertThat(expressions).isPresent();
 
         expressions.get()

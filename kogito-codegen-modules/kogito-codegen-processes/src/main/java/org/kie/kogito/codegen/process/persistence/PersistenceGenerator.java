@@ -23,6 +23,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.AbstractGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.process.persistence.proto.Proto;
+import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -44,17 +55,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
-import org.kie.kogito.codegen.process.persistence.proto.Proto;
-import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
-
 
 public class PersistenceGenerator extends AbstractGenerator {
 
@@ -67,9 +67,10 @@ public class PersistenceGenerator extends AbstractGenerator {
     protected static final String PATH_NAME = "path";
 
     private static final String KOGITO_PERSISTENCE_FS_PATH_PROP = "kogito.persistence.filesystem.path";
-    
-    private static final String KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE= "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
-    private static final String KOGITO_PROCESS_INSTANCE_FACTORY_IMPL= "KogitoProcessInstancesFactoryImpl";
+
+    private static final String KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE =
+            "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
+    private static final String KOGITO_PROCESS_INSTANCE_FACTORY_IMPL = "KogitoProcessInstancesFactoryImpl";
     private static final String KOGITO_PROCESS_INSTANCE_PACKAGE = "org.kie.kogito.persistence";
     private static final String MONGODB_DB_NAME = "dbName";
     private static final String QUARKUS_PERSISTENCE_MONGODB_NAME_PROP = "quarkus.mongodb.database";
@@ -90,7 +91,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     @Override
     public Collection<GeneratedFile> generate() {
-        if(!context().getAddonsConfig().usePersistence()) {
+        if (!context().getAddonsConfig().usePersistence()) {
             return Collections.emptyList();
         }
 
@@ -107,7 +108,8 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     public String persistenceType() {
-        return context().getApplicationProperty("kogito.persistence.type").orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
+        return context().getApplicationProperty("kogito.persistence.type")
+                .orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
     }
 
     protected Collection<GeneratedFile> infinispanBasedPersistence() {
@@ -115,14 +117,16 @@ public class PersistenceGenerator extends AbstractGenerator {
 
         Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
 
-        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
+        ClassOrInterfaceDeclaration persistenceProviderClazz =
+                new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
+                        .setModifiers(Modifier.Keyword.PUBLIC)
+                        .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
 
-        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
+        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt()
+                .addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
 
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
@@ -131,12 +135,15 @@ public class PersistenceGenerator extends AbstractGenerator {
             context().getDependencyInjectionAnnotator().withInjection(constructor);
 
             FieldDeclaration templateNameField = new FieldDeclaration().addVariable(new VariableDeclarator()
-                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
+                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()),
+                            NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
                     .setName(TEMPLATE_NAME));
-            context().getDependencyInjectionAnnotator().withConfigInjection(templateNameField, "kogito.persistence.infinispan.template");
+            context().getDependencyInjectionAnnotator().withConfigInjection(templateNameField,
+                    "kogito.persistence.infinispan.template");
             // allow to inject template name for the cache
             BlockStmt templateMethodBody = new BlockStmt();
-            templateMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(TEMPLATE_NAME), OR_ELSE).addArgument(new StringLiteralExpr(""))));
+            templateMethodBody.addStatement(new ReturnStmt(
+                    new MethodCallExpr(new NameExpr(TEMPLATE_NAME), OR_ELSE).addArgument(new StringLiteralExpr(""))));
 
             MethodDeclaration templateNameMethod = new MethodDeclaration()
                     .addModifier(Keyword.PUBLIC)
@@ -163,7 +170,8 @@ public class PersistenceGenerator extends AbstractGenerator {
 
             for (CompilationUnit marshallerClazz : marshallers) {
                 String packageName = marshallerClazz.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
-                String clazzName = packageName + "." + marshallerClazz.findFirst(ClassOrInterfaceDeclaration.class).map(c -> c.getName().toString()).get();
+                String clazzName = packageName + "."
+                        + marshallerClazz.findFirst(ClassOrInterfaceDeclaration.class).map(c -> c.getName().toString()).get();
 
                 variableMarshallers.add(clazzName);
 
@@ -187,12 +195,15 @@ public class PersistenceGenerator extends AbstractGenerator {
 
             ClassOrInterfaceType listType = new ClassOrInterfaceType(null, List.class.getCanonicalName());
             BlockStmt marshallersMethodBody = new BlockStmt();
-            VariableDeclarationExpr marshallerList = new VariableDeclarationExpr(new VariableDeclarator(listType, "list", new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ArrayList.class.getCanonicalName()), NodeList.nodeList())));
+            VariableDeclarationExpr marshallerList =
+                    new VariableDeclarationExpr(new VariableDeclarator(listType, "list", new ObjectCreationExpr(null,
+                            new ClassOrInterfaceType(null, ArrayList.class.getCanonicalName()), NodeList.nodeList())));
             marshallersMethodBody.addStatement(marshallerList);
 
             for (String marshallerClazz : variableMarshallers) {
 
-                MethodCallExpr addMarshallerMethod = new MethodCallExpr(new NameExpr("list"), "add").addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, marshallerClazz), NodeList.nodeList()));
+                MethodCallExpr addMarshallerMethod = new MethodCallExpr(new NameExpr("list"), "add").addArgument(
+                        new ObjectCreationExpr(null, new ClassOrInterfaceType(null, marshallerClazz), NodeList.nodeList()));
                 marshallersMethodBody.addStatement(addMarshallerMethod);
 
             }
@@ -229,12 +240,14 @@ public class PersistenceGenerator extends AbstractGenerator {
             context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
 
             FieldDeclaration pathField = new FieldDeclaration().addVariable(new VariableDeclarator()
-                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
+                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()),
+                            NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
                     .setName(PATH_NAME));
             context().getDependencyInjectionAnnotator().withConfigInjection(pathField, KOGITO_PERSISTENCE_FS_PATH_PROP);
             // allow to inject path for the file system storage
             BlockStmt pathMethodBody = new BlockStmt();
-            pathMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(PATH_NAME), OR_ELSE).addArgument(new StringLiteralExpr("/tmp"))));
+            pathMethodBody.addStatement(new ReturnStmt(
+                    new MethodCallExpr(new NameExpr(PATH_NAME), OR_ELSE).addArgument(new StringLiteralExpr("/tmp"))));
 
             MethodDeclaration pathMethod = new MethodDeclaration()
                     .addModifier(Keyword.PUBLIC)
@@ -255,13 +268,14 @@ public class PersistenceGenerator extends AbstractGenerator {
     private Collection<GeneratedFile> mongodbBasedPersistence() {
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
-                                                                                                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL).setModifiers(Modifier.Keyword.PUBLIC)
-                                                                                                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
+                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL).setModifiers(Modifier.Keyword.PUBLIC)
+                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
 
-        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
+        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt()
+                .addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
 
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
@@ -270,24 +284,28 @@ public class PersistenceGenerator extends AbstractGenerator {
             context().getDependencyInjectionAnnotator().withInjection(constructor);
 
             FieldDeclaration dbNameField = new FieldDeclaration().addVariable(new VariableDeclarator()
-                                                                                                      .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(
-                                                                                                                                                                                                                   new ClassOrInterfaceType(null,
-                                                                                                                                                                                                                                            String.class.getCanonicalName()))))
-                                                                                                      .setName(MONGODB_DB_NAME));
+                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()),
+                            NodeList.nodeList(
+                                    new ClassOrInterfaceType(null,
+                                            String.class.getCanonicalName()))))
+                    .setName(MONGODB_DB_NAME));
             //injecting dbName from quarkus/springboot properties else default kogito
             if (context() instanceof QuarkusKogitoBuildContext) {
-                context().getDependencyInjectionAnnotator().withConfigInjection(dbNameField, QUARKUS_PERSISTENCE_MONGODB_NAME_PROP);
+                context().getDependencyInjectionAnnotator().withConfigInjection(dbNameField,
+                        QUARKUS_PERSISTENCE_MONGODB_NAME_PROP);
             } else if (context() instanceof SpringBootKogitoBuildContext) {
-                context().getDependencyInjectionAnnotator().withConfigInjection(dbNameField, SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP);
+                context().getDependencyInjectionAnnotator().withConfigInjection(dbNameField,
+                        SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP);
             }
 
             BlockStmt dbNameMethodBody = new BlockStmt();
-            dbNameMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(MONGODB_DB_NAME), OR_ELSE).addArgument(new StringLiteralExpr("kogito"))));
+            dbNameMethodBody.addStatement(new ReturnStmt(
+                    new MethodCallExpr(new NameExpr(MONGODB_DB_NAME), OR_ELSE).addArgument(new StringLiteralExpr("kogito"))));
             MethodDeclaration dbNameMethod = new MethodDeclaration()
-                                                                  .addModifier(Keyword.PUBLIC)
-                                                                  .setName(MONGODB_DB_NAME)
-                                                                  .setType(String.class)
-                                                                  .setBody(dbNameMethodBody);
+                    .addModifier(Keyword.PUBLIC)
+                    .setName(MONGODB_DB_NAME)
+                    .setType(String.class)
+                    .setBody(dbNameMethodBody);
 
             persistenceProviderClazz.addMember(dbNameField);
             persistenceProviderClazz.addMember(dbNameMethod);
@@ -308,21 +326,25 @@ public class PersistenceGenerator extends AbstractGenerator {
             paramNames.add(new NameExpr(name));
         }
         BlockStmt body = new BlockStmt();
-        ExplicitConstructorInvocationStmt superExp = new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(paramNames));
+        ExplicitConstructorInvocationStmt superExp =
+                new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(paramNames));
         body.addStatement(superExp);
 
         constructor.setBody(body);
         return constructor;
     }
 
-    private Optional<GeneratedFile> generatePersistenceProviderClazz(ClassOrInterfaceDeclaration persistenceProviderClazz, CompilationUnit compilationUnit) {
+    private Optional<GeneratedFile> generatePersistenceProviderClazz(ClassOrInterfaceDeclaration persistenceProviderClazz,
+            CompilationUnit compilationUnit) {
         String pkgName = compilationUnit.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
-        Optional<ClassOrInterfaceDeclaration> firstClazz = persistenceProviderClazz.findFirst(ClassOrInterfaceDeclaration.class);
+        Optional<ClassOrInterfaceDeclaration> firstClazz =
+                persistenceProviderClazz.findFirst(ClassOrInterfaceDeclaration.class);
         Optional<String> firstClazzName = firstClazz.map(c -> c.getName().toString());
         persistenceProviderClazz.getMembers().sort(new BodyDeclarationComparator());
         if (firstClazzName.isPresent()) {
             String clazzName = pkgName + "." + firstClazzName.get();
-            return Optional.of(new GeneratedFile(GeneratedFileType.SOURCE, clazzName.replace('.', '/') + ".java", compilationUnit.toString()));
+            return Optional.of(new GeneratedFile(GeneratedFileType.SOURCE, clazzName.replace('.', '/') + ".java",
+                    compilationUnit.toString()));
         }
         return Optional.empty();
     }

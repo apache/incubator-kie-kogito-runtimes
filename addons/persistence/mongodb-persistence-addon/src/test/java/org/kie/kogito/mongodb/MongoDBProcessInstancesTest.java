@@ -15,10 +15,15 @@
 
 package org.kie.kogito.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
+
 import java.util.Collections;
 import java.util.Optional;
 
-import com.mongodb.client.MongoClient;
 import org.drools.core.io.impl.ClassPathResource;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
@@ -28,11 +33,7 @@ import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
+import com.mongodb.client.MongoClient;
 
 class MongoDBProcessInstancesTest extends TestHelper {
 
@@ -42,7 +43,8 @@ class MongoDBProcessInstancesTest extends TestHelper {
         process.setProcessInstancesFactory(new MongoDBProcessInstancesFactory(getMongoClient()));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance =
+                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());

@@ -77,7 +77,7 @@ public class InterpretedRuleUnit<T extends RuleUnitData> extends AbstractRuleUni
         @SuppressWarnings("unchecked")
         @Override
         public <T extends KogitoEngine> T get(Class<T> clazz) {
-            if(clazz.isAssignableFrom(org.kie.kogito.rules.RuleUnits.class)) {
+            if (clazz.isAssignableFrom(org.kie.kogito.rules.RuleUnits.class)) {
                 return (T) ruleUnits;
             }
             return null;
@@ -89,7 +89,7 @@ public class InterpretedRuleUnit<T extends RuleUnitData> extends AbstractRuleUni
 
         public static class RuleUnits extends AbstractRuleUnits {
             @Override
-            protected RuleUnit<?> create( String fqcn ) {
+            protected RuleUnit<?> create(String fqcn) {
                 throw new UnsupportedOperationException();
             }
         }

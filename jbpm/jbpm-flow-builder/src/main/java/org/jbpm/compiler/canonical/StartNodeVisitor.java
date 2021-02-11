@@ -16,20 +16,6 @@
 
 package org.jbpm.compiler.canonical;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.timer.Timer;
-import org.jbpm.ruleflow.core.factory.StartNodeFactory;
-import org.jbpm.workflow.core.node.StartNode;
-
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
@@ -39,6 +25,21 @@ import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_INTERRUPTIN
 import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TIMER;
 import static org.jbpm.ruleflow.core.factory.StartNodeFactory.METHOD_TRIGGER;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.timer.Timer;
+import org.jbpm.ruleflow.core.factory.StartNodeFactory;
+import org.jbpm.workflow.core.node.StartNode;
+
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+
 public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
 
     @Override
@@ -47,10 +48,13 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
     }
 
     @Override
-    public void visitNode(String factoryField, StartNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, StartNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+    public void visitNode(String factoryField, StartNode node, BlockStmt body, VariableScope variableScope,
+            ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, StartNodeFactory.class, getNodeId(node), getNodeKey(),
+                new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Start"))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_INTERRUPTING, new BooleanLiteralExpr(node.isInterrupting())));
+                .addStatement(
+                        getFactoryMethod(getNodeId(node), METHOD_INTERRUPTING, new BooleanLiteralExpr(node.isInterrupting())));
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
@@ -79,7 +83,8 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
                 String.valueOf(node.getId())).validate();
     }
 
-    protected void handleSignal(StartNode startNode, Map<String, Object> nodeMetaData, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+    protected void handleSignal(StartNode startNode, Map<String, Object> nodeMetaData, BlockStmt body,
+            VariableScope variableScope, ProcessMetaData metadata) {
         if (EVENT_TYPE_SIGNAL.equalsIgnoreCase((String) startNode.getMetaData(TRIGGER_TYPE))) {
             Variable variable = null;
             Map<String, String> variableMapping = startNode.getOutMappings();
@@ -94,7 +99,8 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
 
                 if (variable == null) {
                     // check parent node container
-                    VariableScope vscope = (VariableScope) startNode.resolveContext(VariableScope.VARIABLE_SCOPE, varInfo.getKey());
+                    VariableScope vscope =
+                            (VariableScope) startNode.resolveContext(VariableScope.VARIABLE_SCOPE, varInfo.getKey());
                     variable = vscope.findVariable(varInfo.getKey());
                 }
             } else {
@@ -102,7 +108,8 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
                         new StringLiteralExpr((String) nodeMetaData.get(MESSAGE_TYPE)),
                         new StringLiteralExpr(getOrDefault((String) nodeMetaData.get(TRIGGER_MAPPING), ""))));
             }
-            metadata.addSignal((String) nodeMetaData.get(MESSAGE_TYPE), variable != null ? variable.getType().getStringType() : null);
+            metadata.addSignal((String) nodeMetaData.get(MESSAGE_TYPE),
+                    variable != null ? variable.getType().getStringType() : null);
         } else {
             String triggerMapping = (String) nodeMetaData.get(TRIGGER_MAPPING);
             body.addStatement(getFactoryMethod(getNodeId(startNode), METHOD_TRIGGER,

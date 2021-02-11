@@ -15,11 +15,11 @@
 
 package org.kie.kogito.codegen.api;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.GeneratedFileType.Category;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.GeneratedFileType.Category;
 
 class GeneratedFileTypeTest {
 
@@ -92,8 +92,10 @@ class GeneratedFileTypeTest {
     @Test
     public void equalsOnValue() {
         GeneratedFileType mock = new MockGenericFileType();
-        GeneratedFileType sameType = GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), mock.isCustomizable());
-        GeneratedFileType differentType = GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), !mock.isCustomizable());
+        GeneratedFileType sameType =
+                GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), mock.isCustomizable());
+        GeneratedFileType differentType =
+                GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), !mock.isCustomizable());
 
         // GeneratedFileType equals should only consider values and not actual class
         assertThat(sameType).isEqualTo(mock);
