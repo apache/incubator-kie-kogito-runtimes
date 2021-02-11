@@ -15,11 +15,16 @@
 
 package org.kie.kogito.mongodb;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 
-import com.mongodb.MongoClientSettings;
 import org.bson.BsonBinaryReader;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonWriter;
@@ -35,17 +40,14 @@ import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodec;
 import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodecProvider;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.mongodb.MongoClientSettings;
 
 class ProcessInstanceDocumentCodecProviderTest {
 
     @Test
     void providerTest() {
-        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromProviders(new ProcessInstanceDocumentCodecProvider()));
+        CodecRegistry codecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
+                fromProviders(new ProcessInstanceDocumentCodecProvider()));
         CodecProvider provider = codecRegistry;
         Codec<ProcessInstanceDocument> codec = provider.get(ProcessInstanceDocument.class, codecRegistry);
         assertNotNull(codec, "Codec cannot be null");

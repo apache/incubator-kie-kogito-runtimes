@@ -25,7 +25,7 @@ import org.jbpm.process.core.datatype.DataTypeFactory;
 public class InstanceDataTypeFactory implements DataTypeFactory {
 
     private static final long serialVersionUID = 510l;
-    
+
     private Class<?> dataTypeClass;
     private DataType instance;
 
@@ -40,11 +40,13 @@ public class InstanceDataTypeFactory implements DataTypeFactory {
             } catch (final IllegalAccessException e) {
                 throw new RuntimeException(
                         "Could not create data type for class "
-                                + this.dataTypeClass, e);
+                                + this.dataTypeClass,
+                        e);
             } catch (final InstantiationException e) {
                 throw new RuntimeException(
                         "Could not create data type for class "
-                                + this.dataTypeClass, e);
+                                + this.dataTypeClass,
+                        e);
             }
         }
         return this.instance;

@@ -16,6 +16,11 @@
 
 package org.jbpm.ruleflow.core.factory;
 
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.DroolsAction;
@@ -23,11 +28,6 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.EndNode;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
 
 public class EndNodeFactory extends ExtendedNodeFactory {
 

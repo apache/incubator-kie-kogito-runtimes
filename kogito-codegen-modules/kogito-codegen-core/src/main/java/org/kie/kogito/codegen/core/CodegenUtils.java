@@ -52,7 +52,8 @@ public class CodegenUtils {
         return method(modifier, type, name, NodeList.nodeList(), body);
     }
 
-    public static MethodDeclaration method(Modifier.Keyword modifier, Class<?> type, String name, NodeList<Parameter> parameters, BlockStmt body) {
+    public static MethodDeclaration method(Modifier.Keyword modifier, Class<?> type, String name,
+            NodeList<Parameter> parameters, BlockStmt body) {
         return new MethodDeclaration()
                 .setModifiers(modifier)
                 .setType(type == null ? "void" : type.getCanonicalName())

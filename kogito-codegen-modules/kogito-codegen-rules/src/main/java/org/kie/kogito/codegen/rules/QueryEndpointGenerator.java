@@ -16,11 +16,24 @@
 
 package org.kie.kogito.codegen.rules;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static com.github.javaparser.StaticJavaParser.parseStatement;
+import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
+
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.drools.compiler.compiler.DroolsError;
+import org.drools.modelcompiler.builder.QueryModel;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
@@ -43,18 +56,6 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
-import org.drools.compiler.compiler.DroolsError;
-import org.drools.modelcompiler.builder.QueryModel;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
-
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static com.github.javaparser.StaticJavaParser.parseStatement;
-import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classNameToReferenceType;
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class QueryEndpointGenerator implements RuleFileGenerator {
 
@@ -69,8 +70,8 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
     private final TemplatedGenerator generator;
 
     public QueryEndpointGenerator(RuleUnitDescription ruleUnit,
-                                  QueryModel query,
-                                  KogitoBuildContext context) {
+            QueryModel query,
+            KogitoBuildContext context) {
         this.ruleUnit = ruleUnit;
         this.query = query;
         this.name = toCamelCase(query.getName());
@@ -121,7 +122,8 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
 
         @Override
         public String getMessage() {
-            return "Query " + query.getName() + " has no bound variable. At least one binding is required to determine the value returned by this query";
+            return "Query " + query.getName()
+                    + " has no bound variable. At least one binding is required to determine the value returned by this query";
         }
 
         @Override
@@ -137,14 +139,16 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
 
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
         clazz.setName(targetClassName);
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
         FieldDeclaration ruleUnitDeclaration = clazz
                 .getFieldByName("ruleUnit")
-                .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
         setUnitGeneric(ruleUnitDeclaration.getElementType());
 
         String returnType = getReturnType(clazz);
@@ -204,17 +208,20 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
         returnMethodSingle.findAll(VariableDeclarator.class).forEach(decl -> decl.setType(toNonPrimitiveType(returnType)));
 
         if (context.getAddonsConfig().useMonitoring()) {
-            addMonitoringToResource(cu, new MethodDeclaration[]{queryMethod, queryMethodSingle}, endpointName);
+            addMonitoringToResource(cu, new MethodDeclaration[] { queryMethod, queryMethodSingle }, endpointName);
         }
     }
 
     private void addMonitoringToResource(CompilationUnit cu, MethodDeclaration[] methods, String nameURL) {
-        cu.addImport(new ImportDeclaration(new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
+        cu.addImport(new ImportDeclaration(
+                new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
 
         for (MethodDeclaration md : methods) {
-            BlockStmt body = md.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
+            BlockStmt body =
+                    md.getBody().orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"));
             NodeList<Statement> statements = body.getStatements();
-            ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a return statement!"));
+            ReturnStmt returnStmt = body.findFirst(ReturnStmt.class)
+                    .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a return statement!"));
             statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
             String endpoint = nameURL;
@@ -224,7 +231,9 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
                     endpoint += path.get();
                 }
             }
-            statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + endpoint + "\", endTime - startTime);"), returnStmt);
+            statements.addBefore(parseStatement(
+                    "SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + endpoint + "\", endTime - startTime);"),
+                    returnStmt);
             md.setBody(wrapBodyAddingExceptionLogging(body, nameURL));
         }
     }
@@ -240,8 +249,7 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
                 String.format(
                         "SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());",
                         nameURL,
-                        exceptionName)
-        ));
+                        exceptionName)));
         cb.addStatement(new ThrowStmt(new NameExpr(exceptionName)));
         cc.setBody(cb);
         ts.setCatchClauses(new NodeList<>(cc));

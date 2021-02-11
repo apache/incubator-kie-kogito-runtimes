@@ -20,9 +20,8 @@ import java.util.function.Consumer;
 
 import org.kie.kogito.uow.WorkUnit;
 
-
 public class BaseWorkUnit implements WorkUnit<Object> {
-    
+
     private Object data;
     private Consumer<Object> action;
     private Consumer<Object> compensation;
@@ -31,7 +30,7 @@ public class BaseWorkUnit implements WorkUnit<Object> {
         this.data = data;
         this.action = action;
     }
-    
+
     public BaseWorkUnit(Object data, Consumer<Object> action, Consumer<Object> compensation) {
         this.data = data;
         this.action = action;
@@ -55,5 +54,4 @@ public class BaseWorkUnit implements WorkUnit<Object> {
         }
     }
 
-    
 }

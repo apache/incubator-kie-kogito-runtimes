@@ -15,6 +15,9 @@
 
 package org.kie.kogito.codegen.process.persistence;
 
+import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
+import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import org.drools.core.util.StringUtils;
+import org.infinispan.protostream.EnumMarshaller;
+import org.infinispan.protostream.FileDescriptorSource;
+import org.infinispan.protostream.SerializationContext;
+import org.infinispan.protostream.config.Configuration;
+import org.infinispan.protostream.descriptors.Descriptor;
+import org.infinispan.protostream.descriptors.EnumDescriptor;
+import org.infinispan.protostream.descriptors.FieldDescriptor;
+import org.infinispan.protostream.descriptors.FileDescriptor;
+import org.infinispan.protostream.descriptors.Option;
+import org.infinispan.protostream.impl.SerializationContextImpl;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -45,24 +64,6 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.drools.core.util.StringUtils;
-import org.infinispan.protostream.EnumMarshaller;
-import org.infinispan.protostream.FileDescriptorSource;
-import org.infinispan.protostream.SerializationContext;
-import org.infinispan.protostream.config.Configuration;
-import org.infinispan.protostream.descriptors.Descriptor;
-import org.infinispan.protostream.descriptors.EnumDescriptor;
-import org.infinispan.protostream.descriptors.FieldDescriptor;
-import org.infinispan.protostream.descriptors.FileDescriptor;
-import org.infinispan.protostream.descriptors.Option;
-import org.infinispan.protostream.impl.SerializationContextImpl;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-
-import static com.github.javaparser.ast.Modifier.Keyword.PUBLIC;
-import static com.github.javaparser.ast.expr.BinaryExpr.Operator.EQUALS;
 
 public class MarshallerGenerator {
 
@@ -96,7 +97,8 @@ public class MarshallerGenerator {
         CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
 
         SerializationContext serializationContext = new SerializationContextImpl(Configuration.builder().build());
-        serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(context.getClassLoader(), "kogito-types.proto"));
+        serializationContext
+                .registerProtoFiles(FileDescriptorSource.fromResources(context.getClassLoader(), "kogito-types.proto"));
         serializationContext.registerProtoFiles(proto);
 
         Map<String, FileDescriptor> descriptors = serializationContext.getFileDescriptors();
@@ -119,33 +121,44 @@ public class MarshallerGenerator {
                 String javaType = packageFromOption(d, msg) + "." + msg.getName();
 
                 clazzFile.setPackageDeclaration(d.getPackage());
-                ClassOrInterfaceDeclaration clazz = clazzFile.findFirst(ClassOrInterfaceDeclaration.class, sl -> true).orElseThrow(() -> new RuntimeException("No class found"));
+                ClassOrInterfaceDeclaration clazz = clazzFile.findFirst(ClassOrInterfaceDeclaration.class, sl -> true)
+                        .orElseThrow(() -> new RuntimeException("No class found"));
                 clazz.setName(msg.getName() + "MessageMarshaller");
                 clazz.getImplementedTypes(0).setTypeArguments(NodeList.nodeList(new ClassOrInterfaceType(null, javaType)));
 
-                MethodDeclaration getJavaClassMethod = clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getJavaClass")).orElseThrow(() -> new RuntimeException("No getJavaClass method found"));
-                getJavaClassMethod.setType(new ClassOrInterfaceType(null, new SimpleName(Class.class.getName()), NodeList.nodeList(new ClassOrInterfaceType(null, javaType))));
+                MethodDeclaration getJavaClassMethod =
+                        clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getJavaClass"))
+                                .orElseThrow(() -> new RuntimeException("No getJavaClass method found"));
+                getJavaClassMethod.setType(new ClassOrInterfaceType(null, new SimpleName(Class.class.getName()),
+                        NodeList.nodeList(new ClassOrInterfaceType(null, javaType))));
                 BlockStmt getJavaClassMethodBody = new BlockStmt();
                 getJavaClassMethodBody.addStatement(new ReturnStmt(new NameExpr(javaType + ".class")));
                 getJavaClassMethod.setBody(getJavaClassMethodBody);
 
-                MethodDeclaration getTypeNameMethod = clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getTypeName")).orElseThrow(() -> new RuntimeException("No getTypeName method found"));
+                MethodDeclaration getTypeNameMethod =
+                        clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("getTypeName"))
+                                .orElseThrow(() -> new RuntimeException("No getTypeName method found"));
                 BlockStmt getTypeNameMethodBody = new BlockStmt();
                 getTypeNameMethodBody.addStatement(new ReturnStmt(new StringLiteralExpr(msg.getFullName())));
                 getTypeNameMethod.setBody(getTypeNameMethodBody);
 
-                MethodDeclaration readFromMethod = clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("readFrom")).orElseThrow(() -> new RuntimeException("No readFrom method found"));
+                MethodDeclaration readFromMethod =
+                        clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("readFrom"))
+                                .orElseThrow(() -> new RuntimeException("No readFrom method found"));
                 readFromMethod.setType(javaType);
                 readFromMethod.setBody(new BlockStmt());
 
-                MethodDeclaration writeToMethod = clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("writeTo")).orElseThrow(() -> new RuntimeException("No writeTo method found"));
+                MethodDeclaration writeToMethod =
+                        clazz.findFirst(MethodDeclaration.class, md -> md.getNameAsString().equals("writeTo"))
+                                .orElseThrow(() -> new RuntimeException("No writeTo method found"));
                 writeToMethod.getParameter(1).setType(javaType);
                 writeToMethod.setBody(new BlockStmt());
 
                 ClassOrInterfaceType classType = new ClassOrInterfaceType(null, javaType);
 
                 // read method
-                VariableDeclarationExpr instance = new VariableDeclarationExpr(new VariableDeclarator(classType, "value", new ObjectCreationExpr(null, classType, NodeList.nodeList())));
+                VariableDeclarationExpr instance = new VariableDeclarationExpr(new VariableDeclarator(classType, "value",
+                        new ObjectCreationExpr(null, classType, NodeList.nodeList())));
                 readFromMethod.getBody().ifPresent(b -> b.addStatement(instance));
 
                 for (FieldDescriptor field : msg.getFields()) {
@@ -160,7 +173,8 @@ public class MarshallerGenerator {
                         String accessor = protoStreamMethodType.equals("Boolean") ? "is" : "get";
                         write = new MethodCallExpr(new NameExpr("writer"), "write" + protoStreamMethodType)
                                 .addArgument(new StringLiteralExpr(field.getName()))
-                                .addArgument(new MethodCallExpr(new NameExpr("t"), accessor + StringUtils.ucFirst(field.getName())));
+                                .addArgument(
+                                        new MethodCallExpr(new NameExpr("t"), accessor + StringUtils.ucFirst(field.getName())));
                     } else {
                         // custom types 
                         String customTypeName = javaTypeForMessage(d, field.getTypeName(), serializationContext);
@@ -172,11 +186,14 @@ public class MarshallerGenerator {
 
                             read = new MethodCallExpr(new NameExpr("reader"), "readCollection")
                                     .addArgument(new StringLiteralExpr(field.getName()))
-                                    .addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ArrayList.class.getCanonicalName()), NodeList.nodeList()))
+                                    .addArgument(new ObjectCreationExpr(null,
+                                            new ClassOrInterfaceType(null, ArrayList.class.getCanonicalName()),
+                                            NodeList.nodeList()))
                                     .addArgument(new NameExpr(customTypeName + ".class"));
                             write = new MethodCallExpr(new NameExpr("writer"), "writeCollection")
                                     .addArgument(new StringLiteralExpr(field.getName()))
-                                    .addArgument(new MethodCallExpr(new NameExpr("t"), "get" + StringUtils.ucFirst(field.getName())))
+                                    .addArgument(
+                                            new MethodCallExpr(new NameExpr("t"), "get" + StringUtils.ucFirst(field.getName())))
                                     .addArgument(new NameExpr(customTypeName + ".class"));
                         } else {
 
@@ -185,12 +202,15 @@ public class MarshallerGenerator {
                                     .addArgument(new NameExpr(customTypeName + ".class"));
                             write = new MethodCallExpr(new NameExpr("writer"), "writeObject")
                                     .addArgument(new StringLiteralExpr(field.getName()))
-                                    .addArgument(new MethodCallExpr(new NameExpr("t"), "get" + StringUtils.ucFirst(field.getName())))
+                                    .addArgument(
+                                            new MethodCallExpr(new NameExpr("t"), "get" + StringUtils.ucFirst(field.getName())))
                                     .addArgument(new NameExpr(customTypeName + ".class"));
                         }
                     }
 
-                    MethodCallExpr setter = new MethodCallExpr(new NameExpr("value"), "set" + StringUtils.ucFirst(field.getName())).addArgument(read);
+                    MethodCallExpr setter =
+                            new MethodCallExpr(new NameExpr("value"), "set" + StringUtils.ucFirst(field.getName()))
+                                    .addArgument(read);
                     readFromMethod.getBody().ifPresent(b -> b.addStatement(setter));
 
                     // write method
@@ -204,7 +224,7 @@ public class MarshallerGenerator {
                 clazz.getMembers().sort(new BodyDeclarationComparator());
             }
 
-            for(EnumDescriptor msg : d.getEnumTypes()) {
+            for (EnumDescriptor msg : d.getEnumTypes()) {
                 CompilationUnit compilationUnit = new CompilationUnit();
                 units.add(compilationUnit);
 
@@ -218,8 +238,10 @@ public class MarshallerGenerator {
                         .setType(String.class)
                         .setBody(new BlockStmt().addStatement(new ReturnStmt(new StringLiteralExpr(msg.getFullName()))));
                 classDeclaration.addMethod("getJavaClass", PUBLIC)
-                        .setType(new ClassOrInterfaceType(null, new SimpleName(Class.class.getName()), NodeList.nodeList(new ClassOrInterfaceType(null, javaType))))
-                        .setBody(new BlockStmt().addStatement(new ReturnStmt(new ClassExpr(new ClassOrInterfaceType(null, javaType)))));
+                        .setType(new ClassOrInterfaceType(null, new SimpleName(Class.class.getName()),
+                                NodeList.nodeList(new ClassOrInterfaceType(null, javaType))))
+                        .setBody(new BlockStmt()
+                                .addStatement(new ReturnStmt(new ClassExpr(new ClassOrInterfaceType(null, javaType)))));
 
                 BlockStmt encodeBlock = new BlockStmt().addStatement(
                         new IfStmt(
@@ -297,8 +319,8 @@ public class MarshallerGenerator {
                 }
             }
             List<EnumDescriptor> enums = entry.getValue().getEnumTypes();
-            for(EnumDescriptor msg : enums) {
-                if(messageName.equals(msg.getName())) {
+            for (EnumDescriptor msg : enums) {
+                if (messageName.equals(msg.getName())) {
                     return packageFromOption(d, msg) + "." + messageName;
                 } else if (messageName.equals(msg.getFullName())) {
                     return packageFromOption(d, msg) + "." + msg.getName();

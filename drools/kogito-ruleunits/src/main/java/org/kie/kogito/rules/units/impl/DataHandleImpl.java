@@ -27,15 +27,17 @@ public class DataHandleImpl implements DataHandle {
     private final long id = counter.incrementAndGet();
     private final Object object;
 
-    public DataHandleImpl( Object object ) {
+    public DataHandleImpl(Object object) {
         this.object = object;
     }
 
     @Override
-    public boolean equals( Object o ) {
-        if ( this == o ) return true;
-        if ( o == null || getClass() != o.getClass() ) return false;
-        DataHandleImpl that = ( DataHandleImpl ) o;
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        DataHandleImpl that = (DataHandleImpl) o;
         return id == that.id;
     }
 
@@ -50,9 +52,8 @@ public class DataHandleImpl implements DataHandle {
 
     @Override
     public int hashCode() {
-        return Objects.hash( id );
+        return Objects.hash(id);
     }
-
 
     @Override
     public String toString() {

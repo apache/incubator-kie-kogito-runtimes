@@ -16,6 +16,9 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,9 +30,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.Sig;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 public class SubProcessTest extends AbstractCodegenTest {
 

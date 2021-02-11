@@ -26,7 +26,8 @@ import org.jbpm.process.core.context.AbstractContext;
 public class VariableScope extends AbstractContext {
 
     public static final String VARIABLE_STRICT_ENABLED_PROPERTY = "org.jbpm.variable.strict";
-    private static boolean variableStrictEnabled = Boolean.parseBoolean(System.getProperty(VARIABLE_STRICT_ENABLED_PROPERTY, Boolean.FALSE.toString()));
+    private static boolean variableStrictEnabled =
+            Boolean.parseBoolean(System.getProperty(VARIABLE_STRICT_ENABLED_PROPERTY, Boolean.FALSE.toString()));
 
     public static final String VARIABLE_SCOPE = "VariableScope";
 

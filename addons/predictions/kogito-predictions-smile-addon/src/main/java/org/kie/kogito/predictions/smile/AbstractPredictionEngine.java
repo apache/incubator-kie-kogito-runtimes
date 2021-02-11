@@ -24,7 +24,8 @@ public abstract class AbstractPredictionEngine {
     protected AttributeType outcomeFeatureType;
     protected double confidenceThreshold;
 
-    public AbstractPredictionEngine(Map<String, AttributeType> inputFeatures, String outputFeatureName, AttributeType outputFeatureType, double confidenceThreshold) {
+    public AbstractPredictionEngine(Map<String, AttributeType> inputFeatures, String outputFeatureName,
+            AttributeType outputFeatureType, double confidenceThreshold) {
         this.inputFeatures = inputFeatures;
         this.outcomeFeatureName = outputFeatureName;
         this.outcomeFeatureType = outputFeatureType;

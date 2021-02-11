@@ -48,7 +48,8 @@ public class DecisionTracingCollector {
     private final Supplier<TerminationDetector> terminationDetectorSupplier;
     private final ConfigBean configBean;
 
-    public DecisionTracingCollector(Consumer<String> payloadConsumer, BiFunction<String, String, DMNModel> modelSupplier, ConfigBean configBean) {
+    public DecisionTracingCollector(Consumer<String> payloadConsumer, BiFunction<String, String, DMNModel> modelSupplier,
+            ConfigBean configBean) {
         this(new DefaultAggregator(), payloadConsumer, modelSupplier, CounterTerminationDetector::new, configBean);
     }
 
@@ -57,8 +58,7 @@ public class DecisionTracingCollector {
             Consumer<String> payloadConsumer,
             BiFunction<String, String, DMNModel> modelSupplier,
             Supplier<TerminationDetector> terminationDetectorSupplier,
-            ConfigBean configBean
-    ) {
+            ConfigBean configBean) {
         this.cacheMap = new ConcurrentHashMap<>();
         this.terminationDetectorMap = new ConcurrentHashMap<>();
         this.aggregator = aggregator;
@@ -69,7 +69,8 @@ public class DecisionTracingCollector {
     }
 
     public void addEvent(EvaluateEvent event) {
-        LOG.trace("Received {}(executionId: {}, modelName: {}, modelNamespace: {})", event.getType(), event.getExecutionId(), event.getModelName(), event.getModelNamespace());
+        LOG.trace("Received {}(executionId: {}, modelName: {}, modelNamespace: {})", event.getType(), event.getExecutionId(),
+                event.getModelName(), event.getModelNamespace());
 
         String executionId = event.getExecutionId();
         if (!cacheMap.containsKey(executionId)) {

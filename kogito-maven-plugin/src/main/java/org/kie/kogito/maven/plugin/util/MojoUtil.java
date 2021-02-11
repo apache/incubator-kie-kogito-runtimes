@@ -16,6 +16,8 @@
 
 package org.kie.kogito.maven.plugin.util;
 
+import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -39,12 +41,10 @@ import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
 
-import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
-
 public final class MojoUtil {
 
     public static Set<URL> getProjectFiles(final MavenProject mavenProject,
-                                           final List<InternalKieModule> kmoduleDeps)
+            final List<InternalKieModule> kmoduleDeps)
             throws DependencyResolutionRequiredException, IOException {
         final Set<URL> urls = new HashSet<>();
         for (final String element : mavenProject.getCompileClasspathElements()) {
@@ -61,9 +61,9 @@ public final class MojoUtil {
     }
 
     public static ClassLoader createProjectClassLoader(final ClassLoader parentClassLoader,
-                                                       final MavenProject mavenProject,
-                                                       final File outputDirectory,
-                                                       final List<InternalKieModule> kmoduleDeps) throws MojoExecutionException {
+            final MavenProject mavenProject,
+            final File outputDirectory,
+            final List<InternalKieModule> kmoduleDeps) throws MojoExecutionException {
         try {
             final Set<URL> urls = getProjectFiles(mavenProject, kmoduleDeps);
             urls.add(outputDirectory.toURI().toURL());
@@ -75,14 +75,14 @@ public final class MojoUtil {
     }
 
     private static void populateURLsFromJarArtifact(final Set<URL> toPopulate, final Artifact artifact,
-                                                    final List<InternalKieModule> kmoduleDeps) throws IOException {
+            final List<InternalKieModule> kmoduleDeps) throws IOException {
         final File file = artifact.getFile();
         if (file != null && file.isFile()) {
             toPopulate.add(file.toURI().toURL());
             final KieModuleModel depModel = getDependencyKieModel(file);
             if (kmoduleDeps != null && depModel != null) {
                 final ReleaseId releaseId = new ReleaseIdImpl(artifact.getGroupId(), artifact.getArtifactId(),
-                                                              artifact.getVersion());
+                        artifact.getVersion());
                 kmoduleDeps.add(new ZipKieModule(releaseId, depModel, file));
             }
         }
@@ -90,7 +90,7 @@ public final class MojoUtil {
 
     private static KieModuleModel getDependencyKieModel(final File jar) throws IOException {
         try (final ZipFile zipFile = new ZipFile(jar)) {
-            final ZipEntry zipEntry = zipFile.getEntry( KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
+            final ZipEntry zipEntry = zipFile.getEntry(KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
             if (zipEntry != null) {
                 final KieModuleModel kieModuleModel = KogitoKieModuleModelImpl.fromXML(zipFile.getInputStream(zipEntry));
                 setDefaultsforEmptyKieModule(kieModuleModel);

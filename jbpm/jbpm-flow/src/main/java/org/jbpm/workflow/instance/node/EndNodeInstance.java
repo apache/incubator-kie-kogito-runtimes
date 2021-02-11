@@ -16,6 +16,10 @@
 
 package org.jbpm.workflow.instance.node;
 
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.workflow.core.node.EndNode.PROCESS_SCOPE;
+import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+
 import java.util.Date;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
@@ -25,10 +29,6 @@ import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-
-import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
-import static org.jbpm.workflow.core.node.EndNode.PROCESS_SCOPE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
 
 /**
  * Runtime counterpart of an end node.
@@ -42,7 +42,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
     }
 
     @Override
-    public void internalTrigger( KogitoNodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
@@ -65,7 +65,8 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
                     getProcessInstance().setState(STATE_COMPLETED);
                 } else {
                     while (!getNodeInstanceContainer().getNodeInstances().isEmpty()) {
-                        ((org.jbpm.workflow.instance.NodeInstance) getNodeInstanceContainer().getNodeInstances().iterator().next()).cancel();
+                        ((org.jbpm.workflow.instance.NodeInstance) getNodeInstanceContainer().getNodeInstances().iterator()
+                                .next()).cancel();
                     }
                     ((NodeInstanceContainer) getNodeInstanceContainer()).nodeInstanceCompleted(this, null);
                 }

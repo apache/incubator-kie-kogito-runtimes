@@ -16,9 +16,9 @@
 
 package org.kie.kogito.tracing.decision.event.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class MessageExceptionField {
 

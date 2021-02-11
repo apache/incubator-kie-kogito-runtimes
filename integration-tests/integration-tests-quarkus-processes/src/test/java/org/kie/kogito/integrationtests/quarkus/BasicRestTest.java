@@ -16,23 +16,24 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
@@ -49,22 +50,22 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
                 .header("Location", not(emptyOrNullString()))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .get("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
@@ -79,15 +80,15 @@ class BasicRestTest {
         String id = given()
                 .contentType(ContentType.JSON)
                 .queryParam("businessKey", businessKey)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         // UUID is no longer the BusinessKey or generated from it
@@ -97,9 +98,9 @@ class BasicRestTest {
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .get("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
@@ -112,10 +113,10 @@ class BasicRestTest {
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .get("/AdHocFragments/FOO")
-            .then()
+                .then()
                 .statusCode(404);
     }
 
@@ -126,25 +127,25 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
-                .header("Location",not(emptyOrNullString()))
+                .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         // Update the previously model
         params.put("var1", "Gonzo");
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .put("/AdHocFragments/{customId}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Gonzo"));
@@ -157,23 +158,23 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .delete("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
@@ -181,10 +182,10 @@ class BasicRestTest {
         //Resource already deleted
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .delete("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(404);
     }
 
@@ -195,21 +196,21 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
-            .when()
-            .get("/AdHocFragments/{id}/tasks", id)
-            .then()
-            .statusCode(200)
-            .body("$.size", is(1))
-            .body("[0].name", is("Task"));
+                .when()
+                .get("/AdHocFragments/{id}/tasks", id)
+                .then()
+                .statusCode(200)
+                .body("$.size", is(1))
+                .body("[0].name", is("Task"));
     }
 }

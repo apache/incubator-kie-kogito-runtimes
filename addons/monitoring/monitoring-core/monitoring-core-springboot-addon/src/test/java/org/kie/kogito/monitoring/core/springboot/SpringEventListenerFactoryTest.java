@@ -14,12 +14,12 @@
  */
 package org.kie.kogito.monitoring.core.springboot;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.process.MonitoringProcessEventListenerConfig;
 import org.kie.kogito.monitoring.core.common.rule.RuleMetricsListenerConfig;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class SpringEventListenerFactoryTest {
 

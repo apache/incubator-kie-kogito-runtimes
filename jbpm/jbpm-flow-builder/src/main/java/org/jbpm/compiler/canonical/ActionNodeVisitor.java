@@ -16,14 +16,16 @@
 
 package org.jbpm.compiler.canonical;
 
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
+import static org.jbpm.ruleflow.core.factory.ActionNodeFactory.METHOD_ACTION;
+
 import java.util.List;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.LambdaExpr;
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.UnknownType;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -34,13 +36,12 @@ import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 
-import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
-import static org.jbpm.ruleflow.core.factory.ActionNodeFactory.METHOD_ACTION;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.LambdaExpr;
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.UnknownType;
 
 public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
 
@@ -52,12 +53,15 @@ public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
     }
 
     @Override
-    public void visitNode(String factoryField, ActionNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+    public void visitNode(String factoryField, ActionNode node, BlockStmt body, VariableScope variableScope,
+            ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, ActionNodeFactory.class, getNodeId(node), getNodeKey(),
+                new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Script"));
 
         if (isIntermediateCompensation(node)) {
-            ProcessInstanceCompensationAction action = (ProcessInstanceCompensationAction) node.getAction().getMetaData(Metadata.ACTION);
+            ProcessInstanceCompensationAction action =
+                    (ProcessInstanceCompensationAction) node.getAction().getMetaData(Metadata.ACTION);
             String compensateNode = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + metadata.getProcessId();
             if (action != null) {
                 compensateNode = action.getActivityRef();
@@ -68,12 +72,14 @@ public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
             LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata);
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else if (node.getMetaData(REF) != null && EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
-            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String)node.getMetaData(REF),
-                (String)node.getMetaData(VARIABLE), (String) node.getMetaData(CUSTOM_SCOPE))));
+            body.addStatement(
+                    getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String) node.getMetaData(REF),
+                            (String) node.getMetaData(VARIABLE), (String) node.getMetaData(CUSTOM_SCOPE))));
         } else {
             String consequence = getActionConsequence(node.getAction());
             if (consequence == null || consequence.trim().isEmpty()) {
-                throw new IllegalStateException("Action node " + node.getId() + " name " + node.getName() + " has no action defined");
+                throw new IllegalStateException(
+                        "Action node " + node.getId() + " name " + node.getName() + " has no action defined");
             }
             BlockStmt actionBody = new BlockStmt();
             List<Variable> variables = variableScope.getVariables();
@@ -87,8 +93,7 @@ public class ActionNodeVisitor extends AbstractNodeVisitor<ActionNode> {
 
             LambdaExpr lambda = new LambdaExpr(
                     new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
-                    actionBody
-            );
+                    actionBody);
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         }
         visitMetaData(node.getMetaData(), body, getNodeId(node));

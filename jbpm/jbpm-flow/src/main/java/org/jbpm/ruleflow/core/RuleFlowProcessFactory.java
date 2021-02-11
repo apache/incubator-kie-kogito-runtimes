@@ -16,6 +16,16 @@
 
 package org.jbpm.ruleflow.core;
 
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
+import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
+import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
+import static org.jbpm.ruleflow.core.Metadata.SIGNAL_NAME;
+import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DATE;
+import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,16 +60,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.jbpm.ruleflow.core.Metadata.ACTION;
-import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
-import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
-import static org.jbpm.ruleflow.core.Metadata.SIGNAL_NAME;
-import static org.jbpm.ruleflow.core.Metadata.TIME_CYCLE;
-import static org.jbpm.ruleflow.core.Metadata.TIME_DATE;
-import static org.jbpm.ruleflow.core.Metadata.TIME_DURATION;
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_EXIT;
-
 public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
 
     public static final String METHOD_NAME = "name";
@@ -74,7 +74,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     public static final String METHOD_ADD_COMPENSATION_CONTEXT = "addCompensationContext";
 
     private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
-
 
     public static RuleFlowProcessFactory createProcess(String id) {
         return new RuleFlowProcessFactory(id);
@@ -156,7 +155,8 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
 
-    public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
+    public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName,
+            Object metaDataValue) {
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
@@ -247,7 +247,8 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
             if (node instanceof EventNode) {
                 final String attachedTo = (String) node.getMetaData().get(ATTACHED_TO);
                 if (attachedTo != null) {
-                    Node attachedNode = findNodeByIdOrUniqueIdInMetadata(nodeContainer, attachedTo, "Could not find node to attach to: " + attachedTo);
+                    Node attachedNode = findNodeByIdOrUniqueIdInMetadata(nodeContainer, attachedTo,
+                            "Could not find node to attach to: " + attachedTo);
                     for (EventFilter filter : ((EventNode) node).getEventFilters()) {
                         String type = ((EventTypeFilter) filter).getType();
                         if (type.startsWith("Timer-")) {
@@ -281,7 +282,8 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
             }
             timer.setDelay(timeCycle);
             timer.setTimeType(Timer.TIME_CYCLE);
-            compositeNode.addTimer(timer, timerAction("Timer-" + attachedTo + "-" + timeCycle + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId()));
+            compositeNode.addTimer(timer, timerAction("Timer-" + attachedTo + "-" + timeCycle
+                    + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId()));
         } else if (timeDate != null) {
             timer.setDate(timeDate);
             timer.setTimeType(Timer.TIME_DATE);
@@ -317,7 +319,8 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     protected DroolsAction timerAction(String type) {
         DroolsAction signal = new DroolsAction();
 
-        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type, (( KogitoNodeInstance ) kcontext.getNodeInstance()).getStringId());
+        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type,
+                ((KogitoNodeInstance) kcontext.getNodeInstance()).getStringId());
         signal.wire(action);
 
         return signal;

@@ -15,15 +15,16 @@
 
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.GeneratedFile;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 class AbstractProtoGeneratorTest {
 

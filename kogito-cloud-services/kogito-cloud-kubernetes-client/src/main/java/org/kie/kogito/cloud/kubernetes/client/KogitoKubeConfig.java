@@ -25,15 +25,18 @@ import io.fabric8.kubernetes.client.dsl.base.OperationSupport;
 import okhttp3.OkHttpClient;
 
 /**
- * Wraps the Kubernetes Client setup and configuration, exposing infrastructure components to connect to a Kubernetes cluster reliably. 
+ * Wraps the Kubernetes Client setup and configuration, exposing infrastructure components to connect to a Kubernetes cluster
+ * reliably.
  * Most used when there's a need to customize the Fabric8 Kubernetes Client.
  */
 public final class KogitoKubeConfig {
 
     public static final String KNATIVE_ISTIO_NAMESPACE = "istio-system";
     private static final String NAMESPACE_REPLACE = "@ns@";
-    private static final String KNATIVE_SERVICE_SERVICE_URL = "apis/serving.knative.dev/v1alpha1/namespaces/" + NAMESPACE_REPLACE + "/services";
-    private static final String KNATIVE_ISTIO_GATEWAY_URL = "api/v1/namespaces/" + KNATIVE_ISTIO_NAMESPACE + "/services/istio-ingressgateway";
+    private static final String KNATIVE_SERVICE_SERVICE_URL =
+            "apis/serving.knative.dev/v1alpha1/namespaces/" + NAMESPACE_REPLACE + "/services";
+    private static final String KNATIVE_ISTIO_GATEWAY_URL =
+            "api/v1/namespaces/" + KNATIVE_ISTIO_NAMESPACE + "/services/istio-ingressgateway";
 
     private KubernetesClient kubernetesClient;
 
@@ -44,7 +47,8 @@ public final class KogitoKubeConfig {
     }
 
     /**
-     * Highly customizable config client. Most used in integration tests. 90% of the time you won't need to use this constructor.
+     * Highly customizable config client. Most used in integration tests. 90% of the time you won't need to use this
+     * constructor.
      * 
      * @param kubernetesClient
      */

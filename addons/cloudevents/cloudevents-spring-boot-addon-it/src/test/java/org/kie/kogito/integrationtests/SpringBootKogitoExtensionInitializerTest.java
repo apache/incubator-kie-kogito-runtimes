@@ -15,16 +15,17 @@
  */
 package org.kie.kogito.integrationtests;
 
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.app.KogitoSpringbootApplication;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 public class SpringBootKogitoExtensionInitializerTest {
