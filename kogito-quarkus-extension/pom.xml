@@ -30,11 +30,14 @@
 
   <modules>
     <module>bom</module>
-    <module>deployment</module>
-    <module>runtime</module>
     <module>integration-test</module>
     <module>integration-test-hot-reload</module>
     <module>integration-test-legacy</module>
+    <module>kogito-quarkus-extension-common</module>
+    <module>kogito-quarkus-extension</module>
+    <module>kogito-quarkus-rules-extension</module>
+    <module>kogito-quarkus-decisions-extension</module>
+    <module>kogito-quarkus-predictions-extension</module>
   </modules>
 
   <build>
