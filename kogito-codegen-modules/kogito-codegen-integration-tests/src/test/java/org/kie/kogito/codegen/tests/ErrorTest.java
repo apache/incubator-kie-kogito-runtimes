@@ -58,12 +58,13 @@ public class ErrorTest extends AbstractCodegenTest {
 
     @Test
     void testEndErrorWithEventSubprocess() throws Exception {
-        testErrorInSubprocess("error/EndErrorWithEventSubprocess.bpmn2");
+        testErrorInSubprocess("error/EndErrorWithEventSubprocess.bpmn2", "EndErrorWithEventSubprocess");
     }
 
     @Test
     void testEndErrorInSubprocessWithEventSubprocess() throws Exception {
-        testErrorInSubprocess("error/EndErrorInSubprocessWithEventSubprocess.bpmn2");
+        testErrorInSubprocess("error/EndErrorInSubprocessWithEventSubprocess.bpmn2",
+                              "EndErrorInSubprocessWithEventSubprocess");
     }
 
     private List<String> completedNodesListener(Application app) {
@@ -77,13 +78,13 @@ public class ErrorTest extends AbstractCodegenTest {
         return completedIds;
     }
 
-    private void testErrorInSubprocess(String processPath) throws Exception {
+    private void testErrorInSubprocess(String processPath, String processId) throws Exception {
         Application app = generateCodeProcessesOnly(processPath);
         assertThat(app).isNotNull();
 
         List<String> completedNames = completedNodesListener(app);
 
-        Process<? extends Model> p = app.get(Processes.class).processById("EndErrorWithEventSubprocess");
+        Process<? extends Model> p = app.get(Processes.class).processById(processId);
         ProcessInstance<?> processInstance = p.createInstance(p.createModel());
 
         assertState(processInstance, ProcessInstance.STATE_PENDING);
