@@ -24,16 +24,15 @@ public class BaseWorkItem implements WorkItem {
     private final String id;
     private final String nodeInstanceId;
     private final String name;
-
+    
     private final int state;
     private String phase;
     private String phaseStatus;
-
+    
     private Map<String, Object> parameters;
     private Map<String, Object> results;
 
-    public BaseWorkItem(String nodeInstanceId, String id, String name, int state, String phase, String phaseStatus,
-            Map<String, Object> results) {
+    public BaseWorkItem(String nodeInstanceId, String id, String name, int state, String phase, String phaseStatus, Map<String, Object> results) {
         this.id = id;
         this.nodeInstanceId = nodeInstanceId;
         this.name = name;
@@ -43,8 +42,7 @@ public class BaseWorkItem implements WorkItem {
         this.results = results;
     }
 
-    public BaseWorkItem(String nodeInstanceId, String id, String name, int state, String phase, String phaseStatus,
-            Map<String, Object> parameters, Map<String, Object> results) {
+    public BaseWorkItem(String nodeInstanceId, String id, String name, int state, String phase, String phaseStatus, Map<String, Object> parameters, Map<String, Object> results) {
         this.id = id;
         this.nodeInstanceId = nodeInstanceId;
         this.name = name;
@@ -63,13 +61,13 @@ public class BaseWorkItem implements WorkItem {
     @Override
     public String getName() {
         return name;
-    }
+    }    
 
     @Override
     public int getState() {
         return state;
     }
-
+    
     @Override
     public Map<String, Object> getParameters() {
         return parameters;
@@ -94,11 +92,10 @@ public class BaseWorkItem implements WorkItem {
     public String getNodeInstanceId() {
         return nodeInstanceId;
     }
-
+    
     @Override
     public String toString() {
-        return "WorkItem [id=" + id + ", name=" + name + ", state=" + state + ", phase=" + phase + ", phaseStatus="
-                + phaseStatus + "]";
+        return "WorkItem [id=" + id + ", name=" + name + ", state=" + state + ", phase=" + phase + ", phaseStatus=" + phaseStatus + "]";
     }
 
 }

@@ -29,7 +29,7 @@ public interface ProcessDialect {
     ReturnValueEvaluatorBuilder getReturnValueEvaluatorBuilder();
 
     ProcessClassBuilder getProcessClassBuilder();
-
+    
     AssignmentBuilder getAssignmentBuilder();
 
     void addProcess(final ProcessBuildContext context);

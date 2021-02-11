@@ -16,10 +16,6 @@
 
 package org.jbpm.workflow.instance.node;
 
-import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
-import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +29,10 @@ import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.event.process.ContextAwareEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+
+import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
+import static org.jbpm.workflow.core.impl.ExtendedNodeImpl.EVENT_NODE_ENTER;
 
 public class DynamicNodeInstance extends CompositeContextNodeInstance {
 
@@ -52,7 +52,7 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
     }
 
     @Override
-    public void internalTrigger(KogitoNodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
         triggerTime = new Date();
         triggerEvent(EVENT_NODE_ENTER);
 
@@ -88,13 +88,12 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
     }
 
     private void addActivationListener() {
-        getProcessInstance().getKnowledgeRuntime().getProcessRuntime()
-                .addEventListener(ContextAwareEventListener.using(listener -> {
-                    if (canActivate() && getState() == ProcessInstance.STATE_PENDING) {
-                        triggerActivated();
-                        getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);
-                    }
-                }));
+        getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener( ContextAwareEventListener.using( listener -> {
+            if (canActivate() && getState() == ProcessInstance.STATE_PENDING) {
+                triggerActivated();
+                getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);
+            }
+        }));
     }
 
     private void addCompletionListener() {

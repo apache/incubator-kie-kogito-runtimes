@@ -41,12 +41,9 @@ public class KogitoInfinispanContainer extends GenericContainer<KogitoInfinispan
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forHttp("/"));
         setDockerImageName(System.getProperty(INFINISPAN_PROPERTY));
-        withClasspathResourceMapping("testcontainers/infinispan/infinispan-local.xml", CONF_PATH + "infinispan-local.xml",
-                BindMode.READ_ONLY);
-        withClasspathResourceMapping("testcontainers/infinispan/users.properties", CONF_PATH + "users.properties",
-                BindMode.READ_ONLY);
-        withClasspathResourceMapping("testcontainers/infinispan/groups.properties", CONF_PATH + "groups.properties",
-                BindMode.READ_ONLY);
+        withClasspathResourceMapping("testcontainers/infinispan/infinispan-local.xml", CONF_PATH + "infinispan-local.xml", BindMode.READ_ONLY);
+        withClasspathResourceMapping("testcontainers/infinispan/users.properties", CONF_PATH + "users.properties", BindMode.READ_ONLY);
+        withClasspathResourceMapping("testcontainers/infinispan/groups.properties", CONF_PATH + "groups.properties", BindMode.READ_ONLY);
         setCommand("/opt/infinispan/bin/server.sh -c infinispan-local.xml");
     }
 

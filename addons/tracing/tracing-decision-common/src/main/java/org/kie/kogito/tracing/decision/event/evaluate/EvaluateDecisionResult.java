@@ -16,14 +16,14 @@
 
 package org.kie.kogito.tracing.decision.event.evaluate;
 
-import static org.kie.kogito.tracing.decision.event.EventUtils.map;
-
 import java.util.List;
 
 import org.kie.dmn.api.core.DMNDecisionResult;
 import org.kie.dmn.api.core.DMNDecisionResult.DecisionEvaluationStatus;
 import org.kie.kogito.tracing.decision.event.EventUtils;
 import org.kie.kogito.tracing.decision.event.message.Message;
+
+import static org.kie.kogito.tracing.decision.event.EventUtils.map;
 
 public class EvaluateDecisionResult {
 
@@ -34,8 +34,7 @@ public class EvaluateDecisionResult {
     private List<Message> messages;
     private boolean errors;
 
-    public EvaluateDecisionResult(String decisionId, String decisionName, DecisionEvaluationStatus evaluationStatus,
-            Object result, List<Message> messages, boolean errors) {
+    public EvaluateDecisionResult(String decisionId, String decisionName, DecisionEvaluationStatus evaluationStatus, Object result, List<Message> messages, boolean errors) {
         this.decisionId = decisionId;
         this.decisionName = decisionName;
         this.evaluationStatus = evaluationStatus;
@@ -78,6 +77,7 @@ public class EvaluateDecisionResult {
                 dr.getEvaluationStatus(),
                 dr.getResult(),
                 map(dr.getMessages(), EventUtils::messageFrom),
-                dr.hasErrors());
+                dr.hasErrors()
+        );
     }
 }

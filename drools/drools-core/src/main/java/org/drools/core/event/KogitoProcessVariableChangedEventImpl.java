@@ -22,15 +22,14 @@ import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.event.KogitoProcessVariableChangedEvent;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
-public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChangedEventImpl
-        implements KogitoProcessVariableChangedEvent {
+public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChangedEventImpl implements KogitoProcessVariableChangedEvent {
 
     private KogitoNodeInstance nodeInstance;
 
-    public KogitoProcessVariableChangedEventImpl(final String id, final String instanceId,
-            final Object oldValue, final Object newValue, List<String> tags,
-            final ProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime) {
-        super(id, instanceId, oldValue, newValue, tags, processInstance, kruntime);
+    public KogitoProcessVariableChangedEventImpl( final String id, final String instanceId,
+                                                  final Object oldValue, final Object newValue, List<String> tags,
+                                                  final ProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime ) {
+        super( id, instanceId, oldValue, newValue, tags, processInstance, kruntime );
         this.nodeInstance = nodeInstance;
     }
 
@@ -40,9 +39,7 @@ public class KogitoProcessVariableChangedEventImpl extends ProcessVariableChange
     }
 
     public String toString() {
-        return "==>[ProcessVariableChanged(id=" + getVariableId() + "; instanceId=" + getVariableInstanceId() + "; oldValue="
-                + getOldValue() + "; newValue=" + getNewValue()
-                + "; processName=" + getProcessInstance().getProcessName() + "; processId="
-                + getProcessInstance().getProcessId() + ")]";
+        return "==>[ProcessVariableChanged(id=" + getVariableId() + "; instanceId=" + getVariableInstanceId() + "; oldValue=" + getOldValue() + "; newValue=" + getNewValue()
+                + "; processName=" + getProcessInstance().getProcessName() + "; processId=" + getProcessInstance().getProcessId() + ")]";
     }
 }

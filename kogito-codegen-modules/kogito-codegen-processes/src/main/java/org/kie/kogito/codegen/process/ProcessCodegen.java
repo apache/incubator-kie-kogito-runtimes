@@ -15,9 +15,6 @@
 
 package org.kie.kogito.codegen.process;
 
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -32,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
@@ -48,12 +46,12 @@ import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.events.TopicsInformationResourceGenerator;
@@ -63,7 +61,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Entry point to process code generation
@@ -73,15 +72,11 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCodegen.class);
 
     private static final GeneratedFileType PROCESS_TYPE = GeneratedFileType.of("PROCESS", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType PROCESS_INSTANCE_TYPE =
-            GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE =
-            GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE =
-            GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
-    public static final Set<String> SUPPORTED_BPMN_EXTENSIONS =
-            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
+    public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
     private static final String YAML_PARSER = "yml";
     private static final String JSON_PARSER = "json";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
@@ -136,8 +131,7 @@ public class ProcessCodegen extends AbstractGenerator {
                             .forEach(e -> processes.add(parseWorkflowFile(r, e.getValue())));
                 }
                 if (processes.isEmpty()) {
-                    throw new IllegalArgumentException(
-                            "Unable to process file with unsupported extension: " + processSourceFile);
+                    throw new IllegalArgumentException("Unable to process file with unsupported extension: " + processSourceFile);
                 }
             } catch (RuntimeException e) {
                 throw new ProcessCodegenException(processSourceFile.getAbsolutePath(), e);
@@ -178,8 +172,7 @@ public class ProcessCodegen extends AbstractGenerator {
         this.processes = new HashMap<>();
         for (Process process : processes) {
             if (this.processes.containsKey(process.getId())) {
-                throw new ProcessCodegenException(format(
-                        "Duplicated process with id %s found in the project, please review .bpmn files", process.getId()));
+                throw new ProcessCodegenException(format("Duplicated process with id %s found in the project, please review .bpmn files", process.getId()));
             }
             this.processes.put(process.getId(), (KogitoWorkflowProcess) process);
         }
@@ -248,8 +241,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 processIdToMetadata.put(id, generate);
                 processExecutableModelGenerators.add(execModelGen);
             } catch (UndefinedGeneratedRuleUnitVariable e) {
-                LOGGER.error(e.getMessage()
-                        + "\nRemember: in this case rule unit variables are usually named after process variables.");
+                LOGGER.error(e.getMessage() + "\nRemember: in this case rule unit variables are usually named after process variables.");
                 throw new ProcessCodegenException(id, packageName, e);
             } catch (RuntimeException e) {
                 LOGGER.error(e.getMessage());
@@ -270,7 +262,8 @@ public class ProcessCodegen extends AbstractGenerator {
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
-                    applicationCanonicalName());
+                    applicationCanonicalName()
+            );
 
             ProcessInstanceGenerator pi = new ProcessInstanceGenerator(
                     workFlowProcess.getPackageName(),
@@ -338,50 +331,48 @@ public class ProcessCodegen extends AbstractGenerator {
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                    mmd.generate());
+                      mmd.generate());
         }
 
         for (InputModelClassGenerator modelClassGenerator : processIdToInputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                    mmd.generate());
+                      mmd.generate());
         }
 
         for (OutputModelClassGenerator modelClassGenerator : processIdToOutputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                    mmd.generate());
+                      mmd.generate());
         }
 
         for (List<UserTaskModelMetaData> utmd : processIdToUserTaskModel.values()) {
 
             for (UserTaskModelMetaData ut : utmd) {
-                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()),
-                        ut.generateInput());
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput());
 
-                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()),
-                        ut.generateOutput());
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput());
             }
         }
 
         for (ProcessResourceGenerator resourceGenerator : rgs) {
             storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
-                    resourceGenerator.generate());
+                      resourceGenerator.generate());
         }
 
         for (MessageDataEventGenerator messageDataEventGenerator : mdegs) {
             storeFile(GeneratedFileType.SOURCE, messageDataEventGenerator.generatedFilePath(),
-                    messageDataEventGenerator.generate());
+                      messageDataEventGenerator.generate());
         }
 
         for (MessageConsumerGenerator messageConsumerGenerator : megs) {
             storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(),
-                    messageConsumerGenerator.generate());
+                      messageConsumerGenerator.generate());
         }
 
         for (MessageProducerGenerator messageProducerGenerator : mpgs) {
             storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(),
-                    messageProducerGenerator.generate());
+                      messageProducerGenerator.generate());
         }
 
         for (ProcessGenerator p : ps) {
@@ -405,6 +396,7 @@ public class ProcessCodegen extends AbstractGenerator {
         final TopicsInformationResourceGenerator topicsGenerator =
                 new TopicsInformationResourceGenerator(context(), processExecutableModelGenerators);
         storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
+
 
         for (ProcessInstanceGenerator pi : pis) {
             storeFile(PROCESS_INSTANCE_TYPE, pi.generatedFilePath(), pi.generate());

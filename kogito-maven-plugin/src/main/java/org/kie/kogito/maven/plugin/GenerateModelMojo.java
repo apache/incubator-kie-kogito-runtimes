@@ -31,8 +31,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
+import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
 @Mojo(name = "generateModel",
@@ -44,8 +44,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
 
     public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
 
-    @Parameter(property = "kogito.codegen.sources.directory",
-            defaultValue = "${project.build.directory}/generated-sources/kogito")
+    @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")
     private File customizableSourcesPath;
 
     /**
@@ -111,7 +110,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     private void deleteDrlFiles() throws MojoExecutionException {
         // Remove drl files
         try (final Stream<Path> drlFiles = Files.find(outputDirectory.toPath(), Integer.MAX_VALUE,
-                (p, f) -> drlFileMatcher.matches(p))) {
+                                                      (p, f) -> drlFileMatcher.matches(p))) {
             drlFiles.forEach(p -> {
                 try {
                     Files.delete(p);

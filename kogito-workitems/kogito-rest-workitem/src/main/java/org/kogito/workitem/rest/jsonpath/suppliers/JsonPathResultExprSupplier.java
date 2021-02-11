@@ -16,10 +16,9 @@ package org.kogito.workitem.rest.jsonpath.suppliers;
 
 import java.util.function.Supplier;
 
-import org.kogito.workitem.rest.jsonpath.functions.JSonPathResultHandler;
-
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import org.kogito.workitem.rest.jsonpath.functions.JSonPathResultHandler;
 
 public class JsonPathResultExprSupplier implements Supplier<Expression> {
 

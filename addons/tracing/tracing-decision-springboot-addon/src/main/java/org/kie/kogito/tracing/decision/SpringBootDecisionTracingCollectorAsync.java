@@ -27,13 +27,11 @@ import org.springframework.scheduling.annotation.Async;
 
 public class SpringBootDecisionTracingCollectorAsync extends SpringBootDecisionTracingCollector {
 
-    public SpringBootDecisionTracingCollectorAsync(SpringBootTraceEventEmitter eventEmitter, ConfigBean configBean,
-            BiFunction<String, String, DMNModel> modelSupplier) {
+    public SpringBootDecisionTracingCollectorAsync(SpringBootTraceEventEmitter eventEmitter, ConfigBean configBean, BiFunction<String, String, DMNModel> modelSupplier) {
         super(eventEmitter, configBean, modelSupplier);
     }
 
-    public SpringBootDecisionTracingCollectorAsync(SpringBootTraceEventEmitter eventEmitter, ConfigBean configBean,
-            Application application) {
+    public SpringBootDecisionTracingCollectorAsync(SpringBootTraceEventEmitter eventEmitter, ConfigBean configBean, Application application) {
         super(eventEmitter, configBean, application);
     }
 

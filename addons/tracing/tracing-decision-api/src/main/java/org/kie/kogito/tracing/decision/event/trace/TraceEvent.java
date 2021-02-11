@@ -39,8 +39,7 @@ public class TraceEvent {
     private TraceEvent() {
     }
 
-    public TraceEvent(TraceHeader header, List<TraceInputValue> inputs, List<TraceOutputValue> outputs,
-            List<TraceExecutionStep> executionSteps) {
+    public TraceEvent(TraceHeader header, List<TraceInputValue> inputs, List<TraceOutputValue> outputs, List<TraceExecutionStep> executionSteps) {
         this.header = header;
         this.inputs = inputs;
         this.outputs = outputs;

@@ -15,13 +15,14 @@
  */
 package org.kie.kogito.testcontainers;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class KogitoMongoDBContainerTest {
 
@@ -42,7 +43,7 @@ class KogitoMongoDBContainerTest {
 
     @Test
     void shouldGetMapperPort() {
-        doReturn(MAPPED_PORT).when(container).getMappedPort(KogitoMongoDBContainer.MONGODB_INTERNAL_PORT);
+        doReturn(MAPPED_PORT).when(container).getMappedPort(KogitoMongoDBContainer.MONGODB_INTERNAL_PORT );
         assertEquals(MAPPED_PORT, container.getMappedPort());
     }
 }

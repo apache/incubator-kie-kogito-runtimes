@@ -55,12 +55,9 @@ public class DMNResultMetricsBuilder {
         handlers.put(String.class, new StringHandler(SupportedDecisionTypes.fromInternalToStandard(String.class)));
         handlers.put(Boolean.class, new BooleanHandler(SupportedDecisionTypes.fromInternalToStandard(Boolean.class)));
         handlers.put(BigDecimal.class, new BigDecimalHandler(SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class)));
-        handlers.put(LocalDateTime.class,
-                new LocalDateTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDateTime.class)));
-        handlers.put(Duration.class,
-                new DaysAndTimeDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Duration.class)));
-        handlers.put(Period.class,
-                new YearsAndMonthsDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Period.class)));
+        handlers.put(LocalDateTime.class, new LocalDateTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDateTime.class)));
+        handlers.put(Duration.class, new DaysAndTimeDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Duration.class)));
+        handlers.put(Period.class, new YearsAndMonthsDurationHandler(SupportedDecisionTypes.fromInternalToStandard(Period.class)));
         handlers.put(LocalDate.class, new LocalDateHandler(SupportedDecisionTypes.fromInternalToStandard(LocalDate.class)));
         handlers.put(LocalTime.class, new LocalTimeHandler(SupportedDecisionTypes.fromInternalToStandard(LocalTime.class)));
 
@@ -72,8 +69,7 @@ public class DMNResultMetricsBuilder {
     }
 
     public static void generateMetrics(DMNResult dmnResult, String endpointName) {
-        Optional<List<DMNDecisionResult>> optDecisionResults =
-                Optional.ofNullable(dmnResult).map(DMNResult::getDecisionResults);
+        Optional<List<DMNDecisionResult>> optDecisionResults = Optional.ofNullable(dmnResult).map(DMNResult::getDecisionResults);
 
         if (optDecisionResults.isPresent()) {
             for (DMNDecisionResult decision : optDecisionResults.get()) {

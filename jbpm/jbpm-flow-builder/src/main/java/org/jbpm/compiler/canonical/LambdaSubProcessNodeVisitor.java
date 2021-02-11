@@ -16,26 +16,11 @@
 
 package org.jbpm.compiler.canonical;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.drools.core.util.StringUtils.ucFirst;
-import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_INDEPENDENT;
-import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_PROCESS_ID;
-import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_PROCESS_NAME;
-import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_WAIT_FOR_COMPLETION;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
-
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
-import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.node.SubProcessNode;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -48,6 +33,20 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
+import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.node.SubProcessNode;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.drools.core.util.StringUtils.ucFirst;
+import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_INDEPENDENT;
+import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_PROCESS_ID;
+import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_PROCESS_NAME;
+import static org.jbpm.ruleflow.core.factory.SubProcessNodeFactory.METHOD_WAIT_FOR_COMPLETION;
 
 public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessNode> {
 
@@ -57,11 +56,9 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
     }
 
     @Override
-    public void visitNode(String factoryField, SubProcessNode node, BlockStmt body, VariableScope variableScope,
-            ProcessMetaData metadata) {
+    public void visitNode(String factoryField, SubProcessNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
         Optional<Expression> retValue;
-        try (InputStream resourceAsStream =
-                this.getClass().getResourceAsStream("/class-templates/SubProcessFactoryTemplate.java")) {
+        try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/SubProcessFactoryTemplate.java")) {
             retValue = parse(resourceAsStream).findFirst(Expression.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -73,16 +70,13 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 .notEmpty("subProcessId", subProcessId)
                 .validate();
 
-        body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), getNodeKey(),
-                new LongLiteralExpr(node.getId())))
+
+        body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Call Activity"))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_ID, new StringLiteralExpr(subProcessId)))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_NAME,
-                        new StringLiteralExpr(getOrDefault(node.getProcessName(), ""))))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_WAIT_FOR_COMPLETION,
-                        new BooleanLiteralExpr(node.isWaitForCompletion())))
-                .addStatement(
-                        getFactoryMethod(getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(node.isIndependent())));
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_PROCESS_NAME, new StringLiteralExpr(getOrDefault(node.getProcessName(), ""))))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_WAIT_FOR_COMPLETION, new BooleanLiteralExpr(node.isWaitForCompletion())))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(node.isIndependent())));
 
         Map<String, String> inputTypes = (Map<String, String>) node.getMetaData("BPMN.InputTypes");
 
@@ -131,8 +125,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 Variable v = variableScope.findVariable(topLevelVariable);
 
                 actionBody.addStatement(makeAssignment(v));
-                actionBody
-                        .addStatement(subProcessModel.callSetter("model", e.getKey(), dotNotationToGetExpression(expression)));
+                actionBody.addStatement(subProcessModel.callSetter("model", e.getKey(), dotNotationToGetExpression(expression)));
             } else {
                 Variable v = variableScope.findVariable(e.getValue());
                 if (v != null) {
@@ -142,13 +135,11 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
             }
         }
 
-        subProcessNode.getInAssociations().stream().filter(da -> da.getAssignments() != null && !da.getAssignments().isEmpty())
-                .forEach(da -> {
-                    if (da.getTransformation() == null && da.getSources().size() == 1) {
-                        actionBody.addStatement(subProcessModel.callSetter("model", da.getTarget(),
-                                new StringLiteralExpr(da.getSources().get(0))));
-                    }
-                });
+        subProcessNode.getInAssociations().stream().filter(da -> da.getAssignments() != null && !da.getAssignments().isEmpty()).forEach(da -> {
+            if (da.getTransformation() == null && da.getSources().size() == 1) {
+                actionBody.addStatement(subProcessModel.callSetter("model", da.getTarget(), new StringLiteralExpr(da.getSources().get(0))));
+            }
+        });
 
         actionBody.addStatement(new ReturnStmt(new NameExpr("model")));
         return actionBody;
@@ -159,8 +150,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         String processId = ProcessToExecModelGenerator.extractProcessId(subProcessNode.getProcessId());
         String processFieldName = "process" + processId;
 
-        MethodCallExpr processInstanceSupplier =
-                new MethodCallExpr(new NameExpr(processFieldName), "createInstance").addArgument("model");
+        MethodCallExpr processInstanceSupplier = new MethodCallExpr(new NameExpr(processFieldName), "createInstance").addArgument("model");
 
         metadata.addSubProcess(processId, subProcessNode.getProcessId());
 

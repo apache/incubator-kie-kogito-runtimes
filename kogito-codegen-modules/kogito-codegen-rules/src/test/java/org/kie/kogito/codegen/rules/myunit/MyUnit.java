@@ -24,8 +24,5 @@ public class MyUnit implements RuleUnitData {
     public DataSource<Object> getValues() {
         return values;
     }
-
-    private DataSource<Object> thisMethodIsHidden() {
-        return null;
-    }
+    private DataSource<Object> thisMethodIsHidden() { return null; }
 }

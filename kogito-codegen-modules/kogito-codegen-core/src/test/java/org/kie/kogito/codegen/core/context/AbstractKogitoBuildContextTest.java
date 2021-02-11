@@ -14,16 +14,17 @@
  */
 package org.kie.kogito.codegen.core.context;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.Properties;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.context.AbstractKogitoBuildContext;
+
+import java.util.Properties;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AbstractKogitoBuildContextTest {
 
@@ -32,7 +33,7 @@ class AbstractKogitoBuildContextTest {
     @BeforeEach
     public void init() {
         builder = MockKogitoBuildContext.builder()
-                .withAddonsConfig(AddonsConfig.DEFAULT);
+            .withAddonsConfig(AddonsConfig.DEFAULT);
     }
 
     @Test
@@ -60,12 +61,12 @@ class AbstractKogitoBuildContextTest {
         assertThat(builder
                 .withAddonsConfig(null)
                 .build().getAddonsConfig())
-                        .isNotNull()
-                        .isNotEqualTo(AddonsConfig.DEFAULT);
+                .isNotNull()
+                .isNotEqualTo(AddonsConfig.DEFAULT);
         assertThat(builder
                 .withAddonsConfig(AddonsConfig.DEFAULT)
                 .build().getAddonsConfig())
-                        .isEqualTo(AddonsConfig.DEFAULT);
+                    .isEqualTo(AddonsConfig.DEFAULT);
     }
 
     @Test

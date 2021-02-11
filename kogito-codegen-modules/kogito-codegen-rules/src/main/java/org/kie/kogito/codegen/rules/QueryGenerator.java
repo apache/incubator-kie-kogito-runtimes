@@ -16,20 +16,8 @@
 
 package org.kie.kogito.codegen.rules;
 
-import static org.drools.core.util.StringUtils.ucFirst;
-import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
-import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
-
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import org.drools.modelcompiler.builder.QueryModel;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -47,6 +35,17 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import org.drools.modelcompiler.builder.QueryModel;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
+import static org.drools.core.util.StringUtils.ucFirst;
+import static org.drools.modelcompiler.builder.generator.DrlxParseUtil.classToReferenceType;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
+import static org.kie.kogito.codegen.rules.QueryEndpointGenerator.setGeneric;
 
 public class QueryGenerator implements RuleFileGenerator {
 
@@ -56,7 +55,7 @@ public class QueryGenerator implements RuleFileGenerator {
 
     private final String targetClassName;
 
-    public QueryGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, QueryModel query, String name) {
+    public QueryGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, QueryModel query, String name ) {
         this.ruleUnit = ruleUnit;
         this.query = query;
 
@@ -85,20 +84,18 @@ public class QueryGenerator implements RuleFileGenerator {
 
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(
-                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
         clazz.setName(targetClassName);
 
         cu.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
 
         FieldDeclaration ruleUnitDeclaration = clazz
                 .getFieldByName("instance")
-                .orElseThrow(() -> new NoSuchElementException(
-                        "ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
+                .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
         setGeneric(ruleUnitDeclaration.getElementType(), ruleUnit);
 
         String returnType = getReturnType(clazz);
-        setGeneric(clazz.getImplementedTypes(0).getTypeArguments().get().get(0), returnType);
+        setGeneric( clazz.getImplementedTypes( 0 ).getTypeArguments().get().get(0), returnType );
         generateConstructors(clazz);
         generateQueryMethod(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
@@ -132,10 +129,8 @@ public class QueryGenerator implements RuleFileGenerator {
                     .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                     .getStatement(0);
 
-            statement.findFirst(CastExpr.class).orElseThrow(() -> new NoSuchElementException("CastExpr not found in template."))
-                    .setType(returnType);
-            statement.findFirst(StringLiteralExpr.class)
-                    .orElseThrow(() -> new NoSuchElementException("StringLiteralExpr not found in template.")).setString(name);
+            statement.findFirst(CastExpr.class).orElseThrow(() -> new NoSuchElementException("CastExpr not found in template.")).setType(returnType);
+            statement.findFirst(StringLiteralExpr.class).orElseThrow(() -> new NoSuchElementException("StringLiteralExpr not found in template.")).setString(name);
         } else {
             returnType = targetClassName + ".Result";
             generateResultClass(clazz, toResultMethod);
@@ -146,8 +141,7 @@ public class QueryGenerator implements RuleFileGenerator {
     }
 
     private void generateResultClass(ClassOrInterfaceDeclaration clazz, MethodDeclaration toResultMethod) {
-        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration(
-                new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result");
+        ClassOrInterfaceDeclaration resultClass = new ClassOrInterfaceDeclaration(new NodeList<Modifier>(Modifier.publicModifier(), Modifier.staticModifier()), false, "Result");
         clazz.addMember(resultClass);
 
         ConstructorDeclaration constructor = resultClass.addConstructor(Modifier.Keyword.PUBLIC);
@@ -167,8 +161,7 @@ public class QueryGenerator implements RuleFileGenerator {
             body.addStatement(new ReturnStmt(new NameExpr(name)));
 
             constructor.addAndGetParameter(type, name);
-            constructorBody
-                    .addStatement(new AssignExpr(new NameExpr("this." + name), new NameExpr(name), AssignExpr.Operator.ASSIGN));
+            constructorBody.addStatement(new AssignExpr(new NameExpr("this." + name), new NameExpr(name), AssignExpr.Operator.ASSIGN));
 
             MethodCallExpr callExpr = new MethodCallExpr(new NameExpr("tuple"), "get");
             callExpr.addArgument(new StringLiteralExpr(name));

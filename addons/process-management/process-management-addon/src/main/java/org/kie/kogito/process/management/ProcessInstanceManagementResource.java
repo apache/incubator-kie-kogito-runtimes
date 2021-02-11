@@ -44,7 +44,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     }
 
     @Override
-    protected <R> Response buildOkResponse(R body) {
+    protected  <R> Response buildOkResponse(R body) {
         return Response
                 .status(Response.Status.OK)
                 .entity(body)
@@ -79,8 +79,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @GET
     @Path("{processId}/instances/{processInstanceId}/error")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getInstanceInError(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+    public Response getInstanceInError(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doGetInstanceInError(processId, processInstanceId);
     }
 
@@ -88,8 +87,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @GET
     @Path("{processId}/instances/{processInstanceId}/nodeInstances")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getWorkItemsInProcessInstance(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+    public Response getWorkItemsInProcessInstance(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doGetWorkItemsInProcessInstance(processId, processInstanceId);
     }
 
@@ -97,8 +95,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @POST
     @Path("{processId}/instances/{processInstanceId}/retrigger")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retriggerInstanceInError(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+    public Response retriggerInstanceInError(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doRetriggerInstanceInError(processId, processInstanceId);
     }
 
@@ -106,8 +103,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @POST
     @Path("{processId}/instances/{processInstanceId}/skip")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response skipInstanceInError(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+    public Response skipInstanceInError(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doSkipInstanceInError(processId, processInstanceId);
     }
 
@@ -115,8 +111,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @POST
     @Path("{processId}/instances/{processInstanceId}/nodes/{nodeId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response triggerNodeInstanceId(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeId") String nodeId) {
+    public Response triggerNodeInstanceId(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeId") String nodeId) {
         return doTriggerNodeInstanceId(processId, processInstanceId, nodeId);
     }
 
@@ -124,8 +119,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @POST
     @Path("{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response retriggerNodeInstanceId(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeInstanceId") String nodeInstanceId) {
+    public Response retriggerNodeInstanceId(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeInstanceId") String nodeInstanceId) {
         return doRetriggerNodeInstanceId(processId, processInstanceId, nodeInstanceId);
     }
 
@@ -133,8 +127,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @DELETE
     @Path("{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response cancelNodeInstanceId(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeInstanceId") String nodeInstanceId) {
+    public Response cancelNodeInstanceId(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId, @PathParam("nodeInstanceId") String nodeInstanceId) {
         return doCancelNodeInstanceId(processId, processInstanceId, nodeInstanceId);
     }
 
@@ -142,8 +135,7 @@ public class ProcessInstanceManagementResource extends BaseProcessInstanceManage
     @DELETE
     @Path("{processId}/instances/{processInstanceId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response cancelProcessInstanceId(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+    public Response cancelProcessInstanceId(@PathParam("processId") String processId, @PathParam("processInstanceId") String processInstanceId) {
         return doCancelProcessInstanceId(processId, processInstanceId);
     }
 }

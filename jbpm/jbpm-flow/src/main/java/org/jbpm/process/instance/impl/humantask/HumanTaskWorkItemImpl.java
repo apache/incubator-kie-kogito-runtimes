@@ -126,12 +126,12 @@ public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements HumanTa
     }
 
     @Override
-    public boolean enforce(Policy<?>... policies) {
+    public boolean enforce(Policy<?>... policies) {   
         for (Policy<?> policy : policies) {
             if (policy instanceof SecurityPolicy) {
                 try {
                     enforceAuthorization(((SecurityPolicy) policy).value());
-
+                    
                     return true;
                 } catch (NotAuthorizedException e) {
                     return false;
@@ -151,41 +151,35 @@ public class HumanTaskWorkItemImpl extends KogitoWorkItemImpl implements HumanTa
     protected void enforceAuthorization(IdentityProvider identity) {
 
         if (identity != null) {
-            logger.debug("Identity information provided, enforcing security restrictions, user '{}' with roles '{}'",
-                    identity.getName(), identity.getRoles());
+            logger.debug("Identity information provided, enforcing security restrictions, user '{}' with roles '{}'", identity.getName(), identity.getRoles());
             // in case identity/auth info is given enforce security restrictions
             String user = identity.getName();
             String currentOwner = getActualOwner();
             // if actual owner is already set always enforce same user
             if (currentOwner != null && !currentOwner.trim().isEmpty() && !user.equals(currentOwner)) {
-                logger.debug(
-                        "Work item {} has already owner assigned so requesting user must match - owner '{}' == requestor '{}'",
-                        getStringId(), currentOwner, user);
-                throw new NotAuthorizedException(
-                        "User " + user + " is not authorized to access task instance with id " + getStringId());
-            }
-
+                logger.debug("Work item {} has already owner assigned so requesting user must match - owner '{}' == requestor '{}'", getStringId(), currentOwner, user);
+                throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
+            } 
+            
             checkAssignedOwners(user, identity.getRoles());
         }
     }
-
+    
     protected void checkAssignedOwners(String user, Collection<String> roles) {
-        // is not in the excluded users
+     // is not in the excluded users
         if (getExcludedUsers().contains(user)) {
             logger.debug("Requesting user '{}' is excluded from the potential workers on work item {}", user, getStringId());
-            throw new NotAuthorizedException(
-                    "User " + user + " is not authorized to access task instance with id " + getStringId());
+            throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
         }
-
+        
         // if there are no assignments means open to everyone
         if (getPotentialUsers().isEmpty() && getPotentialGroups().isEmpty()) {
             return;
         }
         // check if user is in potential users or groups 
         if (!getPotentialUsers().contains(user) &&
-                getPotentialGroups().stream().noneMatch(roles::contains)) {
-            throw new NotAuthorizedException(
-                    "User " + user + " is not authorized to access task instance with id " + getStringId());
+            getPotentialGroups().stream().noneMatch(roles::contains)) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access task instance with id " + getStringId());
         }
     }
 }

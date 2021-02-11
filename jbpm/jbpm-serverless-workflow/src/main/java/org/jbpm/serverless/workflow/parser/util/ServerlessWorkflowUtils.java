@@ -20,14 +20,9 @@ import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import org.drools.core.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.branches.Branch;
 import io.serverlessworkflow.api.events.EventDefinition;
@@ -38,15 +33,19 @@ import io.serverlessworkflow.api.mapper.JsonObjectMapper;
 import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.ParallelState;
+import org.drools.core.util.StringUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerlessWorkflowUtils {
 
     public static final String DEFAULT_WORKFLOW_FORMAT = "json";
     public static final String ALTERNATE_WORKFLOW_FORMAT = "yml";
-    public static final String DEFAULT_JSONPATH_CONFIG =
-            "com.jayway.jsonpath.Configuration jsonPathConfig = com.jayway.jsonpath.Configuration.builder()" +
-                    ".mappingProvider(new com.jayway.jsonpath.spi.mapper.JacksonMappingProvider())" +
-                    ".jsonProvider(new com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider()).build(); ";
+    public static final String DEFAULT_JSONPATH_CONFIG = "com.jayway.jsonpath.Configuration jsonPathConfig = com.jayway.jsonpath.Configuration.builder()" +
+            ".mappingProvider(new com.jayway.jsonpath.spi.mapper.JacksonMappingProvider())" +
+            ".jsonProvider(new com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider()).build(); ";
+
 
     private static final String APP_PROPERTIES_BASE = "kogito.sw.";
     private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
@@ -121,7 +120,7 @@ public class ServerlessWorkflowUtils {
         // currently support for only workflowId inside branches
         if (parallelState.getBranches() != null && parallelState.getBranches().size() > 0) {
             for (Branch branch : parallelState.getBranches()) {
-                if (branch.getWorkflowId() == null || branch.getWorkflowId().length() < 1) {
+                if(branch.getWorkflowId() == null || branch.getWorkflowId().length() < 1) {
                     return false;
                 }
             }
@@ -136,6 +135,7 @@ public class ServerlessWorkflowUtils {
                 .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("No event for " + eventName));
     }
+
 
     public static String sysOutFunctionScript(String script) {
         String retStr = DEFAULT_JSONPATH_CONFIG;
@@ -166,14 +166,13 @@ public class ServerlessWorkflowUtils {
         String processVar = "workflowdata";
         String otherVar = conditionStr.substring(conditionStr.indexOf("$") + 1, conditionStr.indexOf("."));
 
-        if (otherVar.trim().length() > 0) {
+        if(otherVar.trim().length() > 0) {
             processVar = otherVar;
             conditionStr = conditionStr.replaceAll(otherVar, "");
 
         }
 
-        return "return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\""
-                + processVar + "\")).toString()).read(\"" + conditionStr + "\")).isEmpty();";
+        return "return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"" + processVar + "\")).toString()).read(\"" + conditionStr + "\")).isEmpty();";
     }
 
     public static String getJsonPathScript(String script) {
@@ -193,22 +192,17 @@ public class ServerlessWorkflowUtils {
             ObjectMapper objectMapper = new ObjectMapper();
             String injectStr = objectMapper.writeValueAsString(toInjectNode);
 
-            return "com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();\n"
-                    +
-                    "        com.fasterxml.jackson.databind.JsonNode updateNode2 = objectMapper.readTree(\""
-                    + injectStr.replaceAll("\"", "\\\\\"") + "\");\n" +
-                    "        com.fasterxml.jackson.databind.JsonNode mainNode2 = (com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\");\n"
-                    +
+            return "com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();\n" +
+                    "        com.fasterxml.jackson.databind.JsonNode updateNode2 = objectMapper.readTree(\"" + injectStr.replaceAll("\"", "\\\\\"") + "\");\n" +
+                    "        com.fasterxml.jackson.databind.JsonNode mainNode2 = (com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\");\n" +
                     "        java.util.Iterator<String> fieldNames2 = updateNode2.fieldNames();\n" +
                     "        while(fieldNames2.hasNext()) {\n" +
                     "            String updatedFieldName = fieldNames2.next();\n" +
                     "            com.fasterxml.jackson.databind.JsonNode updatedValue = updateNode2.get(updatedFieldName);\n" +
                     "            if(mainNode2.get(updatedFieldName) != null) {\n" +
-                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).replace(updatedFieldName, updatedValue);\n"
-                    +
+                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).replace(updatedFieldName, updatedValue);\n" +
                     "            } else {\n" +
-                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).put(updatedFieldName, updatedValue);\n"
-                    +
+                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).put(updatedFieldName, updatedValue);\n" +
                     "            }\n" +
                     "        }\n" +
                     "        kcontext.setVariable(\"workflowdata\", mainNode2);\n";
@@ -219,35 +213,28 @@ public class ServerlessWorkflowUtils {
         }
     }
 
-    public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey,
-            WorkflowAppContext workflowAppContext) {
+    public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey, WorkflowAppContext workflowAppContext) {
         if (function != null && function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) {
             return function.getMetadata().get(metadataKey);
         }
 
         if (function != null && workflowAppContext != null &&
-                workflowAppContext.getApplicationProperties().containsKey(
-                        APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey)) {
-            return workflowAppContext.getApplicationProperty(
-                    APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey);
+                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey)) {
+            return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey);
         }
 
         LOGGER.warn("Could not resolve function metadata: {}", metadataKey);
         return "";
     }
 
-    public static String resolveEvenDefinitiontMetadata(EventDefinition eventDefinition, String metadataKey,
-            WorkflowAppContext workflowAppContext) {
-        if (eventDefinition != null && eventDefinition.getMetadata() != null
-                && eventDefinition.getMetadata().containsKey(metadataKey)) {
+    public static String resolveEvenDefinitiontMetadata(EventDefinition eventDefinition, String metadataKey, WorkflowAppContext workflowAppContext) {
+        if (eventDefinition != null && eventDefinition.getMetadata() != null && eventDefinition.getMetadata().containsKey(metadataKey)) {
             return eventDefinition.getMetadata().get(metadataKey);
         }
 
         if (eventDefinition != null && workflowAppContext != null &&
-                workflowAppContext.getApplicationProperties().containsKey(
-                        APP_PROPERTIES_BASE + APP_PROPERTIES_EVENTS_BASE + eventDefinition.getName() + "." + metadataKey)) {
-            return workflowAppContext.getApplicationProperty(
-                    APP_PROPERTIES_BASE + APP_PROPERTIES_EVENTS_BASE + eventDefinition.getName() + "." + metadataKey);
+                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_EVENTS_BASE + eventDefinition.getName() + "." + metadataKey)) {
+            return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_EVENTS_BASE + eventDefinition.getName() + "." + metadataKey);
         }
 
         LOGGER.warn("Could not resolve event definition metadata: {}", metadataKey);
@@ -260,10 +247,8 @@ public class ServerlessWorkflowUtils {
         }
 
         if (state != null && workflowAppContext != null &&
-                workflowAppContext.getApplicationProperties()
-                        .containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + state.getName() + "." + metadataKey)) {
-            return workflowAppContext.getApplicationProperty(
-                    APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + state.getName() + "." + metadataKey);
+                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + state.getName() + "." + metadataKey)) {
+            return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + state.getName() + "." + metadataKey);
         }
 
         LOGGER.warn("Could not resolve state metadata: {}", metadataKey);
@@ -276,13 +261,13 @@ public class ServerlessWorkflowUtils {
         }
 
         if (workflow != null && workflowAppContext != null &&
-                workflowAppContext.getApplicationProperties()
-                        .containsKey(APP_PROPERTIES_BASE + workflow.getId() + "." + metadataKey)) {
+                workflowAppContext.getApplicationProperties().containsKey(APP_PROPERTIES_BASE + workflow.getId() + "." + metadataKey)) {
             return workflowAppContext.getApplicationProperty(APP_PROPERTIES_BASE + workflow.getId() + "." + metadataKey);
         }
 
         LOGGER.warn("Could not resolve state metadata: {}", metadataKey);
         return "";
     }
+
 
 }
