@@ -25,12 +25,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.JobDescription;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.UnitOfWorkManager;
@@ -63,9 +63,11 @@ public class InMemoryJobService implements JobsService {
         LOGGER.debug("ScheduleProcessJob: {}", description);
         ScheduledFuture<?> future = null;
         if (description.expirationTime().repeatInterval() != null) {
-            future = scheduler.scheduleAtFixedRate(repeatableProcessJobByDescription(description), calculateDelay(description), description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
+            future = scheduler.scheduleAtFixedRate(repeatableProcessJobByDescription(description), calculateDelay(description),
+                    description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
         } else {
-            future = scheduler.schedule(processJobByDescription(description), calculateDelay(description), TimeUnit.MILLISECONDS);
+            future = scheduler.schedule(processJobByDescription(description), calculateDelay(description),
+                    TimeUnit.MILLISECONDS);
         }
         scheduledJobs.put(description.id(), future);
         return description.id();
@@ -75,9 +77,14 @@ public class InMemoryJobService implements JobsService {
     public String scheduleProcessInstanceJob(ProcessInstanceJobDescription description) {
         ScheduledFuture<?> future = null;
         if (description.expirationTime().repeatInterval() != null) {
-            future = scheduler.scheduleAtFixedRate(new SignalProcessInstanceOnExpiredTimer(description.id(), description.processInstanceId(), false, description.expirationTime().repeatLimit()), calculateDelay(description), description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
+            future = scheduler.scheduleAtFixedRate(
+                    new SignalProcessInstanceOnExpiredTimer(description.id(), description.processInstanceId(), false,
+                            description.expirationTime().repeatLimit()),
+                    calculateDelay(description), description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
         } else {
-            future = scheduler.schedule(new SignalProcessInstanceOnExpiredTimer(description.id(), description.processInstanceId(), true, -1), calculateDelay(description), TimeUnit.MILLISECONDS);
+            future = scheduler.schedule(
+                    new SignalProcessInstanceOnExpiredTimer(description.id(), description.processInstanceId(), true, -1),
+                    calculateDelay(description), TimeUnit.MILLISECONDS);
         }
         scheduledJobs.put(description.id(), future);
         return description.id();
@@ -121,9 +128,11 @@ public class InMemoryJobService implements JobsService {
 
     protected Runnable repeatableProcessJobByDescription(ProcessJobDescription description) {
         if (description.process() != null) {
-            return new StartProcessOnExpiredTimer(description.id(), description.process(), false, description.expirationTime().repeatLimit());
+            return new StartProcessOnExpiredTimer(description.id(), description.process(), false,
+                    description.expirationTime().repeatLimit());
         } else {
-            return new LegacyStartProcessOnExpiredTimer(description.id(), description.processId(), false, description.expirationTime().repeatLimit());
+            return new LegacyStartProcessOnExpiredTimer(description.id(), description.processId(), false,
+                    description.expirationTime().repeatLimit());
         }
     }
 
@@ -134,7 +143,8 @@ public class InMemoryJobService implements JobsService {
         private String processInstanceId;
         private Integer limit;
 
-        private SignalProcessInstanceOnExpiredTimer(String id, String processInstanceId, boolean removeAtExecution, Integer limit) {
+        private SignalProcessInstanceOnExpiredTimer(String id, String processInstanceId, boolean removeAtExecution,
+                Integer limit) {
             this.id = id;
             this.processInstanceId = processInstanceId;
             this.removeAtExecution = removeAtExecution;
@@ -180,7 +190,8 @@ public class InMemoryJobService implements JobsService {
 
         private Integer limit;
 
-        private StartProcessOnExpiredTimer(String id, org.kie.kogito.process.Process<?> process, boolean removeAtExecution, Integer limit) {
+        private StartProcessOnExpiredTimer(String id, org.kie.kogito.process.Process<?> process, boolean removeAtExecution,
+                Integer limit) {
             this.id = id;
             this.process = process;
             this.removeAtExecution = removeAtExecution;

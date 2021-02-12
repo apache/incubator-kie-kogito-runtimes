@@ -14,17 +14,10 @@
  */
 package org.kie.kogito.codegen.process.persistence;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.data.GeneratedPOJO;
-import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.FILESYSTEM_PERSISTENCE_TYPE;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.PATH_NAME;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -33,10 +26,18 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.FILESYSTEM_PERSISTENCE_TYPE;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.PATH_NAME;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.data.GeneratedPOJO;
+import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 
 class FileSystemPersistenceGeneratorTest {
 
@@ -51,7 +52,8 @@ class FileSystemPersistenceGeneratorTest {
     void test() {
         context.setApplicationProperty("kogito.persistence.type", FILESYSTEM_PERSISTENCE_TYPE);
 
-        ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
+        ReflectionProtoGenerator protoGenerator =
+                ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
                 protoGenerator);
@@ -69,7 +71,8 @@ class FileSystemPersistenceGeneratorTest {
 
         final ClassOrInterfaceDeclaration classDeclaration = compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         final Optional<MethodDeclaration> methodDeclaration = classDeclaration
                 .findFirst(MethodDeclaration.class, d -> d.getName().getIdentifier().equals(PATH_NAME));

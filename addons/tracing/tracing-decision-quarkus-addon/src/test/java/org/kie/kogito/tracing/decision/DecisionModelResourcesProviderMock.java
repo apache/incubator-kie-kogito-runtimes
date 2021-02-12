@@ -16,20 +16,21 @@
 
 package org.kie.kogito.tracing.decision;
 
+import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
+import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAMESPACE;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
-import io.quarkus.test.Mock;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
 
-import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
-import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAMESPACE;
+import io.quarkus.test.Mock;
 
 @Mock
 public class DecisionModelResourcesProviderMock implements DecisionModelResourcesProvider {

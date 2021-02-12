@@ -15,12 +15,12 @@
 
 package org.kie.kogito.codegen.api.utils;
 
+import java.util.function.Predicate;
+
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Predicate;
 
 /**
  * Utility class that performs automatic addons discovery
@@ -51,7 +51,8 @@ public class AddonsConfigDiscovery {
         boolean useMonitoring = usePrometheusMonitoring || classAvailabilityResolver.test(MONITORING_CORE_CLASS);
         boolean useTracing = classAvailabilityResolver.test(TRACING_CLASS);
         boolean useKnativeEventing = classAvailabilityResolver.test(KNATIVE_EVENTING_CLASS);
-        boolean useCloudEvents = classAvailabilityResolver.test(QUARKUS_CLOUD_EVENTS) || classAvailabilityResolver.test(SPRING_CLOUD_EVENTS);
+        boolean useCloudEvents =
+                classAvailabilityResolver.test(QUARKUS_CLOUD_EVENTS) || classAvailabilityResolver.test(SPRING_CLOUD_EVENTS);
 
         AddonsConfig addonsConfig = AddonsConfig.builder()
                 .withPersistence(usePersistence)

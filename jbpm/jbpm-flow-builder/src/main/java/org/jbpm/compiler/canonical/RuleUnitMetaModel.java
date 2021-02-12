@@ -15,6 +15,16 @@
 
 package org.jbpm.compiler.canonical;
 
+import static com.github.javaparser.StaticJavaParser.parseExpression;
+
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
+import org.kie.kogito.rules.DataObserver;
+import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.DataStream;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -28,15 +38,6 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
-import org.kie.kogito.rules.DataObserver;
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.AssignableChecker;
-
-import static com.github.javaparser.StaticJavaParser.parseExpression;
 
 public class RuleUnitMetaModel {
 
@@ -46,7 +47,8 @@ public class RuleUnitMetaModel {
     private final String instanceVarName;
     private final AssignableChecker assignableChecker;
 
-    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName, AssignableChecker assignableChecker ) {
+    public RuleUnitMetaModel(RuleUnitDescription ruleUnitDescription, String instanceVarName,
+            AssignableChecker assignableChecker) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.modelClassName = ruleUnitDescription.getCanonicalName();
         this.instanceVarName = instanceVarName;
@@ -113,13 +115,13 @@ public class RuleUnitMetaModel {
         blockStmt.addStatement(assignVar(v));
         blockStmt.addStatement(
                 iterate(new VariableDeclarator()
-                                .setType("Object").setName("it"),
+                        .setType("Object").setName("it"),
                         new NameExpr(sourceProcVar))
-                        .setBody(new ExpressionStmt(
-                                new MethodCallExpr()
-                                        .setScope(new NameExpr(localVarName(v)))
-                                        .setName(appendMethod)
-                                        .addArgument(new NameExpr("it")))));
+                                .setBody(new ExpressionStmt(
+                                        new MethodCallExpr()
+                                                .setScope(new NameExpr(localVarName(v)))
+                                                .setName(appendMethod)
+                                                .addArgument(new NameExpr("it")))));
         return blockStmt;
     }
 
@@ -144,11 +146,11 @@ public class RuleUnitMetaModel {
 
     private String appendMethodOf(Class<?> type) {
         String appendMethod;
-        if ( assignableChecker.isAssignableFrom(DataStream.class, type)) {
+        if (assignableChecker.isAssignableFrom(DataStream.class, type)) {
             appendMethod = "append";
-        } else if ( assignableChecker.isAssignableFrom(DataStore.class, type)) {
+        } else if (assignableChecker.isAssignableFrom(DataStore.class, type)) {
             appendMethod = "add";
-        } else if ( assignableChecker.isAssignableFrom(SingletonStore.class, type)) {
+        } else if (assignableChecker.isAssignableFrom(SingletonStore.class, type)) {
             appendMethod = "set";
         } else {
             throw new IllegalArgumentException("Unknown data source type " + type.getCanonicalName());
@@ -165,7 +167,7 @@ public class RuleUnitMetaModel {
                         new MethodCallExpr(new NameExpr(localVarName), "subscribe")
                                 .addArgument(new MethodCallExpr(
                                         new NameExpr(DataObserver.class.getCanonicalName()), "of")
-                                                     .addArgument(parseExpression(targetProcessVar + "::add")))));
+                                                .addArgument(parseExpression(targetProcessVar + "::add")))));
         return blockStmt;
     }
 
@@ -178,7 +180,8 @@ public class RuleUnitMetaModel {
                         new MethodCallExpr(new NameExpr(localVarName), "subscribe")
                                 .addArgument(new MethodCallExpr(
                                         new NameExpr(DataObserver.class.getCanonicalName()), "ofUpdatable")
-                                                     .addArgument(parseExpression("o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
+                                                .addArgument(parseExpression(
+                                                        "o -> kcontext.setVariable(\"" + targetProcessVar + "\", o)")))));
 
         return blockStmt;
     }

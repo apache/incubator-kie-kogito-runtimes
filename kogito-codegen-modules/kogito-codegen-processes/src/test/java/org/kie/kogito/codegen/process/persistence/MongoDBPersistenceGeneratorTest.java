@@ -15,6 +15,13 @@
 
 package org.kie.kogito.codegen.process.persistence;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.MONGODB_PERSISTENCE_TYPE;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collection;
@@ -22,11 +29,6 @@ import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
@@ -36,12 +38,11 @@ import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
-import static com.github.javaparser.StaticJavaParser.parse;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.MONGODB_PERSISTENCE_TYPE;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 class MongoDBPersistenceGeneratorTest {
 
@@ -62,18 +63,23 @@ class MongoDBPersistenceGeneratorTest {
                 protoGenerator);
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
-        Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
+        Optional<GeneratedFile> generatedCLASSFile =
+                generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category()).findFirst();
         assertTrue(generatedCLASSFile.isPresent());
         GeneratedFile classFile = generatedCLASSFile.get();
         assertEquals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java", classFile.relativePath());
 
         final CompilationUnit compilationUnit = parse(new ByteArrayInputStream(classFile.contents()));
 
-        final ClassOrInterfaceDeclaration classDeclaration = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+        final ClassOrInterfaceDeclaration classDeclaration =
+                compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(
+                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         assertNotNull(classDeclaration);
 
-        final MethodDeclaration methodDeclaration = classDeclaration.findFirst(MethodDeclaration.class, d -> d.getName().getIdentifier().equals("dbName")).orElseThrow(() -> new NoSuchElementException("Class declaration doesn't contain a method named \"dbName\"!"));
+        final MethodDeclaration methodDeclaration = classDeclaration
+                .findFirst(MethodDeclaration.class, d -> d.getName().getIdentifier().equals("dbName"))
+                .orElseThrow(() -> new NoSuchElementException("Class declaration doesn't contain a method named \"dbName\"!"));
         assertNotNull(methodDeclaration);
         assertTrue(methodDeclaration.getBody().isPresent());
 

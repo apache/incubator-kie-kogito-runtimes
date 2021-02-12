@@ -21,8 +21,8 @@ import org.drools.core.marshalling.impl.ProcessMarshallerFactoryService;
 
 public class ProcessMarshallerFactoryServiceImpl implements ProcessMarshallerFactoryService {
 
-	public ProcessMarshaller newProcessMarshaller() {
-		return new ProtobufProcessMarshaller();
-	}
-	
+    public ProcessMarshaller newProcessMarshaller() {
+        return new ProtobufProcessMarshaller();
+    }
+
 }

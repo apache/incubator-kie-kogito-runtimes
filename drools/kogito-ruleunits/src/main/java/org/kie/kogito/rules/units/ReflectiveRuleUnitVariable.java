@@ -14,16 +14,16 @@
  */
 package org.kie.kogito.rules.units;
 
+import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
+import static org.drools.reflective.util.ClassUtils.getter2property;
+import static org.kie.kogito.rules.units.StringUtils.capitalize;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
 import org.kie.internal.ruleunit.RuleUnitVariable;
-
-import static org.drools.reflective.util.ClassUtils.convertFromPrimitiveType;
-import static org.drools.reflective.util.ClassUtils.getter2property;
-import static org.kie.kogito.rules.units.StringUtils.capitalize;
 
 public final class ReflectiveRuleUnitVariable implements RuleUnitVariable {
 
@@ -67,17 +67,16 @@ public final class ReflectiveRuleUnitVariable implements RuleUnitVariable {
         Class<?> returnClass = m.getReturnType();
         if (returnClass.isArray()) {
             return returnClass.getComponentType();
-        } else if (Iterable.class.isAssignableFrom( returnClass )) {
+        } else if (Iterable.class.isAssignableFrom(returnClass)) {
             Type returnType = m.getGenericReturnType();
-            Class<?> sourceType = returnType instanceof ParameterizedType ?
-                    (Class<?>) ( (ParameterizedType) returnType ).getActualTypeArguments()[0] :
-                    Object.class;
+            Class<?> sourceType = returnType instanceof ParameterizedType
+                    ? (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0]
+                    : Object.class;
             return sourceType;
         } else {
             return returnClass;
         }
     }
-
 
     @Override
     public boolean isDataSource() {

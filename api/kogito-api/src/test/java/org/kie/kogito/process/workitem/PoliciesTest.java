@@ -14,12 +14,12 @@
  */
 package org.kie.kogito.process.workitem;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.auth.IdentityProvider;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PoliciesTest {
 

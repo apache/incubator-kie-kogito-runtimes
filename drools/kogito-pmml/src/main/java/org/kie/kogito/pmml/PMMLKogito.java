@@ -16,6 +16,8 @@
 
 package org.kie.kogito.pmml;
 
+import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -33,8 +35,6 @@ import org.kie.pmml.api.exceptions.KiePMMLException;
 import org.kie.pmml.api.models.PMMLModel;
 import org.kie.pmml.api.runtime.PMMLRuntime;
 import org.kie.pmml.evaluator.core.PMMLContextImpl;
-
-import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
 /**
  * Internal Utility class.<br/>
@@ -62,6 +62,7 @@ public class PMMLKogito {
     /**
      * This method is equivalents to createKieRuntimeFactories but it also compiles the PMML models in memory instead of
      * just load it. It is used by Kogito Test Scenario to load and run the tests
+     * 
      * @param pmmlPaths
      * @return
      */
@@ -76,9 +77,9 @@ public class PMMLKogito {
             return modelsWithName.get(0);
         } else {
             String errorMessage =
-                    String.format ("Wrong number of model(s) with name '%s': %s",
-                                   modelName,
-                                   modelsWithName.size());
+                    String.format("Wrong number of model(s) with name '%s': %s",
+                            modelName,
+                            modelsWithName.size());
             throw new KiePMMLException(errorMessage);
         }
     }

@@ -15,20 +15,7 @@
 
 package org.kie.kogito.codegen.sample.generator;
 
-
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import org.kie.api.io.Resource;
-import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.api.ConfigGenerator;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.Generator;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.sample.generator.config.SampleConfigGenerator;
+import static java.util.stream.Collectors.toList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +28,20 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
+import org.kie.api.io.Resource;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.ConfigGenerator;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.Generator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.sample.generator.config.SampleConfigGenerator;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
 public class SampleCodegen implements Generator {
 
@@ -81,7 +81,8 @@ public class SampleCodegen implements Generator {
 
         if (context.hasDI()) {
             compilationUnit.findAll(FieldDeclaration.class,
-                    SampleCodegen::isSampleRuntimeField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
+                    SampleCodegen::isSampleRuntimeField)
+                    .forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             compilationUnit.findAll(FieldDeclaration.class,
                     SampleCodegen::isSampleRuntimeField).forEach(SampleCodegen::initializeSampleRuntimeField);
@@ -113,7 +114,8 @@ public class SampleCodegen implements Generator {
 
     private static Collection<SampleResource> parseResources(Collection<CollectedResource> rawSampleResource) {
         return rawSampleResource.stream()
-                .map(cr -> new SampleResource(removeExtension(cr.basePath().getFileName().toString()), getContent(cr.resource())))
+                .map(cr -> new SampleResource(removeExtension(cr.basePath().getFileName().toString()),
+                        getContent(cr.resource())))
                 .collect(toList());
     }
 
@@ -125,8 +127,8 @@ public class SampleCodegen implements Generator {
         try {
             return new BufferedReader(new InputStreamReader(
                     resource.getInputStream(), StandardCharsets.UTF_8))
-                    .lines()
-                    .collect(Collectors.joining("\n"));
+                            .lines()
+                            .collect(Collectors.joining("\n"));
         } catch (IOException e) {
             throw new UncheckedIOException("Impossible to read resource " + resource.getSourcePath(), e);
         }

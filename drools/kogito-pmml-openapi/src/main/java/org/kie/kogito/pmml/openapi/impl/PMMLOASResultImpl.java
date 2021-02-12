@@ -15,21 +15,6 @@
  */
 package org.kie.kogito.pmml.openapi.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import io.smallrye.openapi.runtime.io.JsonUtil;
-import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
-import org.kie.pmml.api.enums.DATA_TYPE;
-import org.kie.pmml.api.enums.ResultCode;
-import org.kie.pmml.api.models.MiningField;
-import org.kie.pmml.api.models.OutputField;
-
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.addIntervals;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.addToSetNode;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.createSetNodeInParent;
@@ -37,6 +22,23 @@ import static org.kie.kogito.pmml.openapi.PMMLOASUtils.getMappedFormat;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.getMappedType;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.isPredicted;
 import static org.kie.kogito.pmml.openapi.PMMLOASUtils.isRequired;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
+import org.kie.pmml.api.enums.DATA_TYPE;
+import org.kie.pmml.api.enums.ResultCode;
+import org.kie.pmml.api.models.MiningField;
+import org.kie.pmml.api.models.OutputField;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
+import io.smallrye.openapi.runtime.io.JsonUtil;
 
 /**
  * Concrete implementation of <code>PMMLOASResult</code>
@@ -113,7 +115,7 @@ public class PMMLOASResultImpl implements PMMLOASResult {
 
     protected void addOutputFields(List<OutputField> toAdd) {
         toAdd.forEach(outputField -> addToResultVariables(outputField.getName(), outputField.getDataType(),
-                                                          outputField.getAllowedValues()));
+                outputField.getAllowedValues()));
     }
 
     protected void addToResultSet(String fieldName, DATA_TYPE dataType, List<String> allowedValues) {

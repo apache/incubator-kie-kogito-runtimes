@@ -37,7 +37,8 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     /**
      * String prefix for Kogito CloudEvents type fields.
      * Since this is a required field, the constructor will fill them with this default value.
-     * Ideally, callers would use #TYPE_FORMAT to fill this field using the process name and the signal node name, e.g: process.travelagency.visaapproved
+     * Ideally, callers would use #TYPE_FORMAT to fill this field using the process name and the signal node name, e.g:
+     * process.travelagency.visaapproved
      */
     public static final String TYPE_PREFIX = "process";
     public static final String TYPE_FORMAT = TYPE_PREFIX + ".%s.%s";
@@ -75,16 +76,17 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String kogitoAddons;
 
-    public AbstractDataEvent() {}
+    public AbstractDataEvent() {
+    }
 
     public AbstractDataEvent(String type,
-                             String source,
-                             T body,
-                             String kogitoProcessinstanceId,
-                             String kogitoRootProcessinstanceId,
-                             String kogitoProcessId,
-                             String kogitoRootProcessId,
-                             String kogitoAddons) {
+            String source,
+            T body,
+            String kogitoProcessinstanceId,
+            String kogitoRootProcessinstanceId,
+            String kogitoProcessId,
+            String kogitoRootProcessId,
+            String kogitoAddons) {
         this.specVersion = SPEC_VERSION;
         this.id = UUID.randomUUID().toString();
         this.source = source;
@@ -102,17 +104,18 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     public AbstractDataEvent(String type,
-                             String source,
-                             T body,
-                             String kogitoProcessinstanceId,
-                             String kogitoRootProcessinstanceId,
-                             String kogitoProcessId,
-                             String kogitoRootProcessId,
-                             String kogitoAddons,
-                             String subject,
-                             String dataContentType,
-                             String dataSchema) {
-        this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons);
+            String source,
+            T body,
+            String kogitoProcessinstanceId,
+            String kogitoRootProcessinstanceId,
+            String kogitoProcessId,
+            String kogitoRootProcessId,
+            String kogitoAddons,
+            String subject,
+            String dataContentType,
+            String dataSchema) {
+        this(type, source, body, kogitoProcessinstanceId, kogitoRootProcessinstanceId, kogitoProcessId, kogitoRootProcessId,
+                kogitoAddons);
         this.subject = subject;
         this.dataContentType = dataContentType;
         this.dataSchema = dataSchema;

@@ -67,14 +67,15 @@ public abstract class AbstractRuleConfig implements RuleConfig {
             Collection<RuleRuntimeEventListener> ruleRuntimeEventListeners) {
         return new CachedRuleEventListenerConfig(
                 merge(ruleEventListenerConfigs,
-                      RuleEventListenerConfig::agendaListeners,
-                      agendaEventListeners),
+                        RuleEventListenerConfig::agendaListeners,
+                        agendaEventListeners),
                 merge(ruleEventListenerConfigs,
-                      RuleEventListenerConfig::ruleRuntimeListeners,
-                      ruleRuntimeEventListeners));
+                        RuleEventListenerConfig::ruleRuntimeListeners,
+                        ruleRuntimeEventListeners));
     }
 
-    private static <C, L> List<L> merge(Collection<C> configs, Function<C, Collection<L>> configToListeners, Collection<L> listeners) {
+    private static <C, L> List<L> merge(Collection<C> configs, Function<C, Collection<L>> configToListeners,
+            Collection<L> listeners) {
         return Stream.concat(
                 configs.stream().flatMap(c -> configToListeners.apply(c).stream()), listeners.stream())
                 .collect(Collectors.toList());

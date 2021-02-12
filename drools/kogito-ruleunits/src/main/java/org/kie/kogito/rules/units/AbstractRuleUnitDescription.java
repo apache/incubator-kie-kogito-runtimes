@@ -48,7 +48,7 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
     }
 
     @Override
-    public RuleUnitVariable getVar( String name) {
+    public RuleUnitVariable getVar(String name) {
         RuleUnitVariable ruleUnitVariable = varDeclarations.get(name);
         if (ruleUnitVariable == null) {
             throw new UndefinedRuleUnitVariable(name, this.getCanonicalName());

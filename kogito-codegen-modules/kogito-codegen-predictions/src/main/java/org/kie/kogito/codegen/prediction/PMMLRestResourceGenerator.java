@@ -15,30 +15,30 @@
 
 package org.kie.kogito.codegen.prediction;
 
+import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
+
 import java.net.URLEncoder;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.pmml.commons.model.KiePMMLModel;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.CodegenUtils;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.pmml.commons.model.KiePMMLModel;
-
-import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 
 public class PMMLRestResourceGenerator {
 
@@ -82,7 +82,7 @@ public class PMMLRestResourceGenerator {
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface " +
-                                                                      "declaration!"));
+                        "declaration!"));
 
         template.setName(resourceClazzName);
 
@@ -91,10 +91,11 @@ public class PMMLRestResourceGenerator {
         setOASAnnotations(template);
         if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                             CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
+                    CodegenUtils::isApplicationField)
+                    .forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
-                             CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
+                    CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());
@@ -118,7 +119,8 @@ public class PMMLRestResourceGenerator {
     }
 
     void setPathValue(ClassOrInterfaceDeclaration template) {
-        template.findFirst(SingleMemberAnnotationExpr.class).orElseThrow(() -> new RuntimeException("")).setMemberValue(new StringLiteralExpr(nameURL));
+        template.findFirst(SingleMemberAnnotationExpr.class).orElseThrow(() -> new RuntimeException(""))
+                .setMemberValue(new StringLiteralExpr(nameURL));
     }
 
     void setPredictionModelName(ClassOrInterfaceDeclaration template) {
@@ -139,7 +141,7 @@ public class PMMLRestResourceGenerator {
         String outputRef = String.format("/%s#/definitions/ResultSet", jsonFile);
         NodeList<AnnotationExpr> annotations = template.getMethodsByName("result").get(0)
                 .getAnnotations();
-        switch(context.name()) {
+        switch (context.name()) {
             case "Quarkus":
                 setQuarkusOASAnnotations(annotations, inputRef, outputRef);
                 break;
@@ -155,7 +157,7 @@ public class PMMLRestResourceGenerator {
         String outputRef = String.format("/%s#/definitions/OutputSet", jsonFile);
         NodeList<AnnotationExpr> annotations = template.getMethodsByName("descriptive").get(0)
                 .getAnnotations();
-        switch(context.name()) {
+        switch (context.name()) {
             case "Quarkus":
                 setQuarkusOASAnnotations(annotations, inputRef, outputRef);
                 break;
@@ -196,24 +198,24 @@ public class PMMLRestResourceGenerator {
     Optional<NormalAnnotationExpr> getNormalAnnotationExprFromMemberValuePair(MemberValuePair source, String searched) {
         return source.stream()
                 .filter(node -> node instanceof NormalAnnotationExpr &&
-                        searched.equals(((NormalAnnotationExpr)node).getName().asString()))
-                .map(node -> (NormalAnnotationExpr)node)
+                        searched.equals(((NormalAnnotationExpr) node).getName().asString()))
+                .map(node -> (NormalAnnotationExpr) node)
                 .findFirst();
     }
 
     Optional<MemberValuePair> getMemberValuePairFromMemberValuePair(MemberValuePair source, String searched) {
         return source.stream()
                 .filter(node -> node instanceof MemberValuePair &&
-                        searched.equals(((MemberValuePair)node).getName().asString()))
-                .map(node -> (MemberValuePair)node)
+                        searched.equals(((MemberValuePair) node).getName().asString()))
+                .map(node -> (MemberValuePair) node)
                 .findFirst();
     }
 
     Optional<MemberValuePair> getMemberValuePairFromAnnotation(AnnotationExpr source, String searched) {
         return source.getChildNodes().stream()
                 .filter(node -> node instanceof MemberValuePair &&
-                        searched.equals(((MemberValuePair)node).getName().asString()))
-                .map(node -> (MemberValuePair)node)
+                        searched.equals(((MemberValuePair) node).getName().asString()))
+                .map(node -> (MemberValuePair) node)
                 .findFirst();
     }
 

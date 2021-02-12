@@ -15,6 +15,11 @@
 
 package org.kie.kogito.codegen.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
@@ -22,11 +27,6 @@ import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 class CompensationTest extends AbstractCodegenTest {
 

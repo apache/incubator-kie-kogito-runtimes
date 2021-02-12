@@ -15,6 +15,8 @@
 
 package org.kie.kogito.codegen.rules;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +27,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.drools.core.io.impl.ByteArrayResource;
+import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
+
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
@@ -33,11 +39,6 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
-import org.drools.core.io.impl.ByteArrayResource;
-import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
-
-import static java.util.stream.Collectors.joining;
 
 public class AnnotatedClassPostProcessor {
 
@@ -103,7 +104,8 @@ public class AnnotatedClassPostProcessor {
             TypeDeclaration<?> typeDeclaration = unitClass.getPrimaryType()
                     .orElseThrow(() -> new IllegalArgumentException("Java class should have a primary type"));
             String rules = typeDeclaration.getMethods().stream()
-                    .filter(m -> m.getParameters().stream().flatMap(p -> p.getAnnotations().stream()).anyMatch(a -> a.getNameAsString().endsWith("When")))
+                    .filter(m -> m.getParameters().stream().flatMap(p -> p.getAnnotations().stream())
+                            .anyMatch(a -> a.getNameAsString().endsWith("When")))
                     .map(this::generateRule).collect(joining());
             String drl = String.format(
 

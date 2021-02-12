@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-
 package org.kie.kogito.codegen.api.di.impl;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
+
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -33,7 +33,6 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
-import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 
 public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnotator {
 
@@ -83,13 +82,15 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withIncomingMessage(T node, String channel) {
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.eclipse.microprofile.reactive.messaging.Incoming"), new StringLiteralExpr(channel)));
+        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.eclipse.microprofile.reactive.messaging.Incoming"),
+                new StringLiteralExpr(channel)));
         return node;
     }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withOutgoingMessage(T node, String channel) {
-        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.eclipse.microprofile.reactive.messaging.Channel"), new StringLiteralExpr(channel)));
+        node.addAnnotation(new SingleMemberAnnotationExpr(new Name("org.eclipse.microprofile.reactive.messaging.Channel"),
+                new StringLiteralExpr(channel)));
         return node;
     }
 
@@ -120,13 +121,10 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         return new MethodCallExpr(
                 new MethodCallExpr(new NameExpr("java.util.stream.StreamSupport"), "stream", NodeList.nodeList(
                         new MethodCallExpr(new NameExpr(fieldName), "spliterator"),
-                        new BooleanLiteralExpr(false)
-                )),
+                        new BooleanLiteralExpr(false))),
                 "collect",
                 NodeList.nodeList(
-                        new MethodCallExpr(new NameExpr("java.util.stream.Collectors"), "toList")
-                )
-        );
+                        new MethodCallExpr(new NameExpr("java.util.stream.Collectors"), "toList")));
     }
 
     @Override
@@ -144,9 +142,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         node.addAnnotation(new NormalAnnotationExpr(
                 new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
                 NodeList.nodeList(
-                        new MemberValuePair("name", new StringLiteralExpr(configKey))
-                )
-        ));
+                        new MemberValuePair("name", new StringLiteralExpr(configKey)))));
         return node;
     }
 
@@ -156,9 +152,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
                 new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
                 NodeList.nodeList(
                         new MemberValuePair("name", new StringLiteralExpr(configKey)),
-                        new MemberValuePair("defaultValue", new StringLiteralExpr(defaultValue))
-                )
-        ));
+                        new MemberValuePair("defaultValue", new StringLiteralExpr(defaultValue)))));
         return node;
     }
 
@@ -178,6 +172,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
     @Override
     public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
         Optional<AnnotationExpr> path = node.getAnnotationByName("Path");
-        return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString());
+        return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr()
+                .asString());
     }
 }

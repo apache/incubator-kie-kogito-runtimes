@@ -41,7 +41,8 @@ public class ApplicationGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGenerator.class);
 
     public static final String APPLICATION_CLASS_NAME = "Application";
-    private static final GeneratedFileType APPLICATION_SECTION_TYPE = GeneratedFileType.of("APPLICATION_SECTION", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType APPLICATION_SECTION_TYPE =
+            GeneratedFileType.of("APPLICATION_SECTION", GeneratedFileType.Category.SOURCE);
 
     private final ApplicationContainerGenerator applicationMainGenerator;
     private ApplicationConfigGenerator applicationConfigGenerator;
@@ -68,7 +69,8 @@ public class ApplicationGenerator {
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
         for (Generator generator : generators) {
-            generator.configGenerator().ifPresent(configGenerator -> applicationConfigGenerator.withConfigGenerator(configGenerator));
+            generator.configGenerator()
+                    .ifPresent(configGenerator -> applicationConfigGenerator.withConfigGenerator(configGenerator));
         }
 
         generatedFiles.add(generateApplicationDescriptor());
@@ -114,6 +116,7 @@ public class ApplicationGenerator {
 
     /**
      * Method to wire Generator with ApplicationGenerator if enabled
+     * 
      * @param generator
      * @param <G>
      * @return

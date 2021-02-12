@@ -43,26 +43,26 @@ public class ActionNodeInstance extends NodeInstanceImpl {
         return (ActionNode) getNode();
     }
 
-    public void internalTrigger( KogitoNodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         triggerTime = new Date();
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
-                "An ActionNode only accepts default incoming connections!");
+                    "An ActionNode only accepts default incoming connections!");
         }
-		Action action = (Action) getActionNode().getAction().getMetaData("Action");
-		try {
+        Action action = (Action) getActionNode().getAction().getMetaData("Action");
+        try {
             KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
-		    context.setNodeInstance(this);
-	        executeAction(action);
-		} catch( WorkflowRuntimeException wre) { 
-		    throw wre;
-		} catch (Exception e) {
-		    // for the case that one of the following throws an exception
-		    // - the ProcessContext() constructor 
-		    // - or context.setNodeInstance(this) 
-		    throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
-		} 
-    	triggerCompleted();
+            context.setNodeInstance(this);
+            executeAction(action);
+        } catch (WorkflowRuntimeException wre) {
+            throw wre;
+        } catch (Exception e) {
+            // for the case that one of the following throws an exception
+            // - the ProcessContext() constructor 
+            // - or context.setNodeInstance(this) 
+            throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
+        }
+        triggerCompleted();
     }
 
     public void setOutputVariable(Object variable) {
@@ -71,10 +71,12 @@ public class ActionNodeInstance extends NodeInstanceImpl {
 
             for (DataAssociation output : outputs) {
 
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
+                VariableScopeInstance variableScopeInstance =
+                        (VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
                 if (variableScopeInstance != null) {
 
-                    Variable var = variableScopeInstance.getVariableScope().getVariables().stream().filter(v -> v.getId().equals(output.getTarget())).findFirst().orElse(null);
+                    Variable var = variableScopeInstance.getVariableScope().getVariables().stream()
+                            .filter(v -> v.getId().equals(output.getTarget())).findFirst().orElse(null);
                     if (var != null) {
                         variableScopeInstance.setVariable(var.getName(), variable);
                     }
@@ -84,8 +86,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
     }
 
     public void triggerCompleted() {
-        triggerCompleted( Node.CONNECTION_DEFAULT_TYPE, true);
+        triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
     }
-
 
 }

@@ -15,18 +15,19 @@
 
 package org.kie.kogito.codegen.sample.generator;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.Statement;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 public class SampleContainerGenerator implements ApplicationSection {
 
@@ -50,13 +51,15 @@ public class SampleContainerGenerator implements ApplicationSection {
     @Override
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = generator.compilationUnitOrThrow();
-        MethodDeclaration loadContent = compilationUnit.findFirst(MethodDeclaration.class, md -> "loadContent".equals(md.getName().asString()))
-                .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find method loadContent"));
+        MethodDeclaration loadContent =
+                compilationUnit.findFirst(MethodDeclaration.class, md -> "loadContent".equals(md.getName().asString()))
+                        .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find method loadContent"));
 
         BlockStmt loadContentBlock = loadContent.getBody()
                 .orElseThrow(() -> new InvalidTemplateException(generator, "loadContent method must have a body"));
 
-        Collection<Statement> loadStatements = sampleResources.stream().map(SampleContainerGenerator::toLoadStatement).collect(Collectors.toList());
+        Collection<Statement> loadStatements =
+                sampleResources.stream().map(SampleContainerGenerator::toLoadStatement).collect(Collectors.toList());
 
         loadContentBlock.getStatements().addAll(loadStatements);
 
@@ -64,7 +67,8 @@ public class SampleContainerGenerator implements ApplicationSection {
     }
 
     private static Statement toLoadStatement(SampleResource resource) {
-        String rawStatement = ADD_CONTENT_STATEMENT.replace("$name$", resource.getName()).replace("$content$", resource.getContent());
+        String rawStatement =
+                ADD_CONTENT_STATEMENT.replace("$name$", resource.getName()).replace("$content$", resource.getContent());
         return StaticJavaParser.parseStatement(rawStatement);
     }
 }

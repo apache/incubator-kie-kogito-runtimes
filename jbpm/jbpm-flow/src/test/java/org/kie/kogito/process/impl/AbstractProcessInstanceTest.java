@@ -16,6 +16,13 @@
 
 package org.kie.kogito.process.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -36,13 +43,6 @@ import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class AbstractProcessInstanceTest {
 
@@ -111,7 +111,7 @@ public class AbstractProcessInstanceTest {
     private NodeInstance givenExistingNode(String nodeId) {
         RuleFlowProcess process = mock(RuleFlowProcess.class);
         when(wpi.getProcess()).thenReturn(process);
-        org.kie.api.definition.process.Node node = mock( org.kie.api.definition.process.Node.class);
+        org.kie.api.definition.process.Node node = mock(org.kie.api.definition.process.Node.class);
         when(node.getMetaData()).thenReturn(Collections.singletonMap("UniqueId", nodeId));
         when(process.getNodesRecursively()).thenReturn(Arrays.asList(node));
 

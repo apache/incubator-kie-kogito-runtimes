@@ -40,10 +40,12 @@ public class ProcessGenerationUtils {
         final List<Process> processes = ProcessCodegen.parseProcesses(Collections.singleton(processFile));
         Assertions.assertThat(processes).isNotEmpty();
 
-        final ProcessToExecModelGenerator execModelGenerator = new ProcessToExecModelGenerator(ProcessGenerationUtils.class.getClassLoader());
+        final ProcessToExecModelGenerator execModelGenerator =
+                new ProcessToExecModelGenerator(ProcessGenerationUtils.class.getClassLoader());
         final List<ProcessExecutableModelGenerator> processExecutableModelGenerators = new ArrayList<>();
         processes.forEach(p -> {
-            processExecutableModelGenerators.add(new ProcessExecutableModelGenerator(( KogitoWorkflowProcess ) p, execModelGenerator));
+            processExecutableModelGenerators
+                    .add(new ProcessExecutableModelGenerator((KogitoWorkflowProcess) p, execModelGenerator));
         });
         return processExecutableModelGenerators;
     }

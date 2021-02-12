@@ -16,11 +16,11 @@
 
 package org.kie.kogito.jobs;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.UUID;
 
 import org.kie.kogito.process.Process;
-
-import static java.util.Objects.requireNonNull;
 
 public class ProcessJobDescription implements JobDescription {
 

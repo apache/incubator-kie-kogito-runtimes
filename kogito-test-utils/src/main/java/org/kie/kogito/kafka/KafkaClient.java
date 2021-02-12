@@ -67,8 +67,8 @@ public class KafkaClient {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 
                     StreamSupport.stream(records.spliterator(), true)
-                                 .map(ConsumerRecord::value)
-                                 .forEach(callback::accept);
+                            .map(ConsumerRecord::value)
+                            .forEach(callback::accept);
 
                     consumer.commitSync();
                 }
@@ -77,7 +77,8 @@ public class KafkaClient {
     }
 
     public void produce(String data, String topic) {
-        producer.send(new ProducerRecord<>(topic, data), (m, ex) -> Optional.ofNullable(ex).ifPresent(e -> LOGGER.error("Error publishing message {}", m, ex)));
+        producer.send(new ProducerRecord<>(topic, data),
+                (m, ex) -> Optional.ofNullable(ex).ifPresent(e -> LOGGER.error("Error publishing message {}", m, ex)));
     }
 
     public void shutdown() {

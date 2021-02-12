@@ -14,6 +14,8 @@
  */
 package org.kie.kogito.dmn;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
@@ -21,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultDecisionModelResourceTest {
 
@@ -33,10 +33,10 @@ public class DefaultDecisionModelResourceTest {
     @Test
     public void testGetters() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                DecisionModelType.DMN,
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
+                "namespace",
+                "name",
+                DecisionModelType.DMN,
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
 
         assertEquals(GAV, resource.getGav());
         assertEquals("name", resource.getModelName());
@@ -47,10 +47,10 @@ public class DefaultDecisionModelResourceTest {
     @Test
     public void testLoad() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                DecisionModelType.DMN,
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
+                "namespace",
+                "name",
+                DecisionModelType.DMN,
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
 
         assertEquals(CONTENT, resource.get().trim());
     }

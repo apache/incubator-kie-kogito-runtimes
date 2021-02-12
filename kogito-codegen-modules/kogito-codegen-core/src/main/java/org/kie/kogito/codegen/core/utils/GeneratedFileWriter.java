@@ -54,7 +54,7 @@ public class GeneratedFileWriter {
 
         /**
          * @param basePath the path to which the given subdirectories will be written
-         *                 e.g. ${basePath}/${classesDir}/myfile.ext
+         *        e.g. ${basePath}/${classesDir}/myfile.ext
          *
          */
         public GeneratedFileWriter build(Path basePath) {

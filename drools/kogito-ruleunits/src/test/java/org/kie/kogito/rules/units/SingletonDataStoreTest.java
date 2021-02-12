@@ -15,6 +15,12 @@
 
 package org.kie.kogito.rules.units;
 
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,12 +29,6 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.SingletonStore;
-
-import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SingletonDataStoreTest {
 
@@ -66,7 +66,6 @@ public class SingletonDataStoreTest {
         assertNull(probe.handle);
         assertNull(probe.value);
     }
-
 
     private static class Probe<T> implements DataProcessor<T> {
 

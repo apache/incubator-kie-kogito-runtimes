@@ -16,18 +16,19 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import static io.restassured.RestAssured.given;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.io.InputStream;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
-
-import java.io.InputStream;
-
-import static io.restassured.RestAssured.given;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
@@ -41,14 +42,15 @@ class JsonSchemaTest {
     void testJsonSchema() {
         // Quarkus returns URI with "quarkus://" scheme when running via CLI and this is not compatible with
         // matchesJsonSchemaInClasspath, while matchesJsonSchema directly accepts InputStream
-        InputStream jsonSchema = Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/jsonSchema/approvals_firstLineApproval.json");
+        InputStream jsonSchema = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("META-INF/jsonSchema/approvals_firstLineApproval.json");
         assertThat(jsonSchema).isNotNull();
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .get("/approvals/firstLineApproval/schema")
-            .then()
+                .then()
                 .statusCode(200)
                 .body(matchesJsonSchema(jsonSchema));
     }

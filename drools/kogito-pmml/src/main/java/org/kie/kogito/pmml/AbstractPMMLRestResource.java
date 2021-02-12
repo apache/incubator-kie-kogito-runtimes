@@ -22,20 +22,22 @@ import org.kie.kogito.Application;
 
 public abstract class AbstractPMMLRestResource {
 
-
     protected Object result(Application application, String modelName, Map<String, Object> variables) {
-        org.kie.kogito.prediction.PredictionModel prediction = application.get(org.kie.kogito.prediction.PredictionModels.class).getPredictionModel(modelName);
+        org.kie.kogito.prediction.PredictionModel prediction =
+                application.get(org.kie.kogito.prediction.PredictionModels.class).getPredictionModel(modelName);
         org.kie.api.pmml.PMML4Result pmml4Result = prediction.evaluateAll(prediction.newContext(variables));
-        return java.util.Collections.singletonMap(pmml4Result.getResultObjectName(), pmml4Result.getResultVariables().get(pmml4Result.getResultObjectName()));
+        return java.util.Collections.singletonMap(pmml4Result.getResultObjectName(),
+                pmml4Result.getResultVariables().get(pmml4Result.getResultObjectName()));
     }
 
     protected PMML4Result descriptive(Application application, String modelName, Map<String, Object> variables) {
-        org.kie.kogito.prediction.PredictionModel prediction = application.get(org.kie.kogito.prediction.PredictionModels.class).getPredictionModel(modelName);
+        org.kie.kogito.prediction.PredictionModel prediction =
+                application.get(org.kie.kogito.prediction.PredictionModels.class).getPredictionModel(modelName);
         return prediction.evaluateAll(prediction.newContext(variables));
     }
 
     public static String getJsonErrorMessage(Exception e) {
-        String errorMessage = String.format("%1$s: %2$s", e.getClass().getName(),  e.getMessage() != null ? e.getMessage() : "");
+        String errorMessage = String.format("%1$s: %2$s", e.getClass().getName(), e.getMessage() != null ? e.getMessage() : "");
         return String.format("{\"exception\" : \"%s\"}", errorMessage);
     }
 }

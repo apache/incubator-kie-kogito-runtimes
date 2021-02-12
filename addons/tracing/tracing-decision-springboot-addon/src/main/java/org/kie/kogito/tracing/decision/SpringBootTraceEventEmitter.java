@@ -29,7 +29,8 @@ public class SpringBootTraceEventEmitter implements EventEmitter {
 
     @Autowired
     public SpringBootTraceEventEmitter(final KafkaTemplate<String, String> template,
-                                       final @Value(value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-decision}") String kafkaTopicName) {
+            final @Value(
+                    value = "${kogito.addon.tracing.decision.kafka.topic.name:kogito-tracing-decision}") String kafkaTopicName) {
         this.template = template;
         this.kafkaTopicName = kafkaTopicName;
     }

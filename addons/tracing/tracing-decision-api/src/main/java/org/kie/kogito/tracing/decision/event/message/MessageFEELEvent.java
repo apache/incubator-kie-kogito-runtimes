@@ -16,9 +16,9 @@
 
 package org.kie.kogito.tracing.decision.event.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class MessageFEELEvent {
 
@@ -34,7 +34,8 @@ public class MessageFEELEvent {
     private MessageFEELEvent() {
     }
 
-    public MessageFEELEvent(MessageFEELEventSeverity severity, String message, Integer line, Integer column, MessageExceptionField sourceException) {
+    public MessageFEELEvent(MessageFEELEventSeverity severity, String message, Integer line, Integer column,
+            MessageExceptionField sourceException) {
         this.severity = severity;
         this.message = message;
         this.line = line == null || line < 0 ? null : line;

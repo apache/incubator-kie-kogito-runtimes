@@ -21,7 +21,8 @@ import java.util.function.Function;
 import org.kie.kogito.decision.DecisionModel;
 
 /**
- * This class must always have exact FQCN as <code>org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer</code>
+ * This class must always have exact FQCN as
+ * <code>org.kie.kogito.monitoring.core.common.decision.MonitoredDecisionModelTransformer</code>
  * for code generation plugins to inject this class.
  */
 public class MonitoredDecisionModelTransformer implements Function<DecisionModel, DecisionModel> {

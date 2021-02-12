@@ -15,15 +15,16 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 
 @QuarkusTest
 class PMMLTreeTest {

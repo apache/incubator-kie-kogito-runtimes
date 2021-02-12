@@ -14,12 +14,32 @@
  */
 package org.kie.kogito.codegen.decision;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.kie.api.io.ResourceType;
+import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.core.AbstractGenerator;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
@@ -31,25 +51,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import org.junit.jupiter.api.Test;
-import org.kie.api.io.ResourceType;
-import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
-
-import static com.github.javaparser.StaticJavaParser.parse;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DecisionModelResourcesProviderGeneratorTest {
 
@@ -62,8 +63,7 @@ public class DecisionModelResourcesProviderGeneratorTest {
 
         final Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(
                 Paths.get("src/test/resources/decision/models/vacationDays").toAbsolutePath(),
-                Paths.get("src/test/resources/decision/models/vacationDaysAlt").toAbsolutePath()
-        );
+                Paths.get("src/test/resources/decision/models/vacationDaysAlt").toAbsolutePath());
 
         final long numberOfModels = collectedResources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.DMN)
@@ -94,14 +94,16 @@ public class DecisionModelResourcesProviderGeneratorTest {
 
         final ClassOrInterfaceDeclaration classDeclaration = compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(
+                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         assertNotNull(classDeclaration);
 
         final MethodDeclaration methodDeclaration = classDeclaration
                 .findFirst(MethodDeclaration.class,
-                           d -> d.getName().getIdentifier().equals("getResources"))
-                .orElseThrow(() -> new NoSuchElementException("Class declaration doesn't contain a method named \"getResources\"!"));
+                        d -> d.getName().getIdentifier().equals("getResources"))
+                .orElseThrow(
+                        () -> new NoSuchElementException("Class declaration doesn't contain a method named \"getResources\"!"));
         assertNotNull(methodDeclaration);
         assertTrue(methodDeclaration.getBody().isPresent());
 

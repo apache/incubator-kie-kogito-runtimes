@@ -16,18 +16,19 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import java.util.List;
 import java.util.Map;
+
+import org.kie.kogito.tracing.decision.event.message.Message;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.kie.kogito.tracing.decision.event.message.Message;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceExecutionStep {
@@ -63,7 +64,8 @@ public class TraceExecutionStep {
     private TraceExecutionStep() {
     }
 
-    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<Message> messages, Map<String, String> additionalData, List<TraceExecutionStep> children) {
+    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<Message> messages,
+            Map<String, String> additionalData, List<TraceExecutionStep> children) {
         this.type = type;
         this.duration = duration;
         this.name = name;

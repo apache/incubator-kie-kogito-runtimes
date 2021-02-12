@@ -41,21 +41,23 @@ public class StaticKieAssemblers implements KieAssemblers {
     }
 
     @Override
-    public void addResourceBeforeRules(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
+    public void addResourceBeforeRules(Object knowledgeBuilder, Resource resource, ResourceType type,
+            ResourceConfiguration configuration) throws Exception {
         KieAssemblerService assembler = assemblers.get(type);
         if (assembler != null) {
             assembler.addResourceBeforeRules(knowledgeBuilder,
-                                             resource,
-                                             type,
-                                             configuration);
+                    resource,
+                    type,
+                    configuration);
         } else {
             throw new RuntimeException("Unknown resource type: " + type);
         }
-    
+
     }
 
     @Override
-    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration) throws Exception {
+    public void addResource(Object knowledgeBuilder, Resource resource, ResourceType type, ResourceConfiguration configuration)
+            throws Exception {
         KieAssemblerService assembler = assemblers.get(type);
         if (assembler != null) {
             assembler.addResource(knowledgeBuilder,
@@ -68,7 +70,8 @@ public class StaticKieAssemblers implements KieAssemblers {
     }
 
     @Override
-    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type) throws Exception {
+    public void addResources(Object knowledgeBuilder, List<ResourceWithConfiguration> resources, ResourceType type)
+            throws Exception {
         KieAssemblerService assembler = assemblers.get(type);
         if (assembler != null) {
             assembler.addResources(knowledgeBuilder, resources, type);
