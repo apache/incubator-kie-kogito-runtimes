@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
