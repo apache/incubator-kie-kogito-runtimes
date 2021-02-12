@@ -193,6 +193,13 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-codegen-api</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-codegen-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1195,6 +1202,11 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-pmml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-pmml-openapi</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

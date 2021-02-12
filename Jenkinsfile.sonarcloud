@@ -1,0 +1,68 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+import org.kie.jenkins.MavenCommand
+
+pipeline {
+    agent {
+        label 'kie-rhel7 && kie-mem16g'
+    }
+    tools {
+        maven 'kie-maven-3.6.2'
+        jdk 'kie-jdk11'
+    }
+    options {
+        timeout(time: 360, unit: 'MINUTES')
+    }
+    environment {
+        // Some generated env is also defined into .jenkins/dsl/jobs.groovy file
+
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
+        SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
+        MAVEN_OPTS = '-Xms1024m -Xmx4g'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout(githubscm.resolveRepository('kogito-runtimes', params.GIT_AUTHOR, params.BUILD_BRANCH_NAME, false))
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                script {
+                    getMavenCommand()
+                        .withProfiles(['run-code-coverage'])
+                        .run('clean install')
+                }
+            }
+        }
+        stage('Analyze') {
+            steps {
+                script {
+                    getMavenCommand()
+                        .withOptions(['-e', '-nsu'])
+                        .withProfiles(['sonarcloud-analysis'])
+                        .run('validate')
+                }
+            }
+        }
+    }
+    post {
+        unsuccessful {
+            emailext body: 'Kogito Runtimes daily Sonar #${BUILD_NUMBER} was: ' + "${currentBuild.currentResult}" +  '\n' +
+                            'Please look here: ${BUILD_URL} ',
+                     subject: "[${params.BUILD_BRANCH_NAME}][d] Runtimes Sonar",
+                     to: env.KOGITO_CI_EMAIL_TO
+        }
+        always {
+            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+            cleanWs()
+        }
+    }
+}
+
+MavenCommand getMavenCommand() {
+    return new MavenCommand(this, ['-fae'])
+                .withSettingsXmlId('kogito_release_settings')
+}
