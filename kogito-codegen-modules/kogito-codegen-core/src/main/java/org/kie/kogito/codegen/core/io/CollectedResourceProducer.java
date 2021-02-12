@@ -16,6 +16,14 @@
 
 package org.kie.kogito.codegen.core.io;
 
+import org.drools.core.io.impl.ByteArrayResource;
+import org.drools.core.io.impl.FileSystemResource;
+import org.drools.core.io.internal.InternalResource;
+import org.kie.api.io.Resource;
+import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -28,14 +36,6 @@ import java.util.Enumeration;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import org.drools.core.io.impl.ByteArrayResource;
-import org.drools.core.io.impl.FileSystemResource;
-import org.drools.core.io.internal.InternalResource;
-import org.kie.api.io.Resource;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.drools.core.util.IoUtils.readBytesFromInputStream;
 import static org.kie.api.io.ResourceType.determineResourceType;
@@ -59,8 +59,7 @@ public class CollectedResourceProducer {
             if (path.toFile().isDirectory()) {
                 Collection<CollectedResource> res = fromDirectory(path);
                 resources.addAll(res);
-            } else if (path.getFileName().toString().endsWith(".jar")
-                    || path.getFileName().toString().endsWith(".jar.original")) {
+            } else if (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".jar.original")) {
                 Collection<CollectedResource> res = fromJarFile(path);
                 resources.addAll(res);
             } else if (!path.toFile().exists()) {

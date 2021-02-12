@@ -26,14 +26,10 @@ public class WorkflowAppContextTest extends BaseServerlessTest {
         WorkflowAppContext workflowAppContext = WorkflowAppContext.ofAppResources();
         assertThat(workflowAppContext).isNotNull();
         assertThat(workflowAppContext.getApplicationProperties()).isNotNull();
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop1"))
-                .isEqualTo("testprop1val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop2"))
-                .isEqualTo("testprop2val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop1"))
-                .isEqualTo("testprop1val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop2"))
-                .isEqualTo("testprop2val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop1")).isEqualTo("testprop1val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop2")).isEqualTo("testprop2val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop1")).isEqualTo("testprop1val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop2")).isEqualTo("testprop2val");
     }
 
     @Test
@@ -41,14 +37,10 @@ public class WorkflowAppContextTest extends BaseServerlessTest {
         WorkflowAppContext workflowAppContext = WorkflowAppContext.ofProperties(testWorkflowProperties());
         assertThat(workflowAppContext).isNotNull();
         assertThat(workflowAppContext.getApplicationProperties()).isNotNull();
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop1"))
-                .isEqualTo("testprop1val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop2"))
-                .isEqualTo("testprop2val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop1"))
-                .isEqualTo("testprop1val");
-        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop2"))
-                .isEqualTo("testprop2val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop1")).isEqualTo("testprop1val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction1.testprop2")).isEqualTo("testprop2val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop1")).isEqualTo("testprop1val");
+        assertThat(workflowAppContext.getApplicationProperties().getProperty("kogito.sw.functions.testfunction2.testprop2")).isEqualTo("testprop2val");
     }
 
 }

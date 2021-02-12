@@ -19,14 +19,13 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,7 +42,7 @@ public class SystemMetricsCollectorTest {
     }
 
     @AfterEach
-    public void cleanUp() {
+    public void cleanUp(){
         SystemMetricsCollector.setRegistry(MonitoringRegistry.getDefaultMeterRegistry());
     }
 
@@ -55,16 +54,12 @@ public class SystemMetricsCollectorTest {
         mapCodeRepetition.put("404", 50);
 
         // Act
-        IntStream.range(0, mapCodeRepetition.get("400"))
-                .forEach(x -> SystemMetricsCollector.registerStatusCodeRequest(handler, "400"));
-        IntStream.range(0, mapCodeRepetition.get("404"))
-                .forEach(x -> SystemMetricsCollector.registerStatusCodeRequest(handler, "404"));
+        IntStream.range(0, mapCodeRepetition.get("400")).forEach(x -> SystemMetricsCollector.registerStatusCodeRequest(handler, "400"));
+        IntStream.range(0, mapCodeRepetition.get("404")).forEach(x -> SystemMetricsCollector.registerStatusCodeRequest(handler, "404"));
 
         // Assert
-        assertEquals(mapCodeRepetition.get("400"),
-                (int) registry.find("api_http_response_code").tag("identifier", "400").counter().count());
-        assertEquals(mapCodeRepetition.get("404"),
-                (int) registry.find("api_http_response_code").tag("identifier", "404").counter().count());
+        assertEquals(mapCodeRepetition.get("400"), (int)registry.find("api_http_response_code").tag("identifier", "400").counter().count());
+        assertEquals(mapCodeRepetition.get("404"), (int)registry.find("api_http_response_code").tag("identifier", "404").counter().count());
     }
 
     @Test
@@ -75,16 +70,14 @@ public class SystemMetricsCollectorTest {
         mapExceptionRepetition.put("Exception", 20);
 
         // Act
-        IntStream.range(0, mapExceptionRepetition.get("NoSuchElement"))
-                .forEach(x -> SystemMetricsCollector.registerException(handler, "NoSuchElement"));
-        IntStream.range(0, mapExceptionRepetition.get("Exception"))
-                .forEach(x -> SystemMetricsCollector.registerException(handler, "Exception"));
+        IntStream.range(0, mapExceptionRepetition.get("NoSuchElement")).forEach(x -> SystemMetricsCollector.registerException(handler, "NoSuchElement"));
+        IntStream.range(0, mapExceptionRepetition.get("Exception")).forEach(x -> SystemMetricsCollector.registerException(handler, "Exception"));
 
         // Assert
-        assertEquals(mapExceptionRepetition.get("NoSuchElement"), (int) registry.find("api_http_stacktrace_exceptions")
+        assertEquals(mapExceptionRepetition.get("NoSuchElement"), (int)registry.find("api_http_stacktrace_exceptions")
                 .tag("identifier", "NoSuchElement")
                 .counter().count());
-        assertEquals(mapExceptionRepetition.get("Exception"), (int) registry.find("api_http_stacktrace_exceptions")
+        assertEquals(mapExceptionRepetition.get("Exception"), (int)registry.find("api_http_stacktrace_exceptions")
                 .tag("identifier", "Exception")
                 .counter().count());
     }
@@ -96,6 +89,6 @@ public class SystemMetricsCollectorTest {
 
         // Assert
         assertTrue(registry.find("api_execution_elapsed")
-                .timer().max(TimeUnit.NANOSECONDS) >= 5000);
+                           .timer().max(TimeUnit.NANOSECONDS) >= 5000);
     }
 }

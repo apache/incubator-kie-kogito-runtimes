@@ -13,13 +13,11 @@
  * limitations under the License.
  */
 
+
 package org.kie.kogito.codegen.json;
 
 import java.util.Iterator;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
@@ -27,20 +25,17 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonUtils {
-    /*
-     * see https://stackoverflow.com/questions/9895041/merging-two-json-documents-using-jackson for alternative approaches to
-     * merge
-     */
-    private JsonUtils() {
-    }
-
+    /* see https://stackoverflow.com/questions/9895041/merging-two-json-documents-using-jackson for alternative approaches to merge */
+    private JsonUtils() {}
+    
     private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
 
     /**
-     * Merge two JSON documents.
-     * 
+     * Merge two JSON documents. 
      * @param src JsonNode to be merged
      * @param target JsonNode to merge to
      */
@@ -66,7 +61,7 @@ public class JsonUtils {
                     updateObject(target, BooleanNode.valueOf(entry.getValue().booleanValue()), entry);
                     break;
                 default:
-                    logger.warn("Unrecognized data type {} " + subNode.getNodeType());
+                    logger.warn("Unrecognized data type {} "+subNode.getNodeType());
             }
         }
     }
@@ -102,8 +97,8 @@ public class JsonUtils {
     }
 
     private static void updateObject(JsonNode target,
-            ValueNode value,
-            Map.Entry<String, JsonNode> src) {
+                                     ValueNode value,
+                                     Map.Entry<String, JsonNode> src) {
         boolean newEntry = true;
         Iterator<Map.Entry<String, JsonNode>> iter = target.fields();
         while (iter.hasNext()) {

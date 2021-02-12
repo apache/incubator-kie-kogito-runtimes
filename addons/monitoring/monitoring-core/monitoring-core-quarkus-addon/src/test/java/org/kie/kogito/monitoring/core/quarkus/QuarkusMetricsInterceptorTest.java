@@ -15,20 +15,19 @@
 
 package org.kie.kogito.monitoring.core.quarkus;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.system.interceptor.MetricsInterceptor;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -66,8 +65,7 @@ class QuarkusMetricsInterceptorTest {
 
             interceptor.filter(requestMock, responseMock);
 
-            metricsInterceptor.verify(times(1),
-                    () -> MetricsInterceptor.filter(matchedUrl.capture(), statusCodeCaptor.capture()));
+            metricsInterceptor.verify(times(1), () -> MetricsInterceptor.filter(matchedUrl.capture(), statusCodeCaptor.capture()));
 
             List<String> endpoints = matchedUrl.getAllValues();
             assertThat(endpoints.isEmpty()).isFalse();

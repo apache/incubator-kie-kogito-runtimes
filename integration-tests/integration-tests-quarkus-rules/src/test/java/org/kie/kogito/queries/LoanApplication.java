@@ -27,8 +27,7 @@ public class LoanApplication {
 
     private boolean approved = false;
 
-    public LoanApplication() {
-    }
+    public LoanApplication() {}
 
     public LoanApplication(String id, Applicant applicant, int amount, int deposit) {
         this.id = id;

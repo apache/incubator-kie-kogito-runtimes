@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.drools.core.io.impl.ClassPathResource;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
@@ -43,9 +45,6 @@ import org.kie.kogito.services.identity.StaticIdentityProvider;
 import org.kie.kogito.testcontainers.KogitoMongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -150,8 +149,7 @@ class MongoDBProcessInstancesIT {
         process.setProcessInstancesFactory(new MongoDBProcessInstancesFactory(mongoClient));
         process.configure();
 
-        ProcessInstance<BpmnVariables> mutablePi =
-                process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
+        ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
 
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
@@ -185,8 +183,7 @@ class MongoDBProcessInstancesIT {
         process.setProcessInstancesFactory(new MongoDBProcessInstancesFactory(mongoClient));
         process.configure();
 
-        ProcessInstance<BpmnVariables> processInstance =
-                process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
+        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
 
         processInstance.start();
 

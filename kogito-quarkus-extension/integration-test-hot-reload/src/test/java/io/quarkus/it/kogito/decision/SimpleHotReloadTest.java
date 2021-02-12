@@ -16,15 +16,14 @@
 
 package io.quarkus.it.kogito.decision;
 
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-
 import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -36,7 +35,7 @@ public class SimpleHotReloadTest {
     }
 
     private static final String PACKAGE = "io.quarkus.it.kogito.decision";
-    private static final String RESOURCE_FILE_PATH = PACKAGE.replace('.', '/');
+    private static final String RESOURCE_FILE_PATH = PACKAGE.replace( '.', '/' );
     private static final String DMN_RESOURCE_FILE = RESOURCE_FILE_PATH + "/TrafficViolation.dmn";
 
     private static final String HTTP_TEST_PORT = "65535";

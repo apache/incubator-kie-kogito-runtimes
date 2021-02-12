@@ -34,7 +34,7 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
     private UnitOfWork fallbackUnitOfWork = new PassThroughUnitOfWork();
     // factory used to create unit of work 
     private UnitOfWorkFactory factory;
-
+    
     private EventManager eventManager = new BaseEventManager();
 
     public DefaultUnitOfWorkManager(UnitOfWorkFactory factory) {
@@ -51,7 +51,7 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
     @Override
     public UnitOfWork currentUnitOfWork() {
         UnitOfWork unit = currentUnitOfWork.get();
-
+        
         if (unit == null) {
             return fallbackUnitOfWork;
         }
@@ -60,10 +60,10 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
 
     @Override
     public UnitOfWork newUnitOfWork() {
-
+        
         return new ManagedUnitOfWork(factory.create(eventManager), this::associate, this::dissociate, this::dissociate);
     }
-
+    
     protected void associate(UnitOfWork unit) {
         currentUnitOfWork.set(unit);
     }

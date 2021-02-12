@@ -82,15 +82,13 @@ public class RuleSetTest extends AbstractBaseTest {
         String modelName = "wrong-name";
         String decisionName = "isAdult";
 
-        IllegalStateException illegalStateException =
-                assertThrows(IllegalStateException.class, () -> createProcess(namespace, modelName, decisionName));
+        IllegalStateException illegalStateException = assertThrows(IllegalStateException.class, () -> createProcess(namespace, modelName, decisionName));
         assertTrue(illegalStateException.getMessage().contains(namespace));
         assertTrue(illegalStateException.getMessage().contains(modelName));
     }
 
     private RuleFlowProcess createProcess(String namespace, String modelName, String decisionName) {
-        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(
-                new InputStreamReader(RuleSetTest.class.getResourceAsStream("/org/jbpm/process/PersonDecisions.dmn")));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(RuleSetTest.class.getResourceAsStream("/org/jbpm/process/PersonDecisions.dmn")));
         DmnDecisionModel dmnDecisionModel = new DmnDecisionModel(dmnRuntime, namespace, modelName);
 
         RuleFlowProcess process = new RuleFlowProcess();
@@ -135,8 +133,8 @@ public class RuleSetTest extends AbstractBaseTest {
         return process;
     }
 
-    private void connect(Node sourceNode, Node targetNode) {
+    private void connect( Node sourceNode, Node targetNode) {
         new ConnectionImpl(sourceNode, Node.CONNECTION_DEFAULT_TYPE,
-                targetNode, Node.CONNECTION_DEFAULT_TYPE);
+                           targetNode, Node.CONNECTION_DEFAULT_TYPE);
     }
 }

@@ -40,7 +40,7 @@ public class IntegerMessageMarshaller implements MessageMarshaller<Integer> {
     @Override
     public void writeTo(ProtoStreamWriter writer, Integer t) throws IOException {
         writer.writeInt("data", t);
-
+        
     }
 
 }

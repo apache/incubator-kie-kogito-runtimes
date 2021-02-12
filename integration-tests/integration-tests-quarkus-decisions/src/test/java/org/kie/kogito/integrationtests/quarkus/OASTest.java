@@ -18,8 +18,6 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import java.net.URL;
 
-import org.junit.jupiter.api.Test;
-
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -28,6 +26,7 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
@@ -65,9 +64,9 @@ class OASTest {
     @Test
     public void testOASdmnDefinitions() {
         RestAssured.given()
-                .get("/dmnDefinitions.json")
-                .then()
-                .statusCode(200)
-                .body("definitions", aMapWithSize(greaterThan(0)));
+                   .get("/dmnDefinitions.json")
+                   .then()
+                   .statusCode(200)
+                   .body("definitions", aMapWithSize(greaterThan(0)));
     }
 }

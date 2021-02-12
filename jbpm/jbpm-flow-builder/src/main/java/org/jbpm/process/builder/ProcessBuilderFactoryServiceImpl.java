@@ -23,8 +23,8 @@ import org.kie.internal.builder.KnowledgeBuilder;
 
 public class ProcessBuilderFactoryServiceImpl implements ProcessBuilderFactoryService {
 
-    public ProcessBuilderImpl newProcessBuilder(KnowledgeBuilder knowledgeBuilder) {
-        return new ProcessBuilderImpl((KnowledgeBuilderImpl) knowledgeBuilder);
-    }
-
+	public ProcessBuilderImpl newProcessBuilder(KnowledgeBuilder knowledgeBuilder) {
+		return new ProcessBuilderImpl((KnowledgeBuilderImpl) knowledgeBuilder);
+	}
+	
 }

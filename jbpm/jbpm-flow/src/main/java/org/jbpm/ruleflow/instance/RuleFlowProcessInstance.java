@@ -36,8 +36,7 @@ public class RuleFlowProcessInstance extends WorkflowProcessInstanceImpl {
         if (startNode != null) {
             getNodeInstance(startNode).trigger(null, null);
         } else if (!getRuleFlowProcess().isDynamic()) {
-            throw new IllegalArgumentException(
-                    "There is no start node that matches the trigger " + (trigger == null ? "none" : trigger));
+            throw new IllegalArgumentException("There is no start node that matches the trigger " + (trigger == null ? "none" : trigger));
         }
 
         // activate ad hoc fragments if they are marked as such

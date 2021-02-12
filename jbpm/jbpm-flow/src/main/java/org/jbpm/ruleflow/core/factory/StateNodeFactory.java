@@ -94,8 +94,7 @@ public class StateNodeFactory extends CompositeContextNodeFactory {
         return this;
     }
 
-    public StateNodeFactory constraint(String connectionId, long nodeId, String type, String dialect, String constraint,
-            int priority) {
+    public StateNodeFactory constraint(String connectionId, long nodeId, String type, String dialect, String constraint, int priority) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(connectionId);
         constraintImpl.setType(type);

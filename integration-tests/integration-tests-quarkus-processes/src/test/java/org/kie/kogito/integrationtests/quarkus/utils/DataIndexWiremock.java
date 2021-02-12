@@ -19,7 +19,6 @@ package org.kie.kogito.integrationtests.quarkus.utils;
 import java.util.Map;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
@@ -61,7 +60,7 @@ public class DataIndexWiremock implements QuarkusTestResourceLifecycleManager {
         server.start();
         configureFor(server.port());
         stubFor(post(urlEqualTo("/graphql"))
-                .willReturn(okJson(jsonString)));
+                        .willReturn(okJson(jsonString)));
 
         return singletonMap("kogito.dataindex.http.url", server.baseUrl());
     }

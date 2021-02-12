@@ -52,14 +52,13 @@ public class SVGImageProcessor {
         return transform(svg, completed, active, null, COMPLETED_COLOR, COMPLETED_BORDER_COLOR, ACTIVE_BORDER_COLOR);
     }
 
-    public static String transform(InputStream svg, List<String> completed, List<String> active,
-            Map<String, String> subProcessLinks) {
+    public static String transform(InputStream svg, List<String> completed, List<String> active, Map<String, String> subProcessLinks) {
         return transform(svg, completed, active, subProcessLinks, COMPLETED_COLOR, COMPLETED_BORDER_COLOR, ACTIVE_BORDER_COLOR);
     }
 
     public static String transform(InputStream svg, List<String> completed, List<String> active,
-            Map<String, String> subProcessLinks, String completedNodeColor,
-            String completedNodeBorderColor, String activeNodeBorderColor) {
+                                   Map<String, String> subProcessLinks, String completedNodeColor,
+                                   String completedNodeBorderColor, String activeNodeBorderColor) {
         SVGProcessor processor = new SVGImageProcessor(svg).getProcessor();
 
         for (String nodeId : completed) {

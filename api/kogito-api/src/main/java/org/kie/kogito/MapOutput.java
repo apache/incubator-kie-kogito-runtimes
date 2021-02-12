@@ -23,8 +23,7 @@ import java.util.Map;
 public interface MapOutput {
 
     /**
-     * Returns class representation as map
-     * 
+     * Returns class representation as map  
      * @return non null map of data extracted from the class
      */
     Map<String, Object> toMap();

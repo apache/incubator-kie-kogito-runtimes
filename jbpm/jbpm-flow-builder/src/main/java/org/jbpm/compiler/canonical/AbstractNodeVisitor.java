@@ -20,15 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.jbpm.process.core.context.variable.Mappable;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.node.HumanTaskNode;
-import org.jbpm.workflow.core.node.StartNode;
-import org.kie.api.definition.process.Connection;
-import org.kie.api.definition.process.Node;
-
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.CastExpr;
@@ -46,6 +37,14 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
+import org.jbpm.process.core.context.variable.Mappable;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.workflow.core.impl.ConnectionImpl;
+import org.jbpm.workflow.core.node.HumanTaskNode;
+import org.jbpm.workflow.core.node.StartNode;
+import org.kie.api.definition.process.Connection;
+import org.kie.api.definition.process.Node;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.drools.core.util.StringUtils.ucFirst;
@@ -88,8 +87,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
         return getFactoryMethod(object, METHOD_DONE);
     }
 
-    protected AssignExpr getAssignedFactoryMethod(String factoryField, Class<?> typeClass, String variableName,
-            String methodName, Expression... args) {
+    protected AssignExpr getAssignedFactoryMethod(String factoryField, Class<?> typeClass, String variableName, String methodName, Expression... args) {
         ClassOrInterfaceType type = new ClassOrInterfaceType(null, typeClass.getCanonicalName());
 
         MethodCallExpr variableMethod = new MethodCallExpr(new NameExpr(factoryField), methodName);
@@ -119,7 +117,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
                         new MethodCallExpr(
                                 new NameExpr(KCONTEXT_VAR),
                                 "getVariable")
-                                        .addArgument(new StringLiteralExpr(targetLocalVariable))),
+                                .addArgument(new StringLiteralExpr(targetLocalVariable))),
                 AssignExpr.Operator.ASSIGN);
         return new ExpressionStmt(assignExpr);
     }
@@ -145,12 +143,10 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
     protected void addNodeMappings(Mappable node, BlockStmt body, String variableName) {
         for (Entry<String, String> entry : node.getInMappings().entrySet()) {
-            body.addStatement(getFactoryMethod(variableName, METHOD_IN_MAPPING, new StringLiteralExpr(entry.getKey()),
-                    new StringLiteralExpr(entry.getValue())));
+            body.addStatement(getFactoryMethod(variableName, METHOD_IN_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue())));
         }
         for (Entry<String, String> entry : node.getOutMappings().entrySet()) {
-            body.addStatement(getFactoryMethod(variableName, METHOD_OUT_MAPPING, new StringLiteralExpr(entry.getKey()),
-                    new StringLiteralExpr(entry.getValue())));
+            body.addStatement(getFactoryMethod(variableName, METHOD_OUT_MAPPING, new StringLiteralExpr(entry.getKey()), new StringLiteralExpr(entry.getValue())));
         }
     }
 
@@ -185,6 +181,7 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
                 new StringLiteralExpr(getOrDefault((String) connection.getMetaData().get("UniqueId"), ""))));
     }
 
+
     protected static LambdaExpr createLambdaExpr(String consequence, VariableScope scope) {
         BlockStmt conditionBody = new BlockStmt();
         List<Variable> variables = scope.getVariables();
@@ -196,7 +193,8 @@ public abstract class AbstractNodeVisitor<T extends Node> extends AbstractVisito
 
         return new LambdaExpr(
                 new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
-                conditionBody);
+                conditionBody
+        );
     }
 
 }

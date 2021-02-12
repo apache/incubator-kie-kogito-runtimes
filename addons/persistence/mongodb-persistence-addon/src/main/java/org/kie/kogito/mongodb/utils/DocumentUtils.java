@@ -15,13 +15,6 @@
 
 package org.kie.kogito.mongodb.utils;
 
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodecProvider;
-import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
-import org.kie.kogito.mongodb.marshalling.DocumentUnmarshallingException;
-import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
@@ -29,13 +22,18 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.kie.kogito.mongodb.codec.ProcessInstanceDocumentCodecProvider;
+import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
+import org.kie.kogito.mongodb.marshalling.DocumentUnmarshallingException;
+import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 public class DocumentUtils {
 
-    private DocumentUtils() {
-    }
+    private DocumentUtils() {}
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -44,10 +42,8 @@ public class DocumentUtils {
         return MAPPER;
     }
 
-    public static MongoCollection<ProcessInstanceDocument> getCollection(MongoClient mongoClient, String processId,
-            String dbName) {
-        CodecRegistry registry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(new ProcessInstanceDocumentCodecProvider()));
+    public static MongoCollection<ProcessInstanceDocument> getCollection(MongoClient mongoClient, String processId, String dbName) {
+        CodecRegistry registry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), fromProviders(new ProcessInstanceDocumentCodecProvider()));
         MongoDatabase mongoDatabase = mongoClient.getDatabase(dbName).withCodecRegistry(registry);
         return mongoDatabase.getCollection(processId, ProcessInstanceDocument.class).withCodecRegistry(registry);
     }

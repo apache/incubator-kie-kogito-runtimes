@@ -28,8 +28,8 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class ProcessSvgServiceTest {
 
@@ -80,8 +80,7 @@ public abstract class ProcessSvgServiceTest {
     @Test
     public void readFileFromClassPathTest() throws Exception {
         assertThat(getTestedProcessSvgService().readFileContentFromClassPath("undefined")).isEmpty();
-        assertThat(getTravelsSVGFile())
-                .isEqualTo(getTestedProcessSvgService().readFileContentFromClassPath("travels.svg").get());
+        assertThat(getTravelsSVGFile()).isEqualTo(getTestedProcessSvgService().readFileContentFromClassPath("travels.svg").get());
     }
 
     @Test

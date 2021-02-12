@@ -53,12 +53,10 @@ public abstract class AbstractDecisionConfig implements org.kie.kogito.decision.
     private DecisionEventListenerConfig mergeDecisionEventListenerConfig(
             java.util.Collection<DecisionEventListenerConfig> decisionEventListenerConfigs,
             Collection<DMNRuntimeEventListener> dmnRuntimeEventListeners) {
-        return new org.kie.kogito.dmn.config.CachedDecisionEventListenerConfig(
-                merge(decisionEventListenerConfigs, DecisionEventListenerConfig::listeners, dmnRuntimeEventListeners));
+        return new org.kie.kogito.dmn.config.CachedDecisionEventListenerConfig(merge(decisionEventListenerConfigs, DecisionEventListenerConfig::listeners, dmnRuntimeEventListeners));
     }
 
-    private static <C, L> List<L> merge(Collection<C> configs, Function<C, Collection<L>> configToListeners,
-            Collection<L> listeners) {
+    private static <C, L> List<L> merge(Collection<C> configs, Function<C, Collection<L>> configToListeners, Collection<L> listeners) {
         return Stream.concat(
                 configs.stream().flatMap(c -> configToListeners.apply(c).stream()),
                 listeners.stream()).collect(toList());

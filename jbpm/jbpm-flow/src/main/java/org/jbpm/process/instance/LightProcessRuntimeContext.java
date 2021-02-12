@@ -90,10 +90,8 @@ public class LightProcessRuntimeContext implements ProcessRuntimeContext {
         Process process = processInstance.getProcess();
         // set variable default values
         // TODO: should be part of processInstanceImpl?
-        VariableScope variableScope =
-                (VariableScope) ((ContextContainer) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
-        VariableScopeInstance variableScopeInstance =
-                (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope = (VariableScope) ((ContextContainer) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         // set input parameters
         if (parameters != null) {
             if (variableScope != null) {

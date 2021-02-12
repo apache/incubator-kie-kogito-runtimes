@@ -28,9 +28,9 @@ import org.kie.api.runtime.process.ProcessContext;
 
 public class DynamicNodeFactory extends CompositeContextNodeFactory {
 
-    public static final String METHOD_LANGUAGE = "language";
-    public static final String METHOD_ACTIVATION_EXPRESSION = "activationExpression";
-    public static final String METHOD_COMPLETION_EXPRESSION = "completionExpression";
+	public static final String METHOD_LANGUAGE = "language";
+	public static final String METHOD_ACTIVATION_EXPRESSION = "activationExpression";
+	public static final String METHOD_COMPLETION_EXPRESSION = "completionExpression";
 
     public DynamicNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -114,7 +114,7 @@ public class DynamicNodeFactory extends CompositeContextNodeFactory {
         return this;
     }
 
-    public DynamicNodeFactory completionExpression(Predicate<ProcessContext> completionExpression) {
+    public DynamicNodeFactory completionExpression(Predicate<ProcessContext>  completionExpression) {
         getDynamicNode().setCompletionExpression(completionExpression);
         return this;
     }

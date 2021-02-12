@@ -15,10 +15,9 @@
 
 package org.kie.kogito.cloud.workitems;
 
-import org.junit.jupiter.api.Test;
-
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.client.dsl.RecreateFromServerGettable;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -33,8 +32,7 @@ public class KNativeDiscoveredServiceWorkItemHandlerTest extends BaseKubernetesD
     @Test
     public void whenExistsAServiceWithKNative() {
         final RecreateFromServerGettable<KubernetesList> serviceResource =
-                this.getClient().lists()
-                        .load(this.getClass().getResource("/mock/responses/ocp4.x/knative/serving.knative.dev-services.json"));
+                this.getClient().lists().load(this.getClass().getResource("/mock/responses/ocp4.x/knative/serving.knative.dev-services.json"));
         this.getClient().lists().create(serviceResource.get());
 
         final DiscoveredServiceWorkItemHandler handler = new TestDiscoveredServiceWorkItemHandler(this);

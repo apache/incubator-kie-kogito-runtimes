@@ -24,21 +24,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.drools.core.util.StringUtils;
-import org.kie.dmn.api.core.DMNModel;
-import org.kie.dmn.api.core.DMNType;
-import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
-import org.kie.dmn.model.api.DecisionService;
-import org.kie.dmn.openapi.model.DMNModelIOSets;
-import org.kie.dmn.openapi.model.DMNOASResult;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.core.CodegenUtils;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
@@ -57,6 +42,20 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.drools.core.util.StringUtils;
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.dmn.api.core.DMNType;
+import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
+import org.kie.dmn.model.api.DecisionService;
+import org.kie.dmn.openapi.model.DMNModelIOSets;
+import org.kie.dmn.openapi.model.DMNOASResult;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 
@@ -79,8 +78,7 @@ public class DecisionRestResourceGenerator {
     private boolean swaggerAnnPresent;
     private final TemplatedGenerator generator;
 
-    private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED =
-            () -> new RuntimeException("Template was modified!");
+    private static final Supplier<RuntimeException> TEMPLATE_WAS_MODIFIED = () -> new RuntimeException("Template was modified!");
 
     public DecisionRestResourceGenerator(KogitoBuildContext context, DMNModel model, String appCanonicalName) {
         this.context = context;
@@ -115,8 +113,7 @@ public class DecisionRestResourceGenerator {
 
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(
-                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         template.setName(resourceClazzName);
 
@@ -131,23 +128,20 @@ public class DecisionRestResourceGenerator {
 
         if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isApplicationField)
-                    .forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
+                             CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
+                             CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
 
-        MethodDeclaration dmnMethod =
-                template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+        MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
         processOASAnn(dmnMethod, null);
 
         final String dmnMethodUrlPlaceholder = "$dmnMethodUrl$";
 
         template.addMember(cloneForDMNResult(dmnMethod, "dmn_dmnresult", "dmnresult", dmnMethodUrlPlaceholder));
         for (DecisionService ds : dmnModel.getDefinitions().getDecisionService()) {
-            if (ds.getAdditionalAttributes().keySet().stream()
-                    .anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
+            if (ds.getAdditionalAttributes().keySet().stream().anyMatch(qn -> qn.getLocalPart().equals("dynamicDecisionService"))) {
                 continue;
             }
 
@@ -155,13 +149,10 @@ public class DecisionRestResourceGenerator {
             processOASAnn(clonedMethod, ds);
             String name = CodegenStringUtil.escapeIdentifier("decisionService_" + ds.getName());
             clonedMethod.setName(name);
-            MethodCallExpr evaluateCall =
-                    clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("evaluateAll"))
-                            .orElseThrow(TEMPLATE_WAS_MODIFIED);
+            MethodCallExpr evaluateCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("evaluateAll")).orElseThrow(TEMPLATE_WAS_MODIFIED);
             evaluateCall.setName(new SimpleName("evaluateDecisionService"));
             evaluateCall.addArgument(new StringLiteralExpr(ds.getName()));
-            MethodCallExpr ctxCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("ctx"))
-                    .orElseThrow(TEMPLATE_WAS_MODIFIED);
+            MethodCallExpr ctxCall = clonedMethod.findFirst(MethodCallExpr.class, x -> x.getNameAsString().equals("ctx")).orElseThrow(TEMPLATE_WAS_MODIFIED);
             ctxCall.addArgument(new StringLiteralExpr(ds.getName()));
 
             //insert request path
@@ -171,9 +162,8 @@ public class DecisionRestResourceGenerator {
             ReturnStmt returnStmt = clonedMethod.findFirst(ReturnStmt.class).orElseThrow(TEMPLATE_WAS_MODIFIED);
             if (ds.getOutputDecision().size() == 1) {
                 MethodCallExpr rewrittenReturnExpr = returnStmt.findFirst(MethodCallExpr.class,
-                        mce -> mce.getNameAsString().equals("extractContextIfSucceded")
-                                || mce.getNameAsString().equals("extractStronglyTypedContextIfSucceded"))
-                        .orElseThrow(TEMPLATE_WAS_MODIFIED);
+                                                                          mce -> mce.getNameAsString().equals("extractContextIfSucceded") || mce.getNameAsString().equals("extractStronglyTypedContextIfSucceded"))
+                                                               .orElseThrow(TEMPLATE_WAS_MODIFIED);
                 rewrittenReturnExpr.setName("extractSingletonDSIfSucceded");
             }
 
@@ -203,95 +193,84 @@ public class DecisionRestResourceGenerator {
     private void processOASAnn(MethodDeclaration dmnMethod, DecisionService ds) {
         String inputRef = null;
         String outputRef = null;
-        if (withOASResult != null) {
+        if (withOASResult!= null) {
             DMNModelIOSets ioSets = withOASResult.lookupIOSetsByModel(dmnModel);
-            DMNType identifyInputSet =
-                    ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSInputSet() : ioSets.getInputSet();
-            DMNType identifyOutputSet =
-                    ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSOutputSet() : ioSets.getOutputSet();
+            DMNType identifyInputSet = ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSInputSet() : ioSets.getInputSet();
+            DMNType identifyOutputSet = ds != null ? ioSets.lookupDSIOSetsByName(ds.getName()).getDSOutputSet() : ioSets.getOutputSet();
             inputRef = withOASResult.getNamingPolicy().getRef(identifyInputSet);
             outputRef = withOASResult.getNamingPolicy().getRef(identifyOutputSet);
         }
         final String DMN_DEFINITIONS_JSON = "/dmnDefinitions.json";
         // MP / Quarkus
         processAnnForRef(dmnMethod,
-                "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody",
-                "org.eclipse.microprofile.openapi.annotations.media.Schema",
-                DMN_DEFINITIONS_JSON + inputRef,
-                !mpAnnPresent);
+                         "org.eclipse.microprofile.openapi.annotations.parameters.RequestBody",
+                         "org.eclipse.microprofile.openapi.annotations.media.Schema",
+                         DMN_DEFINITIONS_JSON + inputRef,
+                         !mpAnnPresent);
         processAnnForRef(dmnMethod,
-                "org.eclipse.microprofile.openapi.annotations.responses.APIResponse",
-                "org.eclipse.microprofile.openapi.annotations.media.Schema",
-                DMN_DEFINITIONS_JSON + outputRef,
-                !mpAnnPresent);
+                         "org.eclipse.microprofile.openapi.annotations.responses.APIResponse",
+                         "org.eclipse.microprofile.openapi.annotations.media.Schema",
+                         DMN_DEFINITIONS_JSON + outputRef,
+                         !mpAnnPresent);
         // io.swagger / SB
         processAnnForRef(dmnMethod,
-                "io.swagger.v3.oas.annotations.parameters.RequestBody",
-                "io.swagger.v3.oas.annotations.media.Schema",
-                DMN_DEFINITIONS_JSON + inputRef,
-                !swaggerAnnPresent);
+                         "io.swagger.v3.oas.annotations.parameters.RequestBody",
+                         "io.swagger.v3.oas.annotations.media.Schema",
+                         DMN_DEFINITIONS_JSON + inputRef,
+                         !swaggerAnnPresent);
         processAnnForRef(dmnMethod,
-                "io.swagger.v3.oas.annotations.responses.ApiResponse",
-                "io.swagger.v3.oas.annotations.media.Schema",
-                DMN_DEFINITIONS_JSON + outputRef,
-                !swaggerAnnPresent);
+                         "io.swagger.v3.oas.annotations.responses.ApiResponse",
+                         "io.swagger.v3.oas.annotations.media.Schema",
+                         DMN_DEFINITIONS_JSON + outputRef,
+                         !swaggerAnnPresent);
     }
 
-    private void processAnnForRef(MethodDeclaration dmnMethod, String parentName, String innerName, String ref,
-            boolean removeIt) {
-        List<NormalAnnotationExpr> findAll =
-                dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(parentName));
+    private void processAnnForRef(MethodDeclaration dmnMethod, String parentName, String innerName, String ref, boolean removeIt) {
+        List<NormalAnnotationExpr> findAll = dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(parentName));
         if (findAll.isEmpty()) {
             if (removeIt) {
                 return; // nothing to do
             } else {
-                throw new IllegalStateException(
-                        "Impossible to find annotation " + parentName + " on method " + dmnMethod.toString());
+                throw new IllegalStateException("Impossible to find annotation " + parentName + " on method " + dmnMethod.toString());
             }
         }
         NormalAnnotationExpr parentExpr = findAll.get(0);
         if (removeIt || ref == null) {
             parentExpr.remove();
         } else {
-            NormalAnnotationExpr schemaAnn =
-                    parentExpr.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(innerName))
-                            .get(0);
+            NormalAnnotationExpr schemaAnn = parentExpr.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(innerName))
+                                                    .get(0);
             schemaAnn.getPairs().removeIf(x -> true);
             schemaAnn.addPair("ref", new StringLiteralExpr(ref));
         }
     }
 
     private void removeAnnFromMethod(MethodDeclaration dmnMethod, String fqn) {
-        for (NormalAnnotationExpr ann : dmnMethod.findAll(NormalAnnotationExpr.class,
-                x -> x.getName().toString().equals(fqn))) {
+        for (NormalAnnotationExpr ann : dmnMethod.findAll(NormalAnnotationExpr.class, x -> x.getName().toString().equals(fqn))) {
             dmnMethod.remove(ann);
         }
     }
 
     private void chooseMethodForStronglyTyped(ClassOrInterfaceDeclaration template) {
         if (isStronglyTyped) {
-            MethodDeclaration extractContextIfSucceded = template
-                    .findAll(MethodDeclaration.class, x -> x.getName().toString().equals("extractContextIfSucceded")).get(0);
+            MethodDeclaration extractContextIfSucceded = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("extractContextIfSucceded")).get(0);
             extractContextIfSucceded.remove();
         } else {
-            MethodDeclaration extractContextIfSucceded = template.findAll(MethodDeclaration.class,
-                    x -> x.getName().toString().equals("extractStronglyTypedContextIfSucceded")).get(0);
+            MethodDeclaration extractContextIfSucceded = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("extractStronglyTypedContextIfSucceded")).get(0);
             extractContextIfSucceded.remove();
         }
     }
 
     private void modifyDmnMethodForStronglyTyped(ClassOrInterfaceDeclaration template) {
-        MethodDeclaration dmnMethod =
-                template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
+        MethodDeclaration dmnMethod = template.findAll(MethodDeclaration.class, x -> x.getName().toString().equals("dmn")).get(0);
         if (!isStronglyTyped) {
-            List<ExpressionStmt> convertStatement = dmnMethod.findAll(ExpressionStmt.class, stmt -> stmt
-                    .findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("convertToOutputSet")).isPresent());
+            List<ExpressionStmt> convertStatement = dmnMethod.findAll(ExpressionStmt.class, stmt -> stmt.findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("convertToOutputSet")).isPresent());
             convertStatement.get(0).remove();
         }
     }
 
     private MethodDeclaration cloneForDMNResult(MethodDeclaration dmnMethod, String name, String pathName,
-            String placeHolder) {
+                                                String placeHolder) {
         MethodDeclaration clonedDmnMethod = dmnMethod.clone();
         // a DMNResult-returning method doesn't need the OAS annotations for the $ref of return type.
         removeAnnFromMethod(clonedDmnMethod, "org.eclipse.microprofile.openapi.annotations.responses.APIResponse");
@@ -324,18 +303,17 @@ public class DecisionRestResourceGenerator {
     private void interpolateOutputType(ClassOrInterfaceDeclaration template) {
         String outputType = isStronglyTyped ? "OutputSet" : "Object";
 
-        List<ClassOrInterfaceType> outputTypeOccurrences =
-                template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("$outputType$"));
-
+        List<ClassOrInterfaceType> outputTypeOccurrences = template.findAll(ClassOrInterfaceType.class, t -> t.asString().equals("$outputType$"));
+        
         // first, methods which return DMNResult shall just have DMNResult as the return type in signature (useful for GraalVM NI introspection)
         List<ClassOrInterfaceType> dmnResultOuputTypes = outputTypeOccurrences
-                .stream()
-                .filter(t -> t.getParentNode().isPresent() && t.getParentNode().get() instanceof MethodDeclaration)
-                .filter(t -> {
-                    MethodDeclaration parent = (MethodDeclaration) t.getParentNode().get();
-                    return parent.getNameAsString().endsWith("dmnresult");
-                })
-                .collect(Collectors.toList());
+              .stream()
+              .filter(t -> t.getParentNode().isPresent() && t.getParentNode().get() instanceof MethodDeclaration)
+              .filter(t -> {
+                  MethodDeclaration parent = (MethodDeclaration) t.getParentNode().get();
+                  return parent.getNameAsString().endsWith("dmnresult");
+              })
+              .collect(Collectors.toList());
         dmnResultOuputTypes.forEach(type -> type.setName("org.kie.kogito.dmn.rest.KogitoDMNResult"));
         outputTypeOccurrences.removeAll(dmnResultOuputTypes);
 
@@ -344,7 +322,7 @@ public class DecisionRestResourceGenerator {
                 .stream()
                 .filter(t -> t.getParentNode().isPresent() && t.getParentNode().get() instanceof MethodDeclaration)
                 .filter(t -> {
-                    MethodDeclaration parent = (MethodDeclaration) t.getParentNode().get();
+                    MethodDeclaration parent = (MethodDeclaration)t.getParentNode().get();
                     return parent.getNameAsString().startsWith("decisionService_");
                 })
                 .collect(Collectors.toList());
@@ -383,39 +361,26 @@ public class DecisionRestResourceGenerator {
         MethodDeclaration method = clazz.findFirst(MethodDeclaration.class, x -> "toResponse".equals(x.getNameAsString()))
                 .orElseThrow(() -> new NoSuchElementException("Method toResponse not found, template has changed."));
 
-        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException(
-                "This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
-        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(
-                () -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint."));
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
+        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Check for null dmn result not found, can't add monitoring to endpoint."));
         NodeList<Statement> statements = body.getStatements();
         String methodArgumentName = method.getParameters().get(0).getNameAsString();
-        statements.addBefore(parseStatement(
-                String.format("SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());", nameURL,
-                        methodArgumentName)),
-                returnStmt);
+        statements.addBefore(parseStatement(String.format("SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());", nameURL, methodArgumentName)), returnStmt);
     }
 
     private void addMonitoringImports(CompilationUnit cu) {
-        cu.addImport(new ImportDeclaration(
-                new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
-        cu.addImport(new ImportDeclaration(
-                new Name("org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuilder"), false, false));
-        cu.addImport(new ImportDeclaration(
-                new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuilder"), false, false));
+        cu.addImport(new ImportDeclaration(new Name("org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector"), false, false));
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
-        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException(
-                "This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
+        BlockStmt body = method.getBody().orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
         NodeList<Statement> statements = body.getStatements();
-        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException(
-                "Return statement not found: can't add monitoring to endpoint. Template was modified."));
+        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified."));
         statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
         statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
-        statements.addBefore(
-                parseStatement(
-                        "SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"),
-                returnStmt);
+        statements.addBefore(parseStatement("SystemMetricsCollector.registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
     }
 
     private void initializeApplicationField(FieldDeclaration fd) {
@@ -449,8 +414,7 @@ public class DecisionRestResourceGenerator {
         return this;
     }
 
-    public DecisionRestResourceGenerator withOASResult(DMNOASResult oasResult, boolean mpAnnPresent,
-            boolean swaggerAnnPresent) {
+    public DecisionRestResourceGenerator withOASResult(DMNOASResult oasResult, boolean mpAnnPresent, boolean swaggerAnnPresent) {
         this.withOASResult = oasResult;
         this.mpAnnPresent = mpAnnPresent;
         this.swaggerAnnPresent = swaggerAnnPresent;

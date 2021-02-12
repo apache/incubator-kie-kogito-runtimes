@@ -55,8 +55,8 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         this.workItemHandlerConfig = orDefault(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
         this.processEventListenerConfig = merge(processEventListenerConfigs, processEventListeners);
         this.unitOfWorkManager = orDefault(unitOfWorkManager,
-                () -> new DefaultUnitOfWorkManager(
-                        new CollectingUnitOfWorkFactory()));
+                                           () -> new DefaultUnitOfWorkManager(
+                                                   new CollectingUnitOfWorkFactory()));
         this.jobsService = orDefault(jobsService, () -> null);
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
@@ -104,10 +104,8 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     static ProcessEventListenerConfig merge(
             Iterable<ProcessEventListenerConfig> processEventListenerConfigs,
             Iterable<ProcessEventListener> processEventListeners) {
-        List<ProcessEventListenerConfig> l1 =
-                StreamSupport.stream(processEventListenerConfigs.spliterator(), false).collect(Collectors.toList());
-        List<ProcessEventListener> l2 =
-                StreamSupport.stream(processEventListeners.spliterator(), false).collect(Collectors.toList());
+        List<ProcessEventListenerConfig> l1 = StreamSupport.stream(processEventListenerConfigs.spliterator(), false).collect(Collectors.toList());
+        List<ProcessEventListener> l2 = StreamSupport.stream(processEventListeners.spliterator(), false).collect(Collectors.toList());
 
         Stream<ProcessEventListener> processEventListenerStream = l1.stream().flatMap(c -> c.listeners().stream());
         Stream<ProcessEventListener> eventListenerStream = l2.stream();

@@ -23,3 +23,4 @@ public class MonitoringProcessEventListenerConfig extends DefaultProcessEventLis
         super(new MetricsProcessEventListener("default-process-monitoring-listener"));
     }
 }
+

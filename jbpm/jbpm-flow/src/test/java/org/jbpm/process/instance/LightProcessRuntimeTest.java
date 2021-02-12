@@ -47,7 +47,6 @@ public class LightProcessRuntimeTest {
             process = factory.validate().getProcess();
         }
     }
-
     @Test
     public void testInstantiation() {
         LightProcessRuntimeServiceProvider services =

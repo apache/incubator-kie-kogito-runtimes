@@ -32,13 +32,11 @@ public class BpmnProcessInstance extends AbstractProcessInstance<BpmnVariables> 
         super(process, variables, wpi);
     }
 
-    public BpmnProcessInstance(AbstractProcess<BpmnVariables> process, BpmnVariables variables, InternalProcessRuntime rt,
-            WorkflowProcessInstance wpi) {
+    public BpmnProcessInstance(AbstractProcess<BpmnVariables> process, BpmnVariables variables, InternalProcessRuntime rt, WorkflowProcessInstance wpi) {
         super(process, variables, rt, wpi);
     }
 
-    public BpmnProcessInstance(AbstractProcess<BpmnVariables> process, BpmnVariables variables, String businessKey,
-            InternalProcessRuntime rt) {
+    public BpmnProcessInstance(AbstractProcess<BpmnVariables> process, BpmnVariables variables, String businessKey, InternalProcessRuntime rt) {
         super(process, variables, businessKey, rt);
     }
 

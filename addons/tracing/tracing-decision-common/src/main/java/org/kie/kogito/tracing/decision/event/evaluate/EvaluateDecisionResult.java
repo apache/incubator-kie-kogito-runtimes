@@ -34,8 +34,7 @@ public class EvaluateDecisionResult {
     private List<Message> messages;
     private boolean errors;
 
-    public EvaluateDecisionResult(String decisionId, String decisionName, DecisionEvaluationStatus evaluationStatus,
-            Object result, List<Message> messages, boolean errors) {
+    public EvaluateDecisionResult(String decisionId, String decisionName, DecisionEvaluationStatus evaluationStatus, Object result, List<Message> messages, boolean errors) {
         this.decisionId = decisionId;
         this.decisionName = decisionName;
         this.evaluationStatus = evaluationStatus;
@@ -78,6 +77,7 @@ public class EvaluateDecisionResult {
                 dr.getEvaluationStatus(),
                 dr.getResult(),
                 map(dr.getMessages(), EventUtils::messageFrom),
-                dr.hasErrors());
+                dr.hasErrors()
+        );
     }
 }

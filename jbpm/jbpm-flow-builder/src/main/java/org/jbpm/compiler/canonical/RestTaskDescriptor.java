@@ -24,8 +24,7 @@ import static com.github.javaparser.StaticJavaParser.parse;
 
 public class RestTaskDescriptor {
 
-    private RestTaskDescriptor() {
-    }
+    private RestTaskDescriptor() {}
 
     public static String getClassName(ProcessMetaData processMetadata) {
         return processMetadata.getProcessId() + "RestWorkItemHandler";

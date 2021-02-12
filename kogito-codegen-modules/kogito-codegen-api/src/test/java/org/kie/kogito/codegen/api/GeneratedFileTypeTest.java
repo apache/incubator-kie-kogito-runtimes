@@ -92,10 +92,8 @@ class GeneratedFileTypeTest {
     @Test
     public void equalsOnValue() {
         GeneratedFileType mock = new MockGenericFileType();
-        GeneratedFileType sameType =
-                GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), mock.isCustomizable());
-        GeneratedFileType differentType =
-                GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), !mock.isCustomizable());
+        GeneratedFileType sameType = GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), mock.isCustomizable());
+        GeneratedFileType differentType = GeneratedFileType.of(mock.name(), mock.category(), mock.canHotReload(), !mock.isCustomizable());
 
         // GeneratedFileType equals should only consider values and not actual class
         assertThat(sameType).isEqualTo(mock);

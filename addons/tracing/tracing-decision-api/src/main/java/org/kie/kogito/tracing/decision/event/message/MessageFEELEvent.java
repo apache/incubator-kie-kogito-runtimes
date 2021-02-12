@@ -34,8 +34,7 @@ public class MessageFEELEvent {
     private MessageFEELEvent() {
     }
 
-    public MessageFEELEvent(MessageFEELEventSeverity severity, String message, Integer line, Integer column,
-            MessageExceptionField sourceException) {
+    public MessageFEELEvent(MessageFEELEventSeverity severity, String message, Integer line, Integer column, MessageExceptionField sourceException) {
         this.severity = severity;
         this.message = message;
         this.line = line == null || line < 0 ? null : line;

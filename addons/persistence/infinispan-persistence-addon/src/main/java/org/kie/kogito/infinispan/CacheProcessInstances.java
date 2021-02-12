@@ -33,15 +33,14 @@ import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
 
 import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
-@SuppressWarnings({ "rawtypes" })
+@SuppressWarnings({"rawtypes"})
 public class CacheProcessInstances implements MutableProcessInstances {
 
     private final RemoteCache<String, byte[]> cache;
     private ProcessInstanceMarshaller marshaller;
     private org.kie.kogito.process.Process<?> process;
 
-    public CacheProcessInstances(Process<?> process, RemoteCacheManager cacheManager, String templateName, String proto,
-            BaseMarshaller<?>... marshallers) {
+    public CacheProcessInstances(Process<?> process, RemoteCacheManager cacheManager, String templateName, String proto, BaseMarshaller<?>... marshallers) {
         this.process = process;
         this.cache = cacheManager.administration().getOrCreateCache(process.id() + "_store", ignoreNullOrEmpty(templateName));
         this.marshaller = new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers));
@@ -59,16 +58,18 @@ public class CacheProcessInstances implements MutableProcessInstances {
             return Optional.empty();
         }
 
-        return Optional.of(mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process)
-                : marshaller.unmarshallReadOnlyProcessInstance(data, process));
+        return Optional.of(mode == MUTABLE ?
+                                   marshaller.unmarshallProcessInstance(data, process) :
+                                   marshaller.unmarshallReadOnlyProcessInstance(data, process));
     }
 
     @Override
     public Collection<? extends ProcessInstance> values(ProcessInstanceReadMode mode) {
         return cache.values()
                 .parallelStream()
-                .map(data -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process)
-                        : marshaller.unmarshallReadOnlyProcessInstance(data, process))
+                .map(data -> mode == MUTABLE ?
+                        marshaller.unmarshallProcessInstance(data, process) :
+                        marshaller.unmarshallReadOnlyProcessInstance(data, process))
                 .collect(Collectors.toList());
     }
 

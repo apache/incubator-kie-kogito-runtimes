@@ -42,7 +42,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
     }
 
     @Override
-    public void internalTrigger(KogitoNodeInstance from, String type) {
+    public void internalTrigger( KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
@@ -65,8 +65,7 @@ public class EndNodeInstance extends ExtendedNodeInstanceImpl {
                     getProcessInstance().setState(STATE_COMPLETED);
                 } else {
                     while (!getNodeInstanceContainer().getNodeInstances().isEmpty()) {
-                        ((org.jbpm.workflow.instance.NodeInstance) getNodeInstanceContainer().getNodeInstances().iterator()
-                                .next()).cancel();
+                        ((org.jbpm.workflow.instance.NodeInstance) getNodeInstanceContainer().getNodeInstances().iterator().next()).cancel();
                     }
                     ((NodeInstanceContainer) getNodeInstanceContainer()).nodeInstanceCompleted(this, null);
                 }

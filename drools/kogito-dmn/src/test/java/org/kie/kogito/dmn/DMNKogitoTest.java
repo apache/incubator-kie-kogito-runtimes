@@ -29,8 +29,7 @@ public class DMNKogitoTest {
 
     @Test
     public void testBasic() {
-        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(
-                new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("TrafficViolation.dmn")));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("TrafficViolation.dmn")));
         assertEquals(1, dmnRuntime.getModels().size());
 
         final String TRAFFIC_VIOLATION_NS = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
@@ -43,8 +42,7 @@ public class DMNKogitoTest {
 
     @Test
     public void testProfile() {
-        DMNRuntime dmnRuntime = DMNKogito
-                .createGenericDMNRuntime(new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("profile.dmn")));
+        DMNRuntime dmnRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(DMNKogitoTest.class.getResourceAsStream("profile.dmn")));
         assertEquals(1, dmnRuntime.getModels().size());
 
         DMNModel dmnModel = dmnRuntime.getModels().get(0);

@@ -16,6 +16,7 @@
 
 package org.kie.kogito.process;
 
+
 public class NamedDataType {
 
     private final String name;

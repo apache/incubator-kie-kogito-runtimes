@@ -49,8 +49,7 @@ public class TraceResourceId {
         this(serviceUrl, modelNamespace, modelName, null, null);
     }
 
-    public TraceResourceId(String serviceUrl, String modelNamespace, String modelName, String decisionServiceId,
-            String decisionServiceName) {
+    public TraceResourceId(String serviceUrl, String modelNamespace, String modelName, String decisionServiceId, String decisionServiceName) {
         this.serviceUrl = serviceUrl;
         this.modelNamespace = modelNamespace;
         this.modelName = modelName;

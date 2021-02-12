@@ -31,8 +31,8 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
  * A process can have multiple instances.
  */
 public interface ProcessInstance extends KogitoProcessInstance,
-        ContextInstanceContainer,
-        ContextableInstance {
+                                         ContextInstanceContainer,
+                                         ContextableInstance {
 
     void setId(String id);
 
@@ -96,5 +96,5 @@ public interface ProcessInstance extends KogitoProcessInstance,
 
     AgendaFilter getAgendaFilter();
 
-    void setAgendaFilter(AgendaFilter agendaFilter);
+    void setAgendaFilter( AgendaFilter agendaFilter );
 }

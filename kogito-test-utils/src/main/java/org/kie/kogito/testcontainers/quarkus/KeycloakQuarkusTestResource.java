@@ -69,8 +69,7 @@ public class KeycloakQuarkusTestResource extends ConditionalQuarkusTestResource 
 
         start = new HashMap<>(start);
         String url = start.get(getKogitoProperty());
-        start.putAll(tenants.stream().map(tenant -> format("quarkus.oidc.%s.auth-server-url", tenant))
-                .collect(toMap(Function.identity(), s -> url)));
+        start.putAll(tenants.stream().map(tenant -> format("quarkus.oidc.%s.auth-server-url", tenant)).collect(toMap(Function.identity(), s -> url)));
         return start;
     }
 

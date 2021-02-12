@@ -48,8 +48,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     public AbstractProcessSvgService() {
     }
 
-    public AbstractProcessSvgService(DataIndexClient dataIndexClient, Optional<String> svgResourcesPath, String completedColor,
-            String completedBorderColor, String activeBorderColor) {
+    public AbstractProcessSvgService(DataIndexClient dataIndexClient, Optional<String> svgResourcesPath, String completedColor, String completedBorderColor, String activeBorderColor) {
         this.dataIndexClient = dataIndexClient;
         this.svgResourcesPath = svgResourcesPath;
         this.completedColor = completedColor;
@@ -103,8 +102,7 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
 
         try (InputStream svgStream = new ByteArrayInputStream(svg.getBytes())) {
             SVGProcessor processor = new SVGImageProcessor(svgStream).getProcessor();
-            completedNodes
-                    .forEach(nodeId -> processor.defaultCompletedTransformation(nodeId, completedColor, completedBorderColor));
+            completedNodes.forEach(nodeId -> processor.defaultCompletedTransformation(nodeId, completedColor, completedBorderColor));
             activeNodes.forEach(nodeId -> processor.defaultActiveTransformation(nodeId, activeBorderColor));
             return Optional.of(processor.getSVG());
         } catch (Exception e) {
@@ -117,10 +115,8 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
         Optional<String> processSvg = getProcessSvg(processId);
         if (processSvg.isPresent()) {
             List<NodeInstance> nodes = dataIndexClient.getNodeInstancesFromProcessInstance(processInstanceId);
-            List<String> completedNodes =
-                    nodes.stream().filter(NodeInstance::isCompleted).map(NodeInstance::getDefinitionId).collect(toList());
-            List<String> activeNodes =
-                    nodes.stream().filter(n -> !n.isCompleted()).map(NodeInstance::getDefinitionId).collect(toList());
+            List<String> completedNodes = nodes.stream().filter(NodeInstance::isCompleted).map(NodeInstance::getDefinitionId).collect(toList());
+            List<String> activeNodes = nodes.stream().filter(n -> !n.isCompleted()).map(NodeInstance::getDefinitionId).collect(toList());
             return annotateExecutedPath(processSvg.get(), completedNodes, activeNodes);
         } else {
             return Optional.empty();

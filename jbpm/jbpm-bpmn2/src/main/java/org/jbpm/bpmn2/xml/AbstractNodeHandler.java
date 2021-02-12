@@ -16,6 +16,7 @@
 
 package org.jbpm.bpmn2.xml;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -103,14 +104,14 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         this.validPeers.add(null);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Variable.class);
-        this.validPeers.add(Node.class);
+        this.validPeers.add( Node.class);
         this.validPeers.add(SequenceFlow.class);
         this.validPeers.add(Lane.class);
         this.validPeers.add(Association.class);
     }
 
     public Object start(final String uri, final String localName, final Attributes attrs,
-            final ExtensibleXmlParser parser) throws SAXException {
+                        final ExtensibleXmlParser parser) throws SAXException {
         parser.startElementBuilder(localName, attrs);
         final Node node = createNode(attrs);
         String id = attrs.getValue("id");
@@ -135,7 +136,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                         newId = n.getId();
                     }
                 }
-                ((Node) node).setId(++newId);
+                (( Node ) node).setId(++newId);
             }
         } else {
             AtomicInteger idGen = (AtomicInteger) parser.getMetaData().get("idGen");
@@ -144,12 +145,12 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return node;
     }
 
-    protected abstract Node createNode(Attributes attrs);
+    protected abstract Node createNode( Attributes attrs);
 
     public Object end(final String uri, final String localName,
-            final ExtensibleXmlParser parser) throws SAXException {
+                      final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
-        Node node = (Node) parser.getCurrent();
+        Node node = ( Node ) parser.getCurrent();
         handleNode(node, element, uri, localName, parser);
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
         nodeContainer.addNode(node);
@@ -157,8 +158,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return node;
     }
 
-    protected void handleNode(final Node node, final Element element, final String uri,
-            final String localName, final ExtensibleXmlParser parser)
+    protected void handleNode( final Node node, final Element element, final String uri,
+                               final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         final String x = element.getAttribute("x");
         if (x != null && x.length() != 0) {
@@ -194,11 +195,11 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    public abstract void writeNode(final Node node, final StringBuilder xmlDump,
-            final int metaDataType);
+    public abstract void writeNode( final Node node, final StringBuilder xmlDump,
+                                    final int metaDataType);
 
     protected void writeNode(final String name, final Node node,
-            final StringBuilder xmlDump, int metaDataType) {
+                             final StringBuilder xmlDump, int metaDataType) {
         xmlDump.append("    <" + name + " ");
         xmlDump.append("id=\"" + XmlBPMNProcessDumper.getUniqueNodeId(node) + "\" ");
         if (node.getName() != null) {
@@ -278,15 +279,15 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return new DroolsConsequenceAction("mvel", "");
     }
 
-    protected void writeMetaData(final Node node, final StringBuilder xmlDump) {
+    protected void writeMetaData( final Node node, final StringBuilder xmlDump) {
         XmlBPMNProcessDumper.writeMetaData(getMetaData(node), xmlDump);
     }
 
-    protected Map<String, Object> getMetaData(Node node) {
+    protected Map<String, Object> getMetaData( Node node) {
         return XmlBPMNProcessDumper.getMetaData(node.getMetaData());
     }
 
-    protected void writeExtensionElements(Node node, final StringBuilder xmlDump) {
+    protected void writeExtensionElements( Node node, final StringBuilder xmlDump) {
         if (containsExtensionElements(node)) {
             xmlDump.append("      <extensionElements>" + EOL);
             if (node instanceof ExtendedNodeImpl) {
@@ -298,7 +299,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    protected boolean containsExtensionElements(Node node) {
+    protected boolean containsExtensionElements( Node node) {
         if (!getMetaData(node).isEmpty()) {
             return true;
         }
@@ -325,7 +326,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 xmlDump.append(" name=\"" + name + "\"");
             }
             String dialect = consequenceAction.getDialect();
-            if (JavaDialect.ID.equals(dialect)) {
+            if ( JavaDialect.ID.equals(dialect)) {
                 xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVA_LANGUAGE + "\"");
             } else if ("JavaScript".equals(dialect)) {
                 xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVASCRIPT_LANGUAGE + "\"");
@@ -344,8 +345,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    protected void readIoSpecification(org.w3c.dom.Node xmlNode, Map<String, String> dataInputs,
-            Map<String, String> dataOutputs, Map<String, String> dataInputTypes, Map<String, String> dataOutputTypes) {
+    protected void readIoSpecification(org.w3c.dom.Node xmlNode, Map<String, String> dataInputs, Map<String, String> dataOutputs, Map<String, String> dataInputTypes, Map<String, String> dataOutputTypes) {
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
         while (subNode instanceof Element) {
             String subNodeName = subNode.getNodeName();
@@ -417,8 +417,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     @SuppressWarnings("unchecked")
-    protected void readMultiInstanceLoopCharacteristics(org.w3c.dom.Node xmlNode, ForEachNode forEachNode,
-            ExtensibleXmlParser parser) {
+    protected void readMultiInstanceLoopCharacteristics(org.w3c.dom.Node xmlNode, ForEachNode forEachNode, ExtensibleXmlParser parser) {
 
         // sourceRef
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
@@ -428,8 +427,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 String variableName = ((Element) subNode).getAttribute("id");
                 String itemSubjectRef = ((Element) subNode).getAttribute("itemSubjectRef");
                 DataType dataType = null;
-                Map<String, ItemDefinition> itemDefinitions =
-                        (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
+                        ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
                 dataType = getDataType(itemSubjectRef, itemDefinitions, parser.getClassLoader());
 
                 if (variableName != null && variableName.trim().length() > 0) {
@@ -439,8 +438,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 String variableName = ((Element) subNode).getAttribute("id");
                 String itemSubjectRef = ((Element) subNode).getAttribute("itemSubjectRef");
                 DataType dataType = null;
-                Map<String, ItemDefinition> itemDefinitions =
-                        (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
+                        ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
                 dataType = getDataType(itemSubjectRef, itemDefinitions, parser.getClassLoader());
 
                 if (variableName != null && variableName.trim().length() > 0) {
@@ -517,11 +516,10 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     protected String getErrorIdForErrorCode(String errorCode, Node node) {
         org.kie.api.definition.process.NodeContainer parent = node.getParentContainer();
         while (!(parent instanceof RuleFlowProcess) && parent instanceof Node) {
-            parent = ((Node) parent).getParentContainer();
+            parent = (( Node ) parent).getParentContainer();
         }
         if (!(parent instanceof RuleFlowProcess)) {
-            throw new RuntimeException("This should never happen: !(parent instanceof RuleFlowProcess): parent is "
-                    + parent.getClass().getSimpleName());
+            throw new RuntimeException("This should never happen: !(parent instanceof RuleFlowProcess): parent is " + parent.getClass().getSimpleName());
         }
         List<Error> errors = ((Definitions) ((RuleFlowProcess) parent).getMetaData("Definitions")).getErrors();
         Error error = null;
@@ -540,8 +538,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return error.getId();
     }
 
-    protected void handleThrowCompensationEventNode(final Node node, final Element element,
-            final String uri, final String localName, final ExtensibleXmlParser parser) {
+    protected void handleThrowCompensationEventNode( final Node node, final Element element,
+                                                     final String uri, final String localName, final ExtensibleXmlParser parser) {
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         assert node instanceof ActionNode || node instanceof EndNode
                 : "Node is neither an ActionNode nor an EndNode but a " + node.getClass().getSimpleName();
@@ -557,9 +555,9 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                  * waitForCompletion:
                  * BPMN 2.0 Spec, p. 304:
                  * "By default, compensation is triggered synchronously, that is the compensation throw event
-                 * waits for the completion of the triggered compensation handler.
-                 * Alternatively, compensation can be triggered without waiting for its completion,
-                 * by setting the throw compensation event's waitForCompletion attribute to false."
+                 *  waits for the completion of the triggered compensation handler.
+                 *  Alternatively, compensation can be triggered without waiting for its completion,
+                 *  by setting the throw compensation event's waitForCompletion attribute to false."
                  */
                 String nodeId = (String) node.getMetaData().get("UniqueId");
                 String waitForCompletionString = ((Element) xmlNode).getAttribute("waitForCompletion");
@@ -579,17 +577,14 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
 
     protected void writeVariableName(EventNode eventNode, StringBuilder xmlDump) {
         if (eventNode.getVariableName() != null) {
-            xmlDump.append("      <dataOutput id=\"" + XmlBPMNProcessDumper.getUniqueNodeId(eventNode)
-                    + "_Output\" name=\"event\" />" + EOL);
+            xmlDump.append("      <dataOutput id=\"" + XmlBPMNProcessDumper.getUniqueNodeId(eventNode) + "_Output\" name=\"event\" />" + EOL);
             xmlDump.append("      <dataOutputAssociation>" + EOL);
             xmlDump.append(
                     "      <sourceRef>" + XmlBPMNProcessDumper.getUniqueNodeId(eventNode) + "_Output</sourceRef>" + EOL +
-                            "      <targetRef>" + XmlDumper.replaceIllegalChars(eventNode.getVariableName()) + "</targetRef>"
-                            + EOL);
+                            "      <targetRef>" + XmlDumper.replaceIllegalChars(eventNode.getVariableName()) + "</targetRef>" + EOL);
             xmlDump.append("      </dataOutputAssociation>" + EOL);
             xmlDump.append("      <outputSet>" + EOL);
-            xmlDump.append("        <dataOutputRefs>" + XmlBPMNProcessDumper.getUniqueNodeId(eventNode)
-                    + "_Output</dataOutputRefs>" + EOL);
+            xmlDump.append("        <dataOutputRefs>" + XmlBPMNProcessDumper.getUniqueNodeId(eventNode) + "_Output</dataOutputRefs>" + EOL);
             xmlDump.append("      </outputSet>" + EOL);
         }
     }
@@ -633,8 +628,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
 
         if (itemSubjectRef != null && !itemSubjectRef.isEmpty()) {
-            Map<String, ItemDefinition> itemDefinitions =
-                    (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+            Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
+                    ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
 
             return itemDefinitions.get(itemSubjectRef).getStructureRef();
         }
@@ -642,11 +637,12 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return null;
     }
 
+
     /**
      * Finds the right variable by its name to make sure that when given as id it will be also matched
      *
      * @param variableName name or id of the variable
-     * @param parser parser instance
+     * @param parser       parser instance
      * @return returns found variable name or given 'variableName' otherwise
      */
     protected String findVariable(String variableName, final ExtensibleXmlParser parser) {
@@ -659,8 +655,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             if (parent instanceof ContextContainer) {
                 ContextContainer contextContainer = (ContextContainer) parent;
                 VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
-                return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(v -> v.getName())
-                        .findFirst().orElse(variableName);
+                return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(v -> v.getName()).findFirst().orElse(variableName);
             }
         }
 

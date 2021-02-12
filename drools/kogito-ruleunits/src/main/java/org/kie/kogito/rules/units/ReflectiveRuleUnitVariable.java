@@ -65,16 +65,17 @@ public final class ReflectiveRuleUnitVariable implements KogitoRuleUnitVariable 
         Class<?> returnClass = m.getReturnType();
         if (returnClass.isArray()) {
             return returnClass.getComponentType();
-        } else if (Iterable.class.isAssignableFrom(returnClass)) {
+        } else if (Iterable.class.isAssignableFrom( returnClass )) {
             Type returnType = m.getGenericReturnType();
-            Class<?> sourceType = returnType instanceof ParameterizedType
-                    ? (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0]
-                    : Object.class;
+            Class<?> sourceType = returnType instanceof ParameterizedType ?
+                    (Class<?>) ( (ParameterizedType) returnType ).getActualTypeArguments()[0] :
+                    Object.class;
             return sourceType;
         } else {
             return returnClass;
         }
     }
+
 
     @Override
     public boolean isDataSource() {
