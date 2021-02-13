@@ -64,11 +64,11 @@ import org.slf4j.LoggerFactory;
  * Runtime counterpart of a SubFlow node.
  */
 public class SubProcessNodeInstance extends StateBasedNodeInstance implements EventListener,
-                                                                              ContextInstanceContainer {
+        ContextInstanceContainer {
 
     private static final long serialVersionUID = 510l;
     private static final Logger logger = LoggerFactory.getLogger(SubProcessNodeInstance.class);
-    
+
     // NOTE: ContetxInstances are not persisted as current functionality (exception scope) does not require it
     private Map<String, ContextInstance> contextInstances = new HashMap<String, ContextInstance>();
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
@@ -80,7 +80,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     }
 
     @Override
-    public void internalTrigger( final KogitoNodeInstance from, String type) {
+    public void internalTrigger(final KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         // if node instance was cancelled, abort
         if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
@@ -91,7 +91,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                     "A SubProcess node only accepts default incoming connections!");
         }
         Map<String, Object> parameters = new HashMap<>();
-        for (Iterator<DataAssociation> iterator = getSubProcessNode().getInAssociations().iterator(); iterator.hasNext(); ) {
+        for (Iterator<DataAssociation> iterator = getSubProcessNode().getInAssociations().iterator(); iterator.hasNext();) {
             DataAssociation mapping = iterator.next();
             Object parameterValue = null;
             if (mapping.getTransformation() != null) {
@@ -102,8 +102,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                 }
             } else {
 
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getSources().get(0));
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getSources().get(0));
                 if (variableScopeInstance != null) {
                     parameterValue = variableScopeInstance.getVariable(mapping.getSources().get(0));
                 } else {
@@ -136,8 +135,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         while (matcher.find()) {
             String paramName = matcher.group(1);
             if (replacements.get(paramName) == null) {
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
                 if (variableScopeInstance != null) {
                     Object variableValue = variableScopeInstance.getVariable(paramName);
                     String variableValueString = variableValue == null ? "" : variableValue.toString();
@@ -177,7 +175,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
             getProcessInstance().setState(ProcessInstance.STATE_ABORTED);
             throw new RuntimeException("Could not find process " + processId);
         } else {
-            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( getProcessInstance().getKnowledgeRuntime() );
+            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
             if (getSubProcessNode().getMetaData("MICollectionInput") != null) {
                 // remove foreach input variable to avoid problems when running in variable strict mode
                 parameters.remove(getSubProcessNode().getMetaData("MICollectionInput"));
@@ -202,7 +200,8 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
             processInstance.setMetaData("ParentNodeInstanceId", getUniqueId());
             processInstance.setMetaData("ParentNodeId", getSubProcessNode().getUniqueId());
             processInstance.setParentProcessInstanceId(getProcessInstance().getStringId());
-            processInstance.setRootProcessInstanceId(StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
+            processInstance.setRootProcessInstanceId(
+                    StringUtils.isEmpty(getProcessInstance().getRootProcessInstanceId()) ? getProcessInstance().getStringId() : getProcessInstance().getRootProcessInstanceId());
             processInstance.setRootProcessId(StringUtils.isEmpty(getProcessInstance().getRootProcessId()) ? getProcessInstance().getProcessId() : getProcessInstance().getRootProcessId());
             processInstance.setSignalCompletion(getSubProcessNode().isWaitForCompletion());
 
@@ -222,7 +221,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     public void cancel() {
         super.cancel();
         if (getSubProcessNode() == null || !getSubProcessNode().isIndependent()) {
-            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( getProcessInstance().getKnowledgeRuntime() );
+            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
 
             ProcessInstance processInstance = (ProcessInstance) kruntime.getProcessInstance(processInstanceId);
 
@@ -265,7 +264,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
 
     @Override
     public String[] getEventTypes() {
-        return new String[]{"processInstanceCompleted:" + processInstanceId};
+        return new String[] { "processInstanceCompleted:" + processInstanceId };
     }
 
     public void processInstanceCompleted(ProcessInstance processInstance) {
@@ -274,8 +273,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         if (processInstance.getState() == ProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
             // handle exception as sub process failed with error code
-            ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance)
-                    resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, faultName);
+            ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, faultName);
             if (exceptionScopeInstance != null) {
 
                 exceptionScopeInstance.handleException(faultName, processInstance.getFaultData());
@@ -297,19 +295,17 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     }
 
     private void handleOutMappings(ProcessInstance processInstance) {
-        VariableScopeInstance subProcessVariableScopeInstance = (VariableScopeInstance)
-                processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
+        VariableScopeInstance subProcessVariableScopeInstance = (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         SubProcessNode subProcessNode = getSubProcessNode();
         if (subProcessNode != null) {
-            for (Iterator<org.jbpm.workflow.core.node.DataAssociation> iterator = subProcessNode.getOutAssociations().iterator(); iterator.hasNext(); ) {
+            for (Iterator<org.jbpm.workflow.core.node.DataAssociation> iterator = subProcessNode.getOutAssociations().iterator(); iterator.hasNext();) {
                 org.jbpm.workflow.core.node.DataAssociation mapping = iterator.next();
                 if (mapping.getTransformation() != null) {
                     Transformation transformation = mapping.getTransformation();
                     DataTransformer transformer = DataTransformerRegistry.get().find(transformation.getLanguage());
                     if (transformer != null) {
                         Object parameterValue = transformer.transform(transformation.getCompiledExpression(), subProcessVariableScopeInstance.getVariables());
-                        VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                                resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getTarget());
+                        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getTarget());
                         if (variableScopeInstance != null && parameterValue != null) {
 
                             variableScopeInstance.setVariable(this, mapping.getTarget(), parameterValue);
@@ -319,8 +315,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                         }
                     }
                 } else {
-                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                            resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getTarget());
+                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, mapping.getTarget());
                     if (variableScopeInstance != null) {
                         Object value = subProcessVariableScopeInstance.getVariable(mapping.getSources().get(0));
                         if (value == null) {
@@ -424,8 +419,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         Map<String, Object> parameters = new HashMap<String, Object>();
         for (String sourceParam : association.getSources()) {
             Object parameterValue = null;
-            VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                    resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
+            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
             if (variableScopeInstance != null) {
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {

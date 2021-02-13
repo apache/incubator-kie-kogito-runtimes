@@ -34,21 +34,19 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 public class WorkflowProcessInstanceUpgrader {
 
-    public static void upgradeProcessInstance( KogitoProcessRuntime kruntime, String processInstanceId, String processId,
+    public static void upgradeProcessInstance(KogitoProcessRuntime kruntime, String processInstanceId, String processId,
             Map<String, Long> nodeMapping) {
         if (nodeMapping == null) {
             nodeMapping = new HashMap<String, Long>();
         }
-        WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl)
-                kruntime.getProcessInstance(processInstanceId);
+        WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) kruntime.getProcessInstance(processInstanceId);
         if (processInstance == null) {
             throw new IllegalArgumentException("Could not find process instance " + processInstanceId);
         }
         if (processId == null) {
             throw new IllegalArgumentException("Null process id");
         }
-        WorkflowProcess process = (WorkflowProcess)
-                kruntime.getKieBase().getProcess(processId);
+        WorkflowProcess process = (WorkflowProcess) kruntime.getKieBase().getProcess(processId);
         if (process == null) {
             throw new IllegalArgumentException("Could not find process " + processId);
         }
@@ -110,7 +108,7 @@ public class WorkflowProcessInstanceUpgrader {
         upgradeProcessInstance(kruntime, fromProcessId, toProcessId, nodeIdMapping);
     }
 
-    private static String getNodeId( org.kie.api.definition.process.Node[] nodes, String nodeName, boolean unique) {
+    private static String getNodeId(org.kie.api.definition.process.Node[] nodes, String nodeName, boolean unique) {
 
         Stack<org.kie.api.definition.process.Node> nodeStack = new Stack<org.kie.api.definition.process.Node>();
         for (org.kie.api.definition.process.Node node : nodes) {
@@ -140,9 +138,9 @@ public class WorkflowProcessInstanceUpgrader {
         String id = "";
 
         if (unique) {
-            while (!((( Node ) match).getParentContainer() instanceof Process)) {
+            while (!(((Node) match).getParentContainer() instanceof Process)) {
                 id = ":" + match.getId() + id;
-                match = ( org.kie.api.definition.process.Node ) (( Node ) match).getParentContainer();
+                match = (org.kie.api.definition.process.Node) ((Node) match).getParentContainer();
             }
         }
 
@@ -153,8 +151,7 @@ public class WorkflowProcessInstanceUpgrader {
 
     private static void updateNodeInstances(NodeInstanceContainer nodeInstanceContainer, Map<String, Long> nodeMapping) {
         for (NodeInstance nodeInstance : nodeInstanceContainer.getNodeInstances()) {
-            String oldNodeId = ((NodeImpl)
-                    ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getNode()).getUniqueId();
+            String oldNodeId = ((NodeImpl) ((org.jbpm.workflow.instance.NodeInstance) nodeInstance).getNode()).getUniqueId();
             Long newNodeId = nodeMapping.get(oldNodeId);
             if (newNodeId == null) {
                 newNodeId = nodeInstance.getNodeId();

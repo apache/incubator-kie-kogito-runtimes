@@ -18,5 +18,4 @@ package org.kie.kogito.rules;
 
 public interface RuleUnitData {
 
-
 }

@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled("This test costs time and resources, please only run locally for the time being.")
 public class MultipleProcessesPerThreadTest {
-    
+
     private static final int LOOPS = 1000;
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleProcessesPerThreadTest.class);
@@ -55,10 +55,10 @@ public class MultipleProcessesPerThreadTest {
     protected static KieSession createStatefulKnowledgeSession(KieBase kbase) {
         return kbase.newKieSession();
     }
-    
+
     @Test
     public void doMultipleProcessesInMultipleThreads() {
-        
+
         HelloWorldProcessThread hello = new HelloWorldProcessThread();
         UserTaskProcessThread user = new UserTaskProcessThread();
 
@@ -90,15 +90,15 @@ public class MultipleProcessesPerThreadTest {
         public void run() {
             this.status = Status.SUCCESS;
             KieSession ksession = null;
-            
-            try { 
+
+            try {
                 KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
                 kbuilder.add(ResourceFactory.newClassPathResource("BPMN2-MultiThreadServiceProcess-Timer.bpmn", getClass()), ResourceType.BPMN2);
                 InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
                 kbase.addPackages(kbuilder.getKnowledgePackages());
 
                 ksession = createStatefulKnowledgeSession(kbase);
-            } catch(Exception e) { 
+            } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Unable to set up knowlede base or session.", e);
                 this.status = Status.FAIL;
@@ -123,7 +123,7 @@ public class MultipleProcessesPerThreadTest {
                     t.printStackTrace();
                 }
             }
-            
+
         }
 
         public synchronized void join() throws InterruptedException {
@@ -145,20 +145,20 @@ public class MultipleProcessesPerThreadTest {
         public void run() {
             this.status = Status.SUCCESS;
             KogitoProcessRuntime kruntime = null;
-            
-            try { 
+
+            try {
                 KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
                 kbuilder.add(ResourceFactory.newClassPathResource("BPMN2-MultiThreadServiceProcess-Task.bpmn", getClass()), ResourceType.BPMN2);
                 InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
                 kbase.addPackages(kbuilder.getKnowledgePackages());
 
-                kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( createStatefulKnowledgeSession(kbase) );
-            } catch(Exception e) { 
+                kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(createStatefulKnowledgeSession(kbase));
+            } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Unable to set up knowlede base or session.", e);
                 this.status = Status.FAIL;
             }
-            
+
             TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
             kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
 
@@ -197,7 +197,6 @@ public class MultipleProcessesPerThreadTest {
                     t.printStackTrace();
                 }
             }
-            
 
         }
 

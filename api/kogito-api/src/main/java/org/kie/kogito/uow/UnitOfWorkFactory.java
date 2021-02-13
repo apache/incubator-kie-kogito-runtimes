@@ -27,6 +27,7 @@ public interface UnitOfWorkFactory {
 
     /**
      * Creates new instance of UnitOfWork implementation backed by this factory.
+     * 
      * @param eventManager event manager to publish events
      * @return new unit of work instance
      */

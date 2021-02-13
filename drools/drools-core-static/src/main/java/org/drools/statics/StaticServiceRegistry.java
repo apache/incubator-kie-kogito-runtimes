@@ -85,7 +85,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
 
     private void registerKieRuntimeService(String runtimeName, String kieRuntimeServiceImplementation, boolean mandatory) {
         try {
-            KieRuntimeService kieRuntimeService = (KieRuntimeService)SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
+            KieRuntimeService kieRuntimeService = (KieRuntimeService) SimpleInstanceCreator.instance(kieRuntimeServiceImplementation);
             ((KieRuntimes) serviceMap.get(KieRuntimes.class)).getRuntimes().put(runtimeName, kieRuntimeService);
         } catch (Exception e) {
             commonManageException("KieRuntimes", e, mandatory);
@@ -102,7 +102,7 @@ public class StaticServiceRegistry implements ServiceRegistry {
         }
     }
 
-    private void commonManageException(String ignoredServiceType, Exception e, boolean mandatory ) {
+    private void commonManageException(String ignoredServiceType, Exception e, boolean mandatory) {
         if (mandatory) {
             throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
         } else {
@@ -116,8 +116,8 @@ public class StaticServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public <T> List<T> getAll( Class<T> cls ) {
-        return Collections.singletonList( get(cls) );
+    public <T> List<T> getAll(Class<T> cls) {
+        return Collections.singletonList(get(cls));
     }
 
     public <T> T newInstance(String name) {

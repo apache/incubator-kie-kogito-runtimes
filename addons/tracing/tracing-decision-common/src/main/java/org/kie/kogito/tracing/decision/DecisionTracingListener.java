@@ -119,5 +119,4 @@ public class DecisionTracingListener implements DMNRuntimeEventListener {
         return skipTracing.orElse(false);
     }
 
-
 }

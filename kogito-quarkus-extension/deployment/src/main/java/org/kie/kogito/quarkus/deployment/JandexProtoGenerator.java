@@ -49,7 +49,8 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     private final DotName generatedAnnotation;
     private final DotName variableInfoAnnotation;
 
-    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> modelClasses, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> modelClasses, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation,
+            DotName variableInfoAnnotation) {
         super(persistenceClass, modelClasses, dataClasses);
         this.index = index;
         this.generatedAnnotation = generatedAnnotation;
@@ -76,7 +77,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     @Override
     public Proto generate(String messageComment, String fieldComment, String packageName, ClassInfo dataModel,
-                          String... headers) {
+            String... headers) {
         try {
             Proto proto = new Proto(packageName, headers);
             if (dataModel.superName() != null && Enum.class.getName().equals(dataModel.superName().toString())) {
@@ -97,13 +98,13 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 .map(ClassInfo::constructors)
                 .flatMap(values -> values.isEmpty() ? Optional.empty() : Optional.of(values.get(0)))
                 .ifPresent(mi -> mi.parameters().stream()
-                    .map(p -> p.name().toString())
-                    .forEach(parameters::add));
+                        .map(p -> p.name().toString())
+                        .forEach(parameters::add));
         return parameters;
     }
 
     protected ProtoMessage messageFromClass(Proto proto, ClassInfo clazz, IndexView index, String packageName,
-                                            String messageComment, String fieldComment) {
+            String messageComment, String fieldComment) {
 
         if (isHidden(clazz)) {
             // since class is marked as hidden skip processing of that class
@@ -141,7 +142,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 List<Type> typeParameters = pd.type().asParameterizedType().arguments();
                 if (typeParameters.isEmpty()) {
                     throw new IllegalArgumentException("Field " + pd.name() + " of class " + clazz.name().toString()
-                                                               + " uses collection without type information");
+                            + " uses collection without type information");
                 }
                 fieldType = typeParameters.get(0).name();
                 protoType = protoType(fieldType.toString());
@@ -160,7 +161,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                         protoType = another.getName();
                     } else {
                         ProtoMessage another = messageFromClass(proto, classInfo, index, packageName,
-                                                                messageComment, fieldComment);
+                                messageComment, fieldComment);
                         protoType = another.getName();
                     }
                 }
@@ -217,12 +218,12 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         if (processId != null) {
 
             Proto modelProto = generate("@Indexed",
-                                        INDEX_COMMENT,
-                                        modelClazz.name().prefix().toString() + "." + processId, modelClazz,
-                                        "import \"kogito-index.proto\";",
-                                        "import \"kogito-types.proto\";",
-                                        "option kogito_model = \"" + name + "\";",
-                                        "option kogito_id = \"" + processId + "\";");
+                    INDEX_COMMENT,
+                    modelClazz.name().prefix().toString() + "." + processId, modelClazz,
+                    "import \"kogito-index.proto\";",
+                    "import \"kogito-types.proto\";",
+                    "option kogito_model = \"" + name + "\";",
+                    "option kogito_id = \"" + processId + "\";");
 
             if (modelProto.getMessages().isEmpty()) {
                 // no messages, nothing to do

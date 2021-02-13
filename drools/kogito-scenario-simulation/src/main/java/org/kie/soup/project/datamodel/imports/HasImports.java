@@ -23,6 +23,6 @@ public interface HasImports {
 
     Imports getImports();
 
-    void setImports( final Imports imports );
+    void setImports(final Imports imports);
 
 }

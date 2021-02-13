@@ -21,16 +21,17 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.github.victools.jsonschema.generator.SchemaVersion;
 import org.jbpm.util.JsonSchemaUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.UserTaskParam;
 import org.kie.kogito.codegen.api.GeneratedFile;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.github.victools.jsonschema.generator.SchemaVersion;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,7 +86,7 @@ public class JsonSchemaGeneratorTest {
         @UserTaskParam(UserTaskParam.ParamType.INPUT)
         private Color color;
     }
-    
+
     @UserTask(taskName = "name with spaces", processName = "InputOutput")
     private static class WhitespacesTask {
 
@@ -115,7 +116,7 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files =
                 new JsonSchemaGenerator.ClassBuilder(
                         Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class))
-                        .build().generate();
+                                .build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
         assertSchema("org#jbpm#test_test.json", file, SchemaVersion.DRAFT_7);
@@ -127,8 +128,8 @@ public class JsonSchemaGeneratorTest {
             JsonSchemaGenerator.ClassBuilder builder =
                     new JsonSchemaGenerator.ClassBuilder(
                             Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class))
-                            .withSchemaNameFunction(c -> "pepe")
-                            .withSchemaVersion("NON_EXISTING_DRAFT");
+                                    .withSchemaNameFunction(c -> "pepe")
+                                    .withSchemaVersion("NON_EXISTING_DRAFT");
             builder.build().generate();
         });
     }
@@ -138,7 +139,7 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files =
                 new JsonSchemaGenerator.ClassBuilder(
                         Stream.of(PersonInputParams.class, PersonOutputParams.class, IgnoredClass.class))
-                        .withSchemaVersion("DRAFT_2019_09").build().generate();
+                                .withSchemaVersion("DRAFT_2019_09").build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
         assertSchema("org#jbpm#test_test.json", file, SchemaVersion.DRAFT_2019_09);
@@ -151,7 +152,7 @@ public class JsonSchemaGeneratorTest {
         GeneratedFile file = files.iterator().next();
         assertSchema("InputOutput_test.json", file, SchemaVersion.DRAFT_7);
     }
-    
+
     @Test
     public void testJsonSchemaGeneratorWithSpace() throws IOException {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(WhitespacesTask.class)).build().generate();

@@ -75,7 +75,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
 
-
     public static RuleFlowProcessFactory createProcess(String id) {
         return new RuleFlowProcessFactory(id);
     }
@@ -317,7 +316,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     protected DroolsAction timerAction(String type) {
         DroolsAction signal = new DroolsAction();
 
-        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type, (( KogitoNodeInstance ) kcontext.getNodeInstance()).getStringId());
+        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type, ((KogitoNodeInstance) kcontext.getNodeInstance()).getStringId());
         signal.wire(action);
 
         return signal;

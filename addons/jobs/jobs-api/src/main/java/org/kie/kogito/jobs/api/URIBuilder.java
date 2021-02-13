@@ -24,13 +24,14 @@ import java.util.Optional;
 
 public class URIBuilder {
 
-    private URIBuilder(){
+    private URIBuilder() {
 
     }
 
     /**
      * Transform the given url String into an {@link URI} and inserts the default port in case it was not explicit set
      * on the url String.
+     * 
      * @param urlStr
      * @return
      */
@@ -43,7 +44,7 @@ public class URIBuilder {
                     uri.getFragment());
 
         } catch (MalformedURLException | URISyntaxException e) {
-           throw new IllegalArgumentException("Not valid URI: " + urlStr, e);
+            throw new IllegalArgumentException("Not valid URI: " + urlStr, e);
         }
     }
 }

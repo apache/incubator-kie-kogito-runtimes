@@ -51,10 +51,10 @@ public class JavaScriptActionBuilderTest extends AbstractBaseTest {
         final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
 
         ActionDescr actionDescr = new ActionDescr();
-        actionDescr.setText( "var testString; print('Hello')" );
+        actionDescr.setText("var testString; print('Hello')");
 
-        KnowledgeBuilderImpl pkgBuilder = new KnowledgeBuilderImpl( pkg );
-        DialectCompiletimeRegistry dialectRegistry = pkgBuilder.getPackageRegistry( pkg.getName() ).getDialectCompiletimeRegistry();
+        KnowledgeBuilderImpl pkgBuilder = new KnowledgeBuilderImpl(pkg);
+        DialectCompiletimeRegistry dialectRegistry = pkgBuilder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
 
         ProcessDescr processDescr = new ProcessDescr();
         processDescr.setClassName("Process1");
@@ -65,7 +65,7 @@ public class JavaScriptActionBuilderTest extends AbstractBaseTest {
         process.setPackageName("pkg1");
 
         ProcessBuildContext context = new ProcessBuildContext(pkgBuilder, pkgBuilder.getPackage("pkg1"), null, processDescr, dialectRegistry, null);
-        context.init( pkgBuilder, pkg, null, dialectRegistry, null, null);
+        context.init(pkgBuilder, pkg, null, dialectRegistry, null, null);
 
         pkgBuilder.addPackageFromDrl(new StringReader("package pkg1;\nglobal String testField;\n"));
 
@@ -74,7 +74,7 @@ public class JavaScriptActionBuilderTest extends AbstractBaseTest {
         actionNode.setAction(action);
 
         ProcessDialect dialect = ProcessDialectRegistry.getDialect("JavaScript");
-        dialect.getActionBuilder().build( context, action, actionDescr, actionNode );
+        dialect.getActionBuilder().build(context, action, actionDescr, actionNode);
         dialect.addProcess(context);
 
         final JavaScriptActionBuilder builder = new JavaScriptActionBuilder();
@@ -83,14 +83,13 @@ public class JavaScriptActionBuilderTest extends AbstractBaseTest {
                 actionDescr,
                 actionNode);
 
-
         final InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages(Arrays.asList(pkgBuilder.getPackages()));
         final KieSession wm = kbase.newKieSession();
 
         wm.setGlobal("testField", "vagon");
 
-        KogitoProcessContext processContext = new KogitoProcessContextImpl( ((InternalWorkingMemory) wm).getKnowledgeRuntime() );
+        KogitoProcessContext processContext = new KogitoProcessContextImpl(((InternalWorkingMemory) wm).getKnowledgeRuntime());
         ((Action) actionNode.getAction().getMetaData("Action")).execute(processContext);
 
         assertEquals("vagon", wm.getGlobal("testField").toString());

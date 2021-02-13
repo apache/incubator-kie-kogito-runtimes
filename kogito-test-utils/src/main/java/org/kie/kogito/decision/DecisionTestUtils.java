@@ -19,10 +19,11 @@ package org.kie.kogito.decision;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.dmn.DMNKogito;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DecisionTestUtils {
 
@@ -57,8 +58,7 @@ public class DecisionTestUtils {
 
     public static DMNRuntime createDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)
-        ));
+                DecisionTestUtils.class.getResourceAsStream(MODEL_RESOURCE)));
     }
 
     public static DMNModel createDMNModel() {

@@ -26,6 +26,7 @@ public interface KogitoEventListener extends EventListener {
 
     /**
      * Returns unique set of event descriptions that this event listener is interested in.
+     * 
      * @return returns set of event definitions awaiting or empty set
      */
     default Set<EventDescription<?>> getEventDescriptions() {

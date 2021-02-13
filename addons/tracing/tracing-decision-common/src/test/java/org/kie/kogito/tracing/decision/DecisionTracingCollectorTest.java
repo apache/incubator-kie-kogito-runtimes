@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.cloudevents.CloudEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNModel;
@@ -37,6 +36,8 @@ import org.kie.kogito.tracing.decision.terminationdetector.BoundariesTermination
 import org.kie.kogito.tracing.decision.terminationdetector.CounterTerminationDetector;
 import org.kie.kogito.tracing.decision.terminationdetector.TerminationDetector;
 import org.mockito.ArgumentCaptor;
+
+import io.cloudevents.CloudEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,8 +81,7 @@ class DecisionTracingCollectorTest {
                 payloadConsumer,
                 (namespace, name) -> model,
                 terminationDetectorSupplier,
-                configBean
-        );
+                configBean);
 
         List<EvaluateEvent> evaluateAllEvents = readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE);
         List<EvaluateEvent> evaluateDecisionServiceEvents = readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);
