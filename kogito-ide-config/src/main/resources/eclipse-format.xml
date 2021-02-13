@@ -74,7 +74,7 @@
     <setting id="org.eclipse.jdt.core.formatter.comment.indent_root_tags" value="true"/>
     <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="insert"/>
     <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_for_parameter" value="do not insert"/>
-    <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="128"/>
+    <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="200"/>
     <setting id="org.eclipse.jdt.core.formatter.comment.new_lines_at_block_boundaries" value="true"/>
     <setting id="org.eclipse.jdt.core.formatter.comment.new_lines_at_javadoc_boundaries" value="true"/>
     <setting id="org.eclipse.jdt.core.formatter.comment.preserve_white_space_between_code_and_line_comments" value="false"/>
@@ -293,7 +293,7 @@
     <setting id="org.eclipse.jdt.core.formatter.keep_simple_while_body_on_same_line" value="false"/>
     <setting id="org.eclipse.jdt.core.formatter.keep_then_statement_on_same_line" value="false"/>
     <setting id="org.eclipse.jdt.core.formatter.keep_type_declaration_on_one_line" value="one_line_never"/>
-    <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="128"/>
+    <setting id="org.eclipse.jdt.core.formatter.lineSplit" value="200"/>
     <setting id="org.eclipse.jdt.core.formatter.never_indent_block_comments_on_first_column" value="false"/>
     <setting id="org.eclipse.jdt.core.formatter.never_indent_line_comments_on_first_column" value="false"/>
     <setting id="org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_method_body" value="0"/>
