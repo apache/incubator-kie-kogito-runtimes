@@ -36,8 +36,7 @@ public class NodeSummary {
         this(nodeId, null, null, null, null, null);
     }
 
-    public NodeSummary(String nodeId, Element border, Element background, Element borderSubProcess, Element subProcessLink,
-            RenderType renderType) {
+    public NodeSummary(String nodeId, Element border, Element background, Element borderSubProcess, Element subProcessLink, RenderType renderType) {
         this.nodeId = nodeId;
         this.border = border;
         this.background = background;

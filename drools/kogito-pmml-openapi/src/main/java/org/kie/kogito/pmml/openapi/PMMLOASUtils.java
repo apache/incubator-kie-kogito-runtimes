@@ -15,6 +15,29 @@
  */
 package org.kie.kogito.pmml.openapi;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.IntStream;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BigIntegerNode;
+import com.fasterxml.jackson.databind.node.DecimalNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.FloatNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ShortNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import io.smallrye.openapi.runtime.io.JsonUtil;
+import org.kie.pmml.api.enums.DATA_TYPE;
+import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
+import org.kie.pmml.api.models.Interval;
+import org.kie.pmml.api.models.MiningField;
+
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.BOOLEAN;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.DOUBLE;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.ENUM;
@@ -30,35 +53,9 @@ import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.PROPERTIES;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.STRING;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.TYPE;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import org.kie.pmml.api.enums.DATA_TYPE;
-import org.kie.pmml.api.enums.FIELD_USAGE_TYPE;
-import org.kie.pmml.api.models.Interval;
-import org.kie.pmml.api.models.MiningField;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BigIntegerNode;
-import com.fasterxml.jackson.databind.node.DecimalNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.FloatNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ShortNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-
-import io.smallrye.openapi.runtime.io.JsonUtil;
-
 public class PMMLOASUtils {
 
-    public static final String INFINITY_SYMBOL =
-            new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+    public static final String INFINITY_SYMBOL = new String(Character.toString('\u221E').getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
 
     private PMMLOASUtils() {
     }
@@ -118,8 +115,7 @@ public class PMMLOASUtils {
             ArrayNode intervalsNode = JsonUtil.arrayNode();
             IntStream.range(0, intervals.size()).forEach(i -> {
                 Interval interval = intervals.get(i);
-                String leftMargin =
-                        interval.getLeftMargin() != null ? interval.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
+                String leftMargin = interval.getLeftMargin() != null ? interval.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
                 String rightMargin = interval.getRightMargin() != null ? interval.getRightMargin().toString() : INFINITY_SYMBOL;
                 String formattedInterval = String.format("%s %s", leftMargin, rightMargin);
                 intervalsNode.add(new TextNode(formattedInterval));
@@ -128,7 +124,8 @@ public class PMMLOASUtils {
         }
     }
 
-    public static void addToSetNode(String fieldName, DATA_TYPE dataType, List<String> allowedValues, ObjectNode setNode) {
+    public static void addToSetNode(String fieldName, DATA_TYPE dataType, List<String> allowedValues, ObjectNode
+            setNode) {
         final ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
         final ObjectNode typeFieldNode = JsonUtil.objectNode();
         String mappedType = getMappedType(dataType);

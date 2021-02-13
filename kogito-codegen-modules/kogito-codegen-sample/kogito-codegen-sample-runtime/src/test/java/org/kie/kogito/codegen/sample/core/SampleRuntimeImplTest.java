@@ -14,16 +14,16 @@
  */
 package org.kie.kogito.codegen.sample.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.Collections;
-
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
 import org.kie.kogito.StaticApplication;
 import org.kie.kogito.StaticConfig;
+
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SampleRuntimeImplTest {
 

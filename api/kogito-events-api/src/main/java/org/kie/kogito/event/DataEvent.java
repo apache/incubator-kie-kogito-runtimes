@@ -47,8 +47,7 @@ public interface DataEvent<T> extends EventMeta {
     String getTime();
 
     /**
-     * The Content type of data value. This attribute enables data to carry any type of content, whereby format and encoding
-     * might differ from that of the chosen event format.
+     * The Content type of data value. This attribute enables data to carry any type of content, whereby format and encoding might differ from that of the chosen event format.
      *
      * @return Content type of data value
      */

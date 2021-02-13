@@ -14,10 +14,10 @@
  */
 package org.kie.kogito.monitoring.prometheus.springboot.rest;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class SpringbootMetricsResourceTest {
 

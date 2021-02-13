@@ -16,23 +16,6 @@
 
 package org.kie.kogito.tracing.decision;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_ID;
-import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
-import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
-import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForError;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForWarning;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
-import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContextForWarning;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +38,23 @@ import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEventType;
 import org.kie.kogito.tracing.decision.mock.MockAfterEvaluateAllEvent;
 import org.kie.kogito.tracing.decision.mock.MockBeforeEvaluateAllEvent;
 import org.mockito.ArgumentCaptor;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForError;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContextForWarning;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContextForWarning;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class DecisionTracingListenerTest {
 
@@ -123,13 +123,11 @@ class DecisionTracingListenerTest {
     }
 
     private static void testWithRealEvaluateDecisionService(Map<String, Object> contextVariables, int expectedEvents) {
-        List<EvaluateEvent> events = testWithRealRuntime(contextVariables, expectedEvents,
-                (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME));
+        List<EvaluateEvent> events = testWithRealRuntime(contextVariables, expectedEvents, (model, context) -> model.evaluateDecisionService(context, DECISION_SERVICE_NODE_NAME));
         assertEvaluateDecisionServiceEvents(events, MODEL_NAMESPACE, MODEL_NAME, TEST_EXECUTION_ID_2);
     }
 
-    private static List<EvaluateEvent> testWithRealRuntime(Map<String, Object> contextVariables, int expectedEvents,
-            BiConsumer<DecisionModel, DMNContext> modelConsumer) {
+    private static List<EvaluateEvent> testWithRealRuntime(Map<String, Object> contextVariables, int expectedEvents, BiConsumer<DecisionModel, DMNContext> modelConsumer) {
         final DMNRuntime runtime = createDMNRuntime();
 
         Consumer<EvaluateEvent> eventConsumer = mock(Consumer.class);
@@ -146,8 +144,7 @@ class DecisionTracingListenerTest {
         return eventCaptor.getAllValues();
     }
 
-    private static void assertEvaluateAllEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace, String modelName,
-            String executionId) {
+    private static void assertEvaluateAllEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace, String modelName, String executionId) {
         assertTrue(evaluateEvents.size() >= 2);
 
         evaluateEvents.forEach(e -> assertEventMatches(modelNamespace, modelName, executionId, e));
@@ -159,8 +156,7 @@ class DecisionTracingListenerTest {
         assertSame(EvaluateEventType.AFTER_EVALUATE_ALL, afterEvent.getType());
     }
 
-    private static void assertEvaluateDecisionServiceEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace,
-            String modelName, String executionId) {
+    private static void assertEvaluateDecisionServiceEvents(List<EvaluateEvent> evaluateEvents, String modelNamespace, String modelName, String executionId) {
         assertTrue(evaluateEvents.size() >= 2);
 
         evaluateEvents.forEach(e -> assertEventMatches(modelNamespace, modelName, executionId, e));
@@ -177,8 +173,7 @@ class DecisionTracingListenerTest {
     }
 
     private static void assertEventMatches(String modelNamespace, String modelName, String executionId, EvaluateEvent event) {
-        assertTrue(event.getModelNamespace() == null && event.getModelName() == null
-                || event.getModelNamespace() != null && event.getModelName() != null);
+        assertTrue(event.getModelNamespace() == null && event.getModelName() == null || event.getModelNamespace() != null && event.getModelName() != null);
         if (event.getModelNamespace() != null) {
             assertEquals(modelNamespace, event.getModelNamespace());
             assertEquals(modelName, event.getModelName());

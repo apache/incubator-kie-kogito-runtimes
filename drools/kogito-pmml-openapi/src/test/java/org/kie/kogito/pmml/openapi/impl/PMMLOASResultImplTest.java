@@ -1,5 +1,22 @@
 package org.kie.kogito.pmml.openapi.impl;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import org.junit.jupiter.api.Test;
+import org.kie.pmml.api.enums.DATA_TYPE;
+import org.kie.pmml.api.enums.ResultCode;
+import org.kie.pmml.api.models.MiningField;
+import org.kie.pmml.api.models.OutputField;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -22,24 +39,6 @@ import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.SEGMENT_ID;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.SEGMENT_INDEX;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.STRING;
 import static org.kie.kogito.pmml.openapi.api.PMMLOASResult.TYPE;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import org.junit.jupiter.api.Test;
-import org.kie.pmml.api.enums.DATA_TYPE;
-import org.kie.pmml.api.enums.ResultCode;
-import org.kie.pmml.api.models.MiningField;
-import org.kie.pmml.api.models.OutputField;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 class PMMLOASResultImplTest {
 
@@ -82,7 +81,7 @@ class PMMLOASResultImplTest {
         assertNotNull(outputSetPropertiesNode.get(RESULT_VARIABLES));
         ObjectNode resultVariablesNode = (ObjectNode) outputSetPropertiesNode.get(RESULT_VARIABLES);
         assertNotNull(resultVariablesNode.get(PROPERTIES));
-        ObjectNode resultVariablesPropertiesNode = (ObjectNode) resultVariablesNode.get(PROPERTIES);
+        ObjectNode resultVariablesPropertiesNode =  (ObjectNode) resultVariablesNode.get(PROPERTIES);
         assertEquals(toAdd.size(), resultVariablesPropertiesNode.size());
         List<JsonNode> nodeList = StreamSupport
                 .stream(resultVariablesPropertiesNode.spliterator(), false)

@@ -14,18 +14,17 @@
  */
 package org.kie.kogito.codegen.sample.generator.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Optional;
-
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SampleConfigGeneratorTest {
 
@@ -39,8 +38,7 @@ class SampleConfigGeneratorTest {
         GeneratedFile generate = sampleConfigGenerator.generate();
         CompilationUnit compilationUnit = StaticJavaParser.parse(new String(generate.contents()));
 
-        Optional<ClassOrInterfaceDeclaration> optionalClassDeclaration =
-                compilationUnit.findFirst(ClassOrInterfaceDeclaration.class);
+        Optional<ClassOrInterfaceDeclaration> optionalClassDeclaration = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class);
 
         assertThat(optionalClassDeclaration).isNotEmpty();
 

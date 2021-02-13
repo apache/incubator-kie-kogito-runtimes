@@ -16,13 +16,13 @@
 
 package org.jbpm.workflow.core.node;
 
-import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-
 import java.util.function.Predicate;
 
 import org.jbpm.workflow.core.Node;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.runtime.process.ProcessContext;
+
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 /**
  * Default implementation of a milestone node.

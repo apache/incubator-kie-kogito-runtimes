@@ -21,8 +21,8 @@ import org.jbpm.process.core.impl.XmlProcessDumperFactoryService;
 
 public class XmlProcessDumperFactoryServiceImpl implements XmlProcessDumperFactoryService {
 
-    public XmlProcessDumper newXmlProcessDumper() {
-        return XmlBPMNProcessDumper.INSTANCE;
-    }
-
+	public XmlProcessDumper newXmlProcessDumper() {
+		return XmlBPMNProcessDumper.INSTANCE;
+	}
+	
 }

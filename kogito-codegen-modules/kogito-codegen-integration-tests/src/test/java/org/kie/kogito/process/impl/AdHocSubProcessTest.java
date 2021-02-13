@@ -15,9 +15,6 @@
 
 package org.kie.kogito.process.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +27,9 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 class AdHocSubProcessTest extends AbstractCodegenTest {
 

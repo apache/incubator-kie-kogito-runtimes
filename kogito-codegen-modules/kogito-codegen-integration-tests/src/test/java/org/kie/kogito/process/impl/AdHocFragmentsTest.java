@@ -15,10 +15,6 @@
 
 package org.kie.kogito.process.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +36,10 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class AdHocFragmentsTest extends AbstractCodegenTest {
 
     @Test
@@ -58,6 +58,7 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         assertAdHocFragments(expected, adHocFragments);
     }
 
+
     @Test
     void testStartUserTask() throws Exception {
         String taskName = "AdHoc User Task";
@@ -68,15 +69,13 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         ProcessInstance<? extends Model> processInstance = p.createInstance(p.createModel());
         processInstance.start();
 
-        Optional<WorkItem> workItem = processInstance.workItems().stream()
-                .filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
+        Optional<WorkItem> workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
         assertThat(workItem).isNotPresent();
 
         processInstance.send(Sig.of(taskName, p.createModel()));
 
         assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.status());
-        workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName))
-                .findFirst();
+        workItem = processInstance.workItems().stream().filter(wi -> wi.getParameters().get("NodeName").equals(taskName)).findFirst();
         assertThat(workItem).isPresent();
         assertThat(workItem.get().getId()).isNotBlank();
         assertThat(workItem.get().getName()).isNotBlank();
@@ -129,10 +128,9 @@ class AdHocFragmentsTest extends AbstractCodegenTest {
         assertThat(current).isNotNull();
         assertThat(current.size()).isEqualTo(expected.size());
         expected.forEach(e -> assertTrue(
-                current.stream()
-                        .anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType())
-                                && c.isAutoStart() == e.isAutoStart()),
-                "Expected: " + e.toString() + ", Got: " + current.toString()));
+                current.stream().anyMatch(c -> c.getName().equals(e.getName()) && c.getType().equals(e.getType()) && c.isAutoStart() == e.isAutoStart()),
+                "Expected: " + e.toString() + ", Got: " + current.toString())
+        );
     }
 
 }

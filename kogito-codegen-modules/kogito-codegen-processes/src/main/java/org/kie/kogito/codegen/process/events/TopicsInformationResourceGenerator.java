@@ -22,21 +22,20 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
-import org.kie.kogito.event.EventKind;
-import org.kie.kogito.services.event.DataEventAttrBuilder;
-
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
+import org.kie.kogito.event.EventKind;
+import org.kie.kogito.services.event.DataEventAttrBuilder;
 
 public class TopicsInformationResourceGenerator extends AbstractEventResourceGenerator {
 
@@ -46,7 +45,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
     private final Map<String, List<TriggerMetaData>> triggers;
 
     public TopicsInformationResourceGenerator(final KogitoBuildContext context,
-            final List<ProcessExecutableModelGenerator> generators) {
+                                              final List<ProcessExecutableModelGenerator> generators) {
         super(TemplatedGenerator.builder()
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
@@ -63,8 +62,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
         final CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate TopicInformation REST Resource");
         final ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(
-                        () -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         this.addEventsMeta(template);
 
@@ -77,8 +75,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
             template.findFirst(MethodDeclaration.class, md -> md.getName().toString().equals("getTopics"))
                     .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain method getTopics!"))
                     .getBody().orElseThrow(() -> new NoSuchElementException("getTopics method doesn't have a body!"))
-                    .addStatement(0, StaticJavaParser
-                            .parseStatement("discovery = new org.kie.kogito.services.event.impl.NoOpTopicDiscovery();"));
+                    .addStatement(0, StaticJavaParser.parseStatement("discovery = new org.kie.kogito.services.event.impl.NoOpTopicDiscovery();"));
         }
 
         template.getMembers().sort(new BodyDeclarationComparator());
@@ -87,8 +84,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
     }
 
     private void addEventsMeta(final ClassOrInterfaceDeclaration template) {
-        final BlockStmt constructorBlock = template.getDefaultConstructor()
-                .orElseThrow(() -> new IllegalArgumentException("No body found in setup method!")).getBody();
+        final BlockStmt constructorBlock = template.getDefaultConstructor().orElseThrow(() -> new IllegalArgumentException("No body found in setup method!")).getBody();
         final List<String> repeatLines = extractRepeatLinesFromMethod(constructorBlock);
         this.triggers.forEach((processId, triggers) -> triggers.forEach(t -> {
             String eventKind = EventKind.class.getName() + "." + EventKind.CONSUMED.name();
@@ -101,8 +97,7 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
                 eventSource = DataEventAttrBuilder.toSource(processId);
             }
             for (String l : repeatLines) {
-                constructorBlock.addStatement(
-                        l.replace("$type$", eventType).replace("$source$", eventSource).replace("$kind$", eventKind));
+                constructorBlock.addStatement(l.replace("$type$", eventType).replace("$source$", eventSource).replace("$kind$", eventKind));
             }
         }));
     }
@@ -114,9 +109,9 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
                     .stream()
                     .filter(m -> m.generate().getTriggers() != null && !m.generate().getTriggers().isEmpty())
                     .forEach(m -> filteredTriggers.put(m.getProcessId(),
-                            m.generate().getTriggers().stream()
-                                    .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
-                                    .collect(Collectors.toList())));
+                                                   m.generate().getTriggers().stream()
+                                                 .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
+                                                 .collect(Collectors.toList())));
             return filteredTriggers;
         }
         return Collections.emptyMap();

@@ -22,7 +22,7 @@ public class WorkItemNotFoundException extends RuntimeException {
     private String workItemId;
 
     public WorkItemNotFoundException(String message,
-            String workItemId) {
+                                     String workItemId) {
         super(message);
         this.workItemId = workItemId;
     }

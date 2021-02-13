@@ -16,8 +16,6 @@
 
 package org.jbpm.ruleflow.core.factory;
 
-import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
-
 import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
@@ -26,6 +24,8 @@ import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.jbpm.workflow.core.node.StateNode;
+
+import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 
 /**
  *
@@ -94,8 +94,7 @@ public class StateNodeFactory extends CompositeContextNodeFactory {
         return this;
     }
 
-    public StateNodeFactory constraint(String connectionId, long nodeId, String type, String dialect, String constraint,
-            int priority) {
+    public StateNodeFactory constraint(String connectionId, long nodeId, String type, String dialect, String constraint, int priority) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(connectionId);
         constraintImpl.setType(type);

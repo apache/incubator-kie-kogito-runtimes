@@ -43,8 +43,7 @@ public final class Printer {
             return "\n";
         }
         final StringBuilder sb = new StringBuilder();
-        event.getExtensionNames()
-                .forEach(e -> sb.append("\t").append(e).append(": ").append(event.getExtension(e)).append("\n"));
+        event.getExtensionNames().forEach(e -> sb.append("\t").append(e).append(": ").append(event.getExtension(e)).append("\n"));
         return sb.toString();
     }
 

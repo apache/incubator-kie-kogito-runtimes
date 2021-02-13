@@ -21,30 +21,30 @@ import java.io.Serializable;
 import org.jbpm.workflow.core.DroolsAction;
 
 public class ActionExceptionHandler implements ExceptionHandler, Serializable {
+	
+	private static final long serialVersionUID = 510l;
+	
+	private String faultVariable;
+	private DroolsAction action;
 
-    private static final long serialVersionUID = 510l;
+	public String getFaultVariable() {
+		return faultVariable;
+	}
 
-    private String faultVariable;
-    private DroolsAction action;
+	public void setFaultVariable(String faultVariable) {
+		this.faultVariable = faultVariable;
+	}
 
-    public String getFaultVariable() {
-        return faultVariable;
-    }
+	public DroolsAction getAction() {
+		return action;
+	}
 
-    public void setFaultVariable(String faultVariable) {
-        this.faultVariable = faultVariable;
-    }
-
-    public DroolsAction getAction() {
-        return action;
-    }
-
-    public void setAction(DroolsAction action) {
-        this.action = action;
-    }
-
-    public String toString() {
-        return action == null ? "" : action.toString();
-    }
+	public void setAction(DroolsAction action) {
+		this.action = action;
+	}
+	
+	public String toString() {
+		return action == null ? "" : action.toString();
+	}
 
 }

@@ -16,11 +16,6 @@
 
 package org.kie.api.internal.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -30,13 +25,18 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.internal.assembler.KieAssemblerService;
 import org.kie.api.io.ResourceType;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class ServiceDiscoveryImplTest {
 
     @Test
     public void testServiceAndChildServiceInSameKieConf() {
         ServiceDiscoveryImpl serviceDiscovery = new ServiceDiscoveryImpl();
         ClassLoader cl = ServiceDiscoveryImplTest.class.getClassLoader();
-        serviceDiscovery.registerConfs(cl, getUrl(cl, "META-INF/kie.conf.test0"));
+        serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test0" ) );
 
         Map<String, List<Object>> services = serviceDiscovery.getServices();
         assertTrue(services.size() == 1);
@@ -57,11 +57,11 @@ public class ServiceDiscoveryImplTest {
         ClassLoader cl = ServiceDiscoveryImplTest.class.getClassLoader();
 
         try {
-            serviceDiscovery.registerConfs(cl, getUrl(cl, "META-INF/kie.conf.test1"));
-            serviceDiscovery.registerConfs(cl, getUrl(cl, "META-INF/kie.conf.test2"));
+            serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test1" ) );
+            serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test2" ) );
             serviceDiscovery.getServices();
             fail();
-        } catch (Exception e) {
+        } catch(Exception e) {
             // expected
         }
     }
@@ -71,8 +71,8 @@ public class ServiceDiscoveryImplTest {
         ServiceDiscoveryImpl serviceDiscovery = new ServiceDiscoveryImpl();
         ClassLoader cl = ServiceDiscoveryImplTest.class.getClassLoader();
 
-        serviceDiscovery.registerConfs(cl, getUrl(cl, "META-INF/kie.conf.test3"));
-        serviceDiscovery.registerConfs(cl, getUrl(cl, "META-INF/kie.conf.test1"));
+        serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test3" ) );
+        serviceDiscovery.registerConfs( cl, getUrl( cl, "META-INF/kie.conf.test1" ) );
         Map<String, List<Object>> services = serviceDiscovery.getServices();
 
         List<Object> service = services.get("org.kie.api.internal.assembler.KieAssemblers");
@@ -82,11 +82,11 @@ public class ServiceDiscoveryImplTest {
         assertTrue(service.get(1) instanceof MockAssemblersImpl);
     }
 
-    protected URL getUrl(ClassLoader cl, String resourceName) {
+    protected URL getUrl( ClassLoader cl, String resourceName ) {
         try {
-            return cl.getResources(resourceName).nextElement();
+            return cl.getResources( resourceName ).nextElement();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException( e );
         }
     }
 }

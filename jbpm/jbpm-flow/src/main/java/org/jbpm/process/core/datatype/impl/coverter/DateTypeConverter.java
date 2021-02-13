@@ -21,8 +21,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.function.Function;
 
-public class DateTypeConverter implements Function<String, Date> {
 
+public class DateTypeConverter implements Function<String, Date> {
+    
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     @Override
@@ -34,4 +35,5 @@ public class DateTypeConverter implements Function<String, Date> {
         }
     }
 
+    
 }

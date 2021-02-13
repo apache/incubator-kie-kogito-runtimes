@@ -28,8 +28,7 @@ public class PersonWithList {
     private List<Boolean> booleanList;
     private List<Long> longList;
 
-    public PersonWithList(String name, int age, boolean adult, List<String> stringList, List<Integer> integerList,
-            List<Boolean> booleanList, List<Long> longList) {
+    public PersonWithList(String name, int age, boolean adult, List<String> stringList, List<Integer> integerList, List<Boolean> booleanList, List<Long> longList) {
         this.name = name;
         this.age = age;
         this.adult = adult;

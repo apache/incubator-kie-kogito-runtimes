@@ -24,13 +24,14 @@ import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 
+
 public class BoundaryEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = -4958054074031174180L;
 
     @Override
     public void signalEvent(String type, Object event) {
-        if (triggerTime == null) {
+        if(triggerTime == null) {
             triggerTime = new Date();
         }
         BoundaryEventNode boundaryNode = (BoundaryEventNode) getEventNode();
@@ -53,13 +54,11 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         }
     }
 
-    private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type,
-            Object event) {
+    private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
             for (NodeInstance nInstance : nodeInstances) {
                 String nodeUniqueId = (String) nInstance.getNode().getMetaData().get("UniqueId");
-                boolean isActivating = ((WorkflowProcessInstanceImpl) nInstance.getProcessInstance()).getActivatingNodeIds()
-                        .contains(nodeUniqueId);
+                boolean isActivating = ((WorkflowProcessInstanceImpl) nInstance.getProcessInstance()).getActivatingNodeIds().contains(nodeUniqueId);
                 if (attachedTo.equals(nodeUniqueId) && !isActivating) {
                     // in case this is timer event make sure it corresponds to the proper node instance
                     if (type.startsWith("Timer-")) {

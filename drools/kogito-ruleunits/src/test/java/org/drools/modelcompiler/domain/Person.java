@@ -32,6 +32,7 @@ public class Person extends AbstractReactiveObject {
     @Position(1)
     private int age;
 
+
     private long ageLong;
 
     private Address address;
@@ -40,6 +41,7 @@ public class Person extends AbstractReactiveObject {
     private Boolean employed;
 
     private List<Address> addresses = new ArrayList<>();
+
 
     private BigDecimal money;
 
@@ -67,12 +69,12 @@ public class Person extends AbstractReactiveObject {
 
     private Person ParentP;
 
-    public Person() {
-    }
+    public Person() { }
 
     public Person(String name) {
         this.name = name;
     }
+
 
     public Person(String name, BigDecimal money) {
         this.name = name;
@@ -107,7 +109,7 @@ public class Person extends AbstractReactiveObject {
     }
 
     public Short getAgeAsShort() {
-        return (short) age;
+        return (short)age;
     }
 
     public void setAge(int age) {
@@ -136,7 +138,7 @@ public class Person extends AbstractReactiveObject {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId( int id ) {
         this.id = id;
     }
 
@@ -144,7 +146,7 @@ public class Person extends AbstractReactiveObject {
         return likes;
     }
 
-    public void setLikes(String likes) {
+    public void setLikes( String likes ) {
         this.likes = likes;
     }
 
@@ -213,10 +215,8 @@ public class Person extends AbstractReactiveObject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Person person = (Person) o;
         return age == person.age && name.equals(person.name);

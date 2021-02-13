@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.tests;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,13 +26,18 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
-import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.process.impl.Sig;
 import org.mockito.ArgumentCaptor;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class MessageIntermediateEventTest extends AbstractCodegenTest {
 
@@ -77,50 +77,50 @@ public class MessageIntermediateEventTest extends AbstractCodegenTest {
 
     @Test
     public void testMessageCatchEventProcess() throws Exception {
-
-        Application app = generateCodeProcessesOnly("messageevent/IntermediateCatchEventMessage.bpmn2");
+        
+        Application app = generateCodeProcessesOnly("messageevent/IntermediateCatchEventMessage.bpmn2");        
         assertThat(app).isNotNull();
-
+                
         Process<? extends Model> p = app.get(Processes.class).processById("IntermediateCatchEvent");
-
+        
         Model m = p.createModel();
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();        
         m.fromMap(parameters);
-
+        
         ProcessInstance<?> processInstance = p.createInstance(m);
-        processInstance.start();
-
+        processInstance.start();     
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-
+        
         processInstance.send(Sig.of("Message-customers", "CUS-00998877"));
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model) processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }
-
+    
     @Test
     public void testMessageBoundaryCatchEventProcess() throws Exception {
-
-        Application app = generateCodeProcessesOnly("messageevent/BoundaryMessageEventOnTask.bpmn2");
+        
+        Application app = generateCodeProcessesOnly("messageevent/BoundaryMessageEventOnTask.bpmn2");        
         assertThat(app).isNotNull();
-
+                
         Process<? extends Model> p = app.get(Processes.class).processById("BoundaryMessageOnTask");
-
+        
         Model m = p.createModel();
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();        
         m.fromMap(parameters);
-
+        
         ProcessInstance<?> processInstance = p.createInstance(m);
-        processInstance.start();
-
+        processInstance.start();     
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_ACTIVE);
-
+        
         processInstance.send(Sig.of("Message-customers", "CUS-00998877"));
-
+        
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
-        Model result = (Model) processInstance.variables();
+        Model result = (Model)processInstance.variables();
         assertThat(result.toMap()).hasSize(1).containsKeys("customerId");
         assertThat(result.toMap().get("customerId")).isNotNull().isEqualTo("CUS-00998877");
     }

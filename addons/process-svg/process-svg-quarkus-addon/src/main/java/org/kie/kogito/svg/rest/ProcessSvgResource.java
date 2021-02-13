@@ -51,7 +51,7 @@ public class ProcessSvgResource {
     @Path("processes/{processId}/instances/{processInstanceId}")
     @Produces("image/svg+xml")
     public Response getExecutionPathByProcessInstanceId(@PathParam("processId") String processId,
-            @PathParam("processInstanceId") String processInstanceId) {
+                                                        @PathParam("processInstanceId") String processInstanceId) {
         Optional<String> processInstanceSvg = service.getProcessInstanceSvg(processId, processInstanceId);
         if (processInstanceSvg.isPresent()) {
             return Response.ok(processInstanceSvg.get()).build();
@@ -65,3 +65,4 @@ public class ProcessSvgResource {
         this.service = service;
     }
 }
+

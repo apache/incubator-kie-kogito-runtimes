@@ -19,8 +19,10 @@ import org.kie.api.runtime.process.ProcessInstance;
 
 public interface KogitoWorkingMemory extends WorkingMemory {
 
+
     ProcessInstance getProcessInstance(String id);
 
     ProcessInstance getProcessInstance(String id, boolean readOnly);
+
 
 }

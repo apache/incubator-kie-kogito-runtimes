@@ -16,18 +16,17 @@
 
 package org.kie.kogito.tracing.decision.event.trace;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-
 import java.util.List;
-
-import org.kie.kogito.tracing.decision.event.message.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.kie.kogito.tracing.decision.event.message.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TraceHeader {
@@ -62,8 +61,7 @@ public class TraceHeader {
     private TraceHeader() {
     }
 
-    public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration,
-            TraceResourceId resourceId, List<Message> messages) {
+    public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration, TraceResourceId resourceId, List<Message> messages) {
         checkAndLogInvalidTimestamp(startTs, "startTimestamp", executionId);
         checkAndLogInvalidTimestamp(endTs, "endTimestamp", executionId);
         checkAndLogInvalidTimestamp(duration, "duration", executionId);
@@ -104,10 +102,9 @@ public class TraceHeader {
         return messages;
     }
 
-    private void checkAndLogInvalidTimestamp(Long timestamp, String property, String executionId) {
-        if (timestamp == null || timestamp < 0) {
-            LOGGER.warn(String.format("The TraceHeader timestamp property %s of the execution %s is null or negative: %d",
-                    property, executionId, timestamp));
+    private void checkAndLogInvalidTimestamp(Long timestamp, String property, String executionId){
+        if (timestamp == null || timestamp < 0){
+            LOGGER.warn(String.format("The TraceHeader timestamp property %s of the execution %s is null or negative: %d", property, executionId, timestamp));
         }
     }
 }

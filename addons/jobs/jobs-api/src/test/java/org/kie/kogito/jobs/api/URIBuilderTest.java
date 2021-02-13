@@ -16,11 +16,11 @@
 
 package org.kie.kogito.jobs.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class URIBuilderTest {
 

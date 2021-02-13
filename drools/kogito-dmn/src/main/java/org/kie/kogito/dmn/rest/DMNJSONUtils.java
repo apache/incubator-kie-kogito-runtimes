@@ -34,8 +34,7 @@ public class DMNJSONUtils {
      */
     public static DMNContext ctx(DecisionModel dm, Map<String, Object> variables) {
         if (variables != null && variables.size() > 0) {
-            return new org.kie.dmn.core.internal.utils.DynamicDMNContextBuilder(new org.kie.dmn.core.impl.DMNContextImpl(),
-                    dm.getDMNModel()).populateContextWith(variables);
+            return new org.kie.dmn.core.internal.utils.DynamicDMNContextBuilder(new org.kie.dmn.core.impl.DMNContextImpl(), dm.getDMNModel()).populateContextWith(variables);
         } else {
             return dm.newContext(variables);
         }
@@ -55,8 +54,7 @@ public class DMNJSONUtils {
      */
     public static DMNContext ctx(DecisionModel dm, Map<String, Object> variables, String decisionServiceName) {
         if (variables != null && variables.size() > 0) {
-            return new org.kie.dmn.core.internal.utils.DynamicDMNContextBuilder(new org.kie.dmn.core.impl.DMNContextImpl(),
-                    dm.getDMNModel()).populateContextForDecisionServiceWith(decisionServiceName, variables);
+            return new org.kie.dmn.core.internal.utils.DynamicDMNContextBuilder(new org.kie.dmn.core.impl.DMNContextImpl(), dm.getDMNModel()).populateContextForDecisionServiceWith(decisionServiceName, variables);
         } else {
             return dm.newContext(variables);
         }

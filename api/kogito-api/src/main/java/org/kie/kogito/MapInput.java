@@ -24,10 +24,8 @@ public interface MapInput {
 
     /**
      * Fills the class with information retrieved from the map
-     * 
      * @param params Map containing keys which matches names of fields
-     *        in the class
-     */
+     * in the class*/
     void fromMap(Map<String, Object> params);
 
 }

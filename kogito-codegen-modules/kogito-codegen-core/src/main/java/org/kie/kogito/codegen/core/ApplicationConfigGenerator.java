@@ -15,19 +15,10 @@
 
 package org.kie.kogito.codegen.core;
 
-import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
-
-import org.kie.kogito.Addons;
-import org.kie.kogito.codegen.api.ConfigGenerator;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -36,6 +27,14 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import org.kie.kogito.Addons;
+import org.kie.kogito.codegen.api.ConfigGenerator;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
+import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
 
@@ -66,7 +65,8 @@ public class ApplicationConfigGenerator {
     public Collection<GeneratedFile> generate() {
         ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
 
-        configGenerators.forEach(configGenerator -> generatedFiles.add(configGenerator.generate()));
+        configGenerators.forEach(configGenerator ->
+                generatedFiles.add(configGenerator.generate()));
 
         Collection<String> configClassNames = configGenerators.stream()
                 .map(ConfigGenerator::configClassName)
@@ -84,7 +84,7 @@ public class ApplicationConfigGenerator {
                 .ifPresent(this::replaceAddonPlaceHolder);
 
         // Add explicit initialization when no DI
-        if (!context.hasDI()) {
+        if(!context.hasDI()) {
             ClassOrInterfaceDeclaration cls = compilationUnit
                     .findFirst(ClassOrInterfaceDeclaration.class)
                     .orElseThrow(() -> new InvalidTemplateException(
@@ -95,15 +95,15 @@ public class ApplicationConfigGenerator {
         }
 
         return new GeneratedFile(ConfigGenerator.APPLICATION_CONFIG_TYPE,
-                templatedGenerator.generatedFilePath(),
-                compilationUnit.toString());
+                                 templatedGenerator.generatedFilePath(),
+                                 compilationUnit.toString());
     }
 
     private void replaceAddonPlaceHolder(ClassOrInterfaceDeclaration cls) {
         // get the place holder and replace it with a list of the addons that have been found
         NameExpr addonsPlaceHolder =
-                cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$"))
-                        .orElseThrow(() -> new InvalidTemplateException(
+                cls.findFirst(NameExpr.class, e -> e.getNameAsString().equals("$Addons$")).
+                        orElseThrow(() -> new InvalidTemplateException(
                                 templatedGenerator,
                                 "Missing $Addons$ placeholder"));
 
@@ -137,10 +137,9 @@ public class ApplicationConfigGenerator {
 
     /**
      * For each config it produces a new instance follow naming convention and add it to superInvocation
-     * e.g. section: ProcessConfig
+     *       e.g. section: ProcessConfig
      * produce:
-     * e.g.: new ProcessConfig()
-     * 
+     *       e.g.: new ProcessConfig()
      * @param superInvocation
      * @param configClassNames
      */

@@ -47,7 +47,7 @@ public class GrafanaConfigurationWriter {
      * Generates an operational grafana dashboard based on a given template.
      *
      * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
-     * @param handlerName: The name of the endpoint.
+     * @param handlerName:  The name of the endpoint.
      * @return: The template customized for the endpoint.
      */
     public static String generateOperationalDashboard(String templatePath, String handlerName, boolean generateAuditLink) {
@@ -77,13 +77,11 @@ public class GrafanaConfigurationWriter {
      * Generates domain specific dashboard from a given dashboard template.
      *
      * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
-     * @param endpoint: The name of the endpoint.
-     * @param decisions: The decisions in the DMN model.
-     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the
-     *          arguments.
+     * @param endpoint:     The name of the endpoint.
+     * @param decisions:    The decisions in the DMN model.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
      */
-    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, List<Decision> decisions,
-            boolean generateAuditLink) {
+    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, List<Decision> decisions, boolean generateAuditLink) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, endpoint);
 
@@ -102,19 +100,18 @@ public class GrafanaConfigurationWriter {
         for (Decision decision : decisions) {
             QName type = decision.getVariable().getTypeRef();
             if (type == null) {
-                logger.warn(String.format("DMN typeref for the decision \"%s\" with node id \"%s\" is null.",
-                        decision.getName(), decision.getId()));
+                logger.warn(String.format("DMN typeref for the decision \"%s\" with node id \"%s\" is null.", decision.getName(), decision.getId()));
             } else {
                 if (SupportedDecisionTypes.isSupported(type.getLocalPart())) {
                     jgrafana.addPanel(PanelType.GRAPH,
-                            "Decision " + decision.getName(),
-                            String.format("%s_dmn_result%s{endpoint = \"%s\", decision = \"%s\"}",
-                                    type.toString().replace(" ", "_"),
-                                    SupportedDecisionTypes.getNameSuffix(type.getLocalPart()),
-                                    endpoint,
-                                    decision.getName()),
-                            SupportedDecisionTypes.getGrafanaFunction(type.getLocalPart()),
-                            SupportedDecisionTypes.getYAxis(type.getLocalPart()));
+                                      "Decision " + decision.getName(),
+                                      String.format("%s_dmn_result%s{endpoint = \"%s\", decision = \"%s\"}",
+                                                    type.toString().replace(" ", "_"),
+                                                    SupportedDecisionTypes.getNameSuffix(type.getLocalPart()),
+                                                    endpoint,
+                                                    decision.getName()),
+                                      SupportedDecisionTypes.getGrafanaFunction(type.getLocalPart()),
+                                      SupportedDecisionTypes.getYAxis(type.getLocalPart()));
                 }
             }
         }

@@ -15,11 +15,6 @@
 
 package org.kie.kogito.codegen.decision;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.kie.kogito.codegen.api.utils.KogitoContextTestUtils.mockClassAvailabilityResolver;
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,19 +22,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.grafana.JGrafana;
 
-import com.github.javaparser.ast.CompilationUnit;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.codegen.api.utils.KogitoContextTestUtils.mockClassAvailabilityResolver;
 
 public class DecisionCodegenTest {
 
@@ -51,17 +55,17 @@ public class DecisionCodegenTest {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(6);
         assertThat(fileNames(generatedFiles)).containsAll(Arrays.asList("decision/InputSet.java",
-                "decision/OutputSet.java",
-                "decision/TEmployee.java",
-                "decision/TAddress.java",
-                "decision/TPayroll.java",
-                "decision/VacationsResource.java",
-                "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
+                                                                        "decision/OutputSet.java",
+                                                                        "decision/TEmployee.java",
+                                                                        "decision/TAddress.java",
+                                                                        "decision/TPayroll.java",
+                                                                        "decision/VacationsResource.java",
+                                                                        "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertThat(optionalApplicationSection).isNotEmpty();
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit);
+        assertNotNull(compilationUnit );
     }
 
     @ParameterizedTest
@@ -71,33 +75,28 @@ public class DecisionCodegenTest {
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
-        assertThat(fileNames(generatedFiles)).containsAll(Arrays.asList(
-                "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
-                "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OutputSet.java",
-                "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
-                "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
+        assertThat(fileNames(generatedFiles)).containsAll(Arrays.asList("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
+                                                                        "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OutputSet.java",
+                                                                        "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
+                                                                        "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertThat(optionalApplicationSection).isNotEmpty();
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit);
+        assertNotNull(compilationUnit );
     }
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    public void givenADMNModelWhenMonitoringIsActiveThenGrafanaDashboardsAreGenerated(KogitoBuildContext.Builder contextBuilder)
-            throws Exception {
-        List<GeneratedFile> dashboards = generateTestDashboards(
-                AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(), contextBuilder);
+    public void givenADMNModelWhenMonitoringIsActiveThenGrafanaDashboardsAreGenerated(KogitoBuildContext.Builder contextBuilder) throws Exception {
+        List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(), contextBuilder);
 
-        JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream()
-                .filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
+        JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(6, vacationOperationalDashboard.getDashboard().panels.size());
         assertEquals(0, vacationOperationalDashboard.getDashboard().links.size());
 
-        JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream()
-                .filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
+        JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(1, vacationDomainDashboard.getDashboard().panels.size());
         assertEquals(0, vacationDomainDashboard.getDashboard().links.size());
@@ -105,19 +104,14 @@ public class DecisionCodegenTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    public void givenADMNModelWhenMonitoringAndTracingAreActiveThenTheGrafanaDashboardsContainsTheAuditUILink(
-            KogitoBuildContext.Builder contextBuilder) throws Exception {
-        List<GeneratedFile> dashboards = generateTestDashboards(
-                AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).withTracing(true).build(),
-                contextBuilder);
+    public void givenADMNModelWhenMonitoringAndTracingAreActiveThenTheGrafanaDashboardsContainsTheAuditUILink(KogitoBuildContext.Builder contextBuilder) throws Exception {
+        List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).withTracing(true).build(), contextBuilder);
 
-        JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream()
-                .filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
+        JGrafana vacationOperationalDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(1, vacationOperationalDashboard.getDashboard().links.size());
 
-        JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream()
-                .filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
+        JGrafana vacationDomainDashboard = JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("domain-dashboard-Vacations.json")).findFirst().get().contents()));
 
         assertEquals(1, vacationDomainDashboard.getDashboard().links.size());
     }
@@ -133,7 +127,7 @@ public class DecisionCodegenTest {
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertThat(optionalApplicationSection).isNotEmpty();
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit);
+        assertNotNull(compilationUnit );
     }
 
     @ParameterizedTest
@@ -148,33 +142,27 @@ public class DecisionCodegenTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void testNSEW_positive(KogitoBuildContext.Builder contextBuilder) throws Exception {
         contextBuilder
-                .withClassAvailabilityResolver(mockClassAvailabilityResolver(
-                        Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), Collections.emptyList()));
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), Collections.emptyList()));
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
-        GeneratedFile inputSetFile =
-                generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
-        assertThat(new String(inputSetFile.contents()))
-                .containsPattern("@org\\.eclipse\\.microprofile\\.openapi\\.annotations\\.media\\.Schema\\(.*enumeration");
+        GeneratedFile inputSetFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
+        assertThat(new String(inputSetFile.contents())).containsPattern("@org\\.eclipse\\.microprofile\\.openapi\\.annotations\\.media\\.Schema\\(.*enumeration");
     }
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void testNSEW_negative(KogitoBuildContext.Builder contextBuilder) throws Exception {
         contextBuilder
-                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.emptyList(),
-                        Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.emptyList(), Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles).anyMatch(x -> x.relativePath().endsWith("InputSet.java"));
-        GeneratedFile inputSetFile =
-                generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
-        assertThat(new String(inputSetFile.contents()))
-                .doesNotContain("@org.eclipse.microprofile.openapi.annotations.media.Schema");
+        GeneratedFile inputSetFile = generatedFiles.stream().filter(x -> x.relativePath().endsWith("InputSet.java")).findFirst().get();
+        assertThat(new String(inputSetFile.contents())).doesNotContain("@org.eclipse.microprofile.openapi.annotations.media.Schema");
     }
 
     private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
@@ -188,14 +176,12 @@ public class DecisionCodegenTest {
         return getDecisionCodegen(sourcePath, AddonsConfig.DEFAULT, contextBuilder);
     }
 
-    protected DecisionCodegen getDecisionCodegen(String sourcePath, AddonsConfig addonsConfig,
-            KogitoBuildContext.Builder contextBuilder) {
+    protected DecisionCodegen getDecisionCodegen(String sourcePath, AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = stronglyTypedContext(contextBuilder)
                 .withAddonsConfig(addonsConfig)
                 .build();
 
-        return DecisionCodegen.ofCollectedResources(context,
-                CollectedResourceProducer.fromPaths(Paths.get(sourcePath).toAbsolutePath()));
+        return DecisionCodegen.ofCollectedResources(context, CollectedResourceProducer.fromPaths(Paths.get(sourcePath).toAbsolutePath()));
     }
 
     private List<String> fileNames(List<GeneratedFile> generatedFiles) {
@@ -203,8 +189,7 @@ public class DecisionCodegenTest {
     }
 
     private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) {
-        DecisionCodegen codeGenerator =
-                getDecisionCodegen("src/test/resources/decision/models/vacationDays", addonsConfig, contextBuilder);
+        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays", addonsConfig, contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 

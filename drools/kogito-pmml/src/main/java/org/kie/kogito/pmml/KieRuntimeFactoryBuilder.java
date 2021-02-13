@@ -15,9 +15,6 @@
  */
 package org.kie.kogito.pmml;
 
-import static org.kie.pmml.evaluator.assembler.factories.PMMLRuleMappersFactory.KIE_PMML_RULE_MAPPERS_CLASS_NAME;
-import static org.kie.pmml.evaluator.assembler.service.PMMLAssemblerService.getFactoryClassNamePackageName;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +46,9 @@ import org.kie.pmml.evaluator.assembler.service.PMMLCompilerService;
 import org.kie.pmml.evaluator.assembler.service.PMMLLoaderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.kie.pmml.evaluator.assembler.factories.PMMLRuleMappersFactory.KIE_PMML_RULE_MAPPERS_CLASS_NAME;
+import static org.kie.pmml.evaluator.assembler.service.PMMLAssemblerService.getFactoryClassNamePackageName;
 
 /**
  * Utility class to replace the <b>Assembler</b> mechanism where this is not available
@@ -117,27 +117,26 @@ public class KieRuntimeFactoryBuilder {
     }
 
     private static List<PMMLRuleMapper> loadPMMLRuleMappers(final ClassLoader classLoader,
-            final Resource resource) {
+                                                            final Resource resource) {
         Optional<PMMLRuleMappers> predictionRuleMappers = loadPMMLRuleMappersClass(classLoader, resource);
         return predictionRuleMappers.map(PMMLRuleMappers::getPMMLRuleMappers).orElse(Collections.emptyList());
     }
 
     private static Optional<PMMLRuleMappers> loadPMMLRuleMappersClass(final ClassLoader classLoader,
-            final Resource resource) {
+                                                                            final Resource resource) {
         String[] classNamePackageName = getFactoryClassNamePackageName(resource);
         String packageName = classNamePackageName[1];
         String fullPMMLRuleMappersClassName = packageName + "." + KIE_PMML_RULE_MAPPERS_CLASS_NAME;
         try {
             PMMLRuleMappers predictionRuleMappers =
-                    (PMMLRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor()
-                            .newInstance();
+                    (PMMLRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor().newInstance();
             return Optional.of(predictionRuleMappers);
         } catch (ClassNotFoundException e) {
             logger.debug("{} class not found in rootClassLoader", fullPMMLRuleMappersClassName);
             return Optional.empty();
         } catch (Exception e) {
             throw new RuntimeException(String.format("%s class not instantiable",
-                    fullPMMLRuleMappersClassName), e);
+                                                     fullPMMLRuleMappersClassName), e);
         }
     }
 }
