@@ -10,8 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>kogito-quarkus-common</artifactId>
-    <name>Kogito :: Quarkus Extension :: Common</name>
-    <description>Add business automation capabilities - processes and rules with Kogito (a toolkit that originates from projects Drools and jBPM)</description>
+    <name>Kogito :: Quarkus Extension Common :: Runtime</name>
 
     <dependencies>
         <dependency>

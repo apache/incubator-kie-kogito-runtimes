@@ -6,14 +6,14 @@
 
     <parent>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-parent</artifactId>
+        <artifactId>kogito-quarkus-extension</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>kogito-quarkus-integration-test-hot-reload</artifactId>
-    <name>Kogito :: Quarkus Extension :: Integration Tests (Hot Reload)</name>
+    <artifactId>kogito-quarkus-integration-test</artifactId>
+    <name>Kogito :: Quarkus Extension :: Integration Tests</name>
 
-    <dependencies>
+     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus</artifactId>
@@ -23,13 +23,11 @@
             <artifactId>drools-decisiontables</artifactId>
         </dependency>
 
-        <!-- this is used implicitly by hot reload tests so let's make Maven aware of it -->
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-quarkus-deployment</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
+<!--         FIXME to fix is needed? -->
+<!--         <dependency>-->
+<!--             <groupId>io.quarkus</groupId>-->
+<!--             <artifactId>quarkus-smallrye-openapi</artifactId>-->
+<!--         </dependency>-->
 
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -47,6 +45,14 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+
+         <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
+         <dependency>
+             <groupId>org.kie.kogito</groupId>
+             <artifactId>kogito-quarkus-deployment</artifactId>
+             <version>${project.version}</version>
+             <scope>provided</scope>
+         </dependency>
     </dependencies>
 
     <build>
@@ -98,9 +104,7 @@
                                 </goals>
                                 <configuration>
                                     <systemProperties>
-                                        <native.image.path>
-                                            ${project.build.directory}/${project.build.finalName}-runner
-                                        </native.image.path>
+                                        <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                                     </systemProperties>
                                 </configuration>
                             </execution>

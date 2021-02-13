@@ -10,17 +10,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>kogito-quarkus-common-deployment</artifactId>
-    <name>Kogito :: Quarkus Extension :: Common Deployment</name>
+    <name>Kogito :: Quarkus Extension Common :: Deployment</name>
 
     <dependencies>
 
 
         <!-- kogito -->
-        <!--     FIXME to fix   -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!--     FIXME to fix Required because of InMemoryCompiler  -->
         <dependency>

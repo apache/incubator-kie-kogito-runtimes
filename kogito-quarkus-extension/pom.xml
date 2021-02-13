@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>kogito-quarkus-parent</artifactId>
-  <name>Kogito :: Quarkus Extension</name>
+  <name>Kogito :: Quarkus Extension :: Parent</name>
 
   <packaging>pom</packaging>
 
@@ -30,9 +30,6 @@
 
   <modules>
     <module>bom</module>
-    <module>integration-test</module>
-    <module>integration-test-hot-reload</module>
-    <module>integration-test-legacy</module>
     <module>kogito-quarkus-extension-common</module>
     <module>kogito-quarkus-extension</module>
     <module>kogito-quarkus-rules-extension</module>

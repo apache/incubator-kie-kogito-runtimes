@@ -10,26 +10,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>kogito-quarkus-decisions</artifactId>
-    <name>Kogito :: Quarkus Extension :: Decisions</name>
-    <description>Add business automation capabilities - processes and rules with Kogito (a toolkit that originates from projects Drools and jBPM)</description>
+    <name>Kogito :: Quarkus Decisions Extension :: Runtime</name>
+    <description>Add Kogito decision (DMN) capabilities - Include Drools DMN engine</description>
     <dependencies>
 
-<!--        FIXME to fix-->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-common</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
 
         <!-- quarkus -->
 
         <!-- kogito -->
-<!--     FIXME to fix it should not be mandatory   -->
+<!--     FIXME to fix it should not be mandatory  (fixed by KOGITO-4428) -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-predictions</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

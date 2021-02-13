@@ -9,15 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-
     <artifactId>kogito-quarkus-extension</artifactId>
-    <packaging>pom</packaging>
+    <name>Kogito :: Quarkus Extension</name>
 
-    <name>Kogito :: Quarkus Extensions</name>
+    <packaging>pom</packaging>
 
     <modules>
         <module>kogito-quarkus-deployment</module>
         <module>kogito-quarkus</module>
+        <module>kogito-quarkus-integration-test</module>
+        <module>kogito-quarkus-integration-test-hot-reload</module>
+        <module>kogito-quarkus-integration-test-legacy</module>
     </modules>
 
 </project>

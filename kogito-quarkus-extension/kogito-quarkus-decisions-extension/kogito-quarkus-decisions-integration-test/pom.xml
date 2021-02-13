@@ -2,31 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
     <parent>
+        <artifactId>kogito-quarkus-decisions-extension</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>kogito-quarkus-integration-test</artifactId>
-    <name>Kogito :: Quarkus Extension :: Integration Tests</name>
+    <artifactId>kogito-quarkus-decisions-integration-test</artifactId>
+    <name>Kogito :: Quarkus Decisions Extension :: Integration Tests</name>
 
-     <dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-quarkus</artifactId>
+            <artifactId>kogito-quarkus-decisions</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>drools-decisiontables</artifactId>
-        </dependency>
-
-         <dependency>
-             <groupId>io.quarkus</groupId>
-             <artifactId>quarkus-smallrye-openapi</artifactId>
-         </dependency>
 
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -45,13 +35,13 @@
             <scope>test</scope>
         </dependency>
 
-         <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
-         <dependency>
-             <groupId>org.kie.kogito</groupId>
-             <artifactId>kogito-quarkus-deployment</artifactId>
-             <version>${project.version}</version>
-             <scope>provided</scope>
-         </dependency>
+        <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-quarkus-decisions-deployment</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>

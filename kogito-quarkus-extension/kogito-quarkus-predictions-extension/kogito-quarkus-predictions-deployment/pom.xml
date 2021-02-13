@@ -19,11 +19,9 @@
             <artifactId>kogito-quarkus-common-deployment</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--        FIXME to fix move -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-predictions</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- codegen dependencies -->

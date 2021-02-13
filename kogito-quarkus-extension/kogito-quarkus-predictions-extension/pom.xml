@@ -10,15 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>kogito-quarkus-predictions-extension</artifactId>
+    <name>Kogito :: Quarkus Predictions Extension</name>
+
     <packaging>pom</packaging>
     <modules>
         <module>kogito-quarkus-predictions-deployment</module>
         <module>kogito-quarkus-predictions</module>
+        <module>kogito-quarkus-predictions-integration-test</module>
     </modules>
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
 
 </project>
