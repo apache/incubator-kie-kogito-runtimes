@@ -46,10 +46,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusFileUtils.compileGeneratedSources;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusFileUtils.dumpFilesToDisk;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusFileUtils.kogitoBuildContext;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusFileUtils.registerResources;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.compileGeneratedSources;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
 
 /**
  * Main class of the Kogito extension

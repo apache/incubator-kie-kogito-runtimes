@@ -24,7 +24,6 @@
             <artifactId>kogito-quarkus-rules</artifactId>
         </dependency>
 
-
         <!-- codegen dependencies -->
         <dependency>
             <groupId>org.kie.kogito</groupId>

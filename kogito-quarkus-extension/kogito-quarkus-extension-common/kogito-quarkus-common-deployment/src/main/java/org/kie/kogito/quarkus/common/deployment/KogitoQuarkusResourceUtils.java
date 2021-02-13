@@ -21,6 +21,7 @@ import io.quarkus.bootstrap.model.AppDependency;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import org.jboss.jandex.CompositeIndex;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.GeneratedFile;
@@ -40,16 +41,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public class KogitoQuarkusFileUtils {
+public class KogitoQuarkusResourceUtils {
 
-    private KogitoQuarkusFileUtils() {
+    private KogitoQuarkusResourceUtils() {
         // utility class
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoQuarkusFileUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoQuarkusResourceUtils.class);
 
     // since quarkus-maven-plugin is later phase of maven-resources-plugin,
     // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath );
@@ -123,6 +125,17 @@ public class KogitoQuarkusFileUtils {
         return makeBuildItems(
                 context.getAppPaths(),
                 inMemoryCompiler.getTargetFileSystem());
+    }
+
+    public static IndexView generateAggregatedIndex(IndexView baseIndex, List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
+        List<IndexView> indexes = new ArrayList<>();
+        indexes.add(baseIndex);
+
+        indexes.addAll(generatedKogitoClasses.stream()
+                .map(KogitoGeneratedClassesBuildItem::getIndexedClasses)
+                .collect(Collectors.toList()));
+
+        return CompositeIndex.create(indexes.toArray(new IndexView[0]));
     }
 
     public static Path getTargetClassesPath(AppPaths appPaths) {

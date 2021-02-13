@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.deployment;
+package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import java.nio.file.Paths;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.quarkus.common.deployment.MemoryClassLoader;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

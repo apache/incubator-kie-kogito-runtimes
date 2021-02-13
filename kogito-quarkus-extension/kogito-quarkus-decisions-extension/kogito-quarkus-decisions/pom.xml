@@ -23,12 +23,6 @@
         <!-- quarkus -->
 
         <!-- kogito -->
-<!--     FIXME to fix it should not be mandatory  (fixed by KOGITO-4428) -->
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-quarkus-predictions</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-dmn</artifactId>
