@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -57,7 +58,7 @@ public class DecisionCodegenTest {
                                                                         "decision/VacationsResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
         
-        getNotEmptySectionCompilationUnit(codeGenerator);
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
@@ -72,7 +73,7 @@ public class DecisionCodegenTest {
                                                                         "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        getNotEmptySectionCompilationUnit(codeGenerator);
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
@@ -113,7 +114,7 @@ public class DecisionCodegenTest {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        getNotEmptySectionCompilationUnit(codeGenerator);
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
@@ -158,15 +159,15 @@ public class DecisionCodegenTest {
         contextBuilder
                 .withClassAvailabilityResolver(mockClassAvailabilityResolver(singleton(DecisionContainerGenerator.PMML_ABSTRACT_CLASS), emptyList()));
         
-        CompilationUnit withPMMLCompilationUnit = getNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder);
-        assertThat(withPMMLCompilationUnit.toString()).contains(DecisionContainerGenerator.PMML_FUNCTION);
+        assertNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder)
+                .contains(DecisionContainerGenerator.PMML_FUNCTION);
 
         // without PMML in the classpath
         contextBuilder
                 .withClassAvailabilityResolver(mockClassAvailabilityResolver(emptyList(), singleton(DecisionContainerGenerator.PMML_ABSTRACT_CLASS)));
         
-        CompilationUnit withoutPMMLGenerator = getNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder);
-        assertThat(withoutPMMLGenerator.toString()).doesNotContain(DecisionContainerGenerator.PMML_FUNCTION);
+        assertNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder)
+                .doesNotContain(DecisionContainerGenerator.PMML_FUNCTION);
     }
 
     private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
@@ -176,17 +177,17 @@ public class DecisionCodegenTest {
         return builder;
     }
     
-    protected CompilationUnit getNotEmptySectionCompilationUnit(String sourcePath, KogitoBuildContext.Builder contextBuilder) {
+    protected AbstractStringAssert<?> assertNotEmptySectionCompilationUnit(String sourcePath, KogitoBuildContext.Builder contextBuilder) {
         DecisionCodegen codeGenerator = getDecisionCodegen(sourcePath, contextBuilder);
-        return getNotEmptySectionCompilationUnit(codeGenerator);
+        return assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
-    protected CompilationUnit getNotEmptySectionCompilationUnit(DecisionCodegen codeGenerator) {
+    protected AbstractStringAssert<?> assertNotEmptySectionCompilationUnit(DecisionCodegen codeGenerator) {
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertThat(optionalApplicationSection).isNotEmpty();
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
         assertThat(compilationUnit).isNotNull();
-        return compilationUnit;
+        return assertThat(compilationUnit.toString());
     }
 
     protected DecisionCodegen getDecisionCodegen(String sourcePath, KogitoBuildContext.Builder contextBuilder) {
