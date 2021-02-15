@@ -146,12 +146,11 @@ public class StartEventHandler extends AbstractNodeHandler {
                 handleTimerNode(startNode, element, uri, localName, parser);
                 // following event definitions are only for event sub process and will be validated to not be included in top process definitions
             } else if ("errorEventDefinition".equals(nodeName)) {
-                if (!startNode.isInterrupting()) {
-                    // BPMN2 spec (p.245-246, (2011-01-03)) implies that
-                    //   - a <startEvent> in an Event Sub-Process
-                    //    - *without* the 'isInterupting' attribute always interrupts (containing process)
-                    startNode.setInterrupting(true);
-                }
+                // BPMN2 spec (p.245-246, (2011-01-03)) implies that
+                //   - a <startEvent> in an Event Sub-Process
+                //    - *without* the 'isInterupting' attribute always interrupts (containing process)
+                startNode.setInterrupting(true);
+
                 String errorRef = ((Element) xmlNode).getAttribute("errorRef");
                 if (errorRef != null && errorRef.trim().length() > 0) {
                     List<Error> errors = (List<Error>) ((ProcessBuildData) parser.getData()).getMetaData("Errors");
