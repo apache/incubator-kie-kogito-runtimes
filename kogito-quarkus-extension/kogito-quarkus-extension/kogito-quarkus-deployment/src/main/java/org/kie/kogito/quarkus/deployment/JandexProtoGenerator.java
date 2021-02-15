@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.quarkus.deployment;
 
 import java.lang.reflect.Modifier;
@@ -22,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -41,6 +41,8 @@ import org.kie.kogito.codegen.process.persistence.proto.ProtoEnum;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toSet;
 
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
@@ -100,6 +102,18 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                     .map(p -> p.name().toString())
                     .forEach(parameters::add));
         return parameters;
+    }
+
+    @Override
+    public Set<String> getProcessIds() {
+        return modelClasses.stream().map(c -> {
+            AnnotationInstance instance = c.classAnnotation(generatedAnnotation);
+            if(instance == null){
+                return null;
+            }
+            AnnotationValue value = instance.value("reference");
+            return value == null ? null : value.asString();
+        }).filter(Objects::nonNull).collect(toSet());
     }
 
     protected ProtoMessage messageFromClass(Proto proto, ClassInfo clazz, IndexView index, String packageName,
