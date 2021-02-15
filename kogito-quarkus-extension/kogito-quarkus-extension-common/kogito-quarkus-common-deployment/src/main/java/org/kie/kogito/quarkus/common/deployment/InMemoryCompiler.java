@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.kie.memorycompiler.CompilationProblem;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.toClassName;
 
 /**
  * A instance of a Java compiler with a given classpath,
@@ -101,18 +103,6 @@ public class InMemoryCompiler {
      */
     public MemoryFileSystem getTargetFileSystem() {
         return trgMfs;
-    }
-
-    private String toClassName(String sourceName) {
-        if (sourceName.startsWith("./")) {
-            sourceName = sourceName.substring(2);
-        }
-        if (sourceName.endsWith(".java")) {
-            sourceName = sourceName.substring(0, sourceName.length() - 5);
-        } else if (sourceName.endsWith(".class")) {
-            sourceName = sourceName.substring(0, sourceName.length() - 6);
-        }
-        return sourceName.replace('/', '.');
     }
 
     private String toRuntimeSource(String className) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.quarkus.common.deployment;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
@@ -45,6 +44,9 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Utility class
+ */
 public class KogitoQuarkusResourceUtils {
 
     private KogitoQuarkusResourceUtils() {
@@ -115,13 +117,13 @@ public class KogitoQuarkusResourceUtils {
                         .collect(toList());
 
         if (javaFiles.isEmpty()) {
-            LOGGER.info("No file to compile");
+            LOGGER.info("No java source to compile");
             return Collections.emptyList();
         }
 
         InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(context.getAppPaths().getClassesPaths(),
                 dependencies);
-        inMemoryCompiler.compile(generatedFiles);
+        inMemoryCompiler.compile(javaFiles);
         return makeBuildItems(
                 context.getAppPaths(),
                 inMemoryCompiler.getTargetFileSystem());
@@ -164,7 +166,7 @@ public class KogitoQuarkusResourceUtils {
         return buildItems;
     }
 
-    private static String toClassName(String sourceName) {
+    public static String toClassName(String sourceName) {
         if (sourceName.startsWith("./")) {
             sourceName = sourceName.substring(2);
         }
