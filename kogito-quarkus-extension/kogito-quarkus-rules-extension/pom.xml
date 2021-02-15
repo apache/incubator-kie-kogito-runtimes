@@ -18,6 +18,7 @@
         <module>kogito-quarkus-rules</module>
         <module>kogito-quarkus-rules-integration-test</module>
         <module>kogito-quarkus-rules-integration-test-hot-reload</module>
+        <module>kogito-quarkus-rules-integration-test-legacy</module>
     </modules>
 
 </project>

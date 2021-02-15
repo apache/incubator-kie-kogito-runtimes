@@ -19,7 +19,6 @@
         <module>kogito-quarkus</module>
         <module>kogito-quarkus-integration-test</module>
         <module>kogito-quarkus-integration-test-hot-reload</module>
-        <module>kogito-quarkus-integration-test-legacy</module>
     </modules>
 
 </project>

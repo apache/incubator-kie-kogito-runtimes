@@ -21,7 +21,6 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import org.kie.api.pmml.PMML4Result;
-import org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
@@ -36,7 +35,7 @@ import java.util.List;
  */
 public class PredictionsAssetsProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(PredictionsAssetsProcessor.class);
 
     @BuildStep
     CapabilityBuildItem capability() {

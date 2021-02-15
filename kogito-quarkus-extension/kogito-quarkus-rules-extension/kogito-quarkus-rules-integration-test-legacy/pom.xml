@@ -6,17 +6,17 @@
 
     <parent>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-quarkus-extension</artifactId>
+        <artifactId>kogito-quarkus-rules-extension</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>kogito-quarkus-integration-test-legacy</artifactId>
-    <name>Kogito :: Quarkus Extension :: Integration Tests (Legacy API)</name>
+    <name>Kogito :: Quarkus Rules Extension :: Integration Tests (Legacy API)</name>
 
      <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-quarkus</artifactId>
+            <artifactId>kogito-quarkus-rules</artifactId>
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
@@ -37,7 +37,7 @@
          <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
          <dependency>
              <groupId>org.kie.kogito</groupId>
-             <artifactId>kogito-quarkus-deployment</artifactId>
+             <artifactId>kogito-quarkus-rules</artifactId>
              <version>${project.version}</version>
              <scope>provided</scope>
          </dependency>

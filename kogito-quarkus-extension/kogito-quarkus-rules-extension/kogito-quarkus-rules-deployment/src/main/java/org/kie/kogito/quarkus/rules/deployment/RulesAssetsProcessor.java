@@ -18,7 +18,6 @@ package org.kie.kogito.quarkus.rules.deployment;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CapabilityBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RulesAssetsProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(RulesAssetsProcessor.class);
 
     @BuildStep
     CapabilityBuildItem capability() {

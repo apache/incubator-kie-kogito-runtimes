@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.drools;
+package org.kie.kogito.quarkus.dmn;
 
 import io.quarkus.test.junit.NativeImageTest;
 
 @NativeImageTest
-public class DroolsTestIT extends DroolsTest {
+public class DMNTestIT extends DMNTest {
 }

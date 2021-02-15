@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.dmn;
+package org.kie.kogito.quarkus.dmn;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
