@@ -128,7 +128,7 @@
     <module>kogito-codegen-modules</module>
     <module>kogito-springboot</module>
     <module>kogito-maven-plugin</module>
-    <module>kogito-quarkus-extension</module>
+    <module>kogito-quarkus-parent</module>
     <module>archetypes</module>
     <module>grafana-api</module>
     <module>addons</module>

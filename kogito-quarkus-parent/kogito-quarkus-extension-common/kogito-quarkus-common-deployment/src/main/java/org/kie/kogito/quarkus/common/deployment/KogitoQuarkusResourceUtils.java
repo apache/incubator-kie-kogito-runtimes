@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Utility class
+ * Utility class to aggregate and share resource handling in Kogito extensions
  */
 public class KogitoQuarkusResourceUtils {
 
@@ -117,7 +117,7 @@ public class KogitoQuarkusResourceUtils {
                         .collect(toList());
 
         if (javaFiles.isEmpty()) {
-            LOGGER.info("No java source to compile");
+            LOGGER.info("No Java source to compile");
             return Collections.emptyList();
         }
 
