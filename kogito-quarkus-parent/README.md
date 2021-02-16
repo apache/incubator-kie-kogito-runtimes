@@ -113,3 +113,20 @@ To add a new extension you should replicate the same structure and:
       <artifactId>kogito-*</artifactId>
     </dependency>
 ```
+
+### Testing an extension
+Use `kogito-quarkus-*-integration-test` and `kogito-quarkus-*-integration-test-hot-reload` modules to implement simple 
+integration tests.
+
+**NOTE:** each extension has a runtime dependency that is declared in integration test `pom.xml` but also an "implicit" 
+deployment, if you want to prevent integration tests to run if deployment compilation failed you can add the following dependency
+
+```xml
+    <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-*-deployment</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+```
