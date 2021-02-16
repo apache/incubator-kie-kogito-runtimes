@@ -109,8 +109,11 @@ pipeline {
             sendNotification()
         }
         always {
-            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-            cleanWs()
+            script {
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+                cleanWs()
+                cloud.cleanContainersAndImages('docker')
+            }
         }
     }
 }

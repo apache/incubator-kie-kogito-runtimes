@@ -109,9 +109,12 @@ pipeline {
     }
     post {
         always {
-            sh '$WORKSPACE/trace.sh'
-            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-            cleanWs()
+            script {
+                sh '$WORKSPACE/trace.sh'
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+                cleanWs()
+                cloud.cleanContainersAndImages('docker')
+            }
         }
         failure {
             script {
