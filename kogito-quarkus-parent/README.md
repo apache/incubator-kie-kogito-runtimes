@@ -4,6 +4,12 @@ This module contains all the code of the extensions that Kogito provides
 for Quarkus platform. It applies Quarkus guidelines so please refer to [Quarkus extension guide](https://quarkus.io/guides/writing-extensions)
 for more information
 
+### Common module
+Most of the code of the extension is shared so that each extension should just provide the specific behavior. Also common
+code is divided in runtime and deployment:
+- `kogito-quarkus-common`: common runtime code, it only contains substitution required for native compilation for now
+- `kogito-quarkus-common-deployment`: most of the extension code is here
+
 ### Structure of an extension
 Each extension has a common structure:
 - `kogito-quarkus-*-extension`: root module an extension
@@ -17,5 +23,93 @@ the user has to use
 - `kogito-quarkus-*-integration-test-hot-reload` (optional): if the extension supports hot reload feature, it module contains
   integration test of this feature
   
-### Common module
-Most of the code
+### Create an extension
+To add a new extension you should replicate the same structure and:
+
+#### Runtime module
+- Add quarkus plugins to module `pom.xml`
+```xml
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-extension-processor</artifactId>
+              <version>${version.io.quarkus}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>extension-descriptor</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}
+              </deployment>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+```
+- Add dependency to `kogito-quarkus-common`
+```xml
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-common</artifactId>
+    </dependency>
+```
+
+#### Deployment module
+- Add quarkus plugins to module `pom.xml`
+```xml
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-extension-processor</artifactId>
+              <version>${version.io.quarkus}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>extension-descriptor</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}
+              </deployment>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+```
+- Add dependencies
+```xml
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-common-deployment</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-*</artifactId>
+    </dependency>
+```
