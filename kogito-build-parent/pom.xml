@@ -119,7 +119,7 @@
     <version.com.github.javaparser>3.13.10</version.com.github.javaparser>
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
     <version.com.github.victools>4.12.1</version.com.github.victools>
-    <version.com.github.tomakehurst>2.27.2</version.com.github.tomakehurst>
+    <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
     <version.com.google.protobuf>3.14.0</version.com.google.protobuf>
     <version.com.squareup.okhttp3>3.14.6</version.com.squareup.okhttp3>
     <version.com.sun.xml.bind>2.3.0</version.com.sun.xml.bind>
@@ -136,8 +136,8 @@
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>5.0.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.6.1</version.io.micrometer>
-    <version.io.restassured>4.3.0</version.io.restassured>
-    <version.io.restassured.springboot>3.3.0</version.io.restassured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
+    <version.io.rest-assured>4.3.0</version.io.rest-assured>
+    <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.serverlessworkflow>1.0.3.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.0.19</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive>2.6.1</version.io.smallrye.reactive>
@@ -626,7 +626,7 @@
       <dependency>
         <groupId>com.github.tomakehurst</groupId>
         <artifactId>wiremock-jre8</artifactId>
-        <version>${version.com.github.tomakehurst}</version>
+        <version>${version.com.github.tomakehurst.wiremock}</version>
         <scope>test</scope>
       </dependency>
 
@@ -809,7 +809,7 @@
       <dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
-        <version>${version.io.restassured}</version>
+        <version>${version.io.rest-assured}</version>
       </dependency>
 
       <dependency>
@@ -862,7 +862,7 @@
       <dependency>
         <groupId>io.rest-assured</groupId>
         <artifactId>json-schema-validator</artifactId>
-        <version>${version.io.restassured}</version>
+        <version>${version.io.rest-assured}</version>
       </dependency>
       <dependency>
         <groupId>com.github.java-json-tools</groupId>
