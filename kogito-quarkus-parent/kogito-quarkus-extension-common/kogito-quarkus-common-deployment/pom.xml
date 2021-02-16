@@ -20,13 +20,13 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-common</artifactId>
         </dependency>
-        <!--     FIXME to fix Required because of InMemoryCompiler  -->
+        <!--  Required because of InMemoryCompiler  -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-drools</artifactId>
         </dependency>
 
-        <!--     FIXME to fix Required KogitoAssetsProcessor.registerDataEventsForReflection  -->
+        <!-- Required KogitoAssetsProcessor.registerDataEventsForReflection  -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-events-api</artifactId>

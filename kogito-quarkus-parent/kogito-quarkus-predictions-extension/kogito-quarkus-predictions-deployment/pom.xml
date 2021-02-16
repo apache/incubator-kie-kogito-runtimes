@@ -13,7 +13,6 @@
     <name>Kogito :: Quarkus Predictions Extension :: Deployment</name>
 
     <dependencies>
-        <!--        FIXME to fix move -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-common-deployment</artifactId>

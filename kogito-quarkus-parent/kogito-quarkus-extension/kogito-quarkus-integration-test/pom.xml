@@ -19,11 +19,6 @@
             <artifactId>kogito-quarkus</artifactId>
         </dependency>
 
-<!--         FIXME to fix is needed? -->
-<!--         <dependency>-->
-<!--             <groupId>io.quarkus</groupId>-->
-<!--             <artifactId>quarkus-smallrye-openapi</artifactId>-->
-<!--         </dependency>-->
 
         <dependency>
             <groupId>io.quarkus</groupId>
