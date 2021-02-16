@@ -24,7 +24,7 @@ the user has to use
   integration test of this feature
   
 ### Create an extension
-To add a new extension you should replicate the same structure and:
+To add a new extension you should replicate the same structure.
 
 #### Runtime module
 - Add quarkus plugins to module `pom.xml`
