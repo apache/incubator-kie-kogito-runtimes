@@ -24,7 +24,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 public class ForEachTest extends AbstractBaseTest {
@@ -84,10 +84,10 @@ public class ForEachTest extends AbstractBaseTest {
         parameters.put("x", "oldValue");
         parameters.put("list", list);
         parameters.put("listOut", listOut);
-        
-        KieSession ksession = createKieSession(factory.getProcess());
-        
-        ksession.startProcess("ParentProcess", parameters);
+
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(factory.getProcess());
+
+        kruntime.startProcess("ParentProcess", parameters);
     }
 
 }

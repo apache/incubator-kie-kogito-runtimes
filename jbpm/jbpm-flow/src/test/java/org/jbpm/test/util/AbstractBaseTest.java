@@ -29,6 +29,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,12 +48,12 @@ public abstract class AbstractBaseTest {
     
     protected static AtomicInteger uniqueIdGen = new AtomicInteger(0);
 
-    public KieSession createKieSession(Process... process) {
+    public KogitoProcessRuntime createKogitoProcessRuntime(Process... process) {
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         for (Process processToAdd : process) {
             ((KnowledgeBaseImpl) kbase).addProcess(processToAdd);
         }
-        return kbase.newKieSession();
+        return KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
     }
 
     public void showEventHistory(KieSession ksession) {
