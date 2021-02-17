@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.drools.core.process.instance.WorkItem;
+import org.kie.api.runtime.process.WorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 
 public interface InternalKogitoWorkItemManager extends org.drools.core.process.instance.WorkItemManager, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager {
 
@@ -37,6 +39,11 @@ public interface InternalKogitoWorkItemManager extends org.drools.core.process.i
     void retryWorkItem( String workItemID, Map<String, Object> params ) ;
 
     Set<WorkItem> getWorkItems();
+
+    @Override
+    default void registerWorkItemHandler(String workItemName, WorkItemHandler handler) {
+        registerWorkItemHandler(workItemName, (KogitoWorkItemHandler) handler);
+    }
 
     @Override
     default void internalExecuteWorkItem( org.drools.core.process.instance.WorkItem workItem ) {

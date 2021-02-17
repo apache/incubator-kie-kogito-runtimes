@@ -26,7 +26,6 @@ import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.command.Command;
-import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.type.FactType;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.io.ResourceType;
@@ -37,6 +36,7 @@ import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.command.CommandFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,22 +113,21 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "\n" +
                 "</process>";
 
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
-        kbuilder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
+        builder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
+        builder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
 
-        if ( kbuilder.hasErrors() ) {
-            fail( kbuilder.getErrors().toString() );
+        if ( builder.hasErrors() ) {
+            fail( builder.getErrors().toString() );
         }
 
-        KieSession ksession = createKieSession(kbuilder.getKnowledgePackages().toArray(new KiePackage[0]));
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         // go !
         Message message = new Message();
         message.setMessage("Hello World");
         message.setStatus(Message.HELLO);
-        ksession.insert(message);
-        ksession.startProcess("process-test");
+        kruntime.getKieSession().insert(message);
+        kruntime.startProcess("process-test");
         
         assertEquals("Goodbye cruel world", message.getMessage());
     }

@@ -94,7 +94,7 @@ public class WorkItemTest extends AbstractBaseTest {
 
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( createKieSession(process) );
 
-        kruntime.getWorkItemManager().registerWorkItemHandler( workName,
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler( workName,
                                                                new DoNothingWorkItemHandler() );
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -107,7 +107,7 @@ public class WorkItemTest extends AbstractBaseTest {
         String processInstanceId = processInstance.getStringId();
         assertEquals( KogitoProcessInstance.STATE_ACTIVE,
                            processInstance.getState() );
-        kruntime.getWorkItemManager().registerWorkItemHandler( workName,
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler( workName,
                                                                null );
 
         try {
@@ -127,12 +127,12 @@ public class WorkItemTest extends AbstractBaseTest {
         String workName = "Unnexistent Task";
         RuleFlowProcess process = getWorkItemProcess( processId,
                                                       workName );
-        KieSession ksession = createKieSession(process); 
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(createKieSession(process));
         
         Map<String, Object> output = new HashMap<String, Object>();
         output.put("Result", "test");
         
-        ksession.getWorkItemManager().registerWorkItemHandler( workName,
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler( workName,
                                                                new MockDataWorkItemHandler(output) );
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -141,7 +141,7 @@ public class WorkItemTest extends AbstractBaseTest {
         parameters.put( "Person",
                         new Person( "John Doe" ) );
 
-        ProcessInstance processInstance = ksession.startProcess( "org.drools.actions",
+        ProcessInstance processInstance = kruntime.startProcess( "org.drools.actions",
                                                                   parameters );
         
         Object numberVariable = ((WorkflowProcessInstance)processInstance).getVariable("MyObject");
@@ -161,7 +161,7 @@ public class WorkItemTest extends AbstractBaseTest {
 
         KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( createKieSession(process) );
 
-        kruntime.getWorkItemManager().registerWorkItemHandler( workName,
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler( workName,
                                                                new MockDataWorkItemHandler((input) ->  {
             Map<String, Object> output = new HashMap<String, Object>();
             if ("John Doe".equals(input.get("Comment"))) {

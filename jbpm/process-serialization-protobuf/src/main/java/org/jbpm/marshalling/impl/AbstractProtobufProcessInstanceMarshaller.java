@@ -69,6 +69,7 @@ import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -839,7 +840,7 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
 
         nodeInstance.setNodeId( _node.getNodeId() );                
         nodeInstance.setId( _node.getId() );
-        nodeInstance.setNodeInstanceContainer( nodeInstanceContainer );
+        nodeInstance.setNodeInstanceContainer((KogitoNodeInstanceContainer) nodeInstanceContainer);
         nodeInstance.setProcessInstance( (org.jbpm.workflow.instance.WorkflowProcessInstance) processInstance );
         nodeInstance.setLevel(_node.getLevel()==0?1:_node.getLevel());
         nodeInstance.internalSetTriggerTime(new Date(_node.getTriggerDate()));

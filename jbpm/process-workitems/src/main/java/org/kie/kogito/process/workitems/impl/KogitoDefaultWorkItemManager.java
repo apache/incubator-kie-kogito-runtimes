@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.process.instance.WorkItem;
+import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.internal.runtime.Closeable;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -132,7 +133,7 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
     }
 
     public Map<String,Object> updateWorkItem(String id, Map<String, Object> params, Policy<?>... policies) {
-        KogitoWorkItem workItem = workItems.get(id);
+        InternalKogitoWorkItem workItem = workItems.get(id);
         if (workItem != null) {
             Map<String,Object> results = workItem.getResults();
             if (results == null) {

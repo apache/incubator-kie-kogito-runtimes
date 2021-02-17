@@ -402,6 +402,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
         startProcess(processId, params, type);
     }
 
+    @Override
     public WorkItemManager getWorkItemManager() {
         return kruntime.getWorkItemManager();
     }

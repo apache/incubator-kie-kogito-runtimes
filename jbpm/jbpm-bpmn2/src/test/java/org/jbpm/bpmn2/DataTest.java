@@ -95,9 +95,9 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testEvaluationProcess() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-EvaluationProcess.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new SystemOutWorkItemHandler());
-        kruntime.getWorkItemManager().registerWorkItemHandler(
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler(
                 "RegisterRequest", new SystemOutWorkItemHandler());
         Map<String, Object> params = new HashMap<>();
         params.put("employee", "UserId-12345");
@@ -110,7 +110,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testEvaluationProcess2() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-EvaluationProcess2.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new SystemOutWorkItemHandler());
         Map<String, Object> params = new HashMap<>();
         params.put("employee", "UserId-12345");
@@ -123,9 +123,9 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testEvaluationProcess3() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-EvaluationProcess3.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new SystemOutWorkItemHandler());
-        kruntime.getWorkItemManager().registerWorkItemHandler(
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler(
                 "RegisterRequest", new SystemOutWorkItemHandler());
         Map<String, Object> params = new HashMap<>();
         params.put("employee", "john2");
@@ -155,7 +155,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataInputAssociations() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
                     @Override
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -185,7 +185,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataInputAssociationsWithStringObject() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-string-object.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     @Override
@@ -216,7 +216,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     public void testDataInputAssociationsWithLazyLoading()
             throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-lazy-creating.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -256,7 +256,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataInputAssociationsWithString() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-string.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -279,7 +279,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     public void testDataInputAssociationsWithStringWithoutQuotes()
             throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-string-no-quotes.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -301,7 +301,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataInputAssociationsWithXMLLiteral() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-xml-literal.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -331,7 +331,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Disabled
     public void testDataInputAssociationsWithTwoAssigns() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataInputAssociations-two-assigns.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -367,7 +367,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataOutputAssociationsforHumanTask() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataOutputAssociations-HumanTask.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -413,7 +413,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataOutputAssociations() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataOutputAssociations.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,
@@ -448,7 +448,7 @@ public class DataTest extends JbpmBpmn2TestCase {
     @Test
     public void testDataOutputAssociationsXmlNode() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-DataOutputAssociations-xml-node.bpmn2");
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task",
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new KogitoWorkItemHandler() {
 
                     public void abortWorkItem(KogitoWorkItem manager,

@@ -107,7 +107,7 @@ public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
     }
 
     @Override
-    public KogitoWorkItemManager getWorkItemManager() {
+    public KogitoWorkItemManager getKogitoWorkItemManager() {
         return (KogitoWorkItemManager) delegate.getWorkItemManager();
     }
 

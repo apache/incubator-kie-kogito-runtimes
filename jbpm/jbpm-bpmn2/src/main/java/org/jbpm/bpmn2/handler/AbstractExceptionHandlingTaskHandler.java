@@ -22,14 +22,14 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 public abstract class AbstractExceptionHandlingTaskHandler implements KogitoWorkItemHandler {
 
-    private WorkItemHandler originalTaskHandler;
+    private KogitoWorkItemHandler originalTaskHandler;
 
     
-    public AbstractExceptionHandlingTaskHandler(WorkItemHandler originalTaskHandler) { 
+    public AbstractExceptionHandlingTaskHandler(KogitoWorkItemHandler originalTaskHandler) {
         this.originalTaskHandler = originalTaskHandler;
     }
     
-    public AbstractExceptionHandlingTaskHandler(Class<? extends WorkItemHandler> originalTaskHandlerClass) { 
+    public AbstractExceptionHandlingTaskHandler(Class<? extends KogitoWorkItemHandler> originalTaskHandlerClass) {
         Class<?> [] clsParams = {};
         Object [] objParams = {};
         try { 
@@ -57,7 +57,7 @@ public abstract class AbstractExceptionHandlingTaskHandler implements KogitoWork
         }
     }
 
-    public WorkItemHandler getOriginalTaskHandler() {
+    public KogitoWorkItemHandler getOriginalTaskHandler() {
         return originalTaskHandler;
     }
 

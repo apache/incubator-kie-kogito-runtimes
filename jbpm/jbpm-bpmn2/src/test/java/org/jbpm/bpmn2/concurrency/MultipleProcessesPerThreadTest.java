@@ -159,7 +159,7 @@ public class MultipleProcessesPerThreadTest {
             }
             
             TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-            kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
 
             for (int i = 1; i <= LOOPS; i++) {
                 logger.debug("Starting user task process, loop {}/{}", i, LOOPS);
@@ -184,7 +184,7 @@ public class MultipleProcessesPerThreadTest {
                 items = workItemHandler.getWorkItems();
                 for (KogitoWorkItem item : items) {
                     try {
-                        kruntime.getWorkItemManager().completeWorkItem(item.getStringId(), null);
+                        kruntime.getKogitoWorkItemManager().completeWorkItem(item.getStringId(), null);
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }

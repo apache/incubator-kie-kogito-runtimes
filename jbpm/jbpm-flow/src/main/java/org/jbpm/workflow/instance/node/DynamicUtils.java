@@ -169,9 +169,10 @@ public class DynamicUtils {
     private static void executeWorkItem(StatefulKnowledgeSessionImpl ksession,
                                         KogitoWorkItemImpl workItem,
                                         WorkItemNodeInstance workItemNodeInstance) {
-        KogitoProcessEventSupport eventSupport = ((InternalProcessRuntime) ksession.getProcessRuntime()).getProcessEventSupport();
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        KogitoProcessEventSupport eventSupport = kruntime.getProcessEventSupport();
         eventSupport.fireBeforeNodeTriggered(workItemNodeInstance, ksession);
-        ((InternalKogitoWorkItemManager) ksession.getWorkItemManager()).internalExecuteWorkItem(workItem);
+        ((InternalKogitoWorkItemManager) kruntime.getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);
         workItemNodeInstance.internalSetWorkItemId(workItem.getStringId());
         eventSupport.fireAfterNodeTriggered(workItemNodeInstance, ksession);
     }

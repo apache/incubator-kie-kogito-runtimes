@@ -114,7 +114,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
             if (signal == null) {
                 workItem.setParameter("Data", signal);
             }
-            ((InternalKogitoWorkItemManager) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
+            ((InternalKogitoWorkItemManager) context.getKogitoProcessRuntime().getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);
         }
     }
 

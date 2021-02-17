@@ -15,20 +15,9 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.kogito.process.workitem.Transition;
 
-public interface KogitoWorkItemHandler extends WorkItemHandler {
-
-    default void executeWorkItem( WorkItem workItem, WorkItemManager manager) {
-        executeWorkItem( (KogitoWorkItem) workItem, (KogitoWorkItemManager) manager);
-    }
-
-    default void abortWorkItem( WorkItem workItem, WorkItemManager manager) {
-        abortWorkItem( (KogitoWorkItem) workItem, (KogitoWorkItemManager) manager);
-    }
+public interface KogitoWorkItemHandler {
 
     /**
      * The given work item should be executed.

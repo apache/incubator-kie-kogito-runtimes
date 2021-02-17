@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.integrationtests.handler.TestWorkItemHandler;
 import org.jbpm.integrationtests.test.Person;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -44,8 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.jbpm.integrationtests.JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ProcessMarshallingTest extends AbstractBaseTest {
     
@@ -83,31 +83,30 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
 			"    <connection from=\"2\" to=\"3\"/>\n" +
 			"  </connections>\n" +
 			"</process>";
-        
-        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add( ResourceFactory.newReaderResource(new StringReader(rule)), ResourceType.DRL );
-        kbuilder.add( ResourceFactory.newReaderResource( new StringReader( process ) ), ResourceType.DRF );
 
-        KieSession ksession = createKieSession(kbuilder.getKnowledgePackages().toArray(new KiePackage[0]));
-        ksession.getEnvironment().set("org.jbpm.rule.task.waitstate", true);
+        builder.add( ResourceFactory.newReaderResource(new StringReader(rule)), ResourceType.DRL );
+        builder.add( ResourceFactory.newReaderResource( new StringReader( process ) ), ResourceType.DRF );
+
+		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+		kruntime.getKieRuntime().getEnvironment().set("org.jbpm.rule.task.waitstate", true);
 
         List<Object> list = new ArrayList<Object>();
-        ksession.setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal( "list", list );
 
         Person p = new Person( "bobba fet", 32);
-        ksession.insert( p );
-        ksession.startProcess("org.test.ruleflow");
+        kruntime.getKieSession().insert( p );
+        kruntime.startProcess("org.test.ruleflow");
         
-        assertEquals(1, ksession.getProcessInstances().size());
+        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
                 
-        ksession = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession( ksession, true );
-        assertEquals(1, ksession.getProcessInstances().size());
+        KieSession ksession1 = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession( kruntime.getKieSession(), true );
+        assertEquals(1, ksession1.getProcessInstances().size());
+
+		ksession1.fireAllRules();
         
-        ksession.fireAllRules();
-        
-        assertEquals( 1, ((List<Object>) ksession.getGlobal("list")).size());
-        assertEquals( p, ((List<Object>) ksession.getGlobal("list")).get(0));
-        assertEquals(0, ksession.getProcessInstances().size());
+        assertEquals( 1, ((List<Object>) ksession1.getGlobal("list")).size());
+        assertEquals( p, ((List<Object>) ksession1.getGlobal("list")).get(0));
+        assertEquals(0, ksession1.getProcessInstances().size());
     }
     
     @Test
@@ -155,27 +154,25 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
 			"    <connection from=\"2\" to=\"3\"/>\n" +
 			"  </connections>\n" +
 			"</process>";
-        builder.addProcessFromXml( new StringReader( process ));
+		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-        KieSession session = createKieSession(builder.getPackages());
-		KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
+		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
-		kruntime.getWorkItemManager().registerWorkItemHandler("Email", handler);
+		kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email", handler);
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("myVariable", "ThisIsMyValue");
 		kruntime.startProcess("org.test.ruleflow", variables);
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
-        assertTrue(handler.getWorkItem() != null);
+		assertNotNull(handler.getWorkItem());
         
-        session = getSerialisedStatefulKnowledgeSession(session, false);
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
         	(( ProcessInstance )kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
         assertEquals("ThisIsMyValue", variableScopeInstance.getVariable("myVariable"));
 
-		kruntime.getWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
+		kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         
         assertEquals(0, kruntime.getKogitoProcessInstances().size());
     }
@@ -255,39 +252,33 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     		"    </connections>\n" +
             "\n" +
             "</process>\n";
-        builder.addProcessFromXml( new StringReader( process ));
+		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-        KieSession session = createKieSession(builder.getPackages());
-		KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
+		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         TestListWorkItemHandler handler = new TestListWorkItemHandler();
-        session.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         List<String> list = new ArrayList<String>();
         list.add("one");
         list.add("two");
         list.add("three");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("list", list);
-        session.startProcess("com.sample.ruleflow", parameters);
+        kruntime.startProcess("com.sample.ruleflow", parameters);
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         assertEquals(3, handler.getWorkItems().size());
-        
-//        session = getSerialisedStatefulSession( session );
-//        session.getWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         List<KogitoWorkItem> workItems = new ArrayList<>(handler.getWorkItems());
         handler.reset();
         for (KogitoWorkItem workItem: workItems) {
-			kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
+			kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         }
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         assertEquals(3, handler.getWorkItems().size());
-        
-        session = getSerialisedStatefulKnowledgeSession(session, false);
 
         for (KogitoWorkItem workItem: handler.getWorkItems()) {
-			kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
+			kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         }
         assertEquals(0, kruntime.getKogitoProcessInstances().size());
     }
@@ -316,15 +307,15 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     		"    </connections>\n" +
             "\n" +
             "</process>\n";
-        builder.addProcessFromXml( new StringReader( process ));
+		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-        final KieSession session = createKieSession(builder.getPackages());
+		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+
+		kruntime.startProcess("com.sample.ruleflow");
+        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
+        kruntime.getKieSession().halt();
         
-        session.startProcess("com.sample.ruleflow");
-        assertEquals(1, session.getProcessInstances().size());
-        session.halt();
-        
-        final StatefulKnowledgeSession session2 = getSerialisedStatefulKnowledgeSession(session);
+        final StatefulKnowledgeSession session2 = getSerialisedStatefulKnowledgeSession(kruntime.getKieSession());
        
         int sleeps = 3;
         int procInstsAlive = session2.getProcessInstances().size();
@@ -395,13 +386,12 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
             "    <connection from=\"2\" to=\"3\"/>\n" +
             "  </connections>\n" +
             "</process>";
-        builder.addProcessFromXml( new StringReader( process ));
+		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-        KieSession session = createKieSession(builder.getPackages());
-		KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( session );
+		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-		kruntime.getWorkItemManager().registerWorkItemHandler("Report", handler);
+		TestWorkItemHandler handler = new TestWorkItemHandler();
+		kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Report", handler);
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("myVariable", "ThisIsMyValue");
         Person myPerson = new Person("Nikola Tesla", 156 );
@@ -409,16 +399,15 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
 		kruntime.startProcess("org.test.ruleflow", variables);
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
-        assertTrue(handler.getWorkItem() != null);
+		assertNotNull(handler.getWorkItem());
         
-        session = getSerialisedStatefulKnowledgeSession(session, false);
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
             (( ProcessInstance )kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
         assertEquals("ThisIsMyValue", variableScopeInstance.getVariable("myVariable"));
         assertEquals(myPerson, variableScopeInstance.getVariable("myPerson"));
 
-		kruntime.getWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
+		kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         
         assertEquals(0, kruntime.getKogitoProcessInstances().size());
     }

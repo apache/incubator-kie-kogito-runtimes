@@ -149,7 +149,7 @@ public class CompensationTest extends AbstractBaseTest {
                                                                 String [] workItemNames, List<String> eventList, String compensationEvent) {
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         for (String workItem : workItemNames) {
-            kruntime.getWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
         }
         KogitoProcessInstance processInstance = kruntime.startProcess(processId);
         
@@ -159,7 +159,7 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
         // complete work 1
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
         // call compensation on work 1, which should now fire
@@ -167,8 +167,8 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(1, eventList.size(), "Compensation should have fired.");
 
         // complete work 2 & 3
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
@@ -192,7 +192,7 @@ public class CompensationTest extends AbstractBaseTest {
             String [] workItemNames, List<String> eventList, String compensationEvent) { 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         for (String workItem : workItemNames) {
-            kruntime.getWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
         }
         KogitoProcessInstance processInstance = kruntime.startProcess(processId);
 
@@ -201,8 +201,8 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
         // complete work 1 & 2
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
@@ -211,7 +211,7 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(2, eventList.size(), "Compensation should have fired.");
 
         // complete work 3 and finish
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
@@ -283,7 +283,7 @@ public class CompensationTest extends AbstractBaseTest {
         // run process
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         for (String workItem : workItemNames) {
-            kruntime.getWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
         }
         KogitoProcessInstance processInstance = kruntime.startProcess(processId);
     
@@ -292,21 +292,21 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
         // pre work item
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
     
         // sub-process is active, but not complete
         kruntime.signalEvent("Compensation", compensationEvent, processInstance.getStringId());
         assertEquals(0, eventList.size(), "Compensation should not have fired yet.");
 
         // sub process work item
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         
         // sub-process has completed 
         kruntime.signalEvent("Compensation", compensationEvent, processInstance.getStringId());
         assertEquals(1, eventList.size(), "Compensation should have fired once.");
 
         // post work item
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
@@ -330,13 +330,13 @@ public class CompensationTest extends AbstractBaseTest {
                                                                  String [] workItemNames, List<String> eventList, String compensationEvent) {
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         for (String workItem : workItemNames) {
-            kruntime.getWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler(workItem, workItemHandler);
         }
         KogitoProcessInstance processInstance = kruntime.startProcess(processId);
 
         // pre and sub process work item
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         
         // Call general compensation 
 
@@ -344,7 +344,7 @@ public class CompensationTest extends AbstractBaseTest {
         assertEquals(1, eventList.size(), "Compensation should have fired once.");
 
         // post work item
-        kruntime.getWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 

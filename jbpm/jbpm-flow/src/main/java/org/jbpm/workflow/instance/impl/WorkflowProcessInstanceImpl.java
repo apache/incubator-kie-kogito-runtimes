@@ -139,7 +139,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private String nodeIdInError;
     private String errorMessage;
 
-    private int slaCompliance = SLA_NA;
+    private int slaCompliance = KogitoProcessInstance.SLA_NA;
     private Date slaDueDate;
     private String slaTimerId;
     
@@ -369,12 +369,12 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         if (state == KogitoProcessInstance.STATE_COMPLETED
                 || state == KogitoProcessInstance.STATE_ABORTED) {
             this.endDate = new Date();
-            if (this.slaCompliance == SLA_PENDING) {
+            if (this.slaCompliance == KogitoProcessInstance.SLA_PENDING) {
                 if (System.currentTimeMillis() > slaDueDate.getTime()) {
                     // completion of the process instance is after expected SLA due date, mark it accordingly
-                    this.slaCompliance = SLA_VIOLATED;
+                    this.slaCompliance = KogitoProcessInstance.SLA_VIOLATED;
                 } else {
-                    this.slaCompliance = state == KogitoProcessInstance.STATE_COMPLETED ? SLA_MET : SLA_ABORTED;
+                    this.slaCompliance = state == KogitoProcessInstance.STATE_COMPLETED ? KogitoProcessInstance.SLA_MET : KogitoProcessInstance.SLA_ABORTED;
                 }
             }
 
@@ -488,7 +488,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             if (timer != null) {
                 this.slaTimerId = timer.getId();
                 this.slaDueDate = new Date(System.currentTimeMillis() + timer.getDelay());
-                this.slaCompliance = SLA_PENDING;
+                this.slaCompliance = KogitoProcessInstance.SLA_PENDING;
                 logger.debug("SLA for process instance {} is PENDING with due date {}", this.getStringId(), this.slaDueDate);
             }
         }
@@ -550,13 +550,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void handleSLAViolation() {
-        if (slaCompliance == SLA_PENDING) {
+        if (slaCompliance == KogitoProcessInstance.SLA_PENDING) {
 
             InternalKnowledgeRuntime kruntime = getKnowledgeRuntime();
             InternalProcessRuntime processRuntime = (InternalProcessRuntime) kruntime.getProcessRuntime();
             processRuntime.getProcessEventSupport().fireBeforeSLAViolated(this, kruntime);
             logger.debug("SLA violated on process instance {}", getStringId());
-            this.slaCompliance = SLA_VIOLATED;
+            this.slaCompliance = KogitoProcessInstance.SLA_VIOLATED;
             this.slaTimerId = null;
             processRuntime.getProcessEventSupport().fireAfterSLAViolated(this, kruntime);
         }

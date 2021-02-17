@@ -198,7 +198,7 @@ public interface KogitoProcessRuntime {
      *
      * @return the <code>WorkItemManager</code> related to this session
      */
-    KogitoWorkItemManager getWorkItemManager();
+    KogitoWorkItemManager getKogitoWorkItemManager();
 
     /**
      * Returns <code>JobsService</code> responsible for scheduling tasks such as timers.

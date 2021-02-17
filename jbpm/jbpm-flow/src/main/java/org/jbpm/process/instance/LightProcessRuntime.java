@@ -92,7 +92,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         this.signalManager = services.getSignalManager();
         this.jobService = services.getJobsService() == null ? new InMemoryJobService(kogitoProcessRuntime, this.unitOfWorkManager) : services.getJobsService();
         this.processEventSupport = services.getEventSupport();
-        this.workItemManager = services.getWorkItemManager();
+        this.workItemManager = services.getKogitoWorkItemManager();
         
         if (isActive()) {
             initProcessEventListeners();
@@ -400,8 +400,9 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         ((org.jbpm.process.instance.ProcessInstance) processInstance).setState(KogitoProcessInstance.STATE_ABORTED);
     }
 
+    @Override
     public WorkItemManager getWorkItemManager() {
-        return getKogitoWorkItemManager();
+        return (WorkItemManager) getKogitoWorkItemManager();
     }
 
     public KogitoWorkItemManager getKogitoWorkItemManager() {

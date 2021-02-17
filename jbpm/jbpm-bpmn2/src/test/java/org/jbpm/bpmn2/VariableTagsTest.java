@@ -46,7 +46,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
     public void testProcessWithMissingRequiredVariable() throws Exception {
         kruntime = createKogitoProcessRuntime("variable-tags/approval-with-required-variable-tags.bpmn2");
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         
         assertThrows(VariableViolationException.class, () -> kruntime.startProcess("approvals"));
     }
@@ -56,7 +56,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("variable-tags/approval-with-required-variable-tags.bpmn2");
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("approver", "john");
@@ -65,11 +65,11 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         assertEquals(STATE_ACTIVE, processInstance.getState());
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
-        kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         
         workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
-        kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), null);
+        kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         
         assertProcessInstanceFinished(processInstance, kruntime);
     }
@@ -79,7 +79,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("variable-tags/approval-with-readonly-variable-tags.bpmn2");
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("approver", "john");
@@ -89,7 +89,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
                 
-        assertThrows(VariableViolationException.class, () -> kruntime.getWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("ActorId", "john")));
+        assertThrows(VariableViolationException.class, () -> kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), Collections.singletonMap("ActorId", "john")));
 
         kruntime.abortProcessInstance(processInstance.getStringId());
         
@@ -100,7 +100,7 @@ public class VariableTagsTest extends JbpmBpmn2TestCase {
     public void testProcessWithCustomVariableTag() throws Exception {
         kruntime = createKogitoProcessRuntime("variable-tags/approval-with-custom-variable-tags.bpmn2");
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-        kruntime.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
 
             @Override

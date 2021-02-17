@@ -65,7 +65,7 @@ public class HandleMessageAction implements Action, Serializable {
             workItem.setParameter("Message", variable);
         }
 
-        ((InternalKogitoWorkItemManager) context.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
+        ((InternalKogitoWorkItemManager) context.getKogitoProcessRuntime().getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);
     }
 
 }

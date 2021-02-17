@@ -17,12 +17,10 @@ package org.kie.kogito.internal.process.runtime;
 
 import java.util.Map;
 
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 
-public interface KogitoWorkItemManager extends WorkItemManager {
+public interface KogitoWorkItemManager {
 
     /**
      * Notifies the work item manager that the work item with the given
@@ -64,7 +62,6 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      * @param workItemName the type of work this work item handler can execute
      * @param handler the handler for executing work items
      */
-    @Override
     void registerWorkItemHandler(String workItemName,
                                  KogitoWorkItemHandler handler);
 
@@ -75,10 +72,5 @@ public interface KogitoWorkItemManager extends WorkItemManager {
      */
     default void transitionWorkItem(String id, Transition<?> transition) {
 
-    }
-
-    default void registerWorkItemHandler(String workItemName,
-                                         WorkItemHandler handler) {
-        registerWorkItemHandler(workItemName, (KogitoWorkItemHandler) handler);
     }
 }

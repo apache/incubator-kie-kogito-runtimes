@@ -237,7 +237,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                     workItem.setParameter(association.getTarget(), parameterValue);
                 }
             } else {
-                association.getAssignments().stream().forEach(this::handleAssignment);
+                association.getAssignments().forEach(this::handleAssignment);
             }
         }
 
@@ -615,7 +615,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 
         switch (handlerException.getStrategy()) {
             case ABORT:
-                KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getWorkItemManager().abortWorkItem(getWorkItem().getStringId());
+                KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager().abortWorkItem(getWorkItem().getStringId());
                 break;
             case RETHROW:
                 String exceptionName = handlerException.getCause().getClass().getName();
@@ -636,7 +636,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 break;
             case COMPLETE:
                 KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( getProcessInstance().getKnowledgeRuntime() );
-                kruntime.getWorkItemManager().completeWorkItem(getWorkItem().getStringId(), processInstance.getVariables());
+                kruntime.getKogitoWorkItemManager().completeWorkItem(getWorkItem().getStringId(), processInstance.getVariables());
                 break;
             default:
                 break;

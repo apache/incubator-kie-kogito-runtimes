@@ -150,7 +150,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
     
     @Override
     public Map<String, Object> updateWorkItem(String id, Map<String, Object> params, Policy<?>... policies) {
-        KogitoWorkItem workItem = workItems.get(id);
+        InternalKogitoWorkItem workItem = workItems.get(id);
         if (workItem != null) {
             if (!workItem.enforce(policies)) {
                 throw new NotAuthorizedException("User is not authorized to access task instance with id " + id);
@@ -180,10 +180,6 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
 
 
     @Override
-    public void internalCompleteWorkItem( KogitoWorkItem workItem) {
-        ProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceStringId());
-
-    @Override
     public void internalCompleteWorkItem( InternalKogitoWorkItem workItem) {
         KogitoProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceStringId());
         workItem.setState(COMPLETED);
@@ -198,7 +194,6 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
     }
 
     @Override
-    @Override
     public void transitionWorkItem(String id, Transition<?> transition) {
         InternalKogitoWorkItem workItem = workItems.get(id);
         if (workItem != null) {
@@ -209,26 +204,12 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
     }
 
     @SuppressWarnings("unchecked")
-    private void transitionWorkItem(KogitoWorkItem workItem, Transition<?> transition) {
+    private void transitionWorkItem(InternalKogitoWorkItem workItem, Transition<?> transition) {
         // work item may have been aborted
-        if (workItem != null) {
-
-            KogitoWorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
-            if (handler != null) {
-                KogitoProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem.getProcessInstanceStringId());
-                eventSupport.fireBeforeWorkItemTransition(processInstance, workItem, transition, null);
-                
-                if ( !transitionToPhase(handler, workItem, this, transition) ) {
-                    workItem.setResults((Map<String, Object>)transition.data()); 
-                    workItem.setPhaseId(Complete.ID);
-                    workItem.setPhaseStatus(Complete.STATUS);
-                    completePhase.apply(workItem, transition);
-                    internalCompleteWorkItem(workItem);                                        
-                }
-        WorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
+        KogitoWorkItemHandler handler = this.workItemHandlers.get(workItem.getName());
         if (handler != null) {
-            ProcessInstance processInstance = processInstanceManager.getProcessInstance(workItem
-                    .getProcessInstanceStringId());
+            KogitoProcessInstance processInstance = processInstanceManager
+                    .getProcessInstance(workItem.getProcessInstanceStringId());
             eventSupport.fireBeforeWorkItemTransition(processInstance, workItem, transition, null);
 
             if (!transitionToPhase(handler, workItem, this, transition)) {
