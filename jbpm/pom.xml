@@ -39,7 +39,7 @@
       <id>prod</id>
       <activation>
         <property>
-          <name>prod</name>
+          <name>productized</name>
         </property>
       </activation>
       <modules>
