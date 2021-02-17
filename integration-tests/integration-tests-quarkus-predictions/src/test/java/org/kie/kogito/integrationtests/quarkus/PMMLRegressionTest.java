@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2020 Red Hat, Inc. and/or its affiliates.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,52 +15,36 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
+import java.util.Collections;
 import java.util.Map;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
 
 @QuarkusTest
 class PMMLRegressionTest {
+
+    private static final String BASE_PATH = "/LinReg";
+    private static final String TARGET = "fld4";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testWholeModel() {
+    void testEvaluateLinRegResult() {
         String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
+        testResult(inputData, BASE_PATH, TARGET, 52.5f);
+    }
 
-
-        Object resultVariables =  given()
-                .contentType(ContentType.JSON)
-                .body(inputData)
-                .when()
-                .post("/LinReg")
-                .then()
-                .statusCode(200)
-                .body("correlationId", nullValue())
-                .body("segmentationId", nullValue())
-                .body("segmentId", nullValue())
-                .body("segmentIndex", equalTo(0)) // as JSON is not schema aware, here we assert the RAW string
-                .body("resultCode", equalTo("OK"))
-                .body("resultObjectName", equalTo("fld4"))
-                .extract()
-                .path("resultVariables");
-        assertNotNull(resultVariables);
-        assertTrue(resultVariables instanceof Map);
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        Map<String, Object> mappedResultVariables = (Map) resultVariables;
-        assertTrue(mappedResultVariables.containsKey("fld4"));
-        assertEquals(52.5f, mappedResultVariables.get("fld4"));
+    @Test
+    void testEvaluateLinRegDescriptive() {
+        String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
+        final Map<String, Object> expectedResultMap = Collections.singletonMap(TARGET, 52.5f);
+        testDescriptive(inputData, BASE_PATH, TARGET, expectedResultMap);
     }
 }

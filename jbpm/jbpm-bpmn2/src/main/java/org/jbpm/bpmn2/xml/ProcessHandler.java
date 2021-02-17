@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.ArrayList;
@@ -109,10 +108,6 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
     public static final String ERRORS = "BPMN.Errors";
     public static final String ESCALATIONS = "BPMN.Escalations";
 
-    static final String PROCESS_INSTANCE_SIGNAL_EVENT = "kcontext.getProcessInstance().signalEvent(\"";
-    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKnowledgeRuntime().signalEvent(\"";
-    static final String RUNTIME_MANAGER_SIGNAL_EVENT = "((org.kie.api.runtime.manager.RuntimeManager)kcontext.getKnowledgeRuntime().getEnvironment().get(\"RuntimeManager\")).signalEvent(\"";
-    		
 	@SuppressWarnings("unchecked")
 	public ProcessHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
@@ -507,7 +502,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         if (timeDuration != null) {
             timer.setDelay(timeDuration);
             timer.setTimeType(Timer.TIME_DURATION);
-            DroolsConsequenceAction consequenceAction = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId(), kcontext -> (( KogitoNodeInstance ) kcontext.getNodeInstance()).getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+            DroolsConsequenceAction consequenceAction = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId(), kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, consequenceAction);            
         } else if (timeCycle != null) {
             int index = timeCycle.indexOf("###");
@@ -521,12 +516,12 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             
             String finalTimeCycle = timeCycle;
             
-            DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + finalTimeCycle + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId(), kcontext -> (( KogitoNodeInstance ) kcontext.getNodeInstance()).getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+            DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + finalTimeCycle + (timer.getPeriod() == null ? "" : "###" + timer.getPeriod()) + "-" + node.getId(), kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action); 
         } else if (timeDate != null) {
             timer.setDate(timeDate);
             timer.setTimeType(Timer.TIME_DATE);                                              
-            DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDate + "-" + node.getId(), kcontext -> (( KogitoNodeInstance ) kcontext.getNodeInstance()).getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+            DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDate + "-" + node.getId(), kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
             compositeNode.addTimer(timer, action); 
         }
         

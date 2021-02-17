@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.util.Collection;
@@ -21,12 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.RuleUnitConfig;
 
-public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescription {
+public abstract class AbstractRuleUnitDescription implements RuleUnitDescription {
 
-    private final Map<String, KogitoRuleUnitVariable> varDeclarations = new HashMap<>();
+    private final Map<String, RuleUnitVariable> varDeclarations = new HashMap<>();
     private RuleUnitConfig config;
 
     @Override
@@ -47,8 +47,8 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
     }
 
     @Override
-    public KogitoRuleUnitVariable getVar( String name) {
-        KogitoRuleUnitVariable ruleUnitVariable = (KogitoRuleUnitVariable) varDeclarations.get(name);
+    public RuleUnitVariable getVar( String name) {
+        RuleUnitVariable ruleUnitVariable = varDeclarations.get(name);
         if (ruleUnitVariable == null) {
             throw new UndefinedRuleUnitVariable(name, this.getCanonicalName());
         }
@@ -61,7 +61,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
     }
 
     @Override
-    public Collection<KogitoRuleUnitVariable> getUnitVarDeclarations() {
+    public Collection<RuleUnitVariable> getUnitVarDeclarations() {
         return varDeclarations.values();
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
         return ruleUnitVariable != null && ruleUnitVariable.isDataSource();
     }
 
-    protected void putRuleUnitVariable(KogitoRuleUnitVariable varDeclaration) {
+    protected void putRuleUnitVariable(RuleUnitVariable varDeclaration) {
         varDeclarations.put(varDeclaration.getName(), varDeclaration);
     }
 
@@ -79,7 +79,6 @@ public abstract class AbstractRuleUnitDescription implements KogitoRuleUnitDescr
         this.config = config;
     }
 
-    @Override
     public RuleUnitConfig getConfig() {
         return config;
     }

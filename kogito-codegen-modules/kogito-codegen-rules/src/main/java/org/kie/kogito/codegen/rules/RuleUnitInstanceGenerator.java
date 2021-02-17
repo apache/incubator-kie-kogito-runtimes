@@ -1,10 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.rules;
 
 import java.lang.reflect.Field;
@@ -36,14 +36,13 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.conf.EntryPoint;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 import org.kie.kogito.rules.units.EntryPointDataProcessor;
-import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
-import org.kie.kogito.rules.units.KogitoRuleUnitVariable;
 
 public class RuleUnitInstanceGenerator implements RuleFileGenerator {
 
@@ -52,7 +51,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
     private final String targetTypeName;
     private final String targetCanonicalName;
     private final String generatedFilePath;
-    private final KogitoRuleUnitDescription ruleUnitDescription;
+    private final RuleUnitDescription ruleUnitDescription;
     private final RuleUnitHelper ruleUnitHelper;
     private final List<String> queryClasses;
 
@@ -60,7 +59,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
         return packageName + "." + typeName + "RuleUnitInstance";
     }
 
-    public RuleUnitInstanceGenerator( KogitoRuleUnitDescription ruleUnitDescription, RuleUnitHelper ruleUnitHelper, List<String> queryClasses ) {
+    public RuleUnitInstanceGenerator( RuleUnitDescription ruleUnitDescription, RuleUnitHelper ruleUnitHelper, List<String> queryClasses ) {
         this.ruleUnitDescription = ruleUnitDescription;
         this.targetTypeName = ruleUnitDescription.getSimpleName() + "RuleUnitInstance";
         this.targetCanonicalName = ruleUnitDescription.getPackageName() + "." + targetTypeName;
@@ -100,7 +99,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
         try {
 
 
-            for (KogitoRuleUnitVariable m : ruleUnitDescription.getUnitVarDeclarations()) {
+            for (RuleUnitVariable m : ruleUnitDescription.getUnitVarDeclarations()) {
                 String methodName = m.getter();
                 String propertyName = m.getName();
 

@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.core;
 
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import org.kie.kogito.Addons;
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -39,7 +38,6 @@ import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 
 public class ApplicationConfigGenerator {
 
-    public static final GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE);
     public static final String TEMPLATE_CONFIG_FOLDER = "/class-templates/config/";
     private static final String CLASS_NAME = "ApplicationConfig";
 
@@ -96,7 +94,7 @@ public class ApplicationConfigGenerator {
             initConfigs(getSuperStatement(cls), configClassNames);
         }
 
-        return new GeneratedFile(APPLICATION_CONFIG_TYPE,
+        return new GeneratedFile(ConfigGenerator.APPLICATION_CONFIG_TYPE,
                                  templatedGenerator.generatedFilePath(),
                                  compilationUnit.toString());
     }

@@ -1,10 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.decision;
 
 import java.util.Collection;
@@ -36,6 +36,8 @@ import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMe
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
 
+    protected static final String PMML_ABSTRACT_CLASS = "org.kie.kogito.pmml.AbstractPredictionModels";
+    protected static final String PMML_FUNCTION = PMML_ABSTRACT_CLASS + ".kieRuntimeFactoryFunction";
     private static final String SECTION_CLASS_NAME = "DecisionModels";
 
     private final String applicationCanonicalName;
@@ -69,6 +71,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
                         templatedGenerator,
                         "Missing init() method"));
 
+        setupPmmlIfAvailable(initMethod);
         setupExecIdSupplierVariable(initMethod);
         setupDecisionModelTransformerVariable(initMethod);
 
@@ -79,6 +82,11 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
         }
 
         return compilationUnit;
+    }
+
+    private void setupPmmlIfAvailable(MethodCallExpr initMethod) {
+        boolean hasPMML = context.hasClassAvailable(PMML_ABSTRACT_CLASS);
+        initMethod.addArgument(hasPMML ? PMML_FUNCTION : "null");
     }
 
     private void setupExecIdSupplierVariable(MethodCallExpr initMethod) {

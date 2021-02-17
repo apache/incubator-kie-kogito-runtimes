@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright 2020 Red Hat, Inc. and/or its affiliates.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.integrationtests.springboot;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.kie.kogito.testcontainers.springboot.InfinispanSpringBootTestResource;
@@ -36,39 +37,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import static org.kie.kogito.integrationtests.springboot.CommonPMMLTestUtils.testDescriptive;
+import static org.kie.kogito.integrationtests.springboot.CommonPMMLTestUtils.testResult;
+
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 @ContextConfiguration(initializers = InfinispanSpringBootTestResource.Conditional.class)
 class PMMLRegressionTest extends BaseRestTest {
+
+    private static final String BASE_PATH = "/LinReg/";
+    private static final String TARGET = "fld4";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testWholeModel() {
+    void testEvaluateLinRegResult() {
         String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
-
-
-        Object resultVariables =  given()
-                .contentType(ContentType.JSON)
-                .body(inputData)
-                .when()
-                .post("/LinReg")
-                .then()
-                .statusCode(200)
-                .body("correlationId", nullValue())
-                .body("segmentationId", nullValue())
-                .body("segmentId", nullValue())
-                .body("segmentIndex", equalTo(0)) // as JSON is not schema aware, here we assert the RAW string
-                .body("resultCode", equalTo("OK"))
-                .body("resultObjectName", equalTo("fld4"))
-                .extract()
-                .path("resultVariables");
-        assertNotNull(resultVariables);
-        assertTrue(resultVariables instanceof Map);
-        Map<String, Object> mappedResultVariables = (Map) resultVariables;
-        assertTrue(mappedResultVariables.containsKey("fld4"));
-        assertEquals(52.5f, mappedResultVariables.get("fld4"));
+        testResult(inputData, BASE_PATH, TARGET, 52.5f);
     }
+
+    @Test
+    void testEvaluateLinRegDescriptive() {
+        String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
+        final Map<String, Object> expectedResultMap = Collections.singletonMap(TARGET, 52.5f);
+        testDescriptive(inputData, BASE_PATH, TARGET, expectedResultMap);
+    }
+
 }

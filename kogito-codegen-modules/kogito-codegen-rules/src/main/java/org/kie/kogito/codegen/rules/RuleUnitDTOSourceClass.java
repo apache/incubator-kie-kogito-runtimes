@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.rules;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -25,20 +24,20 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
-import org.kie.kogito.rules.units.KogitoRuleUnitVariable;
 
 public class RuleUnitDTOSourceClass implements RuleFileGenerator {
 
-    private final KogitoRuleUnitDescription ruleUnit;
+    private final RuleUnitDescription ruleUnit;
 
     private final String targetCanonicalName;
     private final String generatedFilePath;
     private final String packageName;
     private final RuleUnitHelper ruleUnitHelper;
 
-    public RuleUnitDTOSourceClass(KogitoRuleUnitDescription ruleUnit, RuleUnitHelper ruleUnitHelper ) {
+    public RuleUnitDTOSourceClass( RuleUnitDescription ruleUnit, RuleUnitHelper ruleUnitHelper ) {
         this.ruleUnit = ruleUnit;
 
         this.targetCanonicalName = ruleUnit.getSimpleName() + "DTO";
@@ -66,7 +65,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
         BlockStmt supplierBlock = supplier.createBody();
         supplierBlock.addStatement(String.format("%s unit = new %s();", ruleUnit.getSimpleName(), ruleUnit.getSimpleName()));
 
-        for (KogitoRuleUnitVariable unitVarDeclaration : ruleUnit.getUnitVarDeclarations()) {
+        for (RuleUnitVariable unitVarDeclaration : ruleUnit.getUnitVarDeclarations()) {
             FieldProcessor fieldProcessor = new FieldProcessor(unitVarDeclaration, ruleUnitHelper );
             FieldDeclaration field = fieldProcessor.createField();
             supplierBlock.addStatement(fieldProcessor.fieldInitializer());
@@ -82,13 +81,13 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
 
     private static class FieldProcessor {
 
-        final KogitoRuleUnitVariable ruleUnitVariable;
+        final RuleUnitVariable ruleUnitVariable;
         final boolean isDataSource;
         final RuleUnitHelper ruleUnitHelper;
         final boolean isSingletonStore;
         private String genericType;
 
-        public FieldProcessor( KogitoRuleUnitVariable ruleUnitVariable, RuleUnitHelper ruleUnitHelper ) {
+        public FieldProcessor( RuleUnitVariable ruleUnitVariable, RuleUnitHelper ruleUnitHelper ) {
             this.ruleUnitVariable = ruleUnitVariable;
             this.isDataSource = ruleUnitVariable.isDataSource();
             this.ruleUnitHelper = ruleUnitHelper;

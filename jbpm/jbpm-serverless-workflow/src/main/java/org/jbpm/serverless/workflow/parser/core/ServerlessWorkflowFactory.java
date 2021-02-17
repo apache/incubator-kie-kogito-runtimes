@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -254,8 +255,8 @@ public class ServerlessWorkflowFactory {
                                                         "workItem.setNodeId(kcontext.getNodeInstance().getNodeId());" + EOL +
                                                         "workItem.setParameter(\"MessageType\", \"" + messageType + "\");" + EOL +
                                                         (variable == null ? "" : "workItem.setParameter(\"Message\", " + variable + ");" + EOL) +
-                                                        "workItem.setDeploymentId((String) kcontext.getKnowledgeRuntime().getEnvironment().get(\"deploymentId\"));" + EOL +
-                                                        "((org.drools.core.process.instance.WorkItemManager) kcontext.getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);"));
+                                                        "workItem.setDeploymentId((String) kcontext.getKieRuntime().getEnvironment().get(\"deploymentId\"));" + EOL +
+                                                        "((org.drools.core.process.instance.WorkItemManager) kcontext.getKieRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);"));
         endNode.setActions(ExtendedNodeImpl.EVENT_NODE_ENTER, actions);
     }
 

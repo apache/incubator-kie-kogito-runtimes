@@ -1,10 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,43 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.decision;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.github.javaparser.ast.CompilationUnit;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.grafana.JGrafana;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.kie.kogito.codegen.KogitoBuildContextTestUtils.mockClassAvailabilityResolver;
+import static org.kie.kogito.codegen.api.utils.KogitoContextTestUtils.mockClassAvailabilityResolver;
 
 public class DecisionCodegenTest {
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void generateAllFiles(KogitoBuildContext.Builder contextBuilder) throws Exception {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays", contextBuilder);
 
@@ -61,15 +57,12 @@ public class DecisionCodegenTest {
                                                                         "decision/TPayroll.java",
                                                                         "decision/VacationsResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
-
-        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
-        assertThat(optionalApplicationSection).isNotEmpty();
-        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit );
+        
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void doNotGenerateTypesafeInfo(KogitoBuildContext.Builder contextBuilder) throws Exception {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/alltypes/", contextBuilder);
 
@@ -80,14 +73,11 @@ public class DecisionCodegenTest {
                                                                         "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java",
                                                                         "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
-        assertThat(optionalApplicationSection).isNotEmpty();
-        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit );
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void givenADMNModelWhenMonitoringIsActiveThenGrafanaDashboardsAreGenerated(KogitoBuildContext.Builder contextBuilder) throws Exception {
         List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(), contextBuilder);
 
@@ -103,7 +93,7 @@ public class DecisionCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void givenADMNModelWhenMonitoringAndTracingAreActiveThenTheGrafanaDashboardsContainsTheAuditUILink(KogitoBuildContext.Builder contextBuilder) throws Exception {
         List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).withTracing(true).build(), contextBuilder);
 
@@ -117,21 +107,18 @@ public class DecisionCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void resilientToDuplicateDMNIDs(KogitoBuildContext.Builder contextBuilder) throws Exception {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-test20200507", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
         assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(3);
 
-        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
-        assertThat(optionalApplicationSection).isNotEmpty();
-        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertNotNull(compilationUnit );
+        assertNotEmptySectionCompilationUnit(codeGenerator);
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void emptyName(KogitoBuildContext.Builder contextBuilder) throws Exception {
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-empty-name", contextBuilder);
         RuntimeException re = Assertions.assertThrows(RuntimeException.class, codeGenerator::generate);
@@ -139,10 +126,10 @@ public class DecisionCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void testNSEW_positive(KogitoBuildContext.Builder contextBuilder) throws Exception {
         contextBuilder
-                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), Collections.emptyList()));
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(singleton("org.eclipse.microprofile.openapi.models.OpenAPI"), emptyList()));
         // This test is meant to check that IFF Eclipse MP OpenAPI annotations are available on Build/CP of Kogito application, annotation is used with codegen
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
@@ -153,10 +140,10 @@ public class DecisionCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void testNSEW_negative(KogitoBuildContext.Builder contextBuilder) throws Exception {
         contextBuilder
-                .withClassAvailabilityResolver(mockClassAvailabilityResolver(Collections.emptyList(), Collections.singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(emptyList(), singleton("org.eclipse.microprofile.openapi.models.OpenAPI")));
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision-NSEW", contextBuilder);
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
@@ -165,12 +152,22 @@ public class DecisionCodegenTest {
         assertThat(new String(inputSetFile.contents())).doesNotContain("@org.eclipse.microprofile.openapi.annotations.media.Schema");
     }
 
-    static Stream<Arguments> contextBuilders() {
-        return Stream.of(
-                Arguments.of(JavaKogitoBuildContext.builder()),
-                Arguments.of(QuarkusKogitoBuildContext.builder()),
-                Arguments.of(SpringBootKogitoBuildContext.builder())
-        );
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    public void pmmlIntegrationTest(KogitoBuildContext.Builder contextBuilder) throws Exception {
+        // with PMML in the classpath
+        contextBuilder
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(singleton(DecisionContainerGenerator.PMML_ABSTRACT_CLASS), emptyList()));
+        
+        assertNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder)
+                .contains(DecisionContainerGenerator.PMML_FUNCTION);
+
+        // without PMML in the classpath
+        contextBuilder
+                .withClassAvailabilityResolver(mockClassAvailabilityResolver(emptyList(), singleton(DecisionContainerGenerator.PMML_ABSTRACT_CLASS)));
+        
+        assertNotEmptySectionCompilationUnit("src/test/resources/decision/models/vacationDays", contextBuilder)
+                .doesNotContain(DecisionContainerGenerator.PMML_FUNCTION);
     }
 
     private KogitoBuildContext.Builder stronglyTypedContext(KogitoBuildContext.Builder builder) {
@@ -178,6 +175,19 @@ public class DecisionCodegenTest {
         properties.put(DecisionCodegen.STRONGLY_TYPED_CONFIGURATION_KEY, Boolean.TRUE.toString());
         builder.withApplicationProperties(properties);
         return builder;
+    }
+    
+    protected AbstractStringAssert<?> assertNotEmptySectionCompilationUnit(String sourcePath, KogitoBuildContext.Builder contextBuilder) {
+        DecisionCodegen codeGenerator = getDecisionCodegen(sourcePath, contextBuilder);
+        return assertNotEmptySectionCompilationUnit(codeGenerator);
+    }
+
+    protected AbstractStringAssert<?> assertNotEmptySectionCompilationUnit(DecisionCodegen codeGenerator) {
+        Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
+        assertThat(optionalApplicationSection).isNotEmpty();
+        CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
+        assertThat(compilationUnit).isNotNull();
+        return assertThat(compilationUnit.toString());
     }
 
     protected DecisionCodegen getDecisionCodegen(String sourcePath, KogitoBuildContext.Builder contextBuilder) {

@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +23,10 @@ import org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+/**
+ * Abstract class with common code extended with codegen. Please check codegen usages before rename/move this class.
+ * For example it is referenced by DecisionContainerGenerator
+ */
 public abstract class AbstractPredictionModels implements PredictionModels {
 
     // This AtomicReference is needed to have a deterministic/stable value for kieRuntimeFactoryFunction.
