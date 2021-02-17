@@ -33,8 +33,6 @@ import org.jboss.jandex.Indexer;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -54,8 +52,6 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
  * Main class of the Kogito extension
  */
 public class KogitoAssetsProcessor {
-
-    private static final Logger logger = LoggerFactory.getLogger(KogitoAssetsProcessor.class);
 
     @Inject
     ArchiveRootBuildItem root;

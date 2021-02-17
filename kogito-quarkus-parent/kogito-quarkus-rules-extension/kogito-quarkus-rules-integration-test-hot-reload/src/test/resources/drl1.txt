@@ -1,7 +1,7 @@
-package io.quarkus.it.kogito.drools;
+package org.kie.kogito.quarkus.rules.hotreload;
 unit AdultUnit;
 
-import io.quarkus.it.kogito.drools.newunit.Person;
+import org.kie.kogito.quarkus.rules.hotreload.newunit.Person;
 
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;

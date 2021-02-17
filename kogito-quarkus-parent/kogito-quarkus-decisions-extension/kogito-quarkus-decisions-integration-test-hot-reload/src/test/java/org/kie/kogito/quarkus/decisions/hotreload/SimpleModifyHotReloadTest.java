@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.decision;
+package org.kie.kogito.quarkus.decisions.hotreload;
 
 import java.util.function.Supplier;
 
@@ -35,7 +35,7 @@ public class SimpleModifyHotReloadTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    private static final String PACKAGE = "io.quarkus.it.kogito.decision";
+    private static final String PACKAGE = "org.kie.kogito.quarkus.decisions.hotreload";
     private static final String RESOURCE_FILE_PATH = PACKAGE.replace( '.', '/' );
     private static final String DMN_RESOURCE_FILE = RESOURCE_FILE_PATH + "/TrafficViolation.dmn";
 

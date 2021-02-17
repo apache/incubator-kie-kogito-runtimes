@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.decision;
+package org.kie.kogito.quarkus.decisions.hotreload;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
@@ -25,16 +29,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static io.restassured.RestAssured.given;
+import static java.util.Objects.requireNonNull;
 import static org.hamcrest.Matchers.is;
 
-public class SimpleHotReloadTest {
+public class NewFileHotReloadTest {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    private static final String PACKAGE = "io.quarkus.it.kogito.decision";
-    private static final String RESOURCE_FILE_PATH = PACKAGE.replace( '.', '/' );
+    private static final String PACKAGE = "org.kie.kogito.quarkus.decisions.hotreload";
+    private static final String RESOURCE_FILE_PATH = PACKAGE.replace('.', '/');
     private static final String DMN_RESOURCE_FILE = RESOURCE_FILE_PATH + "/TrafficViolation.dmn";
 
     private static final String HTTP_TEST_PORT = "65535";
@@ -42,21 +47,19 @@ public class SimpleHotReloadTest {
     @RegisterExtension
     final static QuarkusDevModeTest test = new QuarkusDevModeTest().setArchiveProducer(
             () -> ShrinkWrap.create(JavaArchive.class)
-                    .addAsResource("TrafficViolation.txt", DMN_RESOURCE_FILE));
+                    .addAsResource("adult.txt", DMN_RESOURCE_FILE + ".dummy")); // add a dummy file only to enforce creation of resource folder
 
     @Test
-    void simpleHotReloadTest() throws InterruptedException {
-        executeTest("Traffic Violation");
+    void newFileTest() throws IOException {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(requireNonNull(classLoader.getResource("TrafficViolation.txt")).getFile());
+        String xml = new String(java.nio.file.Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 
-        test.modifyResourceFile(DMN_RESOURCE_FILE, s -> s.replaceAll("Traffic", "NewTraffic"));
+        test.addResourceFile(DMN_RESOURCE_FILE, xml);
 
-        executeTest("NewTraffic Violation");
-    }
-
-    private void executeTest(String path) {
         ValidatableResponse response = given()
                 .baseUri("http://localhost:" + HTTP_TEST_PORT)
-                .contentType(ContentType.JSON)
+                .contentType( ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body("{\n" +
                         "    \"Driver\": {\n" +
@@ -70,7 +73,7 @@ public class SimpleHotReloadTest {
                         "}")
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/" + path)
+                .post("/Traffic Violation")
                 .then();
 
         response.statusCode(200)

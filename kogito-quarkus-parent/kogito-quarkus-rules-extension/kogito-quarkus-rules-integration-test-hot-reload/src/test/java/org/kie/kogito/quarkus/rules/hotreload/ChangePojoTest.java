@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.drools;
+package org.kie.kogito.quarkus.rules.hotreload;
 
 import java.util.List;
 import java.util.Map;
 
-import io.quarkus.it.kogito.drools.newunit.Person;
+import org.kie.kogito.quarkus.rules.hotreload.newunit.Person;
 import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -37,7 +37,7 @@ public class ChangePojoTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    private static final String PACKAGE = "io.quarkus.it.kogito.drools";
+    private static final String PACKAGE = "org.kie.kogito.quarkus.rules.hotreload";
     private static final String RESOURCE_FILE = PACKAGE.replace( '.', '/' ) + "/adult.drl";
     private static final String HTTP_TEST_PORT = "65535";
 
@@ -113,7 +113,7 @@ public class ChangePojoTest {
     }
 
     private static String POJO2 =
-            "package io.quarkus.it.kogito.drools.newunit;\n" +
+            "package org.kie.kogito.quarkus.rules.hotreload.newunit;\n" +
             "\n" +
             "public class Person {\n" +
             "\n" +
@@ -165,7 +165,7 @@ public class ChangePojoTest {
             "package io.quarkus.it.kogito.drools;\n" +
             "unit AdultUnit;\n" +
             "\n" +
-            "import io.quarkus.it.kogito.drools.newunit.Person;\n" +
+            "import org.kie.kogito.quarkus.rules.hotreload.newunit.Person;\n" +
             "\n" +
             "import org.kie.kogito.rules.DataStore;\n" +
             "import org.kie.kogito.rules.RuleUnitData;\n" +

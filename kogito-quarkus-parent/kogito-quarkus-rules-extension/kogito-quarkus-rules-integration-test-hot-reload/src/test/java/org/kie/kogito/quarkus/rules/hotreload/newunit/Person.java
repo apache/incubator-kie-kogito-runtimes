@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.it.kogito.drools.newunit;
+package org.kie.kogito.quarkus.rules.hotreload.newunit;
 
 public class Person {
 

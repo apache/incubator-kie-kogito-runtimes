@@ -42,8 +42,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -74,10 +72,8 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
  */
 public class ProcessesAssetsProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessesAssetsProcessor.class);
-
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final String quarkusSVGService = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
+    private static final String PROCESS_SVG_SERVICE = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
 
     private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
 
@@ -200,7 +196,7 @@ public class ProcessesAssetsProcessor {
     }
 
     private void registerProcessSVG(KogitoBuildContext context, BuildProducer<NativeImageResourceBuildItem> resource) throws IOException {
-        if (!context.hasClassAvailable(quarkusSVGService)) {
+        if (!context.hasClassAvailable(PROCESS_SVG_SERVICE)) {
             return;
         }
 

@@ -18,15 +18,11 @@ package org.kie.kogito.quarkus.rules.deployment;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CapabilityBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Main class of the Kogito rules extension
  */
 public class RulesAssetsProcessor {
-
-    private static final Logger logger = LoggerFactory.getLogger(RulesAssetsProcessor.class);
 
     @BuildStep
     CapabilityBuildItem capability() {

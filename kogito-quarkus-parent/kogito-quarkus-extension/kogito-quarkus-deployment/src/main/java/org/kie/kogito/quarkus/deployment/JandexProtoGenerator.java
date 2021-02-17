@@ -72,7 +72,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
             }
             return proto;
         } catch (Exception e) {
-            throw new RuntimeException("Error while generating proto for data model", e);
+            throw new IllegalStateException("Error while generating proto for data model", e);
         }
     }
 
@@ -88,7 +88,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
             }
             return proto;
         } catch (Exception e) {
-            throw new RuntimeException("Error while generating proto for data model", e);
+            throw new IllegalStateException("Error while generating proto for data model", e);
         }
     }
 

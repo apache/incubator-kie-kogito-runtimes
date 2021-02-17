@@ -17,6 +17,7 @@ package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
-    public final static Map<Path, Path> classToSource = new ConcurrentHashMap<>();
+    public static final Map<Path, Path> classToSource = new ConcurrentHashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoCompilationProvider.class);
 
     @Override
@@ -56,43 +57,39 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         // containing all the latest class definitions of user's pojos, eventually recompiled also during the latest
         // hot reload round. It is also necessary to use a null as a parent classloader otherwise this classloader
         // could load the old definition of a class from the parent instead of getting the latest one from the output directory
-        final URLClassLoader cl = new URLClassLoader( getClasspathUrls( quarkusContext ), null );
+        try (final URLClassLoader cl = new URLClassLoader( getClasspathUrls( quarkusContext ), null )) {
 
-        File outputDirectory = quarkusContext.getOutputDirectory();
-        try {
-            AppPaths appPaths = AppPaths.fromProjectDir(quarkusContext.getProjectDirectory().toPath());
-            KogitoBuildContext context = KogitoQuarkusContextProvider.context(appPaths, cl);
-
-            ApplicationGenerator appGen = new ApplicationGenerator(context);
-
-            appGen.registerGeneratorIfEnabled(getGenerator(context, filesToCompile, quarkusContext));
-
-            Collection<GeneratedFile> generatedFiles = appGen.generate();
-
-            Set<File> generatedSourceFiles = new HashSet<>();
-            for (GeneratedFile file : generatedFiles) {
-                Path path = pathOf(outputDirectory.getPath(), file.relativePath());
-                if (file.type().canHotReload()) {
-                    Files.write(path, file.contents());
-                    if (file.category().equals(GeneratedFileType.Category.SOURCE)) {
-                        generatedSourceFiles.add(path.toFile());
-                    }
-                }
-                else {
-                    if(LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Skipping file because cannot hot reload: " + file);
-                    }
-                }
-            }
-            super.compile(generatedSourceFiles, quarkusContext);
-        } catch (Exception e) {
-            throw new KogitoCompilerException(e);
-        } finally {
+            File outputDirectory = quarkusContext.getOutputDirectory();
             try {
-                cl.close();
-            } catch (IOException e) {
-                throw new RuntimeException( e );
+                AppPaths appPaths = AppPaths.fromProjectDir(quarkusContext.getProjectDirectory().toPath());
+                KogitoBuildContext context = KogitoQuarkusContextProvider.context(appPaths, cl);
+
+                ApplicationGenerator appGen = new ApplicationGenerator(context);
+
+                appGen.registerGeneratorIfEnabled(getGenerator(context, filesToCompile, quarkusContext));
+
+                Collection<GeneratedFile> generatedFiles = appGen.generate();
+
+                Set<File> generatedSourceFiles = new HashSet<>();
+                for (GeneratedFile file : generatedFiles) {
+                    Path path = pathOf(outputDirectory.getPath(), file.relativePath());
+                    if (file.type().canHotReload()) {
+                        Files.write(path, file.contents());
+                        if (file.category().equals(GeneratedFileType.Category.SOURCE)) {
+                            generatedSourceFiles.add(path.toFile());
+                        }
+                    } else {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Skipping file because cannot hot reload: {}", file);
+                        }
+                    }
+                }
+                super.compile(generatedSourceFiles, quarkusContext);
+            } catch (Exception e) {
+                throw new KogitoCompilerException(e);
             }
+        } catch (IOException e) {
+            throw new UncheckedIOException("Exception while closing URLClassLoader", e);
         }
     }
 
