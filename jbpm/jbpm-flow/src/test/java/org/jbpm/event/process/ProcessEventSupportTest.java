@@ -18,10 +18,6 @@ package org.jbpm.event.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.core.definitions.InternalKnowledgePackage;
-import org.drools.core.definitions.impl.KnowledgePackageImpl;
-import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.instance.impl.Action;
@@ -37,7 +33,6 @@ import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.KiePackage;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEvent;
 import org.kie.api.event.process.ProcessEventListener;
@@ -45,10 +40,9 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,10 +55,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
 
 	@Test
     public void testProcessEventListener() throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        // create a simple package with one process to test the events
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "org.drools.test" );
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.event");
         process.setName("Event Process");
@@ -77,11 +67,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         ActionNode actionNode = new ActionNode();
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData("Action", new Action() {
-			public void execute( KogitoProcessContext context) throws Exception {
-            	logger.info("Executed action");
-			}
-        });
+        action.setMetaData("Action", (Action) context -> logger.info("Executed action"));
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
@@ -98,13 +84,10 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             actionNode, Node.CONNECTION_DEFAULT_TYPE,
             endNode, Node.CONNECTION_DEFAULT_TYPE
         );
-        
-        pkg.addProcess(process);
-        List<KiePackage> pkgs = new ArrayList<KiePackage>();
-        pkgs.add( pkg );
-        kbase.addPackages( pkgs );
-        
-        KieSession session = kbase.newKieSession();
+
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
+
+
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
@@ -149,35 +132,31 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
 			}
 
         };
-        session.addEventListener( processEventListener );
+        kruntime.getProcessEventManager().addEventListener( processEventListener );
 
         // execute the process
-        session.startProcess("org.drools.core.process.event");
+        kruntime.startProcess("org.drools.core.process.event");
         assertEquals( 16, processEventList.size() );
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(0)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(0).getProcessInstance().getProcessId());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(1)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(2)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(3)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeLeftEvent) processEventList.get(4)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(5)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(6)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(7)).getProcessInstance().getProcessId());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(8)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(7).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(8).getProcessInstance().getProcessId());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(9)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(10)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeLeftEvent) processEventList.get(11)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(12)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(13)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(14)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(15)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(15).getProcessInstance().getProcessId());
     }
 
     @Test
     public void testProcessEventListenerProcessState() throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        // create a simple package with one process to test the events
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("org.drools.test");
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.event");
         process.setName("Event Process");
@@ -190,12 +169,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         ActionNode actionNode = new ActionNode();
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData("Action", new Action() {
-
-            public void execute(KogitoProcessContext context) throws Exception {
-                logger.info("Executed action");
-            }
-        });
+        action.setMetaData("Action", (Action) context -> logger.info("Executed action"));
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
@@ -207,12 +181,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         process.addNode(endNode);
         new ConnectionImpl(actionNode, Node.CONNECTION_DEFAULT_TYPE, endNode, Node.CONNECTION_DEFAULT_TYPE);
 
-        pkg.addProcess(process);
-        List<KiePackage> pkgs = new ArrayList<KiePackage>();
-        pkgs.add(pkg);
-        kbase.addPackages(pkgs);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
 
-        KieSession session = kbase.newKieSession();
         final List<Integer> processEventStatusList = new ArrayList<Integer>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
@@ -223,7 +193,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
             public void afterProcessCompleted(ProcessCompletedEvent event) {
-                processEventStatusList.add(new Integer(event.getProcessInstance().getState()));
+                processEventStatusList.add(event.getProcessInstance().getState());
             }
 
             public void afterProcessStarted(ProcessStartedEvent event) {
@@ -236,7 +206,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
             public void beforeProcessCompleted(ProcessCompletedEvent event) {
-                processEventStatusList.add(new Integer(event.getProcessInstance().getState()));
+                processEventStatusList.add(event.getProcessInstance().getState());
             }
 
             public void beforeProcessStarted(ProcessStartedEvent event) {
@@ -249,21 +219,17 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
         };
-        session.addEventListener(processEventListener);
+        kruntime.getProcessEventManager().addEventListener(processEventListener);
 
         // execute the process
-        session.startProcess("org.drools.core.process.event");
+        kruntime.startProcess("org.drools.core.process.event");
         assertEquals(2, processEventStatusList.size());
-        assertEquals(new Integer( KogitoProcessInstance.STATE_ACTIVE), processEventStatusList.get(0));
-        assertEquals(new Integer(KogitoProcessInstance.STATE_COMPLETED), processEventStatusList.get(1));
+        assertEquals(Integer.valueOf(KogitoProcessInstance.STATE_ACTIVE), processEventStatusList.get(0));
+        assertEquals(Integer.valueOf(KogitoProcessInstance.STATE_COMPLETED), processEventStatusList.get(1));
     }
     
 	@Test
     public void testProcessEventListenerWithEvent() throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        // create a simple package with one process to test the events
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "org.drools.test" );
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.event");
         process.setName("Event Process");
@@ -276,11 +242,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         ActionNode actionNode = new ActionNode();
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData("Action", new Action() {
-            public void execute(KogitoProcessContext context) throws Exception {
-                logger.info("Executed action");
-            }
-        });
+        action.setMetaData("Action", (Action) context -> logger.info("Executed action"));
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
@@ -312,13 +274,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             eventNode, Node.CONNECTION_DEFAULT_TYPE,
             endNode, Node.CONNECTION_DEFAULT_TYPE
         );
-        
-        pkg.addProcess(process);
-        List<KiePackage> pkgs = new ArrayList<KiePackage>();
-        pkgs.add( pkg );
-        kbase.addPackages( pkgs );
-        
-        KieSession session = kbase.newKieSession();
+
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
@@ -363,13 +320,13 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
         };
-        session.addEventListener( processEventListener );
+        kruntime.getProcessEventManager().addEventListener( processEventListener );
 
         // execute the process
-        ProcessInstance pi = session.startProcess("org.drools.core.process.event");
+        KogitoProcessInstance pi = kruntime.startProcess("org.drools.core.process.event");
         pi.signalEvent("signal", null);
         assertEquals( 20, processEventList.size() );
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(0)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(0).getProcessInstance().getProcessId());
         
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(1)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(2)).getNodeInstance().getNodeName());
@@ -381,12 +338,12 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(8)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(9)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(10)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(11)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(11).getProcessInstance().getProcessId());
         assertEquals( "Event", ((ProcessNodeLeftEvent) processEventList.get(12)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(13)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(14)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(15)).getProcessInstance().getProcessId());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(16)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(15).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(16).getProcessInstance().getProcessId());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(17)).getNodeInstance().getNodeName());
         assertEquals( "Event", ((ProcessNodeLeftEvent) processEventList.get(19)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(18)).getNodeInstance().getNodeName());
@@ -398,10 +355,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
     
     @Test
     public void testProcessEventListenerWithEndEvent() throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        // create a simple package with one process to test the events
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "org.drools.test" );
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.event");
         process.setName("Event Process");
@@ -414,11 +367,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         ActionNode actionNode = new ActionNode();
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData("Action", new Action() {
-            public void execute(KogitoProcessContext context) throws Exception {
-                logger.info("Executed action");
-            }
-        });
+        action.setMetaData("Action", (Action) context -> logger.info("Executed action"));
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
@@ -436,13 +385,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             actionNode, Node.CONNECTION_DEFAULT_TYPE,
             endNode, Node.CONNECTION_DEFAULT_TYPE
         );
-        
-        pkg.addProcess(process);
-        List<KiePackage> pkgs = new ArrayList<KiePackage>();
-        pkgs.add( pkg );
-        kbase.addPackages( pkgs );
-        
-        KieSession session = kbase.newKieSession();
+
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
@@ -487,12 +431,12 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
         };
-        session.addEventListener( processEventListener );
+        kruntime.getProcessEventManager().addEventListener( processEventListener );
 
         // execute the process
-        session.startProcess("org.drools.core.process.event");
+        kruntime.startProcess("org.drools.core.process.event");
         assertEquals( 14, processEventList.size() );
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(0)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(0).getProcessInstance().getProcessId());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(1)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(2)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(3)).getNodeInstance().getNodeName());
@@ -505,15 +449,11 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(10)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(11)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(12)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(13)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(13).getProcessInstance().getProcessId());
     }
     
     @Test
     public void testProcessEventListenerWithStartEvent() throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-
-        // create a simple package with one process to test the events
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "org.drools.test" );
         RuleFlowProcess process = new RuleFlowProcess();
         process.setId("org.drools.core.process.event");
         process.setName("Event Process");
@@ -531,11 +471,7 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         ActionNode actionNode = new ActionNode();
         actionNode.setName("Print");
         DroolsAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData("Action", new Action() {
-            public void execute(KogitoProcessContext context) throws Exception {
-                logger.info("Executed action");
-            }
-        });
+        action.setMetaData("Action", (Action) context -> logger.info("Executed action"));
         actionNode.setAction(action);
         actionNode.setId(2);
         process.addNode(actionNode);
@@ -552,13 +488,8 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             actionNode, Node.CONNECTION_DEFAULT_TYPE,
             endNode, Node.CONNECTION_DEFAULT_TYPE
         );
-        
-        pkg.addProcess(process);
-        List<KiePackage> pkgs = new ArrayList<KiePackage>();
-        pkgs.add( pkg );
-        kbase.addPackages( pkgs );
-        
-        KieSession session = kbase.newKieSession();
+
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
 
@@ -603,28 +534,26 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
             }
 
         };
-        session.addEventListener( processEventListener );
+        kruntime.getProcessEventManager().addEventListener( processEventListener );
 
-        // execute the process
-//        session.startProcess("org.drools.core.process.event");
-        session.signalEvent("signal", null);
+        kruntime.signalEvent("signal", null);
         assertEquals( 16, processEventList.size() );
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(0)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(0).getProcessInstance().getProcessId());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(1)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(2)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(3)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeLeftEvent) processEventList.get(4)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(5)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(6)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(7)).getProcessInstance().getProcessId());
-        assertEquals( "org.drools.core.process.event", ((ProcessCompletedEvent) processEventList.get(8)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(7).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(8).getProcessInstance().getProcessId());
         assertEquals( "End", ((ProcessNodeLeftEvent) processEventList.get(9)).getNodeInstance().getNodeName());
         assertEquals( "End", ((ProcessNodeTriggeredEvent) processEventList.get(10)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeLeftEvent) processEventList.get(11)).getNodeInstance().getNodeName());
         assertEquals( "Print", ((ProcessNodeTriggeredEvent) processEventList.get(12)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeLeftEvent) processEventList.get(13)).getNodeInstance().getNodeName());
         assertEquals( "Start", ((ProcessNodeTriggeredEvent) processEventList.get(14)).getNodeInstance().getNodeName());
-        assertEquals( "org.drools.core.process.event", ((ProcessStartedEvent) processEventList.get(15)).getProcessInstance().getProcessId());
+        assertEquals( "org.drools.core.process.event", processEventList.get(15).getProcessInstance().getProcessId());
     }
 
 }

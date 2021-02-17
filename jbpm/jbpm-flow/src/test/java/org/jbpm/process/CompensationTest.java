@@ -48,8 +48,6 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -65,13 +63,13 @@ public class CompensationTest extends AbstractBaseTest {
         logger = LoggerFactory.getLogger(this.getClass());
     }
     
-    private KieSession ksession; 
+    private KogitoProcessRuntime kruntime;
     
     @AfterEach
     public void cleanUp() { 
-        if( ksession != null ) { 
-            ksession.dispose();
-            ksession = null;
+        if( kruntime != null && kruntime.getKieSession() != null ) {
+            kruntime.getKieSession().dispose();
+            kruntime = null;
         }
     }
     
@@ -108,8 +106,7 @@ public class CompensationTest extends AbstractBaseTest {
 
     private Node findNode( RuleFlowProcess process, String nodeName) {
         Node found = null;
-        Queue<org.kie.api.definition.process.Node> nodes = new LinkedList<org.kie.api.definition.process.Node>();
-        nodes.addAll(Arrays.asList(process.getNodes()));
+        Queue<org.kie.api.definition.process.Node> nodes = new LinkedList<>(Arrays.asList(process.getNodes()));
         while( ! nodes.isEmpty() ) { 
             org.kie.api.definition.process.Node node = nodes.poll();
             if (node.getName().equals(nodeName) ) {
@@ -136,12 +133,11 @@ public class CompensationTest extends AbstractBaseTest {
         RuleFlowProcess process = createCompensationBoundaryEventProcess(processId, workItemNames, eventList);
 
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
 
         Node compensatedNode = findNode(process, "work1");
         String compensationEvent = (String) compensatedNode.getMetaData().get("UniqueId");
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationBoundaryEventSpecificTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
 
@@ -180,11 +176,10 @@ public class CompensationTest extends AbstractBaseTest {
         RuleFlowProcess process = createCompensationBoundaryEventProcess(processId, workItemNames, eventList);
 
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
         
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + processId;
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationBoundaryEventGeneralTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
     
@@ -271,9 +266,8 @@ public class CompensationTest extends AbstractBaseTest {
         String compensationEvent = (String) toCompensateNode.getMetaData().get("UniqueId");
         
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationEventSubProcessSpecificTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
 
@@ -307,7 +301,7 @@ public class CompensationTest extends AbstractBaseTest {
 
         // post work item
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
     @Test
@@ -320,9 +314,8 @@ public class CompensationTest extends AbstractBaseTest {
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + process.getId(); 
         
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationEventSubProcessGeneralTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
     
@@ -345,7 +338,7 @@ public class CompensationTest extends AbstractBaseTest {
 
         // post work item
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItemHandler.getWorkItems().removeLast().getStringId(), null);
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 
     private RuleFlowProcess createCompensationEventSubProcessProcess(String processId, String[] workItemNames, 
@@ -430,10 +423,9 @@ public class CompensationTest extends AbstractBaseTest {
         
         Node toCompensateNode = findNode(process, "sub1");
         String compensationEvent = (String) toCompensateNode.getMetaData().get("UniqueId");
-        
-        ksession = createKieSession(process);
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        kruntime = createKogitoProcessRuntime(process);
+
         runCompensationEventSubProcessSpecificTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
     
@@ -447,9 +439,8 @@ public class CompensationTest extends AbstractBaseTest {
         Node toCompensateNode = findNode(process, "sub0");
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + toCompensateNode.getMetaData().get("UniqueId");
 
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationEventSubProcessGeneralTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
 
@@ -559,12 +550,11 @@ public class CompensationTest extends AbstractBaseTest {
         RuleFlowProcess process = createNestedCompensationBoundaryEventProcess(processId, workItemNames, eventList);
 
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
 
         Node compensatedNode = findNode(process, "work-comp-1");
         String compensationEvent = (String) compensatedNode.getMetaData().get("UniqueId");
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationBoundaryEventSpecificTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
     
@@ -576,13 +566,12 @@ public class CompensationTest extends AbstractBaseTest {
         RuleFlowProcess process = createNestedCompensationBoundaryEventProcess(processId, workItemNames, eventList);
 
         // run process
-        ksession = createKieSession(process);
+        kruntime = createKogitoProcessRuntime(process);
         
         Node toCompensateNode = findNode(process, "sub2");
         String compensationEvent = CompensationScope.IMPLICIT_COMPENSATION_PREFIX 
-                + (String) toCompensateNode.getMetaData().get("UniqueId");
+                + toCompensateNode.getMetaData().get("UniqueId");
 
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
         runCompensationBoundaryEventGeneralTest(kruntime, process, processId, workItemNames, eventList, compensationEvent);
     }
     

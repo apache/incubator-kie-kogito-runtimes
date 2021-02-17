@@ -18,15 +18,21 @@ package org.jbpm.integrationtests;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.drools.core.impl.InternalKnowledgeBase;
+import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.integrationtests.test.Message;
 import org.jbpm.integrationtests.test.Person;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.builder.KnowledgeBuilderError;
+import org.kie.internal.runtime.conf.ForceEagerActivationOption;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +93,7 @@ public class ProcessStartTest extends AbstractBaseTest {
 			"  </connections>\n" +
 			"\n" +
 			"</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
+		builder.addRuleFlow(source);
 		if (!builder.getErrors().isEmpty()) {
 			for (KnowledgeBuilderError error: builder.getErrors()) {
 			    logger.error(error.toString());
@@ -95,17 +101,24 @@ public class ProcessStartTest extends AbstractBaseTest {
 			fail("Could not build process");
 		}
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+		InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
+		kbase.addPackages(Arrays.asList(builder.getPackages()));
+
+		KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+		conf.setOption( ForceEagerActivationOption.YES );
+		KieSession ksession = kbase.newKieSession(conf, null);
+		// FIXME to fix?
+//		KieSession ksession = KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession(conf, null)).getKieSession();
 
 		List<Message> myList = new ArrayList<Message>();
-		kruntime.getKieSession().setGlobal("myList", myList);
+		ksession.setGlobal("myList", myList);
 
 		assertEquals(0, myList.size());
-        
+
 		Person jack = new Person();
         jack.setName("Jack");
-        kruntime.getKieSession().insert(jack);
-        kruntime.getKieSession().fireAllRules();
+		ksession.insert(jack);
+		ksession.fireAllRules();
         assertEquals(2, myList.size());
         assertEquals("Jack", myList.get(0));
         assertEquals("SomeString", myList.get(1));

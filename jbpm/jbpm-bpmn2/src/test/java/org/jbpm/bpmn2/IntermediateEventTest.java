@@ -36,7 +36,6 @@ import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -44,7 +43,6 @@ import org.kie.api.command.ExecutableCommand;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.command.RegistryContext;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
@@ -1538,7 +1536,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         final String piId = processInstance.getStringId();
         kruntime.getKieSession().execute((ExecutableCommand<Void>) context -> {
-            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(((RegistryContext) context).lookup( KieSession.class ));
             KogitoWorkflowProcessInstance processInstance1 = (KogitoWorkflowProcessInstance) kruntime.getProcessInstance(piId);
             processInstance1.setVariable("x", 0);
             return null;
@@ -1549,7 +1546,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         Integer xValue = kruntime.getKieSession().execute((ExecutableCommand<Integer>) context -> {
-            KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(((RegistryContext) context).lookup( KieSession.class ));
             KogitoWorkflowProcessInstance processInstance2 = (KogitoWorkflowProcessInstance) kruntime.getProcessInstance(piId);
             return (Integer) processInstance2.getVariable("x");
 

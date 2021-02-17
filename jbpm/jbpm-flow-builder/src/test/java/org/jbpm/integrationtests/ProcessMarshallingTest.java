@@ -30,11 +30,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.internal.builder.KnowledgeBuilder;
-import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -52,7 +48,6 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMarshallingTest.class);
 
     @Test
-    @SuppressWarnings("unchecked")
 	public void testMarshallingProcessInstancesAndGlobals() throws Exception {
         String rule = "package org.test;\n";
         rule += "import org.jbpm.integrationtests.test.Person\n";
@@ -98,15 +93,12 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         kruntime.startProcess("org.test.ruleflow");
         
         assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
-                
-        KieSession ksession1 = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession( kruntime.getKieSession(), true );
-        assertEquals(1, ksession1.getProcessInstances().size());
 
-		ksession1.fireAllRules();
+		kruntime.getKieSession().fireAllRules();
         
-        assertEquals( 1, ((List<Object>) ksession1.getGlobal("list")).size());
-        assertEquals( p, ((List<Object>) ksession1.getGlobal("list")).get(0));
-        assertEquals(0, ksession1.getProcessInstances().size());
+        assertEquals( 1, ((List<Object>) kruntime.getKieSession().getGlobal("list")).size());
+        assertEquals( p, ((List<Object>) kruntime.getKieSession().getGlobal("list")).get(0));
+        assertEquals(0, kruntime.getKieSession().getProcessInstances().size());
     }
     
     @Test

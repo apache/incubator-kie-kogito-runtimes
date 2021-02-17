@@ -15,24 +15,17 @@
  */
 package org.jbpm.test.util;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.impl.KnowledgeBaseImpl;
 import org.jbpm.process.instance.impl.util.LoggingPrintStream;
-import org.jbpm.process.test.TestProcessEventListener;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
-import org.kie.api.runtime.KieSession;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractBaseTest {
 
@@ -45,8 +38,6 @@ public abstract class AbstractBaseTest {
     }
    
     public abstract void addLogger();
-    
-    protected static AtomicInteger uniqueIdGen = new AtomicInteger(0);
 
     public KogitoProcessRuntime createKogitoProcessRuntime(Process... process) {
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
@@ -54,30 +45,6 @@ public abstract class AbstractBaseTest {
             ((KnowledgeBaseImpl) kbase).addProcess(processToAdd);
         }
         return KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
-    }
-
-    public void showEventHistory(KieSession ksession) {
-        TestProcessEventListener procEventListener = (TestProcessEventListener) ksession.getProcessEventListeners().iterator().next();
-        for (String event : procEventListener.getEventHistory()) {
-            System.out.println("\"" + event + "\",");
-        }
-    }
-
-    public void verifyEventHistory(String[] eventOrder, List<String> eventHistory) {
-        int max = eventOrder.length > eventHistory.size() ? eventOrder.length : eventHistory.size();
-        logger.debug("{} | {}", "EXPECTED", "TEST" );
-        for (int i = 0; i < max; ++i) {
-            String expected = "", real = "";
-            if (i < eventOrder.length) {
-                expected = eventOrder[i];
-            }
-            if (i < eventHistory.size()) {
-                real = eventHistory.get(i);
-            }
-            logger.debug("{} | {}", expected, real);
-            assertEquals(expected, real, "Mismatch in expected event");
-        }
-        assertEquals(eventOrder.length, eventHistory.size(), "Mismatch in number of events expected.");
     }
 
     @BeforeAll

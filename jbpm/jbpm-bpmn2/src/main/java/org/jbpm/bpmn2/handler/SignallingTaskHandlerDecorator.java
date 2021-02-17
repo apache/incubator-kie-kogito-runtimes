@@ -18,7 +18,6 @@ package org.jbpm.bpmn2.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.runtime.KieSession;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
@@ -50,7 +49,7 @@ public class SignallingTaskHandlerDecorator extends AbstractExceptionHandlingTas
     
     /**
      * Constructs an instance that uses the given <code>eventType</code> parameter to signal the process instance using the given
-     * {@link KieSession} <code>ksession</code> parameter when an instance of the class specified by the 
+     * {@link org.kie.kogito.internal.process.runtime.KogitoProcessRuntime} <code>kruntime</code> parameter when an instance of the class specified by the
      * <code>originalTaskHandlerClass</code> throws an exception upon {@link KogitoWorkItemHandler#executeWorkItem(KogitoWorkItem, KogitoWorkItemManager)}
      * @param originalTaskHandlerClass
      * @param eventType

@@ -49,12 +49,15 @@ import org.kie.api.builder.Message.Level;
 import org.kie.api.definition.process.Node;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.Environment;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
-import org.kie.kogito.internal.process.runtime.*;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.mvel2.MVEL;
 import org.mvel2.ParserContext;
 import org.slf4j.Logger;
@@ -147,8 +150,7 @@ public abstract class JbpmBpmn2TestCase {
             }
         }
 
-        KieContainer kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
-        return kContainer.getKieBase();
+        return ks.newKieContainer(kr.getDefaultReleaseId()).getKieBase();
     }
 
     private StatefulKnowledgeSession createKnowledgeSession(KieBase kbase)

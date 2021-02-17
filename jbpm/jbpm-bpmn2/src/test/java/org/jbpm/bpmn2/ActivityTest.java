@@ -71,7 +71,6 @@ import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.BeforeMatchFiredEvent;
 import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.internal.command.RegistryContext;
@@ -413,8 +412,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
         kruntime.getKieSession().execute((ExecutableCommand<Void>) context -> {
 
-            KogitoProcessRuntime kruntimeLocal = KogitoProcessRuntime.asKogitoProcessRuntime(((RegistryContext) context).lookup( KieSession.class ));
-            KogitoProcessInstance processInstance1 = kruntimeLocal.getProcessInstance(pId);
+            KogitoProcessInstance processInstance1 = kruntime.getProcessInstance(pId);
             assertNotNull(processInstance1);
             NodeInstance nodeInstance = (( KogitoNodeInstanceContainer ) processInstance1)
                     .getNodeInstance(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());

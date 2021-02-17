@@ -31,7 +31,7 @@ public abstract class AbstractBaseTest {
     protected KnowledgeBuilderImpl builder;
    
     @BeforeEach
-    public void before() { 
+    public void before() {
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
     }
 
