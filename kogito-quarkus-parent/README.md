@@ -127,6 +127,13 @@ deployment, if you want to prevent integration tests to run if deployment compil
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-*-deployment</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 ```
