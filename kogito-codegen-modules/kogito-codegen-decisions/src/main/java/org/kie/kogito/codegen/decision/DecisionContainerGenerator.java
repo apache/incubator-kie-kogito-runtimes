@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.decision;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -31,11 +32,15 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DecisionContainerGenerator.class);
 
     protected static final String PMML_ABSTRACT_CLASS = "org.kie.kogito.pmml.AbstractPredictionModels";
     protected static final String PMML_FUNCTION = PMML_ABSTRACT_CLASS + ".kieRuntimeFactoryFunction";
@@ -58,6 +63,7 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
 
+
         ClassOrInterfaceType applicationClass = StaticJavaParser.parseClassOrInterfaceType(applicationCanonicalName);
 
         final InitializerDeclaration staticDeclaration = compilationUnit
@@ -70,6 +76,13 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
                 .orElseThrow(() -> new InvalidTemplateException(
                         templatedGenerator,
                         "Missing init() method"));
+
+        String generationUUID = UUID.randomUUID().toString();
+        LOG.debug("generation UUID: {}", generationUUID);
+        //        ClassOrInterfaceDeclaration decisionModelsClass = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(templatedGenerator, "Cannot locate class"));
+        //        decisionModelsClass.addFieldWithInitializer("String", "ID", new StringLiteralExpr(generationUUID), Modifier.Keyword.PRIVATE, Modifier.Keyword.STATIC, Modifier.Keyword.FINAL);
+        staticDeclaration.getBody().addStatement("final String ID = \"" + generationUUID + "\";");
+        staticDeclaration.getBody().addStatement("System.out.println(ID);");
 
         setupPmmlIfAvailable(initMethod);
         setupExecIdSupplierVariable(initMethod);
