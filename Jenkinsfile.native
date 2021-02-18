@@ -34,12 +34,26 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Build optaplanner') {
             steps {
                 script {
                     getNativeMavenCommand('optaplanner')
                         .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
                 }
             }
         }
@@ -50,12 +64,26 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Build kogito-examples') {
             steps {
                 script {
                     getNativeMavenCommand('kogito-examples')
                         .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
                 }
             }
         }

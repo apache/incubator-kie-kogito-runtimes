@@ -51,6 +51,13 @@ pipeline {
                         .run('validate')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Check Runtimes integration-tests with persistence') {
             steps {
@@ -58,6 +65,13 @@ pipeline {
                     getMavenCommand('integration-tests')
                         .withProfiles(['persistence'])
                         .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
                 }
             }
         }
@@ -73,6 +87,13 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Build Apps') {
             steps {
@@ -80,11 +101,25 @@ pipeline {
                     getMavenCommand('kogito-apps').run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Build Examples') {
             steps {
                 script {
                     getMavenCommand('kogito-examples').run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
                 }
             }
         }
@@ -96,6 +131,13 @@ pipeline {
                         .run('clean verify')
                 }
             }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
+                }
+            }
         }
         stage('Check Examples with events') {
             steps {
@@ -103,6 +145,13 @@ pipeline {
                     getMavenCommand('kogito-examples-events')
                         .withProfiles(['events'])
                         .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cloud.cleanContainersAndImages('docker')
+                    }
                 }
             }
         }
