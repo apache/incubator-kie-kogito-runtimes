@@ -98,10 +98,10 @@ public class ProcessStartTest extends AbstractBaseTest {
 
 		/*
 		 * This test cannot be migrated to use KogitoProcessRuntime because during ProcessRuntime initialization
-		 * multiple listener are registered and this break the semantic of this test:
+		 * multiple listeners are registered and this break the semantic of this test:
 		 * see ProcessRuntimeImpl#initProcessActivationListener() -> startProcessWithParamsAndTrigger (same for LightProcessRuntime)
 		 * This listener triggers a start process when the insert is performed (but no rules are fired) that is an expected behavior
-		 * for BPMN2 processes (see org.jbpm.bpmn2.StartEventTest#testConditionalStart() ) while for DRF process produce an additional
+		 * for BPMN2 processes (see org.jbpm.bpmn2.StartEventTest#testConditionalStart() ) while for DRF processes produces an additional
 		 * unexpected (broken) execution
 		 */
 		KieSession ksession = createKieSession();
