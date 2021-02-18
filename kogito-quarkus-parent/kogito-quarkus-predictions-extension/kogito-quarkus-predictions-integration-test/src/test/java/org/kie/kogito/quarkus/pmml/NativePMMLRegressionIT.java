@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.jbpm;
+package org.kie.kogito.quarkus.pmml;
 
 import io.quarkus.test.junit.NativeImageTest;
 
 @NativeImageTest
-public class OrdersProcessTestIT extends OrdersProcessTest {
+class NativePMMLRegressionIT extends PMMLRegressionTest {
+
 }

@@ -16,28 +16,29 @@
 package org.kie.kogito.quarkus.drools;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+import org.kie.api.runtime.KieSession;
+import org.kie.kogito.rules.KieRuntimeBuilder;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import javax.inject.Inject;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
-public class DroolsTest {
+public class NativeRuntimeIT {
+
+    @Inject
+    KieRuntimeBuilder runtimeBuilder;
 
     @Test
-    public void testAdult() {
-        String payload = "{ \"eventData\": [{ \"type\": \"temperature\", \"value\" : 40 }] }";
-        RestAssured.given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .body(payload)
-                .when()
-                .post("/warnings/first")
-                .then()
-                .statusCode(200)
-                .body("severity", is("warning"))
-                .body("message", startsWith("Event"));
+    public void testRuleEvaluation() {
+        KieSession ksession = runtimeBuilder.newKieSession();
+
+        Result result = new Result();
+        ksession.insert(result);
+        ksession.insert(new Person("Mark", 17));
+        ksession.fireAllRules();
+
+        assertEquals("Mark can NOT drink", result.toString());
     }
 }
