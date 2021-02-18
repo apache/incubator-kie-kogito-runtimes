@@ -18,11 +18,8 @@ package org.jbpm.integrationtests;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.integrationtests.test.Message;
 import org.jbpm.integrationtests.test.Person;
@@ -30,9 +27,7 @@ import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.builder.KnowledgeBuilderError;
-import org.kie.internal.runtime.conf.ForceEagerActivationOption;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,14 +96,15 @@ public class ProcessStartTest extends AbstractBaseTest {
 			fail("Could not build process");
 		}
 
-		InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-		kbase.addPackages(Arrays.asList(builder.getPackages()));
-
-		KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
-		conf.setOption( ForceEagerActivationOption.YES );
-		KieSession ksession = kbase.newKieSession(conf, null);
-		// FIXME to fix?
-//		KieSession ksession = KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession(conf, null)).getKieSession();
+		/*
+		 * This test cannot be migrated to use KogitoProcessRuntime because during ProcessRuntime initialization
+		 * multiple listener are registered and this break the semantic of this test:
+		 * see ProcessRuntimeImpl#initProcessActivationListener() -> startProcessWithParamsAndTrigger (same for LightProcessRuntime)
+		 * This listener triggers a start process when the insert is performed (but no rules are fired) that is an expected behavior
+		 * for BPMN2 processes (see org.jbpm.bpmn2.StartEventTest#testConditionalStart() ) while for DRF process produce an additional
+		 * unexpected (broken) execution
+		 */
+		KieSession ksession = createKieSession();
 
 		List<Message> myList = new ArrayList<Message>();
 		ksession.setGlobal("myList", myList);

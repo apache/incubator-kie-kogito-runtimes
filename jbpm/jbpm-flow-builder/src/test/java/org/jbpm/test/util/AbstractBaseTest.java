@@ -21,6 +21,7 @@ import org.jbpm.process.instance.impl.util.LoggingPrintStream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
@@ -36,9 +37,14 @@ public abstract class AbstractBaseTest {
     }
 
     public KogitoProcessRuntime createKogitoProcessRuntime() {
+        return KogitoProcessRuntime.asKogitoProcessRuntime(createKieSession());
+    }
+
+    @Deprecated
+    public KieSession createKieSession() {
         KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
         conf.setOption( ForceEagerActivationOption.YES );
-        return KogitoProcessRuntime.asKogitoProcessRuntime(builder.newKieBase().newKieSession(conf, null));
+        return builder.newKieBase().newKieSession(conf, null);
     }
 
     @BeforeAll
