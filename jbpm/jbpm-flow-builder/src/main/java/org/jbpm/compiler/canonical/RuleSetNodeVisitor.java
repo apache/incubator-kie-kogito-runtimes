@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
@@ -36,13 +35,13 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.SingletonStore;
 import org.kie.kogito.rules.units.AssignableChecker;
 import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
-import org.kie.kogito.rules.units.KogitoRuleUnitDescription;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
 import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
 import org.slf4j.Logger;
@@ -138,7 +137,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
     private MethodCallExpr handleRuleUnit(VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleSetNode.RuleType ruleType) {
         String unitName = ruleType.getName();
         ProcessContextMetaModel processContext = new ProcessContextMetaModel(variableScope, contextClassLoader);
-        KogitoRuleUnitDescription description;
+        RuleUnitDescription description;
 
         try {
             Class<?> unitClass = loadUnitClass(nodeName, unitName, metadata.getPackageName());

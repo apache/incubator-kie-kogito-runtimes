@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2;
 
 import java.util.ArrayList;
@@ -34,9 +33,6 @@ import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
 import org.jbpm.workflow.core.DroolsAction;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,7 +45,7 @@ public class CompilationTest extends JbpmBpmn2TestCase {
         ProcessDialectRegistry.setDialect("java", javaProcessDialect);
 
         String filename = "BPMN2-GatewaySplit-SequenceConditions.bpmn2";
-        KieBase kbase = createKnowledgeBase(filename);
+        kruntime = createKogitoProcessRuntime(filename);
 
         assertFalse(javaProcessDialect.getActionDescrs().isEmpty(),
                     "No " + ActionDescr.class.getSimpleName() + " instances caught for testing!");

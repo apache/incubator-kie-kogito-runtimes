@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.internal.process.runtime;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.kie.api.KieBase;
+import org.kie.api.event.process.ProcessEventManager;
 import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.ProcessRuntime;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
@@ -207,9 +208,14 @@ public interface KogitoProcessRuntime {
 
     KogitoProcessEventSupport getProcessEventSupport();
 
+    ProcessEventManager getProcessEventManager();
+
     @Deprecated
     KieRuntime getKieRuntime();
 
     @Deprecated
     KieBase getKieBase();
+
+    @Deprecated
+    KieSession getKieSession();
 }

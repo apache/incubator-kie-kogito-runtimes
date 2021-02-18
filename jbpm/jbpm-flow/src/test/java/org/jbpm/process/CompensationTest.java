@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process;
 
 import java.util.ArrayList;
@@ -50,8 +49,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessContext;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
@@ -409,7 +408,7 @@ public class CompensationTest extends AbstractBaseTest {
         actionNode.setName("Execute");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
-            public void execute(ProcessContext context) throws Exception {
+            public void execute( KogitoProcessContext context) throws Exception {
                 eventList.add("Executed action");
             }
         });
@@ -538,7 +537,7 @@ public class CompensationTest extends AbstractBaseTest {
             actionNode.setName("Execute");
             DroolsAction action = new DroolsConsequenceAction("java", null);
             action.setMetaData("Action", new Action() {
-                public void execute(ProcessContext context) throws Exception {
+                public void execute(KogitoProcessContext context) throws Exception {
                     eventList.add("Executed action");
                 }
             });
@@ -707,7 +706,7 @@ public class CompensationTest extends AbstractBaseTest {
         actionNode.setName("Execute");
         DroolsAction action = new DroolsConsequenceAction("java", null);
         action.setMetaData("Action", new Action() {
-            public void execute(ProcessContext context) throws Exception {
+            public void execute(KogitoProcessContext context) throws Exception {
                 eventList.add("action" + id);
             }
         });

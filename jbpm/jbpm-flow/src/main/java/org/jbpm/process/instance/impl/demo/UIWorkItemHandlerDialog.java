@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl.demo;
 
 import java.awt.BorderLayout;
@@ -33,8 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
-import org.kie.api.runtime.process.WorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 /**
  * 
@@ -45,14 +43,14 @@ public class UIWorkItemHandlerDialog extends JDialog {
     
     private Map<String, Object> results = new HashMap<String, Object>();
     private UIWorkItemHandler handler;
-    private WorkItem workItem;
+    private KogitoWorkItem workItem;
     private JTextField resultNameTextField;
     private JTextField resultValueTextField;
     private JButton addResultButton;
     private JButton completeButton;
     private JButton abortButton;
     
-    public UIWorkItemHandlerDialog(UIWorkItemHandler handler, WorkItem workItem) {
+    public UIWorkItemHandlerDialog(UIWorkItemHandler handler, KogitoWorkItem workItem) {
         super(handler, "Execute Work Item", true);
         this.handler = handler;
         this.workItem = workItem;

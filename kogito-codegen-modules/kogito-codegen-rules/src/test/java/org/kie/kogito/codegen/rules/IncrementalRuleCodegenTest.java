@@ -1,10 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.rules;
 
 import java.io.File;
@@ -38,9 +38,9 @@ import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
-import org.kie.kogito.codegen.core.context.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.core.context.SpringBootKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -194,7 +194,7 @@ public class IncrementalRuleCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void generateGrafanaDashboards(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
@@ -214,7 +214,7 @@ public class IncrementalRuleCodegenTest {
     }
 
     @ParameterizedTest
-    @MethodSource("contextBuilders")
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void elapsedTimeMonitoringIsWrappingEveryMethod(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
@@ -286,13 +286,5 @@ public class IncrementalRuleCodegenTest {
         assertEquals(expectedRules +
                              expectedPackages * 2, // package descriptor for rules + package metadata
                      actualGeneratedFiles - 2); // ignore ProjectModel and ProjectRuntime classes
-    }
-
-    private static Stream<Arguments> contextBuilders() {
-        return Stream.of(
-                Arguments.of(JavaKogitoBuildContext.builder()),
-                Arguments.of(QuarkusKogitoBuildContext.builder()),
-                Arguments.of(SpringBootKogitoBuildContext.builder())
-        );
     }
 }

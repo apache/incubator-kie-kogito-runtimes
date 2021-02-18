@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2;
 
 import java.util.ArrayList;
@@ -25,12 +24,7 @@ import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.workitems.KogitoWorkItem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,18 +36,16 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testImplicitEndParallel() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-ParallelSplit.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance processInstance = ksession.startProcess("com.sample.test");
+        kruntime = createKogitoProcessRuntime("BPMN2-ParallelSplit.bpmn2");
+        KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.test");
         assertProcessInstanceCompleted(processInstance);
         
     }
 
     @Test
     public void testErrorEndEventProcess() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-ErrorEndEvent.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance processInstance = ksession
+        kruntime = createKogitoProcessRuntime("BPMN2-ErrorEndEvent.bpmn2");
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("ErrorEndEvent");
         assertProcessInstanceAborted(processInstance);
         assertEquals("error", ((org.jbpm.process.instance.ProcessInstance)processInstance).getOutcome());
@@ -62,9 +54,8 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEscalationEndEventProcess() throws Exception {
-        KieBase kbase = createKnowledgeBase("escalation/BPMN2-EscalationEndEvent.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ProcessInstance processInstance = ksession
+        kruntime = createKogitoProcessRuntime("escalation/BPMN2-EscalationEndEvent.bpmn2");
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("EscalationEndEvent");
         assertProcessInstanceAborted(processInstance);
         
@@ -72,23 +63,21 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testSignalEnd() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-SignalEndEvent.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        Map<String, Object> params = new HashMap<String, Object>();
+        kruntime = createKogitoProcessRuntime("BPMN2-SignalEndEvent.bpmn2");
+        Map<String, Object> params = new HashMap<>();
         params.put("x", "MyValue");
-        ksession.startProcess("SignalEndEvent", params);
+        kruntime.startProcess("SignalEndEvent", params);
         
     }
 
     @Test
     public void testMessageEnd() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-MessageEndEvent.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Send Task",
+        kruntime = createKogitoProcessRuntime("BPMN2-MessageEndEvent.bpmn2");
+        kruntime.getWorkItemManager().registerWorkItemHandler("Send Task",
                 new SendTaskHandler());
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("x", "MyValue");
-        ProcessInstance processInstance = ksession.startProcess(
+        KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MessageEndEvent", params);
         assertProcessInstanceCompleted(processInstance);
         
@@ -96,42 +85,39 @@ public class EndEventTest extends JbpmBpmn2TestCase {
     
     @Test
     public void testMessageEndVerifyDeploymentId() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-MessageEndEvent.bpmn2");
+        kruntime = createKogitoProcessRuntime("BPMN2-MessageEndEvent.bpmn2");
         
         TestWorkItemHandler handler = new TestWorkItemHandler();
         
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("Send Task", handler);
-        Map<String, Object> params = new HashMap<String, Object>();
+        kruntime.getWorkItemManager().registerWorkItemHandler("Send Task", handler);
+        Map<String, Object> params = new HashMap<>();
         params.put("x", "MyValue");
-        ProcessInstance processInstance = ksession.startProcess("MessageEndEvent", params);
+        KogitoProcessInstance processInstance = kruntime.startProcess("MessageEndEvent", params);
         assertProcessInstanceCompleted(processInstance);
         
-        WorkItem workItem = handler.getWorkItem();
+        KogitoWorkItem workItem = (KogitoWorkItem) handler.getWorkItem();
         assertNotNull(workItem);
-        assertTrue(workItem instanceof KogitoWorkItem );
         
-        String nodeInstanceId = (( KogitoWorkItem ) workItem).getNodeInstanceStringId();
-        long nodeId = (( KogitoWorkItem ) workItem).getNodeId();
-        String deploymentId = (( KogitoWorkItem ) workItem).getDeploymentId();
+        String nodeInstanceId = workItem.getNodeInstanceStringId();
+        long nodeId = workItem.getNodeId();
+        String deploymentId = workItem.getDeploymentId();
         
         assertNotNull(nodeId);
         assertTrue(nodeId > 0);
         assertNotNull(nodeInstanceId);
         assertNull(deploymentId);
         
-        // now set deployment id as part of ksession's env
-        ksession.getEnvironment().set("deploymentId", "testDeploymentId");
+        // now set deployment id as part of kruntime's env
+        kruntime.getKieRuntime().getEnvironment().set("deploymentId", "testDeploymentId");
         
-        processInstance = ksession.startProcess("MessageEndEvent", params);
+        processInstance = kruntime.startProcess("MessageEndEvent", params);
         assertProcessInstanceCompleted(processInstance);
         
-        workItem = handler.getWorkItem();
+        workItem = (KogitoWorkItem) handler.getWorkItem();
         assertNotNull(workItem);
-        assertTrue(workItem instanceof KogitoWorkItem );
-        
-        nodeInstanceId = (( KogitoWorkItem ) workItem).getNodeInstanceStringId();
-        nodeId = (( KogitoWorkItem ) workItem).getNodeId();
+
+        nodeInstanceId = workItem.getNodeInstanceStringId();
+        nodeId = workItem.getNodeId();
         
         assertNotNull(nodeId);
         assertTrue(nodeId > 0);
@@ -140,13 +126,12 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testOnEntryExitScript() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-OnEntryExitScriptProcess.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("MyTask",
+        kruntime = createKogitoProcessRuntime("BPMN2-OnEntryExitScriptProcess.bpmn2");
+        kruntime.getWorkItemManager().registerWorkItemHandler("MyTask",
                 new SystemOutWorkItemHandler());
-        List<String> myList = new ArrayList<String>();
-        ksession.setGlobal("list", myList);
-        ProcessInstance processInstance = ksession
+        List<String> myList = new ArrayList<>();
+        kruntime.getKieSession().setGlobal("list", myList);
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
         assertEquals(4, myList.size());
@@ -155,13 +140,12 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testOnEntryExitNamespacedScript() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-OnEntryExitNamespacedScriptProcess.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("MyTask",
+        kruntime = createKogitoProcessRuntime("BPMN2-OnEntryExitNamespacedScriptProcess.bpmn2");
+        kruntime.getWorkItemManager().registerWorkItemHandler("MyTask",
                 new SystemOutWorkItemHandler());
-        List<String> myList = new ArrayList<String>();
-        ksession.setGlobal("list", myList);
-        ProcessInstance processInstance = ksession
+        List<String> myList = new ArrayList<>();
+        kruntime.getKieSession().setGlobal("list", myList);
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
         assertEquals(4, myList.size());
@@ -170,13 +154,12 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testOnEntryExitMixedNamespacedScript() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-OnEntryExitMixedNamespacedScriptProcess.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("MyTask",
+        kruntime = createKogitoProcessRuntime("BPMN2-OnEntryExitMixedNamespacedScriptProcess.bpmn2");
+        kruntime.getWorkItemManager().registerWorkItemHandler("MyTask",
                 new SystemOutWorkItemHandler());
-        List<String> myList = new ArrayList<String>();
-        ksession.setGlobal("list", myList);
-        ProcessInstance processInstance = ksession
+        List<String> myList = new ArrayList<>();
+        kruntime.getKieSession().setGlobal("list", myList);
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
         assertEquals(4, myList.size());
@@ -185,13 +168,12 @@ public class EndEventTest extends JbpmBpmn2TestCase {
     
     @Test
     public void testOnEntryExitScriptDesigner() throws Exception {
-        KieBase kbase = createKnowledgeBaseWithoutDumper("BPMN2-OnEntryExitDesignerScriptProcess.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        ksession.getWorkItemManager().registerWorkItemHandler("MyTask",
+        kruntime = createKogitoProcessRuntime("BPMN2-OnEntryExitDesignerScriptProcess.bpmn2");
+        kruntime.getWorkItemManager().registerWorkItemHandler("MyTask",
                 new SystemOutWorkItemHandler());
-        List<String> myList = new ArrayList<String>();
-        ksession.setGlobal("list", myList);
-        ProcessInstance processInstance = ksession
+        List<String> myList = new ArrayList<>();
+        kruntime.getKieSession().setGlobal("list", myList);
+        KogitoProcessInstance processInstance = kruntime
                 .startProcess("OnEntryExitScriptProcess");
         assertProcessInstanceCompleted(processInstance);
         assertEquals(4, myList.size());
@@ -200,9 +182,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
     
     @Test
     public void testTerminateWithinSubprocessEnd() throws Exception {
-        KieBase kbase = createKnowledgeBase("subprocess/BPMN2-SubprocessWithParallelSpitTerminate.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        kruntime = createKogitoProcessRuntime("subprocess/BPMN2-SubprocessWithParallelSpitTerminate.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-SubprocessWithParallelSpitTerminate");
 
         kruntime.signalEvent("signal1", null, processInstance.getStringId());
@@ -213,9 +193,7 @@ public class EndEventTest extends JbpmBpmn2TestCase {
     
     @Test
     public void testTerminateEnd() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-ParallelSpitTerminate.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( ksession );
+        kruntime = createKogitoProcessRuntime("BPMN2-ParallelSpitTerminate.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-ParallelSpitTerminate");
 
         kruntime.signalEvent("Signal 1", null, processInstance.getStringId());
@@ -226,10 +204,9 @@ public class EndEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testSignalEndWithData() throws Exception {
-        KieBase kbase = createKnowledgeBase("BPMN2-EndEventSignalWithData.bpmn2");
-        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
-        Map<String, Object> params = new HashMap<String, Object>();
-        ProcessInstance processInstance = ksession.startProcess("src.simpleEndSignal", params);
+        kruntime = createKogitoProcessRuntime("BPMN2-EndEventSignalWithData.bpmn2");
+        Map<String, Object> params = new HashMap<>();
+        KogitoProcessInstance processInstance = kruntime.startProcess("src.simpleEndSignal", params);
         
         assertProcessInstanceCompleted(processInstance);
         

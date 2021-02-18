@@ -1,11 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.kie.api.KieBase;
+import org.kie.api.event.process.ProcessEventManager;
 import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
@@ -93,7 +94,7 @@ public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
 
     @Override
     public KogitoProcessInstance getProcessInstance(String id, boolean readOnly) {
-        return (KogitoProcessInstance) delegate.getProcessInstanceManager().getProcessInstance(id, readOnly);
+        return delegate.getProcessInstanceManager().getProcessInstance(id, readOnly);
     }
 
     @Override
@@ -116,6 +117,11 @@ public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
     }
 
     @Override
+    public ProcessEventManager getProcessEventManager() {
+        return delegate;
+    }
+
+    @Override
     public JobsService getJobsService() {
         return delegate.getJobsService();
     }
@@ -130,7 +136,15 @@ public class KogitoProcessRuntimeImpl implements KogitoProcessRuntime {
         return delegate.getInternalKieRuntime().getKieBase();
     }
 
-    public KogitoProcessInstance startProcess( String processId, Map<String, Object> parameters, String trigger, AgendaFilter agendaFilter) {
+    @Override
+    public KieSession getKieSession() {
+        if (delegate.getInternalKieRuntime() instanceof KieSession) {
+            return (KieSession) delegate.getInternalKieRuntime();
+        }
+        return null;
+    }
+
+    public KogitoProcessInstance startProcess(String processId, Map<String, Object> parameters, String trigger, AgendaFilter agendaFilter) {
         KogitoProcessInstance processInstance = createProcessInstance(processId, parameters);
         if ( processInstance != null ) {
             // start process instance

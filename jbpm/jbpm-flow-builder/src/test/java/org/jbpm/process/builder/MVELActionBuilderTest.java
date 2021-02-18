@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.builder;
 
 import java.io.StringReader;
@@ -30,7 +29,7 @@ import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
-import org.drools.core.spi.ProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.mvel.MVELDialectRuntimeData;
 import org.drools.mvel.builder.MVELDialect;
 import org.jbpm.process.builder.dialect.mvel.MVELActionBuilder;
@@ -42,6 +41,7 @@ import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -83,8 +83,8 @@ public class MVELActionBuilderTest extends AbstractBaseTest {
         MVELDialectRuntimeData data = (MVELDialectRuntimeData) pkgBuilder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData( "mvel");
         
         ((MVELAction) actionNode.getAction().getMetaData("Action")).compile( data );
-        
-        ProcessContext processContext = new ProcessContext( ((InternalWorkingMemory) wm).getKnowledgeRuntime() );
+
+        KogitoProcessContext processContext = new KogitoProcessContextImpl( ((InternalWorkingMemory) wm).getKnowledgeRuntime() );
         ((Action) actionNode.getAction().getMetaData("Action")).execute( processContext );
         
         assertEquals("hello world", list.get(0) );

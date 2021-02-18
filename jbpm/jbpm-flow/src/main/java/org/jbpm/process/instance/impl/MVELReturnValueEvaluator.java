@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl;
 
 import java.io.Externalizable;
@@ -31,7 +30,7 @@ import org.drools.mvel.expr.MVELCompilationUnit;
 import org.drools.mvel.expr.MVELCompileable;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.kie.api.definition.KiePackage;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.mvel2.integration.VariableResolverFactory;
 
 public class MVELReturnValueEvaluator
@@ -78,7 +77,7 @@ public class MVELReturnValueEvaluator
         return this.id;
     }
 
-    public Object evaluate(ProcessContext context) throws Exception {
+    public Object evaluate(KogitoProcessContext context) throws Exception {
         int length = unit.getOtherIdentifiers().length;
         Object[] vars = new Object[ length ];
         if (unit.getOtherIdentifiers() != null) {

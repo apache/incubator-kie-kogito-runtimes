@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.drools.core.impl;
 
 import org.drools.core.KogitoWorkingMemory;
@@ -28,7 +28,7 @@ import org.drools.core.kogito.factory.KogitoDefaultFactHandle;
 import org.drools.core.spi.AbstractProcessContext;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.core.spi.KnowledgeHelper;
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.core.time.KogitoTimerServiceFactory;
 import org.drools.core.time.TimerService;
 import org.drools.core.util.bitmask.BitMask;
@@ -172,7 +172,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
         @Override
         protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContext(workingMemory.getKnowledgeRuntime());
+            return new KogitoProcessContextImpl(workingMemory.getKnowledgeRuntime());
         }
 
         @Override

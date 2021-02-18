@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,6 +28,7 @@ import org.drools.core.time.TimerService;
 import org.jbpm.workflow.instance.impl.CodegenNodeInstanceFactoryRegistry;
 import org.kie.api.KieBase;
 import org.kie.api.event.process.ProcessEventListener;
+import org.kie.api.event.process.ProcessEventManager;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.logger.KieRuntimeLogger;
@@ -35,6 +37,7 @@ import org.kie.api.runtime.Channel;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.Globals;
 import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -103,6 +106,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
     }
 
     @Override
+    public ProcessEventManager getProcessEventManager() {
+        return processRuntime;
+    }
+
+    @Override
     public Environment getEnvironment() {
         return environment;
     }
@@ -158,6 +166,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public KieBase getKieBase() {
+        return null;
+    }
+
+    @Override
+    public KieSession getKieSession() {
         return null;
     }
 

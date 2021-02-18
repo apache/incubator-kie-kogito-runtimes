@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.workitems.impl;
 
 import java.io.IOException;
@@ -30,13 +30,14 @@ import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.internal.runtime.Closeable;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.KogitoWorkItem;
 import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 
-import static org.kie.api.runtime.process.WorkItem.ABORTED;
-import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+import static org.kie.kogito.internal.process.runtime.KogitoWorkItem.ABORTED;
+import static org.kie.kogito.internal.process.runtime.KogitoWorkItem.COMPLETED;
 
 public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager {
 
@@ -123,6 +124,22 @@ public class KogitoDefaultWorkItemManager implements KogitoWorkItemManager {
                 processInstance.signalEvent("workItemCompleted", workItem);
             }
             workItems.remove(id);
+        }
+    }
+    
+    public Map<String,Object> updateWorkItem(String id, Map<String, Object> params, Policy<?>... policies) {
+        KogitoWorkItem workItem = workItems.get(id);
+        if (workItem != null) {
+            Map<String,Object> results = workItem.getResults();
+            if (results == null) {
+                workItem.setResults(params);
+                return params;
+            } else {
+                results.putAll(params);
+                return results;
+            }
+        } else {
+            throw new WorkItemNotFoundException(id);
         }
     }
 

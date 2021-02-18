@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.instance.NodeInstance;
-import org.kie.api.runtime.process.ProcessContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
@@ -40,7 +40,8 @@ public class HandleEscalationAction implements Action, Serializable {
         this.variableName = variableName;
     }
 
-    public void execute(ProcessContext context) throws Exception {
+    @Override
+    public void execute(KogitoProcessContext context) throws Exception {
         ExceptionScopeInstance scopeInstance = (ExceptionScopeInstance) ((NodeInstance) context.getNodeInstance()).resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE,
                                                                                                                                           faultName);
         if (scopeInstance != null) {

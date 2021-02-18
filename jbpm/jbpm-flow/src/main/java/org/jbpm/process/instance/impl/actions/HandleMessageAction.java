@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,8 +21,8 @@ import org.jbpm.process.core.event.EventTransformerImpl;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.util.VariableUtil;
 import org.jbpm.workflow.core.node.Transformation;
-import org.kie.api.runtime.process.ProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.process.workitems.KogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -47,7 +47,8 @@ public class HandleMessageAction implements Action, Serializable {
         this.transformation = transformation;
     }
 
-    public void execute(ProcessContext context) throws Exception {
+    @Override
+    public void execute( KogitoProcessContext context) throws Exception {
         Object variable = VariableUtil.resolveVariable(variableName, context.getNodeInstance());
 
         if (transformation != null) {
