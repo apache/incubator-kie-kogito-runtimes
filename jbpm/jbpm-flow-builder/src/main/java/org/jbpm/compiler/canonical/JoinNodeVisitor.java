@@ -16,13 +16,12 @@
 
 package org.jbpm.compiler.canonical;
 
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.JoinFactory;
-import org.jbpm.workflow.core.node.Join;
-
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.JoinFactory;
+import org.jbpm.workflow.core.node.Join;
 
 import static org.jbpm.ruleflow.core.factory.JoinFactory.METHOD_TYPE;
 

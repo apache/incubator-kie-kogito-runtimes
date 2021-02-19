@@ -15,6 +15,8 @@
 
 package org.kie.kogito.monitoring.core.common.process;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,9 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

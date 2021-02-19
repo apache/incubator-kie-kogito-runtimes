@@ -15,19 +15,18 @@
 
 package org.kie.kogito.codegen.sample.generator;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class SampleContainerGenerator implements ApplicationSection {
 

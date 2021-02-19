@@ -114,7 +114,6 @@ public class ApplicationGenerator {
 
     /**
      * Method to wire Generator with ApplicationGenerator if enabled
-     * 
      * @param generator
      * @param <G>
      * @return

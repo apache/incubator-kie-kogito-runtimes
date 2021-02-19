@@ -30,7 +30,6 @@ public final class MapWalker {
 
     /**
      * Walker with safe null
-     * 
      * @param theMap that we're going to walk into
      * @param safeNull whether to return a null value at the end of the walk, otherwise if the key isn't expected a NPE or an {@link IllegalArgumentException} might raise.
      */
@@ -45,7 +44,6 @@ public final class MapWalker {
 
     /**
      * Return the object as a Map.
-     * 
      * @param <K>
      * @param <V>
      * @return
@@ -59,7 +57,6 @@ public final class MapWalker {
 
     /**
      * Return the object as a list
-     * 
      * @param <K>
      * @param <V>
      * @return
@@ -72,7 +69,7 @@ public final class MapWalker {
     }
 
     /**
-     * The key value is another map
+     * The key value is another map 
      */
     public MapWalker mapToMap(String key) {
         if (theMap instanceof Map) {
@@ -104,7 +101,6 @@ public final class MapWalker {
 
     /**
      * In a list, we take the index that is a map
-     * 
      * @param index
      * @return
      */

@@ -16,6 +16,8 @@ package org.kie.kogito.event.impl;
 
 import java.util.function.Function;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
@@ -23,9 +25,6 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DataEventConsumer<M extends Model, D> extends JacksonEventConsumer<M> {
 
@@ -47,8 +46,8 @@ public class DataEventConsumer<M extends Model, D> extends JacksonEventConsumer<
             M model = function.apply(eventData);
             UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
                 logger.debug(
-                        "Received message without reference id, staring new process instance with trigger '{}'",
-                        trigger);
+                    "Received message without reference id, staring new process instance with trigger '{}'",
+                    trigger);
                 ProcessInstance<M> pi = process.createInstance(model);
                 pi.start(trigger, null);
                 return null;

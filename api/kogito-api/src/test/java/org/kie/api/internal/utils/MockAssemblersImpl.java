@@ -29,10 +29,11 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.io.ResourceWithConfiguration;
 
 public class MockAssemblersImpl implements KieAssemblers,
-        Consumer<KieAssemblerService> {
+                                           Consumer<KieAssemblerService> {
 
     private Map<ResourceType, KieAssemblerService> assemblers = new HashMap();
 
+    
     public Map<ResourceType, KieAssemblerService> getAssemblers() {
         return this.assemblers;
     }
@@ -43,7 +44,7 @@ public class MockAssemblersImpl implements KieAssemblers,
     }
 
     @Override
-    public void addResourceBeforeRules(Object o, Resource resource, ResourceType resourceType, ResourceConfiguration resourceConfiguration) throws Exception {
+    public void addResourceBeforeRules( Object o, Resource resource, ResourceType resourceType, ResourceConfiguration resourceConfiguration ) throws Exception {
 
     }
 

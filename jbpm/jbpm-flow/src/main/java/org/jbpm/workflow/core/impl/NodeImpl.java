@@ -200,7 +200,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getFrom() {
         final List<Connection> list =
-                getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
+                getIncomingConnections( Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -220,7 +220,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getTo() {
         final List<Connection> list =
-                getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
+                getOutgoingConnections( Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -239,14 +239,14 @@ public abstract class NodeImpl implements Node, ContextResolver {
      * Helper method for nodes that have multiple default incoming connections
      */
     public List<Connection> getDefaultIncomingConnections() {
-        return getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
+        return getIncomingConnections( Node.CONNECTION_DEFAULT_TYPE);
     }
 
     /**
      * Helper method for nodes that have multiple default outgoing connections
      */
     public List<Connection> getDefaultOutgoingConnections() {
-        return getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
+        return getOutgoingConnections( Node.CONNECTION_DEFAULT_TYPE);
     }
 
     public NodeContainer getParentContainer() {
@@ -297,6 +297,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
             throw new IllegalArgumentException("connection is null");
         }
 
+
         ConnectionRef ref = new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType());
         return this.constraints.get(ref);
 
@@ -307,7 +308,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
     }
 
     public void setConstraint(final Connection connection,
-            final Constraint constraint) {
+                              final Constraint constraint) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }

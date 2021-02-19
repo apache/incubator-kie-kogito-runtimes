@@ -81,7 +81,8 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
         }
-        VariableScope variableScope = (VariableScope) getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope = (VariableScope)
+                getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
         if (variableScope == null) {
             variableScope = new VariableScope();
             getCompositeNode().addContext(variableScope);
@@ -92,7 +93,8 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
     }
 
     public CompositeContextNodeFactory exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
-        ExceptionScope exceptionScope = (ExceptionScope) getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        ExceptionScope exceptionScope = (ExceptionScope)
+                getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
         if (exceptionScope == null) {
             exceptionScope = new ExceptionScope();
             getCompositeNode().addContext(exceptionScope);

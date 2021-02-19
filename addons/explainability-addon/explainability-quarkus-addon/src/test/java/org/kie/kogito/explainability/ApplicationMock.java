@@ -16,8 +16,7 @@
 
 package org.kie.kogito.explainability;
 
-import java.io.InputStreamReader;
-
+import io.quarkus.test.Mock;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
@@ -27,13 +26,14 @@ import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
-import io.quarkus.test.Mock;
+import java.io.InputStreamReader;
 
 @Mock
 public class ApplicationMock implements Application {
 
     final static DMNRuntime genericDMNRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(
-            ApplicationMock.class.getResourceAsStream(Constants.MODEL_RESOURCE)));
+            ApplicationMock.class.getResourceAsStream(Constants.MODEL_RESOURCE)
+    ));
 
     final static DecisionModels decisionModels;
 

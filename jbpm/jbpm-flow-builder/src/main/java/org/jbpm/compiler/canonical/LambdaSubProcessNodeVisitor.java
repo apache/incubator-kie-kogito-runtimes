@@ -22,14 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
-import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.node.SubProcessNode;
-import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
@@ -41,6 +33,13 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
+import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.node.SubProcessNode;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.core.util.StringUtils.ucFirst;
@@ -70,6 +69,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         NodeValidator.of(getNodeKey(), name)
                 .notEmpty("subProcessId", subProcessId)
                 .validate();
+
 
         body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Call Activity"))

@@ -16,14 +16,13 @@
 
 package org.kie.kogito.integrationtests;
 
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.decision.DecisionTestUtils;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
-import io.quarkus.test.junit.QuarkusTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

@@ -44,8 +44,7 @@ public class VariableInstanceEventBody {
     private String processId;
     private String rootProcessId;
 
-    private VariableInstanceEventBody() {
-    }
+    private VariableInstanceEventBody() {}
 
     public String getVariableName() {
         return variableName;
@@ -106,11 +105,9 @@ public class VariableInstanceEventBody {
 
     @Override
     public String toString() {
-        return "VariableInstanceEventBody [variableName=" + variableName + ", variableValue=" + variableValue + ", variablePreviousValue=" + variablePreviousValue + ", changeDate=" + changeDate
-                + ", changedByNodeId=" +
-                changedByNodeId + ", changedByNodeName=" + changedByNodeName + ", changedByNodeType=" + changedByNodeType + ", changedByUser=" + changedByUser + ", processInstanceId="
-                + processInstanceId +
-                ", rootProcessInstanceId=" + rootProcessInstanceId + ", processId=" + processId + ", rootProcessId=" + rootProcessId + "]";
+        return "VariableInstanceEventBody [variableName=" + variableName + ", variableValue=" + variableValue + ", variablePreviousValue=" + variablePreviousValue + ", changeDate=" + changeDate + ", changedByNodeId=" +
+               changedByNodeId + ", changedByNodeName=" + changedByNodeName + ", changedByNodeType=" + changedByNodeType + ", changedByUser=" + changedByUser + ", processInstanceId=" + processInstanceId +
+               ", rootProcessInstanceId=" + rootProcessInstanceId + ", processId=" + processId + ", rootProcessId=" + rootProcessId + "]";
     }
 
     @Override

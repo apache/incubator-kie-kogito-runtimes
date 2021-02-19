@@ -70,7 +70,8 @@ public class EvaluateEvent {
             Map<String, Object> context,
             EvaluateResult result,
             EvaluateContextEntryResult contextEntryResult,
-            EvaluateDecisionTableResult decisionTableResult) {
+            EvaluateDecisionTableResult decisionTableResult
+    ) {
         this.type = type;
         this.timestamp = timestamp;
         this.nanoTime = nanoTime;
@@ -158,8 +159,8 @@ public class EvaluateEvent {
 
     public TraceResourceId toTraceResourceId(String serviceUrl) {
         return getType() == BEFORE_EVALUATE_DECISION_SERVICE || getType() == AFTER_EVALUATE_DECISION_SERVICE
-                ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
-                : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
+               ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
+               : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
     }
 
     public static EvaluateEvent from(BeforeEvaluateAllEvent event) {
@@ -179,13 +180,11 @@ public class EvaluateEvent {
     }
 
     public static EvaluateEvent from(BeforeEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
-                EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
-                EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionEvent event) {
@@ -205,13 +204,11 @@ public class EvaluateEvent {
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
-                EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
-                EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeInvokeBKMEvent event) {

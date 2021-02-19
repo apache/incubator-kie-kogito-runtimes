@@ -42,28 +42,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
     @Test
     public void testSimpleReturnValueConstraintEvaluator() throws Exception {
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
+        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "pkg1" );
 
         ProcessDescr processDescr = new ProcessDescr();
-        processDescr.setClassName("Process1");
-        processDescr.setName("Process1");
+        processDescr.setClassName( "Process1" );
+        processDescr.setName( "Process1" );
 
         WorkflowProcessImpl process = new WorkflowProcessImpl();
-        process.setName("Process1");
+        process.setName( "Process1" );
         process.setPackageName("pkg1");
 
         ReturnValueDescr descr = new ReturnValueDescr();
         descr.setText("function validate() {return value;} validate();");
 
-        KnowledgeBuilderImpl pkgBuilder = new KnowledgeBuilderImpl(pkg);
-        DialectCompiletimeRegistry dialectRegistry = pkgBuilder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
+        KnowledgeBuilderImpl pkgBuilder = new KnowledgeBuilderImpl( pkg );
+        DialectCompiletimeRegistry dialectRegistry = pkgBuilder.getPackageRegistry( pkg.getName() ).getDialectCompiletimeRegistry();
 
-        ProcessBuildContext context = new ProcessBuildContext(pkgBuilder,
+        ProcessBuildContext context = new ProcessBuildContext( pkgBuilder,
                 pkg,
                 process,
                 processDescr,
                 dialectRegistry,
-                null);
+                null );
 
         pkgBuilder.addPackageFromDrl(new StringReader("package pkg1;\n global Boolean value;\n"));
 
@@ -79,6 +79,7 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
         kbase.addPackages(Arrays.asList(pkgBuilder.getPackages()));
         final KieSession ksession = kbase.newKieSession();
 
+
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) ksession);
 
@@ -88,8 +89,9 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
         ksession.setGlobal("value", true);
 
         assertTrue(node.evaluate(splitInstance,
-                null,
-                null));
+                        null,
+                        null)
+        );
 
         // Build second time with reutrn value evaulator returning false
         ReturnValueDescr descr2 = new ReturnValueDescr();
@@ -102,8 +104,9 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest {
                 null);
 
         assertFalse(node.evaluate(splitInstance,
-                null,
-                null));
+                        null,
+                        null)
+        );
     }
 
 }

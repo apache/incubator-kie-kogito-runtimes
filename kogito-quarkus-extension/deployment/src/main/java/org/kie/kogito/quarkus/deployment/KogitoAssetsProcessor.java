@@ -32,35 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
-import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.CompositeIndex;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.Index;
-import org.jboss.jandex.IndexView;
-import org.jboss.jandex.Indexer;
-import org.kie.api.pmml.PMML4Result;
-import org.kie.kogito.Model;
-import org.kie.kogito.UserTask;
-import org.kie.kogito.codegen.Generated;
-import org.kie.kogito.codegen.VariableInfo;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.utils.AppPaths;
-import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
-import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
-import org.kie.kogito.codegen.json.JsonSchemaGenerator;
-import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
-import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -75,6 +46,33 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarningBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import javax.inject.Inject;
+import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.CompositeIndex;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.Index;
+import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Indexer;
+import org.kie.api.pmml.PMML4Result;
+import org.kie.kogito.Model;
+import org.kie.kogito.UserTask;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.json.JsonSchemaGenerator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.Generated;
+import org.kie.kogito.codegen.VariableInfo;
+import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.codegen.api.utils.AppPaths;
+import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
+import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
+import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
+import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -130,11 +128,13 @@ public class KogitoAssetsProcessor {
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-            BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
+            BuildProducer<GeneratedResourceBuildItem> genResBI
+    ) throws IOException {
 
         if (liveReload.isLiveReload()) {
             return;
         }
+
 
         boolean useProcessSVG = combinedIndexBuildItem.getIndex().getClassByName(quarkusSVGService) != null;
 
@@ -192,7 +192,6 @@ public class KogitoAssetsProcessor {
 
     /**
      * Verify if a class is available. First uses jandex indexes, then fallback on classLoader
-     * 
      * @param classLoader
      * @param className
      * @return
@@ -213,15 +212,15 @@ public class KogitoAssetsProcessor {
         }
     }
 
-    private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles) {
+    private void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles){
         generatedFileWriterBuilder
                 .build(appPaths.getFirstProjectPath())
                 .writeAll(generatedFiles);
     }
 
     private void registerResources(Collection<GeneratedFile> generatedFiles,
-            BuildProducer<NativeImageResourceBuildItem> resource,
-            BuildProducer<GeneratedResourceBuildItem> genResBI) {
+                                   BuildProducer<NativeImageResourceBuildItem> resource,
+                                   BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
             if (f.category() == GeneratedFileType.Category.RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
@@ -273,7 +272,7 @@ public class KogitoAssetsProcessor {
 
         if (!persistenceClasses.isEmpty()) {
             InMemoryCompiler inMemoryCompiler = new InMemoryCompiler(context.getAppPaths().getClassesPaths(),
-                    curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
+                                                                     curateOutcomeBuildItem.getEffectiveModel().getUserDependencies());
             inMemoryCompiler.compile(persistenceClasses);
             Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = makeBuildItems(context.getAppPaths(), inMemoryCompiler.getTargetFileSystem());
             generatedBeanBuildItems.forEach(generatedBeans::produce);
@@ -287,17 +286,17 @@ public class KogitoAssetsProcessor {
     }
 
     private Collection<GeneratedFile> getGeneratedPersistenceFiles(IndexView index,
-            KogitoBuildContext context,
-            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+                                                                   KogitoBuildContext context,
+                                                                   BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         ClassInfo persistenceClass = index
                 .getClassByName(persistenceFactoryClass);
 
         Collection<ClassInfo> modelClasses = index
                 .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
         JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(
-                index,
-                DotName.createSimple(Generated.class.getCanonicalName()),
-                DotName.createSimple(VariableInfo.class.getCanonicalName()))
+                    index,
+                    DotName.createSimple(Generated.class.getCanonicalName()),
+                    DotName.createSimple(VariableInfo.class.getCanonicalName()))
                 .withPersistenceClass(persistenceClass)
                 .build(modelClasses);
 
@@ -305,7 +304,7 @@ public class KogitoAssetsProcessor {
                 context,
                 protoGenerator);
 
-        if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
+        if(persistenceGenerator.persistenceType().equals(PersistenceGenerator.MONGODB_PERSISTENCE_TYPE)) {
             addInnerClasses(org.jbpm.marshalling.impl.JBPMMessages.class, reflectiveClass);
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "java.lang.String"));
         }
@@ -345,7 +344,8 @@ public class KogitoAssetsProcessor {
         logger.debug("pmmlEvaluators {}", pmmlEvaluators.size());
         final List<ReflectiveClassBuildItem> toReturn = new ArrayList<>();
         toReturn.add(new ReflectiveClassBuildItem(true, true, PMML4Result.class));
-        pmmlEvaluators.forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true, pmmlModelEvaluator.getClass())));
+        pmmlEvaluators.
+                forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true, pmmlModelEvaluator.getClass())));
         logger.debug("toReturn {}", toReturn.size());
         return toReturn;
     }
@@ -377,7 +377,7 @@ public class KogitoAssetsProcessor {
 
     private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, Index index) throws IOException {
         Path targetClasses = context.getAppPaths().getFirstProjectPath().resolve(targetClassesDir);
-        URL[] urls = { targetClasses.toUri().toURL() };
+        URL[] urls = {targetClasses.toUri().toURL()};
 
         try (URLClassLoader cl = new URLClassLoader(urls, context.getClassLoader())) {
 
@@ -426,7 +426,7 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
-        if (context.getAddonsConfig().useMonitoring()) {
+        if (context.getAddonsConfig().useMonitoring()){
             reflectiveClass.produce(
                     new ReflectiveClassBuildItem(true, true, "org.HdrHistogram.Histogram"));
             reflectiveClass.produce(
@@ -439,11 +439,11 @@ public class KogitoAssetsProcessor {
     }
 
     private void addChildrenClasses(Index index,
-            Class<?> superClass,
-            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+                                    Class<?> superClass,
+                                    BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         index.getAllKnownSubclasses(DotName.createSimple(superClass.getCanonicalName()))
-                .forEach(c -> reflectiveClass.produce(
-                        new ReflectiveClassBuildItem(true, true, c.name().toString())));
+             .forEach(c -> reflectiveClass.produce(
+                      new ReflectiveClassBuildItem(true, true, c.name().toString())));
     }
 
     private Index indexBuildItems(KogitoBuildContext context, Collection<GeneratedBeanBuildItem> buildItems) {

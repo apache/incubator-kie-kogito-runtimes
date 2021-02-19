@@ -21,6 +21,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,11 +38,6 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.mockito.ArgumentCaptor;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -109,7 +107,8 @@ class EventDrivenDecisionControllerTest {
             new RequestData(null, null, null, "{}"),
             new RequestData("aName", "aNamespace", null, null),
             new RequestData("aName", null, null, "{}"),
-            new RequestData(null, "aNamespace", null, "{}")).collect(Collectors.toList());
+            new RequestData(null, "aNamespace", null, "{}")
+    ).collect(Collectors.toList());
 
     private static final RequestData REQUEST_DATA_MODEL_NOT_FOUND = new RequestData("aName", "aNamespace", null, "{}");
 
@@ -126,7 +125,8 @@ class EventDrivenDecisionControllerTest {
             "        \"Actual Speed\": 115,\n" +
             "        \"Speed Limit\": 100\n" +
             "    }\n" +
-            "}");
+            "}"
+    );
 
     private static final RequestData REQUEST_DATA_EVALUATE_DECISION_SERVICE = new RequestData(MODEL_NAME, MODEL_NAMESPACE, DECISION_SERVICE_NODE_NAME, "" +
             "{\n" +
@@ -135,7 +135,8 @@ class EventDrivenDecisionControllerTest {
             "        \"Actual Speed\": 115,\n" +
             "        \"Speed Limit\": 100\n" +
             "    }\n" +
-            "}");
+            "}"
+    );
 
     private static final String TEST_EXECUTION_ID = "11ecbb6f-fb25-4597-88c8-ac7976efe078";
 
@@ -299,8 +300,7 @@ class EventDrivenDecisionControllerTest {
         when(decisionModelsMock.getDecisionModel(eq(MODEL_NAMESPACE), eq(DecisionTestUtils.MODEL_NAME))).thenReturn(decisionModelSpy);
     }
 
-    private <T> void testCloudEventEmitted(RequestData requestData, Boolean fullResult, Boolean filteredCtx, Class<T> responseDataClass, String expectedType,
-            TriConsumer<CloudEvent, KogitoExtension, T> callback) {
+    private <T> void testCloudEventEmitted(RequestData requestData, Boolean fullResult, Boolean filteredCtx, Class<T> responseDataClass, String expectedType, TriConsumer<CloudEvent, KogitoExtension, T> callback) {
         try {
             ArgumentCaptor<String> eventCaptor = ArgumentCaptor.forClass(String.class);
 

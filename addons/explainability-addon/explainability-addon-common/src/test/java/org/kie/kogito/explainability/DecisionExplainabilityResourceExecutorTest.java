@@ -16,8 +16,6 @@
 
 package org.kie.kogito.explainability;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,6 +29,8 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 
+import java.util.stream.Stream;
+
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -40,10 +40,11 @@ public class DecisionExplainabilityResourceExecutorTest {
 
     static Stream<Arguments> getDecisionModelTestProvider() {
         return Stream.of(
-                Arguments.of((Object) new String[] { "namespace", "name" }),
-                Arguments.of((Object) new String[] { "myFancyNamespace:/fdss2344-+{}\"", "myFancyName" }),
-                Arguments.of((Object) new String[] { "hello::::", "myFancyName" }),
-                Arguments.of((Object) new String[] { "hello()", "myFanc+_-_234';yName" }));
+                Arguments.of((Object) new String[]{"namespace", "name"}),
+                Arguments.of((Object) new String[]{"myFancyNamespace:/fdss2344-+{}\"", "myFancyName"}),
+                Arguments.of((Object) new String[]{"hello::::", "myFancyName"}),
+                Arguments.of((Object) new String[]{"hello()", "myFanc+_-_234';yName"})
+        );
     }
 
     @ParameterizedTest
@@ -61,7 +62,7 @@ public class DecisionExplainabilityResourceExecutorTest {
         Assertions.assertNotNull(decisionModelResponse);
         Assertions.assertEquals(namespace, decisionModelResponse.getDMNModel().getNamespace());
         Assertions.assertEquals(name, decisionModelResponse.getDMNModel().getName());
-    }
+        }
 
     @Test
     public void testAcceptRequest() {
@@ -75,7 +76,7 @@ public class DecisionExplainabilityResourceExecutorTest {
         Assertions.assertTrue(executor.acceptRequest(DMNModelPredictInput));
     }
 
-    private DMNRuntime generateDMNRuntime(String namespace, String name) {
+    private DMNRuntime generateDMNRuntime(String namespace, String name){
         DMNRuntime runtime = mock(DMNRuntime.class);
         DMNModel dmnModel = mock(DMNModel.class);
         when(dmnModel.getNamespace()).thenReturn(namespace);

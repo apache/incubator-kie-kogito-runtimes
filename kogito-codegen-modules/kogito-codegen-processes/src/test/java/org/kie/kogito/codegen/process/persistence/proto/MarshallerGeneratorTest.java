@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.Answer;
 import org.kie.kogito.codegen.data.AnswerWitAnnotations;
 import org.kie.kogito.codegen.data.Person;
@@ -34,16 +36,13 @@ import org.kie.kogito.codegen.data.Question;
 import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
 import org.kie.kogito.codegen.process.persistence.MarshallerGenerator;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 class MarshallerGeneratorTest {
 
     KogitoBuildContext context = JavaKogitoBuildContext.builder().build();
-
+    
     @Test
     void testPersonMarshallers() throws Exception {
         ProtoGenerator generator = ReflectionProtoGenerator.builder()
@@ -51,15 +50,15 @@ class MarshallerGeneratorTest {
                 .build(null);
 
         Proto proto = generator.protoOfDataClasses("org.kie.kogito.test");
-        assertThat(proto).isNotNull();
+        assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(1);
-
+        
         MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context);
-
+        
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.toString());
-        assertThat(classes).isNotNull();
+        assertThat(classes).isNotNull();       
         assertThat(classes).hasSize(1);
-
+        
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("PersonMessageMarshaller");
         assertThat(marshallerClass).isPresent();
     }
@@ -93,21 +92,21 @@ class MarshallerGeneratorTest {
                 .build(null);
 
         Proto proto = generator.protoOfDataClasses("org.kie.kogito.test");
-        assertThat(proto).isNotNull();
+        assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(2);
-
+        
         MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context);
-
+        
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.toString());
-        assertThat(classes).isNotNull();
+        assertThat(classes).isNotNull();       
         assertThat(classes).hasSize(2);
-
+        
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("AddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
         marshallerClass = classes.get(1).getClassByName("PersonWithAddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
     }
-
+    
     @Test
     void testPersonWithAddressesMarshallers() throws Exception {
         ProtoGenerator generator = ReflectionProtoGenerator.builder()
@@ -115,17 +114,17 @@ class MarshallerGeneratorTest {
                 .build(null);
 
         Proto proto = generator.protoOfDataClasses("org.kie.kogito.test");
-        assertThat(proto).isNotNull();
+        assertThat(proto).isNotNull();        
         assertThat(proto.getMessages()).hasSize(2);
 
         System.out.println(proto.getMessages());
-
+        
         MarshallerGenerator marshallerGenerator = new MarshallerGenerator(context);
-
+        
         List<CompilationUnit> classes = marshallerGenerator.generate(proto.toString());
-        assertThat(classes).isNotNull();
+        assertThat(classes).isNotNull();       
         assertThat(classes).hasSize(2);
-
+        
         Optional<ClassOrInterfaceDeclaration> marshallerClass = classes.get(0).getClassByName("AddressMessageMarshaller");
         assertThat(marshallerClass).isPresent();
         marshallerClass = classes.get(1).getClassByName("PersonWithAddressesMessageMarshaller");

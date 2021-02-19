@@ -19,26 +19,29 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DecisionTableProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.internal.utils.ServiceRegistry;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
-
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,7 +64,7 @@ public class IncrementalRuleCodegenTest {
                 IncrementalRuleCodegen.ofCollectedResources(
                         ACME_CONTEXT,
                         CollectedResourceProducer.fromFiles(Paths.get("src/test/resources"),
-                                new File("src/test/resources/org/kie/kogito/codegen/rules/pkg1/file1.drl")));
+                                                            new File("src/test/resources/org/kie/kogito/codegen/rules/pkg1/file1.drl")));
 
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertRules(3, 1, generatedFiles.size());
@@ -174,6 +177,7 @@ public class IncrementalRuleCodegenTest {
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/brokenrules/brokenunit/ABrokenUnit.drl")));
 
+
         assertThrows(RuleCodegenError.class, incrementalRuleCodegen.withHotReloadMode()::generate);
     }
 
@@ -194,9 +198,9 @@ public class IncrementalRuleCodegenTest {
     public void generateGrafanaDashboards(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
-                        .withPrometheusMonitoring(true)
-                        .withMonitoring(true)
-                        .build())
+                                          .withPrometheusMonitoring(true)
+                                          .withMonitoring(true)
+                                          .build())
                 .build();
 
         IncrementalRuleCodegen incrementalRuleCodegen =
@@ -214,9 +218,9 @@ public class IncrementalRuleCodegenTest {
     public void elapsedTimeMonitoringIsWrappingEveryMethod(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()
-                        .withPrometheusMonitoring(true)
-                        .withMonitoring(true)
-                        .build())
+                                          .withPrometheusMonitoring(true)
+                                          .withMonitoring(true)
+                                          .build())
                 .build();
 
         IncrementalRuleCodegen incrementalRuleCodegen =
@@ -273,14 +277,14 @@ public class IncrementalRuleCodegenTest {
 
     private static void assertRules(int expectedRules, int expectedPackages, int expectedUnits, int actualGeneratedFiles) {
         assertEquals(expectedRules +
-                expectedPackages * 2 + // package descriptor for rules + package metadata 
-                expectedUnits * 3, // ruleUnit + ruleUnit instance + unit model
-                actualGeneratedFiles);
+                             expectedPackages * 2 + // package descriptor for rules + package metadata 
+                             expectedUnits * 3, // ruleUnit + ruleUnit instance + unit model
+                     actualGeneratedFiles);
     }
 
     private static void assertRules(int expectedRules, int expectedPackages, int actualGeneratedFiles) {
         assertEquals(expectedRules +
-                expectedPackages * 2, // package descriptor for rules + package metadata
-                actualGeneratedFiles - 2); // ignore ProjectModel and ProjectRuntime classes
+                             expectedPackages * 2, // package descriptor for rules + package metadata
+                     actualGeneratedFiles - 2); // ignore ProjectModel and ProjectRuntime classes
     }
 }

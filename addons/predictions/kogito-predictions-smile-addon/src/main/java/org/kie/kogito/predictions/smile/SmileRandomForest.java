@@ -24,9 +24,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.kie.api.runtime.process.WorkItem;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.prediction.api.PredictionOutcome;
 import org.kie.kogito.prediction.api.PredictionService;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,8 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     public static final String IDENTIFIER = "SMILERandomForest";
     private static final String UNABLE_PARSE_TEXT = "Unable to parse text";
     private static final Logger logger = LoggerFactory.getLogger(SmileRandomForest.class);
-
+    
+    
     private final AttributeDataset dataset;
     private final Map<String, Attribute> smileAttributes;
     private final Attribute outcomeAttribute;
@@ -50,7 +51,7 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     private final int numAttributes;
     private final int numberTrees;
     protected List<String> attributeNames = new ArrayList<>();
-
+    
     private Set<String> outcomeSet = new HashSet<>();
     private static final int MINIMUM_OBSERVATIONS = 1200;
     private int observations = 0;
@@ -64,10 +65,10 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     }
 
     public SmileRandomForest(Map<String, AttributeType> inputFeatures,
-            String outputFeatureName,
-            AttributeType outputFeatureType,
-            double confidenceThreshold,
-            int numberTrees) {
+                             String outputFeatureName,
+                             AttributeType outputFeatureType,
+                             double confidenceThreshold,
+                             int numberTrees) {
         super(inputFeatures, outputFeatureName, outputFeatureType, confidenceThreshold);
         this.numberTrees = numberTrees;
         smileAttributes = new HashMap<>();
@@ -80,9 +81,10 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
         numAttributes = smileAttributes.size();
         outcomeAttribute = createAttribute(outputFeatureName, outputFeatureType);
         outcomeAttributeType = outputFeatureType;
-
+        
         dataset = new AttributeDataset("dataset", smileAttributes.values().toArray(new Attribute[numAttributes]), outcomeAttribute);
     }
+
 
     protected Attribute createAttribute(String name, AttributeType type) {
         if (type == AttributeType.NOMINAL || type == AttributeType.BOOLEAN) {
@@ -93,7 +95,7 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
             return new StringAttribute(name);
         }
     }
-
+    
     protected Object convertValue(String value, AttributeType type) {
         if (type == AttributeType.NOMINAL) {
             return value;
@@ -109,7 +111,7 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     /**
      * Add the data provided as a map to a Smile {@link smile.data.Dataset}.
      *
-     * @param data A map containing the input attribute names as keys and the attribute values as values.
+     * @param data    A map containing the input attribute names as keys and the attribute values as values.
      * @param outcome The value of the outcome (output data).
      */
     public void addData(Map<String, Object> data, Object outcome) {
@@ -164,7 +166,7 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     /**
      * Returns a model prediction given the input data
      *
-     * @param task Human task data
+     * @param task      Human task data
      * @param inputData A map containing the input attribute names as keys and the attribute values as values.
      * @return A {@link PredictionOutcome} containing the model's prediction for the input data.
      */
@@ -188,8 +190,7 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
             final double confidence = posteriori[(int) prediction];
             outcomes.put("confidence", confidence);
 
-            logger.debug("task id {}, total {} observations, prediction = {}, confidence = {} (threshold = {})", ((KogitoWorkItem) task).getStringId(), this.observations, predictionStr, confidence,
-                    this.confidenceThreshold);
+            logger.debug("task id {}, total {} observations, prediction = {}, confidence = {} (threshold = {})", (( KogitoWorkItem ) task).getStringId(), this.observations, predictionStr, confidence, this.confidenceThreshold);
 
             return new PredictionOutcome(confidence, this.confidenceThreshold, outcomes);
         } else {
@@ -201,8 +202,8 @@ public class SmileRandomForest extends AbstractPredictionEngine implements Predi
     /**
      * Train the random forest model using data from the human task.
      *
-     * @param task Human task data
-     * @param inputData A map containing the input attribute names as keys and the attribute values as values.
+     * @param task       Human task data
+     * @param inputData  A map containing the input attribute names as keys and the attribute values as values.
      * @param outputData A map containing the output attribute names as keys and the attribute values as values.
      */
     @Override

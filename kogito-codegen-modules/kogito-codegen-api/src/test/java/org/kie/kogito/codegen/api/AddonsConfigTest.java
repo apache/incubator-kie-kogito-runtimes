@@ -35,8 +35,7 @@ public class AddonsConfigTest {
     }
 
     @Test
-    public void addonsAreProperlyActivated() {
-        ;
+    public void addonsAreProperlyActivated() {;
         assertThat(DEFAULT.useMonitoring()).isFalse();
         assertThat(builder().withMonitoring(true).build().useMonitoring()).isTrue();
 

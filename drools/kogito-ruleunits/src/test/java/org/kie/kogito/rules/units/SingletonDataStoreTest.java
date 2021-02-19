@@ -67,6 +67,7 @@ public class SingletonDataStoreTest {
         assertNull(probe.value);
     }
 
+
     private static class Probe<T> implements DataProcessor<T> {
 
         DataHandle handle;

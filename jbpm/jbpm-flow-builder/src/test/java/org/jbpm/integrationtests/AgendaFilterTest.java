@@ -45,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class AgendaFilterTest extends AbstractBaseTest {
-
+    
     private static final Logger logger = LoggerFactory.getLogger(AgendaFilterTest.class);
-
+    
     @Test
     public void testAgendaFilter() {
         // JBRULES-3374
@@ -115,11 +115,11 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "</process>";
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
-        kbuilder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
+        kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
+        kbuilder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
 
-        if (kbuilder.hasErrors()) {
-            fail(kbuilder.getErrors().toString());
+        if ( kbuilder.hasErrors() ) {
+            fail( kbuilder.getErrors().toString() );
         }
 
         KieSession ksession = createKieSession(kbuilder.getKnowledgePackages().toArray(new KiePackage[0]));
@@ -130,7 +130,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         message.setStatus(Message.HELLO);
         ksession.insert(message);
         ksession.startProcess("process-test");
-
+        
         assertEquals("Goodbye cruel world", message.getMessage());
     }
 
@@ -165,14 +165,14 @@ public class AgendaFilterTest extends AbstractBaseTest {
         private Integer currentSalience = null;
 
         public boolean accept(Match activation) {
-            RuleImpl rule = (RuleImpl) activation.getRule();
+            RuleImpl rule = (RuleImpl)activation.getRule();
 
-            if (currentSalience == null) {
+            if (currentSalience == null){
                 currentSalience = rule.getSalience() != null ? Integer.valueOf(rule.getSalience().toString()) : 0;
             }
             boolean nocancel = currentSalience >= Integer.valueOf(rule.getSalience().toString());
 
-            if (!nocancel) {
+            if(!nocancel){
                 logger.info("cancelling -> {}", rule.getName());
             }
 
@@ -248,15 +248,15 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "</process>";
 
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        kbuilder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
-        kbuilder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
+        kbuilder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
+        kbuilder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
 
-        if (kbuilder.hasErrors()) {
-            fail(kbuilder.getErrors().toString());
+        if ( kbuilder.hasErrors() ) {
+            fail( kbuilder.getErrors().toString() );
         }
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages(kbuilder.getKnowledgePackages());
+        kbase.addPackages( kbuilder.getKnowledgePackages() );
         KieSession ksession = kbase.newKieSession();
 
         ksession.addEventListener(new DebugAgendaEventListener());

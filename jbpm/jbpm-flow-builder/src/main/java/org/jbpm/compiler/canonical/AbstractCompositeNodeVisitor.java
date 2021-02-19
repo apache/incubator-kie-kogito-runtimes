@@ -15,13 +15,12 @@
 
 package org.jbpm.compiler.canonical;
 
-import java.util.Map;
-
+import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.kie.api.definition.process.Node;
 
-import com.github.javaparser.ast.stmt.BlockStmt;
+import java.util.Map;
 
 public abstract class AbstractCompositeNodeVisitor<T extends CompositeContextNode> extends AbstractNodeVisitor<T> {
 

@@ -22,11 +22,12 @@ import org.kie.kogito.timer.Trigger;
 
 public interface TimerJobInstance {
     public JobHandle getJobHandle();
-
+    
     public Job getJob();
-
+    
     public Trigger getTrigger();
-
+    
     public JobContext getJobContext();
-
+    
+    
 }

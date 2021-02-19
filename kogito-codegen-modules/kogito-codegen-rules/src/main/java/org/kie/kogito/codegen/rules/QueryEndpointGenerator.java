@@ -22,14 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.drools.compiler.compiler.DroolsError;
-import org.drools.modelcompiler.builder.QueryModel;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
@@ -51,6 +43,13 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
+import org.drools.compiler.compiler.DroolsError;
+import org.drools.modelcompiler.builder.QueryModel;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
@@ -70,8 +69,8 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
     private final TemplatedGenerator generator;
 
     public QueryEndpointGenerator(RuleUnitDescription ruleUnit,
-            QueryModel query,
-            KogitoBuildContext context) {
+                                  QueryModel query,
+                                  KogitoBuildContext context) {
         this.ruleUnit = ruleUnit;
         this.query = query;
         this.name = toCamelCase(query.getName());
@@ -205,7 +204,7 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
         returnMethodSingle.findAll(VariableDeclarator.class).forEach(decl -> decl.setType(toNonPrimitiveType(returnType)));
 
         if (context.getAddonsConfig().useMonitoring()) {
-            addMonitoringToResource(cu, new MethodDeclaration[] { queryMethod, queryMethodSingle }, endpointName);
+            addMonitoringToResource(cu, new MethodDeclaration[]{queryMethod, queryMethodSingle}, endpointName);
         }
     }
 
@@ -241,7 +240,8 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
                 String.format(
                         "SystemMetricsCollector.registerException(\"%s\", %s.getStackTrace()[0].toString());",
                         nameURL,
-                        exceptionName)));
+                        exceptionName)
+        ));
         cb.addStatement(new ThrowStmt(new NameExpr(exceptionName)));
         cc.setBody(cb);
         ts.setCatchClauses(new NodeList<>(cc));

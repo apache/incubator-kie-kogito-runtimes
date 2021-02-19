@@ -89,8 +89,7 @@ class KogitoProcessInstancesFactoryTest {
     }
 
     private enum TheEnum {
-        YES,
-        NO
+        YES, NO
     }
 
     private static class TheEnumMarshaller implements EnumMarshaller<TheEnum> {

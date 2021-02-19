@@ -31,7 +31,7 @@ import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 
 public class RulesCompilationProvider extends KogitoCompilationProvider {
 
-    private static final Set<String> MANAGED_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".drl", ".xls", ".xlsx", ".csv")));
+    private static final Set<String> MANAGED_EXTENSIONS = Collections.unmodifiableSet( new HashSet<>( Arrays.asList( ".drl", ".xls", ".xlsx", ".csv" ) ) );
 
     @Override
     public Set<String> handledExtensions() {
@@ -43,8 +43,8 @@ public class RulesCompilationProvider extends KogitoCompilationProvider {
         Path resources = quarkusContext.getProjectDirectory().toPath().resolve("src").resolve("main").resolve("resources");
         Collection<File> files = PackageWalker.getAllSiblings(filesToCompile);
         return IncrementalRuleCodegen.ofCollectedResources(
-                context,
-                CollectedResourceProducer.fromFiles(resources, files.toArray(new File[0])))
+                        context,
+                        CollectedResourceProducer.fromFiles(resources, files.toArray(new File[0])))
                 .withHotReloadMode();
     }
 

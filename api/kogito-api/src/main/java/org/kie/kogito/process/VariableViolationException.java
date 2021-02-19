@@ -17,7 +17,7 @@ package org.kie.kogito.process;
 
 /**
  * Thrown when there is any kind of variable violation such as missing required variable
- * or attempt to set already defined readonly variable.
+ * or attempt to set already defined readonly variable. 
  * 
  */
 public class VariableViolationException extends RuntimeException {
@@ -37,7 +37,6 @@ public class VariableViolationException extends RuntimeException {
 
     /**
      * Returns process instance id of the instance that failed.
-     * 
      * @return process instance id
      */
     public String getProcessInstanceId() {
@@ -46,7 +45,6 @@ public class VariableViolationException extends RuntimeException {
 
     /**
      * Returns variable name that was violated
-     * 
      * @return variable name
      */
     public String getVariableName() {
@@ -55,7 +53,6 @@ public class VariableViolationException extends RuntimeException {
 
     /**
      * Returns error message associated with this failure.
-     * 
      * @return error message
      */
     public String getErrorMessage() {

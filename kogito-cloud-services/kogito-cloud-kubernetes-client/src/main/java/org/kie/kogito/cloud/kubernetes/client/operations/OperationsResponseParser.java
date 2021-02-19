@@ -18,14 +18,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClientException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OperationsResponseParser {
 
@@ -43,7 +42,7 @@ public class OperationsResponseParser {
 
     /**
      * Returns the raw JSON Document Response from the API
-     * 
+     *  
      * @return
      */
     public String asJson() {
@@ -80,7 +79,6 @@ public class OperationsResponseParser {
 
     /**
      * A {@link MapWalker} with the option to turn on/off safe nulls
-     * 
      * @param safeNull
      * @return
      */

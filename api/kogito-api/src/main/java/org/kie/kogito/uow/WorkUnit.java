@@ -26,35 +26,32 @@ public interface WorkUnit<T> {
 
     /**
      * Returns data attached to the work unit
-     * 
      * @return actual data of the work unit
      */
     T data();
-
+    
     /**
      * Performs action associated with the work unit usually consuming data
      */
     void perform();
-
+    
     /**
      * Optional abort logic associated with the work unit
      */
     default void abort() {
-
+        
     }
-
+    
     /**
      * Returns desired priority for the work unit execution order
-     * 
      * @return property as positive number
      */
     default Integer priority() {
         return 100;
     }
-
+    
     /**
      * Creates new WorkUnit that has only action invoked upon completion of the unit of work
-     * 
      * @param data data associated with the work
      * @param action work to be executed on given data
      * @return WorkUnit populated with data and action
@@ -63,7 +60,7 @@ public interface WorkUnit<T> {
         return new WorkUnit<S>() {
 
             @Override
-            public S data() {
+            public S data() {                
                 return data;
             }
 
@@ -71,14 +68,13 @@ public interface WorkUnit<T> {
             public void perform() {
                 action.accept(data());
             }
-
+            
         };
     }
-
+    
     /**
      * Creates new WorkUnit that has both action invoked upon completion of the unit of work
      * and compensation invoked in case of unit of work cancellation.
-     * 
      * @param data data associated with the work
      * @param action work to be executed on given data
      * @param compensation revert action to be performed upon cancellation
@@ -88,7 +84,7 @@ public interface WorkUnit<T> {
         return new WorkUnit<S>() {
 
             @Override
-            public S data() {
+            public S data() {                
                 return data;
             }
 
@@ -96,7 +92,7 @@ public interface WorkUnit<T> {
             public void perform() {
                 action.accept(data());
             }
-
+            
             @Override
             public void abort() {
                 compensation.accept(data());

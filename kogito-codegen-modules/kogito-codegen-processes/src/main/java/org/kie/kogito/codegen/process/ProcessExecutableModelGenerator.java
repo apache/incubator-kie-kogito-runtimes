@@ -39,8 +39,7 @@ public class ProcessExecutableModelGenerator {
     }
 
     public ProcessMetaData generate() {
-        if (processMetaData != null)
-            return processMetaData;
+        if (processMetaData != null) return processMetaData;
         processMetaData = execModelGenerator.generate(workFlowProcess);
 
         // this is ugly, but this class will be refactored
@@ -55,8 +54,7 @@ public class ProcessExecutableModelGenerator {
     }
 
     public String className() {
-        if (processMetaData == null)
-            generate();
+        if (processMetaData == null) generate();
         return processMetaData.getProcessClassName();
     }
 

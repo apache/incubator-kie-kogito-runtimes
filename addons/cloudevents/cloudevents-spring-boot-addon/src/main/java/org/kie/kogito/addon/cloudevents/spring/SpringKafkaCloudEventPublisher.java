@@ -34,7 +34,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.kafka.receiver.KafkaReceiver;
@@ -77,11 +76,11 @@ public class SpringKafkaCloudEventPublisher {
         ConnectableFlux<String> broadcast = KafkaReceiver.create(options).receive().map(record -> {
             ReceiverOffset offset = record.receiverOffset();
             log.info("Received message: topic-partition={} offset={} timestamp={} key={} value={}\n",
-                    offset.topicPartition(),
-                    offset.offset(),
-                    dateFormat.format(new Date(record.timestamp())),
-                    record.key(),
-                    record.value());
+                      offset.topicPartition(),
+                      offset.offset(),
+                      dateFormat.format(new Date(record.timestamp())),
+                      record.key(),
+                      record.value());
             offset.acknowledge();
 
             return record.value();

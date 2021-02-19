@@ -15,6 +15,8 @@
 
 package org.jbpm.serverless.workflow;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.serverlessworkflow.api.Workflow;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.utils.WorkflowTestUtils;
 import org.jbpm.workflow.core.Constraint;
@@ -34,10 +36,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import io.serverlessworkflow.api.Workflow;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,7 +53,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-operation.sw.json", "/exec/single-operation.sw.yml" })
+    @ValueSource(strings = {"/exec/single-operation.sw.json", "/exec/single-operation.sw.yml"})
     public void testSingleOperationWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -87,7 +85,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-operation-with-delay.sw.json", "/exec/single-operation-with-delay.sw.yml" })
+    @ValueSource(strings = {"/exec/single-operation-with-delay.sw.json", "/exec/single-operation-with-delay.sw.yml"})
     public void testSingleOperationWithDelayWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -124,7 +122,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-service-operation.sw.json", "/exec/single-service-operation.sw.yml" })
+    @ValueSource(strings = {"/exec/single-service-operation.sw.json", "/exec/single-service-operation.sw.yml"})
     public void testSingleServiceOperationWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -164,7 +162,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-subflow.sw.json", "/exec/single-subflow.sw.yml" })
+    @ValueSource(strings = {"/exec/single-subflow.sw.json", "/exec/single-subflow.sw.yml"})
     public void testSingleSubFlowWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -187,7 +185,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-eventstate.sw.json", "/exec/single-eventstate.sw.yml" })
+    @ValueSource(strings = {"/exec/single-eventstate.sw.json", "/exec/single-eventstate.sw.yml"})
     public void testSingleEventStateWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -219,7 +217,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-eventstate-multi-eventrefs.sw.json", "/exec/single-eventstate-multi-eventrefs.sw.yml" })
+    @ValueSource(strings = {"/exec/single-eventstate-multi-eventrefs.sw.json", "/exec/single-eventstate-multi-eventrefs.sw.yml"})
     public void testSingleEventStateMultiEventRefsWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -255,7 +253,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-operation-many-functions.sw.json", "/exec/single-operation-many-functions.sw.yml" })
+    @ValueSource(strings = {"/exec/single-operation-many-functions.sw.json", "/exec/single-operation-many-functions.sw.yml"})
     public void testSingleOperationWithManyFunctionsWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -289,7 +287,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/multiple-operations.sw.json", "/exec/multiple-operations.sw.yml" })
+    @ValueSource(strings = {"/exec/multiple-operations.sw.json", "/exec/multiple-operations.sw.yml"})
     public void testMultipleOperationWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -347,7 +345,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/single-inject-state.sw.json", "/exec/single-inject-state.sw.yml" })
+    @ValueSource(strings = {"/exec/single-inject-state.sw.json", "/exec/single-inject-state.sw.yml"})
     public void testSingleInjectWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("function", process.getId());
@@ -370,7 +368,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/switch-state.sw.json", "/exec/switch-state.sw.yml" })
+    @ValueSource(strings = {"/exec/switch-state.sw.json", "/exec/switch-state.sw.yml"})
     public void testSwitchWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("switchworkflow", process.getId());
@@ -410,7 +408,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/switch-state-end-condition.sw.json", "/exec/switch-state-end-condition.sw.yml" })
+    @ValueSource(strings = {"/exec/switch-state-end-condition.sw.json", "/exec/switch-state-end-condition.sw.yml"})
     public void testSwitchWithEndConditionsWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("switchworkflow", process.getId());
@@ -448,7 +446,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/parallel-state.sw.json", "/exec/parallel-state.sw.yml" })
+    @ValueSource(strings = {"/exec/parallel-state.sw.json", "/exec/parallel-state.sw.yml"})
     public void testParallelWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("parallelworkflow", process.getId());
@@ -474,7 +472,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/transition-produce-event.sw.json", "/exec/transition-produce-event.sw.yml" })
+    @ValueSource(strings = {"/exec/transition-produce-event.sw.json", "/exec/transition-produce-event.sw.yml"})
     public void testProduceEventOnTransition(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("produceeventontransition", process.getId());
@@ -504,7 +502,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/eventbased-switch-state.sw.json", "/exec/eventbased-switch-state.sw.yml" })
+    @ValueSource(strings = {"/exec/eventbased-switch-state.sw.json", "/exec/eventbased-switch-state.sw.yml"})
     public void testEventBasedSwitchWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("eventswitchworkflow", process.getId());
@@ -550,7 +548,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/prchecker.sw.json", "/exec/prchecker.sw.yml" })
+    @ValueSource(strings = {"/exec/prchecker.sw.json", "/exec/prchecker.sw.yml"})
     public void testPrCheckerWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("prchecker", process.getId());
@@ -592,7 +590,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/transition-produce-multi-events.sw.json", "/exec/transition-produce-multi-events.sw.yml" })
+    @ValueSource(strings = {"/exec/transition-produce-multi-events.sw.json", "/exec/transition-produce-multi-events.sw.yml"})
     public void testProduceMultiEventsOnTransition(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("produceeventontransition", process.getId());
@@ -633,7 +631,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/exec/switch-state-produce-events.sw.json", "/exec/switch-state-produce-events.sw.yml" })
+    @ValueSource(strings = {"/exec/switch-state-produce-events.sw.json", "/exec/switch-state-produce-events.sw.yml"})
     public void testSwitchProduceEventsOnTransitionWorkflow(String workflowLocation) throws Exception {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertEquals("switchworkflow", process.getId());
@@ -658,7 +656,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/examples/applicantworkflow.sw.json" })
+    @ValueSource(strings = {"/examples/applicantworkflow.sw.json"})
     public void testSpecExamplesParsing(String workflowLocation) throws JsonProcessingException {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 

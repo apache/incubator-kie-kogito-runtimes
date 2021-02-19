@@ -30,10 +30,9 @@ public class ModelIdentifier {
     @JsonProperty("resourceId")
     private String resourceId;
 
-    public ModelIdentifier() {
-    }
+    public ModelIdentifier(){}
 
-    public ModelIdentifier(String resourceType, String resourceId) {
+    public ModelIdentifier(String resourceType, String resourceId){
         this.resourceType = resourceType;
         this.resourceId = resourceId;
     }

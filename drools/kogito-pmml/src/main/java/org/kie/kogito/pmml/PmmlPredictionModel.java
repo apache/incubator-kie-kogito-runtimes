@@ -42,6 +42,7 @@ public class PmmlPredictionModel implements PredictionModel {
         return new PMMLContextImpl(pmmlRequestData);
     }
 
+
     @Override
     public PMML4Result evaluateAll(PMMLContext context) {
         return pmmlRuntime.evaluate(pmmlModel.getName(), context);

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.cloudevents.CloudEventUtils;
@@ -36,9 +38,6 @@ import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
 
 public class EventDrivenDecisionController {
 
