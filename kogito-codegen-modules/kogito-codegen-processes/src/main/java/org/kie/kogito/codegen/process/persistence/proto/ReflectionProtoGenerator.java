@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.codegen.process.persistence.proto;
 
 import java.beans.BeanInfo;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -37,6 +38,8 @@ import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.toSet;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
@@ -85,6 +88,14 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             }
         }
         return parameters;
+    }
+
+    @Override
+    public Set<String> getProcessIds() {
+        return modelClasses.stream().map(c -> {
+            Generated generated = c.getAnnotation(Generated.class);
+            return generated == null ? null : generated.reference();
+        }).filter(Objects::nonNull).collect(toSet());
     }
 
     protected ProtoMessage messageFromClass(Proto proto, Class<?> clazz, String packageName, String messageComment, String fieldComment) throws Exception {

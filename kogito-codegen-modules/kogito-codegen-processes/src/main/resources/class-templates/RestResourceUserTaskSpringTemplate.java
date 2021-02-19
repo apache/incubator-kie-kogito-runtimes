@@ -1,3 +1,18 @@
+/*
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.myspace.demo;
 
 import java.util.List;
@@ -12,6 +27,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -49,12 +65,12 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$/{workItemId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<$Type$Output> completeTask(@PathVariable("id") final String id,
+    public ResponseEntity<$Type$Output> taskTransition(@PathVariable("id") final String id,
                                                      @PathVariable("workItemId") final String workItemId,
                                                      @RequestParam(value = "phase", required = false, defaultValue =
                                                              "complete") final String phase,
                                                      @RequestParam(value = "user", required = false) final String user,
-                                                     @RequestParam(value = "group", required = false, defaultValue = "") final List<String> groups,
+                                                     @RequestParam(value = "group", required = false) final List<String> groups,
                                                      @RequestBody(required = false) final $TaskOutput$ model) {
         return UnitOfWorkExecutor
                 .executeInUnitOfWork(
@@ -72,12 +88,54 @@ public class $Type$Resource {
                                 })
                                 .orElseGet(() -> ResponseEntity.notFound().build()));
     }
+    
+    @PostMapping(value = "/{id}/$taskName$/{workItemId}/phases/{phase}", produces = MediaType.APPLICATION_JSON_VALUE,
+                 consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<$Type$Output> completeTask(@PathVariable("id") final String id,
+                                                     @PathVariable("workItemId") final String workItemId,
+                                                     @PathVariable("phase") final String phase,
+                                                     @RequestParam("user") final String user,
+                                                     @RequestParam("group") final List<String> groups,
+                                                     @RequestBody(required = false) final $TaskOutput$ model) {
+        return UnitOfWorkExecutor
+                .executeInUnitOfWork(
+                        application.unitOfWorkManager(),
+                        () -> process
+                                .instances()
+                                .findById(id)
+                                .map(pi -> {
+                                    pi.transitionWorkItem(
+                                            workItemId,
+                                            HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
+                                    return ResponseEntity.ok(pi.checkError().variables().toOutput());
+                                })
+                                .orElseGet(() -> ResponseEntity.notFound().build()));
+    }
+    
+    
+    @PatchMapping(value = "/{id}/$taskName$/{workItemId}", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<$TaskOutput$> updateTask(@PathVariable("id") final String id,
+                                                     @PathVariable("workItemId") final String workItemId,
+                                                     @RequestParam("user") final String user,
+                                                     @RequestParam("group") final List<String> groups,
+                                                     @RequestBody final Map<String,Object> model) {
+        return UnitOfWorkExecutor
+                .executeInUnitOfWork(
+                        application.unitOfWorkManager(),
+                        () -> process
+                                .instances()
+                                .findById(id)
+                                .map(pi -> ResponseEntity.ok($TaskOutput$.fromMap(pi.updateWorkItem(workItemId, model,
+                                        Policies.of(user, groups)))))
+                                .orElseGet(() -> ResponseEntity.notFound().build()));
+    }
 
     @GetMapping(value = "/{id}/$taskName$/{workItemId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<$TaskInput$> getTask(@PathVariable("id") String id,
                                @PathVariable("workItemId") String workItemId,
                                @RequestParam(value = "user", required = false) final String user,
-                               @RequestParam(value = "group", required = false, defaultValue = "") final List<String> groups) {
+                               @RequestParam(value = "group", required = false) final List<String> groups) {
         return process
             .instances()
             .findById(id)
@@ -95,7 +153,7 @@ public class $Type$Resource {
     public Map<String, Object> getSchemaAndPhases(@PathVariable("id") final String id,
                                          @PathVariable("workItemId") final String workItemId,
                                          @RequestParam(value = "user", required = false) final String user,
-                                         @RequestParam(value = "group", required = false, defaultValue = "") final List<String> groups) {
+                                         @RequestParam(value = "group", required = false) final List<String> groups) {
         return JsonSchemaUtil
             .addPhases(
                 process,
@@ -112,7 +170,7 @@ public class $Type$Resource {
                                                   @RequestParam(value = "phase", required = false, defaultValue =
                                                           "abort") final String phase,
                                                   @RequestParam(value = "user", required = false) final String user,
-                                                  @RequestParam(value = "group", required = false, defaultValue = "") final List<String> groups) {
+                                                  @RequestParam(value = "group", required = false) final List<String> groups) {
         return UnitOfWorkExecutor
                 .executeInUnitOfWork(
                         application.unitOfWorkManager(),
