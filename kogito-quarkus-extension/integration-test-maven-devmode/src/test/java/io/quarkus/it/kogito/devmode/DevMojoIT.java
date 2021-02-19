@@ -92,7 +92,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("done.");
     }
 
-    @Test
+    // TODO @Test
     public void testDMNHotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-dmn");
         run(true);
@@ -156,6 +156,75 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
                .then()
                .statusCode(200)
                .body("greeting", is("Bonjour, v1"));
+
+        System.out.println("done.");
+    }
+
+    @Test
+    public void testDRLHotReload() throws Exception {
+        testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");
+        run(true);
+
+        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+
+        System.out.println("Evaluate DRL");
+        String response = given()
+               .baseUri("http://localhost:" + HTTP_TEST_PORT)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .body("{\n" +
+                     "    \"strings\": [\"v1\"]  " +
+                     "}")
+               .contentType(ContentType.JSON)
+               .when()
+               .post("/" + "q1")
+               .then()
+               .statusCode(200)
+               .extract().asString();
+        System.out.println(response);
+        
+        // --- Change #1
+        System.out.println("Beginning Change #1");
+        File source = new File(testDir, "src/main/resources/acme/rules.drl");
+        filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        Thread.sleep(1_000);
+        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        System.out.println("Evaluate DRL");
+        response = given()
+               .baseUri("http://localhost:" + HTTP_TEST_PORT)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .body("{\n" +
+                     "    \"strings\": [\"v1\"]  " +
+                     "}")
+               .contentType(ContentType.JSON)
+               .when()
+               .post("/" + "q1")
+               .then()
+               .statusCode(200)
+               .extract().asString();
+        System.out.println(response);
+        
+        // --- Change #2
+        System.out.println("Beginning Change #2");
+        filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        Thread.sleep(1_000);
+        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        System.out.println("Evaluate DRL");
+        response = given()
+               .baseUri("http://localhost:" + HTTP_TEST_PORT)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .body("{\n" +
+                     "    \"strings\": [\"v1\"]  " +
+                     "}")
+               .contentType(ContentType.JSON)
+               .when()
+               .post("/" + "q1")
+               .then()
+               .statusCode(200)
+               .extract().asString();
+        System.out.println(response);
 
         System.out.println("done.");
     }

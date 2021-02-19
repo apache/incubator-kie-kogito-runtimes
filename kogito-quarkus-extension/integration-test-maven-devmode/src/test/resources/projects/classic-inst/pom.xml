@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.company</groupId>
   <artifactId>sample-kogito</artifactId>
@@ -11,10 +13,8 @@
     <quarkus.version>@version.io.quarkus@</quarkus.version>
     <kogito.version>@project.version@</kogito.version>
     <surefire.version>2.22.2</surefire.version>
-    <compiler.version>3.8.1</compiler.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>11</maven.compiler.release> 
   </properties>
 
   <dependencyManagement>
@@ -65,6 +65,14 @@
 
   <build>
     <plugins>
+      <plugin> <!-- Maven properties were not respected to compile the RuleUnit, hence projected explicitly the maven compiler plugin settings. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>11</release>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
