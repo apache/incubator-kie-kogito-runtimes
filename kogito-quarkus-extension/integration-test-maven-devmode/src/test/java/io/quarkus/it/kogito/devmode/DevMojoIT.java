@@ -2,6 +2,8 @@ package io.quarkus.it.kogito.devmode;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
 import io.quarkus.test.devmode.util.DevModeTestUtils;
@@ -10,23 +12,46 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;;
 
-//@DisableForNative ??
+// this is not yet available as of 1.11, and I doubt is ever needed for this module.: @DisableForNative
 public class DevMojoIT extends RunAndCheckMojoTestBase {
 
-    private static final String HTTP_TEST_PORT = "8080";
+    private static final String HTTP_TEST_PORT = "65535";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    // TODO @Test
+    private String getRestResponse(String url) throws Exception {
+        AtomicReference<String> resp = new AtomicReference<>();
+        // retry on exceptions for connection refused, connection errors, etc. which will occur until the Kogito Quarkus maven project is fully built and running
+        await().pollDelay(1, TimeUnit.SECONDS)
+               .atMost(1, TimeUnit.MINUTES).until(() -> {
+                   try {
+                       String content = DevModeTestUtils.get("http://localhost:" + HTTP_TEST_PORT + url);
+                       resp.set(content);
+                       return true;
+                   } catch (Exception e) {
+                       return false;
+                   }
+               });
+        return resp.get();
+    }
+
+    @Test
     public void testBPMN2HotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-bpmn");
         run(true);
         
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(1, TimeUnit.MINUTES).until(() -> getRestResponse("/control").contains("Hello, v1"));
 
         System.out.println("Starting bpmn process");
         given()
@@ -48,8 +73,10 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("Beginning Change #1");
         File source = new File(testDir, "src/main/resources/simple.bpmn2");
         filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Ciao, v1"));
 
         System.out.println("Starting bpmn process");
         given()
@@ -70,8 +97,10 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         // --- Change #2
         System.out.println("Beginning Change #2");
         filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Bonjour, v1"));
 
         System.out.println("Starting bpmn process");
         given()
@@ -92,12 +121,17 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("done.");
     }
 
-    // TODO @Test
+    @Test
     public void testDMNHotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-dmn");
         run(true);
 
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(1, TimeUnit.MINUTES).until(() -> getRestResponse("/control").contains("Hello, v1"));
 
         System.out.println("Evaluate DMN");
         given()
@@ -118,8 +152,10 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("Beginning Change #1");
         File source = new File(testDir, "src/main/resources/hello.dmn");
         filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Ciao, v1"));
 
         System.out.println("Evaluate DMN");
         given()
@@ -139,8 +175,10 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         // --- Change #2
         System.out.println("Beginning Change #2");
         filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Bonjour, v1"));
 
         System.out.println("Evaluate DMN");
         given()
@@ -165,10 +203,15 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");
         run(true);
 
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        final File controlSource = new File(testDir, "src/main/java/control/RestControl.java");
+
+        // await Quarkus
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(1, TimeUnit.MINUTES).until(() -> getRestResponse("/control").contains("Hello, v1"));
 
         System.out.println("Evaluate DRL");
-        String response = given()
+        given()
                .baseUri("http://localhost:" + HTTP_TEST_PORT)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -180,17 +223,20 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
                .post("/" + "q1")
                .then()
                .statusCode(200)
-               .extract().asString();
-        System.out.println(response);
+               .body(containsString("Hello, v1"));
         
         // --- Change #1
         System.out.println("Beginning Change #1");
         File source = new File(testDir, "src/main/resources/acme/rules.drl");
         filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
+        Thread.sleep(5_000);
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Ciao, v1"));
+
         System.out.println("Evaluate DRL");
-        response = given()
+        given()
                .baseUri("http://localhost:" + HTTP_TEST_PORT)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -202,16 +248,19 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
                .post("/" + "q1")
                .then()
                .statusCode(200)
-               .extract().asString();
-        System.out.println(response);
+               .body(containsString("Ciao, v1"));
         
         // --- Change #2
         System.out.println("Beginning Change #2");
         filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
-        Thread.sleep(1_000);
-        DevModeTestUtils.getHttpResponse(); // await Quarkus 
+        filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
+        Thread.sleep(5_000);
+        await()
+               .pollDelay(1, TimeUnit.SECONDS)
+               .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Bonjour, v1"));
+
         System.out.println("Evaluate DRL");
-        response = given()
+        given()
                .baseUri("http://localhost:" + HTTP_TEST_PORT)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -223,8 +272,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
                .post("/" + "q1")
                .then()
                .statusCode(200)
-               .extract().asString();
-        System.out.println(response);
+               .body(containsString("Bonjour, v1"));
 
         System.out.println("done.");
     }
