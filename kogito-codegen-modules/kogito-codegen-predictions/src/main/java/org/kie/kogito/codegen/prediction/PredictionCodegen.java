@@ -27,33 +27,28 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
-import org.drools.compiler.compiler.DroolsError;
 import org.drools.compiler.kproject.ReleaseIdImpl;
-import org.drools.compiler.lang.descr.PackageDescr;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
-import org.drools.core.io.impl.DescrResource;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
-import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.rules.KogitoPackageSources;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
-import org.kie.kogito.codegen.rules.RuleCodegenError;
+import org.kie.kogito.codegen.rules.KogitoPackageSources;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
 import org.kie.kogito.pmml.openapi.factories.PMMLOASResultFactory;
 import org.kie.pmml.commons.model.HasNestedModels;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
-import org.kie.pmml.models.drools.commons.model.KiePMMLDroolsModelWithSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +117,7 @@ public class PredictionCodegen extends AbstractGenerator {
             CompositeKnowledgeBuilder batch = modelBuilder.batch();
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
             addModels(kiepmmlModels, resource, batch);
-            generatedFiles.addAll(generateRules(modelBuilder, batch));
+//            generatedFiles.addAll(generateRules(modelBuilder, batch));
         }
         return generatedFiles;
     }
@@ -145,10 +140,13 @@ public class PredictionCodegen extends AbstractGenerator {
                     String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
                     storeFile(PMML_TYPE, path, sourceMapEntry.getValue());
                 }
-                if (model instanceof KiePMMLDroolsModelWithSources) {
-                    PackageDescr packageDescr = ((KiePMMLDroolsModelWithSources)model).getPackageDescr();
-                    batch.add( new DescrResource( packageDescr ), ResourceType.DESCR );
+            Map<String, String> rulesSourceMap = ((HasSourcesMap) model).getRulesSourcesMap();
+            if (rulesSourceMap != null) {
+                for (Map.Entry<String, String> rulesSourceMapEntry : rulesSourceMap.entrySet()) {
+                    String path = rulesSourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
+                    storeFile(IncrementalRuleCodegen.RULE_TYPE, path, rulesSourceMapEntry.getValue());
                 }
+            }
                 if (!(model instanceof KiePMMLFactoryModel)) {
                     PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model, applicationCanonicalName());
                     storeFile(PMML_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
@@ -166,53 +164,6 @@ public class PredictionCodegen extends AbstractGenerator {
                 addModels(((HasNestedModels) model).getNestedModels(), resource, batch);
             }
         }
-    }
-
-    private List<GeneratedFile> generateRules(ModelBuilderImpl<KogitoPackageSources> modelBuilder,
-                                              CompositeKnowledgeBuilder batch) {
-        try {
-            batch.build();
-        } catch (RuntimeException e) {
-            for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                LOGGER.error(error.toString());
-            }
-            LOGGER.error(e.getMessage());
-            throw new RuleCodegenError(e, modelBuilder.getErrors().getErrors());
-        }
-
-        if (modelBuilder.hasErrors()) {
-            for (DroolsError error : modelBuilder.getErrors().getErrors()) {
-                LOGGER.error(error.toString());
-            }
-            throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
-        }
-
-        return generateModels(modelBuilder);
-    }
-
-    private List<GeneratedFile> generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder) {
-        List<GeneratedFile> modelFiles = new ArrayList<>();
-
-        List<org.drools.modelcompiler.builder.GeneratedFile> legacyModelFiles = new ArrayList<>();
-        for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
-            pkgSources.collectGeneratedFiles(legacyModelFiles);
-            org.drools.modelcompiler.builder.GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
-            if (reflectConfigSource != null) {
-                modelFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
-                        reflectConfigSource.getPath(),
-                        reflectConfigSource.getData()));
-            }
-        }
-
-        modelFiles.addAll(convertGeneratedRuleFile(legacyModelFiles));
-        return modelFiles;
-    }
-
-    private Collection<GeneratedFile> convertGeneratedRuleFile(Collection<org.drools.modelcompiler.builder.GeneratedFile> legacyModelFiles) {
-        return legacyModelFiles.stream().map(f -> new GeneratedFile(
-                IncrementalRuleCodegen.RULE_TYPE,
-                f.getPath(), f.getData()))
-                .collect(toList());
     }
 
     private void storeFile(GeneratedFileType type, String path, String source) {
