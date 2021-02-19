@@ -252,6 +252,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         await()
                .pollDelay(1, TimeUnit.SECONDS)
                .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Ciao, v1"));
+        Thread.sleep(5_000);
 
         System.out.println("Evaluate DRL");
         given()
@@ -276,6 +277,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         await()
                .pollDelay(1, TimeUnit.SECONDS)
                .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Bonjour, v1"));
+        Thread.sleep(5_000);
 
         System.out.println("Evaluate DRL");
         given()
