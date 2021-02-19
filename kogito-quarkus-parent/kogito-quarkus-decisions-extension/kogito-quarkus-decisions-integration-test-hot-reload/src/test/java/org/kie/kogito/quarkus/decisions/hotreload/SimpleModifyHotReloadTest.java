@@ -36,8 +36,8 @@ public class SimpleModifyHotReloadTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    private static final String PACKAGE = "org.kie.kogito.quarkus.decisions.hotreload";
-    private static final String RESOURCE_FILE_PATH = PACKAGE.replace('.', '/');
+    private static final String PACKAGE = "io.quarkus.it.kogito.decision";
+    private static final String RESOURCE_FILE_PATH = PACKAGE.replace( '.', '/' );
     private static final String DMN_RESOURCE_FILE = RESOURCE_FILE_PATH + "/TrafficViolation.dmn";
 
     private static final String HTTP_TEST_PORT = "65535";
@@ -59,10 +59,16 @@ public class SimpleModifyHotReloadTest {
     void simpleHotReloadTest() throws InterruptedException {
         executeTest("No");
 
+        // --- Change #1
         test.modifyResourceFile(DMN_RESOURCE_FILE, s -> s.replaceAll("if Total Points >= 20 then \"Yes\" else \"No\"",
-                "if Total Points >= 2 then \"Yes\" else \"No\""));
+                                                                     "if Total Points >= 2 then \"Yes\" else \"No\""));
 
         executeTest("Yes");
+
+        // --- Change #2
+        test.modifyResourceFile(DMN_RESOURCE_FILE, s -> s.replaceAll("if Total Points >= 2 then \"Yes\" else \"No\"",
+                                                                     "if Total Points >= 20 then \"Yes\" else \"No\""));
+        executeTest("No");
     }
 
     private void executeTest(String result) {
@@ -82,7 +88,7 @@ public class SimpleModifyHotReloadTest {
                         "}")
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/Traffic Violation")
+        .post("/Traffic Violation")
                 .then();
 
         response.statusCode(200)
