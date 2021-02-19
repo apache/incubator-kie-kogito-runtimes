@@ -32,10 +32,10 @@
     <module>bom</module>
     <module>deployment</module>
     <module>runtime</module>
-<!-- *** TEMP <module>integration-test</module>
-    <module>integration-test-hot-reload</module> -->
+    <module>integration-test</module>
+    <module>integration-test-hot-reload</module> 
     <module>integration-test-maven-devmode</module>
-<!--  *** TEMP <module>integration-test-legacy</module> -->
+    <module>integration-test-legacy</module> 
   </modules>
 
   <build>
