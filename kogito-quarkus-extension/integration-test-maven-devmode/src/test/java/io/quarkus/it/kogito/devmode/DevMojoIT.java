@@ -24,6 +24,7 @@ import io.quarkus.maven.it.RunAndCheckMojoTestBase;
 import io.quarkus.test.devmode.util.DevModeTestUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -216,6 +217,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("done.");
     }
 
+    @Disabled("KOGITO-4512 Investigate potential DRL hotreload issue with quarkus maven devmode")
     @Test
     public void testDRLHotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");
