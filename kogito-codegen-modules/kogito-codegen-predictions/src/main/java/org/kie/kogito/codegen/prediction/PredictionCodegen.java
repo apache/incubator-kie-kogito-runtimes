@@ -25,15 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
-import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
-import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -42,7 +38,6 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
-import org.kie.kogito.codegen.rules.KogitoPackageSources;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
 import org.kie.kogito.pmml.openapi.factories.PMMLOASResultFactory;
 import org.kie.pmml.commons.model.HasNestedModels;
@@ -110,20 +105,13 @@ public class PredictionCodegen extends AbstractGenerator {
             return Collections.emptyList();
         }
         for (PMMLResource resource : resources) {
-            ModelBuilderImpl<KogitoPackageSources> modelBuilder =
-                    new ModelBuilderImpl<>(KogitoPackageSources::dumpSources,
-                                           new KnowledgeBuilderConfigurationImpl(getClass().getClassLoader()),
-                                           new ReleaseIdImpl("dummy:dummy:0.0.0"), true, false);
-            CompositeKnowledgeBuilder batch = modelBuilder.batch();
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
-            addModels(kiepmmlModels, resource, batch);
-//            generatedFiles.addAll(generateRules(modelBuilder, batch));
+            addModels(kiepmmlModels, resource);
         }
         return generatedFiles;
     }
 
-    private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource,
-                           final CompositeKnowledgeBuilder batch) {
+    private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource) {
         for (KiePMMLModel model : kiepmmlModels) {
             if (model.getName() == null || model.getName().isEmpty()) {
                     String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
@@ -161,7 +149,7 @@ public class PredictionCodegen extends AbstractGenerator {
                     }
             }
             if (model instanceof HasNestedModels) {
-                addModels(((HasNestedModels) model).getNestedModels(), resource, batch);
+                addModels(((HasNestedModels) model).getNestedModels(), resource);
             }
         }
     }
