@@ -34,12 +34,26 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Build optaplanner') {
             steps {
                 script {
                     getNativeMavenCommand('optaplanner')
                         .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
@@ -50,12 +64,26 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Build kogito-examples') {
             steps {
                 script {
                     getNativeMavenCommand('kogito-examples')
                         .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
@@ -65,8 +93,14 @@ pipeline {
             sendNotification()
         }
         always {
-            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-            cleanWs()
+            script {
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+            }
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
+            }
         }
     }
 }
@@ -110,4 +144,8 @@ MavenCommand getNativeMavenCommand(String directory) {
                 .withProfiles(['native'])
                 .withProperty('quarkus.native.container-build', true)
                 .withProperty('quarkus.native.container-runtime', 'docker')
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('docker')
 }
