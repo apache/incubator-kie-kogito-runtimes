@@ -96,8 +96,6 @@ class CloudEventMetaFactoryGeneratorTest {
                 .flatMap(ReturnStmt::getExpression)
                 .map(Expression::toString);
 
-        System.err.println(optExpr);
-
         assertTrue(
                 optExpr.filter(str -> str.contains(String.format("\"%s\"", expectedType))).isPresent(),
                 () -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType)
