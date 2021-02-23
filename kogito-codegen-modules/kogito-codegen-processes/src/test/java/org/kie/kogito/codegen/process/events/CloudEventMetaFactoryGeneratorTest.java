@@ -17,11 +17,15 @@ package org.kie.kogito.codegen.process.events;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -32,30 +36,18 @@ import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.EventKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TopicsInformationResourceGeneratorTest {
+class CloudEventMetaFactoryGeneratorTest {
 
     @Test
     void verifyProcessWithMessageEvent() {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertThat(clazz.getDefaultConstructor()).isPresent();
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString()).contains("customer");
-    }
-
-    @Test
-    void verifyProcessWithMessageEventNoInjection() {
-        final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateCatchEventMessage.bpmn2", 1, false);
-
-        assertThat(clazz).isNotNull();
-        assertThat(clazz.findFirst(MethodDeclaration.class,
-                                   md -> md.getName().toString().equals("getTopics"))
-                           .get().getBody().get()
-                           .findFirst(BlockStmt.class,
-                                      b -> b.getStatements().get(0).asExpressionStmt().getExpression().toString().contains("NoOpTopicDiscovery")))
-                .isPresent();
+        assertEquals(1, clazz.getMethods().size());
+        assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
     }
 
     @Test
@@ -63,12 +55,9 @@ class TopicsInformationResourceGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messagestartevent/MessageStartAndEndEvent.bpmn2", 2, true);
 
         assertThat(clazz).isNotNull();
-        assertThat(clazz.getDefaultConstructor()).isPresent();
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(3);
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(EventKind.CONSUMED.name());
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(2).toExpressionStmt().get().getExpression().toString())
-                .contains("processedcustomers").contains(EventKind.PRODUCED.name());
+        assertEquals(2, clazz.getMethods().size());
+        assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
+        assertReturnExpressionContains(clazz.getMethods().get(1), "process.messagestartevent.processedcustomers", EventKind.PRODUCED);
     }
 
     @Test
@@ -76,10 +65,8 @@ class TopicsInformationResourceGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/IntermediateThrowEventMessage.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertThat(clazz.getDefaultConstructor()).isPresent();
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(EventKind.PRODUCED.name());
+        assertEquals(1, clazz.getMethods().size());
+        assertReturnExpressionContains(clazz.getMethods().get(0), "process.messageintermediateevent.customers", EventKind.PRODUCED);
     }
 
     @Test
@@ -87,10 +74,8 @@ class TopicsInformationResourceGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/messageevent/BoundaryMessageEventOnTask.bpmn2", 1, true);
 
         assertThat(clazz).isNotNull();
-        assertThat(clazz.getDefaultConstructor()).isPresent();
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(2);
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatement(1).toExpressionStmt().get().getExpression().toString())
-                .contains("customers").contains(EventKind.CONSUMED.name());
+        assertEquals(1, clazz.getMethods().size());
+        assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
     }
 
     @Test
@@ -98,8 +83,29 @@ class TopicsInformationResourceGeneratorTest {
         final ClassOrInterfaceDeclaration clazz = generateAndParseClass("/usertask/approval.bpmn2", 0, true);
 
         assertThat(clazz).isNotNull();
-        assertThat(clazz.getDefaultConstructor()).isPresent();
-        assertThat(clazz.getDefaultConstructor().get().getBody().getStatements()).hasSize(1);
+        assertTrue(clazz.getMethods().isEmpty());
+    }
+
+    private void assertReturnExpressionContains(MethodDeclaration method, String expectedType, EventKind expectedKind) {
+        Optional<String> optExpr = method.getBody()
+                .map(BlockStmt::getStatements)
+                .filter(stmtList -> stmtList.size() == 1)
+                .map(stmtList -> stmtList.get(0))
+                .filter(Statement::isReturnStmt)
+                .map(Statement::asReturnStmt)
+                .flatMap(ReturnStmt::getExpression)
+                .map(Expression::toString);
+
+        System.err.println(optExpr);
+
+        assertTrue(
+                optExpr.filter(str -> str.contains(String.format("\"%s\"", expectedType))).isPresent(),
+                () -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType)
+        );
+        assertTrue(
+                optExpr.filter(str -> str.contains(String.format("%s.%s", EventKind.class.getName(), expectedKind.name()))).isPresent(),
+                () -> String.format("Method %s doesn't contain %s as event kind", method.getName(), expectedKind.name())
+        );
     }
 
     private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers, boolean withInjection) {
