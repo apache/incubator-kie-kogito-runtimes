@@ -19,7 +19,6 @@
             <artifactId>kogito-quarkus-common</artifactId>
         </dependency>
 
-
         <!-- quarkus -->
 
         <!-- kogito -->

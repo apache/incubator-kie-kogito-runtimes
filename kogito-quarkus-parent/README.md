@@ -12,7 +12,7 @@ code is divided in runtime and deployment:
 
 ### Structure of an extension
 Each extension has a common structure:
-- `kogito-quarkus-*-extension`: root module an extension
+- `kogito-quarkus-*-extension`: root module of an extension
 - `kogito-quarkus-*`: runtime part of the extension, this is the only dependency
 the user has to use
 - `kogito-quarkus-*-deployment`: compile side of the extension
