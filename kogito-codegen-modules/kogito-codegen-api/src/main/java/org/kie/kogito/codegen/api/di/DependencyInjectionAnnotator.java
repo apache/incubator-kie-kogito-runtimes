@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -254,4 +253,18 @@ public interface DependencyInjectionAnnotator {
      * @return The URI path template value if exists
      */
     <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
+
+    /**
+     * Annotates given node with factory class annotations e.g. Configuration for Spring Boot
+     *
+     * @param node node to be annotated
+     */
+    <T extends NodeWithAnnotations<?>> T withFactoryClass(T node);
+
+    /**
+     * Annotates given node with factory method annotations e.g. Produces, Bean
+     *
+     * @param node node to be annotated
+     */
+    <T extends NodeWithAnnotations<?>> T withFactoryMethod(T node);
 }

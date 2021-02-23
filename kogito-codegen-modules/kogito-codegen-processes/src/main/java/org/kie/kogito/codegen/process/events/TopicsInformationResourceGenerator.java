@@ -22,11 +22,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
@@ -34,7 +32,6 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
@@ -63,46 +60,10 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
 
     public String generate() {
         final CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate TopicInformation REST Resource");
+
         final ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
-
-        this.addEventsMeta(template);
-
-        // in case we don't have the bean in the classpath, just ignore the injection that the generated class will use NoOp instead
-        if (context.hasDI() && context.getAddonsConfig().useCloudEvents()) {
-            context.getDependencyInjectionAnnotator().withApplicationComponent(template);
-            template.findAll(FieldDeclaration.class, fd -> fd.getVariables().get(0).getNameAsString().contains("discovery"))
-                    .forEach(context.getDependencyInjectionAnnotator()::withInjection);
-        } else {
-            template.findFirst(MethodDeclaration.class, md -> md.getName().toString().equals("getTopics"))
-                    .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain method getTopics!"))
-                    .getBody().orElseThrow(() -> new NoSuchElementException("getTopics method doesn't have a body!"))
-                    .addStatement(0, StaticJavaParser.parseStatement("discovery = new org.kie.kogito.services.event.impl.NoOpTopicDiscovery();"));
-        }
-
-        template.getMembers().sort(new BodyDeclarationComparator());
-
-        return clazz.toString();
-    }
-
-    private void addEventsMeta(final ClassOrInterfaceDeclaration template) {
-//        final BlockStmt constructorBlock = template.getDefaultConstructor().orElseThrow(() -> new IllegalArgumentException("No body found in setup method!")).getBody();
-//        final List<String> repeatLines = extractRepeatLinesFromMethod(constructorBlock);
-//        this.triggers.forEach((processId, triggers) -> triggers.forEach(t -> {
-//            String eventKind = EventKind.class.getName() + "." + EventKind.CONSUMED.name();
-//            String eventType = t.getName();
-//            // we don't know the source of a consumed event, should be provided by the producer
-//            String eventSource = "";
-//            if (TriggerMetaData.TriggerType.ProduceMessage.equals(t.getType())) {
-//                eventType = DataEventAttrBuilder.toType(t.getName(), processId);
-//                eventKind = EventKind.class.getName() + "." + EventKind.PRODUCED.name();
-//                eventSource = DataEventAttrBuilder.toSource(processId);
-//            }
-//            for (String l : repeatLines) {
-//                constructorBlock.addStatement(l.replace("$type$", eventType + "YEEEEE").replace("$source$", eventSource).replace("$kind$", eventKind));
-//            }
-//        }));
 
         this.triggers.forEach((processId, triggers) -> triggers.forEach(trigger -> {
             EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
@@ -127,8 +88,16 @@ public class TopicsInformationResourceGenerator extends AbstractEventResourceGen
             builderMethod.setType(CloudEventMeta.class);
             builderMethod.setBody(builderBody);
 
-            builderMethod.addAnnotation("javax.enterprise.inject.Produces");
+            if (context.hasDI()) {
+                context.getDependencyInjectionAnnotator().withFactoryMethod(builderMethod);
+            }
         }));
+
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withFactoryClass(template);
+        }
+
+        return clazz.toString();
     }
 
     private Map<String, List<TriggerMetaData>> filterTriggers(final List<ProcessExecutableModelGenerator> generators) {
