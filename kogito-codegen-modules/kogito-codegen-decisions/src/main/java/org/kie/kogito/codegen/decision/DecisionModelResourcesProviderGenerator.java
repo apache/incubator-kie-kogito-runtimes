@@ -131,8 +131,8 @@ public class DecisionModelResourcesProviderGenerator {
         );
 
         if (definitions.size() != 1) {
-            LOGGER.warn("Could not extract DMN version from DMN model {}", resource.getDmnModel().getName());
-            return UNKNOWN_VERSION;
+            LOGGER.error("Could not extract DMN version from DMN model {}", resource.getDmnModel().getName());
+            throw new IllegalStateException("The DMN model does not contain a unique model version in the metadata.");
         }
         return definitions.iterator().next();
     }
