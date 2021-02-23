@@ -15,8 +15,11 @@
  */
 package org.kie.kogito.codegen.decision;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -31,17 +34,22 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.api.management.GAV;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
 
 public class DecisionModelResourcesProviderGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DecisionModelResourcesProviderGenerator.class);
+    private static final String UNKNOWN_VERSION = "UNKNOWN";
 
     private final KogitoBuildContext context;
     private final String applicationCanonicalName;
@@ -98,7 +106,7 @@ public class DecisionModelResourcesProviderGenerator {
             final MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource.getCollectedResource());
             final MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
             add.addArgument(newObject(DefaultDecisionModelResource.class,
-                                      mockGAV(),
+                                      mockGAV(resource),
                                       new StringLiteralExpr(resource.getDmnModel().getNamespace()),
                                       new StringLiteralExpr(resource.getDmnModel().getName()),
                                       makeDMNType(),
@@ -107,12 +115,26 @@ public class DecisionModelResourcesProviderGenerator {
         }
     }
 
-    private ObjectCreationExpr mockGAV() {
+    private ObjectCreationExpr mockGAV(DMNResource resource) {
         //TODO See https://issues.redhat.com/browse/FAI-239
         return newObject(GAV.class,
                          new StringLiteralExpr("dummy"),
                          new StringLiteralExpr("dummy"),
-                         new StringLiteralExpr("0.0"));
+                         new StringLiteralExpr(extractModelVersion(resource)));
+    }
+
+    private String extractModelVersion(DMNResource resource) {
+        Set<String> definitions = new HashSet<>(resource.getDmnModel().getDefinitions().getNsContext().values());
+        definitions.retainAll(Arrays.asList(org.kie.dmn.model.v1_1.KieDMNModelInstrumentedBase.URI_DMN,
+                                            org.kie.dmn.model.v1_2.KieDMNModelInstrumentedBase.URI_DMN,
+                                            org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMN)
+        );
+
+        if (definitions.size() != 1) {
+            LOGGER.warn("Could not extract DMN version from DMN model {}", resource.getDmnModel().getName());
+            return UNKNOWN_VERSION;
+        }
+        return definitions.iterator().next();
     }
 
     private FieldAccessExpr makeDMNType() {
