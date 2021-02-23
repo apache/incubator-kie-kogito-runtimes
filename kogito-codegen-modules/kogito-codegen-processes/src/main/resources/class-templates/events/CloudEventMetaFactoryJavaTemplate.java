@@ -15,5 +15,6 @@
  */
 package org.kie.kogito.app;
 
-public class TopicsInformationResource {
+public class CloudEventMetaFactory {
+
 }

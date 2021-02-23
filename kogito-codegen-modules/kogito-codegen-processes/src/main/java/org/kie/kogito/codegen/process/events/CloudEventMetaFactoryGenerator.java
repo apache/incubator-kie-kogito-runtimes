@@ -30,25 +30,25 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.services.event.DataEventAttrBuilder;
 
-public class TopicsInformationResourceGenerator extends AbstractEventResourceGenerator {
+public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerator {
 
-    private static final String CLASS_NAME = "TopicsInformationResource";
+    private static final String CLASS_NAME = "CloudEventMetaFactory";
 
     private final KogitoBuildContext context;
     private final Map<String, List<TriggerMetaData>> triggers;
 
-    public TopicsInformationResourceGenerator(final KogitoBuildContext context,
-                                              final List<ProcessExecutableModelGenerator> generators) {
+    public CloudEventMetaFactoryGenerator(final KogitoBuildContext context,
+                                          final List<ProcessExecutableModelGenerator> generators) {
         super(TemplatedGenerator.builder()
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
-                .withFallbackContext(QuarkusKogitoBuildContext.CONTEXT_NAME)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, CLASS_NAME));
         this.context = context;
         this.triggers = this.filterTriggers(generators);

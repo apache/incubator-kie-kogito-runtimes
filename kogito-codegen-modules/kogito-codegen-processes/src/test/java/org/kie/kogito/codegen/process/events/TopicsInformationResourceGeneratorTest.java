@@ -25,8 +25,8 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.EventKind;
@@ -109,8 +109,8 @@ class TopicsInformationResourceGeneratorTest {
                 .withAddonsConfig(AddonsConfig.builder().withCloudEvents(true).build())
                 .build();
 
-        final TopicsInformationResourceGenerator generator =
-                new TopicsInformationResourceGenerator(
+        final CloudEventMetaFactoryGenerator generator =
+                new CloudEventMetaFactoryGenerator(
                         context,
                         ProcessGenerationUtils.execModelFromProcessFile(bpmnFile));
         if (expectedTriggers > 0) {
