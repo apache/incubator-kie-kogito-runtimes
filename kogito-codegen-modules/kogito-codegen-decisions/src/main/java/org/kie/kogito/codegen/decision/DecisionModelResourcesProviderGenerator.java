@@ -49,7 +49,6 @@ import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMe
 public class DecisionModelResourcesProviderGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DecisionModelResourcesProviderGenerator.class);
-    private static final String UNKNOWN_VERSION = "UNKNOWN";
 
     private final KogitoBuildContext context;
     private final String applicationCanonicalName;
