@@ -112,6 +112,10 @@ public final class TemplatedGenerator {
         return compilationUnitOrThrow("Missing template");
     }
 
+    public CompilationUnit newCompilationUnit() {
+        return new CompilationUnit(packageName);
+    }
+
     /**
      * Returns the valid template path if exists or null
      * @return
@@ -120,7 +124,7 @@ public final class TemplatedGenerator {
         String resourcePath = uncheckedTemplatePath();
         String fallbackPath = createTemplatePath(templateBasePath, templateName, fallbackContext);
 
-        if(getResource(resourcePath) != null) {
+        if (getResource(resourcePath) != null) {
             return resourcePath;
         }
 

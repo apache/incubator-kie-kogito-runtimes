@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -30,7 +29,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.CloudEventMeta;
@@ -46,10 +44,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
 
     public CloudEventMetaFactoryGenerator(final KogitoBuildContext context,
                                           final List<ProcessExecutableModelGenerator> generators) {
-        super(TemplatedGenerator.builder()
-                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
-                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, CLASS_NAME));
+        super(TemplatedGenerator.builder().build(context, CLASS_NAME));
         this.context = context;
         this.triggers = this.filterTriggers(generators);
     }
@@ -59,13 +54,11 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
     }
 
     public String generate() {
-        final CompilationUnit clazz = generator.compilationUnitOrThrow("Cannot generate TopicInformation REST Resource");
+        final CompilationUnit compilationUnit = generator.newCompilationUnit();
 
-        final ClassOrInterfaceDeclaration template = clazz
-                .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+        final ClassOrInterfaceDeclaration classDefinition = compilationUnit.addClass(CLASS_NAME);
 
-        this.triggers.forEach((processId, triggers) -> triggers.forEach(trigger -> {
+        this.triggers.forEach((processId, triggerList) -> triggerList.forEach(trigger -> {
             EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
                     ? EventKind.PRODUCED
                     : EventKind.CONSUMED;
@@ -84,7 +77,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
             )));
 
             String builderMethodName = String.format("buildCloudEventMeta_%s_%s", eventKind.name(), trigger.getName());
-            MethodDeclaration builderMethod = template.addMethod(builderMethodName, Modifier.Keyword.PUBLIC);
+            MethodDeclaration builderMethod = classDefinition.addMethod(builderMethodName, Modifier.Keyword.PUBLIC);
             builderMethod.setType(CloudEventMeta.class);
             builderMethod.setBody(builderBody);
 
@@ -94,10 +87,10 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         }));
 
         if (context.hasDI()) {
-            context.getDependencyInjectionAnnotator().withFactoryClass(template);
+            context.getDependencyInjectionAnnotator().withFactoryClass(classDefinition);
         }
 
-        return clazz.toString();
+        return compilationUnit.toString();
     }
 
     private Map<String, List<TriggerMetaData>> filterTriggers(final List<ProcessExecutableModelGenerator> generators) {
