@@ -18,7 +18,7 @@ package org.kie.kogito.tracing.decision.event.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.decision.DecisionModelMetadata;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelEvent {
@@ -29,7 +29,7 @@ public class ModelEvent {
 
     private final String namespace;
 
-    private final DecisionModelType type;
+    private final DecisionModelMetadata decisionModelMetadata;
 
     private final String definition;
 
@@ -71,12 +71,12 @@ public class ModelEvent {
     public ModelEvent(final @JsonProperty("gav") GAV gav,
                       final @JsonProperty("name") String name,
                       final @JsonProperty("namespace") String namespace,
-                      final @JsonProperty("type") DecisionModelType type,
+                      final @JsonProperty("decisionModelMetadata") DecisionModelMetadata decisionModelMetadata,
                       final @JsonProperty("definition") String definition) {
         this.gav = gav;
         this.name = name;
         this.namespace = namespace;
-        this.type = type;
+        this.decisionModelMetadata = decisionModelMetadata;
         this.definition = definition;
     }
 
@@ -92,8 +92,8 @@ public class ModelEvent {
         return namespace;
     }
 
-    public DecisionModelType getType() {
-        return type;
+    public DecisionModelMetadata getDecisionModelMetadata() {
+        return decisionModelMetadata;
     }
 
     public String getDefinition() {

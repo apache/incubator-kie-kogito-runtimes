@@ -22,9 +22,9 @@ import java.util.List;
 
 import io.quarkus.test.Mock;
 import org.kie.api.management.GAV;
+import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelResourcesProvider;
-import org.kie.kogito.decision.DecisionModelType;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
 
 import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
@@ -41,7 +41,9 @@ public class DecisionModelResourcesProviderMock implements DecisionModelResource
                 new GAV("test", "test", "test"),
                 TEST_MODEL_NAMESPACE,
                 TEST_MODEL_NAME,
-                DecisionModelType.DMN,
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
                 new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
 
         return Collections.singletonList(resource);

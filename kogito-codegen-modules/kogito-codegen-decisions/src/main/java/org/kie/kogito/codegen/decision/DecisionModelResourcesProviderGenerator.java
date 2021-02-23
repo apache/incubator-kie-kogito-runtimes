@@ -38,7 +38,7 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +108,7 @@ public class DecisionModelResourcesProviderGenerator {
                                       mockGAV(resource),
                                       new StringLiteralExpr(resource.getDmnModel().getNamespace()),
                                       new StringLiteralExpr(resource.getDmnModel().getName()),
-                                      makeDMNType(),
+                                      makeDecisionModelMetadata(resource),
                                       isr));
             body.addStatement(body.getStatements().size() - 1, add);
         }
@@ -119,7 +119,14 @@ public class DecisionModelResourcesProviderGenerator {
         return newObject(GAV.class,
                          new StringLiteralExpr("dummy"),
                          new StringLiteralExpr("dummy"),
-                         new StringLiteralExpr(extractModelVersion(resource)));
+                         new StringLiteralExpr("0.0"));
+    }
+
+    private ObjectCreationExpr makeDecisionModelMetadata(DMNResource resource) {
+        return newObject(DecisionModelMetadata.class,
+                         makeDMNType(),
+                         new StringLiteralExpr(extractModelVersion(resource))
+        );
     }
 
     private String extractModelVersion(DMNResource resource) {
@@ -137,7 +144,7 @@ public class DecisionModelResourcesProviderGenerator {
     }
 
     private FieldAccessExpr makeDMNType() {
-        NameExpr clazz = new NameExpr(DecisionModelType.class.getName());
+        NameExpr clazz = new NameExpr(DecisionModelMetadata.Type.class.getName());
         return new FieldAccessExpr(clazz, "DMN");
     }
 }
