@@ -17,17 +17,55 @@ package org.jbpm.workflow.instance.node;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
+import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
 
 
+
 public class BoundaryEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = -4958054074031174180L;
+
+    @Override
+    public BoundaryEventNode getEventNode() {
+        return (BoundaryEventNode) super.getEventNode();
+    }
+
+    @Override
+    public void triggerCompleted(String type, Object event) {
+        Collection<NodeInstance> nodeInstances = ((NodeInstanceContainer) getNodeInstanceContainer()).getNodeInstances().stream().map(e -> (NodeInstance) e).collect(Collectors.toList());
+
+        String attachedTo = getEventNode().getAttachedToNodeId();
+        NodeInstance nodeInstance = getAttachedToNodeActive(nodeInstances, attachedTo, type, event);
+
+        List<DataAssociation> dataAssociation = getEventNode().getOutAssociations();
+        if(!dataAssociation.isEmpty()) {
+
+            Map<String, Object> outputData = new HashMap<>();
+            // this is for backward compatibility
+            outputData.put(dataAssociation.get(0).getSources().get(0), event);
+            // added normalized data
+            outputData.put("nodeInstance", nodeInstance);
+            outputData.put("signal", type);
+            outputData.put("event", event);
+            if(nodeInstance instanceof WorkItemNodeInstance) {
+                outputData.put("workItem", ((WorkItemNodeInstance) nodeInstance).getWorkItem());
+            }
+
+            mapOutputSetVariables(this, getEventNode().getOutAssociations(), outputData);
+        }
+
+        super.triggerCompleted();
+    }
 
     @Override
     public void signalEvent(String type, Object event) {
@@ -55,6 +93,10 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
     }
 
     private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
+        return getAttachedToNodeActive(nodeInstances, attachedTo, type, event) != null;
+    }
+
+    private NodeInstance getAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
             for (NodeInstance nInstance : nodeInstances) {
                 String nodeUniqueId = (String) nInstance.getNode().getMetaData().get("UniqueId");
@@ -63,15 +105,15 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
                     // in case this is timer event make sure it corresponds to the proper node instance
                     if (type.startsWith("Timer-")) {
                         if (nInstance.getStringId().equals(event)) {
-                            return true;
+                            return nInstance;
                         }
                     } else {
-                        return true;
+                        return nInstance;
                     }
                 }
             }
         }
-        return false;
+        return null;
     }
 
     private boolean isAttachedToNodeCompleted(String attachedTo) {

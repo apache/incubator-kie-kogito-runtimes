@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 import javax.script.ScriptEngineManager;
 import org.assertj.core.api.Assumptions;
@@ -47,6 +48,7 @@ import org.jbpm.process.core.impl.DataTransformerRegistry;
 import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.event.listeners.TriggerRulesEventListener;
 import org.jbpm.process.instance.impl.AssignmentAction;
+import org.jbpm.process.instance.impl.AssignmentProducer;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
@@ -77,6 +79,7 @@ import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.NodeInstance;
+import org.kie.api.runtime.process.ProcessContext;
 import org.kie.api.runtime.process.WorkItem;
 import org.kie.api.runtime.process.WorkItemManager;
 import org.kie.internal.command.RegistryContext;
@@ -1707,10 +1710,24 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
             @Override
             public AssignmentBuilder getAssignmentBuilder() {
-                return (context, assignment, sourceExpr, targetExpr, contextResolver, isInput) -> assignment.setMetaData("Action", (AssignmentAction) (workItem, context1) -> {
-                    assertEquals("from_expression", assignment.getFrom());
-                    assertEquals("to_expression", assignment.getTo());
-                });
+                return new AssignmentBuilder() {
+
+                    @Override
+                    public void build(PackageBuildContext context,
+                                      Assignment assignment,
+                                      String sourceExpr,
+                                      String targetExpr,
+                                      BiFunction<ProcessContext, NodeInstance, Object> source,
+                                      BiFunction<ProcessContext, NodeInstance, Object> target,
+                                      AssignmentProducer producer) {
+                        assignment.setMetaData("Action", (AssignmentAction) (workItem, context1) -> {
+                            assertEquals("from_expression", assignment.getFrom());
+                            assertEquals("to_expression", assignment.getTo());
+                        });
+                    }
+                    
+                };
+
             }
 
             @Override

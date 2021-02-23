@@ -78,8 +78,12 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
         		}
         		variableScopeInstance.setVariable(this, variableName, event);
         	}
-        	triggerCompleted();
+        	triggerCompleted(type, event);
         }
+    }
+
+    protected void triggerCompleted(String type, Object event) {
+        triggerCompleted();
     }
 
     @Override

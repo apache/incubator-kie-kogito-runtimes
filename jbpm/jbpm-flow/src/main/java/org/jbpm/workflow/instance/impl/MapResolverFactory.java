@@ -15,27 +15,28 @@
  */
 package org.jbpm.workflow.instance.impl;
 
-import org.kie.api.runtime.process.WorkItem;
+import java.util.Map;
+
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.ImmutableDefaultFactory;
 import org.mvel2.integration.impl.SimpleValueResolver;
 
-public class WorkItemResolverFactory extends ImmutableDefaultFactory {
+public class MapResolverFactory extends ImmutableDefaultFactory {
 
-	private static final long serialVersionUID = 510l;
-	
-	private WorkItem workItem;
-	
-	public WorkItemResolverFactory(WorkItem workItem) {
-		this.workItem = workItem;
-	}
+    private static final long serialVersionUID = 510l;
 
-	public boolean isResolveable(String name) {
-		return workItem.getResult(name) != null;
-	}
-	
-	public VariableResolver getVariableResolver(String name) {
-		return new SimpleValueResolver(workItem.getResult(name));
-	}
-	
+    private Map<String, Object> data;
+
+    public MapResolverFactory(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public boolean isResolveable(String name) {
+        return data.get(name) != null;
+    }
+
+    public VariableResolver getVariableResolver(String name) {
+        return new SimpleValueResolver(data.get(name));
+    }
+
 }
