@@ -51,6 +51,13 @@ pipeline {
                         .run('validate')
                 }
             }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Check Runtimes integration-tests with persistence') {
             steps {
@@ -58,6 +65,13 @@ pipeline {
                     getMavenCommand('integration-tests')
                         .withProfiles(['persistence'])
                         .run('clean verify')
+                }
+            }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
@@ -73,6 +87,13 @@ pipeline {
                         .run('clean install')
                 }
             }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Build Apps') {
             steps {
@@ -80,11 +101,25 @@ pipeline {
                     getMavenCommand('kogito-apps').run('clean install')
                 }
             }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Build Examples') {
             steps {
                 script {
                     getMavenCommand('kogito-examples').run('clean install')
+                }
+            }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
@@ -96,6 +131,13 @@ pipeline {
                         .run('clean verify')
                 }
             }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
         stage('Check Examples with events') {
             steps {
@@ -105,13 +147,21 @@ pipeline {
                         .run('clean verify')
                 }
             }
+            post {
+                cleanup {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
         }
     }
     post {
         always {
-            sh '$WORKSPACE/trace.sh'
-            junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-            cleanWs()
+            script {
+                sh '$WORKSPACE/trace.sh'
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+            }
         }
         failure {
             script {
@@ -126,6 +176,11 @@ pipeline {
         fixed {
             script {
                 mailer.sendEmail_fixedPR()
+            }
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
             }
         }
     }
@@ -157,4 +212,8 @@ MavenCommand getMavenCommand(String directory){
     return new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .inDirectory(directory)
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('docker')
 }
