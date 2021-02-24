@@ -144,7 +144,7 @@ public class DecisionModelResourcesProviderGenerator {
     }
 
     private FieldAccessExpr makeDMNType() {
-        NameExpr clazz = new NameExpr(DecisionModelMetadata.Type.class.getName());
+        NameExpr clazz = new NameExpr(DecisionModelMetadata.Type.class.getCanonicalName());
         return new FieldAccessExpr(clazz, "DMN");
     }
 }
