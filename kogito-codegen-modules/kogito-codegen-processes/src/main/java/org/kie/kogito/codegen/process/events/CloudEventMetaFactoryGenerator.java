@@ -73,7 +73,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         final MethodDeclaration templatedBuildMethod = classDefinition
                 .findAll(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_")).get(0);
 
-        validateTemplatedBuildMethodDeclaration(templatedBuildMethod);
+        validateTemplatedBuildMethodDeclaration(generator, templatedBuildMethod);
 
         this.triggers.forEach((processId, triggerList) -> triggerList.forEach(trigger -> {
             EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
@@ -128,7 +128,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         return Collections.emptyMap();
     }
 
-    private void validateTemplatedBuildMethodDeclaration(MethodDeclaration methodDeclaration) {
+    public static void validateTemplatedBuildMethodDeclaration(TemplatedGenerator generator, MethodDeclaration methodDeclaration) {
         if (methodDeclaration == null) {
             throw new InvalidTemplateException(generator, "templated build method declaration is null");
         }

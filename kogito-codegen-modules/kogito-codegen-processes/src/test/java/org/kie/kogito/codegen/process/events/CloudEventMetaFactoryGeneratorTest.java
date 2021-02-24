@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.codegen.process.events;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,11 +33,14 @@ import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.EventKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CloudEventMetaFactoryGeneratorTest {
@@ -86,6 +90,57 @@ class CloudEventMetaFactoryGeneratorTest {
         assertTrue(clazz.getMethods().isEmpty());
     }
 
+    @Test
+    void testValidateTemplatedBuildMethodDeclaration() {
+        TemplatedGenerator tgMock = TemplatedGenerator.builder().build(getContext(true), "CloudEventMetaFactory");
+
+        assertThrows(InvalidTemplateException.class,
+                () -> CloudEventMetaFactoryGenerator.validateTemplatedBuildMethodDeclaration(tgMock, null),
+                "validate must fail when input MethodDeclaration is null"
+        );
+
+        Map<String, String> brokenMethodsMap = new HashMap<>();
+        brokenMethodsMap.put(
+                "public CloudEventMeta buildCloudEventMeta() { return new CloudEventMeta($type$, $source$, $kind$); }",
+                "validate must fail when method name doesn't contain $methodName$ placeholder"
+        );
+        brokenMethodsMap.put(
+                "public void buildCloudEventMeta_$methodName$() { }",
+                "validate must fail when method name doesn't contain a return statement"
+        );
+        brokenMethodsMap.put(
+                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return null; }",
+                "validate must fail when method name doesn't return a new CloudEventMeta"
+        );
+        brokenMethodsMap.put(
+                "public Object buildCloudEventMeta_$methodName$() { return new Object(); }",
+                "validate must fail when method name doesn't return a new CloudEventMeta"
+        );
+        brokenMethodsMap.put(
+                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return new CloudEventMeta($a$, $source$, $kind$); }",
+                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
+        );
+        brokenMethodsMap.put(
+                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return new CloudEventMeta($type$, $b$, $kind$); }",
+                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
+        );
+        brokenMethodsMap.put(
+                "public CloudEventMeta buildCloudEventMeta() { return new CloudEventMeta($type$, $source$, $c$); }",
+                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
+        );
+
+        brokenMethodsMap.forEach((code, errorMsg) -> assertThrows(InvalidTemplateException.class,
+                () -> CloudEventMetaFactoryGenerator.validateTemplatedBuildMethodDeclaration(tgMock, parseMethodDeclaration(code)),
+                errorMsg
+        ));
+    }
+
+    private MethodDeclaration parseMethodDeclaration(String code) {
+        return StaticJavaParser.parse("class CloudEventMetaFactory { " + code + " }")
+                .findFirst(MethodDeclaration.class)
+                .orElseThrow(IllegalStateException::new);
+    }
+
     private void assertReturnExpressionContains(MethodDeclaration method, String expectedType, EventKind expectedKind) {
         Optional<String> optExpr = method.getBody()
                 .map(BlockStmt::getStatements)
@@ -107,11 +162,7 @@ class CloudEventMetaFactoryGeneratorTest {
     }
 
     private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers, boolean withInjection) {
-        KogitoBuildContext context = (withInjection ?
-                QuarkusKogitoBuildContext.builder() :
-                JavaKogitoBuildContext.builder())
-                .withAddonsConfig(AddonsConfig.builder().withCloudEvents(true).build())
-                .build();
+        KogitoBuildContext context = getContext(withInjection);
 
         final CloudEventMetaFactoryGenerator generator =
                 new CloudEventMetaFactoryGenerator(
@@ -134,5 +185,13 @@ class CloudEventMetaFactoryGeneratorTest {
                 .getClassByName(generator.getClassName())
                 .orElseThrow(() -> new IllegalArgumentException("Class does not exists"));
         return clazz;
+    }
+
+    private KogitoBuildContext getContext(boolean withInjection) {
+        return (withInjection ?
+                QuarkusKogitoBuildContext.builder() :
+                JavaKogitoBuildContext.builder())
+                .withAddonsConfig(AddonsConfig.builder().withCloudEvents(true).build())
+                .build();
     }
 }
