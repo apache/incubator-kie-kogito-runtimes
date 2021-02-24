@@ -71,7 +71,7 @@ public class SpringBootModelEventEmitterTest {
         when(model.getGav()).thenReturn(new GAV("groupId", "artifactId", "version"));
         when(model.getModelName()).thenReturn("name");
         when(model.getNamespace()).thenReturn("namespace");
-        when(model.getModelType()).thenReturn(
+        when(model.getModelMetadata()).thenReturn(
                 new DecisionModelMetadata(
                         DecisionModelMetadata.Type.DMN,
                         "http://www.omg.org/spec/DMN/20151101/dmn.xsd")

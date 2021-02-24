@@ -44,8 +44,8 @@ public class DefaultDecisionModelResourceTest {
         assertEquals(GAV, resource.getGav());
         assertEquals("name", resource.getModelName());
         assertEquals("namespace", resource.getNamespace());
-        assertEquals(DecisionModelMetadata.Type.DMN, resource.getModelType().getType());
-        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", resource.getModelType().getSpecVersion());
+        assertEquals(DecisionModelMetadata.Type.DMN, resource.getModelMetadata().getType());
+        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", resource.getModelMetadata().getSpecVersion());
     }
 
     @Test

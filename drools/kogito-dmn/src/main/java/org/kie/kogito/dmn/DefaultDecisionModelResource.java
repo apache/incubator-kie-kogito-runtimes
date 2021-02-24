@@ -63,7 +63,7 @@ public class DefaultDecisionModelResource implements DecisionModelResource {
     }
 
     @Override
-    public DecisionModelMetadata getModelType() {
+    public DecisionModelMetadata getModelMetadata() {
         return type;
     }
 

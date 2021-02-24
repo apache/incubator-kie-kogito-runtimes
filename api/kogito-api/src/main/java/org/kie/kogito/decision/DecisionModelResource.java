@@ -27,5 +27,5 @@ public interface DecisionModelResource extends Supplier<String> {
 
     String getModelName();
 
-    DecisionModelMetadata getModelType();
+    DecisionModelMetadata getModelMetadata();
 }
