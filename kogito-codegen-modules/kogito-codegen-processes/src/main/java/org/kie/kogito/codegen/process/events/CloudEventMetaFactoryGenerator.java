@@ -19,16 +19,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.CloudEventMeta;
@@ -44,7 +52,10 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
 
     public CloudEventMetaFactoryGenerator(final KogitoBuildContext context,
                                           final List<ProcessExecutableModelGenerator> generators) {
-        super(TemplatedGenerator.builder().build(context, CLASS_NAME));
+        super(TemplatedGenerator.builder()
+                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .build(context, CLASS_NAME));
         this.context = context;
         this.triggers = this.filterTriggers(generators);
     }
@@ -54,16 +65,21 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
     }
 
     public String generate() {
-        final CompilationUnit compilationUnit = generator.newCompilationUnit();
+        final CompilationUnit compilationUnit = generator.compilationUnitOrThrow("Cannot generate CloudEventMetaFactory");
 
-        final ClassOrInterfaceDeclaration classDefinition = compilationUnit.addClass(CLASS_NAME);
+        final ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+
+        final MethodDeclaration templatedBuildMethod = classDefinition
+                .findAll(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_")).get(0);
+
+        validateTemplatedBuildMethodDeclaration(templatedBuildMethod);
 
         this.triggers.forEach((processId, triggerList) -> triggerList.forEach(trigger -> {
             EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
                     ? EventKind.PRODUCED
                     : EventKind.CONSUMED;
 
-            String strEventKind = String.format("%s.%s", EventKind.class.getName(), eventKind.name());
             String strEventType = eventKind == EventKind.PRODUCED
                     ? DataEventAttrBuilder.toType(trigger.getName(), processId)
                     : trigger.getName();
@@ -71,20 +87,24 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                     ? DataEventAttrBuilder.toSource(processId)
                     : "";
 
-            BlockStmt builderBody = new BlockStmt();
-            builderBody.addStatement(new ReturnStmt(String.format("new CloudEventMeta(\"%s\", \"%s\", %s)",
-                    strEventType, strEventSource, strEventKind
-            )));
+            MethodDeclaration builderMethod = templatedBuildMethod.clone();
 
-            String builderMethodName = String.format("buildCloudEventMeta_%s_%s", eventKind.name(), trigger.getName());
-            MethodDeclaration builderMethod = classDefinition.addMethod(builderMethodName, Modifier.Keyword.PUBLIC);
-            builderMethod.setType(CloudEventMeta.class);
-            builderMethod.setBody(builderBody);
+            String builderMethodName = String.format("%s_%s", eventKind.name(), trigger.getName());
+            builderMethod.setName(builderMethod.getName().asString().replace("$methodName$", builderMethodName));
+
+            ObjectCreationExpr objectCreationExpr = builderMethod.findAll(ObjectCreationExpr.class).get(0);
+            objectCreationExpr.setArgument(0, new StringLiteralExpr(strEventType));
+            objectCreationExpr.setArgument(1, new StringLiteralExpr(strEventSource));
+            objectCreationExpr.setArgument(2, new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), eventKind.name()));
 
             if (context.hasDI()) {
                 context.getDependencyInjectionAnnotator().withFactoryMethod(builderMethod);
             }
+
+            classDefinition.addMember(builderMethod);
         }));
+
+        templatedBuildMethod.remove();
 
         if (context.hasDI()) {
             context.getDependencyInjectionAnnotator().withFactoryClass(classDefinition);
@@ -100,11 +120,43 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                     .stream()
                     .filter(m -> m.generate().getTriggers() != null && !m.generate().getTriggers().isEmpty())
                     .forEach(m -> filteredTriggers.put(m.getProcessId(),
-                                                   m.generate().getTriggers().stream()
-                                                 .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
-                                                 .collect(Collectors.toList())));
+                            m.generate().getTriggers().stream()
+                                    .filter(t -> !TriggerMetaData.TriggerType.Signal.equals(t.getType()))
+                                    .collect(Collectors.toList())));
             return filteredTriggers;
         }
         return Collections.emptyMap();
+    }
+
+    private void validateTemplatedBuildMethodDeclaration(MethodDeclaration methodDeclaration) {
+        if (methodDeclaration == null) {
+            throw new InvalidTemplateException(generator, "templated build method declaration is null");
+        }
+
+        if (!methodDeclaration.getName().toString().contains("$methodName$")) {
+            throw new InvalidTemplateException(generator, "missing $methodName$ placeholder in templated build method declaration");
+        }
+
+        List<ReturnStmt> returnStmtList = methodDeclaration.findAll(ReturnStmt.class);
+        if (returnStmtList.size() != 1) {
+            throw new InvalidTemplateException(generator, "templated build method declaration must contain exactly one return statement");
+        }
+
+        Optional<ObjectCreationExpr> optObjectCreationExprExpr = returnStmtList.get(0).getExpression()
+                .filter(Expression::isObjectCreationExpr)
+                .map(Expression::asObjectCreationExpr)
+                .filter(ocExpr -> {
+                    String typeName = ocExpr.getType().getNameAsString();
+                    return typeName.equals(CloudEventMeta.class.getSimpleName()) || typeName.equals(CloudEventMeta.class.getName());
+                })
+                .filter(ocExpr -> ocExpr.getArguments().size() == 3)
+                .filter(ocExpr -> ocExpr.getArguments().get(0).toString().equals("$type$")
+                        && ocExpr.getArguments().get(1).toString().equals("$source$")
+                        && ocExpr.getArguments().get(2).toString().equals("$kind$")
+                );
+
+        if (!optObjectCreationExprExpr.isPresent()) {
+            throw new InvalidTemplateException(generator, "templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta");
+        }
     }
 }

@@ -393,9 +393,11 @@ public class ProcessCodegen extends AbstractGenerator {
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
-        final CloudEventMetaFactoryGenerator topicsGenerator =
-                new CloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
-        storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
+        if (context().hasDI()) {
+            final CloudEventMetaFactoryGenerator topicsGenerator =
+                    new CloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
+            storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
+        }
 
         for (ProcessInstanceGenerator pi : pis) {
             storeFile(PROCESS_INSTANCE_TYPE, pi.generatedFilePath(), pi.generate());
