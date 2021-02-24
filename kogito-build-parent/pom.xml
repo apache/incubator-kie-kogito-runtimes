@@ -142,7 +142,7 @@
     <version.io.rest-assured>4.3.0</version.io.rest-assured>
     <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.serverlessworkflow>1.0.3.Final</version.io.serverlessworkflow>
-    <version.io.smallrye-open-api-core>2.0.20</version.io.smallrye-open-api-core>
+    <version.io.smallrye-open-api-core>2.0.22</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive>2.8.0</version.io.smallrye.reactive>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>1.3.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
@@ -1533,9 +1533,8 @@ limitations under the License.
                               <!-- To avoid a complaint about duplicate classes as KogitoProcessInstancesFactory.class is required in every persistence addon that is mutually exclusive. -->
                               <exclude name="**/target/classes/org/kie/kogito/persistence/KogitoProcessInstancesFactory.class"/>
                               <!-- To avoid a complaint about duplicate classes created by code generation. -->
-                              <exclude name="**/target/classes/**/Application.class"/>
-                              <exclude name="**/target/classes/**/ApplicationConfig.class"/>
-                              <exclude name="**/target/classes/**/RuleUnits.class"/>
+                              <exclude name="**/target/classes/org/kie/kogito/app/**/*.class"/>
+                              <exclude name="**/target/classes/org/drools/project/model/**/*.class"/>
                               <!-- To avoid a complaint about duplicate classes created by code generation in IT tests. -->
                               <exclude name="**/it/integration-tests-springboot-it/target/classes/**/*.class"/>
                               <exclude name="**/it/integration-tests-springboot-kakfa-it/target/classes/**/*.class"/>
@@ -1545,7 +1544,7 @@ limitations under the License.
                               <exclude name="**/integration-test/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test-legacy/**/target/classes/**/*.class"/>
                               <exclude name="**/cloudevents-quarkus-addon-it/target/classes/**/*.class"/>
-                              <exclude name="**/cloudevents-spring-boot-addon-it/target/classes/**/*.class"/>
+                              <exclude name="**/it/cloudevents-spring-boot-addon-it-invoked/target/classes/**/*.class"/>
                             </fileset>
                           </classfiles>
                           <sourcefiles encoding="UTF-8">
