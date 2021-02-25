@@ -69,9 +69,8 @@ public class TestWorkItemHandler implements KogitoWorkItemHandler {
     @Override
     public void transitionToPhase(KogitoWorkItem workItem, KogitoWorkItemManager manager, Transition<?> transition) {
 
-
-        if ( transition.phase().equals( Complete.ID ) ) {
-            ((InternalKogitoWorkItemManager) manager).internalCompleteWorkItem( (InternalKogitoWorkItem) workItem );
+        if (transition.phase().equals(Complete.ID)) {
+            ((InternalKogitoWorkItemManager) manager).internalCompleteWorkItem((InternalKogitoWorkItem) workItem);
         }
     }
 }

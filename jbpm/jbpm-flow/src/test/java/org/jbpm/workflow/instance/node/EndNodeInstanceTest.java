@@ -40,7 +40,7 @@ public class EndNodeInstanceTest extends AbstractBaseTest {
     public void testEndNode() {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         MockNode mockNode = new MockNode();
-        MockNodeInstanceFactory factory = new MockNodeInstanceFactory( new MockNodeInstance( mockNode ) );
+        MockNodeInstanceFactory factory = new MockNodeInstanceFactory(new MockNodeInstance(mockNode));
         NodeInstanceFactoryRegistry.getInstance(kruntime.getKieRuntime().getEnvironment()).register(mockNode.getClass(), factory);
 
         WorkflowProcessImpl process = new WorkflowProcessImpl();

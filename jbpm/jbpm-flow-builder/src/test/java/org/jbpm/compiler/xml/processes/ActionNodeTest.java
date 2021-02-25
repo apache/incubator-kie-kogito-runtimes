@@ -30,7 +30,7 @@ public class ActionNodeTest extends AbstractBaseTest {
 
     @Test
     public void testSingleActionNode() throws Exception {
-        builder.add( new ClassPathResource( "ActionNodeTest.xml", ActionNodeTest.class ), ResourceType.DRF );
+        builder.add(new ClassPathResource("ActionNodeTest.xml", ActionNodeTest.class), ResourceType.DRF);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();

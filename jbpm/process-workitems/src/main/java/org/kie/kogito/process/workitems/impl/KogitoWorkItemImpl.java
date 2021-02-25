@@ -264,6 +264,6 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
 
     @Override
     public void setProcessInstance(KogitoProcessInstance processInstance) {
-        this.processInstance =  processInstance;
+        this.processInstance = processInstance;
     }
 }

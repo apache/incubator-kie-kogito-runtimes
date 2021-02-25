@@ -40,7 +40,7 @@ public interface KogitoEventListener {
      * @param event the data associated with this event
      */
     void signalEvent(String type,
-                     Object event);
+            Object event);
 
     /**
      * Returns the event types this event listener is interested in.

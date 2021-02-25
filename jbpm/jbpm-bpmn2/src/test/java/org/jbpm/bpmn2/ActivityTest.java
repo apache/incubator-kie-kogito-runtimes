@@ -74,7 +74,6 @@ import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.internal.command.RegistryContext;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -414,7 +413,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
             KogitoProcessInstance processInstance1 = kruntime.getProcessInstance(pId);
             assertNotNull(processInstance1);
-            NodeInstance nodeInstance = (( KogitoNodeInstanceContainer ) processInstance1)
+            NodeInstance nodeInstance = ((KogitoNodeInstanceContainer) processInstance1)
                     .getNodeInstance(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
 
             assertNotNull(nodeInstance);

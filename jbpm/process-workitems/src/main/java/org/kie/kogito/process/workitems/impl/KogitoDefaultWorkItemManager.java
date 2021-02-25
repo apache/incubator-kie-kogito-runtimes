@@ -25,16 +25,15 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.drools.core.process.instance.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.internal.runtime.Closeable;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
-import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
-import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
+import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 
 import static org.kie.kogito.internal.process.runtime.KogitoWorkItem.ABORTED;
 import static org.kie.kogito.internal.process.runtime.KogitoWorkItem.COMPLETED;
@@ -67,7 +66,7 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
     }
 
     @Override
-    public void internalAddWorkItem( InternalKogitoWorkItem workItem) {
+    public void internalAddWorkItem(InternalKogitoWorkItem workItem) {
         workItems.put(workItem.getStringId(), workItem);
     }
 

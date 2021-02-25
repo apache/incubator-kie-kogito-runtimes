@@ -28,9 +28,9 @@ import org.kie.internal.runtime.conf.ForceEagerActivationOption;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 public abstract class AbstractBaseTest {
- 
+
     protected KnowledgeBuilderImpl builder;
-   
+
     @BeforeEach
     public void before() {
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
@@ -43,17 +43,17 @@ public abstract class AbstractBaseTest {
     @Deprecated
     public KieSession createKieSession() {
         KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
-        conf.setOption( ForceEagerActivationOption.YES );
+        conf.setOption(ForceEagerActivationOption.YES);
         return builder.newKieBase().newKieSession(conf, null);
     }
 
     @BeforeAll
-    public static void configure() { 
+    public static void configure() {
         LoggingPrintStream.interceptSysOutSysErr();
     }
-    
+
     @AfterAll
-    public static void reset() { 
+    public static void reset() {
         LoggingPrintStream.resetInterceptSysOutSysErr();
     }
 }

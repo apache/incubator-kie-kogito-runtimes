@@ -65,12 +65,12 @@ public class StartNodeInstanceTest extends AbstractBaseTest {
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setProcess(process);
-        processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession() );
-        
-        assertEquals(  ProcessInstance.STATE_PENDING, processInstance.getState() );
-        processInstance.start();        
-        assertEquals(  ProcessInstance.STATE_ACTIVE, processInstance.getState() );
-        
+        processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
+
+        assertEquals(ProcessInstance.STATE_PENDING, processInstance.getState());
+        processInstance.start();
+        assertEquals(ProcessInstance.STATE_ACTIVE, processInstance.getState());
+
         MockNodeInstance mockNodeInstance = mockNodeFactory.getMockNodeInstance();
         List<NodeInstance> triggeredBy =
                 mockNodeInstance.getTriggers().get(Node.CONNECTION_DEFAULT_TYPE);

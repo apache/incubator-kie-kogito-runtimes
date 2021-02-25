@@ -101,14 +101,14 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
                         "    <connection from=\"3\" to=\"4\" />\n" +
                         "  </connections>\n" +
                         "</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
+        builder.add(new ReaderResource(source), ResourceType.DRF);
         for (KnowledgeBuilderError error : builder.getErrors()) {
             logger.error(error.toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
-		kruntime.getKieSession().setGlobal("list", list);
+        kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.dynamic");
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(4, list.size());
@@ -165,21 +165,21 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
                         "    <connection from=\"3\" to=\"4\" />\n" +
                         "  </connections>\n" +
                         "</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
-		for (KnowledgeBuilderError error : builder.getErrors()) {
-			logger.error(error.toString());
-		}
+        builder.add(new ReaderResource(source), ResourceType.DRF);
+        for (KnowledgeBuilderError error : builder.getErrors()) {
+            logger.error(error.toString());
+        }
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         TestWorkItemHandler testHandler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Work", testHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.dynamic");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         assertEquals(1, list.size());
-		KogitoWorkItem workItem = testHandler.getWorkItem();
+        KogitoWorkItem workItem = testHandler.getWorkItem();
         assertNotNull(workItem);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
@@ -274,38 +274,38 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
                         "</process>");
         Reader source2 = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-                "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-                "         type=\"RuleFlow\" name=\"subflow\" id=\"org.drools.subflow\" package-name=\"org.drools\" >\n" +
-                "\n" +
-                "  <header>\n" +
-        		"    <variables>\n" +
-        		"      <variable name=\"x\" >\n" +
-        		"        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-        		"        <value>SomeText</value>\n" +
-        		"      </variable>\n" +
-        		"    </variables>\n" +
-                "  </header>\n" +
-                "\n" +
-                "  <nodes>\n" +
-                "    <start id=\"1\" name=\"Start\" />\n" + 
-                "    <actionNode id=\"2\" name=\"Action\" >\n" +
-                "      <action type=\"expression\" dialect=\"mvel\" >System.out.println(x);</action>\n" +
-                "    </actionNode>\n" +
-                "    <workItem id=\"3\" name=\"Work\" >\n" +
-	            "      <work name=\"Human Task\" />\n" +
-	            "    </workItem>\n" +
-	            "    <end id=\"4\" name=\"End\" />\n" +
-                "  </nodes>\n" +
-                "\n" +
-                "  <connections>\n" +
-                "    <connection from=\"1\" to=\"2\" />\n" +
-                "    <connection from=\"2\" to=\"3\" />\n" +
-                "    <connection from=\"3\" to=\"4\" />\n" +
-                "  </connections>\n" +
-                "</process>");
-		builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"subflow\" id=\"org.drools.subflow\" package-name=\"org.drools\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"x\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>SomeText</value>\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <actionNode id=\"2\" name=\"Action\" >\n" +
+                        "      <action type=\"expression\" dialect=\"mvel\" >System.out.println(x);</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <workItem id=\"3\" name=\"Work\" >\n" +
+                        "      <work name=\"Human Task\" />\n" +
+                        "    </workItem>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "  </connections>\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         builder.add(ResourceFactory.newReaderResource(source2), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         KieRuntimeLogger logger = KogitoRuntimeLoggerFactory.newFileLogger(kruntime.getKieSession(), "test");

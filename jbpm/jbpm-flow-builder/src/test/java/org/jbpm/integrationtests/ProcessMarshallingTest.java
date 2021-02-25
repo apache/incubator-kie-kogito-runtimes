@@ -48,7 +48,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(ProcessMarshallingTest.class);
 
     @Test
-	public void testMarshallingProcessInstancesAndGlobals() throws Exception {
+    public void testMarshallingProcessInstancesAndGlobals() throws Exception {
         String rule = "package org.test;\n";
         rule += "import org.jbpm.integrationtests.test.Person\n";
         rule += "global java.util.List list\n";
@@ -82,8 +82,8 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newReaderResource(new StringReader(rule)), ResourceType.DRL);
         builder.add(ResourceFactory.newReaderResource(new StringReader(process)), ResourceType.DRF);
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
-		kruntime.getKieRuntime().getEnvironment().set("org.jbpm.rule.task.waitstate", true);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        kruntime.getKieRuntime().getEnvironment().set("org.jbpm.rule.task.waitstate", true);
 
         List<Object> list = new ArrayList<Object>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -94,7 +94,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
 
         assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
 
-		kruntime.getKieSession().fireAllRules();
+        kruntime.getKieSession().fireAllRules();
 
         assertEquals(1, ((List<Object>) kruntime.getKieSession().getGlobal("list")).size());
         assertEquals(p, ((List<Object>) kruntime.getKieSession().getGlobal("list")).get(0));
@@ -146,9 +146,9 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
                         "    <connection from=\"2\" to=\"3\"/>\n" +
                         "  </connections>\n" +
                         "</process>";
-		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email", handler);
@@ -157,7 +157,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         kruntime.startProcess("org.test.ruleflow", variables);
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
-		assertNotNull(handler.getWorkItem());
+        assertNotNull(handler.getWorkItem());
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         VariableScopeInstance variableScopeInstance =
@@ -243,9 +243,9 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
                         "    </connections>\n" +
                         "\n" +
                         "</process>\n";
-		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         TestListWorkItemHandler handler = new TestListWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -299,11 +299,11 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
                         "    </connections>\n" +
                         "\n" +
                         "</process>\n";
-		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		kruntime.startProcess("com.sample.ruleflow");
+        kruntime.startProcess("com.sample.ruleflow");
         assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
         kruntime.getKieSession().halt();
 
@@ -381,11 +381,11 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
                         "    <connection from=\"2\" to=\"3\"/>\n" +
                         "  </connections>\n" +
                         "</process>";
-		builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		TestWorkItemHandler handler = new TestWorkItemHandler();
+        TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Report", handler);
         Map<String, Object> variables = new HashMap<String, Object>();
         variables.put("myVariable", "ThisIsMyValue");
@@ -394,7 +394,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         kruntime.startProcess("org.test.ruleflow", variables);
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
-		assertNotNull(handler.getWorkItem());
+        assertNotNull(handler.getWorkItem());
 
         assertEquals(1, kruntime.getKogitoProcessInstances().size());
         VariableScopeInstance variableScopeInstance =

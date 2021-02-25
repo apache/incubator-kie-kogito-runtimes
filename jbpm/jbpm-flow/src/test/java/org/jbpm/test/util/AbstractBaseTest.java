@@ -34,9 +34,9 @@ public abstract class AbstractBaseTest {
     @BeforeEach
     public void before(TestInfo testInfo) {
         addLogger();
-        logger.debug( "> " + testInfo.getDisplayName() );
+        logger.debug("> " + testInfo.getDisplayName());
     }
-   
+
     public abstract void addLogger();
 
     public KogitoProcessRuntime createKogitoProcessRuntime(Process... process) {

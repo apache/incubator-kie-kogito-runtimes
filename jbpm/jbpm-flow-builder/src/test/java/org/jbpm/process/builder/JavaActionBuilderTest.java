@@ -66,8 +66,8 @@ public class JavaActionBuilderTest extends AbstractBaseTest {
 
         context.init(builder, pkg, null, dialectRegistry, javaDialect, null);
 
-        builder.addPackageFromDrl( new StringReader("package pkg1;\nglobal java.util.List list;\n") );
-        
+        builder.addPackageFromDrl(new StringReader("package pkg1;\nglobal java.util.List list;\n"));
+
         ActionNode actionNode = new ActionNode();
         DroolsAction action = new DroolsConsequenceAction("java", null);
         actionNode.setAction(action);
@@ -81,9 +81,9 @@ public class JavaActionBuilderTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal("list", list);
 
-        KogitoProcessContext processContext = new KogitoProcessContextImpl( kruntime.getKieRuntime());
+        KogitoProcessContext processContext = new KogitoProcessContextImpl(kruntime.getKieRuntime());
         ((Action) actionNode.getAction().getMetaData("Action")).execute(processContext);
 
         assertEquals("hello world", list.get(0));

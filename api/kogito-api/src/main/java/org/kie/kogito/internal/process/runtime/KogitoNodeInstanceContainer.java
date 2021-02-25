@@ -15,12 +15,11 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
-import org.kie.api.runtime.process.NodeInstanceContainer;
-
 import java.util.Collection;
 
-public interface KogitoNodeInstanceContainer extends NodeInstanceContainer {
+import org.kie.api.runtime.process.NodeInstanceContainer;
 
+public interface KogitoNodeInstanceContainer extends NodeInstanceContainer {
 
     /**
      * Returns all node instances that are currently active

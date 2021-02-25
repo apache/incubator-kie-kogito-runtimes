@@ -46,7 +46,7 @@ public class XPATHAssignmentAction implements AssignmentAction {
         this.isInput = isInput;
     }
 
-	public void execute(InternalKogitoWorkItem workItem, ProcessContext context) throws Exception {
+    public void execute(InternalKogitoWorkItem workItem, ProcessContext context) throws Exception {
         String from = assignment.getFrom();
         String to = assignment.getTo();
 

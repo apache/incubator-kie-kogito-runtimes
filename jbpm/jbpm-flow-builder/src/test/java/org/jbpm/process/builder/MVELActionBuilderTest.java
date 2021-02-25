@@ -57,8 +57,8 @@ public class MVELActionBuilderTest extends AbstractBaseTest {
         PackageBuildContext context = new PackageBuildContext();
         context.init(builder, pkg, null, dialectRegistry, mvelDialect, null);
 
-        builder.addPackageFromDrl( new StringReader("package pkg1;\nglobal java.util.List list;\n") );
-        
+        builder.addPackageFromDrl(new StringReader("package pkg1;\nglobal java.util.List list;\n"));
+
         ActionNode actionNode = new ActionNode();
         DroolsAction action = new DroolsConsequenceAction("mvel", null);
         actionNode.setAction(action);

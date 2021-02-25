@@ -93,8 +93,8 @@ public class SignallingTaskHandlerDecorator extends AbstractExceptionHandlingTas
         if (getAndIncreaseExceptionCount(workItem.getProcessInstanceStringId()) < exceptionCountLimit) {
             workItem.getParameters().put(this.workItemExceptionParameterName, cause);
             ((InternalKogitoWorkItemManager) manager).signalEvent(this.eventType, (InternalKogitoWorkItem) workItem, workItem.getProcessInstanceStringId());
-        } else { 
-            if( cause instanceof RuntimeException ) { 
+        } else {
+            if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
             } else {
                 throw new WorkItemHandlerRuntimeException(cause,

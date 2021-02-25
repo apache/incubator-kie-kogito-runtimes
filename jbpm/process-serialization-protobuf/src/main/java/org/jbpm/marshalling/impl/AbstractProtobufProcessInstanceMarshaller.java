@@ -530,12 +530,12 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 .setState(workItem.getState());
 
         if (workItem instanceof InternalKogitoWorkItem) {
-            if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
-            _workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
+            if (((InternalKogitoWorkItem) workItem).getDeploymentId() != null) {
+                _workItem.setDeploymentId(((InternalKogitoWorkItem) workItem).getDeploymentId());
             }
-            _workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
-            .setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
-            
+            _workItem.setNodeId(((InternalKogitoWorkItem) workItem).getNodeId())
+                    .setNodeInstanceId(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
+
             if (kogitoWorkItem.getPhaseId() != null) {
                 _workItem.setPhaseId(kogitoWorkItem.getPhaseId());
             }
@@ -596,13 +596,12 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 .setName(workItem.getName())
                 .setState(workItem.getState());
 
-        
-        if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
-        _workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
+        if (((InternalKogitoWorkItem) workItem).getDeploymentId() != null) {
+            _workItem.setDeploymentId(((InternalKogitoWorkItem) workItem).getDeploymentId());
         }
-        _workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
-        .setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
-        
+        _workItem.setNodeId(((InternalKogitoWorkItem) workItem).getNodeId())
+                .setNodeInstanceId(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
+
         if (workItem.getPhaseId() != null) {
             _workItem.setPhaseId(workItem.getPhaseId());
         }
@@ -836,11 +835,11 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 context,
                 processInstance);
 
-        nodeInstance.setNodeId( _node.getNodeId() );                
-        nodeInstance.setId( _node.getId() );
+        nodeInstance.setNodeId(_node.getNodeId());
+        nodeInstance.setId(_node.getId());
         nodeInstance.setNodeInstanceContainer((KogitoNodeInstanceContainer) nodeInstanceContainer);
-        nodeInstance.setProcessInstance( (org.jbpm.workflow.instance.WorkflowProcessInstance) processInstance );
-        nodeInstance.setLevel(_node.getLevel()==0?1:_node.getLevel());
+        nodeInstance.setProcessInstance((org.jbpm.workflow.instance.WorkflowProcessInstance) processInstance);
+        nodeInstance.setLevel(_node.getLevel() == 0 ? 1 : _node.getLevel());
         nodeInstance.internalSetTriggerTime(new Date(_node.getTriggerDate()));
         nodeInstance.internalSetSlaCompliance(_node.getSlaCompliance());
         if (_node.getSlaDueDate() > 0) {
@@ -966,9 +965,9 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 break;
             case HUMAN_TASK_NODE:
                 nodeInstance = new HumanTaskNodeInstance();
-                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItemId( _content.getHumanTask().getWorkItemId() );
-                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItem( (InternalKogitoWorkItem) readHumanTaskWorkItem(context, _content.getHumanTask().getWorkitem()) );
-                if ( _content.getHumanTask().getTimerInstanceIdCount() > 0 ) {
+                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItemId(_content.getHumanTask().getWorkItemId());
+                ((HumanTaskNodeInstance) nodeInstance).internalSetWorkItem((InternalKogitoWorkItem) readHumanTaskWorkItem(context, _content.getHumanTask().getWorkitem()));
+                if (_content.getHumanTask().getTimerInstanceIdCount() > 0) {
                     List<String> timerInstances = new ArrayList<>();
                     for (String _timerId : _content.getHumanTask().getTimerInstanceIdList()) {
                         timerInstances.add(_timerId);
@@ -979,9 +978,9 @@ public abstract class AbstractProtobufProcessInstanceMarshaller
                 break;
             case WORK_ITEM_NODE:
                 nodeInstance = new WorkItemNodeInstance();
-                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItemId( _content.getWorkItem().getWorkItemId() );
-                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItem( (InternalKogitoWorkItem) readWorkItem(context, _content.getWorkItem().getWorkitem()) );
-                if ( _content.getWorkItem().getTimerInstanceIdCount() > 0 ) {
+                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItemId(_content.getWorkItem().getWorkItemId());
+                ((WorkItemNodeInstance) nodeInstance).internalSetWorkItem((InternalKogitoWorkItem) readWorkItem(context, _content.getWorkItem().getWorkitem()));
+                if (_content.getWorkItem().getTimerInstanceIdCount() > 0) {
                     List<String> timerInstances = new ArrayList<>();
                     for (String _timerId : _content.getWorkItem().getTimerInstanceIdList()) {
                         timerInstances.add(_timerId);

@@ -84,10 +84,10 @@ public class ProtobufProcessMarshaller
 
         List<WorkItem> workItems = new ArrayList<>(((InternalKogitoWorkItemManager) context.getWorkingMemory().getWorkItemManager()).getWorkItems());
         workItems.sort(Comparator.comparing(o -> ((InternalKogitoWorkItem) o).getStringId()));
-        for ( WorkItem workItem : workItems ) {
-            _pdata.addExtension( JBPMMessages.workItem,
-                                 writeWorkItem( context,
-                                                workItem ) );
+        for (WorkItem workItem : workItems) {
+            _pdata.addExtension(JBPMMessages.workItem,
+                    writeWorkItem(context,
+                            workItem));
         }
     }
 
@@ -111,10 +111,10 @@ public class ProtobufProcessMarshaller
     public void readWorkItems(MarshallerReaderContext context) throws IOException {
         ProtobufMessages.ProcessData _pdata = (ProtobufMessages.ProcessData) context.getParameterObject();
         InternalWorkingMemory wm = context.getWorkingMemory();
-        for ( JBPMMessages.WorkItem _workItem : _pdata.getExtension( JBPMMessages.workItem ) ) {
-            WorkItem workItem = readWorkItem( context,
-                                              _workItem );
-            ((InternalKogitoWorkItemManager) wm.getWorkItemManager()).internalAddWorkItem( (InternalKogitoWorkItem) workItem );
+        for (JBPMMessages.WorkItem _workItem : _pdata.getExtension(JBPMMessages.workItem)) {
+            WorkItem workItem = readWorkItem(context,
+                    _workItem);
+            ((InternalKogitoWorkItemManager) wm.getWorkItemManager()).internalAddWorkItem((InternalKogitoWorkItem) workItem);
         }
     }
 
@@ -122,17 +122,17 @@ public class ProtobufProcessMarshaller
             WorkItem workItem,
             boolean includeVariables) throws IOException {
         JBPMMessages.WorkItem.Builder _workItem = JBPMMessages.WorkItem.newBuilder()
-                .setId( ((InternalKogitoWorkItem)workItem).getStringId() )
-                .setProcessInstancesId( ((InternalKogitoWorkItem)workItem).getProcessInstanceStringId() )
-                .setName( workItem.getName() )
-                .setState( workItem.getState() );
+                .setId(((InternalKogitoWorkItem) workItem).getStringId())
+                .setProcessInstancesId(((InternalKogitoWorkItem) workItem).getProcessInstanceStringId())
+                .setName(workItem.getName())
+                .setState(workItem.getState());
 
         if (workItem instanceof InternalKogitoWorkItem) {
-        	if (((InternalKogitoWorkItem)workItem).getDeploymentId() != null){
-        	_workItem.setDeploymentId(((InternalKogitoWorkItem)workItem).getDeploymentId());
-        	}
-        	_workItem.setNodeId(((InternalKogitoWorkItem)workItem).getNodeId())
-        	.setNodeInstanceId(((InternalKogitoWorkItem)workItem).getNodeInstanceStringId());
+            if (((InternalKogitoWorkItem) workItem).getDeploymentId() != null) {
+                _workItem.setDeploymentId(((InternalKogitoWorkItem) workItem).getDeploymentId());
+            }
+            _workItem.setNodeId(((InternalKogitoWorkItem) workItem).getNodeId())
+                    .setNodeInstanceId(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
         }
 
         if (includeVariables) {

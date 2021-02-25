@@ -68,8 +68,8 @@ public class GetProcessInstanceVariableCommand implements ExecutableCommand<Obje
         if (processInstance == null) {
             throw new IllegalArgumentException("Could not find process instance for id " + processInstanceId);
         }
-        if (processInstance instanceof KogitoWorkflowProcessInstance ) {
-        	return ((KogitoWorkflowProcessInstance) processInstance).getVariable(variableId);
+        if (processInstance instanceof KogitoWorkflowProcessInstance) {
+            return ((KogitoWorkflowProcessInstance) processInstance).getVariable(variableId);
         } else {
             throw new IllegalStateException("Could not retrieve variable " + variableId
                     + " because process instance " + processInstanceId + " was inaccessible!");

@@ -27,7 +27,6 @@ import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.event.process.SLAViolatedEvent;
 import org.kie.api.event.process.SignalEvent;
 import org.kie.api.runtime.KieRuntime;
-import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.event.ProcessWorkItemTransitionEvent;

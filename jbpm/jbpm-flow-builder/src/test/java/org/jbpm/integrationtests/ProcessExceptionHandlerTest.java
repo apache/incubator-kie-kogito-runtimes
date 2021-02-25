@@ -60,63 +60,63 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
                         "  </connections>\n" +
                         "\n" +
                         "</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
-		KnowledgeBuilderErrors errors = builder.getErrors();
+        builder.add(new ReaderResource(source), ResourceType.DRF);
+        KnowledgeBuilderErrors errors = builder.getErrors();
         if (errors != null && !errors.isEmpty()) {
             for (KnowledgeBuilderError error : errors) {
                 logger.error(error.toString());
             }
             fail("Package could not be compiled");
         }
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
+        KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
         assertEquals(KogitoProcessInstance.STATE_ABORTED, processInstance.getState());
     }
 
     @Test
     public void testProcessExceptionHandlerAction() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.exception\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "    <variables>\n" +
-            "      <variable name=\"SomeVar\" >\n" +
-            "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        <value>SomeValue</value>\n" +
-            "      </variable>\n" +
-            "      <variable name=\"faultVar\" >\n" +
-            "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "      </variable>\n" +
-            "    </variables>\n" +
-			"    <exceptionHandlers>\n" +
-			"      <exceptionHandler faultName=\"myFault\" type=\"action\" faultVariable=\"faultVar\" >\n" +
-			"        <action type=\"expression\" name=\"Print\" dialect=\"java\" >list.add(context.getVariable(\"faultVar\"));</action>\n" +
-			"      </exceptionHandler>\n" +
-			"    </exceptionHandlers>\n" +
-			"  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <fault id=\"2\" name=\"Fault\" faultName=\"myFault\" faultVariable=\"SomeVar\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.exception\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"SomeVar\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>SomeValue</value>\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"faultVar\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "    <exceptionHandlers>\n" +
+                        "      <exceptionHandler faultName=\"myFault\" type=\"action\" faultVariable=\"faultVar\" >\n" +
+                        "        <action type=\"expression\" name=\"Print\" dialect=\"java\" >list.add(context.getVariable(\"faultVar\"));</action>\n" +
+                        "      </exceptionHandler>\n" +
+                        "    </exceptionHandlers>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <fault id=\"2\" name=\"Fault\" faultName=\"myFault\" faultVariable=\"SomeVar\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(new ReaderResource(source), ResourceType.DRF);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
@@ -140,22 +140,22 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
                         "    <exceptionHandlers>\n" +
                         "      <exceptionHandler faultName=\"myFault\" type=\"action\"  >\n" +
                         "        <action type=\"expression\" name=\"Complete\" dialect=\"java\" >((org.jbpm.process.instance.ProcessInstance) context.getProcessInstance()).setState(org.jbpm.process.instance.ProcessInstance.STATE_COMPLETED);</action>\n"
-                        +"      </exceptionHandler>\n" +
-			"    </exceptionHandlers>\n" +
-			"  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <fault id=\"2\" name=\"Fault\" faultName=\"myFault\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-		builder.add(new ReaderResource(source), ResourceType.DRF);
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+                        + "      </exceptionHandler>\n" +
+                        "    </exceptionHandlers>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <fault id=\"2\" name=\"Fault\" faultName=\"myFault\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(new ReaderResource(source), ResourceType.DRF);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
@@ -224,7 +224,7 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
                         "</process>");
 
         builder.add(new ReaderResource(source), ResourceType.DRF);
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
@@ -299,12 +299,12 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
                         "</process>");
 
         builder.add(new ReaderResource(source), ResourceType.DRF);
-		KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-		List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
-		KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
-		assertEquals(1, list.size());
+        KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
+        assertEquals(1, list.size());
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 

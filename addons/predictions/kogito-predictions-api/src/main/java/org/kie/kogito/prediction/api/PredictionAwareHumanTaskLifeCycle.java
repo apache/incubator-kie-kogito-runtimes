@@ -58,8 +58,8 @@ public class PredictionAwareHumanTaskLifeCycle extends BaseHumanTaskLifeCycle {
             if (outcome.isCertain()) {
                 humanTaskWorkItem.getResults().putAll(outcome.getData());
                 logger.debug("Prediction service is certain (confidence level {}) on the outputs, completing work item {}", outcome.getConfidenceLevel(), humanTaskWorkItem.getStringId());
-                ((InternalKogitoWorkItemManager)manager).internalCompleteWorkItem(humanTaskWorkItem);
-                
+                ((InternalKogitoWorkItemManager) manager).internalCompleteWorkItem(humanTaskWorkItem);
+
                 return outcome.getData();
             } else if (outcome.isPresent()) {
                 logger.debug("Prediction service is NOT certain (confidence level {}) on the outputs, setting recommended outputs on work item {}", outcome.getConfidenceLevel(),

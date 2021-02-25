@@ -53,6 +53,7 @@ public interface LifeCycle<T> {
      * @return returns work item data after the transition
      */
     T transitionTo(KogitoWorkItem workItem, KogitoWorkItemManager manager, Transition<T> transition);
+
     /**
      * Returns current data set for given work item
      *
@@ -60,6 +61,7 @@ public interface LifeCycle<T> {
      * @return current data set
      */
     T data(KogitoWorkItem workItem);
+
     /**
      * Returns the set of phases the provided phase is able to be transitioned to
      *

@@ -41,71 +41,71 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
     @Test
     public void testWorkItem() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.actions\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-    		"    <variables>\n" +
-    		"      <variable name=\"UserName\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-    		"        <value>John Doe</value>\n" +
-    		"      </variable>\n" +
-     		"      <variable name=\"Person\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.ObjectDataType\" className=\"org.jbpm.integrationtests.test.Person\" />\n" +
-    		"      </variable>\n" +
-    		"      <variable name=\"MyObject\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-    		"      </variable>\n" +
-    		"      <variable name=\"Number\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.IntegerDataType\" />\n" +
-    		"      </variable>\n" +
-    		"    </variables>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"2\" name=\"HumanTask\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "        <parameter name=\"ActorId\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>#{UserName}</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Content\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>#{Person.name}</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"TaskName\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>Do something</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Priority\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Comment\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Attachment\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "      </work>\n" +
-            "      <mapping type=\"in\" from=\"MyObject\" to=\"Attachment\" />" +
-            "      <mapping type=\"in\" from=\"Person.name\" to=\"Comment\" />" +
-            "      <mapping type=\"out\" from=\"Result\" to=\"MyObject\" />" +
-            "      <mapping type=\"out\" from=\"Result.length()\" to=\"Number\" />" +
-            "    </workItem>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.actions\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"UserName\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>John Doe</value>\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"Person\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.ObjectDataType\" className=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"MyObject\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"Number\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.IntegerDataType\" />\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"2\" name=\"HumanTask\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "        <parameter name=\"ActorId\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>#{UserName}</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Content\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>#{Person.name}</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"TaskName\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>Do something</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Priority\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Comment\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Attachment\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "      </work>\n" +
+                        "      <mapping type=\"in\" from=\"MyObject\" to=\"Attachment\" />" +
+                        "      <mapping type=\"in\" from=\"Person.name\" to=\"Comment\" />" +
+                        "      <mapping type=\"out\" from=\"Result\" to=\"MyObject\" />" +
+                        "      <mapping type=\"out\" from=\"Result.length()\" to=\"Number\" />" +
+                        "    </workItem>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
@@ -149,70 +149,70 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
     @Test
     public void testWorkItemImmediateCompletion() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.actions\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-    		"    <variables>\n" +
-    		"      <variable name=\"UserName\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-    		"        <value>John Doe</value>\n" +
-    		"      </variable>\n" +
-     		"      <variable name=\"Person\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.ObjectDataType\" className=\"org.jbpm.integrationtests.test.Person\" />\n" +
-    		"      </variable>\n" +
-    		"      <variable name=\"MyObject\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-    		"      </variable>\n" +
-    		"      <variable name=\"Number\" >\n" +
-    		"        <type name=\"org.jbpm.process.core.datatype.impl.type.IntegerDataType\" />\n" +
-    		"      </variable>\n" +
-    		"    </variables>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"2\" name=\"HumanTask\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "        <parameter name=\"ActorId\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>#{UserName}</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Content\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>#{Person.name}</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"TaskName\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "          <value>Do something</value>\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Priority\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Comment\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "        <parameter name=\"Attachment\" >\n" +
-            "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        </parameter>\n" +
-            "      </work>\n" +
-            "      <mapping type=\"in\" from=\"MyObject\" to=\"Attachment\" />" +
-            "      <mapping type=\"in\" from=\"Person.name\" to=\"Comment\" />" +
-            "      <mapping type=\"out\" from=\"Result\" to=\"MyObject\" />" +
-            "      <mapping type=\"out\" from=\"Result.length()\" to=\"Number\" />" +
-            "    </workItem>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.actions\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"UserName\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>John Doe</value>\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"Person\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.ObjectDataType\" className=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"MyObject\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "      </variable>\n" +
+                        "      <variable name=\"Number\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.IntegerDataType\" />\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"2\" name=\"HumanTask\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "        <parameter name=\"ActorId\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>#{UserName}</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Content\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>#{Person.name}</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"TaskName\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "          <value>Do something</value>\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Priority\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Comment\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "        <parameter name=\"Attachment\" >\n" +
+                        "          <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        </parameter>\n" +
+                        "      </work>\n" +
+                        "      <mapping type=\"in\" from=\"MyObject\" to=\"Attachment\" />" +
+                        "      <mapping type=\"in\" from=\"Person.name\" to=\"Comment\" />" +
+                        "      <mapping type=\"out\" from=\"Result\" to=\"MyObject\" />" +
+                        "      <mapping type=\"out\" from=\"Result.length()\" to=\"Number\" />" +
+                        "    </workItem>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
         builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();

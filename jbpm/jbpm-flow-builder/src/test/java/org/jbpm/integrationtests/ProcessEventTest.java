@@ -170,9 +170,8 @@ public class ProcessEventTest extends AbstractBaseTest {
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
-        assertEquals("SomeText", ((VariableScopeInstance)
-    		((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
-				VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
+        assertEquals("SomeText", ((VariableScopeInstance) ((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
+                VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         kruntime.signalEvent("MyEvent", "MyValue");
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());

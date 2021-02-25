@@ -55,34 +55,34 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         rule += "end";
 
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ReaderResource( new StringReader( rule )), ResourceType.DRL );
+        builder.add(new ReaderResource(new StringReader(rule)), ResourceType.DRL);
 
         String process =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"2\" name=\"Hello\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "      </work>\n" +
-            "    </workItem>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\"/>\n" +
-            "    <connection from=\"2\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"2\" name=\"Hello\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "      </work>\n" +
+                        "    </workItem>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\"/>\n" +
+                        "    <connection from=\"2\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages(builder.getKnowledgePackages());
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -152,34 +152,34 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         rule += "end";
 
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ReaderResource( new StringReader( rule )), ResourceType.DRL );
+        builder.add(new ReaderResource(new StringReader(rule)), ResourceType.DRL);
 
         String process =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"2\" name=\"Hello\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "      </work>\n" +
-            "    </workItem>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\"/>\n" +
-            "    <connection from=\"2\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"2\" name=\"Hello\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "      </work>\n" +
+                        "    </workItem>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\"/>\n" +
+                        "    <connection from=\"2\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages(builder.getKnowledgePackages());
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
@@ -252,45 +252,45 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
         builder.add(new ByteArrayResource(rule.getBytes()), ResourceType.DRL);
-        
-        String process = 
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <composite id=\"2\" name=\"Composite\" >\n" +
-            "      <nodes>\n" +
-            "        <workItem id=\"1\" name=\"Hello\" >\n" +
-            "          <work name=\"Human Task\" >\n" +
-            "          </work>\n" +
-            "        </workItem>\n" +
-            "      </nodes>\n" +
-            "      <connections>\n" +
-            "      </connections>\n" +
-            "      <in-ports>\n" +
-            "        <in-port type=\"DROOLS_DEFAULT\" nodeId=\"1\" nodeInType=\"DROOLS_DEFAULT\" />\n" +
-            "      </in-ports>\n" +
-            "      <out-ports>\n" +
-            "        <out-port type=\"DROOLS_DEFAULT\" nodeId=\"1\" nodeOutType=\"DROOLS_DEFAULT\" />\n" +
-            "      </out-ports>\n" +
-            "    </composite>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\"/>\n" +
-            "    <connection from=\"2\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
+
+        String process =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <composite id=\"2\" name=\"Composite\" >\n" +
+                        "      <nodes>\n" +
+                        "        <workItem id=\"1\" name=\"Hello\" >\n" +
+                        "          <work name=\"Human Task\" >\n" +
+                        "          </work>\n" +
+                        "        </workItem>\n" +
+                        "      </nodes>\n" +
+                        "      <connections>\n" +
+                        "      </connections>\n" +
+                        "      <in-ports>\n" +
+                        "        <in-port type=\"DROOLS_DEFAULT\" nodeId=\"1\" nodeInType=\"DROOLS_DEFAULT\" />\n" +
+                        "      </in-ports>\n" +
+                        "      <out-ports>\n" +
+                        "        <out-port type=\"DROOLS_DEFAULT\" nodeId=\"1\" nodeOutType=\"DROOLS_DEFAULT\" />\n" +
+                        "      </out-ports>\n" +
+                        "    </composite>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\"/>\n" +
+                        "    <connection from=\"2\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder.add(new ReaderResource(new StringReader(process)), ResourceType.DRF);
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addPackages(builder.getKnowledgePackages());
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);

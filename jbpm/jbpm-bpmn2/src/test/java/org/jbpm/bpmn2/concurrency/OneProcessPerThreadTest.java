@@ -119,15 +119,15 @@ public class OneProcessPerThreadTest {
 
         public ProcessInstanceStartRunner(KogitoProcessRuntime kruntime, int id, String processId) {
             this.kruntime = kruntime;
-	        this.id = id;
-	        this.processId = processId;
-	    }
+            this.id = id;
+            this.processId = processId;
+        }
 
-	    public void run() {
-	        started.incrementAndGet();
-	        try {
-	        	Map<String, Object> params = new HashMap<String, Object>();
-	        	params.put("id", id);
+        public void run() {
+            started.incrementAndGet();
+            try {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("id", id);
                 kruntime.startProcess(processId, params);
             } catch (Throwable t) {
                 this.status = Status.FAIL;

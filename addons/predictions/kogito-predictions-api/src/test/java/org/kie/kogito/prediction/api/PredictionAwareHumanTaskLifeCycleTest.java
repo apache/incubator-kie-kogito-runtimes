@@ -67,7 +67,7 @@ public class PredictionAwareHumanTaskLifeCycleTest {
 
             @Override
             public void train(org.kie.api.runtime.process.WorkItem task, Map<String, Object> inputData, Map<String, Object> outputData) {
-                trainedTasks.add( ((InternalKogitoWorkItem) task).getStringId());
+                trainedTasks.add(((InternalKogitoWorkItem) task).getStringId());
             }
 
             @Override

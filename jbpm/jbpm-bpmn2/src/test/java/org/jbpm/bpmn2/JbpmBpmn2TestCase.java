@@ -222,7 +222,7 @@ public abstract class JbpmBpmn2TestCase {
     }
 
     private void assertNodeActive(KogitoNodeInstanceContainer container,
-                                  List<String> names) {
+            List<String> names) {
         for (KogitoNodeInstance nodeInstance : container.getKogitoNodeInstances()) {
             String nodeName = nodeInstance.getNodeName();
             if (names.contains(nodeName)) {

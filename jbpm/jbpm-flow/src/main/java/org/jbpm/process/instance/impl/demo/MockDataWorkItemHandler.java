@@ -52,7 +52,7 @@ public class MockDataWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-         manager.completeWorkItem( workItem.getStringId(), outputDataSupplier.apply(workItem.getParameters()));
+        manager.completeWorkItem(workItem.getStringId(), outputDataSupplier.apply(workItem.getParameters()));
     }
 
     @Override

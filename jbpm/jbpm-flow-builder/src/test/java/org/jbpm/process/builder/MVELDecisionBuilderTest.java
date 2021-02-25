@@ -58,8 +58,8 @@ public class MVELDecisionBuilderTest extends AbstractBaseTest {
         PackageBuildContext context = new PackageBuildContext();
         context.init(builder, pkg, null, pkgReg.getDialectCompiletimeRegistry(), mvelDialect, null);
 
-        builder.addPackageFromDrl( new StringReader("package pkg1;\nglobal java.util.List list;\n") );
-        
+        builder.addPackageFromDrl(new StringReader("package pkg1;\nglobal java.util.List list;\n"));
+
         ActionNode actionNode = new ActionNode();
         DroolsAction action = new DroolsConsequenceAction("java", null);
         actionNode.setAction(action);
@@ -73,15 +73,15 @@ public class MVELDecisionBuilderTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal("list", list);
 
-        MVELDialectRuntimeData data = (MVELDialectRuntimeData) builder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData( "mvel");
+        MVELDialectRuntimeData data = (MVELDialectRuntimeData) builder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData("mvel");
 
         KogitoProcessContext processContext = new KogitoProcessContextImpl(kruntime.getKieSession());
-        ((MVELAction) actionNode.getAction().getMetaData("Action")).compile( data );
-        ((Action)actionNode.getAction().getMetaData("Action")).execute( processContext );
-        
-        assertEquals("hello world", list.get(0) );
-    }    
+        ((MVELAction) actionNode.getAction().getMetaData("Action")).compile(data);
+        ((Action) actionNode.getAction().getMetaData("Action")).execute(processContext);
+
+        assertEquals("hello world", list.get(0));
+    }
 
 }

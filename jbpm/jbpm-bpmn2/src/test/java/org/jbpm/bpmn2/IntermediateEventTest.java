@@ -44,7 +44,6 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.runtime.rule.FactHandle;
-import org.kie.internal.command.RegistryContext;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -63,7 +62,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
-
 
     private KogitoProcessEventListener LOGGING_EVENT_LISTENER = new DefaultKogitoProcessEventListener() {
 
@@ -1249,10 +1247,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("TimerBoundaryEvent");
         assertProcessInstanceActive(processInstance);
 
-
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         KogitoWorkItem workItem = handler.getWorkItem();
@@ -1321,7 +1317,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         // now wait for 1 second for timer to trigger
         countDownListener.waitTillCompleted();
 
-
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new DoNothingWorkItemHandler());
         kruntime.getProcessEventManager().addEventListener(countDownListener);
 
@@ -1384,7 +1379,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         // now wait for 1 second for timer to trigger
         countDownListener.waitTillCompleted();
-
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new DoNothingWorkItemHandler());
 
@@ -1701,7 +1695,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     @Test
     public void testIntermediateCatchEventNoIncommingConnection() throws Exception {
         try {
-	    	kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventNoIncommingConnection.bpmn2");
+            kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventNoIncommingConnection.bpmn2");
 
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotNull();
@@ -2322,8 +2316,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             NodeLeftCountDownProcessEventListener countDownListener4 = new NodeLeftCountDownProcessEventListener("Request an online review", 1);
             kruntime = createKogitoProcessRuntime("timer/BPMN2-CronTimerWithEventBasedGateway.bpmn2");
 
-
-            
             TestWorkItemHandler handler = new TestWorkItemHandler();
             kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
             kruntime.getProcessEventManager().addEventListener(countDownListener);

@@ -167,7 +167,7 @@ public class ProcessActionTest extends AbstractBaseTest {
     }
 
     @Test
-	public void testActionContextMVEL() {
+    public void testActionContextMVEL() {
         Reader source = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -228,7 +228,7 @@ public class ProcessActionTest extends AbstractBaseTest {
     }
 
     @Test
-	public void testActionVariableJava() {
+    public void testActionVariableJava() {
         Reader source = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
@@ -281,7 +281,7 @@ public class ProcessActionTest extends AbstractBaseTest {
     }
 
     @Test
-	public void testActionVariableMVEL() {
+    public void testActionVariableMVEL() {
         Reader source = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                         "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +

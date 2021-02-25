@@ -231,49 +231,49 @@ public class ProcessStateTest extends AbstractBaseTest {
     @Test
     public void testImmediateStateConstraintPriorities2() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" priority=\"2\" >\n" +
-            "            eval(true)" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"5\" name=\"two\" priority=\"1\" >\n" +
-            "           eval(true)" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" priority=\"2\" >\n" +
+                        "            eval(true)" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"5\" name=\"two\" priority=\"1\" >\n" +
+                        "           eval(true)" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
         builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
@@ -543,45 +543,45 @@ public class ProcessStateTest extends AbstractBaseTest {
     @Test
     public void testActionState() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-            "    <globals>\n" +
-            "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-            "    </globals>\n" +
-            "    <variables>\n" +
-            "      <variable name=\"s\" >\n" +
-            "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        <value>a</value>\n" +
-            "      </variable>\n" +
-            "    </variables>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" name=\"State\" >\n" +
-            "      <onEntry>" +
-            "        <action type=\"expression\" dialect=\"mvel\" >list.add(\"Action1\" + s);</action>\n" +
-            "        <action type=\"expression\" dialect=\"java\" >list.add(\"Action2\" + s);</action>\n" +
-            "      </onEntry>\n" +
-            "      <onExit>\n" +
-            "        <action type=\"expression\" dialect=\"mvel\" >list.add(\"Action3\" + s);</action>\n" +
-            "        <action type=\"expression\" dialect=\"java\" >list.add(\"Action4\" + s);</action>\n" +
-            "      </onExit>\n" +
-            "    </state>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"s\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>a</value>\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" name=\"State\" >\n" +
+                        "      <onEntry>" +
+                        "        <action type=\"expression\" dialect=\"mvel\" >list.add(\"Action1\" + s);</action>\n" +
+                        "        <action type=\"expression\" dialect=\"java\" >list.add(\"Action2\" + s);</action>\n" +
+                        "      </onEntry>\n" +
+                        "      <onExit>\n" +
+                        "        <action type=\"expression\" dialect=\"mvel\" >list.add(\"Action3\" + s);</action>\n" +
+                        "        <action type=\"expression\" dialect=\"java\" >list.add(\"Action4\" + s);</action>\n" +
+                        "      </onExit>\n" +
+                        "    </state>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
         builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
@@ -608,46 +608,46 @@ public class ProcessStateTest extends AbstractBaseTest {
 
     @Test
     public void testTimerState() {
-         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-            "    <globals>\n" +
-            "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-            "    </globals>\n" +
-            "    <variables>\n" +
-            "      <variable name=\"s\" >\n" +
-            "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        <value>a</value>\n" +
-            "      </variable>\n" +
-            "    </variables>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" name=\"State\" >\n" +
-            "      <timers>\n" +
-            "        <timer id=\"1\" delay=\"1s\" period=\"2s\" >\n" +
-            "          <action type=\"expression\" dialect=\"mvel\" >list.add(\"Timer1\" + s);</action>\n" +
-            "        </timer>\n" +
-            "        <timer id=\"2\" delay=\"1s\" period=\"2s\" >\n" +
-            "          <action type=\"expression\" dialect=\"mvel\" >list.add(\"Timer2\" + s);</action>\n" +
-            "        </timer>\n" +
-            "      </timers>\n" +
-            "    </state>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
+        Reader source = new StringReader(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "    <variables>\n" +
+                        "      <variable name=\"s\" >\n" +
+                        "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                        "        <value>a</value>\n" +
+                        "      </variable>\n" +
+                        "    </variables>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" name=\"State\" >\n" +
+                        "      <timers>\n" +
+                        "        <timer id=\"1\" delay=\"1s\" period=\"2s\" >\n" +
+                        "          <action type=\"expression\" dialect=\"mvel\" >list.add(\"Timer1\" + s);</action>\n" +
+                        "        </timer>\n" +
+                        "        <timer id=\"2\" delay=\"1s\" period=\"2s\" >\n" +
+                        "          <action type=\"expression\" dialect=\"mvel\" >list.add(\"Timer2\" + s);</action>\n" +
+                        "        </timer>\n" +
+                        "      </timers>\n" +
+                        "    </state>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
         builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();

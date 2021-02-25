@@ -627,7 +627,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 Map<String, Object> parameters = new HashMap<>(getWorkItem().getParameters());
 
                 parameters.putAll(processInstance.getVariables());
-                
+
                 ((InternalKogitoWorkItemManager) getProcessInstance()
                         .getKnowledgeRuntime().getWorkItemManager()).retryWorkItem(getWorkItem().getStringId(), parameters);
                 break;

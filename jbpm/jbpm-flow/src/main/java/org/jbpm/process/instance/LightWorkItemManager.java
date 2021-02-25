@@ -37,8 +37,8 @@ import org.kie.kogito.process.workitem.NotAuthorizedException;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
-import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
+import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kie.kogito.signal.SignalManager;
 

@@ -40,7 +40,6 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
@@ -82,7 +81,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         new ConnectionImpl(
                 actionNode, Node.CONNECTION_DEFAULT_TYPE,
                 endNode, Node.CONNECTION_DEFAULT_TYPE);
-
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
 
@@ -270,7 +268,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
                 eventNode, Node.CONNECTION_DEFAULT_TYPE,
                 endNode, Node.CONNECTION_DEFAULT_TYPE);
 
-
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
@@ -376,7 +373,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
                 actionNode, Node.CONNECTION_DEFAULT_TYPE,
                 endNode, Node.CONNECTION_DEFAULT_TYPE);
 
-
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
         final ProcessEventListener processEventListener = new ProcessEventListener() {
@@ -477,7 +473,6 @@ public class ProcessEventSupportTest extends AbstractBaseTest {
         new ConnectionImpl(
                 actionNode, Node.CONNECTION_DEFAULT_TYPE,
                 endNode, Node.CONNECTION_DEFAULT_TYPE);
-
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
         final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();

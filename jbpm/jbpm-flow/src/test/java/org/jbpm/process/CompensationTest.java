@@ -64,9 +64,10 @@ public class CompensationTest extends AbstractBaseTest {
     }
 
     private KogitoProcessRuntime kruntime;
+
     @AfterEach
     public void cleanUp() {
-        if (kruntime != null && kruntime.getKieSession() != null ) {
+        if (kruntime != null && kruntime.getKieSession() != null) {
             kruntime.getKieSession().dispose();
             kruntime = null;
         }

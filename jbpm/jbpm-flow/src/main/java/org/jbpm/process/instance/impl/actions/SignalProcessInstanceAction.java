@@ -102,8 +102,8 @@ public class SignalProcessInstanceAction implements Action, Serializable {
         } else if (EXTERNAL_SCOPE.equals(scope)) {
             KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
             workItem.setName("External Send Task");
-            workItem.setNodeInstanceId( context.getNodeInstance().getStringId());
-            workItem.setProcessInstanceId( context.getProcessInstance().getStringId());
+            workItem.setNodeInstanceId(context.getNodeInstance().getStringId());
+            workItem.setProcessInstanceId(context.getProcessInstance().getStringId());
             workItem.setNodeId(context.getNodeInstance().getNodeId());
             workItem.setParameter("Signal", signalName);
             workItem.setParameter("SignalProcessInstanceId", context.getVariable("SignalProcessInstanceId"));
