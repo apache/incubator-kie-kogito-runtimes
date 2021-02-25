@@ -71,7 +71,8 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
         final MethodDeclaration templatedBuildMethod = classDefinition
-                .findAll(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_")).get(0);
+                .findFirst(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_"))
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find expected buildCloudEventMeta_ method"));
 
         validateTemplatedBuildMethodDeclaration(generator, templatedBuildMethod);
 
