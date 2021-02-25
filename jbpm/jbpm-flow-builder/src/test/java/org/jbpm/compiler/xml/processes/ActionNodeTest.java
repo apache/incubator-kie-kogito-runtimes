@@ -27,18 +27,18 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ActionNodeTest extends AbstractBaseTest {
-    
+
     @Test
     public void testSingleActionNode() throws Exception {
         builder.add( new ClassPathResource( "ActionNodeTest.xml", ActionNodeTest.class ), ResourceType.DRF );
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
-        
-        kruntime.startProcess( "process name" );
-        
-        assertEquals( 1, list.size() );
-        assertEquals( "action node was here", list.get(0) );        
+        kruntime.getKieSession().setGlobal("list", list);
+
+        kruntime.startProcess("process name");
+
+        assertEquals(1, list.size());
+        assertEquals("action node was here", list.get(0));
     }
 }

@@ -27,34 +27,34 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExecutionFlowControlTest  extends AbstractBaseTest {
+public class ExecutionFlowControlTest extends AbstractBaseTest {
 
     @Test
     public void testRuleFlowUpgrade() throws Exception {
         // Set the system property so that automatic conversion can happen
-        System.setProperty( "drools.ruleflow.port", "true" );
+        System.setProperty("drools.ruleflow.port", "true");
 
-        builder.add( ResourceFactory.newClassPathResource("ruleflow.drl", ExecutionFlowControlTest.class), ResourceType.DRL);
-        builder.add( ResourceFactory.newClassPathResource("ruleflow40.rfm", ExecutionFlowControlTest.class), ResourceType.DRF);
+        builder.add(ResourceFactory.newClassPathResource("ruleflow.drl", ExecutionFlowControlTest.class), ResourceType.DRL);
+        builder.add(ResourceFactory.newClassPathResource("ruleflow40.rfm", ExecutionFlowControlTest.class), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         final List list = new ArrayList();
         kruntime.getKieSession().setGlobal("list", list);
         kruntime.getKieSession().fireAllRules();
         assertEquals(0, list.size());
         final KogitoProcessInstance processInstance = kruntime.startProcess("0");
-        assertEquals( KogitoProcessInstance.STATE_COMPLETED,
-                processInstance.getState() );
-        
-        assertEquals( 4,
-                      list.size() );
-        assertEquals( "Rule1",
-                      list.get( 0 ) );
-        list.subList(1,2).contains( "Rule2" );
-        list.subList(1,2).contains( "Rule3" );
-        assertEquals( "Rule4",
-                      list.get( 3 ) );
-        assertEquals( KogitoProcessInstance.STATE_COMPLETED,
-                      processInstance.getState() );
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED,
+                processInstance.getState());
+
+        assertEquals(4,
+                list.size());
+        assertEquals("Rule1",
+                list.get(0));
+        list.subList(1, 2).contains("Rule2");
+        list.subList(1, 2).contains("Rule3");
+        assertEquals("Rule4",
+                list.get(3));
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED,
+                processInstance.getState());
         // Reset the system property so that automatic conversion should not happen
         System.setProperty("drools.ruleflow.port", "false");
     }

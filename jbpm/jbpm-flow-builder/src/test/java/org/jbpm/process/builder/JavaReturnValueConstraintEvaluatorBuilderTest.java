@@ -43,64 +43,64 @@ public class JavaReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
 
     @Test
     public void testSimpleReturnValueConstraintEvaluator() throws Exception {
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "pkg1" );
+        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
 
         ProcessDescr processDescr = new ProcessDescr();
-        processDescr.setClassName( "Process1" );
-        processDescr.setName( "Process1" );
-        
+        processDescr.setClassName("Process1");
+        processDescr.setName("Process1");
+
         WorkflowProcessImpl process = new WorkflowProcessImpl();
-        process.setName( "Process1" );
-        process.setPackageName( "pkg1" );
+        process.setName("Process1");
+        process.setPackageName("pkg1");
 
         ReturnValueDescr descr = new ReturnValueDescr();
-        descr.setText( "return value;" );
+        descr.setText("return value;");
 
-        builder = new KnowledgeBuilderImpl( pkg );
-        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry( pkg.getName() ).getDialectCompiletimeRegistry();
-        JavaDialect javaDialect = (JavaDialect) dialectRegistry.getDialect( "java" );
+        builder = new KnowledgeBuilderImpl(pkg);
+        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
+        JavaDialect javaDialect = (JavaDialect) dialectRegistry.getDialect("java");
 
-        ProcessBuildContext context = new ProcessBuildContext( builder,
-                                                               pkg,
-                                                               process,
-                                                               processDescr,
-                                                               dialectRegistry,
-                                                               javaDialect );
+        ProcessBuildContext context = new ProcessBuildContext(builder,
+                pkg,
+                process,
+                processDescr,
+                dialectRegistry,
+                javaDialect);
 
-        builder.addPackageFromDrl( new StringReader( "package pkg1;\nglobal Boolean value;" ) );
+        builder.addPackageFromDrl(new StringReader("package pkg1;\nglobal Boolean value;"));
 
         ReturnValueConstraintEvaluator node = new ReturnValueConstraintEvaluator();
 
         final JavaReturnValueEvaluatorBuilder evaluatorBuilder = new JavaReturnValueEvaluatorBuilder();
-        evaluatorBuilder.build( context,
-                       node,
-                       descr,
-                       null );
+        evaluatorBuilder.build(context,
+                node,
+                descr,
+                null);
 
-        ProcessDialectRegistry.getDialect(JavaDialect.ID).addProcess( context );
+        ProcessDialectRegistry.getDialect(JavaDialect.ID).addProcess(context);
         javaDialect.compileAll();
-        assertEquals( 0, javaDialect.getResults().size() );
+        assertEquals(0, javaDialect.getResults().size());
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-        kruntime.getKieSession().setGlobal( "value", true );
+        kruntime.getKieSession().setGlobal("value", true);
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
 
         SplitInstance splitInstance = new SplitInstance();
-        splitInstance.setProcessInstance( processInstance );
+        splitInstance.setProcessInstance(processInstance);
 
-        assertTrue( node.evaluate( splitInstance,
-                                   null,
-                                   null ) );
+        assertTrue(node.evaluate(splitInstance,
+                null,
+                null));
 
-        kruntime.getKieSession().setGlobal( "value",
-                      false );
+        kruntime.getKieSession().setGlobal("value",
+                false);
 
-        assertFalse( node.evaluate( splitInstance,
-                                    null,
-                                    null ) );
+        assertFalse(node.evaluate(splitInstance,
+                null,
+                null));
     }
 
 }

@@ -37,10 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class ProcessWorkItemTest extends AbstractBaseTest {
-    
+
     @Test
     public void testWorkItem() {
-    	Reader source = new StringReader(
+        Reader source = new StringReader(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -115,8 +115,7 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         Person person = new Person();
         person.setName("John Doe");
         parameters.put("Person", person);
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
-                kruntime.startProcess("org.drools.actions", parameters);
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         KogitoWorkItem workItem = handler.getWorkItem();
         assertNotNull(workItem);
@@ -125,15 +124,13 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         assertEquals("John Doe", workItem.getParameter("Comment"));
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
-        
         parameters = new HashMap<String, Object>();
         parameters.put("UserName", "Jane Doe");
         parameters.put("MyObject", "SomeString");
         person = new Person();
         person.setName("Jane Doe");
         parameters.put("Person", person);
-        processInstance = (WorkflowProcessInstance)
-                kruntime.startProcess("org.drools.actions", parameters);
+        processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         workItem = handler.getWorkItem();
         assertNotNull(workItem);
@@ -148,10 +145,10 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         assertEquals("SomeOtherString", processInstance.getVariable("MyObject"));
         assertEquals(15, processInstance.getVariable("Number"));
     }
-    
+
     @Test
     public void testWorkItemImmediateCompletion() {
-    	Reader source = new StringReader(
+        Reader source = new StringReader(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -216,8 +213,8 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
             "  </connections>\n" +
             "\n" +
             "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
-        
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
+
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         ImmediateTestWorkItemHandler handler = new ImmediateTestWorkItemHandler();
@@ -228,19 +225,18 @@ public class ProcessWorkItemTest extends AbstractBaseTest {
         Person person = new Person();
         person.setName("John Doe");
         parameters.put("Person", person);
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
-                kruntime.startProcess("org.drools.actions", parameters);
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.actions", parameters);
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
-    
+
     private static class ImmediateTestWorkItemHandler implements KogitoWorkItemHandler {
         @Override
-        public void executeWorkItem( KogitoWorkItem workItem, KogitoWorkItemManager manager ) {
+        public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
             manager.completeWorkItem(workItem.getStringId(), null);
         }
 
         @Override
-        public void abortWorkItem( KogitoWorkItem workItem, KogitoWorkItemManager manager ) {
+        public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         }
     }
 }

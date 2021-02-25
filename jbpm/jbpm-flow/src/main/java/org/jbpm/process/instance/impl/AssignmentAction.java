@@ -19,7 +19,6 @@ import org.kie.api.runtime.process.ProcessContext;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
 public interface AssignmentAction {
-    
+
     void execute(InternalKogitoWorkItem workItem, ProcessContext context) throws Exception;
-    
 }

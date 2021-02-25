@@ -15,18 +15,18 @@
  */
 package org.jbpm.process;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class FactoryTest extends AbstractBaseTest {
 
@@ -102,6 +102,5 @@ public class FactoryTest extends AbstractBaseTest {
 
         kruntime.startProcess("ExampleProcess", parameters);
     }
-
 
 }

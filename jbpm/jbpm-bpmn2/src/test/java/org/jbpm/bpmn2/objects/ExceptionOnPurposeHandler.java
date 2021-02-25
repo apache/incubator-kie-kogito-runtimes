@@ -20,13 +20,13 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 public class ExceptionOnPurposeHandler implements KogitoWorkItemHandler {
-	
-	@Override
-	public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+
+    @Override
+    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         throw new RuntimeException("Thrown on purpose");
-	}
-	
-	@Override
-	public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-	}
+    }
+
+    @Override
+    public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+    }
 }

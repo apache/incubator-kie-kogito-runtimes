@@ -40,7 +40,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessUpgradeTest extends AbstractBaseTest {
-    
+
     @Test
     public void testDefaultUpgrade() throws Exception {
         String rule = "package org.test;\n";
@@ -56,8 +56,8 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
         builder.add( new ReaderResource( new StringReader( rule )), ResourceType.DRL );
-        
-        String process = 
+
+        String process =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -81,54 +81,53 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages( builder.getKnowledgePackages() );
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession() );
+        kbase.addPackages(builder.getKnowledgePackages());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal("list", list);
 
-        Person p = new Person( "bobba fet", 32);
-        kruntime.getKieSession().insert( p );
+        Person p = new Person("bobba fet", 32);
+        kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
-        
-        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
-        
-        String process2 = 
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "    <globals>\n" +
-            "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-            "    </globals>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"2\" name=\"Hello\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "      </work>\n" +
-            "    </workItem>\n" +
-            "    <actionNode id=\"4\" name=\"Action\" >" +
-            "      <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
-            "list.add(\"Executed\");</action>\n" +
-            "    </actionNode>\n" + 
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\"/>\n" +
-            "    <connection from=\"2\" to=\"4\"/>\n" +
-            "    <connection from=\"4\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ReaderResource( new StringReader( process2 )), ResourceType.DRF );
-        kbase.addPackages( builder.getKnowledgePackages() );
 
+        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
+
+        String process2 =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"2\" name=\"Hello\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "      </work>\n" +
+                        "    </workItem>\n" +
+                        "    <actionNode id=\"4\" name=\"Action\" >" +
+                        "      <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
+                        "list.add(\"Executed\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\"/>\n" +
+                        "    <connection from=\"2\" to=\"4\"/>\n" +
+                        "    <connection from=\"4\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
+        builder.add(new ReaderResource(new StringReader(process2)), ResourceType.DRF);
+        kbase.addPackages(builder.getKnowledgePackages());
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", new HashMap<>());
         assertEquals("org.test.ruleflow2", processInstance.getProcessId());
@@ -154,8 +153,8 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
 
         builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
         builder.add( new ReaderResource( new StringReader( rule )), ResourceType.DRL );
-        
-        String process = 
+
+        String process =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -179,67 +178,65 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages( builder.getKnowledgePackages() );
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession() );
+        kbase.addPackages(builder.getKnowledgePackages());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal("list", list);
 
-        Person p = new Person( "bobba fet", 32);
-        kruntime.getKieSession().insert( p );
+        Person p = new Person("bobba fet", 32);
+        kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
-        
-        assertEquals(1, kruntime.getKogitoProcessInstances().size());
-        
-        String process2 = 
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "    <globals>\n" +
-            "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-            "    </globals>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <workItem id=\"102\" name=\"Hello\" >\n" +
-            "      <work name=\"Human Task\" >\n" +
-            "      </work>\n" +
-            "    </workItem>\n" +
-            "    <actionNode id=\"4\" name=\"Action\" >" +
-            "      <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
-            "list.add(\"Executed\");</action>\n" +
-            "    </actionNode>\n" + 
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"102\"/>\n" +
-            "    <connection from=\"102\" to=\"4\"/>\n" +
-            "    <connection from=\"4\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
-        builder.add( new ReaderResource( new StringReader( process2 )), ResourceType.DRF );
-        kbase.addPackages( builder.getKnowledgePackages() );
 
+        assertEquals(1, kruntime.getKogitoProcessInstances().size());
+
+        String process2 =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <workItem id=\"102\" name=\"Hello\" >\n" +
+                        "      <work name=\"Human Task\" >\n" +
+                        "      </work>\n" +
+                        "    </workItem>\n" +
+                        "    <actionNode id=\"4\" name=\"Action\" >" +
+                        "      <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
+                        "list.add(\"Executed\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"102\"/>\n" +
+                        "    <connection from=\"102\" to=\"4\"/>\n" +
+                        "    <connection from=\"4\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
+        builder.add(new ReaderResource(new StringReader(process2)), ResourceType.DRF);
+        kbase.addPackages(builder.getKnowledgePackages());
         Map<String, Long> mapping = new HashMap<String, Long>();
         mapping.put("2", 102L);
-        
+
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", mapping);
         assertEquals("org.test.ruleflow2", processInstance.getProcessId());
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        
         assertEquals(1, list.size());
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
-    
+
     @Test
     public void testCompositeMappingUpgrade() throws Exception {
         String rule = "package org.test;\n";
@@ -292,76 +289,74 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         builder.add( new ReaderResource( new StringReader( process )), ResourceType.DRF );
 
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages( builder.getKnowledgePackages() );
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession() );
+        kbase.addPackages(builder.getKnowledgePackages());
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( kbase.newKieSession());
 
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
 
         List<String> list = new ArrayList<String>();
-        kruntime.getKieSession().setGlobal( "list", list );
+        kruntime.getKieSession().setGlobal("list", list);
 
-        Person p = new Person( "bobba fet", 32);
-        kruntime.getKieSession().insert( p );
+        Person p = new Person("bobba fet", 32);
+        kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
-        
-        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
-        
-        String process2 = 
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
-            "  <header>\n" +
-            "    <globals>\n" +
-            "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-            "    </globals>\n" +
-            "  </header>\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <composite id=\"2\" name=\"Composite\" >\n" +
-            "      <nodes>\n" +
-            "        <workItem id=\"101\" name=\"Hello\" >\n" +
-            "          <work name=\"Human Task\" >\n" +
-            "          </work>\n" +
-            "        </workItem>\n" +
-            "        <actionNode id=\"2\" name=\"Action\" >" +
-            "          <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
-            "list.add(\"Executed\");</action>\n" +
-            "        </actionNode>\n" + 
-            "      </nodes>\n" +
-            "      <connections>\n" +
-            "        <connection from=\"101\" to=\"2\"/>\n" +
-            "      </connections>\n" +
-            "      <in-ports>\n" +
-            "        <in-port type=\"DROOLS_DEFAULT\" nodeId=\"101\" nodeInType=\"DROOLS_DEFAULT\" />\n" +
-            "      </in-ports>\n" +
-            "      <out-ports>\n" +
-            "        <out-port type=\"DROOLS_DEFAULT\" nodeId=\"2\" nodeOutType=\"DROOLS_DEFAULT\" />\n" +
-            "      </out-ports>\n" +
-            "    </composite>\n" +
-            "    <end id=\"3\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\"/>\n" +
-            "    <connection from=\"2\" to=\"3\"/>\n" +
-            "  </connections>\n" +
-            "</process>";
-        builder.add( new ReaderResource( new StringReader( process2 )), ResourceType.DRF );
-        kbase.addPackages( builder.getKnowledgePackages() );
 
+        assertEquals(1, kruntime.getKieSession().getProcessInstances().size());
+
+        String process2 =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "    xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "    xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "    type=\"RuleFlow\" name=\"ruleflow\" id=\"org.test.ruleflow2\" package-name=\"org.test\" >\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <composite id=\"2\" name=\"Composite\" >\n" +
+                        "      <nodes>\n" +
+                        "        <workItem id=\"101\" name=\"Hello\" >\n" +
+                        "          <work name=\"Human Task\" >\n" +
+                        "          </work>\n" +
+                        "        </workItem>\n" +
+                        "        <actionNode id=\"2\" name=\"Action\" >" +
+                        "          <action type=\"expression\" dialect=\"java\">System.out.println();\n" +
+                        "list.add(\"Executed\");</action>\n" +
+                        "        </actionNode>\n" +
+                        "      </nodes>\n" +
+                        "      <connections>\n" +
+                        "        <connection from=\"101\" to=\"2\"/>\n" +
+                        "      </connections>\n" +
+                        "      <in-ports>\n" +
+                        "        <in-port type=\"DROOLS_DEFAULT\" nodeId=\"101\" nodeInType=\"DROOLS_DEFAULT\" />\n" +
+                        "      </in-ports>\n" +
+                        "      <out-ports>\n" +
+                        "        <out-port type=\"DROOLS_DEFAULT\" nodeId=\"2\" nodeOutType=\"DROOLS_DEFAULT\" />\n" +
+                        "      </out-ports>\n" +
+                        "    </composite>\n" +
+                        "    <end id=\"3\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\"/>\n" +
+                        "    <connection from=\"2\" to=\"3\"/>\n" +
+                        "  </connections>\n" +
+                        "</process>";
+        builder.add(new ReaderResource(new StringReader(process2)), ResourceType.DRF);
+        kbase.addPackages(builder.getKnowledgePackages());
         Map<String, Long> mapping = new HashMap<String, Long>();
         mapping.put("2:1", 101L);
-        
+
         WorkflowProcessInstanceUpgrader.upgradeProcessInstance(
                 kruntime, processInstance.getStringId(), "org.test.ruleflow2", mapping);
         assertEquals("org.test.ruleflow2", processInstance.getProcessId());
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        
         assertEquals(1, list.size());
         assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
-    
+
 }

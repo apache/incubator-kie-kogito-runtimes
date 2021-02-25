@@ -40,8 +40,8 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
     public KogitoSetProcessInstanceVariablesCommand() {
     }
 
-    public KogitoSetProcessInstanceVariablesCommand( String processInstanceId,
-                                                     Map<String, Object> variables) {
+    public KogitoSetProcessInstanceVariablesCommand(String processInstanceId,
+            Map<String, Object> variables) {
         this.processInstanceId = processInstanceId;
         this.variables = variables;
     }
@@ -50,7 +50,7 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
         return processInstanceId;
     }
 
-    public void setProcessInstanceId( String processInstanceId) {
+    public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
 
@@ -58,12 +58,12 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
         return variables;
     }
 
-    public void setVariables( Map<String, Object> variables) {
+    public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
     }
 
-    public Void execute( Context context) {
-        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime( (( RegistryContext ) context).lookup( KieSession.class) );
+    public Void execute(Context context) {
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(((RegistryContext) context).lookup(KieSession.class));
         KogitoProcessInstance processInstance = kruntime.getProcessInstance(processInstanceId);
         if (processInstance != null) {
             if (variables != null) {

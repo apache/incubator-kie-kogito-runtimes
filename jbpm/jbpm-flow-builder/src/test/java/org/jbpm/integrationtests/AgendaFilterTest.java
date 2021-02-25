@@ -39,9 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class AgendaFilterTest extends AbstractBaseTest {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AgendaFilterTest.class);
-    
+
     @Test
     public void testAgendaFilter() {
         // JBRULES-3374
@@ -108,11 +108,11 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "\n" +
                 "</process>";
 
-        builder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
-        builder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
+        builder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
+        builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
-        if ( builder.hasErrors() ) {
-            fail( builder.getErrors().toString() );
+        if (builder.hasErrors()) {
+            fail(builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
@@ -123,7 +123,6 @@ public class AgendaFilterTest extends AbstractBaseTest {
         message.setStatus(Message.HELLO);
         kruntime.getKieSession().insert(message);
         kruntime.startProcess("process-test");
-        
         assertEquals("Goodbye cruel world", message.getMessage());
     }
 
@@ -158,14 +157,14 @@ public class AgendaFilterTest extends AbstractBaseTest {
         private Integer currentSalience = null;
 
         public boolean accept(Match activation) {
-            RuleImpl rule = (RuleImpl)activation.getRule();
+            RuleImpl rule = (RuleImpl) activation.getRule();
 
-            if (currentSalience == null){
+            if (currentSalience == null) {
                 currentSalience = rule.getSalience() != null ? Integer.valueOf(rule.getSalience().toString()) : 0;
             }
             boolean nocancel = currentSalience >= Integer.valueOf(rule.getSalience().toString());
 
-            if(!nocancel){
+            if (!nocancel) {
                 logger.info("cancelling -> {}", rule.getName());
             }
 
@@ -240,11 +239,11 @@ public class AgendaFilterTest extends AbstractBaseTest {
                 "  </connections>\n" +
                 "</process>";
 
-        builder.add( ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL );
-        builder.add( ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF );
+        builder.add(ResourceFactory.newByteArrayResource(drl.getBytes()), ResourceType.DRL);
+        builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
-        if ( builder.hasErrors() ) {
-            fail( builder.getErrors().toString() );
+        if (builder.hasErrors()) {
+            fail(builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();

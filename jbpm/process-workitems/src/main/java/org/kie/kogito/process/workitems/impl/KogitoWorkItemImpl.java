@@ -78,7 +78,7 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
     }
 
     @Override
-    public void setProcessInstanceId( long processInstanceId ) {
+    public void setProcessInstanceId(long processInstanceId) {
         throw new UnsupportedOperationException();
     }
 
@@ -154,7 +154,7 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
     }
 
     @Override
-    public void setNodeInstanceId( long deploymentId ) {
+    public void setNodeInstanceId(long deploymentId) {
         throw new UnsupportedOperationException();
     }
 
@@ -264,6 +264,6 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
 
     @Override
     public void setProcessInstance(KogitoProcessInstance processInstance) {
-        this.processInstance = processInstance;
+        this.processInstance =  processInstance;
     }
 }

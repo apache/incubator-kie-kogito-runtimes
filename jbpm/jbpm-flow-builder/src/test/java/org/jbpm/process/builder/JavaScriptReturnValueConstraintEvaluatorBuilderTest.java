@@ -38,28 +38,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JavaScriptReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseTest {
     @Test
     public void testSimpleReturnValueConstraintEvaluator() throws Exception {
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "pkg1" );
+        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
 
         ProcessDescr processDescr = new ProcessDescr();
-        processDescr.setClassName( "Process1" );
-        processDescr.setName( "Process1" );
+        processDescr.setClassName("Process1");
+        processDescr.setName("Process1");
 
         WorkflowProcessImpl process = new WorkflowProcessImpl();
-        process.setName( "Process1" );
+        process.setName("Process1");
         process.setPackageName("pkg1");
 
         ReturnValueDescr descr = new ReturnValueDescr();
         descr.setText("function validate() {return value;} validate();");
 
         builder.addPackage(pkg);
-        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry( pkg.getName() ).getDialectCompiletimeRegistry();
+        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
 
-        ProcessBuildContext context = new ProcessBuildContext( builder,
+        ProcessBuildContext context = new ProcessBuildContext(builder,
                 pkg,
                 process,
                 processDescr,
                 dialectRegistry,
-                null );
+                null);
 
         builder.addPackageFromDrl(new StringReader("package pkg1;\n global Boolean value;\n"));
 
@@ -72,7 +72,6 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest extends Abstrac
                 null);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
-
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
 
@@ -82,9 +81,8 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest extends Abstrac
         kruntime.getKieSession().setGlobal("value", true);
 
         assertTrue(node.evaluate(splitInstance,
-                        null,
-                        null)
-        );
+                null,
+                null));
 
         // Build second time with reutrn value evaulator returning false
         ReturnValueDescr descr2 = new ReturnValueDescr();
@@ -97,9 +95,8 @@ public class JavaScriptReturnValueConstraintEvaluatorBuilderTest extends Abstrac
                 null);
 
         assertFalse(node.evaluate(splitInstance,
-                        null,
-                        null)
-        );
+                null,
+                null));
     }
 
 }

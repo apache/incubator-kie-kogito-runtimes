@@ -42,27 +42,27 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonProcessViolated() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
                 latch.countDown();
             }
-            
+
         };
         kruntime = createKogitoProcessRuntime("BPMN2-UserTaskWithSLA.bpmn2");
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         kruntime.getProcessEventManager().addEventListener(listener);
-        
+
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
-        
+
         boolean slaViolated = latch.await(10, TimeUnit.SECONDS);
         assertTrue(slaViolated, "SLA was not violated while it is expected");
 
@@ -77,7 +77,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         slaCompliance = getSLAComplianceForProcessInstance(processInstance);
         assertEquals(KogitoProcessInstance.SLA_VIOLATED, slaCompliance);
-
     }
 
     @Test
@@ -86,7 +85,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
@@ -102,14 +100,12 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         int slaCompliance = getSLAComplianceForProcessInstance(processInstance);
         assertEquals(KogitoProcessInstance.SLA_MET, slaCompliance);
-
     }
-
 
     @Test
     public void testSLAonUserTaskViolated() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -139,7 +135,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         int slaCompliance = getSLAComplianceForProcessInstance(processInstance);
         assertEquals(KogitoProcessInstance.SLA_NA, slaCompliance);
 
-        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance)processInstance).getKogitoNodeInstances();
+        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance) processInstance).getKogitoNodeInstances();
         assertEquals(1, active.size());
 
         KogitoNodeInstance userTaskNode = active.iterator().next();
@@ -152,7 +148,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         slaCompliance = getSLAComplianceForProcessInstance(processInstance);
         assertEquals(KogitoProcessInstance.SLA_NA, slaCompliance);
-
         slaCompliance = getSLAComplianceForNodeInstance(processInstance.getStringId(), (org.jbpm.workflow.instance.NodeInstance) userTaskNode, 1);
         assertEquals(KogitoProcessInstance.SLA_VIOLATED, slaCompliance);
 
@@ -164,7 +159,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
-
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
@@ -175,7 +169,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
-        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance)processInstance).getKogitoNodeInstances();
+        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance) processInstance).getKogitoNodeInstances();
         assertEquals(1, active.size());
 
         KogitoNodeInstance userTaskNode = active.iterator().next();
@@ -190,7 +184,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         // Whereas in memory it is already met
         assertEquals(KogitoProcessInstance.SLA_MET, slaCompliance);
 
-
         slaCompliance = getSLAComplianceForNodeInstance(processInstance.getStringId(), (org.jbpm.workflow.instance.NodeInstance) userTaskNode, 1);
         assertEquals(KogitoProcessInstance.SLA_MET, slaCompliance);
 
@@ -199,7 +192,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonProcessViolatedExternalTracking() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -220,7 +213,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
-
 
         boolean slaViolated = latch.await(5, TimeUnit.SECONDS);
         assertFalse(slaViolated, "SLA should not violated by timer");
@@ -248,7 +240,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonUserTaskViolatedExternalTracking() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -276,7 +268,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
-        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance)processInstance).getKogitoNodeInstances();
+        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance) processInstance).getKogitoNodeInstances();
         assertEquals(1, active.size());
 
         KogitoNodeInstance userTaskNode = active.iterator().next();
@@ -304,7 +296,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonProcessViolatedWithExpression() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -348,7 +340,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonProcessViolatedNoTracking() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -370,7 +362,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
 
-
         boolean slaViolated = latch.await(5, TimeUnit.SECONDS);
         assertFalse(slaViolated, "SLA should not violated by timer");
 
@@ -391,7 +382,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonCatchEventViolated() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -403,7 +394,6 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         kruntime.getProcessEventManager().addEventListener(listener);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new SystemOutWorkItemHandler());
-
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
@@ -413,7 +403,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
-        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance)processInstance).getKogitoNodeInstances();
+        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance) processInstance).getKogitoNodeInstances();
         assertEquals(1, active.size());
 
         KogitoNodeInstance eventNode = active.iterator().next();
@@ -436,7 +426,7 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
     @Test
     public void testSLAonCatchEventNotViolated() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
-        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener(){
+        final KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
 
             @Override
             public void afterSLAViolated(SLAViolatedEvent event) {
@@ -448,11 +438,10 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         kruntime.getProcessEventManager().addEventListener(listener);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new SystemOutWorkItemHandler());
-
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
 
-        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance)processInstance).getKogitoNodeInstances();
+        Collection<KogitoNodeInstance> active = ((KogitoWorkflowProcessInstance) processInstance).getKogitoNodeInstances();
         assertEquals(1, active.size());
 
         KogitoNodeInstance eventNode = active.iterator().next();
@@ -466,26 +455,24 @@ public class SLAComplianceTest extends JbpmBpmn2TestCase {
 
         slaCompliance = getSLAComplianceForNodeInstance(processInstance.getStringId(), (org.jbpm.workflow.instance.NodeInstance) eventNode, 1);
         assertEquals(KogitoProcessInstance.SLA_MET, slaCompliance);
-        
 
         boolean slaViolated = latch.await(3, TimeUnit.SECONDS);
         assertFalse(slaViolated, "SLA should not violated by timer");
 
     }
-    
+
     /*
      * Helper methods
      */
-    
+
     private int getSLAComplianceForProcessInstance(KogitoProcessInstance processInstance) {
-        int slaCompliance = ((org.jbpm.process.instance.ProcessInstance)processInstance).getSlaCompliance();
-        
+        int slaCompliance = ((org.jbpm.process.instance.ProcessInstance) processInstance).getSlaCompliance();
         return slaCompliance;
     }
-    
+
     private int getSLAComplianceForNodeInstance(String processInstanceId, org.jbpm.workflow.instance.NodeInstance nodeInstance, int logType) {
         int slaCompliance = nodeInstance.getSlaCompliance();
-        
+
         return slaCompliance;
     }
 }

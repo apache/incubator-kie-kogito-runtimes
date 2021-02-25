@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
-    
+
     private KogitoProcessEventListener LOGGING_EVENT_LISTENER = new DefaultKogitoProcessEventListener() {
 
         @Override
@@ -104,21 +104,21 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 handler);
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("BoundarySignalOnTask");
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("MySignal");
+                .hasSize(2)
+                .extracting("event").contains("MySignal");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("signal");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "signal")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
-               
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "signal")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
+
         KogitoProcessInstance processInstance2 = kruntime.startProcess("SignalIntermediateEvent");
         assertProcessInstanceFinished(processInstance2, kruntime);
 
@@ -131,7 +131,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         final AtomicBoolean eventAfterNodeLeftTriggered = new AtomicBoolean(false);
         kruntime = createKogitoProcessRuntime(
                 "BPMN2-BoundaryEventWithNonEffectiveSignal.bpmn2");
-        
+
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 handler);
@@ -140,8 +140,8 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 // BoundaryEventNodeInstance
-                if(signal.equals(event.getNodeInstance().getNodeName())) {
-                	eventAfterNodeLeftTriggered.set(true);
+                if (signal.equals(event.getNodeInstance().getNodeName())) {
+                    eventAfterNodeLeftTriggered.set(true);
                 }
             }
         });
@@ -151,7 +151,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         // outer human work
         kruntime.getKogitoWorkItemManager().completeWorkItem(
                 handler.getWorkItem().getStringId(), null);
-        
+
         kruntime.signalEvent(signal, signal);
 
         // inner human task
@@ -171,32 +171,32 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(LOGGING_EVENT_LISTENER);
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("BoundarySignalOnTask");
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("MySignal", "workItemCompleted");
+                .hasSize(2)
+                .extracting("event").contains("MySignal", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "workItem");
+                .extracting("eventType").contains("signal", "workItem");
         assertThat(eventDescriptions)
-            .extracting("nodeId").contains("BoundaryEvent_2", "UserTask_1");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("nodeId").contains("BoundaryEvent_2", "UserTask_1");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "signal")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
+                .extracting("processInstanceId").contains(processInstance.getStringId());
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "signal")
-            .hasSize(1)
-            .extracting("nodeInstanceId").containsOnlyNulls();        
-        
+                .filteredOn("eventType", "signal")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "workItem")
-            .hasSize(1)
-            .extracting("nodeInstanceId").doesNotContainNull();
-       
+                .filteredOn("eventType", "signal")
+                .hasSize(1)
+                .extracting("nodeInstanceId").containsOnlyNulls();
+
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "workItem")
+                .hasSize(1)
+                .extracting("nodeInstanceId").doesNotContainNull();
+
         kruntime.signalEvent("MySignal", "value");
         assertProcessInstanceFinished(processInstance, kruntime);
 
@@ -243,20 +243,20 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("SignalBoundaryEvent");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("MyMessage", "workItemCompleted");
+                .hasSize(2)
+                .extracting("event").contains("MyMessage", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "workItem");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("signal", "workItem");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "signal")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "signal")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
 
         kruntime.signalEvent("MyMessage", null);
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -311,20 +311,20 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 new SystemOutWorkItemHandler());
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email2",
                 new SystemOutWorkItemHandler());
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("Yes", "No");
+                .hasSize(2)
+                .extracting("event").contains("Yes", "No");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal");
+                .extracting("eventType").contains("signal");
         assertThat(eventDescriptions)
-             .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
-        assertThat(eventDescriptions)            
-            .extracting("nodeInstanceId").doesNotContainNull();
-        
+                .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .extracting("nodeInstanceId").doesNotContainNull();
+
         kruntime.signalEvent("Yes", "YesValue", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
         // No
@@ -412,22 +412,22 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("com.sample.test");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("Yes", "timerTriggered");
+                .hasSize(2)
+                .extracting("event").contains("Yes", "timerTriggered");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "timer");
+                .extracting("eventType").contains("signal", "timer");
         assertThat(eventDescriptions).filteredOn(i -> i.getDataType() != null)
-             .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
         assertThat(eventDescriptions)
-        .filteredOn("eventType", "timer")
-        .hasSize(1)
-        .extracting("properties", Map.class)
-        .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Delay"));
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "timer")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Delay"));
 
         kruntime.getProcessEventManager().addEventListener(countDownListener);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1",
@@ -478,17 +478,17 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("com.sample.test");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("Yes");
+                .hasSize(2)
+                .extracting("event").contains("Yes");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "conditional");
+                .extracting("eventType").contains("signal", "conditional");
         assertThat(eventDescriptions).filteredOn(i -> i.getDataType() != null)
-             .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1",
                 new SystemOutWorkItemHandler());
@@ -521,17 +521,17 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime
                 .startProcess("com.sample.test");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("Message-YesMessage", "Message-NoMessage");
+                .hasSize(2)
+                .extracting("event").contains("Message-YesMessage", "Message-NoMessage");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("message", "message");
+                .extracting("eventType").contains("message", "message");
         assertThat(eventDescriptions)
-             .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("dataType").hasOnlyElementsOfType(NamedDataType.class).extracting("dataType").hasOnlyElementsOfType(StringDataType.class);
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Email1",
                 new SystemOutWorkItemHandler());
@@ -602,7 +602,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.signalEvent("StopSignal", "", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
 
-
         // Continue and Stop
         processInstance = kruntime.startProcess("com.sample.bpmn.testEBGInSubprocess");
         assertProcessInstanceActive(processInstance);
@@ -617,7 +616,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEventSubprocessSignal() throws Exception {
-        String [] nodes = {
+        String[] nodes = {
                 "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "sub-script", "end-sub"
         };
@@ -626,7 +625,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
     @Test
     public void testEventSubprocessSignalNested() throws Exception {
-        String [] nodes = {
+        String[] nodes = {
                 "Start",
                 "Sub Process",
                 "Sub Start",
@@ -644,7 +643,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         runTestEventSubprocessSignal("BPMN2-EventSubprocessSignal-Nested.bpmn2", nodes);
     }
 
-    public void runTestEventSubprocessSignal(String processFile, String [] completedNodes) throws Exception {
+    public void runTestEventSubprocessSignal(String processFile, String[] completedNodes) throws Exception {
         kruntime = createKogitoProcessRuntime(processFile);
         final List<String> executednodes = new ArrayList<>();
         KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
@@ -653,7 +652,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName()
                         .equals("sub-script")) {
-                    executednodes.add( (( KogitoNodeInstance ) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
                 }
             }
 
@@ -670,18 +669,18 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("MySignal", "workItemCompleted");
+                .hasSize(2)
+                .extracting("event").contains("MySignal", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "workItem");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("signal", "workItem");
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
         kruntime.signalEvent("MySignal", null, processInstance.getStringId());
         assertProcessInstanceActive(processInstance);
-        
+
         kruntime.signalEvent("MySignal", null);
         assertProcessInstanceActive(processInstance);
-        
+
         kruntime.signalEvent("MySignal", null);
         assertProcessInstanceActive(processInstance);
         kruntime.signalEvent("MySignal", null);
@@ -691,7 +690,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
-        assertNodeTriggered(processInstance.getStringId(), completedNodes );
+        assertNodeTriggered(processInstance.getStringId(), completedNodes);
         assertThat(executednodes.size()).isEqualTo(4);
 
     }
@@ -705,7 +704,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName().equals("User Task 2")) {
-                    executednodes.add( (( KogitoNodeInstance ) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
                 }
             }
 
@@ -768,7 +767,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName()
                         .equals("Script Task 1")) {
-                    executednodes.add( (( KogitoNodeInstance ) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
                 }
             }
 
@@ -802,7 +801,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName()
                         .equals("Script Task 1")) {
-                    executednodes.add( (( KogitoNodeInstance ) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
                 }
             }
 
@@ -817,13 +816,12 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("Message-HelloMessage", "workItemCompleted");
+                .hasSize(2)
+                .extracting("event").contains("Message-HelloMessage", "workItemCompleted");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("signal", "workItem");       
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
-
+                .extracting("eventType").contains("signal", "workItem");
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
         kruntime.getProcessEventManager().addEventListener(listener);
 
         kruntime.signalEvent("Message-HelloMessage", null, processInstance.getStringId());
@@ -857,30 +855,30 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-EventSubprocessTimer");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("workItemCompleted", "timerTriggered");
+                .hasSize(2)
+                .extracting("event").contains("workItemCompleted", "timerTriggered");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("workItem", "timer");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("workItem", "timer");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "timer")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Delay"));
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "timer")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Delay"));
         countDownListener.waitTillCompleted();
-        
+
         eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(1)
-            .extracting("event").contains("workItemCompleted");
-        assertThat(eventDescriptions)            
-            .extracting("eventType").contains("workItem");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .hasSize(1)
+                .extracting("event").contains("workItemCompleted");
+        assertThat(eventDescriptions)
+                .extracting("eventType").contains("workItem");
+        assertThat(eventDescriptions)
+                .extracting("processInstanceId").contains(processInstance.getStringId());
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
@@ -904,21 +902,21 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-EventSubprocessTimer");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("workItemCompleted", "timerTriggered");
+                .hasSize(2)
+                .extracting("event").contains("workItemCompleted", "timerTriggered");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("workItem", "timer");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("workItem", "timer");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "timer")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Period"));
-        
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "timer")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Period"));
+
         countDownListener.waitTillCompleted();
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
@@ -940,7 +938,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
                 if (event.getNodeInstance().getNodeName()
                         .equals("Script Task 1")) {
-                    executednodes.add( (( KogitoNodeInstance ) event.getNodeInstance()).getStringId());
+                    executednodes.add(((KogitoNodeInstance) event.getNodeInstance()).getStringId());
                 }
             }
 
@@ -957,7 +955,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         Person person = new Person();
         person.setName("john");
         kruntime.getKieSession().insert(person);
-
 
         KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertThat(workItem).isNotNull();
@@ -980,11 +977,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
             @Override
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
-            	@SuppressWarnings("unchecked")
-				Map<String, String> variable = (Map<String, String>)event.getNodeInstance().getVariable("richiesta");
-            	if (variable != null) {
-            		variablevalues.addAll(variable.keySet());
-            	}
+                @SuppressWarnings("unchecked")
+                Map<String, String> variable = (Map<String, String>) event.getNodeInstance().getVariable("richiesta");
+                if (variable != null) {
+                    variablevalues.addAll(variable.keySet());
+                }
             }
 
         };
@@ -1028,7 +1025,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem ).isTrue();
+        assertThat(workItem instanceof KogitoWorkItem).isTrue();
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1050,7 +1047,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem ).isTrue();
+        assertThat(workItem instanceof KogitoWorkItem).isTrue();
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1103,21 +1100,21 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(countDownListener);
         KogitoProcessInstance processInstance = kruntime.startProcess("TimerBoundaryEvent");
         assertProcessInstanceActive(processInstance);
-        
+
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(2)
-            .extracting("event").contains("workItemCompleted", "timerTriggered");
+                .hasSize(2)
+                .extracting("event").contains("workItemCompleted", "timerTriggered");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("workItem", "timer");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("workItem", "timer");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "timer")
-            .hasSize(1)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Period"));
-        
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "timer")
+                .hasSize(1)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("TimerID") && m.containsKey("Period"));
+
         countDownListener.waitTillCompleted();
 
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1231,7 +1228,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 1);
 
         kruntime = createKogitoProcessRuntime("BPMN2-TimerBoundaryEventInterruptingOnTask.bpmn2");
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",  new TestWorkItemHandler());
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new TestWorkItemHandler());
         kruntime.getProcessEventManager().addEventListener(countDownListener);
 
         KogitoProcessInstance processInstance = kruntime.startProcess("TimerBoundaryEvent");
@@ -1253,11 +1250,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);        
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
 
 
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);        
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
         KogitoWorkItem workItem = handler.getWorkItem();
         if (workItem != null) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
@@ -1274,7 +1271,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 new SystemOutWorkItemHandler());
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
         assertProcessInstanceActive(processInstance);
-   
 
         // now signal process instance
         kruntime.signalEvent("MyMessage", "SomeValue", processInstance.getStringId());
@@ -1289,13 +1285,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 new SystemOutWorkItemHandler());
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
-        assertProcessInstanceActive(processInstance);        // now signal process instance
+        assertProcessInstanceActive(processInstance); // now signal process instance
         kruntime.signalEvent("Message-HelloMessage", "SomeValue",
                 processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
 
     }
-    
+
     @Test
     public void testIntermediateCatchEventMessageWithRef() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventMessageWithRef.bpmn2");
@@ -1321,7 +1317,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(countDownListener);
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
         assertProcessInstanceActive(processInstance);
-  
+
         // now wait for 1 second for timer to trigger
         countDownListener.waitTillCompleted();
 
@@ -1451,8 +1447,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventConditionFilterByProcessInstance.bpmn2");
 
-
-
         Map<String, Object> params1 = new HashMap<>();
         params1.put("personId", Long.valueOf(1L));
         Person person1 = new Person();
@@ -1532,7 +1526,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(countDownListener);
         KogitoProcessInstance processInstance = kruntime.startProcess("IntermediateCatchEvent");
         assertProcessInstanceActive(processInstance);
-
 
         final String piId = processInstance.getStringId();
         kruntime.getKieSession().execute((ExecutableCommand<Void>) context -> {
@@ -1631,7 +1624,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         person.setName("john");
         kruntime.getKieSession().insert(person);
 
-
         assertProcessInstanceCompleted(processInstance);
         assertNodeTriggered(processInstance.getStringId(), "StartProcess",
                 "User Task", "Boundary event", "Condition met", "End2");
@@ -1646,11 +1638,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("ConditionalBoundaryEvent");
         assertProcessInstanceActive(processInstance);
 
-
         Person person = new Person();
         person.setName("john");
         kruntime.getKieSession().insert(person);
-
 
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "StartProcess", "Hello",
@@ -1675,7 +1665,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         kruntime.signalEvent("continue", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
-
 
         processInstance = kruntime.startProcess("jbpm.testing.signal");
         assertProcessInstanceActive(processInstance);
@@ -1708,12 +1697,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         kruntime2.getKieSession().dispose(); // kruntime's session is disposed in the @AfterEach method
     }
-    
+
     @Test
     public void testIntermediateCatchEventNoIncommingConnection() throws Exception {
         try {
 	    	kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventNoIncommingConnection.bpmn2");
-
 
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotNull();
@@ -1776,7 +1764,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
 
         for (KogitoWorkItem wi : workItems) {
-        	kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
+            kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
         }
         assertProcessInstanceFinished(processInstance, kruntime);
 
@@ -1801,17 +1789,17 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         Set<EventDescription<?>> eventDescriptions = processInstance.getEventDescriptions();
         assertThat(eventDescriptions)
-            .hasSize(3)
-            .extracting("event").contains("workItemCompleted", "Inside", "Error-_D83CFC28-3322-4ABC-A12D-83476B08C7E8-MyError");
+                .hasSize(3)
+                .extracting("event").contains("workItemCompleted", "Inside", "Error-_D83CFC28-3322-4ABC-A12D-83476B08C7E8-MyError");
         assertThat(eventDescriptions)
-            .extracting("eventType").contains("workItem", "signal");
-        assertThat(eventDescriptions)            
-            .extracting("processInstanceId").contains(processInstance.getStringId());
+                .extracting("eventType").contains("workItem", "signal");
         assertThat(eventDescriptions)
-            .filteredOn("eventType", "signal")
-            .hasSize(2)
-            .extracting("properties", Map.class)
-            .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
+                .extracting("processInstanceId").contains(processInstance.getStringId());
+        assertThat(eventDescriptions)
+                .filteredOn("eventType", "signal")
+                .hasSize(2)
+                .extracting("properties", Map.class)
+                .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull();
@@ -1898,16 +1886,16 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("BPMN2-IntermediateThrowEventMessageWithTransformation.bpmn2");
         final StringBuffer messageContent = new StringBuffer();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Send Task",
-                new SendTaskHandler(){
+                new SendTaskHandler() {
 
-					@Override
-					public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-						// collect message content for verification
-						messageContent.append(workItem.getParameter("Message"));
-						super.executeWorkItem(workItem, manager);
-					}
+                    @Override
+                    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+                        // collect message content for verification
+                        messageContent.append(workItem.getParameter("Message"));
+                        super.executeWorkItem(workItem, manager);
+                    }
 
-        });
+                });
         Map<String, Object> params = new HashMap<>();
         params.put("x", "MyValue");
         KogitoProcessInstance processInstance = kruntime.startProcess(
@@ -1963,7 +1951,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-EventSubprocessSignal");
         assertProcessInstanceActive(processInstance);
 
-
         kruntime.signalEvent("MySignal", "john", processInstance.getStringId());
 
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1980,13 +1967,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     public void testMultipleMessageSignalSubprocess() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-MultipleMessageSignalSubprocess.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("com.sample.bpmn.Multiple_MessageSignal_Subprocess");
-		logger.debug("Parent Process ID: " + processInstance.getStringId());
+        logger.debug("Parent Process ID: " + processInstance.getStringId());
 
-		kruntime.signalEvent("Message-Message 1","Test",processInstance.getStringId());
-		assertProcessInstanceActive(processInstance.getStringId(), kruntime);
+        kruntime.signalEvent("Message-Message 1", "Test", processInstance.getStringId());
+        assertProcessInstanceActive(processInstance.getStringId(), kruntime);
 
-		kruntime.signalEvent("Message-Message 1","Test",processInstance.getStringId());
-		assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
+        kruntime.signalEvent("Message-Message 1", "Test", processInstance.getStringId());
+        assertProcessInstanceCompleted(processInstance.getStringId(), kruntime);
     }
 
     @Test
@@ -2027,8 +2014,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         assertProcessInstanceFinished(processInstance, kruntime);
     }
-
-   
 
     @Test
     @Timeout(10)
@@ -2144,8 +2129,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance2);
 
     }
-
-
 
     @Test
     public void testThrowIntermediateSignalWithExternalScope() throws Exception {
@@ -2328,8 +2311,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(processInstances.size()).isEqualTo(0);
     }
 
-    
-
     @Test
     @Timeout(10)
     public void testEventBasedSplitWithCronTimerAndSignal() throws Exception {
@@ -2344,15 +2325,15 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
             
             TestWorkItemHandler handler = new TestWorkItemHandler();
-            kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);       
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
             kruntime.getProcessEventManager().addEventListener(countDownListener);
             kruntime.getProcessEventManager().addEventListener(countDownListener2);
             kruntime.getProcessEventManager().addEventListener(countDownListener3);
             kruntime.getProcessEventManager().addEventListener(countDownListener4);
-            
+
             KogitoProcessInstance processInstance = kruntime.startProcess("timerWithEventBasedGateway");
             assertProcessInstanceActive(processInstance.getStringId(), kruntime);
-            
+
             countDownListener.waitTillCompleted();
             logger.debug("First timer triggered");
             countDownListener2.waitTillCompleted();
@@ -2361,62 +2342,60 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             logger.debug("Third timer triggered");
             countDownListener4.waitTillCompleted();
             logger.debug("Fourth timer triggered");
-            
+
             List<KogitoWorkItem> wi = handler.getWorkItems();
             assertThat(wi).isNotNull();
             assertThat(wi.size()).isEqualTo(3);
-    
+
             kruntime.abortProcessInstance(processInstance.getStringId());
         } finally {
             // clear property only as the only relevant value is when it's set to true
             System.clearProperty("jbpm.enable.multi.con");
         }
     }
-    
+
     @Test
     public void testEventSubprocessWithEmbeddedSignals() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-EventSubprocessErrorSignalEmbedded.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("project2.myerrorprocess");
-        
+
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
         assertProcessInstanceActive(processInstance);
         kruntime.signalEvent("signal1", null, processInstance.getStringId());
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
-  
+
         kruntime.signalEvent("signal2", null, processInstance.getStringId());
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
-        
+
         kruntime.signalEvent("signal3", null, processInstance.getStringId());
 
         assertProcessInstanceFinished(processInstance, kruntime);
     }
-    
+
     @Test
     public void testEventSubprocessWithExpression() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-EventSubprocessSignalExpression.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-               
         Map<String, Object> params = new HashMap<>();
         params.put("x", "signalling");
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-EventSubprocessSignalExpression", params);
-        
+
         assertProcessInstanceActive(processInstance.getStringId(), kruntime);
         assertProcessInstanceActive(processInstance);
         kruntime.signalEvent("signalling", null, processInstance.getStringId());
-  
+
         assertProcessInstanceFinished(processInstance, kruntime);
     }
-    
+
     @Test
     public void testConditionalProcessFactInsertedBefore() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-IntermediateCatchEventConditionPI.bpmn2", "BPMN2-IntermediateCatchEventSignal.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        
         Person person0 = new Person("john");
         kruntime.getKieSession().insert(person0);
-        
+
         Map<String, Object> params0 = new HashMap<>();
         params0.put("name", "john");
         KogitoProcessInstance pi0 = kruntime.startProcess("IntermediateCatchEvent", params0);
@@ -2431,13 +2410,13 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getKieSession().insert(pi);
         pi = kruntime.getProcessInstance(pi.getStringId());
         assertThat(pi).isNotNull();
-        
+
         Person person2 = new Person("Poul");
         kruntime.getKieSession().insert(person2);
-        
+
         pi = kruntime.getProcessInstance(pi.getStringId());
         assertThat(pi).isNull();
-        
+
     }
 
     @Test
@@ -2451,175 +2430,169 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("SubprocessWithSignalEndEventAndSignalBoundaryEvent", params);
 
         assertNodeTriggered(processInstance.getStringId(), "sysout from boundary", "end2");
-        assertNotNodeTriggered(processInstance.getStringId(),"end1");
+        assertNotNodeTriggered(processInstance.getStringId(), "end1");
 
         assertProcessInstanceFinished(processInstance, kruntime);
     }
-    
+
     @Test
     public void testSignalEndWithData() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-IntermediateThrowEventSignalWithData.bpmn2");
 
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
-                                                              new SystemOutWorkItemHandler());
+                new SystemOutWorkItemHandler());
         Map<String, Object> params = new HashMap<>();
         KogitoProcessInstance processInstance = kruntime.startProcess("testThrowingSignalEvent", params);
 
         assertProcessInstanceActive(processInstance);
-        
+
         kruntime.signalEvent("mysignal", null, processInstance.getStringId());
-        
+
         assertProcessInstanceCompleted(processInstance);
 
     }
-    
+
     @Test
     public void testDynamicCatchEventSignal() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        
         final List<String> instances = new ArrayList<>();
-        
+
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
 
             @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                instances.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                instances.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
-            
+
         });
-        
+
         KogitoProcessInstance processInstance = kruntime.startProcess("src.father");
         assertProcessInstanceActive(processInstance);
         assertThat(instances).hasSize(4);
-        
+
         // remove the parent process instance
         instances.remove(processInstance.getStringId());
-        
+
         for (String id : instances) {
             KogitoProcessInstance child = kruntime.getProcessInstance(id);
             assertProcessInstanceActive(child);
         }
-        
+
         // now complete user task to signal all child instances to stop
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        
+
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        
         assertProcessInstanceFinished(processInstance, kruntime);
-        
+
         for (String id : instances) {
             assertNull(kruntime.getProcessInstance(id), "Child process instance has not been finished.");
         }
     }
 
     @Test
-    public void testDynamicCatchEventSignalWithVariableUpdated() throws Exception {        
+    public void testDynamicCatchEventSignalWithVariableUpdated() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        
         final List<String> instances = new ArrayList<>();
-        
+
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
 
             @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                instances.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                instances.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
-            
+
         });
-        
+
         KogitoProcessInstance processInstance = kruntime.startProcess("src.father");
         assertProcessInstanceActive(processInstance);
         assertThat(instances).hasSize(4);
-        
+
         // remove the parent process instance
         instances.remove(processInstance.getStringId());
-        
+
         for (String id : instances) {
             KogitoProcessInstance child = kruntime.getProcessInstance(id);
             assertProcessInstanceActive(child);
         }
-        
+
         // change one child process instance variable (fatherId) to something else then original fatherId
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
         kruntime.getKieSession().execute(new KogitoSetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
-        
+
         // now complete user task to signal all child instances to stop
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        
+
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        
         assertProcessInstanceFinished(processInstance, kruntime);
-        
+
         for (String id : instances) {
             assertNull(kruntime.getProcessInstance(id), "Child process instance has not been finished.");
         }
-        
+
         KogitoProcessInstance updatedChild = kruntime.getProcessInstance(changeProcessInstanceId);
         assertProcessInstanceActive(updatedChild);
-        
+
         kruntime.signalEvent("stopChild:999", null, changeProcessInstanceId);
         assertProcessInstanceFinished(updatedChild, kruntime);
     }
-    
+
     @RequirePersistence
     @Test
-    public void testDynamicCatchEventSignalWithVariableUpdatedBroadcastSignal() throws Exception {        
+    public void testDynamicCatchEventSignalWithVariableUpdatedBroadcastSignal() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        
         final List<String> instances = new ArrayList<>();
-        
+
         kruntime.getProcessEventManager().addEventListener(new DefaultKogitoProcessEventListener() {
 
             @Override
             public void beforeProcessStarted(ProcessStartedEvent event) {
-                instances.add( (( KogitoProcessInstance ) event.getProcessInstance()).getStringId());
+                instances.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
-            
+
         });
-        
+
         KogitoProcessInstance processInstance = kruntime.startProcess("src.father");
         assertProcessInstanceActive(processInstance);
         assertThat(instances).hasSize(4);
-        
+
         // remove the parent process instance
         instances.remove(processInstance.getStringId());
-        
+
         for (String id : instances) {
             KogitoProcessInstance child = kruntime.getProcessInstance(id);
             assertProcessInstanceActive(child);
         }
-        
+
         // change one child process instance variable (fatherId) to something else then original fatherId
         String changeProcessInstanceId = instances.remove(0);
         Map<String, Object> updatedVariables = new HashMap<>();
         updatedVariables.put("fatherId", "999");
         kruntime.getKieSession().execute(new KogitoSetProcessInstanceVariablesCommand(changeProcessInstanceId, updatedVariables));
-        
+
         // now complete user task to signal all child instances to stop
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        
+
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        
         assertProcessInstanceFinished(processInstance, kruntime);
-        
+
         for (String id : instances) {
             assertNull(kruntime.getProcessInstance(id), "Child process instance has not been finished.");
         }
-        
+
         KogitoProcessInstance updatedChild = kruntime.getProcessInstance(changeProcessInstanceId);
         assertProcessInstanceActive(updatedChild);
-        
+
         kruntime.signalEvent("stopChild:999", null, updatedChild.getStringId());
         assertProcessInstanceFinished(updatedChild, kruntime);
     }

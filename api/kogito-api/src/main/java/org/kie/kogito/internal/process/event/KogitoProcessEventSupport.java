@@ -25,43 +25,43 @@ import org.kie.kogito.process.workitem.Transition;
 
 public interface KogitoProcessEventSupport {
 
-    void fireBeforeProcessStarted(KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireBeforeProcessStarted(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireAfterProcessStarted( KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireAfterProcessStarted(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireBeforeProcessCompleted( KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireBeforeProcessCompleted(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireAfterProcessCompleted( KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireAfterProcessCompleted(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireBeforeNodeTriggered( KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireBeforeNodeTriggered(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireAfterNodeTriggered( KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireAfterNodeTriggered(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireBeforeNodeLeft( KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireBeforeNodeLeft(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireAfterNodeLeft( KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireAfterNodeLeft(KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireBeforeVariableChanged( String id, String instanceId, Object oldValue, Object newValue, List<String> tags,
-                                    KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireBeforeVariableChanged(String id, String instanceId, Object oldValue, Object newValue, List<String> tags,
+            KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireAfterVariableChanged( String name, String id,Object oldValue, Object newValue, List<String> tags,
-                                   KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireAfterVariableChanged(String name, String id, Object oldValue, Object newValue, List<String> tags,
+            KogitoProcessInstance processInstance, KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireBeforeSLAViolated( KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireBeforeSLAViolated(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireAfterSLAViolated( KogitoProcessInstance instance, KieRuntime kruntime );
+    void fireAfterSLAViolated(KogitoProcessInstance instance, KieRuntime kruntime);
 
-    void fireBeforeSLAViolated( KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireBeforeSLAViolated(KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireAfterSLAViolated( KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime );
+    void fireAfterSLAViolated(KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime);
 
-    void fireBeforeWorkItemTransition( KogitoProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime );
+    void fireBeforeWorkItemTransition(KogitoProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime);
 
-    void fireAfterWorkItemTransition( KogitoProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime );
+    void fireAfterWorkItemTransition(KogitoProcessInstance instance, KogitoWorkItem workitem, Transition<?> transition, KieRuntime kruntime);
 
-    void fireOnSignal( KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime, String signalName, Object signalObject );
+    void fireOnSignal(KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime, String signalName, Object signalObject);
 
-    void fireOnMessage( KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime, String messageName, Object messageObject );
+    void fireOnMessage(KogitoProcessInstance instance, KogitoNodeInstance nodeInstance, KieRuntime kruntime, String messageName, Object messageObject);
 
     void reset();
 }

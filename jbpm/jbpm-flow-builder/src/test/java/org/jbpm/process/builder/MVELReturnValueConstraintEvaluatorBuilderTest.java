@@ -42,56 +42,56 @@ public class MVELReturnValueConstraintEvaluatorBuilderTest extends AbstractBaseT
 
     @Test
     public void testSimpleReturnValueConstraintEvaluator() throws Exception {
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "pkg1" );
+        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
 
         ReturnValueDescr descr = new ReturnValueDescr();
-        descr.setText( "return value" );
+        descr.setText("return value");
 
-        builder = new KnowledgeBuilderImpl( pkg );
-        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry( pkg.getName() ).getDialectCompiletimeRegistry();
-        MVELDialect mvelDialect = (MVELDialect) dialectRegistry.getDialect( "mvel" );
+        builder = new KnowledgeBuilderImpl(pkg);
+        DialectCompiletimeRegistry dialectRegistry = builder.getPackageRegistry(pkg.getName()).getDialectCompiletimeRegistry();
+        MVELDialect mvelDialect = (MVELDialect) dialectRegistry.getDialect("mvel");
 
         PackageBuildContext context = new PackageBuildContext();
-        context.init( builder,
-                      pkg,
-                      null,
-                      dialectRegistry,
-                      mvelDialect,
-                      null );
+        context.init(builder,
+                pkg,
+                null,
+                dialectRegistry,
+                mvelDialect,
+                null);
 
-        builder.addPackageFromDrl( new StringReader( "package pkg1;\nglobal Boolean value;" ) );
+        builder.addPackageFromDrl(new StringReader("package pkg1;\nglobal Boolean value;"));
 
         ReturnValueConstraintEvaluator node = new ReturnValueConstraintEvaluator();
 
         final MVELReturnValueEvaluatorBuilder evaluatorBuilder = new MVELReturnValueEvaluatorBuilder();
-        evaluatorBuilder.build( context,
-                       node,
-                       descr,
-                       null );
+        evaluatorBuilder.build(context,
+                node,
+                descr,
+                null);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
-        kruntime.getKieSession().setGlobal( "value", true );
+        kruntime.getKieSession().setGlobal("value", true);
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
 
         SplitInstance splitInstance = new SplitInstance();
-        splitInstance.setProcessInstance( processInstance );
-        
-        MVELDialectRuntimeData data = (MVELDialectRuntimeData) builder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData( "mvel");
-        
-        ( (MVELReturnValueEvaluator) node.getReturnValueEvaluator()).compile( data );
+        splitInstance.setProcessInstance(processInstance);
 
-        assertTrue( node.evaluate( splitInstance,
-                                   null,
-                                   null ) );
-        
-        kruntime.getKieSession().setGlobal( "value", false );
-        
-        assertFalse( node.evaluate( splitInstance,
-                                   null,
-                                   null ) );        
+        MVELDialectRuntimeData data = (MVELDialectRuntimeData) builder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData("mvel");
+
+        ((MVELReturnValueEvaluator) node.getReturnValueEvaluator()).compile(data);
+
+        assertTrue(node.evaluate(splitInstance,
+                null,
+                null));
+
+        kruntime.getKieSession().setGlobal("value", false);
+
+        assertFalse(node.evaluate(splitInstance,
+                null,
+                null));
     }
 
 }

@@ -58,15 +58,15 @@ public class HumanTaskWorkItemHandler implements KogitoWorkItemHandler {
     @SuppressWarnings("unchecked")
     public static boolean transitionToPhase(KogitoWorkItemHandler handler, KogitoWorkItem workItem, KogitoWorkItemManager manager, Transition<?> transition) {
         if (handler instanceof HumanTaskWorkItemHandler) {
-            (( HumanTaskWorkItemHandler ) handler).lifeCycle.transitionTo( workItem, manager, ( Transition<Map<String, Object>> ) transition );
+            ((HumanTaskWorkItemHandler) handler).lifeCycle.transitionTo(workItem, manager, (Transition<Map<String, Object>>) transition);
             return true;
         }
         return false;
     }
-    
+
     public static Stream<LifeCyclePhase> allowedPhases(KogitoWorkItemHandler handler, String phaseId) {
         if (handler instanceof HumanTaskWorkItemHandler) {
-            return (( HumanTaskWorkItemHandler ) handler).lifeCycle.allowedPhases( phaseId );
+            return ((HumanTaskWorkItemHandler) handler).lifeCycle.allowedPhases(phaseId);
         }
         return null;
     }

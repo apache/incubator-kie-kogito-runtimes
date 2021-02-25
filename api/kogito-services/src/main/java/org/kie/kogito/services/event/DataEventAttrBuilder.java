@@ -15,10 +15,11 @@
  */
 package org.kie.kogito.services.event;
 
+import java.util.Objects;
+
+import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-
-import java.util.Objects;
 
 /**
  * Small utility class to format DataEvents attributes from a given {@link KogitoProcessInstance}
@@ -36,7 +37,7 @@ public final class DataEventAttrBuilder {
 
     public static String toSource(final String processId) {
         Objects.requireNonNull(processId);
-        return String.format(AbstractDataEvent.SOURCE_FORMAT,processId.toLowerCase());
+        return String.format(AbstractDataEvent.SOURCE_FORMAT, processId.toLowerCase());
     }
 
     public static String toType(final String channelName, final KogitoProcessInstance process) {

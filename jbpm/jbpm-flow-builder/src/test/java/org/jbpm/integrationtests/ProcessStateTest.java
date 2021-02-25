@@ -37,42 +37,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcessStateTest extends AbstractBaseTest {
-    
+
     @Test
     public void testManualSignalState() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" name=\"StateA\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"toB\" />\n" +
-             "       <constraint toNodeId=\"4\" name=\"toC\" />\n" +
-            "      </constraints>\n" +
-            "    </state>\n" +
-            "    <state id=\"3\" name=\"StateB\" />\n" +
-            "    <state id=\"4\" name=\"StateC\" />\n" +
-            "    <end id=\"5\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"2\" to=\"4\" />\n" +
-            "    <connection from=\"3\" to=\"2\" />\n" +
-            "    <connection from=\"4\" to=\"5\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" name=\"StateA\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"toB\" />\n" +
+                        "       <constraint toNodeId=\"4\" name=\"toC\" />\n" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <state id=\"3\" name=\"StateB\" />\n" +
+                        "    <state id=\"4\" name=\"StateC\" />\n" +
+                        "    <end id=\"5\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"2\" to=\"4\" />\n" +
+                        "    <connection from=\"3\" to=\"2\" />\n" +
+                        "    <connection from=\"4\" to=\"5\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         // start process
@@ -119,50 +119,50 @@ public class ProcessStateTest extends AbstractBaseTest {
     @Test
     public void testImmediateStateConstraint1() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" >\n" +
-            "            eval(true)" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"4\" name=\"two\" >\n" +
-            "           eval(false)" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" >\n" +
+                        "            eval(true)" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"4\" name=\"two\" >\n" +
+                        "           eval(false)" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -171,54 +171,54 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("1", list.get(0));
     }
-    
+
     @Test
     public void testImmediateStateConstraintPriorities1() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" priority=\"1\" >\n" +
-            "            eval(true)" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"5\" name=\"two\" priority=\"2\" >\n" +
-            "           eval(true)" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" priority=\"1\" >\n" +
+                        "            eval(true)" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"5\" name=\"two\" priority=\"2\" >\n" +
+                        "           eval(true)" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -227,10 +227,10 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("1", list.get(0));
     }
-    
+
     @Test
     public void testImmediateStateConstraintPriorities2() {
-    	Reader source = new StringReader(
+        Reader source = new StringReader(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -274,7 +274,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             "  </connections>\n" +
             "\n" +
             "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -283,57 +283,57 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("2", list.get(0));
     }
-    
+
     @Test
     public void testDelayedStateConstraint() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.jbpm\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <imports>\n" +
-			"      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
-			"    </imports>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" >\n" +
-            "            Person( age &gt; 21 )" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"4\" name=\"two\" >\n" +
-            "           Person( age &lt;= 21 )" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.jbpm\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <imports>\n" +
+                        "      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "    </imports>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" >\n" +
+                        "            Person( age &gt; 21 )" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"4\" name=\"two\" >\n" +
+                        "           Person( age &lt;= 21 )" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -347,57 +347,57 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("1", list.get(0));
     }
-    
+
     @Test
     public void testDelayedStateConstraint2() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.jbpm\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <imports>\n" +
-			"      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
-			"    </imports>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"age &gt; 21\" >\n" +
-            "            Person( age &gt; 21 )" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"5\" name=\"age &lt;=21 \" >\n" +
-            "           Person( age &lt;= 21 )" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.jbpm\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <imports>\n" +
+                        "      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "    </imports>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"age &gt; 21\" >\n" +
+                        "            Person( age &gt; 21 )" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"5\" name=\"age &lt;=21 \" >\n" +
+                        "           Person( age &lt;= 21 )" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -411,58 +411,58 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("2", list.get(0));
     }
-    
+
     @Test
     @Disabled
     public void FIXMEtestDelayedStateConstraintPriorities1() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <imports>\n" +
-			"      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
-			"    </imports>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" priority=\"1\" >\n" +
-            "            Person( )" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"5\" name=\"two\" priority=\"2\" >\n" +
-            "           Person( )" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource(source), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <imports>\n" +
+                        "      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "    </imports>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" priority=\"1\" >\n" +
+                        "            Person( )" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"5\" name=\"two\" priority=\"2\" >\n" +
+                        "           Person( )" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -475,58 +475,58 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("1", list.get(0));
     }
-    
+
     @Test
     @Disabled
     public void FIXMEtestDelayedStateConstraintPriorities2() {
         Reader source = new StringReader(
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-			"    <imports>\n" +
-			"      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
-			"    </imports>\n" +
-			"    <globals>\n" +
-			"      <global identifier=\"list\" type=\"java.util.List\" />\n" +
-			"    </globals>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <state id=\"2\" >\n" +
-            "      <constraints>\n" +
-            "        <constraint toNodeId=\"3\" name=\"one\" priority=\"2\" >\n" +
-            "            Person( )" +
-            "        </constraint>"+
-             "       <constraint toNodeId=\"5\" name=\"two\" priority=\"1\" >\n" +
-            "           Person( )" +
-            "        </constraint>"+
-            "      </constraints>\n" +
-            "    </state>\n" +
-			"    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"4\" name=\"End\" />\n" +
-			"    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
-			"      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
-			"    </actionNode>\n" +
-            "    <end id=\"6\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"2\" />\n" +
-            "    <connection from=\"2\" to=\"3\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"2\" to=\"5\" />\n" +
-            "    <connection from=\"5\" to=\"6\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                        "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                        "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                        "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                        "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.state\" package-name=\"org.drools\" version=\"1\" >\n" +
+                        "\n" +
+                        "  <header>\n" +
+                        "    <imports>\n" +
+                        "      <import name=\"org.jbpm.integrationtests.test.Person\" />\n" +
+                        "    </imports>\n" +
+                        "    <globals>\n" +
+                        "      <global identifier=\"list\" type=\"java.util.List\" />\n" +
+                        "    </globals>\n" +
+                        "  </header>\n" +
+                        "\n" +
+                        "  <nodes>\n" +
+                        "    <start id=\"1\" name=\"Start\" />\n" +
+                        "    <state id=\"2\" >\n" +
+                        "      <constraints>\n" +
+                        "        <constraint toNodeId=\"3\" name=\"one\" priority=\"2\" >\n" +
+                        "            Person( )" +
+                        "        </constraint>" +
+                        "       <constraint toNodeId=\"5\" name=\"two\" priority=\"1\" >\n" +
+                        "           Person( )" +
+                        "        </constraint>" +
+                        "      </constraints>\n" +
+                        "    </state>\n" +
+                        "    <actionNode id=\"3\" name=\"ActionNode1\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"1\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"4\" name=\"End\" />\n" +
+                        "    <actionNode id=\"5\" name=\"ActionNode2\" >\n" +
+                        "      <action type=\"expression\" dialect=\"java\" >list.add(\"2\");</action>\n" +
+                        "    </actionNode>\n" +
+                        "    <end id=\"6\" name=\"End\" />\n" +
+                        "  </nodes>\n" +
+                        "\n" +
+                        "  <connections>\n" +
+                        "    <connection from=\"1\" to=\"2\" />\n" +
+                        "    <connection from=\"2\" to=\"3\" />\n" +
+                        "    <connection from=\"3\" to=\"4\" />\n" +
+                        "    <connection from=\"2\" to=\"5\" />\n" +
+                        "    <connection from=\"5\" to=\"6\" />\n" +
+                        "  </connections>\n" +
+                        "\n" +
+                        "</process>");
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
@@ -539,10 +539,10 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(1, list.size());
         assertEquals("2", list.get(0));
     }
-    
+
     @Test
     public void testActionState() {
-    	Reader source = new StringReader(
+        Reader source = new StringReader(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -582,13 +582,12 @@ public class ProcessStateTest extends AbstractBaseTest {
             "  </connections>\n" +
             "\n" +
             "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         // start process
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
-            kruntime.startProcess("org.drools.state");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.state");
         // should be in state A
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         Collection<NodeInstance> nodeInstances = processInstance.getNodeInstances();
@@ -606,10 +605,10 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertTrue(list.contains("Action3a"));
         assertTrue(list.contains("Action4a"));
     }
-    
+
     @Test
     public void testTimerState() {
-    	 Reader source = new StringReader(
+         Reader source = new StringReader(
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
             "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
@@ -649,14 +648,13 @@ public class ProcessStateTest extends AbstractBaseTest {
             "  </connections>\n" +
             "\n" +
             "</process>");
-        builder.add( ResourceFactory.newReaderResource( source ), ResourceType.DRF );
+        builder.add(ResourceFactory.newReaderResource(source), ResourceType.DRF);
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         // start process
-        WorkflowProcessInstance processInstance = (WorkflowProcessInstance)
-            kruntime.startProcess("org.drools.state");
+        WorkflowProcessInstance processInstance = (WorkflowProcessInstance) kruntime.startProcess("org.drools.state");
         // should be in state A
         assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
         Collection<NodeInstance> nodeInstances = processInstance.getNodeInstances();
@@ -665,9 +663,9 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals("State", stateInstance.getNodeName());
         assertEquals(0, list.size());
         try {
-			Thread.sleep(4000);
-		} catch (InterruptedException e) {
-		}
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+        }
         assertEquals(4, list.size());
         assertTrue(list.contains("Timer1a"));
         assertTrue(list.contains("Timer2a"));
@@ -677,11 +675,11 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
         assertEquals(4, list.size());
         try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-		}
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
         assertEquals(4, list.size());
         kruntime.getKieSession().halt();
     }
-    
+
 }

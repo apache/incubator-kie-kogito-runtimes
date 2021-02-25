@@ -45,38 +45,38 @@ public class MVELDecisionBuilderTest extends AbstractBaseTest {
 
     @Test
     public void testSimpleAction() throws Exception {
-        final InternalKnowledgePackage pkg = new KnowledgePackageImpl( "pkg1" );
+        final InternalKnowledgePackage pkg = new KnowledgePackageImpl("pkg1");
 
         ActionDescr actionDescr = new ActionDescr();
-        actionDescr.setText( "list.add( 'hello world' )" );       
+        actionDescr.setText("list.add( 'hello world' )");
 
-        builder = new KnowledgeBuilderImpl( pkg );
-        
-        PackageRegistry pkgReg = builder.getPackageRegistry( pkg.getName() );
-        MVELDialect mvelDialect = ( MVELDialect ) pkgReg.getDialectCompiletimeRegistry().getDialect( "mvel" );
+        builder = new KnowledgeBuilderImpl(pkg);
+
+        PackageRegistry pkgReg = builder.getPackageRegistry(pkg.getName());
+        MVELDialect mvelDialect = (MVELDialect) pkgReg.getDialectCompiletimeRegistry().getDialect("mvel");
 
         PackageBuildContext context = new PackageBuildContext();
-        context.init( builder, pkg, null, pkgReg.getDialectCompiletimeRegistry(), mvelDialect, null);
+        context.init(builder, pkg, null, pkgReg.getDialectCompiletimeRegistry(), mvelDialect, null);
 
         builder.addPackageFromDrl( new StringReader("package pkg1;\nglobal java.util.List list;\n") );
         
         ActionNode actionNode = new ActionNode();
         DroolsAction action = new DroolsConsequenceAction("java", null);
         actionNode.setAction(action);
-        
+
         final MVELActionBuilder actionBuilder = new MVELActionBuilder();
-        actionBuilder.build( context,
-                       action,
-                       actionDescr,
-                       actionNode );
+        actionBuilder.build(context,
+                action,
+                actionDescr,
+                actionNode);
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal( "list", list );
-        
+
         MVELDialectRuntimeData data = (MVELDialectRuntimeData) builder.getPackage("pkg1").getDialectRuntimeRegistry().getDialectData( "mvel");
-        
+
         KogitoProcessContext processContext = new KogitoProcessContextImpl(kruntime.getKieSession());
         ((MVELAction) actionNode.getAction().getMetaData("Action")).compile( data );
         ((Action)actionNode.getAction().getMetaData("Action")).execute( processContext );
@@ -85,4 +85,3 @@ public class MVELDecisionBuilderTest extends AbstractBaseTest {
     }    
 
 }
-
