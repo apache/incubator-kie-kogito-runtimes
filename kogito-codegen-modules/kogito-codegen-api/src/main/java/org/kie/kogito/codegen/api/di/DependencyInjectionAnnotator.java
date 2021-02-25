@@ -36,8 +36,8 @@ import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
  * Currently in scope
  *
  * <ul>
- *  <li>CDI</li>
- *  <li>Spring</li>
+ * <li>CDI</li>
+ * <li>Spring</li>
  * </ul>
  */
 public interface DependencyInjectionAnnotator {
@@ -117,7 +117,7 @@ public interface DependencyInjectionAnnotator {
     /**
      * Annotates given node with incoming message that it should consume from
      *
-     * @param node    node to be annotated
+     * @param node node to be annotated
      * @param channel name of the channel messages should be consumer from
      */
     <T extends NodeWithAnnotations<?>> T withIncomingMessage(T node, String channel);
@@ -125,7 +125,7 @@ public interface DependencyInjectionAnnotator {
     /**
      * Annotates given node with outgoing message that it should send to
      *
-     * @param node    node to be annotated
+     * @param node node to be annotated
      * @param channel name of the channel messages should be send to
      */
     <T extends NodeWithAnnotations<?>> T withOutgoingMessage(T node, String channel);
@@ -133,7 +133,7 @@ public interface DependencyInjectionAnnotator {
     /**
      * Annotates given node with configuration parameter injection
      *
-     * @param node      node to be annotated
+     * @param node node to be annotated
      * @param configKey name of the configuration property to be injected
      */
     <T extends NodeWithAnnotations<?>> T withConfigInjection(T node, String configKey);
@@ -141,8 +141,8 @@ public interface DependencyInjectionAnnotator {
     /**
      * Annotates given node with configuration parameter injection with default value
      *
-     * @param node         node to be annotated
-     * @param configKey    name of the configuration property to be injected
+     * @param node node to be annotated
+     * @param configKey name of the configuration property to be injected
      * @param defaultValue value to be used in case there is no config parameter defined
      */
     <T extends NodeWithAnnotations<?>> T withConfigInjection(T node, String configKey, String defaultValue);
@@ -151,15 +151,15 @@ public interface DependencyInjectionAnnotator {
      * Annotates and enhances method used to produce messages
      *
      * @param produceMethod method to be annotated
-     * @param channel       channel on which messages should be produced
-     * @param event         actual data to be send
+     * @param channel channel on which messages should be produced
+     * @param event actual data to be send
      */
     MethodCallExpr withMessageProducer(MethodCallExpr produceMethod, String channel, Expression event);
 
     /**
      * Annotates given node with set of roles to enforce security
      *
-     * @param node  node to be annotated
+     * @param node node to be annotated
      * @param roles roles that are allowed
      */
     default <T extends NodeWithAnnotations<?>> T withSecurityRoles(T node, String[] roles) {

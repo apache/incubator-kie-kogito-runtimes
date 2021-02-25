@@ -262,8 +262,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     execModelGen,
                     classPrefix,
                     modelClassGenerator.className(),
-                    applicationCanonicalName()
-            );
+                    applicationCanonicalName());
 
             ProcessInstanceGenerator pi = new ProcessInstanceGenerator(
                     workFlowProcess.getPackageName(),
@@ -331,19 +330,19 @@ public class ProcessCodegen extends AbstractGenerator {
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                      mmd.generate());
+                    mmd.generate());
         }
 
         for (InputModelClassGenerator modelClassGenerator : processIdToInputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                      mmd.generate());
+                    mmd.generate());
         }
 
         for (OutputModelClassGenerator modelClassGenerator : processIdToOutputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                      mmd.generate());
+                    mmd.generate());
         }
 
         for (List<UserTaskModelMetaData> utmd : processIdToUserTaskModel.values()) {
@@ -357,22 +356,22 @@ public class ProcessCodegen extends AbstractGenerator {
 
         for (ProcessResourceGenerator resourceGenerator : rgs) {
             storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
-                      resourceGenerator.generate());
+                    resourceGenerator.generate());
         }
 
         for (MessageDataEventGenerator messageDataEventGenerator : mdegs) {
             storeFile(GeneratedFileType.SOURCE, messageDataEventGenerator.generatedFilePath(),
-                      messageDataEventGenerator.generate());
+                    messageDataEventGenerator.generate());
         }
 
         for (MessageConsumerGenerator messageConsumerGenerator : megs) {
             storeFile(MESSAGE_CONSUMER_TYPE, messageConsumerGenerator.generatedFilePath(),
-                      messageConsumerGenerator.generate());
+                    messageConsumerGenerator.generate());
         }
 
         for (MessageProducerGenerator messageProducerGenerator : mpgs) {
             storeFile(MESSAGE_PRODUCER_TYPE, messageProducerGenerator.generatedFilePath(),
-                      messageProducerGenerator.generate());
+                    messageProducerGenerator.generate());
         }
 
         for (ProcessGenerator p : ps) {

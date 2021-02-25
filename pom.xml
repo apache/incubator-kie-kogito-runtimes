@@ -123,6 +123,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>kogito-ide-config</module>
         <module>kogito-build-parent</module>
         <module>kogito-bom</module>
         <module>kogito-test-utils</module>
@@ -133,7 +134,7 @@
         <module>kogito-codegen-modules</module>
         <module>kogito-springboot</module>
         <module>kogito-maven-plugin</module>
-        <module>kogito-quarkus-extension</module>
+        <module>kogito-quarkus-parent</module>
         <module>archetypes</module>
         <module>grafana-api</module>
         <module>addons</module>
@@ -154,11 +155,12 @@
         <module>kogito-codegen-modules</module>
         <module>kogito-springboot</module>
         <module>kogito-maven-plugin</module>
-        <module>kogito-quarkus-extension</module>
+        <module>kogito-quarkus-parent</module>
         <module>archetypes</module>
         <module>grafana-api</module>
       </modules>
     </profile>
   </profiles>
+
 
 </project>

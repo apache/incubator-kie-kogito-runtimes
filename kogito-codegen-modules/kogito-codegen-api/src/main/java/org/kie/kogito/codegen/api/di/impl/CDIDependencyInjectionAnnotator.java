@@ -119,13 +119,10 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         return new MethodCallExpr(
                 new MethodCallExpr(new NameExpr("java.util.stream.StreamSupport"), "stream", NodeList.nodeList(
                         new MethodCallExpr(new NameExpr(fieldName), "spliterator"),
-                        new BooleanLiteralExpr(false)
-                )),
+                        new BooleanLiteralExpr(false))),
                 "collect",
                 NodeList.nodeList(
-                        new MethodCallExpr(new NameExpr("java.util.stream.Collectors"), "toList")
-                )
-        );
+                        new MethodCallExpr(new NameExpr("java.util.stream.Collectors"), "toList")));
     }
 
     @Override
@@ -143,9 +140,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         node.addAnnotation(new NormalAnnotationExpr(
                 new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
                 NodeList.nodeList(
-                        new MemberValuePair("name", new StringLiteralExpr(configKey))
-                )
-        ));
+                        new MemberValuePair("name", new StringLiteralExpr(configKey)))));
         return node;
     }
 
@@ -155,9 +150,7 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
                 new Name("org.eclipse.microprofile.config.inject.ConfigProperty"),
                 NodeList.nodeList(
                         new MemberValuePair("name", new StringLiteralExpr(configKey)),
-                        new MemberValuePair("defaultValue", new StringLiteralExpr(defaultValue))
-                )
-        ));
+                        new MemberValuePair("defaultValue", new StringLiteralExpr(defaultValue)))));
         return node;
     }
 
