@@ -18,13 +18,14 @@ package org.kie.kogito.integrationtests;
 
 import java.util.List;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.app.KogitoSpringbootApplication;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.Topic;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+
+import io.restassured.RestAssured;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -56,7 +57,6 @@ public class SpringBootTopicsInformationResourceTest {
     private void assertTopicExists(List<Topic> topicList, String topicName, ChannelType topicType) {
         assertTrue(
                 topicList.stream().anyMatch(t -> topicName.equals(t.getName()) && t.getType() == topicType),
-                topicType + " topic \"" + topicName + "\" not found"
-        );
+                topicType + " topic \"" + topicName + "\" not found");
     }
 }
