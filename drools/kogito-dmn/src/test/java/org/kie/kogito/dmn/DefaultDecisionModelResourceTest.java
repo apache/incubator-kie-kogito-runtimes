@@ -34,13 +34,12 @@ public class DefaultDecisionModelResourceTest {
     @Test
     public void testGetters() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                new DecisionModelMetadata(
-                                                                                        DecisionModelMetadata.Type.DMN,
-                                                                                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
-
+                "namespace",
+                "name",
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(GAV, resource.getGav());
         assertEquals("name", resource.getModelName());
         assertEquals("namespace", resource.getNamespace());
@@ -51,13 +50,12 @@ public class DefaultDecisionModelResourceTest {
     @Test
     public void testLoad() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                new DecisionModelMetadata(
-                                                                                        DecisionModelMetadata.Type.DMN,
-                                                                                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
-
+                "namespace",
+                "name",
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(CONTENT, resource.get().trim());
     }
 }

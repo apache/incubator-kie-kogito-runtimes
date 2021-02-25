@@ -18,14 +18,15 @@ package org.kie.kogito.tracing.decision;
 import java.util.Arrays;
 import java.util.List;
 
-import io.cloudevents.CloudEvent;
-import io.reactivex.subscribers.TestSubscriber;
 import org.junit.jupiter.api.Test;
 import org.kie.api.management.GAV;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelResourcesProvider;
+
+import io.cloudevents.CloudEvent;
+import io.reactivex.subscribers.TestSubscriber;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -61,8 +62,7 @@ public class QuarkusModelEventEmitterTest {
         when(model.getModelMetadata()).thenReturn(
                 new DecisionModelMetadata(
                         DecisionModelMetadata.Type.DMN,
-                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd")
-        );
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"));
         when(model.get()).thenReturn("model");
         return model;
     }

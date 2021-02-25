@@ -25,9 +25,10 @@ public class DecisionModelMetadata {
     @JsonProperty("specVersion")
     private String specVersion;
 
-    public DecisionModelMetadata(){}
+    public DecisionModelMetadata() {
+    }
 
-    public DecisionModelMetadata(Type type, String specVersion){
+    public DecisionModelMetadata(Type type, String specVersion) {
         this.type = type;
         this.specVersion = specVersion;
     }

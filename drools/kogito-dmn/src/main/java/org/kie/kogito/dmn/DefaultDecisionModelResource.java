@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.kie.api.management.GAV;
-import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.decision.DecisionModelResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +36,10 @@ public class DefaultDecisionModelResource implements DecisionModelResource {
     private final InputStreamReader resourceReader;
 
     public DefaultDecisionModelResource(GAV gav,
-                                        String namespace,
-                                        String modelName,
-                                        DecisionModelMetadata type,
-                                        InputStreamReader resourceReader) {
+            String namespace,
+            String modelName,
+            DecisionModelMetadata type,
+            InputStreamReader resourceReader) {
         this.gav = gav;
         this.namespace = namespace;
         this.modelName = modelName;
@@ -75,7 +75,7 @@ public class DefaultDecisionModelResource implements DecisionModelResource {
     private String load() {
         StringBuilder sb = new StringBuilder();
         try (InputStreamReader isr = resourceReader;
-             BufferedReader reader = new BufferedReader(isr)) {
+                BufferedReader reader = new BufferedReader(isr)) {
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 sb.append(line).append("\n");
             }
