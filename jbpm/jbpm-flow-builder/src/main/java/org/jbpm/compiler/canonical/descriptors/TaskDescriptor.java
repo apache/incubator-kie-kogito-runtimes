@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.sample.generator;
+package org.jbpm.compiler.canonical.descriptors;
 
-import java.nio.file.Paths;
+import com.github.javaparser.ast.CompilationUnit;
 
-import org.drools.core.io.impl.FileSystemResource;
-import org.kie.kogito.codegen.api.io.CollectedResource;
+public interface TaskDescriptor {
 
-public class Utils {
+    String getName();
 
-    private Utils() {
-        // utility class
-    }
+    String getType();
 
-    public static CollectedResource toCollectedResource(String path) {
-        return new CollectedResource(Paths.get(path), new FileSystemResource(path));
-    }
+    CompilationUnit generateHandlerClassForService();
+
 }
