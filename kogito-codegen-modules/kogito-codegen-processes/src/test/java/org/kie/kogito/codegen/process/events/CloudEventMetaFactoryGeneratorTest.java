@@ -15,15 +15,16 @@
  */
 package org.kie.kogito.codegen.process.events;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -33,17 +34,59 @@ import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
+import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class CloudEventMetaFactoryGeneratorTest {
+
+    @Test
+    void testTemplateIsValid() {
+        TemplatedGenerator generator = CloudEventMetaFactoryGenerator.buildTemplatedGenerator(getContext(true));
+
+        CompilationUnit compilationUnit = generator.compilationUnit()
+                .orElseGet(() -> fail("Cannot generate CloudEventMetaFactory"));
+
+        ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseGet(() -> fail("Compilation unit doesn't contain a class or interface declaration!"));
+
+        MethodDeclaration methodDeclaration = classDefinition
+                .findFirst(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_"))
+                .orElseGet(() -> fail("Impossible to find expected buildCloudEventMeta_ method"));
+
+        if (!methodDeclaration.getName().toString().contains("$methodName$")) {
+            fail("Missing $methodName$ placeholder in templated build method declaration");
+        }
+
+        List<ReturnStmt> returnStmtList = methodDeclaration.findAll(ReturnStmt.class);
+        if (returnStmtList.size() != 1) {
+            fail("Templated build method declaration must contain exactly one return statement");
+        }
+
+        Optional<ObjectCreationExpr> optObjectCreationExprExpr = returnStmtList.get(0).getExpression()
+                .filter(Expression::isObjectCreationExpr)
+                .map(Expression::asObjectCreationExpr)
+                .filter(ocExpr -> {
+                    String typeName = ocExpr.getType().getNameAsString();
+                    return typeName.equals(CloudEventMeta.class.getSimpleName()) || typeName.equals(CloudEventMeta.class.getName());
+                })
+                .filter(ocExpr -> ocExpr.getArguments().size() == 3)
+                .filter(ocExpr -> ocExpr.getArguments().get(0).toString().equals("$type$")
+                        && ocExpr.getArguments().get(1).toString().equals("$source$")
+                        && ocExpr.getArguments().get(2).toString().equals("$kind$")
+                );
+
+        if (!optObjectCreationExprExpr.isPresent()) {
+            fail("Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
+                    " with three placeholder arguments ($type$, $source$, $kind$)");
+        }
+    }
 
     @Test
     void verifyProcessWithMessageEvent() {
@@ -88,57 +131,6 @@ class CloudEventMetaFactoryGeneratorTest {
 
         assertThat(clazz).isNotNull();
         assertTrue(clazz.getMethods().isEmpty());
-    }
-
-    @Test
-    void testValidateTemplatedBuildMethodDeclaration() {
-        TemplatedGenerator tgMock = TemplatedGenerator.builder().build(getContext(true), "CloudEventMetaFactory");
-
-        assertThrows(InvalidTemplateException.class,
-                () -> CloudEventMetaFactoryGenerator.validateTemplatedBuildMethodDeclaration(tgMock, null),
-                "validate must fail when input MethodDeclaration is null"
-        );
-
-        Map<String, String> brokenMethodsMap = new HashMap<>();
-        brokenMethodsMap.put(
-                "public CloudEventMeta buildCloudEventMeta() { return new CloudEventMeta($type$, $source$, $kind$); }",
-                "validate must fail when method name doesn't contain $methodName$ placeholder"
-        );
-        brokenMethodsMap.put(
-                "public void buildCloudEventMeta_$methodName$() { }",
-                "validate must fail when method name doesn't contain a return statement"
-        );
-        brokenMethodsMap.put(
-                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return null; }",
-                "validate must fail when method name doesn't return a new CloudEventMeta"
-        );
-        brokenMethodsMap.put(
-                "public Object buildCloudEventMeta_$methodName$() { return new Object(); }",
-                "validate must fail when method name doesn't return a new CloudEventMeta"
-        );
-        brokenMethodsMap.put(
-                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return new CloudEventMeta($a$, $source$, $kind$); }",
-                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
-        );
-        brokenMethodsMap.put(
-                "public CloudEventMeta buildCloudEventMeta_$methodName$() { return new CloudEventMeta($type$, $b$, $kind$); }",
-                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
-        );
-        brokenMethodsMap.put(
-                "public CloudEventMeta buildCloudEventMeta() { return new CloudEventMeta($type$, $source$, $c$); }",
-                "validate must fail when method name return statement doesn't contain $type$, $source$ and $kind$ placeholders"
-        );
-
-        brokenMethodsMap.forEach((code, errorMsg) -> assertThrows(InvalidTemplateException.class,
-                () -> CloudEventMetaFactoryGenerator.validateTemplatedBuildMethodDeclaration(tgMock, parseMethodDeclaration(code)),
-                errorMsg
-        ));
-    }
-
-    private MethodDeclaration parseMethodDeclaration(String code) {
-        return StaticJavaParser.parse("class CloudEventMetaFactory { " + code + " }")
-                .findFirst(MethodDeclaration.class)
-                .orElseThrow(IllegalStateException::new);
     }
 
     private void assertReturnExpressionContains(MethodDeclaration method, String expectedType, EventKind expectedKind) {

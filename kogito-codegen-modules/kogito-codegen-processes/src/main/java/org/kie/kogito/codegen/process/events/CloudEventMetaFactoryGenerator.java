@@ -19,27 +19,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
-import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.services.event.DataEventAttrBuilder;
 
@@ -52,10 +47,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
 
     public CloudEventMetaFactoryGenerator(final KogitoBuildContext context,
                                           final List<ProcessExecutableModelGenerator> generators) {
-        super(TemplatedGenerator.builder()
-                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
-                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, CLASS_NAME));
+        super(buildTemplatedGenerator(context));
         this.context = context;
         this.triggers = this.filterTriggers(generators);
     }
@@ -73,8 +65,6 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         final MethodDeclaration templatedBuildMethod = classDefinition
                 .findFirst(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_"))
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find expected buildCloudEventMeta_ method"));
-
-        validateTemplatedBuildMethodDeclaration(generator, templatedBuildMethod);
 
         this.triggers.forEach((processId, triggerList) -> triggerList.forEach(trigger -> {
             EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
@@ -129,35 +119,10 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         return Collections.emptyMap();
     }
 
-    public static void validateTemplatedBuildMethodDeclaration(TemplatedGenerator generator, MethodDeclaration methodDeclaration) {
-        if (methodDeclaration == null) {
-            throw new InvalidTemplateException(generator, "templated build method declaration is null");
-        }
-
-        if (!methodDeclaration.getName().toString().contains("$methodName$")) {
-            throw new InvalidTemplateException(generator, "missing $methodName$ placeholder in templated build method declaration");
-        }
-
-        List<ReturnStmt> returnStmtList = methodDeclaration.findAll(ReturnStmt.class);
-        if (returnStmtList.size() != 1) {
-            throw new InvalidTemplateException(generator, "templated build method declaration must contain exactly one return statement");
-        }
-
-        Optional<ObjectCreationExpr> optObjectCreationExprExpr = returnStmtList.get(0).getExpression()
-                .filter(Expression::isObjectCreationExpr)
-                .map(Expression::asObjectCreationExpr)
-                .filter(ocExpr -> {
-                    String typeName = ocExpr.getType().getNameAsString();
-                    return typeName.equals(CloudEventMeta.class.getSimpleName()) || typeName.equals(CloudEventMeta.class.getName());
-                })
-                .filter(ocExpr -> ocExpr.getArguments().size() == 3)
-                .filter(ocExpr -> ocExpr.getArguments().get(0).toString().equals("$type$")
-                        && ocExpr.getArguments().get(1).toString().equals("$source$")
-                        && ocExpr.getArguments().get(2).toString().equals("$kind$")
-                );
-
-        if (!optObjectCreationExprExpr.isPresent()) {
-            throw new InvalidTemplateException(generator, "templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta");
-        }
+    static TemplatedGenerator buildTemplatedGenerator(KogitoBuildContext context) {
+        return TemplatedGenerator.builder()
+                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .build(context, CLASS_NAME);
     }
 }
