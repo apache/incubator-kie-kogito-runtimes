@@ -1,0 +1,112 @@
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://kiegroup.org/dmn/_66924F2F-C2E4-41FA-AE1B-A646D95B16FF" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="_E1FE95EC-DDAA-4FC0-887A-66D8040EA4A7" name="Vaccination-Producers" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://kiegroup.org/dmn/_66924F2F-C2E4-41FA-AE1B-A646D95B16FF">
+  <dmn:extensionElements/>
+  <dmn:itemDefinition id="_83A9DF65-FBAF-4736-95A8-D4584FA42125" name="tProducer" isCollection="false">
+    <dmn:typeRef>string</dmn:typeRef>
+    <dmn:allowedValues kie:constraintType="enumeration" id="_4BAA548D-F53B-4890-9AF3-C49CE54F474A">
+      <dmn:text>"Vax Med", "Glob Medicine", "Healthy Life"</dmn:text>
+    </dmn:allowedValues>
+  </dmn:itemDefinition>
+  <dmn:itemDefinition id="_FD0565DA-3AA9-4A93-9ECA-87227D5C5B47" name="tProducers" isCollection="true">
+    <dmn:typeRef>tProducer</dmn:typeRef>
+  </dmn:itemDefinition>
+  <dmn:decision id="_95C27C50-C810-457D-B601-A98659B8E685" name="Producers">
+    <dmn:extensionElements/>
+    <dmn:variable id="_E4B91FDA-5648-42D6-9280-2C5B3E5BBEF2" name="Producers" typeRef="tProducers"/>
+    <dmn:list id="_99FC545C-2866-4597-B70C-37C57E1B782F">
+      <dmn:literalExpression id="_25F2E40B-43FD-454D-98C9-99284D1DEEE9">
+        <dmn:text>"Glob Medicine"</dmn:text>
+      </dmn:literalExpression>
+      <dmn:literalExpression id="_0E050CB4-3119-4E3A-A76D-36154C8C0439">
+        <dmn:text>"Healthy Life"</dmn:text>
+      </dmn:literalExpression>
+      <dmn:literalExpression id="_CFA54A9F-5C83-4B8B-9975-36C551DB88D5">
+        <dmn:text>"Vax Med"</dmn:text>
+      </dmn:literalExpression>
+    </dmn:list>
+  </dmn:decision>
+  <dmn:decisionService id="_12336880-5B14-4702-A9D2-BC4097F11F94" name="ProducersService">
+    <dmn:extensionElements/>
+    <dmn:variable id="_C9990D2E-3650-471B-BF21-4F62725154D1" name="ProducersService" typeRef="tProducers"/>
+    <dmn:outputDecision href="#_72464708-129E-4FA7-9AB1-F352282BA8B2"/>
+  </dmn:decisionService>
+  <dmn:decision id="_72464708-129E-4FA7-9AB1-F352282BA8B2" name="Same Producers">
+    <dmn:extensionElements/>
+    <dmn:variable id="_AEBA6C4B-0BA1-4A7A-A0FB-550A9F1E31EB" name="Same Producers" typeRef="tProducers"/>
+    <dmn:list id="_DDA18816-7043-4254-8A60-90798CD8EB87">
+      <dmn:literalExpression id="_0CE3CF9E-30A9-4349-A4CA-C7132AD4993C">
+        <dmn:text>"Glob Medicine"</dmn:text>
+      </dmn:literalExpression>
+      <dmn:literalExpression id="_4EC5E136-4594-4C48-92E6-08009B317DED">
+        <dmn:text>"Healthy Life"</dmn:text>
+      </dmn:literalExpression>
+      <dmn:literalExpression id="_180C023B-0FF2-4D20-A345-4265CBE3B961">
+        <dmn:text>"Vax Med"</dmn:text>
+      </dmn:literalExpression>
+    </dmn:list>
+  </dmn:decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_2E3B8C83-3CD6-403B-8E8C-F9B9DA55BAA7" name="DRG">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_99FC545C-2866-4597-B70C-37C57E1B782F">
+            <kie:width>50</kie:width>
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_25F2E40B-43FD-454D-98C9-99284D1DEEE9">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_0E050CB4-3119-4E3A-A76D-36154C8C0439">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_CFA54A9F-5C83-4B8B-9975-36C551DB88D5">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_DDA18816-7043-4254-8A60-90798CD8EB87">
+            <kie:width>50</kie:width>
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_0CE3CF9E-30A9-4349-A4CA-C7132AD4993C">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_4EC5E136-4594-4C48-92E6-08009B317DED">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_180C023B-0FF2-4D20-A345-4265CBE3B961">
+            <kie:width>200</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="dmnshape-drg-_95C27C50-C810-457D-B601-A98659B8E685" dmnElementRef="_95C27C50-C810-457D-B601-A98659B8E685" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="218" y="154" width="100" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_12336880-5B14-4702-A9D2-BC4097F11F94" dmnElementRef="_12336880-5B14-4702-A9D2-BC4097F11F94" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="461" y="124" width="200" height="200"/>
+        <dmndi:DMNLabel/>
+        <dmndi:DMNDecisionServiceDividerLine>
+          <di:waypoint x="461" y="224"/>
+          <di:waypoint x="661" y="224"/>
+        </dmndi:DMNDecisionServiceDividerLine>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_72464708-129E-4FA7-9AB1-F352282BA8B2" dmnElementRef="_72464708-129E-4FA7-9AB1-F352282BA8B2" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="511" y="163" width="100" height="50"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</dmn:definitions>
