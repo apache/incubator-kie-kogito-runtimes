@@ -196,14 +196,14 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
         return exceptionHandler(exception, exceptionHandler);
     }
 
-    public RuleFlowProcessFactory errorExceptionHandler(String signalType, String faultCode, String faultVariable){
+    public RuleFlowProcessFactory errorExceptionHandler(String signalType, String faultCode, String faultVariable) {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
         action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(faultVariable);
 
-        if(Objects.isNull(getRuleFlowProcess().getExceptionScope())){
+        if (Objects.isNull(getRuleFlowProcess().getExceptionScope())) {
             getRuleFlowProcess().addContext(new ExceptionScope());
         }
 

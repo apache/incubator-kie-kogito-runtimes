@@ -63,7 +63,7 @@ public class ErrorTest extends AbstractCodegenTest {
     @Test
     void testEndErrorInSubprocessWithEventSubprocess() throws Exception {
         testErrorInSubprocess("error/EndErrorInSubprocessWithEventSubprocess.bpmn2",
-                              "EndErrorInSubprocessWithEventSubprocess");
+                "EndErrorInSubprocessWithEventSubprocess");
     }
 
     private List<String> completedNodesListener(Application app) {

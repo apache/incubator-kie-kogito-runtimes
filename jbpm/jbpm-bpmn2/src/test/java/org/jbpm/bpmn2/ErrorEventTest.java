@@ -447,7 +447,6 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertEquals(processInstance.getState(), KogitoProcessInstance.STATE_ABORTED);
     }
 
-
     class ExceptionWorkItemHandler implements KogitoWorkItemHandler {
 
         @Override
