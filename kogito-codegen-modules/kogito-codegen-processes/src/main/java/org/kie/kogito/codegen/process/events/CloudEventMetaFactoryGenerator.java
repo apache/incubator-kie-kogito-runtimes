@@ -68,7 +68,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         final CompilationUnit compilationUnit = generator.compilationUnitOrThrow("Cannot generate CloudEventMetaFactory");
 
         final ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
         final MethodDeclaration templatedBuildMethod = classDefinition
                 .findAll(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_")).get(0);
