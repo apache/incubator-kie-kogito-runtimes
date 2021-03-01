@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.kie.kogito</groupId>
         <artifactId>events</artifactId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0.Final</version>
     </parent>
     <artifactId>knative-eventing-addon</artifactId>
     <name>Kogito :: Add-Ons :: Events :: Knative Eventing</name>
