@@ -41,9 +41,9 @@ import org.kie.kogito.codegen.openapi.client.io.PathResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.toList;
-
 import io.serverlessworkflow.api.workflow.BaseWorkflow;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Entry point for the OpenAPIClient generator code.
