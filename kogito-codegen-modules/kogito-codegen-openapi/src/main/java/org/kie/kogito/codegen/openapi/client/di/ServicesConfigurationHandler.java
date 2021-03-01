@@ -36,9 +36,8 @@ public class ServicesConfigurationHandler extends AbstractDependencyInjectionHan
     @Override
     public ClassOrInterfaceDeclaration handle(ClassOrInterfaceDeclaration node, OpenApiSpecDescriptor descriptor, File originalGeneratedFile) {
         if (fetchServiceClasses(descriptor).anyMatch(new ClassFileEqualityFilter(originalGeneratedFile))) {
-            node.getConstructorByParameterTypes("ApiClient").ifPresent(c -> {
-                this.context.getDependencyInjectionAnnotator().withInjection(c);
-            });
+            node.getConstructorByParameterTypes(API_CLIENT_PARAMETER)
+                    .ifPresent(c -> this.context.getDependencyInjectionAnnotator().withInjection(c));
             return this.context.getDependencyInjectionAnnotator().withApplicationComponent(node);
         }
         return node;

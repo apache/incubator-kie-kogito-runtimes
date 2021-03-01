@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.drools.core.util.StringUtils;
 import org.kie.kogito.codegen.api.ApplicationSection;
@@ -40,9 +41,9 @@ import org.kie.kogito.codegen.openapi.client.io.PathResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.serverlessworkflow.api.workflow.BaseWorkflow;
-
 import static java.util.stream.Collectors.toList;
+
+import io.serverlessworkflow.api.workflow.BaseWorkflow;
 
 /**
  * Entry point for the OpenAPIClient generator code.
@@ -136,8 +137,8 @@ public class OpenApiClientCodegen extends AbstractGenerator {
      * @param outputDir the target dir
      */
     private void cleanOpenApiGeneratorCode(final String outputDir) {
-        try {
-            Files.walk(Paths.get(outputDir)).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        try (Stream<Path> files = Files.walk(Paths.get(outputDir))) {
+            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         } catch (IOException e) {
             LOGGER.warn("Impossible to clean up OpenApi generator output dir", e);
         }

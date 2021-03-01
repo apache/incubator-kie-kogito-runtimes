@@ -36,7 +36,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
  */
 public class JsonNodeParameterResolver implements OpenApiParameterResolver {
 
-    private static final String JSONPATH_REGEX = "^(\\$\\[).*|(\\$\\.).*";
+    private static final String JSONPATH_REGEX = "^((\\$\\[).*|(\\$\\.).*)";
 
     private static final Configuration jsonPathConfig = Configuration
             .builder()

@@ -78,7 +78,7 @@ class JsonNodeParameterResolverTest {
         final JsonNode inputModel = mapper.readTree("{ \"fahrenheit\": \"32\", \"subtractValue\": \"3\" }");
         final String parameterDefinition = "[\"$.fahrenheit\", \"$.subtractValue\"]";
         final JsonNodeParameterResolver resolver = new JsonNodeParameterResolver(parameterDefinition);
-        final JsonNode processedNode = (JsonNode) resolver.apply(inputModel);
+        final JsonNode processedNode = resolver.apply(inputModel);
         assertTrue(processedNode.isArray());
         assertThat(processedNode.get(0).asInt(), equalTo(32));
         assertThat(processedNode.get(1).asInt(), equalTo(3));
