@@ -83,9 +83,9 @@ class MonitoredDecisionModelTest {
 
     @Test
     void testMonitoredDecisionModelGetDMNModel() {
-            DMNModel outputModel = testObject.getDMNModel();
-            verify(mockedDecisionModel).getDMNModel();
-            assertSame(mockedDMNModel, outputModel);
+        DMNModel outputModel = testObject.getDMNModel();
+        verify(mockedDecisionModel).getDMNModel();
+        assertSame(mockedDMNModel, outputModel);
     }
 
     @Test
