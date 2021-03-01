@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
@@ -60,6 +59,8 @@ import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;

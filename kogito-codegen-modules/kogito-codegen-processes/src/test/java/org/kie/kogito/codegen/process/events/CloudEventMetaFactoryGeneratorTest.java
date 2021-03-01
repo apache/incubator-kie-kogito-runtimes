@@ -19,15 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -38,6 +29,16 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,8 +80,7 @@ class CloudEventMetaFactoryGeneratorTest {
                 .filter(ocExpr -> ocExpr.getArguments().size() == 3)
                 .filter(ocExpr -> ocExpr.getArguments().get(0).toString().equals("$type$")
                         && ocExpr.getArguments().get(1).toString().equals("$source$")
-                        && ocExpr.getArguments().get(2).toString().equals("$kind$")
-                );
+                        && ocExpr.getArguments().get(2).toString().equals("$kind$"));
 
         if (!optObjectCreationExprExpr.isPresent()) {
             fail("Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
@@ -145,12 +145,10 @@ class CloudEventMetaFactoryGeneratorTest {
 
         assertTrue(
                 optExpr.filter(str -> str.contains(String.format("\"%s\"", expectedType))).isPresent(),
-                () -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType)
-        );
+                () -> String.format("Method %s doesn't contain \"%s\" as event type", method.getName(), expectedType));
         assertTrue(
                 optExpr.filter(str -> str.contains(String.format("%s.%s", EventKind.class.getName(), expectedKind.name()))).isPresent(),
-                () -> String.format("Method %s doesn't contain %s as event kind", method.getName(), expectedKind.name())
-        );
+                () -> String.format("Method %s doesn't contain %s as event kind", method.getName(), expectedKind.name()));
     }
 
     private ClassOrInterfaceDeclaration generateAndParseClass(String bpmnFile, int expectedTriggers, boolean withInjection) {
@@ -180,9 +178,7 @@ class CloudEventMetaFactoryGeneratorTest {
     }
 
     private KogitoBuildContext getContext(boolean withInjection) {
-        return (withInjection ?
-                QuarkusKogitoBuildContext.builder() :
-                JavaKogitoBuildContext.builder())
+        return (withInjection ? QuarkusKogitoBuildContext.builder() : JavaKogitoBuildContext.builder())
                 .withAddonsConfig(AddonsConfig.builder().withCloudEvents(true).build())
                 .build();
     }

@@ -19,6 +19,8 @@ package org.kie.kogito.codegen.api.di.impl;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
@@ -32,7 +34,6 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
-import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 
 public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnotator {
 
