@@ -68,6 +68,20 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.contextAttributes = new HashMap<>();
     }
 
+    protected static Properties load(File... resourcePaths) {
+        Properties applicationProperties = new Properties();
+
+        for (File resourcePath : resourcePaths) {
+            try (FileReader fileReader = new FileReader(new File(resourcePath, APPLICATION_PROPERTIES_FILE_NAME))) {
+                applicationProperties.load(fileReader);
+            } catch (IOException ioe) {
+                LOGGER.debug("Unable to load '" + APPLICATION_PROPERTIES_FILE_NAME + "'.");
+            }
+        }
+
+        return applicationProperties;
+    }
+
     @Override
     public boolean hasClassAvailable(String fqcn) {
         return classAvailabilityResolver.test(fqcn);
@@ -137,7 +151,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         if (asClass.isAssignableFrom(output.getClass())) {
             return asClass.cast(output);
         }
-        throw new AssertionError("Impossible to cast key value " + output + " as " + asClass.getName());
+        throw new AssertionError("Impossible to cast '" + key + "' key value as " + asClass.getName() + ", found " + output.getClass().getCanonicalName());
     }
 
     @Override
@@ -145,27 +159,13 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.contextAttributes.put(key, value);
     }
 
-    protected static Properties load(File... resourcePaths) {
-        Properties applicationProperties = new Properties();
-
-        for (File resourcePath : resourcePaths) {
-            try (FileReader fileReader = new FileReader(new File(resourcePath, APPLICATION_PROPERTIES_FILE_NAME))) {
-                applicationProperties.load(fileReader);
-            } catch (IOException ioe) {
-                LOGGER.debug("Unable to load '" + APPLICATION_PROPERTIES_FILE_NAME + "'.");
-            }
-        }
-
-        return applicationProperties;
-    }
-
     protected abstract static class AbstractBuilder implements Builder {
 
         protected String packageName = DEFAULT_PACKAGE_NAME;
         protected Properties applicationProperties = new Properties();
         protected AddonsConfig addonsConfig;
-        protected Predicate<String> classAvailabilityResolver = this::hasClass;
         protected ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        protected Predicate<String> classAvailabilityResolver = this::hasClass;
         protected AppPaths appPaths = AppPaths.fromProjectDir(new File(".").toPath(), classLoader);
 
         protected AbstractBuilder() {

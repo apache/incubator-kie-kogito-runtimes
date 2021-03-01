@@ -27,6 +27,8 @@ import java.util.function.UnaryOperator;
 
 public class AppPaths {
 
+    public static final String TARGET_DIR = "target";
+
     private final Set<Path> projectPaths = new LinkedHashSet<>();
     private final Collection<Path> classesPaths = new ArrayList<>();
 
@@ -70,10 +72,10 @@ public class AppPaths {
 
     private static PathType getPathType(Path archiveLocation) {
         String path = archiveLocation.toString();
-        if (path.endsWith("target" + File.separator + "classes")) {
+        if (path.endsWith(TARGET_DIR + File.separator + "classes")) {
             return PathType.CLASSES;
         }
-        if (path.endsWith("target" + File.separator + "test-classes")) {
+        if (path.endsWith(TARGET_DIR + File.separator + "test-classes")) {
             return PathType.TEST_CLASSES;
         }
         // Quarkus generates a file with extension .jar.original when doing a native compilation of a uberjar

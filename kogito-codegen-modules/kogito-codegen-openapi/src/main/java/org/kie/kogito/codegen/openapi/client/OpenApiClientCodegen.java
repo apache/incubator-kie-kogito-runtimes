@@ -138,7 +138,7 @@ public class OpenApiClientCodegen extends AbstractGenerator {
      */
     private void cleanOpenApiGeneratorCode(final String outputDir) {
         try (Stream<Path> files = Files.walk(Paths.get(outputDir))) {
-            files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+            files.sorted(Comparator.reverseOrder()).map(Path::toFile).filter(File::exists).forEach(File::delete);
         } catch (IOException e) {
             LOGGER.warn("Impossible to clean up OpenApi generator output dir", e);
         }

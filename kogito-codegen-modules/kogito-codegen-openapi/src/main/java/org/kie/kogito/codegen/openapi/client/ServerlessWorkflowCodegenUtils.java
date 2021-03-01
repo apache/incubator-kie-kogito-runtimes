@@ -71,7 +71,7 @@ final class ServerlessWorkflowCodegenUtils {
                 .forEach(o -> {
                     final int idx = resources.indexOf(o);
                     if (idx >= 0) {
-                        resources.get(idx).addRequiredOperation(o.getRequiredOperations());
+                        resources.get(idx).addRequiredOperations(o.getRequiredOperations());
                     } else {
                         resources.add(o);
                     }

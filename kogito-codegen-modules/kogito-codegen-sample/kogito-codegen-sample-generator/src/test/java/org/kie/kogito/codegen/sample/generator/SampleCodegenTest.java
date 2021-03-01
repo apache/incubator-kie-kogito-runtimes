@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.codegen.sample.generator;
 
-import java.util.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +29,7 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.api.utils.CollectedResourcesUtils;
+import org.kie.kogito.codegen.api.utils.CollectedResourcesTestUtils;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -53,8 +52,8 @@ class SampleCodegenTest {
     void generate(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
         Collection<CollectedResource> resources = Arrays.asList(
-                CollectedResourcesUtils.toCollectedResource("/sampleFile1.txt"),
-                CollectedResourcesUtils.toCollectedResource("/sampleFile2.txt"));
+                CollectedResourcesTestUtils.toCollectedResource("/sampleFile1.txt"),
+                CollectedResourcesTestUtils.toCollectedResource("/sampleFile2.txt"));
 
         SampleCodegen codegen = SampleCodegen.ofCollectedResources(context, resources);
 

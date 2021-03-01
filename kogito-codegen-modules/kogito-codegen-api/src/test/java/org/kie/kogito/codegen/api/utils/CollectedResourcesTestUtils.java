@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 import org.drools.core.io.impl.FileSystemResource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 
-public final class CollectedResourcesUtils {
+public final class CollectedResourcesTestUtils {
 
     private static final String TEST_RESOURCE_PATH = "src/test/resources";
 
-    private CollectedResourcesUtils() {
+    private CollectedResourcesTestUtils() {
 
     }
 

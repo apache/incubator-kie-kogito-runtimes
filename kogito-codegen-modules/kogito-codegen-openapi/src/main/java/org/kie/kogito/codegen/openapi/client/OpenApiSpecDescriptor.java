@@ -96,7 +96,7 @@ public class OpenApiSpecDescriptor {
         return Collections.unmodifiableSet(this.requiredOperations);
     }
 
-    public void addRequiredOperation(final Set<OpenApiClientOperation> operations) {
+    public void addRequiredOperations(final Set<OpenApiClientOperation> operations) {
         this.requiredOperations.addAll(operations);
     }
 

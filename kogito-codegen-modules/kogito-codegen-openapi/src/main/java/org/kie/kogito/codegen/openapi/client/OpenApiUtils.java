@@ -15,7 +15,11 @@
  */
 package org.kie.kogito.codegen.openapi.client;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.utils.AppPaths;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +29,11 @@ public final class OpenApiUtils {
     }
 
     public static String getEndUserTargetDir(final KogitoBuildContext context) {
-        return context.getAppPaths().getFirstClassesPath().toString();
+        final Path classesPath = context.getAppPaths().getFirstClassesPath();
+        if (classesPath.endsWith(Paths.get(AppPaths.TARGET_DIR))) {
+            return classesPath.toString();
+        }
+        return context.getAppPaths().getFirstProjectPath().resolve(AppPaths.TARGET_DIR).toString();
     }
 
     public static void requireValidSpecURI(final OpenApiSpecDescriptor resource) {

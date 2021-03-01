@@ -25,9 +25,9 @@ import java.util.Objects;
  */
 public class OpenApiClientOperation {
 
-    private String operationId;
+    private final String operationId;
     private String api;
-    private List<String> parameters = new ArrayList<>();
+    private List<Parameter> parameters = new ArrayList<>();
     private String generatedClass;
     private String methodName;
 
@@ -35,12 +35,13 @@ public class OpenApiClientOperation {
         this.operationId = operationId;
     }
 
-    public String getOperationId() {
-        return operationId;
+    public static Parameter newParameter(final int order, final String name) {
+        Objects.requireNonNull(name, "Parameter name can't be null");
+        return new Parameter(order, name);
     }
 
-    public void setOperationId(String operationId) {
-        this.operationId = operationId;
+    public String getOperationId() {
+        return operationId;
     }
 
     public String getApi() {
@@ -51,15 +52,24 @@ public class OpenApiClientOperation {
         this.api = api;
     }
 
-    public List<String> getParameters() {
+    /**
+     * Gets an unmodifiable list of @{@link Parameter}s. Use {@link #addParameter(Parameter)} to add a parameter to the list.
+     *
+     * @return an unmodifiable list of @{@link Parameter}s
+     */
+    public List<Parameter> getParameters() {
         return Collections.unmodifiableList(this.parameters);
     }
 
-    public void setParameters(List<String> parameters) {
+    public void setParameters(List<Parameter> parameters) {
         if (parameters == null) {
             this.parameters = Collections.emptyList();
         }
         this.parameters = parameters;
+    }
+
+    public void addParameter(final Parameter parameter) {
+        this.parameters.add(parameter);
     }
 
     public String getGeneratedClass() {
@@ -103,5 +113,57 @@ public class OpenApiClientOperation {
                 ", api='" + api + '\'' +
                 ", generatedClass='" + generatedClass + '\'' +
                 '}';
+    }
+
+    /**
+     * Represents a parameter for the {@link OpenApiClientOperation}
+     */
+    public static final class Parameter implements Comparable<Parameter> {
+        private final Integer order;
+        private final String specParameter;
+        private String declaredParameter;
+
+        public Parameter(final int order, final String specParameter) {
+            this.specParameter = specParameter;
+            this.order = order;
+        }
+
+        public int getOrder() {
+            return order;
+        }
+
+        public String getDeclaredParameter() {
+            return declaredParameter;
+        }
+
+        public String getSpecParameter() {
+            return specParameter;
+        }
+
+        public void setDeclaredParameter(String declaredParameter) {
+            this.declaredParameter = declaredParameter;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Parameter that = (Parameter) o;
+            return Objects.equals(order, that.order) && Objects.equals(declaredParameter, that.declaredParameter) && Objects.equals(specParameter, that.specParameter);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(declaredParameter, order, specParameter);
+        }
+
+        @Override
+        public int compareTo(Parameter o) {
+            return this.order.compareTo(o.getOrder());
+        }
     }
 }

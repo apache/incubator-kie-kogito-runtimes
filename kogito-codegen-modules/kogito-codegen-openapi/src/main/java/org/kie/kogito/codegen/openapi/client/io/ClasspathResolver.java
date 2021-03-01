@@ -23,6 +23,8 @@ import static java.util.Objects.requireNonNull;
 
 class ClasspathResolver extends AbstractPathResolver {
 
+    private static final String CLASSPATH_SEP = ".jar!/";
+
     public ClasspathResolver(final KogitoBuildContext context) {
         super(context);
     }
@@ -34,6 +36,11 @@ class ClasspathResolver extends AbstractPathResolver {
         if (PathResolverFactory.CLASSPATH.equals(descriptor.getURI().getScheme())) {
             resourceUri = descriptor.getURI().getHost() + resourceUri;
         }
-        return requireNonNull(this.context.getClassLoader().getResource(resourceUri), "Resource URI can't be found. Descriptor: " + descriptor).getPath();
+        final String classpathPath = requireNonNull(this.context.getClassLoader().getResource(resourceUri), "Resource URI can't be found. Descriptor: " + descriptor).getPath();
+        // OpenApi generator tool doesn't have access to the application build classpath, so we save to a temp location (/target) where it can be accessed
+        if (classpathPath.contains(CLASSPATH_SEP)) {
+            return this.saveFileToTempLocation(descriptor, this.context.getClassLoader().getResourceAsStream(resourceUri));
+        }
+        return classpathPath;
     }
 }

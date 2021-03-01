@@ -15,13 +15,9 @@
  */
 package org.kie.kogito.codegen.openapi.client.io;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Paths;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.openapi.client.OpenApiClientException;
@@ -39,12 +35,8 @@ class HTTPResolver extends AbstractPathResolver {
         OpenApiUtils.requireValidSpecURI(resource);
         try {
             final URL openAPISpecFileURL = resource.getURI().toURL();
-            final String outputPath = Paths.get(this.getOutputPath(), resource.getId() + "_" + resource.getResourceName()).toString();
-            try (InputStream is = openAPISpecFileURL.openStream();
-                    ReadableByteChannel channel = Channels.newChannel(is);
-                    FileOutputStream output = new FileOutputStream(outputPath)) {
-                output.getChannel().transferFrom(channel, 0, Integer.MAX_VALUE);
-                return outputPath;
+            try (InputStream is = openAPISpecFileURL.openStream()) {
+                return this.saveFileToTempLocation(resource, is);
             }
         } catch (IOException e) {
             throw new OpenApiClientException("Fail to resolve remote file: " + resource.getURI().toString(), e);

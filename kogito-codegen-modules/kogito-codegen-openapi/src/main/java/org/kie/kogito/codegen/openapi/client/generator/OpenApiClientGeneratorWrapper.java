@@ -44,8 +44,9 @@ public class OpenApiClientGeneratorWrapper {
     private static final String MODEL_TESTS = "modelTests";
     private static final String MODEL_DOCS = "modelDocs";
     private static final String API_DOCS = "apiDocs";
+    private static final String VERBOSE = "verbose";
 
-    private final OpenApiClientGeneratorAdapter generatorAdapter;
+    private final KogitoCodegenAdapter codegenAdapter;
     private final CodegenConfigurator configurator;
     private final DefaultGenerator generator;
 
@@ -54,17 +55,18 @@ public class OpenApiClientGeneratorWrapper {
         GlobalSettings.setProperty(MODEL_TESTS, FALSE);
         GlobalSettings.setProperty(MODEL_DOCS, FALSE);
         GlobalSettings.setProperty(API_DOCS, FALSE);
+        GlobalSettings.setProperty(VERBOSE, FALSE);
         this.configurator = new CodegenConfigurator();
         this.configurator.setInputSpec(specFilePath);
         this.configurator.setGeneratorName(GENERATOR_NAME);
         this.generator = new DefaultGenerator();
-        this.generatorAdapter = new OpenApiClientGeneratorAdapter(this.generator);
+        this.codegenAdapter = new KogitoCodegenAdapter(this.generator);
         // not working, see @OpenApiClientGeneratorAdapter
-        this.generatorAdapter.setUseRuntimeException(true);
-        this.generatorAdapter.setLibrary(JavaClientCodegen.RESTEASY);
-        this.generatorAdapter.setOutputDir(outputDir);
-        this.generatorAdapter.setTemplateDir(CUSTOM_TEMPLATES);
-        this.generatorAdapter.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
+        this.codegenAdapter.setUseRuntimeException(true);
+        this.codegenAdapter.setLibrary(JavaClientCodegen.RESTEASY);
+        this.codegenAdapter.setOutputDir(outputDir);
+        this.codegenAdapter.setTemplateDir(CUSTOM_TEMPLATES);
+        this.codegenAdapter.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
     }
 
     /**
@@ -79,9 +81,9 @@ public class OpenApiClientGeneratorWrapper {
     }
 
     public OpenApiClientGeneratorWrapper withPackage(final String pkg) {
-        this.generatorAdapter.setApiPackage(pkg);
-        this.generatorAdapter.setInvokerPackage(pkg);
-        this.generatorAdapter.setModelPackage(pkg + "." + MODEL_PACKAGE);
+        this.codegenAdapter.setApiPackage(pkg);
+        this.codegenAdapter.setInvokerPackage(pkg);
+        this.codegenAdapter.setModelPackage(pkg + "." + MODEL_PACKAGE);
         return this;
     }
 
@@ -89,9 +91,9 @@ public class OpenApiClientGeneratorWrapper {
         final List<File> generatedFiles = this.generator.opts(
                 this.configurator
                         .toClientOptInput()
-                        .config(this.generatorAdapter))
+                        .config(this.codegenAdapter))
                 .generate();
-        this.generatorAdapter.processGeneratedOperations(descriptor);
+        this.codegenAdapter.processGeneratedOperations(descriptor);
         return generatedFiles;
     }
 }

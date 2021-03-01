@@ -15,14 +15,21 @@
  */
 package org.kie.kogito.codegen.openapi.client.io;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.openapi.client.OpenApiClientException;
+import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.kie.kogito.codegen.openapi.client.OpenApiUtils;
+
+import h.channel;
 
 abstract class AbstractPathResolver implements PathResolver {
 
@@ -34,7 +41,7 @@ abstract class AbstractPathResolver implements PathResolver {
         this.context = context;
     }
 
-    protected String getOutputPath() {
+    private String getOutputPath() {
         final Path outputPath = Paths.get(OpenApiUtils.getEndUserTargetDir(this.context) + BASE_PATH);
         if (Files.notExists(outputPath)) {
             try {
@@ -44,5 +51,16 @@ abstract class AbstractPathResolver implements PathResolver {
             }
         }
         return outputPath.toString();
+    }
+
+    protected String saveFileToTempLocation(final OpenApiSpecDescriptor resource, final InputStream stream) {
+        final String outputPath = Paths.get(this.getOutputPath(), resource.getId() + "_" + resource.getResourceName()).toString();
+        try (ReadableByteChannel channel = Channels.newChannel(stream);
+                FileOutputStream output = new FileOutputStream(outputPath)) {
+            output.getChannel().transferFrom(channel, 0, Integer.MAX_VALUE);
+            return outputPath;
+        } catch (IOException e) {
+            throw new OpenApiClientException("Fail to resolve remote file: " + resource.getURI().toString(), e);
+        }
     }
 }

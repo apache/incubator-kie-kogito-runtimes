@@ -23,7 +23,7 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.codegen.api.utils.CollectedResourcesUtils.toCollectedResources;
+import static org.kie.kogito.codegen.api.utils.CollectedResourcesTestUtils.toCollectedResources;
 
 class OpenApiClientCodegenTest {
 
@@ -75,6 +75,11 @@ class OpenApiClientCodegenTest {
                 .anyMatch(o -> o.getOperationId().equals("getInventory") &&
                         o.getParameters().size() == 0 &&
                         o.getGeneratedClass().endsWith("StoreApi"))).isTrue();
+        assertThat(codegen.getOpenAPISpecResources().get(0).getRequiredOperations()
+                .stream()
+                .anyMatch(o -> o.getOperationId().equals("uploadFile") &&
+                        o.getParameters().size() == 3 &&
+                        o.getGeneratedClass().endsWith("PetApi"))).isTrue();
     }
 
     private void assertCodeGen(final Collection<GeneratedFile> generatedFiles) {
