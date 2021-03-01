@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
+import org.kie.dmn.api.core.DMNMetadata;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.dmn.api.core.FEELPropertyAccessible;
@@ -29,6 +30,7 @@ import org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuil
 import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.kie.kogito.explainability.Constants.SKIP_MONITORING;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
@@ -95,6 +97,37 @@ class MonitoredDecisionModelTest {
             verify(mockedDecisionModel).evaluateDecisionService(refEq(ctx2), eq(TEST_SERVICE_NAME));
             assertSame(mockedEvaluateDecisionServiceResult, res2);
             mockedMetricsBuilder.verify(times(1), () -> DMNResultMetricsBuilder.generateMetrics(refEq(mockedEvaluateDecisionServiceResult), eq(TEST_MODEL_NAME)));
+
+            // test metrics are not produced if SKIP_MONITORING metadata is specified
+            DMNContext ctx3 = mock(DMNContext.class);
+            when(ctx3.getMetadata()).thenReturn(new DMNMetadata() {
+                @Override
+                public Object set(String s, Object o) {
+                    return null;
+                }
+
+                @Override
+                public Object get(String s) {
+                    return null;
+                }
+
+                @Override
+                public Map<String, Object> asMap() {
+                    Map<String, Object> map = new HashMap();
+                    map.put(SKIP_MONITORING, true);
+                    return map;
+                }
+            });
+
+            DMNResult res3 = testObject.evaluateDecisionService(ctx3, TEST_SERVICE_NAME);
+            verify(mockedDecisionModel).evaluateDecisionService(refEq(ctx3), eq(TEST_SERVICE_NAME));
+            assertSame(mockedEvaluateDecisionServiceResult, res3);
+            mockedMetricsBuilder.verify(times(1), () -> DMNResultMetricsBuilder.generateMetrics(refEq(mockedEvaluateDecisionServiceResult), eq(TEST_MODEL_NAME)));
+
+            res3 = testObject.evaluateAll(ctx3);
+            verify(mockedDecisionModel).evaluateAll(refEq(ctx3));
+            assertSame(mockedEvaluateAllResult, res3);
+            mockedMetricsBuilder.verify(times(1), () -> DMNResultMetricsBuilder.generateMetrics(refEq(mockedEvaluateDecisionServiceResult), eq(TEST_MODEL_NAME)));
         }
     }
 
@@ -104,5 +137,4 @@ class MonitoredDecisionModelTest {
         when(mockedDecisionModel.evaluateAll(any())).thenReturn(mockedEvaluateAllResult);
         when(mockedDecisionModel.evaluateDecisionService(any(), eq(TEST_SERVICE_NAME))).thenReturn(mockedEvaluateDecisionServiceResult);
     }
-
 }
