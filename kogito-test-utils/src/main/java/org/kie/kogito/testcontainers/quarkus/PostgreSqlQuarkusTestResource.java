@@ -19,7 +19,7 @@ import org.kie.kogito.resources.ConditionalQuarkusTestResource;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 
 /**
- * Kafka quarkus resource that works within the test lifecycle.
+ * PostgreSQL quarkus resource that works within the test lifecycle.
  *
  */
 public class PostgreSqlQuarkusTestResource extends ConditionalQuarkusTestResource<KogitoPostgreSqlContainer> {
