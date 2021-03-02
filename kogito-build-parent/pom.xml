@@ -119,7 +119,6 @@
     <version.io.quarkus>1.11.5.Final</version.io.quarkus>
 
     <!-- dependencies versions -->
-    <version.vertx-pg-client>3.9.5</version.vertx-pg-client>
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
     <version.com.fasterxml.jackson>2.11.3</version.com.fasterxml.jackson>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
@@ -201,6 +200,7 @@
     <version.io.netty>4.1.52.Final</version.io.netty>
     <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
+    <version.io.vertx>3.9.5</version.io.vertx>
     <version.xerces>2.11.0</version.xerces>
   </properties>
 
@@ -714,7 +714,7 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-pg-client</artifactId>
-        <version>${version.vertx-pg-client}</version>
+        <version>${version.io.vertx.vertx-pg-client}</version>
       </dependency>
 
       <!-- spring related -->
