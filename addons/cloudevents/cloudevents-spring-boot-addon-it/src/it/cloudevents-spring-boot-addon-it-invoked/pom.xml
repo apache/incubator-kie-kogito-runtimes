@@ -44,6 +44,10 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-cloudevents-common-addon</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         </dependency>
         <dependency>
