@@ -16,9 +16,14 @@
 package org.kie.kogito.codegen.decision;
 
 import java.util.Collection;
-import java.util.UUID;
 
-import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.InitializerDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
@@ -27,18 +32,6 @@ import org.kie.kogito.codegen.core.AbstractApplicationSection;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.InitializerDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
@@ -80,17 +73,6 @@ public class DecisionContainerGenerator extends AbstractApplicationSection {
                 .orElseThrow(() -> new InvalidTemplateException(
                         templatedGenerator,
                         "Missing init() method"));
-
-        String generationUUID = UUID.randomUUID().toString();
-        LOG.debug("Generation ID: {}", generationUUID);
-        final ClassOrInterfaceDeclaration decisionModelsClass = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new InvalidTemplateException(templatedGenerator, "Cannot locate class decl. in template."));
-        final FieldDeclaration idField = decisionModelsClass.addFieldWithInitializer("String",
-                "GENERATIONID" + CodegenStringUtil.escapeIdentifier(generationUUID),
-                new StringLiteralExpr(generationUUID),
-                Modifier.Keyword.STATIC,
-                Modifier.Keyword.FINAL);
-        idField.setBlockComment("for internal use of debugging, generation ID: " + generationUUID);
 
         setupPmmlIfAvailable(initMethod);
         setupExecIdSupplierVariable(initMethod);

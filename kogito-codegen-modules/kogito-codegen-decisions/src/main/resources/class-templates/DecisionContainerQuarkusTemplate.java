@@ -16,6 +16,7 @@
 package $Package$;
 
 @javax.enterprise.context.ApplicationScoped()
+@io.quarkus.runtime.Startup()
 public class DecisionModels extends org.kie.kogito.dmn.AbstractDecisionModels {
 
     static {
