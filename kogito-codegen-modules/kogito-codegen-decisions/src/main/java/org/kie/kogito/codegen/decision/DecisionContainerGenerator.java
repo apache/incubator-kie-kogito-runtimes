@@ -23,8 +23,6 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractApplicationSection;
 import org.kie.kogito.dmn.DmnExecutionIdSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -38,8 +36,6 @@ import static org.kie.kogito.codegen.core.CodegenUtils.newObject;
 import static org.kie.kogito.codegen.decision.ReadResourceUtil.getReadResourceMethod;
 
 public class DecisionContainerGenerator extends AbstractApplicationSection {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DecisionContainerGenerator.class);
 
     protected static final String PMML_ABSTRACT_CLASS = "org.kie.kogito.pmml.AbstractPredictionModels";
     protected static final String PMML_FUNCTION = PMML_ABSTRACT_CLASS + ".kieRuntimeFactoryFunction";
