@@ -47,7 +47,7 @@ public class DecisionExplainabilityResourceExecutor implements ExplainabilityRes
         return convertDMNOutput(decisionModel.evaluateAll(dmnContext), predictInput);
     }
 
-    DecisionModel getDecisionModel(DecisionModels decisionModels, ModelIdentifier modelIdentifier) {
+    protected DecisionModel getDecisionModel(DecisionModels decisionModels, ModelIdentifier modelIdentifier) {
         String[] namespaceAndName = extractNamespaceAndName(modelIdentifier.getResourceId());
         return decisionModels.getDecisionModel(namespaceAndName[0], namespaceAndName[1]);
     }

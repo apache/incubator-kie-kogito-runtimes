@@ -42,7 +42,7 @@ public class ExplainabilityServiceTest {
     final static String TEST_EXECUTION_ID = "test";
     final static DMNRuntime genericDMNRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(
             ExplainabilityServiceTest.class.getResourceAsStream(MODEL_RESOURCE)));
-    final static DmnDecisionModelStub decisionModel = new DmnDecisionModelStub(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
+    final static DmnDecisionModelSpy decisionModel = new DmnDecisionModelSpy(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
 
     @Test
     public void testPerturbedExecution() {

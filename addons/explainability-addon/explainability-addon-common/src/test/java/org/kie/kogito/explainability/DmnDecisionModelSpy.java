@@ -26,11 +26,11 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 
 import static org.kie.kogito.explainability.Constants.SKIP_MONITORING;
 
-public class DmnDecisionModelStub extends DmnDecisionModel {
+public class DmnDecisionModelSpy extends DmnDecisionModel {
 
     private final List<Boolean> evaluationSkipMonitoringHistory = new ArrayList<>();
 
-    public DmnDecisionModelStub(DMNRuntime dmnRuntime, String namespace, String name, ExecutionIdSupplier execIdSupplier) {
+    public DmnDecisionModelSpy(DMNRuntime dmnRuntime, String namespace, String name, ExecutionIdSupplier execIdSupplier) {
         super(dmnRuntime, namespace, name, execIdSupplier);
     }
 
