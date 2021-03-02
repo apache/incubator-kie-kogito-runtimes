@@ -16,7 +16,7 @@
 package $Package$;
 
 @javax.enterprise.context.ApplicationScoped()
-@io.quarkus.runtime.Startup()
+@io.quarkus.runtime.Startup() //<-- Required to force full reload during hot reload
 public class DecisionModels extends org.kie.kogito.dmn.AbstractDecisionModels {
 
     static {

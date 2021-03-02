@@ -30,21 +30,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.jboss.jandex.AnnotationInstance;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.kie.kogito.Model;
-import org.kie.kogito.UserTask;
-import org.kie.kogito.codegen.Generated;
-import org.kie.kogito.codegen.VariableInfo;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.json.JsonSchemaGenerator;
-import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
-import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
-
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.bootstrap.model.AppDependency;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -59,6 +44,20 @@ import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.ClassInfo;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.kie.kogito.Model;
+import org.kie.kogito.UserTask;
+import org.kie.kogito.codegen.Generated;
+import org.kie.kogito.codegen.VariableInfo;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.json.JsonSchemaGenerator;
+import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -112,9 +111,7 @@ public class ProcessesAssetsProcessor {
             BuildProducer<GeneratedResourceBuildItem> genResBI,
             BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration) throws IOException {
 
-        if (liveReload.isLiveReload()) {
-            return;
-        }
+        // The early return has been removed as a fix for KOGITO-4512 if (liveReload.isLiveReload()) {
 
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());
