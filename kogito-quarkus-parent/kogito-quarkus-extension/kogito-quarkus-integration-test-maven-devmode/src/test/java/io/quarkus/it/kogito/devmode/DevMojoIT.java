@@ -23,14 +23,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.junit.jupiter.api.Test;
-
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
 import io.quarkus.maven.it.verifier.RunningInvoker;
 import io.quarkus.test.devmode.util.DevModeTestUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +40,7 @@ import static org.hamcrest.Matchers.is;
 /*
  *  Test inspired by https://github.com/quarkusio/quarkus/blob/c8919cfb8abbc3df49dd1febd74b998417b0367e/integration-tests/maven/src/test/java/io/quarkus/maven/it/DevMojoIT.java#L218
  */
-// this is not yet available as of 1.11, and I doubt is ever needed for this module.: @DisableForNative
+//@DisableForNative: it is not yet available as of 1.11, and I doubt is ever needed for this module
 public class DevMojoIT extends RunAndCheckMojoTestBase {
 
     private static final String HTTP_TEST_PORT = "65535";
