@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
@@ -238,6 +239,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("done.");
     }
 
+    @Disabled("KOGITO-4512")
     @Test
     public void testDRLHotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");

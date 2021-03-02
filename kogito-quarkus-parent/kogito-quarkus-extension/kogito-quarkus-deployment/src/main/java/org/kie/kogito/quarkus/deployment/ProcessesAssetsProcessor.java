@@ -112,7 +112,9 @@ public class ProcessesAssetsProcessor {
             BuildProducer<GeneratedResourceBuildItem> genResBI,
             BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration) throws IOException {
 
-        // The early return has been removed as a fix for KOGITO-4512 if (liveReload.isLiveReload()) {
+        if (liveReload.isLiveReload()) {
+            return;
+        }
 
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());
