@@ -30,20 +30,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppDependency;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
-import io.quarkus.deployment.builditem.CapabilityBuildItem;
-import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
-import io.quarkus.deployment.builditem.LiveReloadBuildItem;
-import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
-import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
@@ -58,6 +44,21 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
+
+import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.bootstrap.model.AppDependency;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
+import io.quarkus.deployment.builditem.CapabilityBuildItem;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
+import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+import io.quarkus.deployment.builditem.LiveReloadBuildItem;
+import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;

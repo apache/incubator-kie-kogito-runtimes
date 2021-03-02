@@ -23,13 +23,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.junit.jupiter.api.Test;
+
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
 import io.quarkus.maven.it.verifier.RunningInvoker;
 import io.quarkus.test.devmode.util.DevModeTestUtils;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
