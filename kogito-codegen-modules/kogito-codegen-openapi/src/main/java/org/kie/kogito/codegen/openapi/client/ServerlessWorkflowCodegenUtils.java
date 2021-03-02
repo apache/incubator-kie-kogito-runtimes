@@ -67,6 +67,7 @@ final class ServerlessWorkflowCodegenUtils {
             return resources;
         }
         functions.getFunctionDefs().stream()
+                .filter(f -> f.getOperation() != null)
                 .map(ServerlessWorkflowCodegenUtils::fromSWFunctionDefinition)
                 .forEach(o -> {
                     final int idx = resources.indexOf(o);

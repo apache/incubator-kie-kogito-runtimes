@@ -108,11 +108,7 @@ public class OpenApiClientOperation {
 
     @Override
     public String toString() {
-        return "OpenApiClientOperation{" +
-                "operationId='" + operationId + '\'' +
-                ", api='" + api + '\'' +
-                ", generatedClass='" + generatedClass + '\'' +
-                '}';
+        return operationId;
     }
 
     /**
@@ -121,7 +117,6 @@ public class OpenApiClientOperation {
     public static final class Parameter implements Comparable<Parameter> {
         private final Integer order;
         private final String specParameter;
-        private String declaredParameter;
 
         public Parameter(final int order, final String specParameter) {
             this.specParameter = specParameter;
@@ -132,16 +127,8 @@ public class OpenApiClientOperation {
             return order;
         }
 
-        public String getDeclaredParameter() {
-            return declaredParameter;
-        }
-
         public String getSpecParameter() {
             return specParameter;
-        }
-
-        public void setDeclaredParameter(String declaredParameter) {
-            this.declaredParameter = declaredParameter;
         }
 
         @Override
@@ -153,12 +140,12 @@ public class OpenApiClientOperation {
                 return false;
             }
             Parameter that = (Parameter) o;
-            return Objects.equals(order, that.order) && Objects.equals(declaredParameter, that.declaredParameter) && Objects.equals(specParameter, that.specParameter);
+            return Objects.equals(order, that.order) && Objects.equals(specParameter, that.specParameter);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(declaredParameter, order, specParameter);
+            return Objects.hash(order, specParameter);
         }
 
         @Override

@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.compiler.canonical.descriptors.OpenApiTaskDescriptor;
+import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -88,7 +89,6 @@ public class ServerlessWorkflowFactory {
     public static final String UNIQUE_ID_PARAM = "UniqueId";
     public static final String EVENTBASED_PARAM = "EventBased";
     public static final String DEFAULT_SERVICE_IMPL = "Java";
-    public static final String OPENAPI_SERVICE_IMPL = "OpenApi";
     public static final String SERVICE_INTERFACE_KEY = "interface";
     public static final String SERVICE_OPERATION_KEY = "operation";
     public static final String SERVICE_IMPL_KEY = "implementation";
@@ -100,7 +100,6 @@ public class ServerlessWorkflowFactory {
     public static final String HT_ACTORID = "actorid";
     public static final String RF_GROUP = "ruleflowgroup";
     public static final String SERVICE_TASK_TYPE = "Service Task";
-    public static final String WORKITEM_TYPE = "Type";
     public static final String WORKITEM_INTERFACE = "Interface";
     public static final String WORKITEM_OPERATION = "Operation";
     public static final String WORKITEM_INTERFACE_IMPL = "interfaceImplementationRef";
@@ -374,7 +373,7 @@ public class ServerlessWorkflowFactory {
         WorkItemNode workItemNode = new WorkItemNode();
         workItemNode.setId(id);
         workItemNode.setName(name);
-        workItemNode.setMetaData(WORKITEM_TYPE, SERVICE_TASK_TYPE);
+        workItemNode.setMetaData(TaskDescriptor.KEY_WORKITEM_TYPE, SERVICE_TASK_TYPE);
 
         Work work = new WorkImpl();
         workItemNode.setWork(work);
@@ -400,31 +399,21 @@ public class ServerlessWorkflowFactory {
     }
 
     public WorkItemNode openApiNode(long id, FunctionRef functionRef, FunctionDefinition function, NodeContainer nodeContainer) {
-        WorkItemNode workItemNode = new WorkItemNode();
+        final OpenApiTaskDescriptor.WorkItemBuilder builder =
+                OpenApiTaskDescriptor.builderFor(ServerlessWorkflowUtils.getOpenApiURI(function), ServerlessWorkflowUtils.getOpenApiOperationId(function))
+                        .withParamResolverType(JsonNodeParameterResolver.class.getCanonicalName())
+                        .withResultHandlerType(JsonNodeResultHandler.class.getCanonicalName())
+                        .withResultHandler(new JsonNodeResultHandlerExprSupplier());
+
+        functionRef.getParameters().forEach((k, v) -> builder.addParamResolver(k, new JsonNodeParameterExprSupplier(v)));
+
+        final WorkItemNode workItemNode = builder.build();
         workItemNode.setId(id);
         workItemNode.setName(functionRef.getRefName());
-        workItemNode.setMetaData(WORKITEM_TYPE, OpenApiTaskDescriptor.TYPE);
         workItemNode.addInMapping(WORKITEM_PARAM, DEFAULT_WORKFLOW_VAR);
         workItemNode.addOutMapping(WORKITEM_RESULT, DEFAULT_WORKFLOW_VAR);
 
-        Work work = new WorkImpl();
-        work.setName(OpenApiTaskDescriptor.TYPE);
-        work.setParameter(SERVICE_IMPL_KEY, DEFAULT_SERVICE_IMPL);
-        work.setParameter(WORKITEM_INTERFACE, ServerlessWorkflowUtils.getOpenApiURI(function));
-        work.setParameter(WORKITEM_OPERATION, ServerlessWorkflowUtils.getOpenApiOperationId(function));
-        if (functionRef.getParameters() != null && !functionRef.getParameters().isEmpty()) {
-            for (Entry<String, String> param : functionRef.getParameters().entrySet()) {
-                work.setParameter(OpenApiTaskDescriptor.PARAM_PREFIX + param.getKey(), new JsonNodeParameterExprSupplier(param.getValue()));
-            }
-            workItemNode.setMetaData(OpenApiTaskDescriptor.PARAM_META_RESOLVER_TYPE, JsonNodeParameterResolver.class.getCanonicalName());
-            workItemNode.setMetaData(OpenApiTaskDescriptor.PARAM_META_RESULT_HANDLER_TYPE, JsonNodeResultHandler.class.getCanonicalName());
-            work.setParameter(OpenApiTaskDescriptor.PARAM_META_RESULT_HANDLER, new JsonNodeResultHandlerExprSupplier());
-        }
-
-        workItemNode.setWork(work);
-
         nodeContainer.addNode(workItemNode);
-
         return workItemNode;
     }
 

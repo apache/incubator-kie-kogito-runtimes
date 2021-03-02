@@ -24,6 +24,8 @@ import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.languages.JavaClientCodegen;
 
+import static java.util.stream.Collectors.toList;
+
 class KogitoCodegenAdapter extends JavaClientCodegen {
 
     private final DefaultGenerator generator;
@@ -38,7 +40,7 @@ class KogitoCodegenAdapter extends JavaClientCodegen {
      * @param descriptor the resource with the required operations
      */
     void processGeneratedOperations(final OpenApiSpecDescriptor descriptor) {
-        Map<String, List<CodegenOperation>> paths = this.generator.processPaths(this.openAPI.getPaths());
+        final Map<String, List<CodegenOperation>> paths = this.generator.processPaths(this.openAPI.getPaths());
         paths.forEach((api, operations) -> operations.forEach(operation -> descriptor.getRequiredOperations().stream()
                 .filter(resourceOperation -> resourceOperation.getOperationId().equals(operation.operationId))
                 .findFirst()
@@ -53,6 +55,18 @@ class KogitoCodegenAdapter extends JavaClientCodegen {
                         }
                     }
                 })));
+        final List<OpenApiClientOperation> nonProcessedOps =
+                descriptor.getRequiredOperations()
+                        .stream()
+                        .filter(ro -> ro.getGeneratedClass() == null || ro.getMethodName() == null).collect(toList());
+        if (!nonProcessedOps.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Required Operations " + nonProcessedOps + " not found in the processed spec " + descriptor.getResourceName() + ". Available operations are " + collectCodegenOperations(paths));
+        }
+    }
+
+    private List<String> collectCodegenOperations(final Map<String, List<CodegenOperation>> paths) {
+        return paths.entrySet().stream().flatMap(e -> e.getValue().stream()).map(o -> o.operationId).collect(toList());
     }
 
     @Override

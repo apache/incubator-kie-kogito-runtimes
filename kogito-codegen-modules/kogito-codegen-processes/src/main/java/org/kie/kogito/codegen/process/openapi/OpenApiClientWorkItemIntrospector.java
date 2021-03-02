@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.process.openapi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jbpm.compiler.canonical.descriptors.OpenApiTaskDescriptor;
-import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
@@ -28,9 +28,9 @@ import org.kie.kogito.codegen.openapi.client.OpenApiClientOperation;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
-import static org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory.WORKITEM_INTERFACE;
-import static org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory.WORKITEM_OPERATION;
-
+/**
+ * Responsible to apply the OpenApi implementation detail into the OpenApi {@link WorkItemNode}s defined in a given {@link KogitoWorkflowProcess}.
+ */
 public class OpenApiClientWorkItemIntrospector {
 
     private List<OpenApiSpecDescriptor> descriptors;
@@ -53,13 +53,12 @@ public class OpenApiClientWorkItemIntrospector {
             return;
         }
         nodes.stream()
-                .filter(node -> node instanceof WorkItemNode && OpenApiTaskDescriptor.TYPE.equals(((WorkItemNode) node).getWork().getName()))
+                .filter(OpenApiTaskDescriptor::isOpenApiTask)
                 .forEach(node -> {
-                    final OpenApiClientOperation operation =
-                            discoverOperation(((WorkItemNode) node).getWork().getParameter(ServerlessWorkflowFactory.WORKITEM_INTERFACE).toString(),
-                                    ((WorkItemNode) node).getWork().getParameter(ServerlessWorkflowFactory.WORKITEM_OPERATION).toString());
-                    ((WorkItemNode) node).getWork().setParameter(WORKITEM_INTERFACE, operation.getGeneratedClass());
-                    ((WorkItemNode) node).getWork().setParameter(WORKITEM_OPERATION, operation.getMethodName());
+                    final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor((WorkItemNode) node);
+                    final OpenApiClientOperation operation = discoverOperation(modifier.getInterface(), modifier.getOperation());
+                    modifier.modify(operation.getGeneratedClass(), operation.getMethodName(),
+                            operation.getParameters().stream().sorted().map(OpenApiClientOperation.Parameter::getSpecParameter).collect(Collectors.toList()));
                 });
     }
 
