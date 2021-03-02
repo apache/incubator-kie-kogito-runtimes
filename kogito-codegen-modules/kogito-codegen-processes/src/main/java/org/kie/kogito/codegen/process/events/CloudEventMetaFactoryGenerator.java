@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -58,43 +59,38 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
     }
 
     public String generate() {
-        final CompilationUnit compilationUnit = generator.compilationUnitOrThrow("Cannot generate CloudEventMetaFactory");
+        CompilationUnit compilationUnit = generator.compilationUnitOrThrow("Cannot generate CloudEventMetaFactory");
 
-        final ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
+        ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
-        final MethodDeclaration templatedBuildMethod = classDefinition
+        MethodDeclaration templatedBuildMethod = classDefinition
                 .findFirst(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_"))
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find expected buildCloudEventMeta_ method"));
 
-        this.triggers.forEach((processId, triggerList) -> triggerList.forEach(trigger -> {
-            EventKind eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
-                    ? EventKind.PRODUCED
-                    : EventKind.CONSUMED;
+        List<CloudEventMetaMethodData> methodDataList = triggers.entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream().map(trigger -> new CloudEventMetaMethodData(entry.getKey(), trigger)))
+                .distinct()
+                .collect(Collectors.toList());
 
-            String strEventType = eventKind == EventKind.PRODUCED
-                    ? DataEventAttrBuilder.toType(trigger.getName(), processId)
-                    : trigger.getName();
-            String strEventSource = eventKind == EventKind.PRODUCED
-                    ? DataEventAttrBuilder.toSource(processId)
-                    : "";
-
+        methodDataList.forEach(methodData -> {
             MethodDeclaration builderMethod = templatedBuildMethod.clone();
 
-            String builderMethodName = String.format("%s_%s", eventKind.name(), trigger.getName());
-            builderMethod.setName(builderMethod.getName().asString().replace("$methodName$", builderMethodName));
+            String methodNameValue = String.format("%s_%s", methodData.eventKind.name(), methodData.triggerName);
+            String builderMethodName = getBuilderMethodName(classDefinition, templatedBuildMethod, methodNameValue);
+            builderMethod.setName(builderMethodName);
 
             ObjectCreationExpr objectCreationExpr = builderMethod.findAll(ObjectCreationExpr.class).get(0);
-            objectCreationExpr.setArgument(0, new StringLiteralExpr(strEventType));
-            objectCreationExpr.setArgument(1, new StringLiteralExpr(strEventSource));
-            objectCreationExpr.setArgument(2, new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), eventKind.name()));
+            objectCreationExpr.setArgument(0, new StringLiteralExpr(methodData.eventType));
+            objectCreationExpr.setArgument(1, new StringLiteralExpr(methodData.eventSource));
+            objectCreationExpr.setArgument(2, new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), methodData.eventKind.name()));
 
             if (context.hasDI()) {
                 context.getDependencyInjectionAnnotator().withFactoryMethod(builderMethod);
             }
 
             classDefinition.addMember(builderMethod);
-        }));
+        });
 
         templatedBuildMethod.remove();
 
@@ -103,6 +99,22 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         }
 
         return compilationUnit.toString();
+    }
+
+    private String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, MethodDeclaration templatedBuildMethod, String methodNameValue) {
+        String baseMethodName = templatedBuildMethod.getNameAsString().replace("$methodName$", methodNameValue);
+        List<MethodDeclaration> methods = classDefinition.findAll(MethodDeclaration.class);
+        int counter = 0;
+        while (true) {
+            String expectedMethodName = counter == 0
+                    ? baseMethodName
+                    : String.format("%s_%d", baseMethodName, counter);
+            if (methods.stream().anyMatch(m -> m.getNameAsString().equals(expectedMethodName))) {
+                counter++;
+            } else {
+                return expectedMethodName;
+            }
+        }
     }
 
     private Map<String, List<TriggerMetaData>> filterTriggers(final List<ProcessExecutableModelGenerator> generators) {
@@ -125,5 +137,48 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, CLASS_NAME);
+    }
+
+    private static class CloudEventMetaMethodData {
+
+        final String processId;
+        final String triggerName;
+        final EventKind eventKind;
+        final String eventType;
+        final String eventSource;
+
+        public CloudEventMetaMethodData(String processId, TriggerMetaData trigger) {
+            this.processId = processId;
+            this.triggerName = trigger.getName();
+
+            this.eventKind = TriggerMetaData.TriggerType.ProduceMessage.equals(trigger.getType())
+                    ? EventKind.PRODUCED
+                    : EventKind.CONSUMED;
+
+            this.eventType = eventKind == EventKind.PRODUCED
+                    ? DataEventAttrBuilder.toType(triggerName, processId)
+                    : triggerName;
+
+            this.eventSource = eventKind == EventKind.PRODUCED
+                    ? DataEventAttrBuilder.toSource(processId)
+                    : "";
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            CloudEventMetaMethodData that = (CloudEventMetaMethodData) o;
+            return processId.equals(that.processId) && triggerName.equals(that.triggerName) && eventKind == that.eventKind && eventType.equals(that.eventType) && eventSource.equals(that.eventSource);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(processId, triggerName, eventKind, eventType, eventSource);
+        }
     }
 }
