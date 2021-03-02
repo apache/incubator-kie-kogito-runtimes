@@ -19,7 +19,7 @@ import org.kie.kogito.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 
 /**
- * Kafka spring boot resource that works within the test lifecycle.
+ * PostgreSQL spring boot resource that works within the test lifecycle.
  *
  */
 public class PostgreSqlSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoPostgreSqlContainer> {
