@@ -27,13 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.Tuple;
 import org.infinispan.protostream.BaseMarshaller;
 import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
@@ -45,7 +38,15 @@ import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"rawtypes"})
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
+
+@SuppressWarnings({ "rawtypes" })
 public class PostgreProcessInstances implements MutableProcessInstances {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgreProcessInstances.class);
@@ -215,21 +216,21 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     }
 
     /**
-     *   Try to create the table using the same application user, this should not be necessary since the database
-     *   is recommended to be configured properly before starting the application.
+     * Try to create the table using the same application user, this should not be necessary since the database
+     * is recommended to be configured properly before starting the application.
      *
-     *   Note:
-     *   This method could be useful for development and testing purposes and does not break the execution flow,
-     *   throwing any exception.
+     * Note:
+     * This method could be useful for development and testing purposes and does not break the execution flow,
+     * throwing any exception.
      */
     private boolean init() {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.query("SELECT EXISTS (\n" +
-                                 "   SELECT FROM pg_tables\n" +
-                                 "   WHERE  schemaname = 'public'\n" +
-                                 "   AND    tablename  = 'process_instances'  \n" +
-                                 ") ")
+                    "   SELECT FROM pg_tables\n" +
+                    "   WHERE  schemaname = 'public'\n" +
+                    "   AND    tablename  = 'process_instances'  \n" +
+                    ") ")
                     .execute(getAsyncResultHandler(future));
 
             final CompletableFuture futureCompose = future.thenCompose(rows -> {
@@ -240,12 +241,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                         .map(row -> row.getBoolean("exists"))
                         .filter(Boolean.FALSE::equals)
                         .map(e -> client.query("CREATE TABLE public.process_instances\n" +
-                                                       "(\n" +
-                                                       "    id uuid NOT NULL,\n" +
-                                                       "    payload bytea,\n" +
-                                                       "    process_id character varying COLLATE pg_catalog.\"default\" NOT NULL,\n" +
-                                                       "    CONSTRAINT process_instances_pkey PRIMARY KEY (id)\n" +
-                                                       ")"))
+                                "(\n" +
+                                "    id uuid NOT NULL,\n" +
+                                "    payload bytea,\n" +
+                                "    process_id character varying COLLATE pg_catalog.\"default\" NOT NULL,\n" +
+                                "    CONSTRAINT process_instances_pkey PRIMARY KEY (id)\n" +
+                                ")"))
                         .map(q -> {
                             q.execute(getAsyncResultHandler(futureCreate));
                             LOGGER.info("Creating process_instances table.");
@@ -261,7 +262,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             return Objects.nonNull(rows) && rows.rowCount() == 1;
         } catch (Exception e) {
             LOGGER.error("Error creating process_instances table, the database should be configured properly before " +
-                                 "starting the application", e);
+                    "starting the application", e);
             //not break the execution flow in case of any missing permission for db application user, for instance.
             return false;
         }

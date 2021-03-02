@@ -115,26 +115,6 @@ class PostgreProcessInstancesTest {
         assertThat(process.instances().values()).isEmpty();
     }
 
-    @Test
-    public void hello() {
-        BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2");
-        ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
-        processInstance.start();
-
-        ProcessInstance<BpmnVariables> persisted = process.instances().findById(processInstance.id()).get();
-        String testVar = (String) persisted.variables().get("test");
-        assertThat(testVar).isEqualTo("test");
-
-        assertThat(process.instances().values()).hasSizeGreaterThan(0);
-        assertThat(process.instances().size()).isGreaterThan(0);
-
-        persisted.abort();
-
-        assertThat(process.instances().findById(processInstance.id()).isPresent()).isFalse();
-
-        System.out.println(persisted.id());
-    }
-
     private class PostgreProcessInstancesFactory extends KogitoProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client) {

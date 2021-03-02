@@ -714,7 +714,7 @@
       <dependency>
         <groupId>io.vertx</groupId>
         <artifactId>vertx-pg-client</artifactId>
-        <version>${version.io.vertx.vertx-pg-client}</version>
+        <version>${version.io.vertx}</version>
       </dependency>
 
       <!-- spring related -->
