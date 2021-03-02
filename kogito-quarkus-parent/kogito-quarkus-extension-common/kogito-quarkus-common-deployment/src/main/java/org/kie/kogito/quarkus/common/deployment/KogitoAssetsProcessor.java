@@ -74,9 +74,7 @@ public class KogitoAssetsProcessor {
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
-        if (liveReload.isLiveReload()) {
-            return Collections.emptyList();
-        }
+        // The early return has been removed as a fix for KOGITO-4512 if (liveReload.isLiveReload()) {
 
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());

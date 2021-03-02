@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.maven.it.RunAndCheckMojoTestBase;
@@ -239,7 +238,6 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("done.");
     }
 
-    @Disabled("KOGITO-4512 Investigate potential DRL hotreload issue with quarkus maven devmode")
     @Test
     public void testDRLHotReload() throws Exception {
         testDir = initProject("projects/classic-inst", "projects/project-intrumentation-reload-drl");
@@ -270,10 +268,8 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         File source = new File(testDir, "src/main/resources/acme/rules.drl");
         filter(source, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
         filter(controlSource, Collections.singletonMap("\"Hello, \"+", "\"Ciao, \"+"));
-        Thread.sleep(5_000);
         await().pollDelay(1, TimeUnit.SECONDS)
                 .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Ciao, v1"));
-        Thread.sleep(5_000);
 
         System.out.println("Evaluate DRL");
         given().baseUri("http://localhost:" + HTTP_TEST_PORT)
@@ -293,10 +289,8 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         System.out.println("Beginning Change #2");
         filter(source, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
         filter(controlSource, Collections.singletonMap("\"Ciao, \"+", "\"Bonjour, \"+"));
-        Thread.sleep(5_000);
         await().pollDelay(1, TimeUnit.SECONDS)
                 .atMost(25, TimeUnit.SECONDS).until(() -> getRestResponse("/control").contains("Bonjour, v1"));
-        Thread.sleep(5_000);
 
         System.out.println("Evaluate DRL");
         given().baseUri("http://localhost:" + HTTP_TEST_PORT)
