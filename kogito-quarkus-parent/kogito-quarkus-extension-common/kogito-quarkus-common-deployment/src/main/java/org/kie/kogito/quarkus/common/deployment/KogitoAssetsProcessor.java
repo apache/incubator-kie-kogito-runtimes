@@ -218,6 +218,13 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceExecutionStep"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceExecutionStepType"));
+
+        reflectiveClass.produce(
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent"));
+        reflectiveClass.produce(
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent$GAV"));
+        reflectiveClass.produce(
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.decision.DecisionModelType"));
     }
 
     private void registerExplainabilityAddonClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
