@@ -90,7 +90,7 @@ public class CodegenUtils {
 
         expressions.forEach((placeholder, expr) -> {
             for (int i = 0; i < argumentList.size(); i++) {
-                if (argumentList.get(i).toString().contains(placeholder)) {
+                if (argumentList.get(i).toString().trim().equals(placeholder)) {
                     argumentIds.put(placeholder, i);
                 }
             }
