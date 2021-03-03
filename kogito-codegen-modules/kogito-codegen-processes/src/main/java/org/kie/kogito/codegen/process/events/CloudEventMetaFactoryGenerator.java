@@ -101,22 +101,6 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         return compilationUnit.toString();
     }
 
-    private String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, MethodDeclaration templatedBuildMethod, String methodNameValue) {
-        String baseMethodName = templatedBuildMethod.getNameAsString().replace("$methodName$", methodNameValue);
-        List<MethodDeclaration> methods = classDefinition.findAll(MethodDeclaration.class);
-        int counter = 0;
-        while (true) {
-            String expectedMethodName = counter == 0
-                    ? baseMethodName
-                    : String.format("%s_%d", baseMethodName, counter);
-            if (methods.stream().anyMatch(m -> m.getNameAsString().equals(expectedMethodName))) {
-                counter++;
-            } else {
-                return expectedMethodName;
-            }
-        }
-    }
-
     private Map<String, List<TriggerMetaData>> filterTriggers(final List<ProcessExecutableModelGenerator> generators) {
         if (generators != null) {
             final Map<String, List<TriggerMetaData>> filteredTriggers = new HashMap<>();
@@ -137,6 +121,36 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, CLASS_NAME);
+    }
+
+    static String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, MethodDeclaration templatedBuildMethod, String methodNameValue) {
+        String baseMethodName = toValidJavaMethodName(templatedBuildMethod.getNameAsString().replace("$methodName$", methodNameValue));
+        List<MethodDeclaration> methods = classDefinition.findAll(MethodDeclaration.class);
+        int counter = 0;
+        while (true) {
+            String expectedMethodName = counter == 0
+                    ? baseMethodName
+                    : String.format("%s_%d", baseMethodName, counter);
+            if (methods.stream().anyMatch(m -> m.getNameAsString().equals(expectedMethodName))) {
+                counter++;
+            } else {
+                return expectedMethodName;
+            }
+        }
+    }
+
+    static String toValidJavaMethodName(String input) {
+        StringBuilder sb = new StringBuilder(input.length());
+        for (char c : input.toCharArray()) {
+            if (c == '_') {
+                sb.append("__");
+            } else if (!Character.isJavaIdentifierPart(c)) {
+                sb.append("_").append(Integer.valueOf(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     private static class CloudEventMetaMethodData {
