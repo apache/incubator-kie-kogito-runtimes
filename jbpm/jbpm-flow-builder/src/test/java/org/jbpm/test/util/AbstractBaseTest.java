@@ -15,59 +15,45 @@
  */
 package org.jbpm.test.util;
 
-import java.util.Arrays;
-
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
-import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
-import org.jbpm.integrationtests.JbpmSerializationHelper;
 import org.jbpm.process.instance.impl.util.LoggingPrintStream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.kie.api.definition.KiePackage;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.runtime.conf.ForceEagerActivationOption;
-
-import static org.junit.jupiter.api.Assertions.fail;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 
 public abstract class AbstractBaseTest {
- 
-    protected KnowledgeBuilderImpl builder;
-   
-    @BeforeEach
-    public void before() { 
-        builder = new KnowledgeBuilderImpl();
-    }
-    
-    public KieSession createKieSession(KiePackage... pkg) { 
-        try { 
-            return createKieSession(false, pkg);
-        } catch(Exception e ) {
-            throw new RuntimeException("There's no reason for an exception to be thrown here (because the kbase is not being serialized)!", e);
-        }
-    } 
-   
-    public KieSession createKieSession(boolean serializeKbase, KiePackage... pkg) throws Exception {
-        InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        kbase.addPackages(Arrays.asList(pkg));
-        if( serializeKbase ) { 
-            kbase = JbpmSerializationHelper.serializeObject( kbase );
-        }
 
-        KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
-        conf.setOption( ForceEagerActivationOption.YES );
-        return kbase.newKieSession(conf, null);
+    protected KnowledgeBuilderImpl builder;
+
+    @BeforeEach
+    public void before() {
+        builder = (KnowledgeBuilderImpl) KnowledgeBuilderFactory.newKnowledgeBuilder();
     }
-    
+
+    public KogitoProcessRuntime createKogitoProcessRuntime() {
+        return KogitoProcessRuntime.asKogitoProcessRuntime(createKieSession());
+    }
+
+    @Deprecated
+    public KieSession createKieSession() {
+        KieSessionConfiguration conf = KnowledgeBaseFactory.newKnowledgeSessionConfiguration();
+        conf.setOption(ForceEagerActivationOption.YES);
+        return builder.newKieBase().newKieSession(conf, null);
+    }
+
     @BeforeAll
-    public static void configure() { 
+    public static void configure() {
         LoggingPrintStream.interceptSysOutSysErr();
     }
-    
+
     @AfterAll
-    public static void reset() { 
+    public static void reset() {
         LoggingPrintStream.resetInterceptSysOutSysErr();
     }
 }

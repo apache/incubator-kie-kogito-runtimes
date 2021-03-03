@@ -22,17 +22,17 @@ import java.util.List;
 import org.drools.compiler.compiler.DroolsError;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ProcessMultiThreadTest extends AbstractBaseTest {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ProcessMultiThreadTest.class);
 
     @Test
@@ -41,80 +41,78 @@ public class ProcessMultiThreadTest extends AbstractBaseTest {
         try {
             boolean success = true;
             final Thread[] t = new Thread[THREAD_COUNT];
-            
-            builder.addProcessFromXml(new InputStreamReader( getClass().getResourceAsStream( "test_ProcessMultithreadEvent.rf" ) ) );
+
+            builder.addProcessFromXml(new InputStreamReader(getClass().getResourceAsStream("test_ProcessMultithreadEvent.rf")));
             if (builder.getErrors().getErrors().length > 0) {
-            	for (DroolsError error: builder.getErrors().getErrors()) {
-            	    logger.error(error.toString());
-            	}
-            	fail("Could not parse process");
+                for (DroolsError error : builder.getErrors().getErrors()) {
+                    logger.error(error.toString());
+                }
+                fail("Could not parse process");
             }
 
-            KieSession session = createKieSession(true, builder.getPackages());
-            
-            session = JbpmSerializationHelper.getSerialisedStatefulKnowledgeSession(session);
+            KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
             List<String> list = new ArrayList<String>();
-            session.setGlobal("list", list);
-            ProcessInstance processInstance = session.startProcess("org.drools.integrationtests.multithread");
+            kruntime.getKieSession().setGlobal("list", list);
+            KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.integrationtests.multithread");
             final ProcessInstanceSignalRunner[] r = new ProcessInstanceSignalRunner[THREAD_COUNT];
-            for ( int i = 0; i < t.length; i++ ) {
-                r[i] = new ProcessInstanceSignalRunner(i, processInstance, "event" + (i+1));
-                t[i] = new Thread( r[i], "thread-" + i );
+            for (int i = 0; i < t.length; i++) {
+                r[i] = new ProcessInstanceSignalRunner(i, processInstance, "event" + (i + 1));
+                t[i] = new Thread(r[i], "thread-" + i);
                 t[i].start();
             }
-            for ( int i = 0; i < t.length; i++ ) {
+            for (int i = 0; i < t.length; i++) {
                 t[i].join();
-                if ( r[i].getStatus() == ProcessInstanceSignalRunner.Status.FAIL ) {
+                if (r[i].getStatus() == ProcessInstanceSignalRunner.Status.FAIL) {
                     success = false;
                 }
             }
-            if ( !success ) {
-                fail( "Multithread test failed. Look at the stack traces for details. " );
+            if (!success) {
+                fail("Multithread test failed. Look at the stack traces for details. ");
             }
             assertEquals(2, list.size());
-            assertFalse(list.get(0).equals(list.get(1)));
-            assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
-        } catch ( Exception e ) {
+            assertNotEquals(list.get(1), list.get(0));
+            assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        } catch (Exception e) {
             e.printStackTrace();
-            fail( "Should not raise any exception: " + e.getMessage() );
+            fail("Should not raise any exception: " + e.getMessage());
         }
-	}
-	
+    }
+
     public static class ProcessInstanceSignalRunner implements Runnable {
 
-	    private ProcessInstance processInstance;
-	    private String type;
+        private KogitoProcessInstance processInstance;
+        private String type;
         private Status status;
         private int id;
-	
-	    public ProcessInstanceSignalRunner(int id, ProcessInstance processInstance, String type) {
-	        this.id = id;
-	    	this.processInstance = processInstance;
-	    	this.type = type;
-	        this.status = Status.SUCCESS;
-	    }
-	
-	    public void run() {
-	        try {
-	        	processInstance.signalEvent(type, null);
-	        } catch ( Exception e ) {
-	            this.status = Status.FAIL;
-	            logger.warn("{} failed: {}",Thread.currentThread().getName(), e.getMessage());
-	        }
-	    }
-	
-	    public static enum Status {
-	        SUCCESS, FAIL
-	    }
-	
-	    public int getId() {
-	        return id;
-	    }
-	
-	    public Status getStatus() {
-	        return status;
-	    }
-	
-	}
-    
+
+        public ProcessInstanceSignalRunner(int id, KogitoProcessInstance processInstance, String type) {
+            this.id = id;
+            this.processInstance = processInstance;
+            this.type = type;
+            this.status = Status.SUCCESS;
+        }
+
+        public void run() {
+            try {
+                processInstance.signalEvent(type, null);
+            } catch (Exception e) {
+                this.status = Status.FAIL;
+                logger.warn("{} failed: {}", Thread.currentThread().getName(), e.getMessage());
+            }
+        }
+
+        public static enum Status {
+            SUCCESS,
+            FAIL
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public Status getStatus() {
+            return status;
+        }
+
+    }
 }

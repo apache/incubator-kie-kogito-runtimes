@@ -114,20 +114,20 @@ public class PredictionCodegen extends AbstractGenerator {
     private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource) {
         for (KiePMMLModel model : kiepmmlModels) {
             if (model.getName() == null || model.getName().isEmpty()) {
-                    String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
-                    throw new RuntimeException(errorMessage);
-                }
-                if (!(model instanceof HasSourcesMap)) {
-                    String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
-                                                        model.getClass().getName(),
-                                                        resource.getModelPath());
-                    throw new RuntimeException(errorMessage);
-                }
-                Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
-                for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
-                    String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
-                    storeFile(PMML_TYPE, path, sourceMapEntry.getValue());
-                }
+                String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
+                throw new RuntimeException(errorMessage);
+            }
+            if (!(model instanceof HasSourcesMap)) {
+                String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
+                                                    model.getClass().getName(),
+                                                    resource.getModelPath());
+                throw new RuntimeException(errorMessage);
+            }
+            Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
+            for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
+                String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
+                storeFile(PMML_TYPE, path, sourceMapEntry.getValue());
+            }
             Map<String, String> rulesSourceMap = ((HasSourcesMap) model).getRulesSourcesMap();
             if (rulesSourceMap != null) {
                 for (Map.Entry<String, String> rulesSourceMapEntry : rulesSourceMap.entrySet()) {
@@ -135,18 +135,18 @@ public class PredictionCodegen extends AbstractGenerator {
                     storeFile(IncrementalRuleCodegen.RULE_TYPE, path, rulesSourceMapEntry.getValue());
                 }
             }
-                if (!(model instanceof KiePMMLFactoryModel)) {
-                    PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model, applicationCanonicalName());
-                    storeFile(PMML_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
-                    final PMMLOASResult oasResult = PMMLOASResultFactory.getPMMLOASResult(model);
-                    try {
-                        String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode());
-                        String jsonFile = String.format("%s.json", getSanitizedClassName(model.getName()));
-                        String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
-                        storeFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent);
-                    } catch (Exception e) {
-                        LOGGER.warn("Failed to write OAS schema");
-                    }
+            if (!(model instanceof KiePMMLFactoryModel)) {
+                PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model, applicationCanonicalName());
+                storeFile(PMML_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
+                final PMMLOASResult oasResult = PMMLOASResultFactory.getPMMLOASResult(model);
+                try {
+                    String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode());
+                    String jsonFile = String.format("%s.json", getSanitizedClassName(model.getName()));
+                    String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
+                    storeFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent);
+                } catch (Exception e) {
+                    LOGGER.warn("Failed to write OAS schema");
+                }
             }
             if (model instanceof HasNestedModels) {
                 addModels(((HasNestedModels) model).getNestedModels(), resource);

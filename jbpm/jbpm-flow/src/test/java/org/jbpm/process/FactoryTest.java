@@ -15,21 +15,18 @@
  */
 package org.jbpm.process;
 
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
-import org.jbpm.test.util.AbstractBaseTest;
-import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.slf4j.LoggerFactory;
 
 public class FactoryTest extends AbstractBaseTest {
 
@@ -101,10 +98,9 @@ public class FactoryTest extends AbstractBaseTest {
         parameters.put("x", "oldValue");
         parameters.put("list", list);
 
-        KieSession ksession = createKieSession(factory.getProcess());
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(factory.getProcess());
 
-        ksession.startProcess("ExampleProcess", parameters);
+        kruntime.startProcess("ExampleProcess", parameters);
     }
-
 
 }

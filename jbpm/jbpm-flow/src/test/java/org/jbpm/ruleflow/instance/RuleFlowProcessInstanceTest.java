@@ -20,21 +20,21 @@ import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
+public class RuleFlowProcessInstanceTest extends AbstractBaseTest {
 
     private static String PROCESS_ID = "process.test";
     static {
         ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
     }
 
-    public void addLogger() { 
+    public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -45,9 +45,9 @@ public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
         process.setName("test");
         process.setPackageName("org.mycomp.myprocess");
 
-        KieSession workingMemory = createKieSession(process);
-        assertThatThrownBy(() -> workingMemory.startProcess(PROCESS_ID))
-                           .isInstanceOf(IllegalArgumentException.class);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
+        assertThatThrownBy(() -> kruntime.startProcess(PROCESS_ID))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -58,8 +58,8 @@ public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
         process.setPackageName("org.mycomp.myprocess");
         process.setDynamic(true);
 
-        KieSession workingMemory = createKieSession(process);
-        ProcessInstance instance = workingMemory.startProcess(PROCESS_ID);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
+        KogitoProcessInstance instance = kruntime.startProcess(PROCESS_ID);
         assertNotNull(instance);
     }
 

@@ -13,6 +13,10 @@
 
   <name>Kogito :: Drools :: Kogito Predictive Model Markup Language :: OpenAPI</name>
   <description>Kogito OpenAPI generator for Kie Drools PMML open source engine</description>
+  
+  <properties>
+    <java.module.name>org.kie.kogito.kogito.pmml.openapi</java.module.name>
+  </properties>
 
   <dependencies>
     <!-- PMML -->
@@ -48,11 +52,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

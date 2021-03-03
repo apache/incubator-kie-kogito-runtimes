@@ -53,7 +53,7 @@ public class GeneratedFileWriter {
 
         /**
          * @param basePath the path to which the given subdirectories will be written
-         *                 e.g. ${basePath}/${classesDir}/myfile.ext
+         *        e.g. ${basePath}/${classesDir}/myfile.ext
          *
          */
         public GeneratedFileWriter build(Path basePath) {
@@ -109,6 +109,22 @@ public class GeneratedFileWriter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public Path getClassesDir() {
+        return classesDir;
+    }
+
+    public Path getSourcesDir() {
+        return sourcesDir;
+    }
+
+    public Path getResourcePath() {
+        return resourcePath;
+    }
+
+    public Path getScaffoldedSourcesDir() {
+        return scaffoldedSourcesDir;
     }
 
     private void writeGeneratedFile(GeneratedFile f, Path location) throws IOException {

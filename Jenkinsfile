@@ -42,6 +42,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('kogito-runtimes')
+                        .withProperty('validate-formatting')
                         .withProfiles(['run-code-coverage'])
                         .run('clean install')
                     
@@ -52,9 +53,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -68,9 +69,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -88,9 +89,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -102,9 +103,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -116,9 +117,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -132,9 +133,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -148,9 +149,9 @@ pipeline {
                 }
             }
             post {
-                always {
+                cleanup {
                     script {
-                        cloud.cleanContainersAndImages('docker')
+                        cleanContainers()
                     }
                 }
             }
@@ -161,8 +162,6 @@ pipeline {
             script {
                 sh '$WORKSPACE/trace.sh'
                 junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
-                cleanWs()
-                cloud.cleanContainersAndImages('docker')
             }
         }
         failure {
@@ -178,6 +177,11 @@ pipeline {
         fixed {
             script {
                 mailer.sendEmail_fixedPR()
+            }
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
             }
         }
     }
@@ -209,4 +213,8 @@ MavenCommand getMavenCommand(String directory){
     return new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .inDirectory(directory)
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('docker')
 }

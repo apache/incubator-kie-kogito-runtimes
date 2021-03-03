@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
 import org.drools.core.io.impl.ClassPathResource;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
@@ -46,12 +44,15 @@ import org.kie.kogito.testcontainers.KogitoMongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
 
 @Testcontainers

@@ -16,6 +16,10 @@
   <description>
     Declare this artifact as "pom" dependency to import all default kie-pmml-trusty modules with exclusions needed for Kogito environment.
   </description>
+  
+  <properties>
+    <java.module.name>org.kie.kogito.kogito.pmml.dependencies</java.module.name>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
@@ -34,20 +38,12 @@
       <artifactId>kie-pmml-dependencies</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-mvel</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-mvel-parser</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>

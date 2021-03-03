@@ -19,25 +19,26 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSchemaType;
+
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.runtime.Context;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.internal.command.RegistryContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class GetProcessInstanceVariableCommand implements ExecutableCommand<Object>, KogitoProcessInstanceIdCommand {
 
     private static final long serialVersionUID = 6L;
-	
-    @XmlAttribute(required=true)
-    @XmlSchemaType(name="string")
+
+    @XmlAttribute(required = true)
+    @XmlSchemaType(name = "string")
     private String processInstanceId;
 
-    @XmlAttribute(required=true)
-    @XmlSchemaType(name="string")
+    @XmlAttribute(required = true)
+    @XmlSchemaType(name = "string")
     private String variableId;
 
     @Override
@@ -58,25 +59,25 @@ public class GetProcessInstanceVariableCommand implements ExecutableCommand<Obje
         this.variableId = variableId;
     }
 
-    public Object execute(Context context ) {
-        KogitoProcessRuntime runtime = ( KogitoProcessRuntime ) ((RegistryContext) context).lookup( KieSession.class );
+    public Object execute(Context context) {
+        KogitoProcessRuntime runtime = (KogitoProcessRuntime) ((RegistryContext) context).lookup(KieSession.class);
         if (processInstanceId == null) {
             return null;
         }
-        ProcessInstance processInstance = runtime.getProcessInstance(processInstanceId);
-        if ( processInstance == null ) {
-            throw new IllegalArgumentException( "Could not find process instance for id " + processInstanceId );
+        KogitoProcessInstance processInstance = runtime.getProcessInstance(processInstanceId);
+        if (processInstance == null) {
+            throw new IllegalArgumentException("Could not find process instance for id " + processInstanceId);
         }
-        if ( processInstance instanceof WorkflowProcessInstance ) { 
-        	return ((WorkflowProcessInstance) processInstance).getVariable(variableId);
-        } else { 
-            throw new IllegalStateException("Could not retrieve variable " + variableId 
+        if (processInstance instanceof KogitoWorkflowProcessInstance) {
+            return ((KogitoWorkflowProcessInstance) processInstance).getVariable(variableId);
+        } else {
+            throw new IllegalStateException("Could not retrieve variable " + variableId
                     + " because process instance " + processInstanceId + " was inaccessible!");
         }
     }
 
     public String toString() {
-        return "session.getProcessInstanceVariable(" + processInstanceId + ", " + variableId +");";
+        return "session.getProcessInstanceVariable(" + processInstanceId + ", " + variableId + ");";
     }
 
 }

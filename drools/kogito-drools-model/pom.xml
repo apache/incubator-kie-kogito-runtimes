@@ -27,21 +27,18 @@
 
   <artifactId>kogito-drools-model</artifactId>
   <name>Kogito :: Drools :: Kogito Drools Model</name>
+  
+  <properties>
+    <java.module.name>org.kie.kogito.kogito.drools.model</java.module.name>
+  </properties>
 
   <!-- Logging -->
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-model-compiler</artifactId>
+      <version>${version.org.kie7}</version>
       <exclusions>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-core</artifactId>

@@ -16,7 +16,6 @@
 package org.jbpm.workflow.instance.node;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
@@ -26,48 +25,43 @@ import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EndNodeInstanceTest extends AbstractBaseTest {
-	
-    public void addLogger() { 
+
+    public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
-    
+
     @Test
     public void testEndNode() {
-        KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        KieSession ksession = kbase.newKieSession();        
-        
-        MockNode mockNode = new MockNode();        
-        MockNodeInstanceFactory factory = new MockNodeInstanceFactory( new MockNodeInstance( mockNode ) );
-        NodeInstanceFactoryRegistry.getInstance(ksession.getEnvironment()).register(  mockNode.getClass(), factory );
-        
-        WorkflowProcessImpl process = new WorkflowProcessImpl(); 
-        
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+        MockNode mockNode = new MockNode();
+        MockNodeInstanceFactory factory = new MockNodeInstanceFactory(new MockNodeInstance(mockNode));
+        NodeInstanceFactoryRegistry.getInstance(kruntime.getKieRuntime().getEnvironment()).register(mockNode.getClass(), factory);
+
+        WorkflowProcessImpl process = new WorkflowProcessImpl();
         Node endNode = new EndNode();
-        endNode.setId( 1 );
-        endNode.setName( "end node" );        
-                            
-        mockNode.setId( 2 );
+        endNode.setId(1);
+        endNode.setName("end node");
+
+        mockNode.setId(2);
         new ConnectionImpl(mockNode, Node.CONNECTION_DEFAULT_TYPE, endNode, Node.CONNECTION_DEFAULT_TYPE);
-        
-        process.addNode( mockNode );
-        process.addNode( endNode );
-                
-        RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();   
+
+        process.addNode(mockNode);
+        process.addNode(endNode);
+
+        RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setId("1223");
-        processInstance.setState( ProcessInstance.STATE_ACTIVE );
-        processInstance.setProcess( process );
-        processInstance.setKnowledgeRuntime( (InternalKnowledgeRuntime) ksession );
-        
-        MockNodeInstance mockNodeInstance = ( MockNodeInstance ) processInstance.getNodeInstance( mockNode );
-        
+        processInstance.setState(ProcessInstance.STATE_ACTIVE);
+        processInstance.setProcess(process);
+        processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
+
+        MockNodeInstance mockNodeInstance = (MockNodeInstance) processInstance.getNodeInstance(mockNode);
         mockNodeInstance.triggerCompleted();
-        assertEquals( ProcessInstance.STATE_COMPLETED, processInstance.getState() );                               
+        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
     }
 }

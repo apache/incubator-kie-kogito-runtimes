@@ -16,7 +16,6 @@
 package org.jbpm.process;
 
 import org.drools.core.common.InternalWorkingMemory;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.runtime.process.ProcessRuntimeFactory;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
@@ -24,8 +23,7 @@ import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
-import org.kie.api.runtime.KieSession;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.JobsService;
@@ -39,95 +37,90 @@ import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TimerTest extends AbstractBaseTest  {
+public class TimerTest extends AbstractBaseTest {
 
-    public void addLogger() { 
+    public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
-    
-	private int counter = 0;
-	   
+
+    private int counter = 0;
+
     static {
         ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
     }
-    
+
     @Test
     @Disabled
-	public void testTimer() {
-        KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-        final KieSession workingMemory = kbase.newKieSession();
+    public void testTimer() {
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance() {
-			private static final long serialVersionUID = 510l;
-			public void signalEvent(String type, Object event) {
-        		if ("timerTriggered".equals(type)) {
-        			TimerInstance timer = (TimerInstance) event;
-        			logger.info("Timer {} triggered", timer.getId());
-            		counter++;
-        		}
-        	}
+            private static final long serialVersionUID = 510l;
+
+            public void signalEvent(String type, Object event) {
+                if ("timerTriggered".equals(type)) {
+                    TimerInstance timer = (TimerInstance) event;
+                    logger.info("Timer {} triggered", timer.getId());
+                    counter++;
+                }
+            }
         };
-        processInstance.setKnowledgeRuntime(((InternalWorkingMemory) workingMemory).getKnowledgeRuntime());
+        processInstance.setKnowledgeRuntime(((InternalWorkingMemory) kruntime.getKieSession()).getKnowledgeRuntime());
         processInstance.setId("1234");
-        InternalProcessRuntime processRuntime = ((InternalProcessRuntime) ((InternalWorkingMemory) workingMemory).getProcessRuntime());
+        InternalProcessRuntime processRuntime = ((InternalProcessRuntime) ((InternalWorkingMemory) kruntime.getKieSession()).getProcessRuntime());
         processRuntime.getProcessInstanceManager().internalAddProcessInstance(processInstance);
 
-        new Thread(new Runnable() {
-			public void run() {
-	        	workingMemory.fireUntilHalt();       	
-			}
-        }).start();
-        
+        new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         JobsService jobService = new InMemoryJobService(processRuntime.getKogitoProcessRuntime(), new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
-        
+
         ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(-1, ExactExpirationTime.now(), processInstance.getStringId(), "test");
         String jobId = jobService.scheduleProcessInstanceJob(desc);
-        
+
         try {
-        	Thread.sleep(1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
-        	// do nothing
+            // do nothing
         }
         assertEquals(1, counter);
-        
+
         counter = 0;
         desc = ProcessInstanceJobDescription.of(-1, DurationExpirationTime.after(500), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertEquals(0, counter);
         try {
-        	Thread.sleep(1000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
-        	// do nothing
+            // do nothing
         }
         assertEquals(1, counter);
-        
+
         counter = 0;
         desc = ProcessInstanceJobDescription.of(-1, DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertEquals(0, counter);
         try {
-        	Thread.sleep(700);
+            Thread.sleep(700);
         } catch (InterruptedException e) {
-        	// do nothing
+            // do nothing
         }
         assertEquals(1, counter);
-        
+
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             // do nothing
         }
         // we can't know exactly how many times this will fire as timers are not precise, but should be at least 4
-        assertTrue( counter >= 4 );
-        
+        assertTrue(counter >= 4);
+
         jobService.cancelJob(jobId);
         int lastCount = counter;
-        try {            
-        	Thread.sleep(1000);
+        try {
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
-        	// do nothing
+            // do nothing
         }
         assertEquals(lastCount, counter);
-	}
-	
+    }
+
 }
