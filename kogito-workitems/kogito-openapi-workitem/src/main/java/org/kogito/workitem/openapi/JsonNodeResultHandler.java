@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonNodeResultHandler implements OpenApiResultHandler {
 
@@ -43,6 +44,11 @@ public class JsonNodeResultHandler implements OpenApiResultHandler {
         }
         final ObjectReader reader = this.mapper.readerForUpdating(dest);
         try {
+            if (src.isArray()) {
+                ObjectNode node = (ObjectNode) reader.createObjectNode();
+                node.set("response", src);
+                return reader.readValue(node);
+            }
             return reader.readValue(src);
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to merge input model and JSON response: " + src, e);

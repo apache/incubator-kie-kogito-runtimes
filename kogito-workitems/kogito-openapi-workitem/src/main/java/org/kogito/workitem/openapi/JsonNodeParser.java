@@ -15,19 +15,25 @@
  */
 package org.kogito.workitem.openapi;
 
+import java.util.regex.Pattern;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * Utility class to parse anything into a valid {@link JsonNode}
  */
 final class JsonNodeParser {
 
+    private static final String JSONPATH_REGEX = "^((\\$\\[).*|(\\$\\.).*)";
     private final ObjectMapper objectMapper;
+    private final Pattern jsonPathRegexPattern;
 
     JsonNodeParser(final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.jsonPathRegexPattern = Pattern.compile(JSONPATH_REGEX, Pattern.CASE_INSENSITIVE);
     }
 
     JsonNode parse(final Object input) {
@@ -35,6 +41,9 @@ final class JsonNodeParser {
             return (JsonNode) input;
         }
         if (input instanceof String) {
+            if (this.isJsonPath((String) input)) {
+                return TextNode.valueOf((String) input);
+            }
             try {
                 return objectMapper.readTree((String) input);
             } catch (JsonProcessingException e) {
@@ -42,5 +51,9 @@ final class JsonNodeParser {
             }
         }
         return objectMapper.valueToTree(input);
+    }
+
+    boolean isJsonPath(final String expression) {
+        return this.jsonPathRegexPattern.matcher(expression).matches();
     }
 }

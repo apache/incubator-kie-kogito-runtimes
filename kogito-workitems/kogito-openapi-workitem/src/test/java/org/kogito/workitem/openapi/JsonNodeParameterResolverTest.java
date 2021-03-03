@@ -83,4 +83,14 @@ class JsonNodeParameterResolverTest {
         assertThat(processedNode.get(0).asInt(), equalTo(32));
         assertThat(processedNode.get(1).asInt(), equalTo(3));
     }
+
+    @Test
+    void verifyParameterAsJsonPath() throws JsonProcessingException {
+        final JsonNode inputModel = mapper.readTree("{ \"fahrenheit\": \"32\", \"subtractValue\": \"3\" }");
+        final String parameterDefinition = "$.fahrenheit";
+        final JsonNodeParameterResolver resolver = new JsonNodeParameterResolver(parameterDefinition);
+        final JsonNode processedNode = resolver.apply(inputModel);
+        assertTrue(processedNode.isValueNode());
+        assertThat(processedNode.asInt(), equalTo(32));
+    }
 }

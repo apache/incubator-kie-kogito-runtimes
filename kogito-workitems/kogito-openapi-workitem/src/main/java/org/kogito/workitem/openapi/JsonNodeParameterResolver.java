@@ -17,7 +17,6 @@ package org.kogito.workitem.openapi;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +35,6 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
  */
 public class JsonNodeParameterResolver implements OpenApiParameterResolver {
 
-    private static final String JSONPATH_REGEX = "^((\\$\\[).*|(\\$\\.).*)";
-
     private static final Configuration jsonPathConfig = Configuration
             .builder()
             .mappingProvider(new JacksonMappingProvider())
@@ -45,12 +42,12 @@ public class JsonNodeParameterResolver implements OpenApiParameterResolver {
             .build();
 
     private final JsonNode parameterDefinition;
-    private final Pattern jsonPathRegexPattern;
+
     private final JsonNodeParser parser;
 
     public JsonNodeParameterResolver(final String parameterDefinition) {
         this.parser = new JsonNodeParser(new ObjectMapper());
-        this.jsonPathRegexPattern = Pattern.compile(JSONPATH_REGEX, Pattern.CASE_INSENSITIVE);
+
         this.parameterDefinition = parser.parse(parameterDefinition);
     }
 
@@ -76,7 +73,7 @@ public class JsonNodeParameterResolver implements OpenApiParameterResolver {
             return processedDefinition;
         } else if (parameterDefinition.isValueNode()) {
             final String jsonPathExpr = parameterDefinition.asText();
-            if (this.jsonPathRegexPattern.matcher(jsonPathExpr).matches()) {
+            if (parser.isJsonPath(jsonPathExpr)) {
                 return JsonPath.using(jsonPathConfig).parse(inputModel).read(jsonPathExpr, JsonNode.class);
             }
             return parameterDefinition.deepCopy();

@@ -76,8 +76,8 @@ public class {{classname}} {
     {{javaUtilPrefix}}Map<String, String> localVarCookieParams = new {{javaUtilPrefix}}HashMap<String, String>();
     {{javaUtilPrefix}}Map<String, Object> localVarFormParams = new {{javaUtilPrefix}}HashMap<String, Object>();
 
-    {{#queryParams}}
-    localVarQueryParams.addAll(apiClient.parameterToPairs("{{#collectionFormat}}{{{collectionFormat}}}{{/collectionFormat}}", "{{baseName}}", {{paramName}}.asText("")));
+    {{#queryParams}}if ({{paramName}} != null)
+       localVarQueryParams.addAll(apiClient.parameterToPairs("{{#collectionFormat}}{{{collectionFormat}}}{{/collectionFormat}}", "{{baseName}}", {{paramName}}.asText("")));
     {{/queryParams}}
 
     {{#headerParams}}if ({{paramName}} != null)
