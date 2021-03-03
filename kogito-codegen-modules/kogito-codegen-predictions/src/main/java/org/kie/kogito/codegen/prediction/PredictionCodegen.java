@@ -53,9 +53,9 @@ import static org.kie.pmml.evaluator.assembler.service.PMMLCompilerService.getKi
 
 public class PredictionCodegen extends AbstractGenerator {
 
+    public static final String DMN_JPMML_CLASS = "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator";
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
     private static final GeneratedFileType PMML_TYPE = GeneratedFileType.of("PMML", GeneratedFileType.Category.SOURCE);
-    public static final String DMN_JPMML_CLASS =  "org.kie.dmn.jpmml.DMNjPMMLInvocationEvaluator";
     private final List<PMMLResource> resources;
     private final List<GeneratedFile> generatedFiles = new ArrayList<>();
 
@@ -114,7 +114,8 @@ public class PredictionCodegen extends AbstractGenerator {
     private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource) {
         for (KiePMMLModel model : kiepmmlModels) {
             if (model.getName() == null || model.getName().isEmpty()) {
-                String errorMessage = String.format("Model name should not be empty inside %s", resource.getModelPath());
+                String errorMessage = String.format("Model name should not be empty inside %s",
+                                                    resource.getModelPath());
                 throw new RuntimeException(errorMessage);
             }
             if (!(model instanceof HasSourcesMap)) {
@@ -136,7 +137,8 @@ public class PredictionCodegen extends AbstractGenerator {
                 }
             }
             if (!(model instanceof KiePMMLFactoryModel)) {
-                PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model, applicationCanonicalName());
+                PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model,
+                                                                                            applicationCanonicalName());
                 storeFile(PMML_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
                 final PMMLOASResult oasResult = PMMLOASResultFactory.getPMMLOASResult(model);
                 try {
