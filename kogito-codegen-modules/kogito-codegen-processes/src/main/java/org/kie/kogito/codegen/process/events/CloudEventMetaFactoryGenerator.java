@@ -22,22 +22,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.SimpleName;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.services.event.DataEventAttrBuilder;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerator {
 
@@ -79,10 +82,13 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
             String builderMethodName = getBuilderMethodName(classDefinition, templatedBuildMethod.getNameAsString(), methodNameValue);
             builderMethod.setName(builderMethodName);
 
+            Map<String, Expression> expressions = new HashMap<>();
+            expressions.put("$type$", new StringLiteralExpr(methodData.eventType));
+            expressions.put("$source$", new StringLiteralExpr(methodData.eventSource));
+            expressions.put("$kind$", new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), methodData.eventKind.name()));
+
             ObjectCreationExpr objectCreationExpr = builderMethod.findAll(ObjectCreationExpr.class).get(0);
-            objectCreationExpr.setArgument(0, new StringLiteralExpr(methodData.eventType));
-            objectCreationExpr.setArgument(1, new StringLiteralExpr(methodData.eventSource));
-            objectCreationExpr.setArgument(2, new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), methodData.eventKind.name()));
+            CodegenUtils.interpolateArguments(objectCreationExpr, expressions);
 
             if (context.hasDI()) {
                 context.getDependencyInjectionAnnotator().withFactoryMethod(builderMethod);
