@@ -19,6 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -29,16 +38,6 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
-
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,6 +85,37 @@ class CloudEventMetaFactoryGeneratorTest {
             fail("Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
                     " with three placeholder arguments ($type$, $source$, $kind$)");
         }
+    }
+
+    @Test
+    void testGetBuilderMethodName() {
+        String testSource = "" +
+                "class CloudEventMetaFactory {\n" +
+                "    public CloudEventMeta buildCloudEventMeta_CONSUMED_first() {\n" +
+                "        return new CloudEventMeta(\"first\", \"\", org.kie.kogito.event.EventKind.CONSUMED);\n" +
+                "    }\n" +
+                "    public CloudEventMeta buildCloudEventMeta_CONSUMED_second() {\n" +
+                "        return new CloudEventMeta(\"second\", \"\", org.kie.kogito.event.EventKind.CONSUMED);\n" +
+                "    }" +
+                "}";
+
+        ClassOrInterfaceDeclaration testClassDefinition = StaticJavaParser.parse(testSource).findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseGet(() -> fail("Test source doesn't contain a class or interface declaration!"));
+
+        String templatedBuildMethodName = "buildCloudEventMeta_$methodName$";
+
+        assertEquals("buildCloudEventMeta_PRODUCED_first",
+                CloudEventMetaFactoryGenerator.getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "PRODUCED_first"));
+        assertEquals("buildCloudEventMeta_CONSUMED_first_1",
+                CloudEventMetaFactoryGenerator.getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_first"));
+        assertEquals("buildCloudEventMeta_CONSUMED_third",
+                CloudEventMetaFactoryGenerator.getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_third"));
+    }
+
+    @Test
+    void testToValidJavaIdentifier() {
+        assertEquals("simpleName", CloudEventMetaFactoryGenerator.toValidJavaIdentifier("simpleName"));
+        assertEquals("more_37Com__plex_47Name_33", CloudEventMetaFactoryGenerator.toValidJavaIdentifier("more%Com_plex/Name!"));
     }
 
     @Test

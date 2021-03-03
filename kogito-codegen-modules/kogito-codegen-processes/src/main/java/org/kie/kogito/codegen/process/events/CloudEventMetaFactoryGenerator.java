@@ -22,15 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.jbpm.compiler.canonical.TriggerMetaData;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
-import org.kie.kogito.event.EventKind;
-import org.kie.kogito.services.event.DataEventAttrBuilder;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -39,6 +30,14 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
+import org.kie.kogito.event.EventKind;
+import org.kie.kogito.services.event.DataEventAttrBuilder;
 
 public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerator {
 
@@ -76,8 +75,8 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         methodDataList.forEach(methodData -> {
             MethodDeclaration builderMethod = templatedBuildMethod.clone();
 
-            String methodNameValue = String.format("%s_%s", methodData.eventKind.name(), methodData.triggerName);
-            String builderMethodName = getBuilderMethodName(classDefinition, templatedBuildMethod, methodNameValue);
+            String methodNameValue = String.format("%s_%s", methodData.eventKind.name(), toValidJavaIdentifier(methodData.triggerName));
+            String builderMethodName = getBuilderMethodName(classDefinition, templatedBuildMethod.getNameAsString(), methodNameValue);
             builderMethod.setName(builderMethodName);
 
             ObjectCreationExpr objectCreationExpr = builderMethod.findAll(ObjectCreationExpr.class).get(0);
@@ -123,8 +122,8 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
                 .build(context, CLASS_NAME);
     }
 
-    static String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, MethodDeclaration templatedBuildMethod, String methodNameValue) {
-        String baseMethodName = toValidJavaMethodName(templatedBuildMethod.getNameAsString().replace("$methodName$", methodNameValue));
+    static String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, String templatedBuildMethodName, String methodNameValue) {
+        String baseMethodName = templatedBuildMethodName.replace("$methodName$", methodNameValue);
         List<MethodDeclaration> methods = classDefinition.findAll(MethodDeclaration.class);
         int counter = 0;
         while (true) {
@@ -139,7 +138,7 @@ public class CloudEventMetaFactoryGenerator extends AbstractEventResourceGenerat
         }
     }
 
-    static String toValidJavaMethodName(String input) {
+    static String toValidJavaIdentifier(String input) {
         StringBuilder sb = new StringBuilder(input.length());
         for (char c : input.toCharArray()) {
             if (c == '_') {
