@@ -15,23 +15,26 @@
  */
 package org.kie.kogito.codegen.openapi.client.generator;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.kie.kogito.codegen.openapi.client.OpenApiClientOperation;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
+import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.languages.JavaClientCodegen;
 
 import static java.util.stream.Collectors.toList;
 
-class KogitoCodegenAdapter extends JavaClientCodegen {
+class KogitoJavaClientCodegen extends JavaClientCodegen {
 
     private final DefaultGenerator generator;
 
-    KogitoCodegenAdapter(final DefaultGenerator generator) {
+    KogitoJavaClientCodegen(final DefaultGenerator generator) {
         this.generator = generator;
+        this.generator.setGeneratorPropertyDefault(CodegenConstants.MODELS, "false");
     }
 
     /**
@@ -74,5 +77,20 @@ class KogitoCodegenAdapter extends JavaClientCodegen {
         // TODO: open an issue on OpenApi project, this should be added by them
         objs.put(JavaClientCodegen.USE_RUNTIME_EXCEPTION, true);
         return super.postProcessSupportingFileData(objs);
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    public Map<String, Object> postProcessOperationsWithModels(Map<String, Object> objs, List<Object> allModels) {
+        super.postProcessOperationsWithModels(objs, allModels);
+        // remove models import since we don't care about them
+        List<Map<String, String>> imports = (List<Map<String, String>>) objs.get("imports");
+        for (Iterator<Map<String, String>> itr = imports.iterator(); itr.hasNext();) {
+            String itrImport = itr.next().get("import");
+            if (itrImport.contains(".model.")) {
+                itr.remove();
+            }
+        }
+        return objs;
     }
 }

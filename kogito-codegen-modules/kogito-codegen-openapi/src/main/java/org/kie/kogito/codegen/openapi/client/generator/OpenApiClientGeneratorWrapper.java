@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.List;
 
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
+import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.config.CodegenConfigurator;
 import org.openapitools.codegen.config.GlobalSettings;
@@ -36,37 +37,42 @@ import org.openapitools.codegen.languages.JavaClientCodegen;
 public class OpenApiClientGeneratorWrapper {
 
     private static final String FALSE = "false";
+    private static final String TRUE = "true";
     private static final String CUSTOM_TEMPLATES = "custom-templates/resteasy";
 
     private static final String MODEL_PACKAGE = "model";
     private static final String GENERATOR_NAME = "java";
-    private static final String API_TESTS = "apiTests";
-    private static final String MODEL_TESTS = "modelTests";
-    private static final String MODEL_DOCS = "modelDocs";
-    private static final String API_DOCS = "apiDocs";
     private static final String VERBOSE = "verbose";
+    private static final String ONCE_LOGGER = "org.openapitools.codegen.utils.oncelogger.enabled";
 
-    private final KogitoCodegenAdapter codegenAdapter;
+    private final KogitoJavaClientCodegen kogitoCodegen;
     private final CodegenConfigurator configurator;
     private final DefaultGenerator generator;
 
     private OpenApiClientGeneratorWrapper(final String specFilePath, final String outputDir) {
-        GlobalSettings.setProperty(API_TESTS, FALSE);
-        GlobalSettings.setProperty(MODEL_TESTS, FALSE);
-        GlobalSettings.setProperty(MODEL_DOCS, FALSE);
-        GlobalSettings.setProperty(API_DOCS, FALSE);
+        // do not generate docs nor tests
+        GlobalSettings.setProperty(CodegenConstants.API_DOCS, FALSE);
+        GlobalSettings.setProperty(CodegenConstants.API_TESTS, FALSE);
+        GlobalSettings.setProperty(CodegenConstants.MODEL_TESTS, FALSE);
+        GlobalSettings.setProperty(CodegenConstants.MODEL_DOCS, FALSE);
+        // generates every Api and Supporting files
+        GlobalSettings.setProperty(CodegenConstants.APIS, "");
+        GlobalSettings.setProperty(CodegenConstants.SUPPORTING_FILES, "");
+        // logging
         GlobalSettings.setProperty(VERBOSE, FALSE);
+        GlobalSettings.setProperty(ONCE_LOGGER, TRUE);
+
         this.configurator = new CodegenConfigurator();
         this.configurator.setInputSpec(specFilePath);
         this.configurator.setGeneratorName(GENERATOR_NAME);
         this.generator = new DefaultGenerator();
-        this.codegenAdapter = new KogitoCodegenAdapter(this.generator);
-        // not working, see @OpenApiClientGeneratorAdapter
-        this.codegenAdapter.setUseRuntimeException(true);
-        this.codegenAdapter.setLibrary(JavaClientCodegen.RESTEASY);
-        this.codegenAdapter.setOutputDir(outputDir);
-        this.codegenAdapter.setTemplateDir(CUSTOM_TEMPLATES);
-        this.codegenAdapter.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
+        this.kogitoCodegen = new KogitoJavaClientCodegen(this.generator);
+        this.kogitoCodegen.setLibrary(JavaClientCodegen.RESTEASY);
+        this.kogitoCodegen.setOutputDir(outputDir);
+        this.kogitoCodegen.setTemplateDir(CUSTOM_TEMPLATES);
+        this.kogitoCodegen.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
+        // not working, see @KogitoJavaClientCodegen
+        this.kogitoCodegen.setUseRuntimeException(true);
     }
 
     /**
@@ -81,9 +87,9 @@ public class OpenApiClientGeneratorWrapper {
     }
 
     public OpenApiClientGeneratorWrapper withPackage(final String pkg) {
-        this.codegenAdapter.setApiPackage(pkg);
-        this.codegenAdapter.setInvokerPackage(pkg);
-        this.codegenAdapter.setModelPackage(pkg + "." + MODEL_PACKAGE);
+        this.kogitoCodegen.setApiPackage(pkg);
+        this.kogitoCodegen.setInvokerPackage(pkg);
+        this.kogitoCodegen.setModelPackage(pkg + "." + MODEL_PACKAGE);
         return this;
     }
 
@@ -91,9 +97,9 @@ public class OpenApiClientGeneratorWrapper {
         final List<File> generatedFiles = this.generator.opts(
                 this.configurator
                         .toClientOptInput()
-                        .config(this.codegenAdapter))
+                        .config(this.kogitoCodegen))
                 .generate();
-        this.codegenAdapter.processGeneratedOperations(descriptor);
+        this.kogitoCodegen.processGeneratedOperations(descriptor);
         return generatedFiles;
     }
 }

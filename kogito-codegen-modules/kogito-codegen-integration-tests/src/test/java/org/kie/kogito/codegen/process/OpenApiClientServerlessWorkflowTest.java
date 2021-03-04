@@ -17,10 +17,14 @@ package org.kie.kogito.codegen.process;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.kie.kogito.Application;
 import org.kie.kogito.codegen.AbstractCodegenTest;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
@@ -40,7 +44,6 @@ public class OpenApiClientServerlessWorkflowTest extends AbstractCodegenTest {
         // OpenApi Generation
         final OpenApiClientCodegen openApiClientCodegen = OpenApiClientCodegen.ofCollectedResources(context, resources);
         assertThat(openApiClientCodegen.getOpenAPISpecResources()).isNotEmpty();
-        // those files MUST be in the classpath, otherwise org.jbpm.compiler.canonical.ServiceTaskDescriptor.loadClass will complain :)
         Collection<GeneratedFile> openApiGeneratedFiles = openApiClientCodegen.generate();
         assertThat(openApiGeneratedFiles).isNotEmpty();
         assertThat(context.getContextAttribute(ContextAttributesConstants.OPENAPI_DESCRIPTORS, List.class)).isNotEmpty();
@@ -48,6 +51,13 @@ public class OpenApiClientServerlessWorkflowTest extends AbstractCodegenTest {
         final ProcessCodegen processCodegen = ProcessCodegen.ofCollectedResources(context, resources);
         Collection<GeneratedFile> processGeneratedFiles = processCodegen.generate();
         assertThat(processGeneratedFiles).isNotEmpty();
-        // compile...
+    }
+
+    @Test
+    public void testPetstoreOpenApiCodeGeneration() throws Exception {
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.OPENAPI, Collections.singletonList("openapi/petstore-classpath.sw.json"));
+        Application app = generateCode(resourcesTypeMap);
+        assertThat(app).isNotNull();
     }
 }

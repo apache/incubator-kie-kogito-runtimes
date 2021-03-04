@@ -28,7 +28,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 
-public class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
+class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
 
     private static final String CONFIGURABLE_CLASS = "ApiClient";
     private static final String SUFFIX = "org.kogito.openapi.client";

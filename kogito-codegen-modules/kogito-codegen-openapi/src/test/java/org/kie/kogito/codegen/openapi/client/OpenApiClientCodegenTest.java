@@ -85,12 +85,22 @@ class OpenApiClientCodegenTest {
     private void assertCodeGen(final Collection<GeneratedFile> generatedFiles) {
         assertThat(generatedFiles).isNotEmpty();
         boolean containsApiClient = false;
+        boolean containsServiceApi = false;
+        boolean containsModel = false;
         for (GeneratedFile file : generatedFiles) {
             assertThat(file.relativePath()).endsWith(".java");
             if (file.relativePath().endsWith("ApiClient.java")) {
                 containsApiClient = true;
             }
+            if (file.relativePath().endsWith("PetApi.java")) {
+                containsServiceApi = true;
+            }
+            if (file.relativePath().endsWith("Pet.java")) {
+                containsModel = true;
+            }
         }
         assertThat(containsApiClient).isTrue();
+        assertThat(containsServiceApi).isTrue();
+        assertThat(containsModel).isFalse();
     }
 }

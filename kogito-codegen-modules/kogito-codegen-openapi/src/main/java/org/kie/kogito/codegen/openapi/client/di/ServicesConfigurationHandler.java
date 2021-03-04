@@ -25,7 +25,7 @@ import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
-public class ServicesConfigurationHandler extends AbstractDependencyInjectionHandler {
+class ServicesConfigurationHandler extends AbstractDependencyInjectionHandler {
 
     private final static String API_CLIENT_PARAMETER = "ApiClient";
 
