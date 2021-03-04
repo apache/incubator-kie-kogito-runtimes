@@ -42,7 +42,7 @@ import org.springframework.http.ResponseEntity;
 public class DMNRestResourceTemplate {
 
     Application application;
-    
+
     private static final String KOGITO_DECISION_INFOWARN_HEADER = "X-Kogito-decision-messages";
     private static final String KOGITO_EXECUTION_ID_HEADER = "X-Kogito-execution-id";
 
