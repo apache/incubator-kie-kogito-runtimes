@@ -160,17 +160,4 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         node.addAnnotation("io.quarkus.runtime.Startup");
         return node;
     }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node) {
-        return Stream.of("POST", "GET", "PUT", "DELETE")
-                .map(node::getAnnotationByName)
-                .anyMatch(Optional::isPresent);
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
-        Optional<AnnotationExpr> path = node.getAnnotationByName("Path");
-        return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString());
-    }
 }

@@ -219,7 +219,7 @@ public class QueryEndpointGenerator implements RuleFileGenerator {
             statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
             String endpoint = nameURL;
             if (context.hasDI()) {
-                Optional<String> path = context.getDependencyInjectionAnnotator().getEndpointValue(md);
+                Optional<String> path = context.getRestAnnotator().getEndpointValue(md);
                 if (path.isPresent()) {
                     endpoint += path.get();
                 }

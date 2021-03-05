@@ -236,21 +236,4 @@ public interface DependencyInjectionAnnotator {
      * @param node node to be annotated
      */
     <T extends NodeWithAnnotations<?>> T withEagerStartup(T node);
-
-    /**
-     * Check if provided node has one of REST annotation
-     *
-     * @param node
-     * @param <T>
-     * @return
-     */
-    <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node);
-
-    /**
-     * Gets the URI path template from the framework specific annotation
-     *
-     * @param md the method declaration
-     * @return The URI path template value if exists
-     */
-    <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
 }

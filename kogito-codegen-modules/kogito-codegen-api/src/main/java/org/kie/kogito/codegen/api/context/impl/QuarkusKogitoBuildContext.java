@@ -16,18 +16,19 @@
 package org.kie.kogito.codegen.api.context.impl;
 
 import org.kie.kogito.codegen.api.di.impl.CDIDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.api.rest.impl.CDIRestAnnotator;
 
 public class QuarkusKogitoBuildContext extends AbstractKogitoBuildContext {
 
     public static final String CONTEXT_NAME = "Quarkus";
 
     protected QuarkusKogitoBuildContext(QuarkusKogitoBuildContextBuilder builder) {
-        super(builder, new CDIDependencyInjectionAnnotator(), CONTEXT_NAME);
+        super(builder, new CDIDependencyInjectionAnnotator(), new CDIRestAnnotator(), CONTEXT_NAME);
     }
 
     @Override
     public boolean hasREST() {
-        return hasClassAvailable("javax.ws.rs.Path");
+        return super.hasREST() && hasClassAvailable("javax.ws.rs.Path");
     }
 
     public static Builder builder() {

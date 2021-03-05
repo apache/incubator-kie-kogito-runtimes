@@ -165,22 +165,4 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
     public <T extends NodeWithAnnotations<?>> T withEagerStartup(T node) {
         return node;
     }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node) {
-        return Stream.of("PostMapping", "GetMapping", "PutMapping", "DeleteMapping")
-                .map(node::getAnnotationByName)
-                .anyMatch(Optional::isPresent);
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
-        Optional<AnnotationExpr> path = node.getAnnotationByName("PostMapping");
-        return path
-                .flatMap(p -> p.asNormalAnnotationExpr()
-                        .getPairs()
-                        .stream()
-                        .filter(x -> "value".equals(x.getName().asString())).findFirst())
-                .map(value -> value.getValue().asStringLiteralExpr().asString());
-    }
 }

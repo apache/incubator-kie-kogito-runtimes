@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
+import org.kie.kogito.codegen.api.rest.RestAnnotator;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.api.utils.KogitoCodeGenConstants;
@@ -31,6 +32,7 @@ public interface KogitoBuildContext {
 
     String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
     String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
+    String KOGITO_GENERATE_REST = "kogito.generate.rest";
 
     boolean hasClassAvailable(String fqcn);
 
@@ -53,7 +55,26 @@ public interface KogitoBuildContext {
         return getDependencyInjectionAnnotator() != null;
     }
 
-    boolean hasREST();
+
+    /**
+     * Return RestAnnotator if available or null
+     *
+     * @return
+     */
+    RestAnnotator getRestAnnotator();
+
+    /**
+     * Method to override default REST annotator
+     *
+     * @param restAnnotator
+     * @return
+     */
+    void setRestAnnotator(RestAnnotator restAnnotator);
+
+    default boolean hasREST() {
+        return getRestAnnotator() != null &&
+                "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_REST).orElse("true"));
+    }
 
     default boolean isValidationSupported() {
         return hasClassAvailable(KogitoCodeGenConstants.VALIDATION_CLASS);

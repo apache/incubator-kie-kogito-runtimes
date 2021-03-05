@@ -16,18 +16,19 @@
 package org.kie.kogito.codegen.api.context.impl;
 
 import org.kie.kogito.codegen.api.di.impl.SpringDependencyInjectionAnnotator;
+import org.kie.kogito.codegen.api.rest.impl.SpringRestAnnotator;
 
 public class SpringBootKogitoBuildContext extends AbstractKogitoBuildContext {
 
     public static final String CONTEXT_NAME = "Spring";
 
     protected SpringBootKogitoBuildContext(SpringBootKogitoBuildContextBuilder builder) {
-        super(builder, new SpringDependencyInjectionAnnotator(), CONTEXT_NAME);
+        super(builder, new SpringDependencyInjectionAnnotator(), new SpringRestAnnotator(), CONTEXT_NAME);
     }
 
     @Override
     public boolean hasREST() {
-        return hasClassAvailable("org.springframework.web.bind.annotation.RestController");
+        return super.hasREST() && hasClassAvailable("org.springframework.web.bind.annotation.RestController");
     }
 
     public static Builder builder() {

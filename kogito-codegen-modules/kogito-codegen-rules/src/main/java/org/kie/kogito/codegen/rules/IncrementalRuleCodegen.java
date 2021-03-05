@@ -353,7 +353,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         if (query.validate()) {
             generatedFiles.add(query.generateFile(QUERY_TYPE));
             QueryGenerator queryGenerator = query.getQueryGenerator();
-            generatedFiles.add(query.getQueryGenerator().generateFile(QUERY_TYPE));
+            generatedFiles.add(queryGenerator.generateFile(QUERY_TYPE));
             return Optional.of(queryGenerator.getQueryClassName());
         }
 

@@ -155,6 +155,8 @@ public class PMMLRestResourceGenerator {
         String outputRef = String.format("/%s#/definitions/OutputSet", jsonFile);
         NodeList<AnnotationExpr> annotations = template.getMethodsByName("descriptive").get(0)
                 .getAnnotations();
+
+
         switch (context.name()) {
             case "Quarkus":
                 setQuarkusOASAnnotations(annotations, inputRef, outputRef);
@@ -165,6 +167,14 @@ public class PMMLRestResourceGenerator {
             default:
                 // noop
         }
+    }
+
+    Optional<MemberValuePair> getOpenApiSchemaRequestAnnotation(NodeList<AnnotationExpr> annotations) {
+        return getRefMemberValuePair(annotations, QUARKUS_REQUEST_BODY, QUARKUS_SCHEMA);
+    }
+
+    Optional<MemberValuePair> getOpenApiSchemaResponseAnnotation(NodeList<AnnotationExpr> annotations) {
+        return getRefMemberValuePair(annotations, QUARKUS_API_RESPONSE, QUARKUS_SCHEMA);
     }
 
     void setQuarkusOASAnnotations(NodeList<AnnotationExpr> annotations, String inputRef, String outputRef) {
