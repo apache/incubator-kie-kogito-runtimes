@@ -67,6 +67,12 @@
             <version>@version.io.rest-assured.springboot@</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.json-unit</groupId>
+            <artifactId>json-unit-assertj</artifactId>
+            <version>@version.org.json-unit-assertj@</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

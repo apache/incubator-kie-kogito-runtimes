@@ -28,8 +28,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import io.restassured.RestAssured;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 public class SpringBootTopicsInformationResourceTest {
@@ -49,14 +48,8 @@ public class SpringBootTopicsInformationResourceTest {
                 .body()
                 .jsonPath().getList(".", Topic.class);
 
-        assertSame(2, topicList.size());
-        assertTopicExists(topicList, "cloudevents-addon-it-requests", ChannelType.INCOMING);
-        assertTopicExists(topicList, "cloudevents-addon-it-responses", ChannelType.OUTGOING);
-    }
-
-    private void assertTopicExists(List<Topic> topicList, String topicName, ChannelType topicType) {
-        assertTrue(
-                topicList.stream().anyMatch(t -> topicName.equals(t.getName()) && t.getType() == topicType),
-                topicType + " topic \"" + topicName + "\" not found");
+        assertThat(topicList).hasSize(2).containsExactly(
+                new Topic("cloudevents-addon-it-requests", ChannelType.INCOMING),
+                new Topic("cloudevents-addon-it-responses", ChannelType.OUTGOING));
     }
 }
