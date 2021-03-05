@@ -683,7 +683,7 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
         assertNotNull(workflow.getName());
         assertNotNull(workflow.getStates());
         assertTrue(workflow.getStates().size() > 0);
-        assertEquals(workflow.getFunctions().getFunctionDefs().size(), 1);
+        assertEquals(1, workflow.getFunctions().getFunctionDefs().size());
 
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation).parseWorkFlow(classpathResourceReader(workflowLocation));
         assertNotNull(process);

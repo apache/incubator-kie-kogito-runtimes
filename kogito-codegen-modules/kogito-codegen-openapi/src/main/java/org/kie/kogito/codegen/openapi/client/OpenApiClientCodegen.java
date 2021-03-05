@@ -69,7 +69,7 @@ public class OpenApiClientCodegen extends AbstractGenerator {
     }
 
     public static OpenApiClientCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
-        // TODO: create a provider for these resources to facilitate future implementations (DRL, DMN, BPMN..)
+        // In the future, we can create a provider for these resources to facilitate implementations for DRL, DMN, BPMN..
         final List<OpenApiSpecDescriptor> openApiSpecDescriptors =
                 resources.stream().map(CollectedResource::resource)
                         .flatMap(resource -> ServerlessWorkflowCodegenUtils.SUPPORTED_SW_EXTENSIONS

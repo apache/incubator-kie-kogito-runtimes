@@ -55,6 +55,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
     static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
 
     private static final String VAR_INPUT_MODEL = "inputModel";
+    private static final String METHOD_GET_PARAM = "getParameter";
 
     OpenApiTaskDescriptor(WorkItemNode workItemNode) {
         super(workItemNode);
@@ -113,7 +114,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
     @Override
     protected void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callServiceMethod) {
         // declare the input model
-        final MethodCallExpr getInputModel = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr("Parameter"));
+        final MethodCallExpr getInputModel = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr("Parameter"));
         final VariableDeclarationExpr inputModel =
                 new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
         executeWorkItemBody.addStatement(inputModel);
@@ -125,7 +126,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
                 .forEach(p -> {
                     if (p.getValue() != null) {
                         // method to get the param resolver instance
-                        final MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(p.getKey()));
+                        final MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p.getKey()));
                         // cast to the given param resolver type
                         final CastExpr castToResolver = new CastExpr(resolverType, getParamMethod);
                         // temp to hold the param resolver with the correct cast
@@ -147,7 +148,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         // fetch the handler type
         final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE).toString());
         // get the handler
-        final MethodCallExpr getResultHandler = new MethodCallExpr(new NameExpr("workItem"), "getParameter").addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
+        final MethodCallExpr getResultHandler = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
         // convert the result into the given type
         final CastExpr castToHandler = new CastExpr(resultHandlerType, getResultHandler);
         // temp to hold the result handler with the correct cast
@@ -316,9 +317,9 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
             final List<String> paramResolvers =
                     this.workItemNode.getWork().getParameters().keySet().stream().filter(o -> o.startsWith(PARAM_PREFIX)).collect(Collectors.toList());
             if (this.specParameters.size() != paramResolvers.size() || this.specParameters.size() > 1) {
-                this.specParameters.stream().filter(p -> !paramResolvers.contains(p)).forEach(p -> {
-                    this.workItemNode.getWork().setParameter(p, null);
-                });
+                this.specParameters.stream()
+                        .filter(p -> !paramResolvers.contains(p))
+                        .forEach(p -> this.workItemNode.getWork().setParameter(p, null));
                 final List<String> unexpectedParams = paramResolvers.stream().filter(p -> !this.specParameters.contains(p)).collect(Collectors.toList());
                 if (!unexpectedParams.isEmpty()) {
                     throw new IllegalArgumentException("Found unexpected parameters in the Task definition: " + unexpectedParams + ". Expected parameters are: " + this.specParameters);
