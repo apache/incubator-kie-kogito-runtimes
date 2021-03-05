@@ -56,6 +56,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>@version.io.rest-assured.springboot@</version>
@@ -65,12 +70,6 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>json-path</artifactId>
             <version>@version.io.rest-assured.springboot@</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.javacrumbs.json-unit</groupId>
-            <artifactId>json-unit-assertj</artifactId>
-            <version>@version.org.json-unit-assertj@</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
