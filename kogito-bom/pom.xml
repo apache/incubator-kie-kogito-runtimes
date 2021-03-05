@@ -22,6 +22,12 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-api</artifactId>
         <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.kie</groupId>
+            <artifactId>narayana-integration-bom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
