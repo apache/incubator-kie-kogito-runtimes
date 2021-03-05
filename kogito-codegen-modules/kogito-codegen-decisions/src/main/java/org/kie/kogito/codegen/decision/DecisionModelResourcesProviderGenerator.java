@@ -107,7 +107,7 @@ public class DecisionModelResourcesProviderGenerator {
             final MethodCallExpr getResAsStream = getReadResourceMethod(applicationClass, resource.getCollectedResource());
             final MethodCallExpr isr = new MethodCallExpr("readResource").addArgument(getResAsStream);
             add.addArgument(newObject(DefaultDecisionModelResource.class,
-                    mockGAV(resource),
+                    mockGAV(),
                     new StringLiteralExpr(resource.getDmnModel().getNamespace()),
                     new StringLiteralExpr(resource.getDmnModel().getName()),
                     makeDecisionModelMetadata(resource),
@@ -116,7 +116,7 @@ public class DecisionModelResourcesProviderGenerator {
         }
     }
 
-    private ObjectCreationExpr mockGAV(DMNResource resource) {
+    private ObjectCreationExpr mockGAV() {
         //TODO See https://issues.redhat.com/browse/FAI-239
         return newObject(GAV.class,
                 new StringLiteralExpr("dummy"),
