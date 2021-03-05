@@ -15,7 +15,10 @@
  */
 package org.kie.kogito.codegen.openapi.client;
 
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -84,23 +87,23 @@ class OpenApiClientCodegenTest {
 
     private void assertCodeGen(final Collection<GeneratedFile> generatedFiles) {
         assertThat(generatedFiles).isNotEmpty();
-        boolean containsApiClient = false;
-        boolean containsServiceApi = false;
-        boolean containsModel = false;
+        final Map<String, Boolean> requiredFiles = new HashMap<>();
+        requiredFiles.put("ApiClient.java", false);
+        requiredFiles.put("KogitoApiClient.java", false);
+        requiredFiles.put("PetApi.java", false);
+        final Map<String, Boolean> absentFiles = new HashMap<>();
+        absentFiles.put("Pet.api", false);
         for (GeneratedFile file : generatedFiles) {
             assertThat(file.relativePath()).endsWith(".java");
-            if (file.relativePath().endsWith("ApiClient.java")) {
-                containsApiClient = true;
-            }
-            if (file.relativePath().endsWith("PetApi.java")) {
-                containsServiceApi = true;
-            }
-            if (file.relativePath().endsWith("Pet.java")) {
-                containsModel = true;
-            }
+            final String fileName = Paths.get(file.relativePath()).getFileName().toString();
+            requiredFiles.computeIfPresent(fileName, (k, v) -> true);
+            absentFiles.computeIfPresent(fileName, (k, v) -> true);
         }
-        assertThat(containsApiClient).isTrue();
-        assertThat(containsServiceApi).isTrue();
-        assertThat(containsModel).isFalse();
+        assertThat(requiredFiles).allSatisfy((file, present) -> {
+            assertThat(present).isTrue();
+        });
+        assertThat(absentFiles).allSatisfy((file, present) -> {
+            assertThat(present).isFalse();
+        });
     }
 }

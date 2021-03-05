@@ -115,8 +115,16 @@ public class AppPaths {
         return projectPaths.iterator().next();
     }
 
+    public boolean hasProjectPaths() {
+        return !this.projectPaths.isEmpty();
+    }
+
     public Path getFirstClassesPath() {
         return classesPaths.iterator().next();
+    }
+
+    public boolean hasClassesPaths() {
+        return !this.classesPaths.isEmpty();
     }
 
     private Path[] getJarPaths() {
@@ -148,5 +156,14 @@ public class AppPaths {
 
     private Path[] transformPaths(Collection<Path> paths, UnaryOperator<Path> f) {
         return paths.stream().map(f).toArray(Path[]::new);
+    }
+
+    @Override
+    public String toString() {
+        return "AppPaths{" +
+                "projectPaths=" + projectPaths +
+                ", classesPaths=" + classesPaths +
+                ", isJar=" + isJar +
+                '}';
     }
 }

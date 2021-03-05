@@ -18,22 +18,16 @@ package org.kie.kogito.codegen.openapi.client.di;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.expr.Expression;
 
 class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
 
-    private static final String CONFIGURABLE_CLASS = "ApiClient";
+    private static final String CONFIGURABLE_CLASS = "KogitoApiClient";
     private static final String SUFFIX = "org.kogito.openapi.client";
-    private static final String BASE_PATH_FIELD = "basePath";
-    private static final String BASE_PATH_CONFIG = "base_path";
     private final Map<String, String> attributesAndKeys = new HashMap<>();
 
     ApplicationPropertiesHandler(KogitoBuildContext context) {
@@ -42,6 +36,7 @@ class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
         this.attributesAndKeys.put("setUsername", "username");
         this.attributesAndKeys.put("setApiKey", "api_key");
         this.attributesAndKeys.put("setApiKeyPrefix", "api_key_prefix");
+        this.attributesAndKeys.put("setPath", "base_path");
     }
 
     @Override
@@ -53,7 +48,6 @@ class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
                     .findFirst()
                     .ifPresent(m -> this.context.getDependencyInjectionAnnotator()
                             .withConfigInjection(m, SUFFIX + "." + openApiId + "." + value)));
-            this.handleBasePathProperty(node, SUFFIX + "." + openApiId);
             this.context.getDependencyInjectionAnnotator().withApplicationComponent(node);
         }
         return node;
@@ -69,23 +63,5 @@ class ApplicationPropertiesHandler extends AbstractDependencyInjectionHandler {
             id = descriptor.getResourceName().substring(0, dividerIdx);
         }
         return id;
-    }
-
-    // TODO: workaround for now, open a PR for OpenApi Generator Tool and fix ApiClient.
-    // setBasePath does not respect POJO structure
-    // after fixing this problem we can add it to #attributesAndKeys map and things will just work
-    // we could modify their template, but this is just not right.
-    private void handleBasePathProperty(final ClassOrInterfaceDeclaration node, final String configSuffix) {
-        final FieldDeclaration basePathField = node.getFieldByName(BASE_PATH_FIELD).orElseThrow(() -> new IllegalArgumentException("basePath property not found on class " + CONFIGURABLE_CLASS));
-        basePathField.setModifiers(Modifier.Keyword.PUBLIC);
-        String defaultURL = "";
-        if (!basePathField.getVariables().isEmpty()) {
-            final Optional<Expression> initializer = basePathField.getVariables().get(0).getInitializer();
-            if (initializer.isPresent()) {
-                defaultURL = initializer.get().toString().replace("\"", "");
-                basePathField.getVariables().get(0).removeInitializer();
-            }
-        }
-        this.context.getDependencyInjectionAnnotator().withConfigInjection(basePathField, configSuffix + "." + BASE_PATH_CONFIG, defaultURL);
     }
 }

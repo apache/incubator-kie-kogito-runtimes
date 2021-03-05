@@ -23,8 +23,6 @@ import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.config.CodegenConfigurator;
 import org.openapitools.codegen.config.GlobalSettings;
-import org.openapitools.codegen.languages.AbstractJavaCodegen;
-import org.openapitools.codegen.languages.JavaClientCodegen;
 
 /**
  * Wrapper for the OpenAPIGen tool.
@@ -38,7 +36,6 @@ public class OpenApiClientGeneratorWrapper {
 
     private static final String FALSE = "false";
     private static final String TRUE = "true";
-    private static final String CUSTOM_TEMPLATES = "custom-templates/resteasy";
 
     private static final String MODEL_PACKAGE = "model";
     private static final String GENERATOR_NAME = "java";
@@ -67,12 +64,7 @@ public class OpenApiClientGeneratorWrapper {
         this.configurator.setGeneratorName(GENERATOR_NAME);
         this.generator = new DefaultGenerator();
         this.kogitoCodegen = new KogitoJavaClientCodegen(this.generator);
-        this.kogitoCodegen.setLibrary(JavaClientCodegen.RESTEASY);
         this.kogitoCodegen.setOutputDir(outputDir);
-        this.kogitoCodegen.setTemplateDir(CUSTOM_TEMPLATES);
-        this.kogitoCodegen.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
-        // not working, see @KogitoJavaClientCodegen
-        this.kogitoCodegen.setUseRuntimeException(true);
     }
 
     /**

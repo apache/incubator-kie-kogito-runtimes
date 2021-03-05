@@ -24,17 +24,28 @@ import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.openapitools.codegen.CodegenConstants;
 import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.DefaultGenerator;
+import org.openapitools.codegen.SupportingFile;
+import org.openapitools.codegen.api.TemplateFileType;
+import org.openapitools.codegen.languages.AbstractJavaCodegen;
 import org.openapitools.codegen.languages.JavaClientCodegen;
 
 import static java.util.stream.Collectors.toList;
 
 class KogitoJavaClientCodegen extends JavaClientCodegen {
 
+    private static final String CUSTOM_TEMPLATES = "custom-templates/resteasy";
+    private static final String CUSTOM_API_CLIENT_TEMPLATE = "kogitoApiClient.mustache";
+    private static final String CUSTOM_API_CLIENT_FILENAME = "KogitoApiClient.java";
     private final DefaultGenerator generator;
 
     KogitoJavaClientCodegen(final DefaultGenerator generator) {
         this.generator = generator;
         this.generator.setGeneratorPropertyDefault(CodegenConstants.MODELS, "false");
+        this.setLibrary(JavaClientCodegen.RESTEASY);
+        this.setTemplateDir(CUSTOM_TEMPLATES);
+        this.setDateLibrary(AbstractJavaCodegen.JAVA8_MODE);
+        // not working, see #postProcessSupportingFileData
+        this.setUseRuntimeException(true);
     }
 
     /**
@@ -70,6 +81,16 @@ class KogitoJavaClientCodegen extends JavaClientCodegen {
 
     private List<String> collectCodegenOperations(final Map<String, List<CodegenOperation>> paths) {
         return paths.entrySet().stream().flatMap(e -> e.getValue().stream()).map(o -> o.operationId).collect(toList());
+    }
+
+    @Override
+    public void processOpts() {
+        super.processOpts();
+        final SupportingFile apiClientFile = this.supportingFiles().stream()
+                .filter(f -> f.getTemplateType() == TemplateFileType.SupportingFiles && f.getDestinationFilename().equals("ApiClient.java"))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("Can't find ApiClient.java supporting file, impossible to generate OpenApi Client application"));
+        // our custom ApiClient will be generated in the same folder
+        this.supportingFiles().add(new SupportingFile(CUSTOM_API_CLIENT_TEMPLATE, apiClientFile.getFolder(), CUSTOM_API_CLIENT_FILENAME));
     }
 
     @Override

@@ -29,11 +29,16 @@ public final class OpenApiUtils {
     }
 
     public static String getEndUserTargetDir(final KogitoBuildContext context) {
-        final Path classesPath = context.getAppPaths().getFirstClassesPath();
-        if (classesPath.endsWith(Paths.get(AppPaths.TARGET_DIR))) {
-            return classesPath.toString();
+        if (context.getAppPaths().hasClassesPaths()) {
+            final Path classesPath = context.getAppPaths().getFirstClassesPath();
+            if (classesPath.endsWith(Paths.get(AppPaths.TARGET_DIR))) {
+                return classesPath.toString();
+            }
         }
-        return context.getAppPaths().getFirstProjectPath().resolve(AppPaths.TARGET_DIR).toString();
+        if (context.getAppPaths().hasProjectPaths()) {
+            return context.getAppPaths().getFirstProjectPath().resolve(AppPaths.TARGET_DIR).toString();
+        }
+        throw new IllegalStateException("No valid paths found in the current application path: " + context.getAppPaths());
     }
 
     public static void requireValidSpecURI(final OpenApiSpecDescriptor resource) {
