@@ -1,40 +1,32 @@
 package {{invokerPackage}};
 
+import java.util.Optional;
+
 {{>generatedAnnotation}}
 public class KogitoApiClient extends ApiClient {
 
-@Override
-public void setUsername(String username) {
-if (username != null && !username.isEmpty()) {
-super.setUsername(username);
-}
-}
+    Optional<String> username;
+    Optional<String> password;
+    Optional<String> apiKey;
+    Optional<String> apiKeyPrefix;
+    Optional<String> basePath;
 
-@Override
-public void setPassword(String password) {
-if (password != null && !password.isEmpty()) {
-super.setPassword(password);
-}
-}
-
-@Override
-public void setApiKey(String apiKey) {
-if (apiKey != null && !apiKey.isEmpty()) {
-super.setApiKey(apiKey);
-}
-}
-
-@Override
-public void setApiKeyPrefix(String apiKeyPrefix) {
-if (apiKeyPrefix != null && !apiKeyPrefix.isEmpty()) {
-super.setApiKeyPrefix(apiKeyPrefix);
-}
-}
-
-public void setPath(String path) {
-if (path != null && !path.isEmpty()) {
-super.setBasePath(path);
-}
-}
-
+    @javax.annotation.PostConstruct
+    public void init() {
+        if (username.isPresent()) {
+            super.setUsername(username.get());
+        }
+        if (password.isPresent()) {
+            super.setPassword(password.get());
+        }
+        if (apiKey.isPresent()) {
+            super.setApiKey(apiKey.get());
+        }
+        if (apiKeyPrefix.isPresent()) {
+            super.setApiKeyPrefix(apiKeyPrefix.get());
+        }
+        if (basePath.isPresent()) {
+            super.setBasePath(basePath.get());
+        }
+    }
 }

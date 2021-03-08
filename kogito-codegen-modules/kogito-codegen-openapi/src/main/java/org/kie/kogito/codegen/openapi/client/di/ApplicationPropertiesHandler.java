@@ -36,19 +36,20 @@ public class ApplicationPropertiesHandler extends AbstractDependencyInjectionHan
 
     protected ApplicationPropertiesHandler(KogitoBuildContext context) {
         super(context);
-        this.attributesAndKeys.put("setPassword", "password");
-        this.attributesAndKeys.put("setUsername", "username");
-        this.attributesAndKeys.put("setApiKey", "api_key");
-        this.attributesAndKeys.put("setApiKeyPrefix", "api_key_prefix");
-        this.attributesAndKeys.put("setPath", "base_path");
+        this.attributesAndKeys.put("password", "password");
+        this.attributesAndKeys.put("username", "username");
+        this.attributesAndKeys.put("apiKey", "api_key");
+        this.attributesAndKeys.put("apiKeyPrefix", "api_key_prefix");
+        this.attributesAndKeys.put("basePath", "base_path");
     }
 
     @Override
     public ClassOrInterfaceDeclaration handle(ClassOrInterfaceDeclaration node, OpenApiSpecDescriptor descriptor, File originalGeneratedFile) {
         if (node.getNameAsString().equals(CONFIGURABLE_CLASS)) {
             final String openApiId = this.formatSpecId(descriptor);
-            this.attributesAndKeys.forEach((key, value) -> node.getMethodsByName(key)
-                    .stream()
+            this.attributesAndKeys.forEach((key, value) -> node.getFields().stream().filter(
+                    f -> f.getVariables().size() == 1 &&
+                            f.getVariable(0).getNameAsString().equals(key))
                     .findFirst()
                     .ifPresent(m -> this.context.getDependencyInjectionAnnotator()
                             .withConfigInjection(m, SUFFIX + "." + openApiId + "." + value)));
