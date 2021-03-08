@@ -113,7 +113,6 @@ public class GrafanaConfigurationWriter {
 
                     GrafanaFunction grafanaFunction = SupportedDecisionTypes.getGrafanaFunction(type.getLocalPart())
                             .orElseThrow(() -> new RuntimeException("Mismatch between supported Grafana DMN Types and defined functions"));
-                    grafanaFunction.render(metricBody, labels);
 
                     jgrafana.addPanel(PanelType.GRAPH,
                             "Decision " + decision.getName(),

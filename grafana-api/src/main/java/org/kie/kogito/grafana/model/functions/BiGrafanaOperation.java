@@ -21,11 +21,11 @@ public class BiGrafanaOperation implements GrafanaFunction {
 
     private static final String RENDER_TEMPLATE = "(%s)%s(%s)";
 
-    private String operation;
+    private GrafanaOperation operation;
     private GrafanaFunction firstOperand;
     private GrafanaFunction secondOperand;
 
-    public BiGrafanaOperation(String operation, GrafanaFunction firstOperand, GrafanaFunction secondOperand) {
+    public BiGrafanaOperation(GrafanaOperation operation, GrafanaFunction firstOperand, GrafanaFunction secondOperand) {
         this.operation = operation;
         this.firstOperand = firstOperand;
         this.secondOperand = secondOperand;
@@ -33,6 +33,6 @@ public class BiGrafanaOperation implements GrafanaFunction {
 
     @Override
     public String render(String metricBody, List<Label> labels) {
-        return String.format(RENDER_TEMPLATE, firstOperand.render(metricBody, labels), operation, secondOperand.render(metricBody, labels));
+        return String.format(RENDER_TEMPLATE, firstOperand.render(metricBody, labels), operation.toString(), secondOperand.render(metricBody, labels));
     }
 }

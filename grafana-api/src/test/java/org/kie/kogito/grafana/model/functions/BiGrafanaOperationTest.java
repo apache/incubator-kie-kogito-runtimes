@@ -29,7 +29,7 @@ public class BiGrafanaOperationTest {
         // Arrange
         GrafanaFunction firstBaseExpression = new BaseExpression("prefix1", "suffix1");
         GrafanaFunction secondBaseExpression = new BaseExpression("prefix2", "suffix2");
-        GrafanaFunction biGrafanaOperation = new BiGrafanaOperation("*", firstBaseExpression, secondBaseExpression);
+        GrafanaFunction biGrafanaOperation = new BiGrafanaOperation(GrafanaOperation.DIVISION, firstBaseExpression, secondBaseExpression);
 
         List<Label> labels = Collections.singletonList(new Label("key", "value"));
 
@@ -37,6 +37,6 @@ public class BiGrafanaOperationTest {
         String result = biGrafanaOperation.render("body", labels);
 
         // Assert
-        assertEquals("(prefix1_body_suffix1{key=value})*(prefix2_body_suffix2{key=value})", result);
+        assertEquals("(prefix1_body_suffix1{key=value})/(prefix2_body_suffix2{key=value})", result);
     }
 }
