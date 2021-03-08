@@ -64,7 +64,7 @@ public class SupportedDecisionTypes {
         if (isSupported(dmnType)) {
             Optional<AbstractDmnType> type = supportedDmnTypes.stream().filter(x -> x.getDmnType().equalsIgnoreCase(dmnType)).findFirst();
             if (type.isPresent()) {
-                return Optional.of(type.get().getGrafanaFunction());
+                return Optional.ofNullable(type.get().getGrafanaFunction());
             }
         }
         return Optional.empty();
