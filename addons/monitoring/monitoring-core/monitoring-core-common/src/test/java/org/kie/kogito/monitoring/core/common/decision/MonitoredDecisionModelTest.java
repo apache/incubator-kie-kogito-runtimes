@@ -31,7 +31,7 @@ import org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuil
 import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.kie.kogito.explainability.Constants.SKIP_MONITORING;
+import static org.kie.kogito.monitoring.core.common.Constants.SKIP_MONITORING;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;

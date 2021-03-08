@@ -25,7 +25,7 @@ import org.kie.dmn.api.core.FEELPropertyAccessible;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.monitoring.core.common.system.metrics.DMNResultMetricsBuilder;
 
-import static org.kie.kogito.explainability.Constants.SKIP_MONITORING;
+import static org.kie.kogito.monitoring.core.common.Constants.SKIP_MONITORING;
 
 public class MonitoredDecisionModel implements DecisionModel {
 
