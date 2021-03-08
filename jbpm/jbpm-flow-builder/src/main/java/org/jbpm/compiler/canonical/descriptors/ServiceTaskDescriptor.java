@@ -36,7 +36,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
-class ServiceTaskDescriptor extends AbstractServiceTaskDescriptor {
+public class ServiceTaskDescriptor extends AbstractServiceTaskDescriptor {
 
     public static final String TYPE = "Service Task";
     protected final Map<String, String> parameters;
@@ -44,7 +44,7 @@ class ServiceTaskDescriptor extends AbstractServiceTaskDescriptor {
     private final String mangledName;
     private Class<?> cls;
 
-    ServiceTaskDescriptor(WorkItemNode workItemNode, ClassLoader contextClassLoader) {
+    protected ServiceTaskDescriptor(WorkItemNode workItemNode, ClassLoader contextClassLoader) {
         super(workItemNode);
         this.contextClassLoader = contextClassLoader;
 

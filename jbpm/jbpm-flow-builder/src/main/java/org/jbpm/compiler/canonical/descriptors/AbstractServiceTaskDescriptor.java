@@ -56,7 +56,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnionType;
 
-abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
+public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
 
     static final String PARAM_INTERFACE = "Interface";
     static final String PARAM_OPERATION = "Operation";
@@ -67,7 +67,7 @@ abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
 
     protected final WorkItemNode workItemNode;
 
-    AbstractServiceTaskDescriptor(final WorkItemNode workItemNode) {
+    protected AbstractServiceTaskDescriptor(final WorkItemNode workItemNode) {
         interfaceName = (String) workItemNode.getWork().getParameter(PARAM_INTERFACE);
         operationName = (String) workItemNode.getWork().getParameter(PARAM_OPERATION);
         NodeValidator.of("workItemNode", workItemNode.getName())

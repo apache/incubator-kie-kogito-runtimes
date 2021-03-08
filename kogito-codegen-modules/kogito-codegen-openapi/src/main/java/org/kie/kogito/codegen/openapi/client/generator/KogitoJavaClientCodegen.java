@@ -31,14 +31,19 @@ import org.openapitools.codegen.languages.JavaClientCodegen;
 
 import static java.util.stream.Collectors.toList;
 
-class KogitoJavaClientCodegen extends JavaClientCodegen {
+/**
+ * Custom {@link JavaClientCodegen} implementation to control the OpenApi client code generation.
+ * We override their behavior to meet the Kogito Application requirements.
+ * Here, we enforce the default Java library, which date library to use, and our custom templates.
+ */
+public class KogitoJavaClientCodegen extends JavaClientCodegen {
 
     private static final String CUSTOM_TEMPLATES = "custom-templates/resteasy";
     private static final String CUSTOM_API_CLIENT_TEMPLATE = "kogitoApiClient.mustache";
     private static final String CUSTOM_API_CLIENT_FILENAME = "KogitoApiClient.java";
     private final DefaultGenerator generator;
 
-    KogitoJavaClientCodegen(final DefaultGenerator generator) {
+    protected KogitoJavaClientCodegen(final DefaultGenerator generator) {
         this.generator = generator;
         this.generator.setGeneratorPropertyDefault(CodegenConstants.MODELS, "false");
         this.setLibrary(JavaClientCodegen.RESTEASY);
@@ -53,7 +58,7 @@ class KogitoJavaClientCodegen extends JavaClientCodegen {
      *
      * @param descriptor the resource with the required operations
      */
-    void processGeneratedOperations(final OpenApiSpecDescriptor descriptor) {
+    protected void processGeneratedOperations(final OpenApiSpecDescriptor descriptor) {
         final Map<String, List<CodegenOperation>> paths = this.generator.processPaths(this.openAPI.getPaths());
         paths.forEach((api, operations) -> operations.forEach(operation -> descriptor.getRequiredOperations().stream()
                 .filter(resourceOperation -> resourceOperation.getOperationId().equals(operation.operationId))

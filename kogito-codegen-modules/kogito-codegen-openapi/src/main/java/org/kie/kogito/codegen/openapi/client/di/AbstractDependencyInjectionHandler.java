@@ -17,11 +17,11 @@ package org.kie.kogito.codegen.openapi.client.di;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-abstract class AbstractDependencyInjectionHandler implements DependencyInjectionHandler {
+public abstract class AbstractDependencyInjectionHandler implements DependencyInjectionHandler {
 
-    final KogitoBuildContext context;
+    protected final KogitoBuildContext context;
 
-    AbstractDependencyInjectionHandler(final KogitoBuildContext context) {
+    protected AbstractDependencyInjectionHandler(final KogitoBuildContext context) {
         this.context = context;
     }
 }

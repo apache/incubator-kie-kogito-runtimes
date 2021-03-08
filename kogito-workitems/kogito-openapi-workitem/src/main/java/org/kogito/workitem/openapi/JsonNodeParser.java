@@ -25,18 +25,18 @@ import com.fasterxml.jackson.databind.node.TextNode;
 /**
  * Utility class to parse anything into a valid {@link JsonNode}
  */
-final class JsonNodeParser {
+public final class JsonNodeParser {
 
     private static final String JSONPATH_REGEX = "^((\\$\\[).*|(\\$\\.).*)";
     private final ObjectMapper objectMapper;
     private final Pattern jsonPathRegexPattern;
 
-    JsonNodeParser(final ObjectMapper objectMapper) {
+    protected JsonNodeParser(final ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.jsonPathRegexPattern = Pattern.compile(JSONPATH_REGEX, Pattern.CASE_INSENSITIVE);
     }
 
-    JsonNode parse(final Object input) {
+    protected JsonNode parse(final Object input) {
         if (input instanceof JsonNode) {
             return (JsonNode) input;
         }

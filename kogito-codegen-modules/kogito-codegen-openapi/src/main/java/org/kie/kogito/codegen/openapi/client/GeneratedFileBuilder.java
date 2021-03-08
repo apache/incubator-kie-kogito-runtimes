@@ -29,12 +29,12 @@ import org.kie.kogito.codegen.openapi.client.di.DependencyInjectionConfigurer;
 /**
  * Builds a @{@link GeneratedFile} from a given file and an associated {@link OpenApiSpecDescriptor}.
  */
-class GeneratedFileBuilder {
+public class GeneratedFileBuilder {
 
     private final KogitoBuildContext context;
     private final DependencyInjectionConfigurer dependencyInjectionConfigurer;
 
-    GeneratedFileBuilder(final KogitoBuildContext context) {
+    protected GeneratedFileBuilder(final KogitoBuildContext context) {
         this.context = context;
         this.dependencyInjectionConfigurer = new DependencyInjectionConfigurer(context);
     }

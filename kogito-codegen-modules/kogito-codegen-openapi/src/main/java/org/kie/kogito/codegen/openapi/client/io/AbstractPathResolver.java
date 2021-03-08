@@ -29,9 +29,10 @@ import org.kie.kogito.codegen.openapi.client.OpenApiClientException;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.kie.kogito.codegen.openapi.client.OpenApiUtils;
 
-import h.channel;
-
-abstract class AbstractPathResolver implements PathResolver {
+/**
+ * Base class for every supported @{@link PathResolver}
+ */
+public abstract class AbstractPathResolver implements PathResolver {
 
     private static final String BASE_PATH = "/openapi-spec-cache";
 

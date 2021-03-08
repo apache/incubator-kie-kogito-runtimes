@@ -21,7 +21,10 @@ import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
-interface DependencyInjectionHandler {
+/**
+ * Common interface for handling dependency injection in the generated OpenApi classes
+ */
+public interface DependencyInjectionHandler {
 
     ClassOrInterfaceDeclaration handle(ClassOrInterfaceDeclaration node, OpenApiSpecDescriptor descriptor, File originalGeneratedFile);
 }

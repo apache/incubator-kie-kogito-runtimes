@@ -57,7 +57,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
     private static final String VAR_INPUT_MODEL = "inputModel";
     private static final String METHOD_GET_PARAM = "getParameter";
 
-    OpenApiTaskDescriptor(WorkItemNode workItemNode) {
+    protected OpenApiTaskDescriptor(WorkItemNode workItemNode) {
         super(workItemNode);
     }
 

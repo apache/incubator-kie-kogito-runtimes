@@ -25,11 +25,14 @@ import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
-class ServicesConfigurationHandler extends AbstractDependencyInjectionHandler {
+/**
+ * Configures DI in the generated OpenApi Service classes.
+ */
+public class ServicesConfigurationHandler extends AbstractDependencyInjectionHandler {
 
     private final static String API_CLIENT_PARAMETER = "ApiClient";
 
-    ServicesConfigurationHandler(KogitoBuildContext context) {
+    protected ServicesConfigurationHandler(KogitoBuildContext context) {
         super(context);
     }
 

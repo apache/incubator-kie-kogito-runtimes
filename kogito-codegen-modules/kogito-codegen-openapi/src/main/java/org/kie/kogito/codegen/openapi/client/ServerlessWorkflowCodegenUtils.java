@@ -29,7 +29,7 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.workflow.Functions;
 
-final class ServerlessWorkflowCodegenUtils {
+public final class ServerlessWorkflowCodegenUtils {
 
     public static final Set<String> SUPPORTED_SW_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".sw.json", ".sw.yaml", ".sw.yml")));
 
@@ -42,7 +42,7 @@ final class ServerlessWorkflowCodegenUtils {
      * @param function the given function definition
      * @return a reference of {@link OpenApiSpecDescriptor} based on the defined operation
      */
-    static OpenApiSpecDescriptor fromSWFunctionDefinition(final FunctionDefinition function) {
+    public static OpenApiSpecDescriptor fromSWFunctionDefinition(final FunctionDefinition function) {
         Objects.requireNonNull(function.getOperation(), "Operation attribute in the Workflow Function definition can't be null");
         if (function.getOperation().isEmpty()) {
             throw new IllegalArgumentException("Resource can't be empty when creating a new OpenAPISpecResource");
@@ -61,7 +61,7 @@ final class ServerlessWorkflowCodegenUtils {
      * @param functions the given function collection
      * @return a list of {@link OpenApiSpecDescriptor} for the given function collection
      */
-    static List<OpenApiSpecDescriptor> fromSWFunctions(final Functions functions) {
+    public static List<OpenApiSpecDescriptor> fromSWFunctions(final Functions functions) {
         final List<OpenApiSpecDescriptor> resources = new ArrayList<>();
         if (functions == null || functions.getFunctionDefs() == null) {
             return resources;
@@ -80,7 +80,7 @@ final class ServerlessWorkflowCodegenUtils {
         return resources;
     }
 
-    static boolean acceptOnlyWithOpenAPIOperation(final Workflow workflow) {
+    public static boolean acceptOnlyWithOpenAPIOperation(final Workflow workflow) {
         return workflow.getFunctions() != null &&
                 workflow.getFunctions().getFunctionDefs() != null &&
                 workflow.getFunctions().getFunctionDefs().stream().anyMatch(ServerlessWorkflowUtils::isOpenApiOperation);

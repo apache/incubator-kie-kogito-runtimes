@@ -22,9 +22,13 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.kie.kogito.codegen.openapi.client.OpenApiUtils;
 
-class FileResolver extends AbstractPathResolver {
+/**
+ * Resolves the schema "file:" in a given OpenApi operation definition.
+ * For example: "file://home/luke/specs/swagger.json"
+ */
+public class FileResolver extends AbstractPathResolver {
 
-    public FileResolver(final KogitoBuildContext context) {
+    protected FileResolver(final KogitoBuildContext context) {
         super(context);
     }
 

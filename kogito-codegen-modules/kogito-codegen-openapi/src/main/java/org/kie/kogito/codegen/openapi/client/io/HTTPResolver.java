@@ -24,9 +24,13 @@ import org.kie.kogito.codegen.openapi.client.OpenApiClientException;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.kie.kogito.codegen.openapi.client.OpenApiUtils;
 
-class HTTPResolver extends AbstractPathResolver {
+/**
+ * Resolves the schema "http|https:" in a given OpenApi operation definition.
+ * For example: "http://myservices.com/swagger.json"
+ */
+public class HTTPResolver extends AbstractPathResolver {
 
-    public HTTPResolver(final KogitoBuildContext context) {
+    protected HTTPResolver(final KogitoBuildContext context) {
         super(context);
     }
 

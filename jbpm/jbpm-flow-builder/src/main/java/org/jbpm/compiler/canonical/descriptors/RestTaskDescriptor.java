@@ -23,13 +23,13 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
-class RestTaskDescriptor implements TaskDescriptor {
+public class RestTaskDescriptor implements TaskDescriptor {
 
     public static final String TYPE = "Rest Task";
 
     private final ProcessMetaData processMetadata;
 
-    RestTaskDescriptor(final ProcessMetaData processMetadata) {
+    protected RestTaskDescriptor(final ProcessMetaData processMetadata) {
         this.processMetadata = processMetadata;
     }
 

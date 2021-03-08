@@ -21,11 +21,15 @@ import org.kie.kogito.codegen.openapi.client.OpenApiUtils;
 
 import static java.util.Objects.requireNonNull;
 
-class ClasspathResolver extends AbstractPathResolver {
+/**
+ * Resolves the schema "classpath:" in a given OpenApi operation definition.
+ * For example: "classpath://specs/swagger.json"
+ */
+public class ClasspathResolver extends AbstractPathResolver {
 
     private static final String CLASSPATH_SEP = ".jar!/";
 
-    public ClasspathResolver(final KogitoBuildContext context) {
+    protected ClasspathResolver(final KogitoBuildContext context) {
         super(context);
     }
 
