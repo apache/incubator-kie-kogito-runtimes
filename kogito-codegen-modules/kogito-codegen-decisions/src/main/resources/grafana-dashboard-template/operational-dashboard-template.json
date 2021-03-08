@@ -201,7 +201,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "api_execution_elapsed_seconds{endpoint=\"$handlerName$\"}",
+          "expr": "sum(increase(api_execution_elapsed_seconds_sum{endpoint=\"$handlerName$\"}[1m]))/sum(increase(api_execution_elapsed_seconds_count{endpoint=\"$handlerName$\"}[1m]))",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
