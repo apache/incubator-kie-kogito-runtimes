@@ -29,7 +29,7 @@ public abstract class KogitoProcessInstancesFactory implements ProtoStreamProces
 
     private PgPool client;
 
-    public KogitoProcessInstancesFactory() {
+    protected KogitoProcessInstancesFactory() {
     }
 
     public KogitoProcessInstancesFactory(PgPool client) {

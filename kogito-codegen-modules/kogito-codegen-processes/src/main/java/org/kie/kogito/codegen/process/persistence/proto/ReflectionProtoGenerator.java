@@ -19,11 +19,13 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -83,7 +85,12 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     public Collection<String> getPersistenceClassParams() {
         Collection<String> parameters = new ArrayList<>();
         if (persistenceClass != null) {
-            for (Type t : persistenceClass.getConstructors()[0].getGenericParameterTypes()) {
+            Type[] types = Arrays.stream(persistenceClass.getConstructors())
+                    .filter(c -> c.getGenericParameterTypes().length > 0)
+                    .map(Constructor::getGenericParameterTypes)
+                    .findFirst()
+                    .orElse(new Type[0]);
+            for (Type t : types) {
                 parameters.add(t.getTypeName());
             }
         }

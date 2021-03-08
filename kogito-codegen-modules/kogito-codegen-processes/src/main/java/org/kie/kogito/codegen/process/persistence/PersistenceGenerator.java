@@ -51,7 +51,6 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -137,8 +136,6 @@ public class PersistenceGenerator extends AbstractGenerator {
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
-
-        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
 
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
@@ -329,8 +326,6 @@ public class PersistenceGenerator extends AbstractGenerator {
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
 
-        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
-
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
         if (context().hasDI()) {
@@ -421,9 +416,15 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     private ConstructorDeclaration createConstructorForClazz(ClassOrInterfaceDeclaration persistenceProviderClazz) {
+        //default empty constructor for DI
+        ConstructorDeclaration emptyConstructor = persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
+        Collection<String> params = protoGenerator.getPersistenceClassParams();
+        if (params.isEmpty()) {
+            return emptyConstructor;
+        }
         ConstructorDeclaration constructor = persistenceProviderClazz.addConstructor(Keyword.PUBLIC);
         List<Expression> paramNames = new ArrayList<>();
-        for (String parameter : protoGenerator.getPersistenceClassParams()) {
+        for (String parameter : params) {
             String name = "param" + paramNames.size();
             constructor.addParameter(parameter, name);
             paramNames.add(new NameExpr(name));

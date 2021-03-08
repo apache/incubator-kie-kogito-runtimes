@@ -15,38 +15,29 @@
  */
 package org.kie.kogito.persistence;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.protostream.BaseMarshaller;
 import org.kie.kogito.infinispan.CacheProcessInstances;
+import org.kie.kogito.persistence.protobuf.ProtoStreamProcessInstancesFactory;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstancesFactory;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.persistence.KogitoProcessInstancesFactory</code>
  *
  */
-public abstract class KogitoProcessInstancesFactory implements ProcessInstancesFactory {
+public abstract class KogitoProcessInstancesFactory implements ProtoStreamProcessInstancesFactory {
 
     protected RemoteCacheManager cacheManager;
+
+    protected KogitoProcessInstancesFactory() {
+
+    }
 
     public KogitoProcessInstancesFactory(RemoteCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
     public CacheProcessInstances createProcessInstances(Process<?> process) {
-        List<BaseMarshaller<?>> marshallers = marshallers();
-        return new CacheProcessInstances(process, cacheManager, template(), proto(), marshallers.toArray(new BaseMarshaller<?>[0]));
-    }
-
-    public String proto() {
-        return null;
-    }
-
-    public List<BaseMarshaller<?>> marshallers() {
-        return Collections.emptyList();
+        return new CacheProcessInstances(process, cacheManager, template(), proto(), marshallersAsArray());
     }
 
     public String template() {
