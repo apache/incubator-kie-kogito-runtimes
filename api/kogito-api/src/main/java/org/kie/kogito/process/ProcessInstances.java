@@ -30,6 +30,19 @@ public interface ProcessInstances<T> {
         return values(ProcessInstanceReadMode.READ_ONLY);
     }
 
+    default Optional<ProcessInstance<T>> findByBusinessKey(String businessKey) {
+        return findByBusinessKey(businessKey, ProcessInstanceReadMode.READ_ONLY);
+    }
+
+    default Optional<ProcessInstance<T>> findByBusinessKey(String businessKey, ProcessInstanceReadMode mode) {
+        for (ProcessInstance<T> instance : values(mode)) {
+            if (businessKey.equals(instance.businessKey())) {
+                return Optional.of(instance);
+            }
+        }
+        return Optional.empty();
+    }
+
     Collection<ProcessInstance<T>> values(ProcessInstanceReadMode mode);
 
     Integer size();

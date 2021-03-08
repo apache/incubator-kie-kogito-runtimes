@@ -233,6 +233,10 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         this.processInstancesFactory = processInstancesFactory;
     }
 
+    public ProcessInstancesFactory getProcessInstancesFactory() {
+        return processInstancesFactory;
+    }
+
     public EventListener eventListener() {
         return completionEventListener;
     }

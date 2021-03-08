@@ -50,6 +50,8 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.AssignExpr.Operator;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
@@ -394,28 +396,48 @@ public class PersistenceGenerator extends AbstractGenerator {
                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
         Optional<GeneratedFile> generatedClientFile = Optional.empty();
+
         if (context().hasDI()) {
             context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
-
-            FieldDeclaration pathField = new FieldDeclaration().addVariable(new VariableDeclarator()
-                    .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
-                    .setName(PATH_NAME));
-            context().getDependencyInjectionAnnotator().withConfigInjection(pathField, KOGITO_PERSISTENCE_FS_PATH_PROP);
-            // allow to inject path for the file system storage
-            BlockStmt pathMethodBody = new BlockStmt();
-            pathMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(PATH_NAME), OR_ELSE).addArgument(new StringLiteralExpr("/tmp"))));
-
-            MethodDeclaration pathMethod = new MethodDeclaration()
-                    .addModifier(Keyword.PUBLIC)
-                    .setName(PATH_NAME)
-                    .setType(String.class)
-                    .setBody(pathMethodBody);
-
-            persistenceProviderClazz.addMember(pathField);
-            persistenceProviderClazz.addMember(pathMethod);
-            generatedClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
-                    new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
         }
+
+        FieldDeclaration pathField = new FieldDeclaration().addVariable(new VariableDeclarator()
+                .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getCanonicalName()))))
+                .setName(PATH_NAME));
+
+        if (context().hasDI()) {
+            context().getDependencyInjectionAnnotator().withConfigInjection(pathField, KOGITO_PERSISTENCE_FS_PATH_PROP);
+        }
+
+        BlockStmt setPathMethodBody = new BlockStmt();
+        setPathMethodBody.addStatement(new AssignExpr(new NameExpr(PATH_NAME),
+                new MethodCallExpr(new NameExpr("java.util.Optional"), "of").addArgument("storagePath"), Operator.ASSIGN));
+
+        ClassOrInterfaceType type = new ClassOrInterfaceType(null, "java.lang.String");
+        Parameter param = new Parameter(type, "storagePath");
+        MethodDeclaration setPathMethod = new MethodDeclaration()
+                .addModifier(Keyword.PUBLIC)
+                .setName("setPath")
+                .setType("void")
+                .addParameter(param)
+                .setBody(setPathMethodBody);
+
+        // allow to inject path for the file system storage
+        BlockStmt pathMethodBody = new BlockStmt();
+        pathMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(PATH_NAME), OR_ELSE).addArgument(new StringLiteralExpr("/tmp"))));
+
+        MethodDeclaration pathMethod = new MethodDeclaration()
+                .addModifier(Keyword.PUBLIC)
+                .setName(PATH_NAME)
+                .setType(String.class)
+                .setBody(pathMethodBody);
+
+        persistenceProviderClazz.addMember(pathField);
+        persistenceProviderClazz.addMember(pathMethod);
+        persistenceProviderClazz.addMember(setPathMethod);
+        generatedClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
+                new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
+
         Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         generatedClientFile.ifPresent(generatedFiles::add);
 

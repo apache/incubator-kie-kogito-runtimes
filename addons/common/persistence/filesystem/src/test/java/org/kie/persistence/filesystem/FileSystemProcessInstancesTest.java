@@ -244,5 +244,11 @@ class FileSystemProcessInstancesTest {
         public String path() {
             return "target";
         }
+
+        @Override
+        public void setPath(String path) {
+            // TODO Auto-generated method stub
+
+        }
     }
 }

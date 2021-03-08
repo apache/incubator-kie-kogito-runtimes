@@ -33,4 +33,8 @@ public interface Processes extends KogitoEngine {
     default void deactivate() {
 
     }
+
+    default ProcessInstancesFactory processInstancesFactory() {
+        return null;
+    }
 }

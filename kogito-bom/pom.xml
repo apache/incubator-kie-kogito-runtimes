@@ -2291,6 +2291,28 @@
         <artifactId>kogito-spring-boot-test-utils</artifactId>
         <version>${project.version}</version>
       </dependency>
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-extension</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-runtime-java</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-persistence-fs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
   </dependencyManagement>

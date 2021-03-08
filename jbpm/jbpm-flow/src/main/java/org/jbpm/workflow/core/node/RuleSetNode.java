@@ -41,6 +41,10 @@ import org.kie.kogito.rules.RuleUnitData;
 public class RuleSetNode extends StateBasedNode implements ContextContainer,
         Mappable {
 
+    public RuleSetNode() {
+        // do nothing
+    }
+
     public static abstract class RuleType implements Serializable {
 
         private static final String UNIT_RULEFLOW_PREFIX = "unit:";
