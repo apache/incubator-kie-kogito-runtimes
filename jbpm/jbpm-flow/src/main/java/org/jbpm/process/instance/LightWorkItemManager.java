@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.drools.core.process.instance.WorkItem;
+import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemHandler;
 import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
@@ -205,7 +206,9 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
                 workItem.setResults((Map<String, Object>) transition.data());
                 workItem.setPhaseId(Complete.ID);
                 workItem.setPhaseStatus(Complete.STATUS);
-                completePhase.apply(workItem, transition);
+                if(handler instanceof HumanTaskWorkItemHandler) {
+                    completePhase.apply(workItem, transition);
+                }
                 internalCompleteWorkItem(workItem);
             }
             processInstance.signalEvent("workItemTransition", transition);

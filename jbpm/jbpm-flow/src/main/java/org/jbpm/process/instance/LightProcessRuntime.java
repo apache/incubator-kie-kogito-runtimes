@@ -150,6 +150,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         KogitoProcessInstance processInstance = createProcessInstance(processId, parameters);
         if (processInstance != null) {
             processInstanceManager.addProcessInstance(processInstance);
+            runtimeContext.setupParameters((org.jbpm.process.instance.ProcessInstance) processInstance, parameters);
             return kogitoProcessRuntime.startProcessInstance(processInstance.getStringId(), trigger, agendaFilter);
         }
         return null;
@@ -164,6 +165,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         KogitoProcessInstance processInstance = createProcessInstance(processId, correlationKey, parameters);
         if (processInstance != null) {
             processInstanceManager.addProcessInstance(processInstance);
+            runtimeContext.setupParameters((org.jbpm.process.instance.ProcessInstance) processInstance, parameters);
             return (KogitoProcessInstance) startProcessInstance(processInstance.getId());
         }
         return null;
@@ -188,7 +190,6 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     private org.jbpm.process.instance.ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey, Map<String, Object> parameters) {
         org.jbpm.process.instance.ProcessInstance pi = runtimeContext.createProcessInstance(process, correlationKey);
         pi.setKnowledgeRuntime(knowledgeRuntime);
-        runtimeContext.setupParameters(pi, parameters);
         return pi;
     }
 
