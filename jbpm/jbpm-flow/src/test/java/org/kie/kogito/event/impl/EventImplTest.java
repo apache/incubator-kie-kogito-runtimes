@@ -137,8 +137,8 @@ public class EventImplTest {
                 "\"source\": \"\"," +
                 "\"type\": \"dummyTopic\"," +
                 "\"time\": \"2019-10-01T12:02:23.812262+02:00[Europe/Warsaw]\"," +
-                "\"kogitoReferenceId\": \"1\"," +
-                "\"kogitoProcessinstanceId\": \"1\"," +
+                "\"referenceid\": \"1\"," +
+                "\"procinstanceid\": \"1\"," +
                 "\"data\": {\"dummyField\" : \"pepe\"}}";
 
         consumer.consume(application, process, payload, trigger);
@@ -159,7 +159,7 @@ public class EventImplTest {
                 "\"source\": \"\"," +
                 "\"type\": \"dummyTopic\"," +
                 "\"time\": \"2019-10-01T12:02:23.812262+02:00[Europe/Warsaw]\"," +
-                "\"kogitoProcessinstanceId\": \"1\"," +
+                "\"procinstanceid\": \"1\"," +
                 "\"data\": {\"dummyField\" : \"pepe\"}}";
 
         consumer.consume(application, process, payload, trigger);
@@ -189,7 +189,7 @@ public class EventImplTest {
         DummyEvent dataEvent = new DummyEvent("pepe");
         String jsonString = marshaller.marshall(dataEvent, DummyCloudEvent::new, Optional.empty());
         assertTrue(jsonString.contains("\"dummyField\":\"pepe\""));
-        assertTrue(jsonString.contains("\"kogitoProcessinstanceId\":\"1\""));
+        assertTrue(jsonString.contains("\"procinstanceid\":\"1\""));
     }
 
     @Test
