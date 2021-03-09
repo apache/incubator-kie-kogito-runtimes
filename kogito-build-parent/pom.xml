@@ -188,14 +188,14 @@
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
-    <version.org.springframework.boot>2.3.1.RELEASE</version.org.springframework.boot>
-    <version.org.springframework>5.2.7.RELEASE</version.org.springframework>
-    <version.org.springframework.kafka>2.5.2.RELEASE</version.org.springframework.kafka>
+    <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
+    <version.org.springframework>5.2.9.RELEASE</version.org.springframework>
+    <version.org.springframework.kafka>2.5.6.RELEASE</version.org.springframework.kafka>
     <version.org.springdoc>1.5.2</version.org.springdoc>
     <version.org.testcontainers>1.15.1</version.org.testcontainers>
     <version.org.xmlunit>2.2.1</version.org.xmlunit>
     <version.io.netty>4.1.50.Final</version.io.netty>
-    <version.io.projectreactor>3.3.6.RELEASE</version.io.projectreactor>
+    <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
     <version.xerces>2.11.0</version.xerces>
   </properties>
