@@ -30,6 +30,10 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
 
     protected MongoClient mongoClient;
 
+    protected KogitoProcessInstancesFactory() {
+
+    }
+
     public KogitoProcessInstancesFactory(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
