@@ -51,6 +51,7 @@
         </property>
       </activation>
       <modules>
+        <module>bom</module>
         <module>deployment</module>
         <module>runtime</module>
       </modules>
