@@ -28,10 +28,6 @@ public abstract class KogitoProcessInstancesFactory implements ProtoStreamProces
 
     protected RemoteCacheManager cacheManager;
 
-    protected KogitoProcessInstancesFactory() {
-
-    }
-
     public KogitoProcessInstancesFactory(RemoteCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }

@@ -51,6 +51,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -84,6 +85,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     private static final String POSTGRESQL_CONNECTION_URI_PROP = "postgresql.connection.uri";
     private static final String OR_ELSE = "orElse";
     private static final String JAVA = ".java";
+    public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
 
     private final ProtoGenerator protoGenerator;
 
@@ -136,6 +138,8 @@ public class PersistenceGenerator extends AbstractGenerator {
         ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration().setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
+
+        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
 
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
@@ -326,6 +330,8 @@ public class PersistenceGenerator extends AbstractGenerator {
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
 
+        persistenceProviderClazz.addConstructor(Keyword.PUBLIC).setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt(false, null, NodeList.nodeList(new NullLiteralExpr()))));
+
         ConstructorDeclaration constructor = createConstructorForClazz(persistenceProviderClazz);
 
         if (context().hasDI()) {
@@ -377,10 +383,15 @@ public class PersistenceGenerator extends AbstractGenerator {
             ConstructorDeclaration constructor = persistenceProviderClazz
                     .addConstructor(Keyword.PUBLIC)
                     .addParameter(pgPoolClass, "client")
+                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), "autoDDL")
                     .setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt()
                             .setThis(false)
-                            .addArgument(new NameExpr("client"))));
+                            .addArgument(new NameExpr("client"))
+                            .addArgument("autoDDL")));
+            context().getDependencyInjectionAnnotator().withConfigInjection(
+                    constructor.getParameterByName("autoDDL").get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
             context().getDependencyInjectionAnnotator().withInjection(constructor);
+
             //empty constructor for DI
             persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
 
@@ -396,7 +407,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             MethodDeclaration clientProviderMethod = pgClientProducerClazz.addMethod("client", Keyword.PUBLIC)
                     .setType(pgPoolClass)//PgPool
                     .addParameter(uriConfigParam)
-                    .setBody(new BlockStmt() // PgPool.pool(connectionUri, poolOptions);
+                    .setBody(new BlockStmt() // PgPool.pool(connectionUri);
                             .addStatement(new ReturnStmt(
                                     new MethodCallExpr(new NameExpr(pgPoolClass), "pool")
                                             .addArgument(new NameExpr("uri")))));
@@ -416,15 +427,9 @@ public class PersistenceGenerator extends AbstractGenerator {
     }
 
     private ConstructorDeclaration createConstructorForClazz(ClassOrInterfaceDeclaration persistenceProviderClazz) {
-        //default empty constructor for DI
-        ConstructorDeclaration emptyConstructor = persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
-        Collection<String> params = protoGenerator.getPersistenceClassParams();
-        if (params.isEmpty()) {
-            return emptyConstructor;
-        }
         ConstructorDeclaration constructor = persistenceProviderClazz.addConstructor(Keyword.PUBLIC);
         List<Expression> paramNames = new ArrayList<>();
-        for (String parameter : params) {
+        for (String parameter : protoGenerator.getPersistenceClassParams()) {
             String name = "param" + paramNames.size();
             constructor.addParameter(parameter, name);
             paramNames.add(new NameExpr(name));

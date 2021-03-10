@@ -90,10 +90,10 @@ class PostgreProcessInstancesTest {
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         assertThat(processInstance.description()).isEqualTo("User Task");
 
-        PostgreProcessInstances fileSystemBasedStorage = (PostgreProcessInstances) process.instances();
-        assertThat(fileSystemBasedStorage.size()).isOne();
-        assertThat(fileSystemBasedStorage.exists(processInstance.id())).isTrue();
-        verify(fileSystemBasedStorage).create(any(), any());
+        PostgreProcessInstances processInstances = (PostgreProcessInstances) process.instances();
+        assertThat(processInstances.size()).isOne();
+        assertThat(processInstances.exists(processInstance.id())).isTrue();
+        verify(processInstances).create(any(), any());
 
         String testVar = (String) processInstance.variables().get("test");
         assertThat(testVar).isEqualTo("test");
@@ -108,9 +108,9 @@ class PostgreProcessInstancesTest {
         processInstance.completeWorkItem(workItem.getId(), null, securityPolicy);
         assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
-        fileSystemBasedStorage = (PostgreProcessInstances) process.instances();
-        verify(fileSystemBasedStorage, times(2)).remove(processInstance.id());
-        assertThat(fileSystemBasedStorage.size()).isZero();
+        processInstances = (PostgreProcessInstances) process.instances();
+        verify(processInstances, times(2)).remove(processInstance.id());
+        assertThat(processInstances.size()).isZero();
 
         assertThat(process.instances().values()).isEmpty();
     }
@@ -118,7 +118,7 @@ class PostgreProcessInstancesTest {
     private class PostgreProcessInstancesFactory extends KogitoProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client) {
-            super(client);
+            super(client, true);
         }
 
         @Override

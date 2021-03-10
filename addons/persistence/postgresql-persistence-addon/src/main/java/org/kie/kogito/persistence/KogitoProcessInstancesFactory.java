@@ -28,12 +28,14 @@ import io.vertx.pgclient.PgPool;
 public abstract class KogitoProcessInstancesFactory implements ProtoStreamProcessInstancesFactory {
 
     private PgPool client;
+    private boolean autoDDL;
 
     protected KogitoProcessInstancesFactory() {
     }
 
-    public KogitoProcessInstancesFactory(PgPool client) {
+    public KogitoProcessInstancesFactory(PgPool client, boolean autoDDL) {
         this.client = client;
+        this.autoDDL = autoDDL;
     }
 
     public PgPool client() {
@@ -42,6 +44,6 @@ public abstract class KogitoProcessInstancesFactory implements ProtoStreamProces
 
     @Override
     public PostgreProcessInstances createProcessInstances(Process<?> process) {
-        return new PostgreProcessInstances(process, client(), proto(), marshallersAsArray());
+        return new PostgreProcessInstances(process, client(), autoDDL, proto(), marshallersAsArray());
     }
 }

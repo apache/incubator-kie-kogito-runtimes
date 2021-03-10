@@ -54,14 +54,19 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private final Process<?> process;
     private final PgPool client;
     private final ProcessInstanceMarshaller marshaller;
+    private final boolean autoDDL;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, String proto, BaseMarshaller<?>... marshallers) {
-        this(process, client, new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers)));
+    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, String proto,
+            BaseMarshaller<?>... marshallers) {
+        this(process, client, autoDDL, new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto,
+                marshallers)));
     }
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, ProcessInstanceMarshaller marshaller) {
+    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL,
+            ProcessInstanceMarshaller marshaller) {
         this.process = process;
         this.client = client;
+        this.autoDDL = autoDDL;
         this.marshaller = marshaller;
         init();
     }
@@ -95,7 +100,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
     @Override
     public Collection<ProcessInstance> values(ProcessInstanceReadMode mode) {
-        return findByAllInternal().stream().map(i -> marshaller.unmarshallProcessInstance(i, process)).collect(Collectors.toList());
+        return findAllInternal().stream().map(i -> marshaller.unmarshallProcessInstance(i, process)).collect(Collectors.toList());
     }
 
     @Override
@@ -132,7 +137,6 @@ public class PostgreProcessInstances implements MutableProcessInstances {
         return ar -> {
             if (ar.succeeded()) {
                 future.complete(ar.result());
-                RowSet<Row> result = ar.result();
             } else {
                 future.completeExceptionally(ar.cause());
             }
@@ -186,7 +190,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
         }
     }
 
-    private List<byte[]> findByAllInternal() {
+    private List<byte[]> findAllInternal() {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("SELECT payload FROM process_instances WHERE process_id = $1")
@@ -223,7 +227,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
      * This method could be useful for development and testing purposes and does not break the execution flow,
      * throwing any exception.
      */
-    private boolean init() {
+    private void init() {
+        if (!autoDDL) {
+            LOGGER.debug("Auto DDL is disabled, do not running initializer scripts");
+            return;
+        }
+
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.query("SELECT EXISTS (\n" +
@@ -233,8 +242,8 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                     ") ")
                     .execute(getAsyncResultHandler(future));
 
-            final CompletableFuture futureCompose = future.thenCompose(rows -> {
-                final CompletableFuture futureCreate = new CompletableFuture();
+            final CompletableFuture<RowSet<Row>> futureCompose = future.thenCompose(rows -> {
+                final CompletableFuture<RowSet<Row>> futureCreate = new CompletableFuture<>();
                 return Optional.ofNullable(rows.iterator())
                         .filter(Iterator::hasNext)
                         .map(Iterator::next)
@@ -244,7 +253,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                                 "(\n" +
                                 "    id uuid NOT NULL,\n" +
                                 "    payload bytea,\n" +
-                                "    process_id character varying COLLATE pg_catalog.\"default\" NOT NULL,\n" +
+                                "    process_id character varying NOT NULL,\n" +
                                 "    CONSTRAINT process_instances_pkey PRIMARY KEY (id)\n" +
                                 ")"))
                         .map(q -> {
@@ -259,12 +268,15 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                         });
             });
             RowSet<Row> rows = getResultFromFuture(futureCompose);
-            return Objects.nonNull(rows) && rows.rowCount() == 1;
+            if (Objects.nonNull(rows) && rows.rowCount() == 1) {
+                LOGGER.info("DDL successfully done for ProcessInstance");
+            } else {
+                LOGGER.info("DDL executed with no changes for ProcessInstance");
+            }
         } catch (Exception e) {
+            //not break the execution flow in case of any missing permission for db application user, for instance.
             LOGGER.error("Error creating process_instances table, the database should be configured properly before " +
                     "starting the application", e);
-            //not break the execution flow in case of any missing permission for db application user, for instance.
-            return false;
         }
     }
 }

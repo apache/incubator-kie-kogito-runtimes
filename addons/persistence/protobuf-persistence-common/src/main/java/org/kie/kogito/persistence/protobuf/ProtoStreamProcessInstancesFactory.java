@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.persistence.protobuf;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.infinispan.protostream.BaseMarshaller;
@@ -22,9 +23,13 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 
 public interface ProtoStreamProcessInstancesFactory extends ProcessInstancesFactory {
 
-    String proto();
+    default String proto() {
+        return null;
+    }
 
-    List<? extends BaseMarshaller> marshallers();
+    default List<? extends BaseMarshaller> marshallers() {
+        return Collections.emptyList();
+    }
 
     default BaseMarshaller[] marshallersAsArray() {
         return marshallers().toArray(new BaseMarshaller[0]);
