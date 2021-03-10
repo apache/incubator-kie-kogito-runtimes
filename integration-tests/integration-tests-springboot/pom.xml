@@ -24,53 +24,6 @@
       <artifactId>kogito-springboot-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-    <!-- Force resolving dependencies in local Maven repo, needed for it tests -->
-    <dependency>
-       <groupId>io.rest-assured</groupId>
-       <artifactId>json-schema-validator</artifactId>
-       <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common internally -->
-       <version>${version.io.rest-assured.springboot}</version>
-       <scope>test</scope>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-spring-boot-starter-remote</artifactId>
-      <version>${version.org.infinispan.starter}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.infinispan</groupId>
-      <artifactId>infinispan-spring5-remote</artifactId>
-      <version>${version.org.infinispan}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.projectreactor.kafka</groupId>
-      <artifactId>reactor-kafka</artifactId>
-      <version>${version.io.projectreactor.kafka}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.projectreactor</groupId>
-      <artifactId>reactor-core</artifactId>
-      <version>${version.io.projectreactor}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-handler</artifactId>
-      <version>${version.io.netty}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-transport-native-epoll</artifactId>
-      <version>${version.io.netty}</version>
-      <classifier>linux-x86_64</classifier>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
@@ -81,8 +34,6 @@
           <configuration>
             <streamLogs>true</streamLogs>
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <settingsFile>src/it/settings.xml</settingsFile>
-            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             <properties>
               <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
