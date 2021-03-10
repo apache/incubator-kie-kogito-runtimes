@@ -82,7 +82,7 @@
         <updatePolicy>never</updatePolicy>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>!${no-snapshot}</enabled>
         <updatePolicy>daily</updatePolicy>
       </snapshots>
     </repository>

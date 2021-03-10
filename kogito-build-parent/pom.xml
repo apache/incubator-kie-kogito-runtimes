@@ -63,6 +63,7 @@
     <formatter.skip>false</formatter.skip>
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
+    <no-snapshot>false</no-snapshot>
     <version.jdk>11</version.jdk>
 
     <!-- plugin versions -->
