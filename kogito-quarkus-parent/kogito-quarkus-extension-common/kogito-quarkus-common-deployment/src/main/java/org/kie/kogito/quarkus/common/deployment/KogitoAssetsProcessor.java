@@ -148,8 +148,6 @@ public class KogitoAssetsProcessor {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
 
-        registerDmnClasses(reflectiveClass);
-
         if (context.getAddonsConfig().useMonitoring()) {
             registerMonitoringAddonClasses(reflectiveClass);
         }
@@ -167,15 +165,6 @@ public class KogitoAssetsProcessor {
             addChildrenClasses(index, "org.kie.kogito.event.AbstractDataEvent", reflectiveClass);
             addChildrenClasses(index, "org.kie.kogito.services.event.AbstractProcessDataEvent", reflectiveClass);
         });
-    }
-
-    private void registerDmnClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
-        reflectiveClass.produce(
-                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.dmn.rest.KogitoDMNDecisionResult"));
-        reflectiveClass.produce(
-                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.dmn.rest.KogitoDMNMessage"));
-        reflectiveClass.produce(
-                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.dmn.rest.KogitoDMNResult"));
     }
 
     private void registerMonitoringAddonClasses(BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
