@@ -17,6 +17,10 @@ package org.kie.kogito.integrationtests.quarkus;
 
 import io.quarkus.test.junit.NativeImageTest;
 
+/**
+ * Part of build certification process. Please do not remove.
+ * Smoke test of kogito end-to-end scenarios.
+ */
 @NativeImageTest
 public class NativeHospitalsStatusIT extends HospitalsStatusTest {
 
