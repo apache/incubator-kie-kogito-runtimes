@@ -23,15 +23,15 @@ package org.kie.kogito.event;
  */
 public final class CloudEventExtensionConstants {
 
-    public static final String PROCESS_INSTANCE_ID = "procinstanceid";
-    public static final String PROCESS_REFERENCE_ID = "referenceid";
-    public static final String PROCESS_INSTANCE_STATE = "procinstancestate";
-    public static final String PROCESS_ID = "procid";
-    public static final String PROCESS_PARENT_PROCESS_INSTANCE_ID = "parentprocinstanceid";
-    public static final String PROCESS_ROOT_PROCESS_INSTANCE_ID = "rootprocinstanceid";
-    public static final String PROCESS_ROOT_PROCESS_ID = "rootprocid";
-    public static final String PROCESS_START_FROM_NODE = "startfromnode";
-    public static final String ADDONS = "addons";
+    public static final String PROCESS_INSTANCE_ID = "kogitoprocinstanceid";
+    public static final String PROCESS_REFERENCE_ID = "kogitoprocrefid";
+    public static final String PROCESS_INSTANCE_STATE = "kogitoprocist";
+    public static final String PROCESS_ID = "kogitoprocid";
+    public static final String PROCESS_PARENT_PROCESS_INSTANCE_ID = "kogitoparentprociid";
+    public static final String PROCESS_ROOT_PROCESS_INSTANCE_ID = "kogitorootprociid";
+    public static final String PROCESS_ROOT_PROCESS_ID = "kogitorootprocid";
+    public static final String PROCESS_START_FROM_NODE = "kogitoprocstartfrom";
+    public static final String ADDONS = "kogitoaddons";
 
     private CloudEventExtensionConstants() {
         // utility class
