@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+         
+    <parent>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-build-parent</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+        <relativePath>../kogito-build-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>kogito-quarkus-parent-quarkus-platform-descriptor</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Kogito :: Quarkus Platform Descriptor</name>
+
+    <properties>
+        <pluginPhase>process-resources</pluginPhase>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/resources</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-platform-descriptor-json-plugin</artifactId>
+                <version>${version.io.quarkus}</version>
+                <executions>
+                    <execution>
+                        <phase>${pluginPhase}</phase>
+                        <goals>
+                            <goal>generate-extensions-json</goal>
+                            <!-- <goal>generate-platform-descriptor-json</goal> -->
+                        </goals>
+                        <configuration>
+                            <!-- <ignoredGroupIds>
+                                <ignoredGroupId>software.amazon.awssdk</ignoredGroupId>
+                            </ignoredGroupIds> -->
+                            <bomArtifactId>kogito-quarkus-parent</bomArtifactId>
+                            <resolveDependencyManagement>true</resolveDependencyManagement>
+                            <overridesFile>${basedir}/target/resources/catalog-overrides.json</overridesFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
