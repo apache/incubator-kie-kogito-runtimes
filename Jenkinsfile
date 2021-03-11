@@ -26,6 +26,7 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
+                    maven.cleanRepository()
                     mailer.buildLogScriptPR()
 
                     checkoutRepo('kogito-runtimes')
