@@ -24,14 +24,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
@@ -83,18 +84,17 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     @Override
     public Collection<String> getPersistenceClassParams() {
-        Collection<String> parameters = new ArrayList<>();
         if (persistenceClass != null) {
-            Type[] types = Arrays.stream(persistenceClass.getConstructors())
-                    .filter(c -> c.getGenericParameterTypes().length > 0)
-                    .map(Constructor::getGenericParameterTypes)
+            Class[] types = Arrays.stream(persistenceClass.getConstructors())
+                    .filter(c -> c.getParameterTypes().length > 0)
+                    .map(Constructor::getParameterTypes)
                     .findFirst()
-                    .orElse(new Type[0]);
-            for (Type t : types) {
-                parameters.add(t.getTypeName());
-            }
+                    .orElse(new Class[0]);
+            return Arrays.stream(types)
+                    .map(Class::getTypeName)
+                    .collect(Collectors.toList());
         }
-        return parameters;
+        return Collections.emptyList();
     }
 
     @Override
