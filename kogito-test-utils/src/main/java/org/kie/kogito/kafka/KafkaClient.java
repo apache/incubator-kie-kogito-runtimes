@@ -55,7 +55,7 @@ public class KafkaClient {
 
     public KafkaClient(KafkaProducer<String, String> producer, KafkaConsumer<String, String> consumer) {
         this.producer = producer;
-        this.consumer = consumer;
+        this.consumer = consumerThisShouldBreakTheBuildAndTheIntegrationTestsShouldFailBecauseTheSnapshotsCanNotBeDownloaded;
     }
 
     public void consume(String topic, Consumer<String> callback) {
