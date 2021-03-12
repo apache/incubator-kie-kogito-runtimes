@@ -16,7 +16,6 @@
 package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -156,14 +155,14 @@ public class KogitoQuarkusResourceUtils {
             String className = toClassName(fileName);
             buildItems.add(new GeneratedBeanBuildItem(className, data));
 
-            Path path = pathOf(location.toString(), fileName);
-            Files.write(path, data);
+            //            Path path = pathOf(location.toString(), fileName);
+            //            Files.write(path, data);
 
             String sourceFile = location.toString().replaceFirst("\\.class", ".java");
             if (sourceFile.contains("$")) {
                 sourceFile = sourceFile.substring(0, sourceFile.indexOf("$")) + ".java";
             }
-            KogitoCompilationProvider.classToSource.put(path, Paths.get(sourceFile));
+            //            KogitoCompilationProvider.classToSource.put(path, Paths.get(sourceFile));
         }
 
         return buildItems;

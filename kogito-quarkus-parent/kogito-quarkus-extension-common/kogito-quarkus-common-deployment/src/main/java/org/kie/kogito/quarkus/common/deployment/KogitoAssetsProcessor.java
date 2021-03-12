@@ -77,7 +77,6 @@ public class KogitoAssetsProcessor {
         //        if (liveReload.isLiveReload()) {
         //            return Collections.emptyList();
         //        }
-
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());
 

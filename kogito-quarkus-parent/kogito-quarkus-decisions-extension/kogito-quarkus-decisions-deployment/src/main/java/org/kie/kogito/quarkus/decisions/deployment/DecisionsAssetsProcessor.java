@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.jandex.DotName;
+import org.jboss.logging.Logger;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CapabilityBuildItem;
@@ -29,6 +30,8 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyIgnoreWarn
  * Main class of the Kogito decisions extension
  */
 public class DecisionsAssetsProcessor {
+
+    static final Logger LOGGER = Logger.getLogger(DecisionsAssetsProcessor.class);
 
     @BuildStep
     CapabilityBuildItem capability() {
@@ -42,6 +45,8 @@ public class DecisionsAssetsProcessor {
 
     @BuildStep
     public List<ReflectiveHierarchyIgnoreWarningBuildItem> reflectiveDMNREST() {
+        LOGGER.info("DMN REST");
+
         List<ReflectiveHierarchyIgnoreWarningBuildItem> result = new ArrayList<>();
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(DotName.createSimple("org.kie.api.builder.Message$Level")));
         result.add(new ReflectiveHierarchyIgnoreWarningBuildItem(DotName.createSimple("org.kie.dmn.api.core.DMNContext")));

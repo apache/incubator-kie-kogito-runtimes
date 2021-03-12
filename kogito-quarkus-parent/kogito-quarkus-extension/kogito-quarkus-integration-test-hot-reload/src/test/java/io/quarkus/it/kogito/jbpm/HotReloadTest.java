@@ -74,6 +74,42 @@ public class HotReloadTest {
                         .extract()
                         .path("id");
 
+        System.out.println("ONE");
+
+        String id2 =
+                given()
+                        .baseUri("http://localhost:" + HTTP_TEST_PORT)
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(payload)
+                        .when()
+                        .post("/" + PROCESS_NAME)
+                        .then()
+                        .statusCode(201)
+                        .header("Location", notNullValue())
+                        .body("id", notNullValue())
+                        .extract()
+                        .path("id");
+
+        System.out.println("TWO");
+
+        String id3 =
+                given()
+                        .baseUri("http://localhost:" + HTTP_TEST_PORT)
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(payload)
+                        .when()
+                        .post("/" + PROCESS_NAME)
+                        .then()
+                        .statusCode(201)
+                        .header("Location", notNullValue())
+                        .body("id", notNullValue())
+                        .extract()
+                        .path("id");
+
+        System.out.println("THREE");
+
         Map<String, String> result = given()
                 .baseUri("http://localhost:" + HTTP_TEST_PORT)
                 .accept(ContentType.JSON)
