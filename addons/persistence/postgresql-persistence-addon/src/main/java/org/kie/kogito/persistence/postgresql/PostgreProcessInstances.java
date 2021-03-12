@@ -15,18 +15,21 @@
  */
 package org.kie.kogito.persistence.postgresql;
 
+import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.drools.core.util.IoUtils;
 import org.infinispan.protostream.BaseMarshaller;
 import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
@@ -50,6 +53,7 @@ import io.vertx.sqlclient.Tuple;
 public class PostgreProcessInstances implements MutableProcessInstances {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgreProcessInstances.class);
+    private static final int TIMEOUT_IN_SECONDS = 10;
 
     private final Process<?> process;
     private final PgPool client;
@@ -129,7 +133,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             return rows.rowCount() == 1;
         } catch (Exception e) {
             LOGGER.error("Error inserting process instance {}", id, e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -152,7 +156,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             return rows.rowCount() == 1;
         } catch (Exception e) {
             LOGGER.error("Error updating process instance {}", id, e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -165,12 +169,13 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             return rows.rowCount() == 1;
         } catch (Exception e) {
             LOGGER.error("Error deleting process instance {}", id, e);
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
-    private RowSet<Row> getResultFromFuture(CompletableFuture<RowSet<Row>> future) throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
-        return future.get(1, TimeUnit.MINUTES);
+    private RowSet<Row> getResultFromFuture(CompletableFuture<RowSet<Row>> future) throws InterruptedException,
+            ExecutionException, TimeoutException {
+        return future.get(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
     }
 
     private Optional<byte[]> findByIdInternal(UUID id) {
@@ -186,7 +191,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                     .map(Buffer::getBytes);
         } catch (Exception e) {
             LOGGER.error("Error finding process instance {}", id, e);
-            return Optional.empty();
+            throw new RuntimeException(e);
         }
     }
 
@@ -202,7 +207,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             LOGGER.error("Error finding all process instances", e);
-            return Collections.emptyList();
+            throw new RuntimeException(e);
         }
     }
 
@@ -215,7 +220,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             return rows.iterator().next().getLong("count");
         } catch (Exception e) {
             LOGGER.error("Error counting process instances", e);
-            return 0L;
+            throw new RuntimeException(e);
         }
     }
 
@@ -226,6 +231,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
      * Note:
      * This method could be useful for development and testing purposes and does not break the execution flow,
      * throwing any exception.
+     * This is only executed in case the configuration for auto DDL is enabled.
      */
     private void init() {
         if (!autoDDL) {
@@ -235,13 +241,8 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.query("SELECT EXISTS (\n" +
-                    "   SELECT FROM pg_tables\n" +
-                    "   WHERE  schemaname = 'public'\n" +
-                    "   AND    tablename  = 'process_instances'  \n" +
-                    ") ")
+            client.query(getQueryFromFile("exists_tables"))
                     .execute(getAsyncResultHandler(future));
-
             final CompletableFuture<RowSet<Row>> futureCompose = future.thenCompose(rows -> {
                 final CompletableFuture<RowSet<Row>> futureCreate = new CompletableFuture<>();
                 return Optional.ofNullable(rows.iterator())
@@ -249,13 +250,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                         .map(Iterator::next)
                         .map(row -> row.getBoolean("exists"))
                         .filter(Boolean.FALSE::equals)
-                        .map(e -> client.query("CREATE TABLE public.process_instances\n" +
-                                "(\n" +
-                                "    id uuid NOT NULL,\n" +
-                                "    payload bytea,\n" +
-                                "    process_id character varying NOT NULL,\n" +
-                                "    CONSTRAINT process_instances_pkey PRIMARY KEY (id)\n" +
-                                ")"))
+                        .map(e -> client.query(getQueryFromFile("create_tables")))
                         .map(q -> {
                             q.execute(getAsyncResultHandler(futureCreate));
                             LOGGER.info("Creating process_instances table.");
@@ -277,6 +272,17 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             //not break the execution flow in case of any missing permission for db application user, for instance.
             LOGGER.error("Error creating process_instances table, the database should be configured properly before " +
                     "starting the application", e);
+        }
+    }
+
+    private String getQueryFromFile(String scriptName) {
+        try {
+            return new String(IoUtils.readBytesFromInputStream(
+                    Thread.currentThread()
+                            .getContextClassLoader()
+                            .getResourceAsStream(String.format("sql/%s.sql", scriptName))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

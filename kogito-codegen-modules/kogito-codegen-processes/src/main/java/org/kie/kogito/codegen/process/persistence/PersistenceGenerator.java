@@ -395,7 +395,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             //empty constructor for DI
             persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
 
-            //creating PgClient producer class
+            //creating PgClient default producer class
             ClassOrInterfaceDeclaration pgClientProducerClazz = new ClassOrInterfaceDeclaration()
                     .setName("PgClientProducer")
                     .setModifiers(Modifier.Keyword.PUBLIC);

@@ -9,7 +9,7 @@
   <name>Kogito :: Add-Ons :: Persistence :: PostgreSQL</name>
 
   <description>PostgreSQL based persistence for Kogito</description>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -64,6 +64,11 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.jboss.jandex</groupId>
