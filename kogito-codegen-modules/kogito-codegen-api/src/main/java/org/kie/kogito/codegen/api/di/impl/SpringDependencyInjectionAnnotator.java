@@ -165,4 +165,16 @@ public class SpringDependencyInjectionAnnotator implements DependencyInjectionAn
     public <T extends NodeWithAnnotations<?>> T withEagerStartup(T node) {
         return node;
     }
+
+    @Override
+    public <T extends NodeWithAnnotations<?>> T withFactoryClass(T node) {
+        node.addAnnotation("org.springframework.context.annotation.Configuration");
+        return node;
+    }
+
+    @Override
+    public <T extends NodeWithAnnotations<?>> T withFactoryMethod(T node) {
+        node.addAnnotation("org.springframework.context.annotation.Bean");
+        return node;
+    }
 }

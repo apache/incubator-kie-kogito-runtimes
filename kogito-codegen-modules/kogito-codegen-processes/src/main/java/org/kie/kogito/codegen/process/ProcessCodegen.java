@@ -52,8 +52,9 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
+import org.kie.kogito.codegen.process.events.CloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
-import org.kie.kogito.codegen.process.events.TopicsInformationResourceGenerator;
+import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.slf4j.Logger;
@@ -118,6 +119,7 @@ public class ProcessCodegen extends AbstractGenerator {
         return new ProcessCodegen(context, processes);
     }
 
+    // used on tests only, do not expose
     static List<Process> parseProcesses(Collection<File> processFiles) {
         List<Process> processes = new ArrayList<>();
         for (File processSourceFile : processFiles) {
@@ -208,6 +210,8 @@ public class ProcessCodegen extends AbstractGenerator {
         Map<String, List<UserTaskModelMetaData>> processIdToUserTaskModel = new HashMap<>();
         Map<String, ProcessMetaData> processIdToMetadata = new HashMap<>();
 
+        OpenApiClientWorkItemIntrospector introspector = new OpenApiClientWorkItemIntrospector(this.context());
+
         // first we generate all the data classes from variable declarations
         for (WorkflowProcess workFlowProcess : processes.values()) {
             ModelClassGenerator mcg = new ModelClassGenerator(context(), workFlowProcess);
@@ -233,6 +237,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // collect all process descriptors (exec model)
         for (KogitoWorkflowProcess workFlowProcess : processes.values()) {
+            introspector.introspect(workFlowProcess);
             ProcessExecutableModelGenerator execModelGen =
                     new ProcessExecutableModelGenerator(workFlowProcess, execModelGenerator);
             String packageName = workFlowProcess.getPackageName();
@@ -393,8 +398,8 @@ public class ProcessCodegen extends AbstractGenerator {
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
-        final TopicsInformationResourceGenerator topicsGenerator =
-                new TopicsInformationResourceGenerator(context(), processExecutableModelGenerators);
+        final CloudEventMetaFactoryGenerator topicsGenerator =
+                new CloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
         storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
 
         for (ProcessInstanceGenerator pi : pis) {

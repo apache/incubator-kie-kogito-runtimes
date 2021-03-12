@@ -23,14 +23,14 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
         super(builder, null, null, CONTEXT_NAME);
     }
 
+    public static Builder builder() {
+        return new JavaKogitoBuildContextBuilder();
+    }
+
     @Override
     public boolean hasREST() {
         return super.hasREST() && (hasClassAvailable("javax.ws.rs.Path")
                 || hasClassAvailable("org.springframework.web.bind.annotation.RestController"));
-    }
-
-    public static Builder builder() {
-        return new JavaKogitoBuildContextBuilder();
     }
 
     protected static class JavaKogitoBuildContextBuilder extends AbstractBuilder {

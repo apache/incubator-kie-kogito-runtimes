@@ -15,26 +15,19 @@
  */
 package org.kie.kogito.grafana.model.functions;
 
+import java.util.List;
+
 public class SumFunction implements GrafanaFunction {
 
-    private static final String FUNCTION = "sum";
+    private static final String RENDER_TEMPLATE = "sum(%s)";
+    private GrafanaFunction grafanaFunction;
 
-    public SumFunction() {
-        // intentionally left blank
+    public SumFunction(GrafanaFunction grafanaFunction) {
+        this.grafanaFunction = grafanaFunction;
     }
 
     @Override
-    public String getFunction() {
-        return FUNCTION;
-    }
-
-    @Override
-    public boolean hasTimeParameter() {
-        return false;
-    }
-
-    @Override
-    public String getTimeParameter() {
-        return null;
+    public String render(String metricBody, List<Label> labels) {
+        return String.format(RENDER_TEMPLATE, grafanaFunction.render(metricBody, labels));
     }
 }

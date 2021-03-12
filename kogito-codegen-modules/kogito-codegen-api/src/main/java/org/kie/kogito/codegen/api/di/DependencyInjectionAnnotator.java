@@ -236,4 +236,18 @@ public interface DependencyInjectionAnnotator {
      * @param node node to be annotated
      */
     <T extends NodeWithAnnotations<?>> T withEagerStartup(T node);
+
+    /**
+     * Annotates given node with factory class annotations e.g. Configuration for Spring Boot
+     *
+     * @param node node to be annotated
+     */
+    <T extends NodeWithAnnotations<?>> T withFactoryClass(T node);
+
+    /**
+     * Annotates given node with factory method annotations e.g. Produces, Bean
+     *
+     * @param node node to be annotated
+     */
+    <T extends NodeWithAnnotations<?>> T withFactoryMethod(T node);
 }

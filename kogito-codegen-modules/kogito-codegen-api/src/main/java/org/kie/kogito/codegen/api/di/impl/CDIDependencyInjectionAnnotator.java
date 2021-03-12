@@ -160,4 +160,15 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
         node.addAnnotation("io.quarkus.runtime.Startup");
         return node;
     }
+
+    @Override
+    public <T extends NodeWithAnnotations<?>> T withFactoryClass(T node) {
+        return node;
+    }
+
+    @Override
+    public <T extends NodeWithAnnotations<?>> T withFactoryMethod(T node) {
+        node.addAnnotation("javax.enterprise.inject.Produces");
+        return node;
+    }
 }
