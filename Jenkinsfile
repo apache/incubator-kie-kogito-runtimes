@@ -86,7 +86,6 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('integration-tests')
-                        .withProperty('no-snapshot')
                         .withProfiles(['persistence'])
                         .run('clean verify')
                 }
