@@ -90,22 +90,18 @@ public class $Type$Resource {
                                        @QueryParam("user") final String user,
                                        @QueryParam("group") final List<String> groups,
                                        final $TaskOutput$ model) {
+
         return UnitOfWorkExecutor
                 .executeInUnitOfWork(
                         application.unitOfWorkManager(),
                         () -> process
                                 .instances()
                                 .findById(id)
-                                .map(pi -> {
-                                    pi.transitionWorkItem(
-                                            workItemId,
-                                            HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
-                                    return pi.variables().toOutput();
-                                }))
-                                .orElseThrow(() -> new NotFoundException());
+                                .map(pi -> doTransitionWorkItem(pi, workItemId, phase, model, user, groups))
+                                .map(pi -> pi.variables().toOutput())
+                                .orElseThrow(() -> new NotFoundException()));
     }
-    
-    
+
     @PATCH
     @Path("/{id}/$taskName$/{workItemId}")
     @Consumes(MediaType.APPLICATION_JSON)
