@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.security.credential.TokenCredential;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 
@@ -69,18 +71,24 @@ public class QuarkusDataIndexClient implements DataIndexClient {
 
     protected WebClientOptions getWebClientToURLOptions(String targetHttpURL) throws MalformedURLException {
         URL dataIndexURL = new URL(targetHttpURL);
+        int port = dataIndexURL.getPort();
+        if (port == -1) {
+            port = dataIndexURL.getDefaultPort();
+        }
+        boolean ssl = dataIndexURL.getProtocol().compareToIgnoreCase("https") == 0;
         return new WebClientOptions()
                 .setDefaultHost(dataIndexURL.getHost())
-                .setDefaultPort(dataIndexURL.getPort())
-                .addEnabledSecureTransportProtocol(dataIndexURL.getProtocol());
+                .setDefaultPort(port)
+                .setSsl(ssl);
     }
 
     @Override
     public List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId) {
         String query = getNodeInstancesQuery(processInstanceId);
         CompletableFuture<List<NodeInstance>> cf = new CompletableFuture<>();
-        client.post("/graphql").putHeader("Authorization", getToken()).sendJson(JsonObject.mapFrom(singletonMap("query", query)), result -> {
-            if (result.succeeded()) {
+        HttpRequest<Buffer> request = client.post("/graphql").putHeader("Authorization", getToken());
+        request.sendJsonObject(JsonObject.mapFrom(singletonMap("query", query)), result -> {
+            if (result.succeeded() && result.result().statusCode() == 200) {
                 cf.complete(getNodeInstancesFromResponse(result.result().bodyAsJsonObject()));
             } else {
                 cf.completeExceptionally(result.cause());
