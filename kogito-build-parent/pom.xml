@@ -145,7 +145,7 @@
     <version.io.jredisearch>2.0.0</version.io.jredisearch>
     <version.io.fabric8.kubernetes-client>5.0.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.6.1</version.io.micrometer>
-    <version.io.rest-assured>4.3.0</version.io.rest-assured>
+    <version.io.rest-assured>4.3.3</version.io.rest-assured>
     <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.serverlessworkflow>1.0.3.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.0.22</version.io.smallrye-open-api-core>
