@@ -85,7 +85,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
         }
         if (!hasDebugOptions) {
             // if no explicit debug options have been specified, let's just disable debugging
-            //            args.add("-Ddebug=false");
+            args.add("-Ddebug=false");
         }
 
         // Since the Kogito extension split, this requires more memory, going for a default of 1GB, per surefire.
