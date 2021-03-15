@@ -93,7 +93,6 @@
     <version.formatter.plugin>2.13.0</version.formatter.plugin>
     <version.impsort.plugin>1.5.0</version.impsort.plugin>
     <version.license.plugin>4.0.rc2</version.license.plugin>
-    <version.archetype.plugin>3.0.1</version.archetype.plugin>
     <version.enforcer.plugin>3.0.0-M2</version.enforcer.plugin>
     <version.de.skuzzle.enforcer>1.1.0</version.de.skuzzle.enforcer>
     <version.maven>3.6.2</version.maven>
@@ -185,7 +184,7 @@
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
     <version.org.keycloak>11.0.3</version.org.keycloak>
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
-    <version.org.kie7>7.51.0.t20210303</version.org.kie7>
+    <version.org.kie7>7.51.0.Final</version.org.kie7>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mongo>4.1.0</version.org.mongo>
     <version.org.mvel>2.4.12.Final</version.org.mvel>
