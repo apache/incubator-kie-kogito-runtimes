@@ -117,6 +117,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <container.image.confluent.kafka>${container.image.confluent.kafka}</container.image.confluent.kafka>
+          </systemPropertyVariables>
+        </configuration>
         <executions>
           <execution>
             <goals>
