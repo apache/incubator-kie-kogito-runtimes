@@ -145,4 +145,11 @@ public class $Type$Resource {
                       .orElseThrow(() -> new NotFoundException());
     }
 
+    private static <T,U extends org.kie.kogito.MapOutput> ProcessInstance<T> doTransitionWorkItem(ProcessInstance<T> pi, String workItemId, String phase, U model, String user, List<String> groups) {
+        pi.transitionWorkItem(
+                workItemId,
+                HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
+        return pi;
+    }
+
 }
