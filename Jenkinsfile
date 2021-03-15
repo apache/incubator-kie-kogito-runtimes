@@ -59,11 +59,13 @@ pipeline {
                         // Only run against given quarkus branch
                         getMavenCommand('kogito-runtimes')
                             .withProperty('no-snapshot')
+                            .withMirrorDisabledForRepoInSettings('jboss-public-repository-group')
                             .run('clean install')
                     } else {
                         // Build & Perform the analysis
                         getMavenCommand('kogito-runtimes')
                             .withProperty('no-snapshot')
+                            .withMirrorDisabledForRepoInSettings('jboss-public-repository-group')
                             .withProperty('validate-formatting')
                             .withProfiles(['run-code-coverage'])
                             .run('clean install')
