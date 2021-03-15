@@ -263,7 +263,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                         });
             });
             RowSet<Row> rows = getResultFromFuture(futureCompose);
-            if (Objects.nonNull(rows) && rows.rowCount() == 1) {
+            if (Objects.nonNull(rows) && rows.rowCount() > 0) {
                 LOGGER.info("DDL successfully done for ProcessInstance");
             } else {
                 LOGGER.info("DDL executed with no changes for ProcessInstance");

@@ -82,7 +82,6 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String QUARKUS_KAFKA_STREAMS_TOPICS_PROP = "quarkus.kafka-streams.topics";
     private static final String QUARKUS_PERSISTENCE_MONGODB_NAME_PROP = "quarkus.mongodb.database";
     private static final String SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP = "spring.data.mongodb.database";
-    private static final String POSTGRESQL_CONNECTION_URI_PROP = "postgresql.connection.uri";
     private static final String OR_ELSE = "orElse";
     private static final String JAVA = ".java";
     public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
