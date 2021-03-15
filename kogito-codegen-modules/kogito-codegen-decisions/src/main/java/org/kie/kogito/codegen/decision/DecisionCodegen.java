@@ -53,7 +53,7 @@ import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.decision.config.DecisionConfigGenerator;
-import org.kie.kogito.codegen.decision.events.CloudEventMetaFactoryGenerator;
+import org.kie.kogito.codegen.decision.events.DecisionCloudEventMetaFactoryGenerator;
 import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,7 +181,7 @@ public class DecisionCodegen extends AbstractGenerator {
             storeFile(GeneratedFileType.RESOURCE, relativePath, marshaller.marshal(definitions));
         }
 
-        final CloudEventMetaFactoryGenerator ceMetaFactoryGenerator = new CloudEventMetaFactoryGenerator(context(), models);
+        final DecisionCloudEventMetaFactoryGenerator ceMetaFactoryGenerator = new DecisionCloudEventMetaFactoryGenerator(context(), models);
         storeFile(REST_TYPE, ceMetaFactoryGenerator.generatedFilePath(), ceMetaFactoryGenerator.generate());
     }
 

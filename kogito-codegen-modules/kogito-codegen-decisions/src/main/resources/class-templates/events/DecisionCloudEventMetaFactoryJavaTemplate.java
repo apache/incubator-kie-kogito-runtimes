@@ -8,7 +8,7 @@ import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
 
-public class CloudEventMetaFactory {
+public class DecisionCloudEventMetaFactory {
 
     ConfigBean config;
 

@@ -47,20 +47,20 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.printer.YamlPrinter;
 
-public class CloudEventMetaFactoryGenerator {
+public class DecisionCloudEventMetaFactoryGenerator {
 
     public static final String RESPONSE_EVENT_TYPE = "DecisionResponse";
     public static final String RESPONSE_FULL_EVENT_TYPE = "DecisionResponseFull";
     public static final String RESPONSE_ERROR_EVENT_TYPE = "DecisionResponseError";
 
     public static final String TEMPLATE_EVENT_FOLDER = "/class-templates/events/";
-    private static final String CLASS_NAME = "CloudEventMetaFactory";
+    private static final String CLASS_NAME = "DecisionCloudEventMetaFactory";
 
     private final KogitoBuildContext context;
     private final TemplatedGenerator generator;
     private final List<DMNModel> models;
 
-    public CloudEventMetaFactoryGenerator(final KogitoBuildContext context, List<DMNModel> models) {
+    public DecisionCloudEventMetaFactoryGenerator(final KogitoBuildContext context, List<DMNModel> models) {
         this.context = context;
         this.generator = buildTemplatedGenerator(context);
         this.models = models;
@@ -76,14 +76,12 @@ public class CloudEventMetaFactoryGenerator {
         ClassOrInterfaceDeclaration classDefinition = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
-        classDefinition.setName("Decision" + CLASS_NAME);
-
         MethodDeclaration templatedBuildMethod = classDefinition
                 .findFirst(MethodDeclaration.class, x -> x.getName().toString().startsWith("buildCloudEventMeta_$methodName$"))
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Impossible to find expected buildCloudEventMeta_ method"));
 
-        List<CloudEventMetaMethodData> methodDataList = models.stream()
-                .flatMap(CloudEventMetaFactoryGenerator::buildMethodDataStreamFromModel)
+        List<MethodData> methodDataList = models.stream()
+                .flatMap(DecisionCloudEventMetaFactoryGenerator::buildMethodDataStreamFromModel)
                 .distinct()
                 .collect(Collectors.toList());
 
@@ -121,33 +119,33 @@ public class CloudEventMetaFactoryGenerator {
         return compilationUnit.toString();
     }
 
-    static Stream<CloudEventMetaMethodData> buildMethodDataStreamFromModel(DMNModel model) {
+    static Stream<MethodData> buildMethodDataStreamFromModel(DMNModel model) {
         String source = Optional.of(model.getName())
                 .filter(s -> !s.isEmpty())
-                .map(CloudEventMetaFactoryGenerator::urlEncodedStringFrom)
+                .map(DecisionCloudEventMetaFactoryGenerator::urlEncodedStringFrom)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .orElse("");
 
-        Stream<CloudEventMetaMethodData> modelStream = Stream.of(
+        Stream<MethodData> modelStream = Stream.of(
                 buildMethodDataFromModel(RESPONSE_EVENT_TYPE, source, model.getName()),
                 buildMethodDataFromModel(RESPONSE_FULL_EVENT_TYPE, source, model.getName()),
                 buildMethodDataFromModel(RESPONSE_ERROR_EVENT_TYPE, source, model.getName()));
 
-        Stream<CloudEventMetaMethodData> decisionServiceStream = model.getDecisionServices().stream()
+        Stream<MethodData> decisionServiceStream = model.getDecisionServices().stream()
                 .flatMap(ds -> buildMethodDataStreamFromDecisionService(model, ds.getName()));
 
         return Stream.concat(modelStream, decisionServiceStream);
     }
 
-    static CloudEventMetaMethodData buildMethodDataFromModel(String type, String source, String modelName) {
-        return new CloudEventMetaMethodData(type, source, EventKind.PRODUCED, buildMethodNameChunk(type, modelName, null));
+    static MethodData buildMethodDataFromModel(String type, String source, String modelName) {
+        return new MethodData(type, source, EventKind.PRODUCED, buildMethodNameChunk(type, modelName, null));
     }
 
-    static Stream<CloudEventMetaMethodData> buildMethodDataStreamFromDecisionService(DMNModel model, String decisionServiceName) {
+    static Stream<MethodData> buildMethodDataStreamFromDecisionService(DMNModel model, String decisionServiceName) {
         String source = Stream.of(model.getName(), decisionServiceName)
                 .filter(s -> s != null && !s.isEmpty())
-                .map(CloudEventMetaFactoryGenerator::urlEncodedStringFrom)
+                .map(DecisionCloudEventMetaFactoryGenerator::urlEncodedStringFrom)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.joining("/"));
@@ -158,21 +156,20 @@ public class CloudEventMetaFactoryGenerator {
                 buildMethodDataFromDecisionService(RESPONSE_ERROR_EVENT_TYPE, source, model.getName(), decisionServiceName));
     }
 
-    static CloudEventMetaMethodData buildMethodDataFromDecisionService(String type, String source, String modelName, String decisionServiceName) {
-        return new CloudEventMetaMethodData(type, source, EventKind.PRODUCED, buildMethodNameChunk(type, modelName, decisionServiceName));
+    static MethodData buildMethodDataFromDecisionService(String type, String source, String modelName, String decisionServiceName) {
+        return new MethodData(type, source, EventKind.PRODUCED, buildMethodNameChunk(type, modelName, decisionServiceName));
     }
 
     static String buildMethodNameChunk(String type, String modelName, String decisionServiceName) {
         return Stream.of(EventKind.PRODUCED.name(), type, modelName, decisionServiceName)
                 .filter(s -> s != null && !s.isEmpty())
-                .map(CloudEventMetaFactoryGenerator::toValidJavaIdentifier)
+                .map(DecisionCloudEventMetaFactoryGenerator::toValidJavaIdentifier)
                 .collect(Collectors.joining("_"));
     }
 
     static TemplatedGenerator buildTemplatedGenerator(KogitoBuildContext context) {
         return TemplatedGenerator.builder()
                 .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
-                .withTargetTypeName("Decision" + CLASS_NAME)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, CLASS_NAME);
     }
@@ -218,14 +215,14 @@ public class CloudEventMetaFactoryGenerator {
                 });
     }
 
-    private static class CloudEventMetaMethodData {
+    private static class MethodData {
 
         final String type;
         final String source;
         final EventKind kind;
         final String methodNameChunk;
 
-        public CloudEventMetaMethodData(String type, String source, EventKind kind, String methodNameChunk) {
+        public MethodData(String type, String source, EventKind kind, String methodNameChunk) {
             this.type = type;
             this.source = source;
             this.kind = kind;
@@ -240,7 +237,7 @@ public class CloudEventMetaFactoryGenerator {
             if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-            CloudEventMetaMethodData that = (CloudEventMetaMethodData) o;
+            MethodData that = (MethodData) o;
             return type.equals(that.type) && source.equals(that.source) && kind == that.kind;
         }
 
