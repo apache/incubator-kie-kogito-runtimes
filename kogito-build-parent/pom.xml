@@ -117,7 +117,7 @@
     <version.org.jsonschema2pojo-maven-plugin>1.0.1</version.org.jsonschema2pojo-maven-plugin>
 
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>999-SNAPSHOT</version.io.quarkus>
+    <version.io.quarkus>1.11.5.Final</version.io.quarkus>
 
     <!-- dependencies versions -->
     <version.ch.obermuhlner>2.0.1</version.ch.obermuhlner>
