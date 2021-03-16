@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>cloudevents</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0.Final</version>
   </parent>
   <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
   <name>Kogito :: Add-Ons :: CloudEvents :: Quarkus</name>
