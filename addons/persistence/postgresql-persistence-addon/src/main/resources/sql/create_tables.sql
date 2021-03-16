@@ -1,5 +1,5 @@
-CREATE TABLE public.process_instances(id uuid NOT NULL,
-                                      payload bytea,
+CREATE TABLE process_instances(id uuid NOT NULL,
+                                      payload bytea NOT NULL,
                                       process_id character varying NOT NULL,
                                       CONSTRAINT process_instances_pkey PRIMARY KEY (id)
                                       );
