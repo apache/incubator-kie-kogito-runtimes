@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.openapi.client.generator;
 import java.io.File;
 import java.util.List;
 
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.openapi.client.OpenApiSpecDescriptor;
 import org.openapitools.codegen.CodegenConstants;
@@ -80,8 +81,8 @@ public class OpenApiClientGeneratorWrapper {
      * @param outputDir a valid path in the local system where the files will be generated
      * @return a new instance of {@link OpenApiClientGeneratorWrapper}
      */
-    public static OpenApiClientGeneratorWrapper newInstance(final String specFilePath, final String outputDir, final String runtime) {
-        return new OpenApiClientGeneratorWrapper(specFilePath, outputDir, runtime);
+    public static OpenApiClientGeneratorWrapper newInstance(final String specFilePath, final String outputDir, final KogitoBuildContext context) {
+        return new OpenApiClientGeneratorWrapper(specFilePath, outputDir, context.name());
     }
 
     public OpenApiClientGeneratorWrapper withPackage(final String pkg) {
