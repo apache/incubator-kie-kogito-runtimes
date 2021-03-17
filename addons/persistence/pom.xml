@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>addons</artifactId>
-    <version>1.4.0.Final</version>
+    <version>1.4.1-SNAPSHOT</version>
   </parent>
   <artifactId>persistence</artifactId>
   <packaging>pom</packaging>
