@@ -55,7 +55,7 @@ pipeline {
             steps {
                 script {
                     mvnCmd = getMavenCommand('kogito-runtimes', true, true)
-                    if (!isSpecificPRCheck()) {
+                    if (isNormalPRCheck()) {
                         mvnCmd.withProperty('validate-formatting')
                             .withProfiles(['run-code-coverage'])
                     }
@@ -72,7 +72,7 @@ pipeline {
         }
         stage('Analyze Runtimes by SonarCloud') {
             when {
-                expression { !isSpecificPRCheck() }
+                expression { isNormalPRCheck() }
             }
             steps {
                 script {
@@ -258,6 +258,8 @@ MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, b
     }
     if (canNative && isNative()) {
         mvnCmd.withProfiles(['native'])
+        // Added due to https://github.com/quarkusio/quarkus/issues/13341
+        mvnCmd.withProperty('quarkus.profile', 'native')
     }
     return mvnCmd
 }
@@ -274,6 +276,6 @@ boolean isNative() {
     return env['NATIVE'] && env['NATIVE'].toBoolean()
 }
 
-boolean isSpecificPRCheck() {
-    return getQuarkusBranch() || isNative()
+boolean isNormalPRCheck() {
+    return !(getQuarkusBranch() || isNative())
 }
