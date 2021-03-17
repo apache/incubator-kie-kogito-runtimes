@@ -85,6 +85,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     private static final String OR_ELSE = "orElse";
     private static final String JAVA = ".java";
     public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
+    public static final String KOGITO_POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
 
     private final ProtoGenerator protoGenerator;
 
@@ -389,6 +390,8 @@ public class PersistenceGenerator extends AbstractGenerator {
                             .addArgument("autoDDL")));
             context().getDependencyInjectionAnnotator().withConfigInjection(
                     constructor.getParameterByName("autoDDL").get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
+            context().getDependencyInjectionAnnotator().withNamed(
+                    constructor.getParameterByName("client").get(), "kogito");
             context().getDependencyInjectionAnnotator().withInjection(constructor);
 
             //empty constructor for DI
@@ -411,9 +414,9 @@ public class PersistenceGenerator extends AbstractGenerator {
                                     new MethodCallExpr(new NameExpr(pgPoolClass), "pool")
                                             .addArgument(new NameExpr("uri")))));
             //inserting DI annotations
-            context().getDependencyInjectionAnnotator().withConfigInjection(uriConfigParam, "postgresql.connection" +
-                    ".uri");
+            context().getDependencyInjectionAnnotator().withConfigInjection(uriConfigParam, KOGITO_POSTGRESQL_CONNECTION_URI);
             context().getDependencyInjectionAnnotator().withProduces(clientProviderMethod, true);
+            context().getDependencyInjectionAnnotator().withNamed(clientProviderMethod, "kogito");
             context().getDependencyInjectionAnnotator().withApplicationComponent(pgClientProducerClazz);
 
             generatedPgClientFile = generatePersistenceProviderClazz(pgClientProducerClazz,

@@ -28,6 +28,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
  */
 public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements TestResource {
 
+    public static final String POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoPostgreSqlContainer.class);
 
     public KogitoPostgreSqlContainer() {

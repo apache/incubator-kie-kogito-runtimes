@@ -18,13 +18,13 @@ package org.kie.kogito.testcontainers.springboot;
 import org.kie.kogito.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 
+import static org.kie.kogito.testcontainers.KogitoPostgreSqlContainer.POSTGRESQL_CONNECTION_URI;
+
 /**
  * PostgreSQL spring boot resource that works within the test lifecycle.
  *
  */
 public class PostgreSqlSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoPostgreSqlContainer> {
-
-    public static final String POSTGRESQL_CONNECTION_URI = "postgresql.connection.uri";
 
     public PostgreSqlSpringBootTestResource() {
         super(new KogitoPostgreSqlContainer());

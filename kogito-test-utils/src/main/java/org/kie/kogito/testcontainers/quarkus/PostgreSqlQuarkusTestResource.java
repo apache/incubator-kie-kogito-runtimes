@@ -18,13 +18,13 @@ package org.kie.kogito.testcontainers.quarkus;
 import org.kie.kogito.resources.ConditionalQuarkusTestResource;
 import org.kie.kogito.testcontainers.KogitoPostgreSqlContainer;
 
+import static org.kie.kogito.testcontainers.KogitoPostgreSqlContainer.POSTGRESQL_CONNECTION_URI;
+
 /**
  * PostgreSQL quarkus resource that works within the test lifecycle.
  *
  */
 public class PostgreSqlQuarkusTestResource extends ConditionalQuarkusTestResource<KogitoPostgreSqlContainer> {
-
-    public static final String POSTGRESQL_CONNECTION_URI = "postgresql.connection.uri";
 
     public PostgreSqlQuarkusTestResource() {
         super(new KogitoPostgreSqlContainer());
