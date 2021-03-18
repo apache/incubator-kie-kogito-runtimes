@@ -38,10 +38,6 @@ public class AppPaths {
         return new AppPaths(Collections.singleton(projectDir), Collections.emptyList(), false);
     }
 
-    public static AppPaths fromProjectDir(Path projectDir, ClassLoader classLoader) {
-        return new AppPaths(Collections.singleton(projectDir), Collections.singleton(getTargetPath(classLoader)), false);
-    }
-
     public static AppPaths fromQuarkus(Iterable<Path> paths) {
         Set<Path> projectPaths = new LinkedHashSet<>();
         Collection<Path> classesPaths = new ArrayList<>();
@@ -84,10 +80,6 @@ public class AppPaths {
             return PathType.JAR;
         }
         return PathType.UNKNOWN;
-    }
-
-    private static Path getTargetPath(ClassLoader classLoader) {
-        return new File(Objects.requireNonNull(classLoader.getResource(""), "Got nullable resource in classloader root").getFile()).getParentFile().toPath();
     }
 
     private enum PathType {
