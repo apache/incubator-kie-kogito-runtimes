@@ -25,6 +25,7 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestContext;
@@ -67,5 +68,9 @@ public final class ProcessUtil {
         ProcessInstance<? extends Model> instance = process.createInstance(model);
         instance.start();
         return instance;
+    }
+
+    public static ProcessInstance<? extends Model> firstProcessInstance(ProcessInstances<? extends Model> instances) {
+        return instances.values().iterator().next();
     }
 }

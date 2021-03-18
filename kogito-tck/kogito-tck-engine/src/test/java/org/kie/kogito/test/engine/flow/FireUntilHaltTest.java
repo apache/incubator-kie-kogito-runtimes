@@ -30,7 +30,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResourceType;
 import org.kie.kogito.tck.junit.listeners.TrackingAgendaEventListener;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 import org.kie.kogito.test.engine.domain.Person;
 
 import static java.util.Collections.singletonMap;
@@ -56,7 +56,7 @@ public class FireUntilHaltTest  {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS),
                      @KogitoUnitTestResource(path = PROCESS_DRL, type = KogitoUnitTestResourceType.RULES)},
-        listeners = {TrackingProcessEventListener.class, TrackingAgendaEventListener.class}
+        listeners = {FlowProcessEventListenerTracker.class, TrackingAgendaEventListener.class}
     )
     public void testFireUntilHaltWithProcess(KogitoUnitTestContext context) throws Exception {
 

@@ -16,7 +16,11 @@
 
 package org.kie.kogito.tck.junit.extension;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +43,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestContext;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
+import org.kie.kogito.tck.junit.api.KogitoUnitTestDeploymentException;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestListeners;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestProcessDebug;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
@@ -66,7 +71,7 @@ public class KogitoUnitTestDeploymentExtension implements Extension, BeforeEachC
     public boolean supportsParameter(ParameterContext parameterContext,
                                      ExtensionContext extensionContext) throws ParameterResolutionException {
         Class<?> type = parameterContext.getParameter().getType();
-        return KogitoUnitTestContext.class.isAssignableFrom(type) || unitTestContexts.get(extensionContext.getUniqueId()).isSupported(type);
+        return KogitoUnitTestContext.class.isAssignableFrom(type) || unitTestContexts.get(extensionContext.getUniqueId()).isSupported(type) || Throwable.class.isAssignableFrom(type);
 
     }
 
@@ -102,10 +107,11 @@ public class KogitoUnitTestDeploymentExtension implements Extension, BeforeEachC
 
     @Override
     public void beforeEach(ExtensionContext context) {
+        Method testMethod = context.getTestMethod().get();
         try {
             Deployment currentDeployment = defaultDeployment;
     
-            Method testMethod = context.getTestMethod().get();
+
             if(testMethod.isAnnotationPresent(KogitoUnitTestDeployment.class)) {
                 // override default deployment with current deployment
                 KogitoUnitTestDeployment archive = testMethod.getAnnotation(KogitoUnitTestDeployment.class);
@@ -137,7 +143,11 @@ public class KogitoUnitTestDeploymentExtension implements Extension, BeforeEachC
 
             unitTestContexts.put(context.getUniqueId(), unitTestContext);
         } catch(Throwable ex) {
-            unitTestContexts.put(context.getUniqueId(), new ErrorKogitoUnitTestContextImpl(ex));
+            if(testMethod.isAnnotationPresent(KogitoUnitTestDeploymentException.class)) {
+                unitTestContexts.put(context.getUniqueId(), new ErrorKogitoUnitTestContextImpl(ex));
+            } else {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -188,11 +198,19 @@ public class KogitoUnitTestDeploymentExtension implements Extension, BeforeEachC
     }
 
     private Map<KogitoUnitTestResourceType, List<String>> toResources(KogitoUnitTestDeployment archive) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(classLoader.getResource(".").getFile());
+        String absolutePath = file.getAbsolutePath();
+
         Map<KogitoUnitTestResourceType, List<String>> resources = new HashMap<>();
         for(KogitoUnitTestResource resource : archive.resources()) {
             KogitoUnitTestResourceType type = resource.type();
             List<String> files = resources.computeIfAbsent(type, (key) -> new ArrayList<>());
             files.add(resource.path());
+            
+            if(!Files.exists(Paths.get(absolutePath, resource.path()))) {
+                throw new RuntimeException("File " + resource.path() + " does not exists!");
+            }
         }
         return resources;
     }

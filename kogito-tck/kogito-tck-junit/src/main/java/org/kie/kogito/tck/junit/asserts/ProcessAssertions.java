@@ -18,7 +18,7 @@ package org.kie.kogito.tck.junit.asserts;
 
 import org.kie.kogito.Model;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 
 public final class ProcessAssertions {
 
@@ -39,7 +39,7 @@ public final class ProcessAssertions {
 
 
 
-    public static TrackProcessPredicateAssert assertThat(TrackingProcessEventListener tracker) {
+    public static TrackProcessPredicateAssert assertThat(FlowProcessEventListenerTracker tracker) {
         return new TrackProcessPredicateAssert(tracker);
     }
 

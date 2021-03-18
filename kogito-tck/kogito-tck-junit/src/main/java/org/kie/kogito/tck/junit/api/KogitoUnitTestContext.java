@@ -16,10 +16,18 @@
 
 package org.kie.kogito.tck.junit.api;
 
+import java.util.Collection;
 import java.util.Optional;
 
+import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Model;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstanceReadMode;
+import org.kie.kogito.process.ProcessInstances;
+
+import static java.util.Collections.emptyList;
+
 
 public interface KogitoUnitTestContext {
     
@@ -33,4 +41,32 @@ public interface KogitoUnitTestContext {
     Optional<ProcessInstance<? extends Model>> findById(String processId, String id);
 
     Optional<ProcessInstance<? extends Model>> findByBusinessKey(String processId, String businessKey);
+
+    default ProcessInstances<? extends Model> instances(String processId) {
+        return new ProcessInstances<Model> () {
+
+            @Override
+            public Optional<ProcessInstance<Model>> findById(String id, ProcessInstanceReadMode mode) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Collection<ProcessInstance<Model>> values(ProcessInstanceReadMode mode) {
+                  return emptyList();
+            }
+
+            @Override
+            public Integer size() {
+                return 0;
+            }
+            
+        };
+    }
+    default void registerWorkItemHandler(String string, KogitoWorkItemHandler signallingTaskHandlerDecorator) {
+        
+    }
+
+    default void registerEventListener(ProcessEventListener defaultProcessEventListener) {
+        
+    }
 }

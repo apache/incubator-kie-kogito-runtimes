@@ -55,4 +55,10 @@ public class ProcessPredicateAssert<T extends ProcessInstance<? extends Model>> 
             Assertions.fail("Process instance " + instance.id() + " has no ended");
         }
     }
+
+    public void isError() {
+        if(this.instance.status() != ProcessInstance.STATE_ERROR) {
+            Assertions.fail("Process instance " + instance.id() + " is not in error state");
+        }
+    }
 }

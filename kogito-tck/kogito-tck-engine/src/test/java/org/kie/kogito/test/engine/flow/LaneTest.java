@@ -28,7 +28,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 import org.kie.kogito.tck.junit.asserts.ProcessAssertions;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 
 import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
 
@@ -45,12 +45,12 @@ public class LaneTest  {
     @Test
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS)},
-        listeners = {TrackingProcessEventListener.class}
+        listeners = {FlowProcessEventListenerTracker.class}
     )
     public void testLane(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         ProcessAssertions.assertThat(tracker)
             .checkStepsForProcessInstance(instance.id())
             .started()

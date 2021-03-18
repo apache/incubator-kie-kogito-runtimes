@@ -16,8 +16,13 @@
 
 package org.kie.kogito.tck.junit.asserts;
 
+import org.assertj.core.api.AbstractIterableAssert;
+import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.internal.bytebuddy.matcher.CollectionSizeMatcher;
+import org.junit.jupiter.api.Assertions;
 import org.kie.kogito.Model;
+
 
 public class ModelPredicateAssert<T extends Model> {
 
@@ -30,5 +35,12 @@ public class ModelPredicateAssert<T extends Model> {
     @SuppressWarnings("unchecked")
     public <T> ObjectAssert<T> output(String name) {
         return new ObjectAssert<T>((T) model.toMap().get(name));
+    }
+
+    public ModelPredicateAssert<T> hasSize(int size) {
+        if(model.toMap().size() != size) {
+            Assertions.fail("model size does not match. Expecting " + size);
+        }
+        return this;
     }
 }

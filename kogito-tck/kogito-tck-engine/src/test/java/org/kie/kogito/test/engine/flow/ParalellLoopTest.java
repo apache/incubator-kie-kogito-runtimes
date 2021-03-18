@@ -24,7 +24,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestWorkItemHandler;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 import org.kie.kogito.tck.junit.wih.WorkItemHandlerTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
 @KogitoUnitTestExtension
 @KogitoUnitTestDeployment(
     resources = {@KogitoUnitTestResource(path = "org/kie/kogito/test/engine/flow/ParalellLoopTest.bpmn2")},
-    listeners = {TrackingProcessEventListener.class},
+    listeners = {FlowProcessEventListenerTracker.class},
     workItemsHandlers = {@KogitoUnitTestWorkItemHandler(name="Human Task", handler=WorkItemHandlerTracker.class)}
 )
 public class ParalellLoopTest {
@@ -53,7 +53,7 @@ public class ParalellLoopTest {
     @Test
     public void testProcessBothReject(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(instance).isActive();
@@ -79,7 +79,7 @@ public class ParalellLoopTest {
     public void testProcessMaryApproveJohnReject(KogitoUnitTestContext context) {
 
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(instance).isActive();
@@ -105,7 +105,7 @@ public class ParalellLoopTest {
     @Test
     public void testProcessJohnApproveMaryReject(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(instance).isActive();
@@ -130,7 +130,7 @@ public class ParalellLoopTest {
     @Test
     public void testProcessAlternateReject(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(instance).isActive();
@@ -157,7 +157,7 @@ public class ParalellLoopTest {
     @Test
     public void testProcessMaryApproveJohnApprove(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(instance).isActive();

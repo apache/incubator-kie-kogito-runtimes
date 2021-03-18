@@ -32,7 +32,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestWorkItemHandler;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 import org.kie.kogito.tck.junit.wih.WorkItemHandlerTracker;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +42,7 @@ import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
 @KogitoUnitTestExtension
 @KogitoUnitTestDeployment(
     resources = {@KogitoUnitTestResource(path = FlexibleProcessTest.PROCESS)},
-    listeners = {TrackingProcessEventListener.class},
+    listeners = {FlowProcessEventListenerTracker.class},
     workItemsHandlers = {@KogitoUnitTestWorkItemHandler(name="Human Task", handler=WorkItemHandlerTracker.class),
                          @KogitoUnitTestWorkItemHandler(name="addedWorkItem", handler=WorkItemHandlerTracker.class)}
 )
@@ -60,7 +60,7 @@ public class FlexibleProcessTest  {
     public void testFlexibleProcess(KogitoUnitTestContext context) throws Exception {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
         assertThat(tracker)
@@ -109,7 +109,7 @@ public class FlexibleProcessTest  {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         WorkItemHandlerTracker handler = context.find(WorkItemHandlerTracker.class);
 
 

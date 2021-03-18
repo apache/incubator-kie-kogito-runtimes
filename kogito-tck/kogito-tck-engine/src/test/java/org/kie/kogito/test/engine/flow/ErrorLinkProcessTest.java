@@ -21,6 +21,7 @@ import org.kie.kogito.Application;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestContext;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
+import org.kie.kogito.tck.junit.api.KogitoUnitTestDeploymentException;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 
@@ -41,6 +42,7 @@ public class ErrorLinkProcessTest {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS_EMPTY)}
     )
+    @KogitoUnitTestDeploymentException
     public void testEmptyLinkEvents(Throwable throwable) {
         assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class).hasMessageContaining("nodes do not have a name");
     }
@@ -49,6 +51,7 @@ public class ErrorLinkProcessTest {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS_MULTI_THROW)}
     )
+    @KogitoUnitTestDeploymentException
     public void testMultiThrowLinkEvents(KogitoUnitTestContext context) {
         assertThat(context.find(Application.class).get(Processes.class).processById("org.jbpm.test.functional.common.MultipleThrowLinkProcess")).isNotNull();
     }
@@ -58,6 +61,7 @@ public class ErrorLinkProcessTest {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS_MULTI_CATCH)}
     )
+    @KogitoUnitTestDeploymentException
     public void testMultiCatchEvents(Throwable throwable) {
         assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class).hasMessageContaining("multiple catch nodes");
     }
@@ -66,6 +70,7 @@ public class ErrorLinkProcessTest {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = PROCESS_UNCONNECTED)}
     )
+    @KogitoUnitTestDeploymentException
     public void testUnconnectedEvents(Throwable throwable) {
         assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class).hasMessageContaining("not connection");
     }
@@ -74,6 +79,7 @@ public class ErrorLinkProcessTest {
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = DIFFERENT_PROCESS)}
     )
+    @KogitoUnitTestDeploymentException
     public void testDifferentProcess(Throwable throwable) {
         assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class).hasMessageContainingAll("not connection", "subprocess");
     }

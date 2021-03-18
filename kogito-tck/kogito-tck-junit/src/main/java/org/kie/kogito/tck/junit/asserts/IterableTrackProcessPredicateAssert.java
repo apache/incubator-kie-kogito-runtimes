@@ -52,7 +52,7 @@ public class IterableTrackProcessPredicateAssert {
     public IterableTrackProcessPredicateAssert entered(String nodeName) {
         ProcessTrackedEvent event = nextEvent();
         if(!(event.getEvent() instanceof ProcessNodeTriggeredEvent)) {
-            Assertions.fail("Node " + nodeName + "has no entered");
+            Assertions.fail("Node " + nodeName + " has no entered");
         }
         ProcessNodeTriggeredEvent nodeTriggeredEvent = event.getEvent();
         String nodeNameEntered = nodeTriggeredEvent.getNodeInstance().getNodeName();

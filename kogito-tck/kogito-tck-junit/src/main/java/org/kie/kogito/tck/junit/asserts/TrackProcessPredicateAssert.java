@@ -16,13 +16,13 @@
 
 package org.kie.kogito.tck.junit.asserts;
 
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 
 public class TrackProcessPredicateAssert {
 
-    private TrackingProcessEventListener tracker;
+    private FlowProcessEventListenerTracker tracker;
 
-    public TrackProcessPredicateAssert(TrackingProcessEventListener tracker) {
+    public TrackProcessPredicateAssert(FlowProcessEventListenerTracker tracker) {
         this.tracker = tracker;
     }
 

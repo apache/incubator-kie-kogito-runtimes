@@ -24,7 +24,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestContext;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 
 import static org.kie.kogito.tck.junit.asserts.ProcessAssertions.assertThat;
 import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
@@ -33,7 +33,7 @@ import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
 @KogitoUnitTestExtension
 @KogitoUnitTestDeployment(
     resources = {@KogitoUnitTestResource(path = EventListenersTest.PROCESS)},
-    listeners = {TrackingProcessEventListener.class}
+    listeners = {FlowProcessEventListenerTracker.class}
 )
 public class EventListenersTest {
 
@@ -45,7 +45,7 @@ public class EventListenersTest {
     public void testClearExecution(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         instance.send(Sig.of("other-branch", "hello world!"));
         assertThat(tracker)
             .checkEventsProcessInstanceThat(instance.id())
@@ -61,7 +61,7 @@ public class EventListenersTest {
     public void testUnfinishedProcess(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
 
         assertThat(tracker)
             .checkEventsProcessInstanceThat(instance.id())
@@ -77,7 +77,7 @@ public class EventListenersTest {
     public void testBadSignal(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         instance.send(Sig.of("bad-signal", "bad signal!"));
 
         assertThat(tracker)

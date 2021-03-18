@@ -18,10 +18,13 @@ package org.kie.kogito.tck.junit.extension;
 
 import java.util.Optional;
 
+import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.ProcessInstances;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestContext;
 import org.kie.kogito.tck.junit.extension.model.DeploymentInstance;
 
@@ -56,6 +59,19 @@ public class KogitoUnitTestContextImpl implements KogitoUnitTestContext {
         return null;
     }
 
+    @Override
+    public ProcessInstances<? extends Model> instances(String processId) {
+        return deploymentInstance.getApplication().get(Processes.class).processById(processId).instances();
+    }
+    @Override
+    public void registerEventListener(ProcessEventListener defaultProcessEventListener) {
+        deploymentInstance.register(defaultProcessEventListener);
+    }
+
+    @Override
+    public void registerWorkItemHandler(String name, KogitoWorkItemHandler handler) {
+        deploymentInstance.registerWorkItemHandler(name, handler);
+    }
     @Override
     public Optional<ProcessInstance<? extends Model>> findById(String processId, String id) {
         return deploymentInstance.findById(processId, id);

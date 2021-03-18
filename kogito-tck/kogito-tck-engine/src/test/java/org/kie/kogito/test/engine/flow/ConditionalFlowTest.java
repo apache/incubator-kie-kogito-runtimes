@@ -27,7 +27,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestEnvironmentProperty;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestProcessDebug;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 
 import static org.kie.kogito.tck.junit.asserts.ProcessAssertions.assertThat;
 import static org.kie.kogito.tck.junit.util.ProcessUtil.startProcess;
@@ -48,13 +48,13 @@ public class ConditionalFlowTest {
     @Disabled
     @KogitoUnitTestDeployment(
         resources = {@KogitoUnitTestResource(path = "org/kie/kogito/test/engine/flow/ConditionalFlow.bpmn2")},
-        listeners = {TrackingProcessEventListener.class}
+        listeners = {FlowProcessEventListenerTracker.class}
     )
     @KogitoUnitTestProcessDebug
     public void testConditionalFlow(KogitoUnitTestContext context) {
         ProcessInstance<? extends Model> instance = startProcess(context, PROCESS_ID);
 
-        TrackingProcessEventListener tracker = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker tracker = context.find(FlowProcessEventListenerTracker.class);
         assertThat(instance).isCompleted();
         assertThat(instance.variables()).output("x").isEqualTo(5);
 

@@ -38,7 +38,7 @@ import org.kie.kogito.tck.junit.api.KogitoUnitTestDeployment;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestExtension;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestResource;
 import org.kie.kogito.tck.junit.api.KogitoUnitTestWorkItemHandler;
-import org.kie.kogito.tck.junit.listeners.TrackingProcessEventListener;
+import org.kie.kogito.tck.junit.listeners.FlowProcessEventListenerTracker;
 import org.kie.kogito.tck.junit.util.ProcessUtil;
 import org.kie.kogito.tck.junit.wih.WorkItemHandlerTracker;
 import org.kie.kogito.test.engine.domain.Person;
@@ -64,7 +64,7 @@ public class DataObjectTest {
         namespace = "org.kie.kogito.test.engine.flow",
         resources = {@KogitoUnitTestResource(path = "org/kie/kogito/test/engine/flow/DataObject.bpmn2")},
         workItemsHandlers = {@KogitoUnitTestWorkItemHandler(name = "Human Task", handler = WorkItemHandlerTracker.class) },
-        listeners = {TrackingProcessEventListener.class}
+        listeners = {FlowProcessEventListenerTracker.class}
     )
     public void testDataObject(KogitoUnitTestContext context) {
         Map<String, Object> params = new HashMap<String, Object>();
@@ -72,7 +72,7 @@ public class DataObjectTest {
         params.put("person", mojmir);
 
         ProcessInstance<? extends Model> instance = ProcessUtil.startProcess(context, PROCESS_ID, params);
-        TrackingProcessEventListener listener = context.find(TrackingProcessEventListener.class);
+        FlowProcessEventListenerTracker listener = context.find(FlowProcessEventListenerTracker.class);
 
         WorkItemHandlerTracker tracker = context.find(WorkItemHandlerTracker.class);
 

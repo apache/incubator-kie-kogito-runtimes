@@ -24,7 +24,7 @@ import java.util.List;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.process.workitem.Transition;
+import org.kie.kogito.process.WorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +76,16 @@ public class WorkItemHandlerTracker implements KogitoWorkItemHandler {
             builder.append("\n");
         }
         return builder.toString();
+    }
+
+    public List<KogitoWorkItem> getWorkItemsFor(String processId) {
+        List<KogitoWorkItem> tmp = new ArrayList<>();
+        for(KogitoWorkItem kwi : workItems) {
+            if(kwi.getState() == KogitoWorkItem.PENDING && kwi.getProcessInstance().getProcessId().equals(processId)) {
+                tmp.add(kwi);
+            }
+        }
+        return tmp;
     }
 
 }
