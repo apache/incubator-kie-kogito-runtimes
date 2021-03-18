@@ -132,9 +132,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             RowSet<Row> rows = getResultFromFuture(future);
             return rows.rowCount() == 1;
         } catch (Exception e) {
-            LOGGER.error("Error inserting process instance {}", id, e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error inserting process instance %s", id);
         }
+    }
+
+    private RuntimeException uncheckedException(Exception ex, String message, Object... param) {
+        return new RuntimeException(String.format(message, param), ex);
     }
 
     private Handler<AsyncResult<RowSet<Row>>> getAsyncResultHandler(CompletableFuture<RowSet<Row>> future) {
@@ -155,8 +158,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             RowSet<Row> rows = getResultFromFuture(future);
             return rows.rowCount() == 1;
         } catch (Exception e) {
-            LOGGER.error("Error updating process instance {}", id, e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error updating process instance %s", id);
         }
     }
 
@@ -168,8 +170,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             RowSet<Row> rows = getResultFromFuture(future);
             return rows.rowCount() == 1;
         } catch (Exception e) {
-            LOGGER.error("Error deleting process instance {}", id, e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error deleting process instance %s", id);
         }
     }
 
@@ -190,8 +191,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                     .map(row -> row.getBuffer("payload"))
                     .map(Buffer::getBytes);
         } catch (Exception e) {
-            LOGGER.error("Error finding process instance {}", id, e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error finding process instance %s", id);
         }
     }
 
@@ -206,8 +206,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                     .map(Buffer::getBytes)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            LOGGER.error("Error finding all process instances", e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
         }
     }
 
@@ -219,8 +218,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             RowSet<Row> rows = getResultFromFuture(future);
             return rows.iterator().next().getLong("count");
         } catch (Exception e) {
-            LOGGER.error("Error counting process instances", e);
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error counting process instances, for processId %s", process.id());
         }
     }
 
@@ -282,7 +280,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                             .getContextClassLoader()
                             .getResourceAsStream(String.format("sql/%s.sql", scriptName))));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw uncheckedException(e, "Error reading query script file %s", scriptName);
         }
     }
 }
