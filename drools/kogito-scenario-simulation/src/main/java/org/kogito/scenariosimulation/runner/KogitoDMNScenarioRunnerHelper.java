@@ -89,9 +89,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
     }
 
     protected void loadInputData(List<InstanceGiven> dataToLoad, DMNContext dmnContext) {
-        for (InstanceGiven input : dataToLoad) {
-            dmnContext.set(input.getFactIdentifier().getName(), input.getValue());
-        }
+        retrieveValuesToLoad(dataToLoad).forEach(dmnContext::set);
     }
 
     private Function<String, KieRuntimeFactory> initPmmlKieRuntimeFactory() {
