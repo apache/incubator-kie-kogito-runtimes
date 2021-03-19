@@ -24,6 +24,5 @@ public interface DataIndexClient {
         return "{ ProcessInstances ( where: { and : {  id: {  equal : \"" + processInstanceId + "\" } } }) { nodes { definitionId exit } } }";
     }
 
-    List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId);
-
+    List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId, String authHeader);
 }

@@ -111,10 +111,10 @@ public abstract class AbstractProcessSvgService implements ProcessSvgService {
     }
 
     @Override
-    public Optional<String> getProcessInstanceSvg(String processId, String processInstanceId) {
+    public Optional<String> getProcessInstanceSvg(String processId, String processInstanceId, String authHeader) {
         Optional<String> processSvg = getProcessSvg(processId);
         if (processSvg.isPresent()) {
-            List<NodeInstance> nodes = dataIndexClient.getNodeInstancesFromProcessInstance(processInstanceId);
+            List<NodeInstance> nodes = dataIndexClient.getNodeInstancesFromProcessInstance(processInstanceId, authHeader);
             List<String> completedNodes = nodes.stream().filter(NodeInstance::isCompleted).map(NodeInstance::getDefinitionId).collect(toList());
             List<String> activeNodes = nodes.stream().filter(n -> !n.isCompleted()).map(NodeInstance::getDefinitionId).collect(toList());
             return annotateExecutedPath(processSvg.get(), completedNodes, activeNodes);
