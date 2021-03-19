@@ -6,7 +6,7 @@
   <parent>
     <artifactId>events</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>1.4.1.Final</version>
+    <version>1.4.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-event-driven-decisions</artifactId>
