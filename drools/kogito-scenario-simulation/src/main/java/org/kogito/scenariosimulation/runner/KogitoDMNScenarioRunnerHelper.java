@@ -92,6 +92,31 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
         retrieveValuesToLoad(dataToLoad).forEach(dmnContext::set);
     }
 
+    protected Map<String, Object> retrieveValuesToLoad(List<InstanceGiven> dataToLoad) {
+        Map<String, Object> valueToLoad = new HashMap<>();
+        Map<String, Map<String, Object>> groupedValueToLoad = new HashMap<>();
+
+        for (InstanceGiven input : dataToLoad) {
+            if (input.getFactIdentifier().getName().contains(".")) {
+                String[] importedKey = retrieveKeys(input.getFactIdentifier().getName());
+                groupedValueToLoad.computeIfAbsent(importedKey[0], k -> new HashMap<>()).put(importedKey[1], input.getValue());
+            } else {
+                valueToLoad.put(input.getFactIdentifier().getName(), input.getValue());
+            }
+        }
+
+        groupedValueToLoad.forEach(valueToLoad::put);
+        return valueToLoad;
+    }
+
+    protected String[] retrieveKeys(String factIdentifierName) {
+        String[] factIdentifierNameParts = factIdentifierName.split("\\.");
+        if (factIdentifierNameParts.length > 2) {
+            throw new IllegalArgumentException("Invalid FactIdentified name: " + factIdentifierName);
+        }
+        return factIdentifierNameParts;
+    }
+
     private Function<String, KieRuntimeFactory> initPmmlKieRuntimeFactory() {
         try (Stream<Path> fileStream = Files.walk(Paths.get("."))) {
             Map<KieBase, KieRuntimeFactory> kieRuntimeFactories =
