@@ -66,7 +66,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
         DMNModel dmnModel = getDMNModel(dmnRuntime, settings);
         DMNContext dmnContext = dmnRuntime.newContext();
 
-        prepareInputValues(scenarioRunnerData.getBackgrounds(), scenarioRunnerData.getGivens()).forEach(dmnContext::set);
+        defineInputValues(scenarioRunnerData.getBackgrounds(), scenarioRunnerData.getGivens()).forEach(dmnContext::set);
 
         DMNResult dmnResult = dmnRuntime.evaluateAll(dmnModel, dmnContext);
 
