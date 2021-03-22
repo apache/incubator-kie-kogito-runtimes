@@ -129,6 +129,7 @@
     <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
     <version.com.github.ben-manes.caffeine>2.8.5</version.com.github.ben-manes.caffeine>
     <version.com.google.protobuf>3.14.0</version.com.google.protobuf>
+    <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.com.squareup.okhttp3>3.14.6</version.com.squareup.okhttp3>
     <version.com.sun.xml.bind>2.3.0</version.com.sun.xml.bind>
     <version.com.sun.activation>1.2.0</version.com.sun.activation>
@@ -195,7 +196,7 @@
     <version.org.springdoc>1.5.2</version.org.springdoc>
     <version.org.testcontainers>1.15.1</version.org.testcontainers>
     <version.org.xmlunit>2.2.1</version.org.xmlunit>
-    <version.io.netty>4.1.50.Final</version.io.netty>
+    <version.io.netty>4.1.52.Final</version.io.netty>
     <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
     <version.xerces>2.11.0</version.xerces>
