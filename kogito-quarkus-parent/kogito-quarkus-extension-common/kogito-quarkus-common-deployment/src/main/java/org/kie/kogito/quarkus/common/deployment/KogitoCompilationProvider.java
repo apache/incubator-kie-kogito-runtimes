@@ -44,7 +44,6 @@ import io.quarkus.deployment.dev.JavaCompilationProvider;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
-    public static final Map<Path, Path> classToSource = new ConcurrentHashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoCompilationProvider.class);
 
     @Override
@@ -92,15 +91,6 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         } catch (IOException e) {
             throw new UncheckedIOException("Exception while closing URLClassLoader", e);
         }
-    }
-
-    @Override
-    public Path getSourcePath(Path classFilePath, Set<String> sourcePaths, String classesPath) {
-        if (classToSource.containsKey(classFilePath)) {
-            return classToSource.get(classFilePath);
-        }
-
-        return null;
     }
 
     protected abstract Generator getGenerator(KogitoBuildContext context,
