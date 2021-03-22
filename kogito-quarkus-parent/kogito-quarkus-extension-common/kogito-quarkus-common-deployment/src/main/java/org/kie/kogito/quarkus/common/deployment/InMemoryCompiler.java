@@ -53,8 +53,8 @@ public class InMemoryCompiler {
         compilerSettings = javaCompiler.createDefaultSettings();
         compilerSettings.addOption("-proc:none"); // force disable annotation processing
         if (useDebugSymbols) {
-            compilerSettings.setDebug(true);
             compilerSettings.addOption("-g");
+            compilerSettings.addOption("-parameters");
         }
         for (Path classPath : classesPaths) {
             compilerSettings.addClasspath(classPath.toString());
