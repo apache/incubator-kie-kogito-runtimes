@@ -32,7 +32,6 @@ import org.drools.scenariosimulation.api.model.Settings;
 import org.drools.scenariosimulation.backend.expression.ExpressionEvaluatorFactory;
 import org.drools.scenariosimulation.backend.runner.DMNScenarioRunnerHelper;
 import org.drools.scenariosimulation.backend.runner.ScenarioException;
-import org.drools.scenariosimulation.backend.runner.model.InstanceGiven;
 import org.drools.scenariosimulation.backend.runner.model.ScenarioRunnerData;
 import org.drools.scenariosimulation.backend.util.DMNSimulationUtils;
 import org.kie.api.KieBase;
@@ -67,8 +66,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
         DMNModel dmnModel = getDMNModel(dmnRuntime, settings);
         DMNContext dmnContext = dmnRuntime.newContext();
 
-        loadInputData(scenarioRunnerData.getBackgrounds(), dmnContext);
-        loadInputData(scenarioRunnerData.getGivens(), dmnContext);
+        prepareInputValues(scenarioRunnerData.getBackgrounds(), scenarioRunnerData.getGivens()).forEach(dmnContext::set);
 
         DMNResult dmnResult = dmnRuntime.evaluateAll(dmnModel, dmnContext);
 
@@ -86,35 +84,6 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
             // if filename is not available or it fails, try directly with namespace/name
             return dmnRuntime.getModel(settings.getDmnNamespace(), settings.getDmnName());
         }
-    }
-
-    protected void loadInputData(List<InstanceGiven> dataToLoad, DMNContext dmnContext) {
-        retrieveValuesToLoad(dataToLoad).forEach(dmnContext::set);
-    }
-
-    protected Map<String, Object> retrieveValuesToLoad(List<InstanceGiven> dataToLoad) {
-        Map<String, Object> valueToLoad = new HashMap<>();
-        Map<String, Map<String, Object>> groupedValueToLoad = new HashMap<>();
-
-        for (InstanceGiven input : dataToLoad) {
-            if (input.getFactIdentifier().getName().contains(".")) {
-                String[] importedKey = retrieveKeys(input.getFactIdentifier().getName());
-                groupedValueToLoad.computeIfAbsent(importedKey[0], k -> new HashMap<>()).put(importedKey[1], input.getValue());
-            } else {
-                valueToLoad.put(input.getFactIdentifier().getName(), input.getValue());
-            }
-        }
-
-        groupedValueToLoad.forEach(valueToLoad::put);
-        return valueToLoad;
-    }
-
-    protected String[] retrieveKeys(String factIdentifierName) {
-        String[] factIdentifierNameParts = factIdentifierName.split("\\.");
-        if (factIdentifierNameParts.length > 2) {
-            throw new IllegalArgumentException("Invalid FactIdentified name: " + factIdentifierName);
-        }
-        return factIdentifierNameParts;
     }
 
     private Function<String, KieRuntimeFactory> initPmmlKieRuntimeFactory() {
