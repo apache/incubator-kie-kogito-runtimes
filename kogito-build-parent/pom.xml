@@ -127,6 +127,7 @@
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
     <version.com.github.victools>4.12.1</version.com.github.victools>
     <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
+    <version.com.github.ben-manes.caffeine>2.8.5</version.com.github.ben-manes.caffeine>
     <version.com.google.protobuf>3.14.0</version.com.google.protobuf>
     <version.com.squareup.okhttp3>3.14.6</version.com.squareup.okhttp3>
     <version.com.sun.xml.bind>2.3.0</version.com.sun.xml.bind>
