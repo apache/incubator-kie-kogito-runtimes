@@ -26,6 +26,8 @@ import java.util.function.UnaryOperator;
 
 public class AppPaths {
 
+    public static final String TARGET_DIR = "target";
+
     private final Set<Path> projectPaths = new LinkedHashSet<>();
     private final Collection<Path> classesPaths = new ArrayList<>();
 
@@ -65,10 +67,10 @@ public class AppPaths {
 
     private static PathType getPathType(Path archiveLocation) {
         String path = archiveLocation.toString();
-        if (path.endsWith("target" + File.separator + "classes")) {
+        if (path.endsWith(TARGET_DIR + File.separator + "classes")) {
             return PathType.CLASSES;
         }
-        if (path.endsWith("target" + File.separator + "test-classes")) {
+        if (path.endsWith(TARGET_DIR + File.separator + "test-classes")) {
             return PathType.TEST_CLASSES;
         }
         // Quarkus generates a file with extension .jar.original when doing a native compilation of a uberjar
@@ -104,8 +106,16 @@ public class AppPaths {
         return projectPaths.iterator().next();
     }
 
+    public boolean hasProjectPaths() {
+        return !this.projectPaths.isEmpty();
+    }
+
     public Path getFirstClassesPath() {
         return classesPaths.iterator().next();
+    }
+
+    public boolean hasClassesPaths() {
+        return !this.classesPaths.isEmpty();
     }
 
     private Path[] getJarPaths() {
@@ -137,5 +147,14 @@ public class AppPaths {
 
     private Path[] transformPaths(Collection<Path> paths, UnaryOperator<Path> f) {
         return paths.stream().map(f).toArray(Path[]::new);
+    }
+
+    @Override
+    public String toString() {
+        return "AppPaths{" +
+                "projectPaths=" + projectPaths +
+                ", classesPaths=" + classesPaths +
+                ", isJar=" + isJar +
+                '}';
     }
 }

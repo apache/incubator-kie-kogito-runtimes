@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.sample.generator;
+package org.kie.kogito.grafana.model.functions;
 
-import java.nio.file.Paths;
+public class Label {
+    private String key;
+    private String value;
 
-import org.drools.core.io.impl.FileSystemResource;
-import org.kie.kogito.codegen.api.io.CollectedResource;
-
-public class Utils {
-
-    private Utils() {
-        // utility class
+    public Label(String key, String value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public static CollectedResource toCollectedResource(String path) {
-        return new CollectedResource(Paths.get(path), new FileSystemResource(path));
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String render() {
+        return String.format("%s=%s", key, value);
     }
 }
