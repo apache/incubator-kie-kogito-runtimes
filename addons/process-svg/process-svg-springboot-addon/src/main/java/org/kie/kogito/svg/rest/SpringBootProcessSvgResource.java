@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/svg")
-public class ProcessSvgResource {
+public class SpringBootProcessSvgResource {
 
     @Autowired
     ProcessSvgService service;
