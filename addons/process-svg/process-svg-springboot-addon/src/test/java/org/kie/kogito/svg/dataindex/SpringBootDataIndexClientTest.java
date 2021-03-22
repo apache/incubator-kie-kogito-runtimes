@@ -18,9 +18,11 @@ package org.kie.kogito.svg.dataindex;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.svg.ProcessSVGException;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class SpringBootDataIndexClientTest {
@@ -63,11 +64,19 @@ public class SpringBootDataIndexClientTest {
             "  }\n" +
             "}";
 
-    SpringBootDataIndexClient client = new SpringBootDataIndexClient("data-indexURL", null);
+    private SpringBootDataIndexClient client;
+    final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Mock
+    RestTemplate restTemplate;
+
+    @BeforeEach
+    void setUp() {
+        client = new SpringBootDataIndexClient("data-indexURL", restTemplate, objectMapper);
+    }
 
     @Test
     public void testGetNodeInstancesFromResponse() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode response = objectMapper.readTree(jsonString);
         List<NodeInstance> nodes = client.getNodeInstancesFromResponse(response);
         assertThat(nodes).hasSize(2).containsExactly(
@@ -77,7 +86,6 @@ public class SpringBootDataIndexClientTest {
 
     @Test
     public void testGetEmptyNodeInstancesFromResponse() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         String emptyResults = "{ \"data\": { \"ProcessInstances\": [] }}";
         JsonNode response = objectMapper.readTree(emptyResults);
         List<NodeInstance> nodes = client.getNodeInstancesFromResponse(response);
@@ -86,9 +94,7 @@ public class SpringBootDataIndexClientTest {
 
     @Test
     public void testGetNodeInstancesFromProcessInstanceOkResponse() {
-        RestTemplate restTemplate = mock(RestTemplate.class);
-        client = new SpringBootDataIndexClient("data-indexURL", restTemplate);
-        lenient().when(restTemplate.postForEntity(eq("data-indexURL/graphql"), any(HttpEntity.class), eq(String.class))).thenReturn(ResponseEntity.ok(jsonString));
+        when(restTemplate.postForEntity(eq("data-indexURL/graphql"), any(HttpEntity.class), eq(String.class))).thenReturn(ResponseEntity.ok(jsonString));
 
         List<NodeInstance> nodes = client.getNodeInstancesFromProcessInstance(PROCESS_INSTANCE_ID, "authHeader");
         assertThat(nodes).hasSize(2).containsExactly(
@@ -98,10 +104,8 @@ public class SpringBootDataIndexClientTest {
 
     @Test
     public void testGetNodeInstancesFromProcessInstance() {
-        RestTemplate restTemplate = mock(RestTemplate.class);
-        client = new SpringBootDataIndexClient("data-indexURL", restTemplate);
 
-        lenient().when(restTemplate.postForEntity(eq("data-indexURL/graphql"), any(HttpEntity.class), eq(String.class))).thenThrow(HttpClientErrorException.NotFound.class);
+        when(restTemplate.postForEntity(eq("data-indexURL/graphql"), any(HttpEntity.class), eq(String.class))).thenThrow(HttpClientErrorException.NotFound.class);
         assertThatThrownBy(() -> client.getNodeInstancesFromProcessInstance(PROCESS_INSTANCE_ID, "authHeader")).isInstanceOf(ProcessSVGException.class);
     }
 }

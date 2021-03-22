@@ -18,7 +18,6 @@ package org.kie.kogito.svg.dataindex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -48,13 +47,16 @@ public class SpringBootDataIndexClient implements DataIndexClient {
     private String dataIndexHttpURL;
 
     private RestTemplate restTemplate;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public SpringBootDataIndexClient(
             @Value("${kogito.dataindex.http.url:http://localhost:8180}") String dataIndexHttpURL,
-            @Autowired(required = false) RestTemplate restTemplate) {
+            @Autowired(required = false) RestTemplate restTemplate,
+            @Autowired ObjectMapper objectMapper) {
         this.dataIndexHttpURL = dataIndexHttpURL;
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @PostConstruct
@@ -68,11 +70,8 @@ public class SpringBootDataIndexClient implements DataIndexClient {
     @Override
     public List<NodeInstance> getNodeInstancesFromProcessInstance(String processInstanceId, String authHeader) {
         String query = getNodeInstancesQuery(processInstanceId);
-        CompletableFuture<List<NodeInstance>> cf = new CompletableFuture<>();
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             String requestJson = objectMapper.writeValueAsString(singletonMap("query", query));
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.add("Authorization", authHeader);
@@ -80,9 +79,9 @@ public class SpringBootDataIndexClient implements DataIndexClient {
             ResponseEntity<String> result = restTemplate.postForEntity(dataIndexHttpURL + "/graphql",
                     request, String.class);
             if (result.getStatusCode().value() == 200) {
-                cf.complete(getNodeInstancesFromResponse(objectMapper.readTree(result.getBody())));
+                return getNodeInstancesFromResponse(objectMapper.readTree(result.getBody()));
             }
-            return cf.get();
+            return emptyList();
         } catch (Exception e) {
             throw new ProcessSVGException("Exception while trying to get data from Data Index service", e);
         }
