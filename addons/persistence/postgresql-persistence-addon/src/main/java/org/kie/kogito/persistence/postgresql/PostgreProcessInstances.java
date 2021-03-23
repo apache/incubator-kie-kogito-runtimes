@@ -17,6 +17,7 @@ package org.kie.kogito.persistence.postgresql;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +47,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowIterator;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
@@ -53,25 +55,21 @@ import io.vertx.sqlclient.Tuple;
 public class PostgreProcessInstances implements MutableProcessInstances {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgreProcessInstances.class);
-    private static final int TIMEOUT_IN_SECONDS = 10;
 
     private final Process<?> process;
     private final PgPool client;
     private final ProcessInstanceMarshaller marshaller;
     private final boolean autoDDL;
+    private final Long queryTimeoutMillis;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, String proto,
+    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
+            String proto,
             BaseMarshaller<?>... marshallers) {
-        this(process, client, autoDDL, new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto,
-                marshallers)));
-    }
-
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL,
-            ProcessInstanceMarshaller marshaller) {
         this.process = process;
         this.client = client;
         this.autoDDL = autoDDL;
-        this.marshaller = marshaller;
+        this.queryTimeoutMillis = queryTimeoutMillis;
+        this.marshaller = new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers));
         init();
     }
 
@@ -129,8 +127,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("INSERT INTO process_instances (id, payload, process_id) VALUES ($1, $2, $3)")
                     .execute(Tuple.of(id, Buffer.buffer(payload), process.id()), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return rows.rowCount() == 1;
+            return getExecutedResult(future);
         } catch (Exception e) {
             throw uncheckedException(e, "Error inserting process instance %s", id);
         }
@@ -155,8 +152,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("UPDATE process_instances SET payload = $1 WHERE id = $2)")
                     .execute(Tuple.of(Buffer.buffer(payload), id), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return rows.rowCount() == 1;
+            return getExecutedResult(future);
         } catch (Exception e) {
             throw uncheckedException(e, "Error updating process instance %s", id);
         }
@@ -167,16 +163,28 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("DELETE FROM process_instances WHERE id = $1")
                     .execute(Tuple.of(id), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return rows.rowCount() == 1;
+            return getExecutedResult(future);
         } catch (Exception e) {
             throw uncheckedException(e, "Error deleting process instance %s", id);
         }
     }
 
-    private RowSet<Row> getResultFromFuture(CompletableFuture<RowSet<Row>> future) throws InterruptedException,
-            ExecutionException, TimeoutException {
-        return future.get(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
+    private Boolean getExecutedResult(CompletableFuture<RowSet<Row>> future) throws ExecutionException,
+            TimeoutException, InterruptedException {
+        return getResultFromFuture(future)
+                .map(RowSet::rowCount)
+                .map(count -> Objects.equals(count, 1))
+                .orElse(false);
+    }
+
+    private Optional<RowSet<Row>> getResultFromFuture(CompletableFuture<RowSet<Row>> future) throws ExecutionException,
+            TimeoutException, InterruptedException {
+        try {
+            return Optional.ofNullable(future.get(queryTimeoutMillis, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw e;
+        }
     }
 
     private Optional<byte[]> findByIdInternal(UUID id) {
@@ -184,8 +192,8 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("SELECT payload FROM process_instances WHERE id = $1")
                     .execute(Tuple.of(id), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return Optional.ofNullable(rows.iterator())
+            return getResultFromFuture(future)
+                    .map(RowSet::iterator)
                     .filter(Iterator::hasNext)
                     .map(Iterator::next)
                     .map(row -> row.getBuffer("payload"))
@@ -200,11 +208,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("SELECT payload FROM process_instances WHERE process_id = $1")
                     .execute(Tuple.of(process.id()), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return StreamSupport.stream(rows.spliterator(), false)
-                    .map(row -> row.getBuffer("payload"))
-                    .map(Buffer::getBytes)
-                    .collect(Collectors.toList());
+            return getResultFromFuture(future)
+                    .map(r -> StreamSupport.stream(r.spliterator(), false)
+                            .map(row -> row.getBuffer("payload"))
+                            .map(Buffer::getBytes)
+                            .collect(Collectors.toList()))
+                    .orElseGet(Collections::emptyList);
         } catch (Exception e) {
             throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
         }
@@ -215,8 +224,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
             client.preparedQuery("SELECT COUNT(id) FROM process_instances WHERE process_id = $1")
                     .execute(Tuple.of(process.id()), getAsyncResultHandler(future));
-            RowSet<Row> rows = getResultFromFuture(future);
-            return rows.iterator().next().getLong("count");
+            return getResultFromFuture(future)
+                    .map(RowSet::iterator)
+                    .map(RowIterator::next)
+                    .map(row -> row.getLong("count"))
+                    .orElse(0l);
         } catch (Exception e) {
             throw uncheckedException(e, "Error counting process instances, for processId %s", process.id());
         }
@@ -260,12 +272,15 @@ public class PostgreProcessInstances implements MutableProcessInstances {
                             return futureCreate;
                         });
             });
-            RowSet<Row> rows = getResultFromFuture(futureCompose);
-            if (Objects.nonNull(rows) && rows.rowCount() > 0) {
-                LOGGER.info("DDL successfully done for ProcessInstance");
-            } else {
-                LOGGER.info("DDL executed with no changes for ProcessInstance");
-            }
+            getResultFromFuture(futureCompose)
+                    .map(RowSet::rowCount)
+                    .ifPresent(count -> {
+                        if (count > 0) {
+                            LOGGER.info("DDL successfully done for ProcessInstance");
+                        } else {
+                            LOGGER.info("DDL executed with no changes for ProcessInstance");
+                        }
+                    });
         } catch (Exception e) {
             //not break the execution flow in case of any missing permission for db application user, for instance.
             LOGGER.error("Error creating process_instances table, the database should be configured properly before " +

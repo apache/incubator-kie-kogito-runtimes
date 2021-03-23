@@ -23,9 +23,7 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 
 public interface ProtoStreamProcessInstancesFactory extends ProcessInstancesFactory {
 
-    default String proto() {
-        return null;
-    }
+    String proto();
 
     default List<? extends BaseMarshaller> marshallers() {
         return Collections.emptyList();

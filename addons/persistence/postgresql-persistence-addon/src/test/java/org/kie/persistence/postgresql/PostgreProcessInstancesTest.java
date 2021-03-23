@@ -118,7 +118,7 @@ class PostgreProcessInstancesTest {
     private class PostgreProcessInstancesFactory extends KogitoProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client) {
-            super(client, true);
+            super(client, true, 10000l);
         }
 
         @Override

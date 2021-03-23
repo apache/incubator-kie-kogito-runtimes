@@ -86,6 +86,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     private static final String JAVA = ".java";
     public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
     public static final String KOGITO_POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
+    private static final String KOGITO_PERSISTENCE_QUERY_TIMEOUT = "kogito.persistence.query.timeout.millis";
 
     private final ProtoGenerator protoGenerator;
 
@@ -384,12 +385,17 @@ public class PersistenceGenerator extends AbstractGenerator {
                     .addConstructor(Keyword.PUBLIC)
                     .addParameter(pgPoolClass, "client")
                     .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), "autoDDL")
+                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Long.class.getName()), "queryTimeout")
                     .setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt()
                             .setThis(false)
                             .addArgument(new NameExpr("client"))
-                            .addArgument("autoDDL")));
+                            .addArgument("autoDDL")
+                            .addArgument("queryTimeout")));
             context().getDependencyInjectionAnnotator().withConfigInjection(
                     constructor.getParameterByName("autoDDL").get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
+            context().getDependencyInjectionAnnotator().withConfigInjection(
+                    constructor.getParameterByName("queryTimeout").get(), KOGITO_PERSISTENCE_QUERY_TIMEOUT,
+                    String.valueOf(10000));
             context().getDependencyInjectionAnnotator().withNamed(
                     constructor.getParameterByName("client").get(), "kogito");
             context().getDependencyInjectionAnnotator().withInjection(constructor);
