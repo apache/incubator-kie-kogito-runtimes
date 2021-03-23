@@ -43,7 +43,6 @@ public class PostgreSqlQuarkusTestResource extends ConditionalQuarkusTestResourc
     public static class Conditional extends PostgreSqlQuarkusTestResource {
 
         public Conditional() {
-            super();
             enableConditional();
         }
     }

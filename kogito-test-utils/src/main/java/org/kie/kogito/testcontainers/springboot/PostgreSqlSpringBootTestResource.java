@@ -43,7 +43,6 @@ public class PostgreSqlSpringBootTestResource extends ConditionalSpringBootTestR
     public static class Conditional extends PostgreSqlSpringBootTestResource {
 
         public Conditional() {
-            super();
             enableConditional();
         }
     }
