@@ -32,7 +32,7 @@ public abstract class KogitoProcessInstancesFactory implements ProtoStreamProces
     private final boolean autoDDL;
 
     protected KogitoProcessInstancesFactory() {
-        this(null, null, null);
+        this(null, true, 10000L);
     }
 
     public KogitoProcessInstancesFactory(PgPool client, Boolean autoDDL, Long queryTimeout) {
