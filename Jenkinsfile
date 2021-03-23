@@ -261,7 +261,6 @@ MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, b
             .withProperty('quarkus.native.container-build', true)
             .withProperty('quarkus.native.container-runtime', 'docker')
             .withProperty('quarkus.profile', 'native') // Added due to https://github.com/quarkusio/quarkus/issues/13341
-
     }
     return mvnCmd
 }
