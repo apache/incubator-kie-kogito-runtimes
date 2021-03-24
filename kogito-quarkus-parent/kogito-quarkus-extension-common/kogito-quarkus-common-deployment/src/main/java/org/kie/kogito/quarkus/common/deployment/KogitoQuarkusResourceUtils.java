@@ -23,13 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppDependency;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import org.jboss.jandex.CompositeIndex;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
@@ -42,15 +38,23 @@ import org.kie.memorycompiler.resources.ResourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.toList;
+import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.bootstrap.model.AppDependency;
+import io.quarkus.deployment.annotations.BuildProducer;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 
-import static org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor.HOT_RELOAD_SUPPORT_FQN;
-import static org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor.HOT_RELOAD_SUPPORT_PATH;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Utility class to aggregate and share resource handling in Kogito extensions
  */
 public class KogitoQuarkusResourceUtils {
+
+    static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kogito";
+    static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
+    static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
+    static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
 
     private KogitoQuarkusResourceUtils() {
         // utility class
@@ -204,5 +208,13 @@ public class KogitoQuarkusResourceUtils {
         Path path = Paths.get(location, end);
         path.getParent().toFile().mkdirs();
         return path;
+    }
+
+    static String getHotReloadSupportSource() {
+        return "package " + HOT_RELOAD_SUPPORT_PACKAGE + ";\n" +
+                "@io.quarkus.runtime.Startup()\n" +
+                "public class " + HOT_RELOAD_SUPPORT_CLASS + " {\n" +
+                "private static final String ID = \"" + UUID.randomUUID().toString() + "\";\n" +
+                "}";
     }
 }

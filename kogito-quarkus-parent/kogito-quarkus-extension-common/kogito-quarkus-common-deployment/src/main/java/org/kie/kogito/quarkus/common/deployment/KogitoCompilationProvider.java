@@ -17,6 +17,7 @@ package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,8 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import io.quarkus.deployment.dev.JavaCompilationProvider;
 
-import static org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor.HOT_RELOAD_SUPPORT_PATH;
-import static org.kie.kogito.quarkus.common.deployment.KogitoAssetsProcessor.getHotReloadSupportSource;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.HOT_RELOAD_SUPPORT_PATH;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getHotReloadSupportSource;
 
 public abstract class KogitoCompilationProvider extends JavaCompilationProvider {
 
@@ -47,7 +48,7 @@ public abstract class KogitoCompilationProvider extends JavaCompilationProvider 
         try {
             Files.write(path, getHotReloadSupportSource().getBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
 
         super.compile(Collections.singleton(path.toFile()), quarkusContext);

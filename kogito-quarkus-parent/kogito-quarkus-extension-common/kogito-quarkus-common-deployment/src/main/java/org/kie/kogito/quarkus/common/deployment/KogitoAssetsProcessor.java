@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -47,8 +46,10 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.HOT_RELOAD_SUPPORT_PATH;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.compileGeneratedSources;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getHotReloadSupportSource;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
 
@@ -65,11 +66,6 @@ public class KogitoAssetsProcessor {
     CurateOutcomeBuildItem curateOutcomeBuildItem;
     @Inject
     CombinedIndexBuildItem combinedIndexBuildItem;
-
-    static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kogito";
-    static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
-    static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
-    static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
 
     /**
      * Main entry point of the Quarkus extension
@@ -274,13 +270,5 @@ public class KogitoAssetsProcessor {
         }
 
         return kogitoIndexer.complete();
-    }
-
-    static String getHotReloadSupportSource() {
-        return "package " + HOT_RELOAD_SUPPORT_PACKAGE + ";\n" +
-                "@io.quarkus.runtime.Startup()\n" +
-                "public class " + HOT_RELOAD_SUPPORT_CLASS + " {\n" +
-                "private static final String ID = \"" + UUID.randomUUID().toString() + "\";\n" +
-                "}";
     }
 }
