@@ -678,7 +678,7 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>process-svg-springboot-addon</artifactId>
+        <artifactId>process-svg-quarkus-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -689,7 +689,7 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>process-svg-quarkus-addon</artifactId>
+        <artifactId>process-svg-springboot-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
