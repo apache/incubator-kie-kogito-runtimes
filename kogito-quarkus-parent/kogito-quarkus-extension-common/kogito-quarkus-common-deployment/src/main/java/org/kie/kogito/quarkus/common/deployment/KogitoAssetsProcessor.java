@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
@@ -64,6 +66,11 @@ public class KogitoAssetsProcessor {
     @Inject
     CombinedIndexBuildItem combinedIndexBuildItem;
 
+    static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kogito";
+    static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
+    static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
+    static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
+
     /**
      * Main entry point of the Quarkus extension
      */
@@ -74,14 +81,16 @@ public class KogitoAssetsProcessor {
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
-        if (liveReload.isLiveReload()) {
-            return Collections.emptyList();
-        }
-
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
+
+        // The HotReloadSupportClass has to be generated only during the first model generation
+        // During actual hot reloads it will be regenrated by the compilation providers in order to retrigger this build step
+        if (!liveReload.isLiveReload()) {
+            generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, HOT_RELOAD_SUPPORT_PATH + ".java", getHotReloadSupportSource()));
+        }
 
         // dump files to disk
         dumpFilesToDisk(context.getAppPaths(), generatedFiles);
@@ -265,5 +274,13 @@ public class KogitoAssetsProcessor {
         }
 
         return kogitoIndexer.complete();
+    }
+
+    static String getHotReloadSupportSource() {
+        return "package " + HOT_RELOAD_SUPPORT_PACKAGE + ";\n" +
+                "@io.quarkus.runtime.Startup()\n" +
+                "public class " + HOT_RELOAD_SUPPORT_CLASS + " {\n" +
+                "private static final String ID = \"" + UUID.randomUUID().toString() + "\";\n" +
+                "}";
     }
 }
