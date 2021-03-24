@@ -19,27 +19,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Collections;
 
-import org.drools.core.impl.EnvironmentImpl;
-import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
-import org.drools.core.marshalling.impl.MarshallerReaderContext;
-import org.drools.core.marshalling.impl.SerializablePlaceholderResolverStrategy;
-import org.jbpm.marshalling.impl.JBPMMessages;
-import org.jbpm.marshalling.impl.KogitoMarshallerReaderContext;
-import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
-import org.jbpm.marshalling.impl.ProcessMarshallerRegistry;
+import org.bson.Document;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.EnvironmentName;
 import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
-import org.kie.kogito.mongodb.utils.ProcessInstanceDocumentMapper;
-import org.kie.kogito.mongodb.utils.ProcessInstanceMessageMapper;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
+import org.kie.kogito.serialization.process.MarshallerReaderContext;
+import org.kie.kogito.serialization.process.MarshallerWriterContext;
+import org.kie.kogito.serialization.process.ProcessInstanceMarshaller;
+import org.kie.kogito.serialization.process.ProcessMarshallerFactory;
+import org.kie.kogito.serialization.protobuf.process.util.ClassObjectMarshallingStrategyAcceptor;
+import org.kie.kogito.serialization.protobuf.process.util.EnvironmentImpl;
+import org.kie.kogito.serialization.protobuf.process.util.SerializablePlaceholderResolverStrategy;
 
 import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_MARSHALLING_ERROR_MSG;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_UNMARSHALLING_ERROR_MSG;
@@ -68,11 +65,15 @@ public class DocumentProcessInstanceMarshaller {
         try {
             WorkflowProcessInstance pi = ((AbstractProcessInstance<?>) processInstance).internalGetProcessInstance();
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                KogitoProcessMarshallerWriteContext context = new KogitoProcessMarshallerWriteContext(baos, null, null, null, null, env);
-                org.jbpm.marshalling.impl.ProcessInstanceMarshaller marshaller = ProcessMarshallerRegistry.INSTANCE.getMarshaller(pi.getProcess().getType());
-                JBPMMessages.ProcessInstance instance = (JBPMMessages.ProcessInstance) marshaller.writeProcessInstance(context, pi);
-                ProcessInstanceDocument document = new ProcessInstanceDocumentMapper().apply(context, instance);
+                env.set(ProcessMarshallerFactory.FORMAT, "json");
+                MarshallerWriterContext context = ProcessMarshallerFactory.newWriterContext(baos, env);
+                ProcessInstanceMarshaller marshaller = ProcessMarshallerFactory.newKogitoProcessInstanceMarshaller();
+                marshaller.writeProcessInstance(context, pi);
                 pi.disconnect();
+
+                ProcessInstanceDocument document = new ProcessInstanceDocument();
+                document.setId(processInstance.id());
+                document.setProcessInstance(Document.parse(new String(baos.toByteArray())));
                 return document;
             }
         } catch (Exception e) {
@@ -83,12 +84,8 @@ public class DocumentProcessInstanceMarshaller {
     public WorkflowProcessInstance unmarshallWorkflowProcessInstance(ProcessInstanceDocument doc, Process<?> process) {
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(getDummyByteArray())) {
-            MarshallerReaderContext context = new KogitoMarshallerReaderContext(bais,
-                    Collections.singletonMap(process.id(), ((AbstractProcess<?>) process).process()),
-                    null, null, null, env);
-            JBPMMessages.ProcessInstance instance = new ProcessInstanceMessageMapper().apply(context, doc);
-            context.setParameterObject(instance);
-            org.jbpm.marshalling.impl.ProcessInstanceMarshaller marshaller = ProcessMarshallerRegistry.INSTANCE.getMarshaller(instance.getProcessType());
+            MarshallerReaderContext context = ProcessMarshallerFactory.newReaderContext(bais, env);
+            ProcessInstanceMarshaller marshaller = ProcessMarshallerFactory.newKogitoProcessInstanceMarshaller();
             return (WorkflowProcessInstance) marshaller.readProcessInstance(context);
         } catch (Exception e) {
             throw new DocumentUnmarshallingException(process.id(), e, DOCUMENT_UNMARSHALLING_ERROR_MSG);

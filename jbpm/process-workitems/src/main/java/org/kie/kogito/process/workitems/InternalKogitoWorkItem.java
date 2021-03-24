@@ -16,11 +16,12 @@
 package org.kie.kogito.process.workitems;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
-public interface InternalKogitoWorkItem extends org.drools.core.process.instance.WorkItem, org.kie.kogito.internal.process.runtime.KogitoWorkItem {
+public interface InternalKogitoWorkItem extends org.kie.kogito.internal.process.runtime.KogitoWorkItem {
 
     void setProcessInstanceId(String processInstanceId);
 
@@ -39,4 +40,28 @@ public interface InternalKogitoWorkItem extends org.drools.core.process.instance
     void setNodeInstance(KogitoNodeInstance nodeInstance);
 
     void setProcessInstance(KogitoProcessInstance processInstance);
+
+    void setParameters(Map<String, Object> map);
+
+    void setResults(Map<String, Object> results);
+
+    void setState(int state);
+
+    void setName(String name);
+
+    void setProcessInstanceId(long processInstanceId);
+
+    void setParameter(String name, Object value);
+
+    String getDeploymentId();
+
+    void setDeploymentId(String deploymentId);
+
+    void setNodeInstanceId(long deploymentId);
+
+    long getNodeInstanceId();
+
+    long getNodeId();
+
+    void setNodeId(long nodeId);
 }

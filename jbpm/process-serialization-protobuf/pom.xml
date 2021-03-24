@@ -12,31 +12,35 @@
   <artifactId>process-serialization-protobuf</artifactId>
   <name>Kogito :: Process :: Protobuf Serialization</name>
   <description>Kogito Process Protobuf Serialization</description>
+  <properties>
+      <sonar.exclusions>**/JBPMMessages.java, **/ProtobufMessages.java</sonar.exclusions>
+  </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-flow</artifactId>
+      <exclusions>
+        <exclusion>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>drools-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-drools</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-drools</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-serialization-protobuf</artifactId>
-      <version>${version.org.kie7}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.drools</groupId>
-          <artifactId>drools-core</artifactId>
-        </exclusion>
-      </exclusions>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java-util</artifactId>
     </dependency>
+
   </dependencies>
   <profiles>
     <profile>
@@ -55,6 +59,7 @@
              </configuration>
             <executions>
               <execution>
+                <phase>generate-sources</phase>
                 <goals>
                   <goal>compile</goal>
                 </goals>

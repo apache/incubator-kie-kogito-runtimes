@@ -17,19 +17,7 @@ package org.kie.kogito.process.impl.marshalling;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collections;
 
-import org.drools.core.impl.EnvironmentImpl;
-import org.drools.core.marshalling.impl.ClassObjectMarshallingStrategyAcceptor;
-import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStrategy;
-import org.drools.core.marshalling.impl.MarshallerReaderContext;
-import org.drools.core.marshalling.impl.SerializablePlaceholderResolverStrategy;
-import org.drools.serialization.protobuf.PersisterHelper;
-import org.jbpm.marshalling.impl.JBPMMessages;
-import org.jbpm.marshalling.impl.KogitoMarshallerReaderContext;
-import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
-import org.jbpm.marshalling.impl.ProcessMarshallerRegistry;
-import org.jbpm.marshalling.impl.ProtobufRuleFlowProcessInstanceMarshaller;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.Environment;
@@ -38,10 +26,16 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.impl.AbstractProcess;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
+import org.kie.kogito.serialization.process.MarshallerReaderContext;
+import org.kie.kogito.serialization.process.MarshallerWriterContext;
+import org.kie.kogito.serialization.process.ProcessMarshallerFactory;
+import org.kie.kogito.serialization.protobuf.process.util.ClassObjectMarshallingStrategyAcceptor;
+import org.kie.kogito.serialization.protobuf.process.util.KogitoSerializablePlaceholderResolverStrategy;
+import org.kie.kogito.serialization.protobuf.process.util.SerializablePlaceholderResolverStrategy;
 
 public class ProcessInstanceMarshaller {
 
-    private Environment env = new EnvironmentImpl();
+    private Environment env = new org.kie.kogito.serialization.protobuf.process.util.EnvironmentImpl();
 
     public ProcessInstanceMarshaller(ObjectMarshallingStrategy... strategies) {
         ObjectMarshallingStrategy[] strats = null;
@@ -65,27 +59,9 @@ public class ProcessInstanceMarshaller {
         WorkflowProcessInstance pi = ((AbstractProcessInstance<?>) processInstance).internalGetProcessInstance();
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-
-            KogitoProcessMarshallerWriteContext context = new KogitoProcessMarshallerWriteContext(baos,
-                    null,
-                    null,
-                    null,
-                    null,
-                    this.env);
-            context.setProcessInstanceId(pi.getStringId());
-            context.setState(pi.getState());
-
-            String processType = pi.getProcess().getType();
-            context.writeUTF(processType);
-
-            org.jbpm.marshalling.impl.ProcessInstanceMarshaller marshaller = ProcessMarshallerRegistry.INSTANCE.getMarshaller(processType);
-
-            Object result = marshaller.writeProcessInstance(context, pi);
-            if (marshaller instanceof ProtobufRuleFlowProcessInstanceMarshaller && result != null) {
-                JBPMMessages.ProcessInstance _instance = (JBPMMessages.ProcessInstance) result;
-                PersisterHelper.writeToStreamWithHeader(context, _instance);
-            }
-            context.close();
+            MarshallerWriterContext context = ProcessMarshallerFactory.newWriterContext(baos, this.env);
+            org.kie.kogito.serialization.process.ProcessInstanceMarshaller marshaller = ProcessMarshallerFactory.newKogitoProcessInstanceMarshaller();
+            marshaller.writeProcessInstance(context, pi);
             pi.disconnect();
             return baos.toByteArray();
         } catch (Exception e) {
@@ -95,16 +71,9 @@ public class ProcessInstanceMarshaller {
 
     public WorkflowProcessInstance unmarshallWorkflowProcessInstance(byte[] data, Process<?> process) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(data)) {
-            MarshallerReaderContext context = new KogitoMarshallerReaderContext(bais,
-                    Collections.singletonMap(process.id(), ((AbstractProcess<?>) process).process()),
-                    null, null, null, this.env);
-            String processInstanceType = context.readUTF();
-
-            org.jbpm.marshalling.impl.ProcessInstanceMarshaller marshaller = ProcessMarshallerRegistry.INSTANCE.getMarshaller(processInstanceType);
-
+            MarshallerReaderContext context = ProcessMarshallerFactory.newReaderContext(bais, this.env);
+            org.kie.kogito.serialization.process.ProcessInstanceMarshaller marshaller = ProcessMarshallerFactory.newKogitoProcessInstanceMarshaller();
             WorkflowProcessInstance pi = (WorkflowProcessInstance) marshaller.readProcessInstance(context);
-
-            context.close();
             return pi;
         } catch (Exception e) {
             throw new RuntimeException("Error while unmarshalling process instance", e);

@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import org.drools.core.process.instance.WorkItem;
+import org.kie.api.runtime.process.WorkItem;
 import org.kie.internal.runtime.Closeable;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -148,16 +148,6 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
             }
             workItems.remove(id);
         }
-    }
-
-    @Override
-    public void completeWorkItem(long l, Map<String, Object> map) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void abortWorkItem(long l) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -26,10 +26,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import org.drools.core.process.instance.WorkItem;
 import org.jbpm.process.instance.impl.workitem.Abort;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
+import org.kie.api.runtime.process.WorkItem;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
@@ -238,16 +238,6 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
             eventSupport.fireAfterWorkItemTransition(processInstance, workItem, transition, null);
             workItems.remove(id);
         }
-    }
-
-    @Override
-    public void completeWorkItem(long l, Map<String, Object> map) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void abortWorkItem(long l) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

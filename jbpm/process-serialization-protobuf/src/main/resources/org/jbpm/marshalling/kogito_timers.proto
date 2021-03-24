@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package org.kie.kogito.serialization.protobuf;
+
+option java_package = "org.kie.kogito.serialization.protobuf";
+option java_outer_classname = "KogitoTimersProtobuf";
+
+import "google/protobuf/any.proto";
+
+message Timers {
+    repeated Timer timer = 1; 
+    optional ProcessTimer proc_timer = 2;
+}
+
+// timers
+message Timer {
+    enum TimerType {
+        EXPIRE = 0;
+        ACTIVATION = 1;
+        BEHAVIOR = 2;
+        PROCESS = 3;
+        TIMER_NODE = 4;
+    }
+
+    TimerType type = 1;
+    google.protobuf.Any data = 2;
+}
+
+message ExpireTimerData {
+    optional int64 handle_id = 1;
+    optional string entry_point_id = 2;
+    optional string class_name = 3;
+    optional int64 next_fire_timestamp = 4;
+}
+
+message TimerNodeTimerData {
+    optional int32 node_id = 1;
+    optional Tuple tuple = 2;
+}
+
+
+
+message ProcessTimer {
+    // timer instance
+    optional int64 id = 1;
+    optional string timer_id = 2;
+    optional int64 delay = 3;
+    optional int64 period = 4;
+    optional string process_instance_id = 5;
+    optional int64 activated_time = 6;
+    optional int64 last_triggered = 7;
+    optional int32 repeatLimit = 10;
+
+    // trigger
+    optional Trigger trigger = 11;
+
+}
+
+message Trigger {
+    enum TriggerType {
+        CRON = 0;
+        INTERVAL = 1;
+        POINT_IN_TIME = 2;
+        COMPOSITE_MAX_DURATION = 3;
+    }
+    TriggerType type = 11;
+    google.protobuf.Any trigger = 12;
+}
+
+// trigger types types
+message CronTrigger {
+    optional int64 start_time = 1;
+    optional int64 end_time = 2;
+    optional int32 repeat_limit = 3;
+    optional int32 repeat_count = 4;
+    optional string cron_expression = 5;
+    optional int64 next_fire_time = 6;
+    repeated string calendar_name = 7;
+}
+
+message IntervalTrigger {
+    optional int64 start_time = 1;
+    optional int64 end_time = 2;
+    optional int32 repeat_limit = 3;
+    optional int32 repeat_count = 4;
+    optional int64 next_fire_time = 6;
+    optional int64 period = 7;
+    repeated string calendar_name = 8;
+}
+message PointInTimeTrigger {
+    optional int64 next_fire_time = 1;
+}
+
+message CompositeMaxDurationTrigger {
+    optional int64 maxDurationTimestamp = 1;
+    optional int64 timerCurrentDate = 2;
+    optional Trigger timerTrigger = 3;
+}
+
+message Tuple {
+    repeated int64 handle_id = 1;
+    repeated SerializedObject object = 2;
+}
+
+message SerializedObject {
+    optional int32 strategy_index = 1;
+    optional bytes object = 2;
+}

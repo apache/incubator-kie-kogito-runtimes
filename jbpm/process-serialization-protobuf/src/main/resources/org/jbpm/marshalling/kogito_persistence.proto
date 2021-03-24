@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package org.kie.kogito.serialization.protobuf;
+
+option java_package = "org.kie.kogito.serialization.protobuf";
+option java_outer_classname = "KogitoPersistenceProtobuf";
+
+import "org/jbpm/marshalling/kogito_process_instance.proto";
+import "org/jbpm/marshalling/kogito_timers.proto";
+
+message PersistenceData {
+    repeated ProcessInstance process_instance = 1;
+    repeated ProcessTimer process_timer = 4;
+}
+
+
