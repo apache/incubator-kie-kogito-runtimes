@@ -51,7 +51,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class KogitoQuarkusResourceUtils {
 
-    static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kogito";
+    static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kie.kogito";
     static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
     static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
     static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
