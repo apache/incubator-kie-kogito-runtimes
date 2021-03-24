@@ -102,34 +102,6 @@ public class TraceHeader {
         return messages;
     }
 
-    public void setType(TraceEventType type) {
-        this.type = type;
-    }
-
-    public void setExecutionId(String executionId) {
-        this.executionId = executionId;
-    }
-
-    public void setStartTimestamp(Long timestamp) {
-        this.startTimestamp = timestamp;
-    }
-
-    public void setEndTimestamp(Long endTimestamp) {
-        this.endTimestamp = endTimestamp;
-    }
-
-    public void setDuration(Long duration) {
-        this.duration = duration;
-    }
-
-    public void setResourceId(TraceResourceId resourceId) {
-        this.resourceId = resourceId;
-    }
-
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
-    }
-
     private void checkAndLogInvalidTimestamp(Long timestamp, String property, String executionId) {
         if (timestamp == null || timestamp < 0) {
             LOGGER.warn(String.format("The TraceHeader timestamp property %s of the execution %s is null or negative: %d", property, executionId, timestamp));
