@@ -48,7 +48,7 @@
     <!-- container images for testing -->
     <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>jboss/keycloak:${version.org.keycloak}</container.image.keycloak>
-    <container.image.confluent.kafka>confluentinc/cp-kafka:${version.org.confluent.kafka}</container.image.confluent.kafka>
+    <container.image.kafka>confluentinc/cp-kafka:${version.org.confluent.kafka}</container.image.kafka>
 
     <maven.compiler.release>8</maven.compiler.release>
     <jacoco.agent.argLine/>
