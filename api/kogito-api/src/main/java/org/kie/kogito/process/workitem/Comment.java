@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.decisions.deployment;
+package org.kie.kogito.process.workitem;
 
-import java.util.Collections;
-import java.util.Set;
+public class Comment extends TaskMetaEntity<String> {
 
-import org.kie.kogito.quarkus.common.deployment.KogitoCompilationProvider;
+    private static final long serialVersionUID = 1L;
 
-public class DecisionsCompilationProvider extends KogitoCompilationProvider {
-
-    @Override
-    public Set<String> handledExtensions() {
-        return Collections.singleton(".dmn");
+    public Comment(Object id, String user) {
+        super(id, user);
     }
 }

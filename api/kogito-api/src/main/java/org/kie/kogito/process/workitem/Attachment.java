@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.decisions.deployment;
+package org.kie.kogito.process.workitem;
 
-import java.util.Collections;
-import java.util.Set;
+import java.net.URI;
 
-import org.kie.kogito.quarkus.common.deployment.KogitoCompilationProvider;
+public class Attachment extends TaskMetaEntity<URI> {
 
-public class DecisionsCompilationProvider extends KogitoCompilationProvider {
+    private static final long serialVersionUID = 1L;
 
-    @Override
-    public Set<String> handledExtensions() {
-        return Collections.singleton(".dmn");
+    private String name;
+
+    public Attachment(Object id, String user) {
+        super(id, user);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

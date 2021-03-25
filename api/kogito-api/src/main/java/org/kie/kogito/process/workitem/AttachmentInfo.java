@@ -13,17 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.decisions.deployment;
+package org.kie.kogito.process.workitem;
 
-import java.util.Collections;
-import java.util.Set;
+import java.net.URI;
 
-import org.kie.kogito.quarkus.common.deployment.KogitoCompilationProvider;
+public class AttachmentInfo {
 
-public class DecisionsCompilationProvider extends KogitoCompilationProvider {
+    private URI uri;
+    private String name;
 
-    @Override
-    public Set<String> handledExtensions() {
-        return Collections.singleton(".dmn");
+    public AttachmentInfo() {
+    }
+
+    public AttachmentInfo(URI uri) {
+        this(uri, null);
+    }
+
+    public AttachmentInfo(URI uri, String name) {
+        this.uri = uri;
+        this.name = name;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public String getName() {
+        return name;
     }
 }
