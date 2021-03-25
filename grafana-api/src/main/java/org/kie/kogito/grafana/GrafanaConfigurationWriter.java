@@ -130,6 +130,37 @@ public class GrafanaConfigurationWriter {
         }
     }
 
+    /**
+     * Generates domain specific DRL dashboard from a given dashboard template.
+     *
+     * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
+     * @param endpoint: The name of the endpoint.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
+     */
+    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, boolean generateAuditLink) {
+        String template = readStandardDashboard(templatePath);
+        template = customizeTemplate(template, endpoint);
+
+        JGrafana jgrafana = null;
+        try {
+            jgrafana = JGrafana.parse(template).setTitle(String.format("%s - Domain Dashboard", endpoint));
+        } catch (IOException e) {
+            logger.error(String.format("Could not parse the grafana template for the endpoint %s", endpoint), e);
+            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
+        }
+
+        if (generateAuditLink) {
+            jgrafana.addLink(AUDIT_LINK_NAME, AUDIT_LINK_URL_PLACEHOLDER);
+        }
+
+        try {
+            return jgrafana.serialize();
+        } catch (IOException e) {
+            logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", endpoint), e);
+            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
+        }
+    }
+
     private static String readStandardDashboard(String templatePath) {
         InputStream is = GrafanaConfigurationWriter.class.getResourceAsStream(templatePath);
         return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));

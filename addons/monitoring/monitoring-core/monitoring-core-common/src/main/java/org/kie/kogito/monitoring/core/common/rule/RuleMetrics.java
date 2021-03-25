@@ -24,18 +24,18 @@ import io.micrometer.core.instrument.Tag;
 
 public class RuleMetrics {
 
-    private static final long NANOSECONDS_PER_MICROSECOND = 1_000_000;
+    private static final long NANOSECONDS_PER_SECONDS = 1_000_000_000;
 
-    private static long toMicro(long second) {
-        return second * NANOSECONDS_PER_MICROSECOND;
+    private static long toNano(long seconds) {
+        return seconds * NANOSECONDS_PER_SECONDS;
     }
 
-    public static DistributionSummary getDroolsEvaluationTimeHistogram(String appId, String processId) {
+    public static DistributionSummary getDroolsEvaluationTimeHistogram(String appId, String rule) {
         DistributionSummary distributionSummary = DistributionSummary.builder("drl_match_fired_nanosecond")
-                .minimumExpectedValue((double) toMicro(1))
-                .maximumExpectedValue((double) toMicro(10))
+                .minimumExpectedValue((double) toNano(1))
+                .maximumExpectedValue((double) toNano(10))
                 .description("Drools Firing Time")
-                .tags(Arrays.asList(Tag.of("app_id", appId), Tag.of("process_id", processId)))
+                .tags(Arrays.asList(Tag.of("app_id", appId), Tag.of("rule", rule)))
                 .register(MonitoringRegistry.getDefaultMeterRegistry());
         return distributionSummary;
     }
