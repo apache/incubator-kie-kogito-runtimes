@@ -40,7 +40,6 @@ under the License.
     <fileSet filtered="true" packaged="false" encoding="UTF-8">
       <directory>src/main/resources</directory>
       <includes>
-        <include>**/*.bpmn2</include>
         <include>**/*.dmn</include>
         <include>**/*.properties</include>
         <include>**/*.md</include>
@@ -50,7 +49,6 @@ under the License.
     <fileSet filtered="true" packaged="false" encoding="UTF-8">
       <directory>src/test/resources</directory>
       <includes>
-        <include>**/*.bpmn2</include>
         <include>**/*.dmn</include>
         <include>**/*.properties</include>
         <include>**/*.md</include>
