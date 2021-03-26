@@ -28,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 public class KogitoKafkaContainer extends KafkaContainer implements TestResource {
 
     public static final String NAME = "kafka";
-    public static final String KAFKA_PROPERTY = "container.image.confluent." + NAME;
+    public static final String KAFKA_PROPERTY = "container.image." + NAME;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoKafkaContainer.class);
 
