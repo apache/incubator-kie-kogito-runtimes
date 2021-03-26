@@ -126,7 +126,9 @@
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
     <version.com.github.victools>4.12.1</version.com.github.victools>
     <version.com.github.tomakehurst.wiremock>2.27.2</version.com.github.tomakehurst.wiremock>
+    <version.com.github.ben-manes.caffeine>2.8.5</version.com.github.ben-manes.caffeine>
     <version.com.google.protobuf>3.14.0</version.com.google.protobuf>
+    <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.org.openapitools>5.0.1</version.org.openapitools>
     <version.org.openapitools.jackson.databind.nullable>0.2.0</version.org.openapitools.jackson.databind.nullable>
     <version.com.squareup.okhttp3>3.14.6</version.com.squareup.okhttp3>
@@ -148,7 +150,7 @@
     <version.io.micrometer>1.6.1</version.io.micrometer>
     <version.io.rest-assured>4.3.0</version.io.rest-assured>
     <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
-    <version.io.serverlessworkflow>1.0.3.Final</version.io.serverlessworkflow>
+    <version.io.serverlessworkflow>2.0.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.0.22</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive>2.7.1</version.io.smallrye.reactive>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>1.3.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
@@ -182,21 +184,21 @@
     <version.org.junit.platform>1.${version.org.junit.minor}</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
     <version.org.keycloak>11.0.3</version.org.keycloak>
-    <version.org.kie7>7.51.0.Final</version.org.kie7>
+    <version.org.kie7>7.52.0.t20210322</version.org.kie7>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mongo>4.1.0</version.org.mongo>
     <version.org.mvel>2.4.12.Final</version.org.mvel>
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
-    <version.org.springframework.boot>2.3.1.RELEASE</version.org.springframework.boot>
-    <version.org.springframework>5.2.7.RELEASE</version.org.springframework>
-    <version.org.springframework.kafka>2.5.2.RELEASE</version.org.springframework.kafka>
+    <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
+    <version.org.springframework>5.2.9.RELEASE</version.org.springframework>
+    <version.org.springframework.kafka>2.5.6.RELEASE</version.org.springframework.kafka>
     <version.org.springdoc>1.5.2</version.org.springdoc>
     <version.org.testcontainers>1.15.1</version.org.testcontainers>
     <version.org.xmlunit>2.2.1</version.org.xmlunit>
-    <version.io.netty>4.1.50.Final</version.io.netty>
-    <version.io.projectreactor>3.3.6.RELEASE</version.io.projectreactor>
+    <version.io.netty>4.1.52.Final</version.io.netty>
+    <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
     <version.xerces>2.11.0</version.xerces>
   </properties>
@@ -745,6 +747,12 @@
         <groupId>io.rest-assured</groupId>
         <artifactId>rest-assured</artifactId>
         <version>${version.io.rest-assured}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -884,6 +892,12 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${version.org.jboss.resteasy}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
