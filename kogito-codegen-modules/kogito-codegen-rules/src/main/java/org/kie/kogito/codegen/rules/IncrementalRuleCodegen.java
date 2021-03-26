@@ -329,7 +329,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(DTO_TYPE));
         }
         if (context().getAddonsConfig().useMonitoring()) {
-            String dashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
+            String dashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
                     domainDashboardDrlTemplate,
                     ruleUnit.typeName(),
                     context().getAddonsConfig().useTracing());
