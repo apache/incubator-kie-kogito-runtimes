@@ -67,7 +67,9 @@ import org.kogito.workitem.rest.jsonpath.suppliers.JsonPathResultExprSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
@@ -355,10 +357,17 @@ public class ServerlessWorkflowFactory {
         work.setParameter(RestWorkItemHandler.HOST, ServerlessWorkflowUtils.resolveFunctionMetadata(functionDefinition, RestWorkItemHandler.HOST, workflowAppContext));
         work.setParameter(RestWorkItemHandler.PORT, ServerlessWorkflowUtils.resolveFunctionMetadata(functionDefinition, RestWorkItemHandler.PORT, workflowAppContext));
 
-        if (functionRef.getParameters() != null) {
-            for (Entry<String, String> param : functionRef.getParameters().entrySet()) {
-                // assuming param value is json string path
-                work.setParameter(param.getKey(), new JsonPathExprSupplier(param.getValue()));
+        if (functionRef.getArguments() != null) {
+            JsonNode arguments = functionRef.getArguments();
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> mapArguments = mapper.convertValue(arguments, new TypeReference<Map<String, String>>() {
+            });
+
+            if (mapArguments != null) {
+                for (Entry<String, String> param : mapArguments.entrySet()) {
+                    // assuming param value is json string path
+                    work.setParameter(param.getKey(), new JsonPathExprSupplier(param.getValue()));
+                }
             }
         }
         work.setParameter(RestWorkItemHandler.RESULT_HANDLER, new JsonPathResultExprSupplier());
@@ -405,7 +414,14 @@ public class ServerlessWorkflowFactory {
                         .withResultHandlerType(JsonNodeResultHandler.class.getCanonicalName())
                         .withResultHandler(new JsonNodeResultHandlerExprSupplier());
 
-        functionRef.getParameters().forEach((k, v) -> builder.addParamResolver(k, new JsonNodeParameterExprSupplier(v)));
+        JsonNode arguments = functionRef.getArguments();
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> mapArguments = mapper.convertValue(arguments, new TypeReference<Map<String, String>>() {
+        });
+
+        if (mapArguments != null) {
+            mapArguments.forEach((k, v) -> builder.addParamResolver(k, new JsonNodeParameterExprSupplier(v)));
+        }
 
         final WorkItemNode workItemNode = builder.build();
         workItemNode.setId(id);
