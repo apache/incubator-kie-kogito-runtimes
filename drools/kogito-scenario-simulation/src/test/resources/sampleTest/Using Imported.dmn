@@ -1,0 +1,135 @@
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:included1="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF" id="_64634CBF-002C-40D3-87A7-83618F6F6A79" name="Using Imported" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D">
+  <dmn:extensionElements/>
+  <dmn:import id="_4491DB0C-7823-4CF4-9B31-03B032C13285" name="tv" namespace="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF" locationURI="Traffic Violation.dmn" importType="http://www.omg.org/spec/DMN/20180521/MODEL/"/>
+  <dmn:decision id="_2785F8A6-CD48-4EBD-8398-B63F264BDFF2" name="Should the driver's license be held?">
+    <dmn:extensionElements/>
+    <dmn:question>Should the driver's license be held?</dmn:question>
+    <dmn:allowedAnswers>"yes", "no"</dmn:allowedAnswers>
+    <dmn:variable id="_B98D1B5B-6B76-4254-B3E7-F65FAFBF0D6A" name="Should the driver's license be held?" typeRef="string"/>
+    <dmn:informationRequirement id="_4C70DB11-12B4-48D3-9914-793C93DC14FF">
+      <dmn:requiredDecision href="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF#_8A408366-D8E9-4626-ABF3-5F69AA01F880"/>
+    </dmn:informationRequirement>
+    <dmn:decisionTable id="_4342733F-4AC2-46A6-9D0C-D434C5DCB890" hitPolicy="UNIQUE" preferredOrientation="Rule-as-Row">
+      <dmn:input id="_7F67D63C-59A1-4190-BDD2-7B659141275A">
+        <dmn:inputExpression id="_EC743CD4-A989-41EE-BE9F-49C57B07C4BF" typeRef="string">
+          <dmn:text>tv.Should the driver be suspended?</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_4A6E1F5C-8F17-4DB7-ACAF-E4B0D0AE406C"/>
+      <dmn:annotation name="annotation-1"/>
+      <dmn:rule id="_8541DB48-4734-43FF-BB6F-9BFB2D349976">
+        <dmn:inputEntry id="_DC97407D-ED43-4B6D-8976-3D8C16ED5900">
+          <dmn:text>"Yes"</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_5EEDC0E2-6E44-49AB-9CE2-6FA7B63FA0BE">
+          <dmn:text>"No"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_E0139C7D-0466-4253-8A05-C39C32274D6B">
+        <dmn:inputEntry id="_6602959D-F36E-4700-94CD-024F9654C8CF">
+          <dmn:text>"No"</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_140633F1-593A-4F64-AE9E-C349805CB52C">
+          <dmn:text>"Yes"</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
+  <dmn:decision id="_2CA2DBF1-7EAC-45DE-A7C8-8386711C3998" name="Should the driver's be arrested?">
+    <dmn:extensionElements/>
+    <dmn:question>Should the driver's be arrested?</dmn:question>
+    <dmn:allowedAnswers>"yes", "no"</dmn:allowedAnswers>
+    <dmn:variable id="_537247C6-5693-413C-9E62-44E06AE6166E" name="Should the driver's be arrested?" typeRef="string"/>
+    <dmn:informationRequirement id="_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB">
+      <dmn:requiredInput href="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF#_1F9350D7-146D-46F1-85D8-15B5B68AF22A"/>
+    </dmn:informationRequirement>
+    <dmn:context id="_F09D3012-FD8A-4D6F-BD78-9933FCDA7A88">
+      <dmn:contextEntry>
+        <dmn:variable id="_AA9C3D48-7571-4B74-BD0A-3EE088467263" name="Total Points" typeRef="number"/>
+        <dmn:literalExpression id="_7CB3FE8A-71E2-45FA-ADB3-9C31FEA7ABA6">
+          <dmn:text>tv.Driver.Points</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+      <dmn:contextEntry>
+        <dmn:literalExpression id="_FE6BAC48-516D-4371-B60D-C47104D888EB">
+          <dmn:text>if Total Points &gt;= 40 then "Yes" else "No"</dmn:text>
+        </dmn:literalExpression>
+      </dmn:contextEntry>
+    </dmn:context>
+  </dmn:decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_46668E1D-4BB7-4137-B830-983EB21E8619" name="DRG">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_4342733F-4AC2-46A6-9D0C-D434C5DCB890">
+            <kie:width>50</kie:width>
+            <kie:width>388</kie:width>
+            <kie:width>384</kie:width>
+            <kie:width>505</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_F09D3012-FD8A-4D6F-BD78-9933FCDA7A88">
+            <kie:width>50</kie:width>
+            <kie:width>562</kie:width>
+            <kie:width>365</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_7CB3FE8A-71E2-45FA-ADB3-9C31FEA7ABA6">
+            <kie:width>365</kie:width>
+          </kie:ComponentWidths>
+          <kie:ComponentWidths dmnElementRef="_FE6BAC48-516D-4371-B60D-C47104D888EB">
+            <kie:width>365</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="dmnshape-drg-_2785F8A6-CD48-4EBD-8398-B63F264BDFF2" dmnElementRef="_2785F8A6-CD48-4EBD-8398-B63F264BDFF2" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="163" y="52" width="152" height="53"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_2CA2DBF1-7EAC-45DE-A7C8-8386711C3998" dmnElementRef="_2CA2DBF1-7EAC-45DE-A7C8-8386711C3998" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="479" y="52" width="147" height="54"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_1F9350D7-146D-46F1-85D8-15B5B68AF22A" dmnElementRef="included1:_1F9350D7-146D-46F1-85D8-15B5B68AF22A" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="480.99999999999994" y="218" width="143" height="63"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_8A408366-D8E9-4626-ABF3-5F69AA01F880" dmnElementRef="included1:_8A408366-D8E9-4626-ABF3-5F69AA01F880" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="181" y="218" width="116" height="68"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="dmnedge-drg-_4C70DB11-12B4-48D3-9914-793C93DC14FF" dmnElementRef="_4C70DB11-12B4-48D3-9914-793C93DC14FF">
+        <di:waypoint x="239" y="252"/>
+        <di:waypoint x="239" y="105"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-drg-_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB" dmnElementRef="_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB">
+        <di:waypoint x="552.5" y="249.5"/>
+        <di:waypoint x="552.5" y="106"/>
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</dmn:definitions>
