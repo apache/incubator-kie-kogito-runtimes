@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.util.function.Function;
 
 import org.drools.core.addon.TypeResolver;
+import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.rules.RuleUnitConfig;
 
 public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
@@ -27,12 +27,21 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     private final String name;
     private final String packageName;
     private final String simpleName;
+    private final String canonicalName;
 
     public GeneratedRuleUnitDescription(String name, Function<String, Class<?>> typeResolver) {
         this.typeResolver = typeResolver;
         this.name = name;
-        this.simpleName = name.substring(name.lastIndexOf('.') + 1);
-        this.packageName = name.substring(0, name.lastIndexOf('.'));
+        int width = name.lastIndexOf('.');
+        if (width > -1) {
+            this.simpleName = name.substring(width + 1);
+            this.packageName = name.substring(0, width);
+            this.canonicalName = packageName + '.' + simpleName;
+        } else {
+            this.simpleName = name;
+            this.packageName = "";
+            this.canonicalName = simpleName;
+        }
         setConfig(RuleUnitConfig.Default);
     }
 
@@ -52,7 +61,7 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
     @Override
     public String getCanonicalName() {
-        return getPackageName() + '.' + getSimpleName();
+        return canonicalName;
     }
 
     @Override
@@ -68,6 +77,15 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
     @Override
     public String getRuleUnitName() {
         return name;
+    }
+
+    @Override
+    public RuleUnitVariable getVar(String name) {
+        try {
+            return super.getVar(name);
+        } catch (UndefinedRuleUnitVariable e) {
+            throw new UndefinedGeneratedRuleUnitVariable(e.getVariable(), e.getUnit());
+        }
     }
 
     public void putSimpleVar(String name, String varTypeFQCN) {

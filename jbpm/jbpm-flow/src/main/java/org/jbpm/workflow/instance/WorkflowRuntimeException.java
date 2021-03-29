@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2012 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance;
 
 import java.text.MessageFormat;
@@ -23,8 +22,8 @@ import java.util.Map;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 /**
  * This exception provides the context information of the error in execution of the flow. <br/>
@@ -44,40 +43,39 @@ public class WorkflowRuntimeException extends RuntimeException {
 
     private Map<String, Object> variables;
 
-    public WorkflowRuntimeException(NodeInstance nodeInstance, ProcessInstance processInstance, String message) {
+    public WorkflowRuntimeException(KogitoNodeInstance nodeInstance, KogitoProcessInstance processInstance, String message) {
         super(message);
         initialize(nodeInstance, processInstance);
     }
 
-    public WorkflowRuntimeException(NodeInstance nodeInstance, ProcessInstance processInstance, String message, Throwable e) {
+    public WorkflowRuntimeException(KogitoNodeInstance nodeInstance, KogitoProcessInstance processInstance, String message, Throwable e) {
         super(message, e);
         initialize(nodeInstance, processInstance);
     }
 
-    public WorkflowRuntimeException(NodeInstance nodeInstance, ProcessInstance processInstance, Exception e) {
+    public WorkflowRuntimeException(KogitoNodeInstance nodeInstance, KogitoProcessInstance processInstance, Exception e) {
         super(e);
         initialize(nodeInstance, processInstance);
     }
 
-    private void initialize(NodeInstance nodeInstance, ProcessInstance processInstance) {
-        this.processInstanceId = processInstance.getId();
+    private void initialize(KogitoNodeInstance nodeInstance, KogitoProcessInstance processInstance) {
+        this.processInstanceId = processInstance.getStringId();
         this.processId = processInstance.getProcessId();
-        this.setDeploymentId(((ProcessInstanceImpl)processInstance).getDeploymentId());
-        if( nodeInstance != null ) { 
-            this.nodeInstanceId = nodeInstance.getId();
+        this.setDeploymentId(((ProcessInstanceImpl) processInstance).getDeploymentId());
+        if (nodeInstance != null) {
+            this.nodeInstanceId = nodeInstance.getStringId();
             this.nodeId = nodeInstance.getNodeId();
-            if( ((ProcessInstanceImpl) processInstance).getKnowledgeRuntime() != null ) { 
+            if (((ProcessInstanceImpl) processInstance).getKnowledgeRuntime() != null) {
                 this.nodeName = nodeInstance.getNodeName();
             }
         }
-        
-        VariableScopeInstance variableScope =  (VariableScopeInstance) 
-                ((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance( 
-                        VariableScope.VARIABLE_SCOPE );
-            // set input parameters
-        if( variableScope != null ) { 
+
+        VariableScopeInstance variableScope = (VariableScopeInstance) ((org.jbpm.process.instance.ProcessInstance) processInstance).getContextInstance(
+                VariableScope.VARIABLE_SCOPE);
+        // set input parameters
+        if (variableScope != null) {
             this.variables = variableScope.getVariables();
-        } else { 
+        } else {
             this.variables = new HashMap<String, Object>(0);
         }
     }
@@ -158,11 +156,11 @@ public class WorkflowRuntimeException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return MessageFormat.format("[{0}:{4} - {1}:{2}] -- {3}", 
+        return MessageFormat.format("[{0}:{4} - {1}:{2}] -- {3}",
                 getProcessId(),
-                (getNodeName() == null ? "?" : getNodeName()), 
-                (getNodeId() == 0 ? "?" : getNodeId()), 
-                (getCause() == null ? getMessage() : getCause().getMessage()), 
+                (getNodeName() == null ? "?" : getNodeName()),
+                (getNodeId() == 0 ? "?" : getNodeId()),
+                (getCause() == null ? "WorkflowRuntimeException" : getCause().getMessage()),
                 getProcessInstanceId());
     }
 

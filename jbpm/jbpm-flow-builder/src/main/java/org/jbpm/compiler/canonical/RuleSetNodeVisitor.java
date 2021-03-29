@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
 
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
+import org.jbpm.workflow.core.node.RuleSetNode;
+import org.kie.internal.ruleunit.RuleUnitComponentFactory;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.rules.RuleConfig;
+import org.kie.kogito.rules.RuleUnitData;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
+import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
+import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
+import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
@@ -30,24 +47,11 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
-import org.jbpm.workflow.core.node.RuleSetNode;
-import org.kie.api.definition.process.Node;
-import org.kie.internal.ruleunit.RuleUnitComponentFactory;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.AssignableChecker;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
-import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
-import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_DECISION;
+import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_PARAMETER;
 
-public class RuleSetNodeVisitor extends AbstractVisitor {
+public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 
     public static final Logger logger = LoggerFactory.getLogger(ProcessToExecModelGenerator.class);
 
@@ -60,52 +64,60 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
     }
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        RuleSetNode ruleSetNode = (RuleSetNode) node;
-        String nodeName = ruleSetNode.getName();
+    protected String getNodeKey() {
+        return "ruleSetNode";
+    }
 
-        String callTargetName = "ruleSetNode" + node.getId();
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, RuleSetNodeFactory.class, callTargetName, "ruleSetNode", new LongLiteralExpr(ruleSetNode.getId()));
-        addFactoryMethodWithArgs(body, callTargetName, "name", new StringLiteralExpr(getOrDefault(nodeName, "Rule")));
+    @Override
+    public void visitNode(String factoryField, RuleSetNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        String nodeName = node.getName();
 
-        RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
+        body.addStatement(getAssignedFactoryMethod(factoryField, RuleSetNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+                .addStatement(getNameMethod(node, "Rule"));
+
+        RuleSetNode.RuleType ruleType = node.getRuleType();
         if (ruleType.getName().isEmpty()) {
             throw new IllegalArgumentException(
                     MessageFormat.format(
                             "Rule task \"{0}\" is invalid: you did not set a unit name, a rule flow group or a decision model.", nodeName));
         }
 
-        addNodeMappings(ruleSetNode, body, callTargetName);
+        addNodeMappings(node, body, getNodeId(node));
+        addParams(node, body, getNodeId(node));
 
-        NameExpr methodScope = new NameExpr(callTargetName);
+        NameExpr methodScope = new NameExpr(getNodeId(node));
         MethodCallExpr m;
         if (ruleType.isRuleFlowGroup()) {
             m = handleRuleFlowGroup(ruleType);
         } else if (ruleType.isRuleUnit()) {
-            m = handleRuleUnit(variableScope, metadata, ruleSetNode, nodeName, ruleType);
+            m = handleRuleUnit(variableScope, metadata, node, nodeName, ruleType);
         } else if (ruleType.isDecision()) {
             m = handleDecision((RuleSetNode.RuleType.Decision) ruleType);
         } else {
-            throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: unsupported rule language " + ruleSetNode.getLanguage());
+            throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: unsupported rule language " + node.getLanguage());
         }
         m.setScope(methodScope);
         body.addStatement(m);
 
-        visitMetaData(ruleSetNode.getMetaData(), body, callTargetName);
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
+    }
 
-        addFactoryMethodWithArgs(body, callTargetName, "done");
-
+    private void addParams(RuleSetNode node, BlockStmt body, String nodeId) {
+        node.getParameters()
+                .forEach((k, v) -> body.addStatement(getFactoryMethod(nodeId, METHOD_PARAMETER, new StringLiteralExpr(k), new StringLiteralExpr(v.toString()))));
     }
 
     private MethodCallExpr handleDecision(RuleSetNode.RuleType.Decision ruleType) {
 
         StringLiteralExpr namespace = new StringLiteralExpr(ruleType.getNamespace());
         StringLiteralExpr model = new StringLiteralExpr(ruleType.getModel());
-        Expression decision = ruleType.getDecision() == null ?
-                new NullLiteralExpr() : new StringLiteralExpr(ruleType.getDecision());
+        Expression decision = ruleType.getDecision() == null ? new NullLiteralExpr() : new StringLiteralExpr(ruleType.getDecision());
 
+        // app.get(org.kie.kogito.decision.DecisionModels.class).getDecisionModel(namespace, model)
         MethodCallExpr decisionModels =
-                new MethodCallExpr(new NameExpr("app"), "decisionModels");
+                new MethodCallExpr(new NameExpr("app"), "get")
+                        .addArgument(new ClassExpr().setType(DecisionModels.class.getCanonicalName()));
         MethodCallExpr decisionModel =
                 new MethodCallExpr(decisionModels, "getDecisionModel")
                         .addArgument(namespace)
@@ -115,11 +127,11 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
         actionBody.addStatement(new ReturnStmt(decisionModel));
 
-        return new MethodCallExpr("decision")
-                        .addArgument(namespace)
-                        .addArgument(model)
-                        .addArgument(decision)
-                        .addArgument(lambda);
+        return new MethodCallExpr(METHOD_DECISION)
+                .addArgument(namespace)
+                .addArgument(model)
+                .addArgument(decision)
+                .addArgument(lambda);
     }
 
     private MethodCallExpr handleRuleUnit(VariableScope variableScope, ProcessMetaData metadata, RuleSetNode ruleSetNode, String nodeName, RuleSetNode.RuleType ruleType) {
@@ -132,7 +144,7 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             description = new ReflectiveRuleUnitDescription(null, (Class<? extends RuleUnitData>) unitClass);
         } catch (ClassNotFoundException e) {
             logger.warn("Rule task \"{}\": cannot load class {}. " +
-                                "The unit data object will be generated.", nodeName, unitName);
+                    "The unit data object will be generated.", nodeName, unitName);
 
             GeneratedRuleUnitDescription d = generateRuleUnitDescription(unitName, processContext);
             RuleUnitComponentFactoryImpl impl = (RuleUnitComponentFactoryImpl) RuleUnitComponentFactory.get();
@@ -140,12 +152,12 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
             description = d;
         }
 
-        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode, assignableChecker );
+        RuleUnitHandler handler = new RuleUnitHandler(description, processContext, ruleSetNode, assignableChecker);
         Expression ruleUnitFactory = handler.invoke();
 
         return new MethodCallExpr("ruleUnit")
-                        .addArgument(new StringLiteralExpr(ruleType.getName()))
-                        .addArgument(ruleUnitFactory);
+                .addArgument(new StringLiteralExpr(ruleType.getName()))
+                .addArgument(ruleUnitFactory);
 
     }
 
@@ -160,16 +172,20 @@ public class RuleSetNodeVisitor extends AbstractVisitor {
         return d;
     }
 
-    private MethodCallExpr handleRuleFlowGroup( RuleSetNode.RuleType ruleType) {
+    private MethodCallExpr handleRuleFlowGroup(RuleSetNode.RuleType ruleType) {
         // build supplier for rule runtime
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
 
-        MethodCallExpr ruleRuntimeBuilder = new MethodCallExpr(
-                new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "ruleRuntimeBuilder");
+        // app.config().get(org.kie.kogito.rules.RuleConfig.class)
+        MethodCallExpr ruleConfig = new MethodCallExpr(
+                new MethodCallExpr(new NameExpr("app"), "config"), "get")
+                        .addArgument(new ClassExpr().setType(RuleConfig.class.getCanonicalName()));
+
         MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(
-                ruleRuntimeBuilder, "newKieSession",
-                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
+                new NameExpr("org.drools.project.model.ProjectRuntime.INSTANCE"), "newKieSession",
+                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"),
+                        ruleConfig));
         actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
 
         return new MethodCallExpr("ruleFlowGroup")

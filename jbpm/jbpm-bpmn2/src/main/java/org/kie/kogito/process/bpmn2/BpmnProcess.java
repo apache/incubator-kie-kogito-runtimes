@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.bpmn2;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-import org.drools.core.xml.SemanticModules;
-import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
-import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
-import org.jbpm.bpmn2.xml.BPMNSemanticModule;
-import org.jbpm.compiler.xml.XmlProcessReader;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
+import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
@@ -33,65 +31,78 @@ import org.kie.kogito.process.impl.AbstractProcess;
 
 public class BpmnProcess extends AbstractProcess<BpmnVariables> {
 
-    private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
-
-    static {
-        BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
-        BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNExtensionsSemanticModule());
-        BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
-    }
+    private static BpmnProcessCompiler COMPILER = new BpmnProcessCompiler();
 
     private final Process process;
 
     public BpmnProcess(Process p) {
         process = p;
     }
-    
-    
+
     public BpmnProcess(Process p, ProcessConfig config) {
         super(config);
         process = p;
     }
-    
+
     @Override
     public ProcessInstance<BpmnVariables> createInstance(Model m) {
-        return new BpmnProcessInstance(this, BpmnVariables.create(m.toMap()), this.createLegacyProcessRuntime());
+        BpmnVariables variables = createModel();
+        variables.fromMap(m.toMap());
+        return new BpmnProcessInstance(this, variables, this.createProcessRuntime());
     }
 
     public ProcessInstance<BpmnVariables> createInstance() {
-        return new BpmnProcessInstance(this, BpmnVariables.create(), this.createLegacyProcessRuntime());
+        return new BpmnProcessInstance(this, createModel(), this.createProcessRuntime());
+    }
+
+    @Override
+    public ProcessInstance<BpmnVariables> createInstance(String businessKey, BpmnVariables variables) {
+        BpmnVariables variablesModel = createModel();
+        variablesModel.fromMap(variables.toMap());
+        return new BpmnProcessInstance(this, variablesModel, businessKey, this.createProcessRuntime());
     }
 
     @Override
     public ProcessInstance<BpmnVariables> createInstance(BpmnVariables variables) {
-        return new BpmnProcessInstance(this, variables, this.createLegacyProcessRuntime());
+        BpmnVariables variablesModel = createModel();
+        variablesModel.fromMap(variables.toMap());
+        return new BpmnProcessInstance(this, variablesModel, this.createProcessRuntime());
     }
-    
-    public static List<BpmnProcess> from(Resource resource) {
-        return from(resource, null);
-    }
-
-    public static List<BpmnProcess> from(Resource resource, ProcessConfig config) {
-        try {
-            XmlProcessReader xmlReader = new XmlProcessReader(
-                    BPMN_SEMANTIC_MODULES,
-                    Thread.currentThread().getContextClassLoader());
-            List<Process> processes = xmlReader.read(resource.getReader());
-            return processes.stream().map(p -> (config == null ? new BpmnProcess(p) : new BpmnProcess(p, config))).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new BpmnProcessReaderException(e);
-        }
-    }
-    
 
     @Override
-    public Process legacyProcess() {
+    public ProcessInstance<BpmnVariables> createInstance(WorkflowProcessInstance wpi) {
+        return new BpmnProcessInstance(this, createModel(), this.createProcessRuntime(), wpi);
+    }
+
+    @Override
+    public ProcessInstance<BpmnVariables> createReadOnlyInstance(WorkflowProcessInstance wpi) {
+        return new BpmnProcessInstance(this, createModel(), wpi);
+    }
+
+    @Override
+    public Process process() {
         return process;
     }
 
-
     @Override
-    public BpmnVariables createModel() {        
-        return BpmnVariables.create(new HashMap<String, Object>());
+    public BpmnVariables createModel() {
+        VariableScope variableScope = (VariableScope) ((WorkflowProcess) process()).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        return new BpmnVariables(variableScope.getVariables(), new HashMap<>());
     }
+
+    /**
+     *
+     */
+    public static void overrideCompiler(BpmnProcessCompiler compiler) {
+        COMPILER = Objects.requireNonNull(compiler);
+    }
+
+    public static List<BpmnProcess> from(Resource... resource) {
+        return from(null, resource);
+    }
+
+    public static List<BpmnProcess> from(ProcessConfig config, Resource... resources) {
+        return COMPILER.from(config, resources);
+    }
+
 }

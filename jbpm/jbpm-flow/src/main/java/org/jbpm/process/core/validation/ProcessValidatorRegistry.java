@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,26 +28,26 @@ import org.kie.api.io.Resource;
 public class ProcessValidatorRegistry {
 
     private static ProcessValidatorRegistry instance;
-    
-    private Map<String, ProcessValidator> defaultValidators = new ConcurrentHashMap<String, ProcessValidator>();    
+
+    private Map<String, ProcessValidator> defaultValidators = new ConcurrentHashMap<String, ProcessValidator>();
     private Set<ProcessValidator> additionalValidators = new CopyOnWriteArraySet<ProcessValidator>();
-    
+
     private ProcessValidatorRegistry() {
         defaultValidators.put(RuleFlowProcess.RULEFLOW_TYPE, RuleFlowProcessValidator.getInstance());
     }
-    
+
     public static ProcessValidatorRegistry getInstance() {
         if (instance == null) {
             instance = new ProcessValidatorRegistry();
         }
-        
+
         return instance;
     }
-    
+
     public void registerAdditonalValidator(ProcessValidator validator) {
         this.additionalValidators.add(validator);
     }
-    
+
     public ProcessValidator getValidator(Process process, Resource resource) {
         if (!additionalValidators.isEmpty()) {
             for (ProcessValidator validator : additionalValidators) {
@@ -57,7 +57,7 @@ public class ProcessValidatorRegistry {
                 }
             }
         }
-        
+
         return defaultValidators.get(process.getType());
     }
 }

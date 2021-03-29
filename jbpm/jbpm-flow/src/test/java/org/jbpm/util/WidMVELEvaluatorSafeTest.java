@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Disabled;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-@Disabled( "This test causes problems to surefire (see same issue with org.drools.core.util.MVELSafeHelperTest) It works when executed by itself.")
+@Disabled("This test causes problems to surefire (see same issue with org.drools.core.util.MVELSafeHelperTest) It works when executed by itself.")
 public class WidMVELEvaluatorSafeTest extends WidMVELEvaluatorTest {
 
     private static TestSecurityManager tsm;
@@ -32,9 +32,9 @@ public class WidMVELEvaluatorSafeTest extends WidMVELEvaluatorTest {
             String enginePolicy = getResouce("/policy/engine.policy");
             String kiePolicy = getResouce("/policy/kie.policy");
             System.setProperty("java.security.policy",
-                               enginePolicy);
+                    enginePolicy);
             System.setProperty("kie.security.policy",
-                               kiePolicy);
+                    kiePolicy);
 
             tsm = new TestSecurityManager();
             System.setSecurityManager(tsm);
@@ -47,9 +47,9 @@ public class WidMVELEvaluatorSafeTest extends WidMVELEvaluatorTest {
     public void after() {
         System.setSecurityManager(null);
         System.setProperty("java.security.policy",
-                           "");
+                "");
         System.setProperty("kie.security.policy",
-                           "");
+                "");
     }
 
     public static class TestSecurityManager extends SecurityManager {

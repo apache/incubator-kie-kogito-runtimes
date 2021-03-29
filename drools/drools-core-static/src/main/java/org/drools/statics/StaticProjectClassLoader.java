@@ -1,18 +1,18 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
+ */
 package org.drools.statics;
 
 import java.io.IOException;
@@ -29,10 +29,14 @@ public class StaticProjectClassLoader extends ProjectClassLoader {
 
     private static boolean isIBM_JVM = System.getProperty("java.vendor").toLowerCase().contains("ibm");
 
-    protected StaticProjectClassLoader( ClassLoader parent, ResourceProvider resourceProvider) {
-        super( parent, resourceProvider );
+    protected StaticProjectClassLoader(ClassLoader parent, ResourceProvider resourceProvider) {
+        super(parent, resourceProvider);
     }
 
+    @Override
+    public boolean isDynamic() {
+        return false;
+    }
 
     public static class IBMStaticClassLoader extends StaticProjectClassLoader {
         private final boolean parentImplementsFindResources;
@@ -44,7 +48,8 @@ public class StaticProjectClassLoader extends ProjectClassLoader {
             Method m = null;
             try {
                 m = parent.getClass().getMethod("findResources", String.class);
-            } catch (NoSuchMethodException e) { }
+            } catch (NoSuchMethodException e) {
+            }
             parentImplementsFindResources = m != null && m.getDeclaringClass() == parent.getClass();
         }
 
@@ -56,7 +61,7 @@ public class StaticProjectClassLoader extends ProjectClassLoader {
         }
     }
 
-    public static StaticProjectClassLoader create( ClassLoader parent, ResourceProvider resourceProvider) {
+    public static StaticProjectClassLoader create(ClassLoader parent, ResourceProvider resourceProvider) {
         return isIBM_JVM ? new IBMStaticClassLoader(parent, resourceProvider) : new StaticProjectClassLoader(parent, resourceProvider);
     }
 
@@ -69,40 +74,40 @@ public class StaticProjectClassLoader extends ProjectClassLoader {
 
         private final ProjectClassLoader projectClassLoader;
 
-        private DummyInternalTypesClassLoader( ProjectClassLoader projectClassLoader ) {
-            super( projectClassLoader.getParent() );
+        private DummyInternalTypesClassLoader(ProjectClassLoader projectClassLoader) {
+            super(projectClassLoader.getParent());
             this.projectClassLoader = projectClassLoader;
         }
 
-        public Class<?> defineClass( String name, byte[] bytecode ) {
+        public Class<?> defineClass(String name, byte[] bytecode) {
             throw new UnsupportedOperationException();
         }
 
-        protected Class<?> loadClass( String name, boolean resolve ) throws ClassNotFoundException {
+        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
             try {
-                return loadType( name, resolve );
+                return loadType(name, resolve);
             } catch (ClassNotFoundException cnfe) {
-                return projectClassLoader.internalLoadClass( name, resolve );
+                return projectClassLoader.internalLoadClass(name, resolve);
             }
         }
 
-        public Class<?> loadType( String name, boolean resolve ) throws ClassNotFoundException {
-            return super.loadClass( name, resolve );
+        public Class<?> loadType(String name, boolean resolve) throws ClassNotFoundException {
+            return super.loadClass(name, resolve);
         }
 
         @Override
-        public URL getResource( String name ) {
-            return projectClassLoader.getResource( name );
+        public URL getResource(String name) {
+            return projectClassLoader.getResource(name);
         }
 
         @Override
-        public InputStream getResourceAsStream( String name) {
-            return projectClassLoader.getResourceAsStream( name );
+        public InputStream getResourceAsStream(String name) {
+            return projectClassLoader.getResourceAsStream(name);
         }
 
         @Override
         public Enumeration<URL> getResources(String name) throws IOException {
-            return projectClassLoader.getResources( name );
+            return projectClassLoader.getResources(name);
         }
     }
 }

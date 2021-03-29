@@ -1,0 +1,140 @@
+{
+  "id": "prchecker",
+  "name": "Github PR Checker Workflow",
+  "version": "1.0",
+  "start": "HandleOpenPR",
+  "functions": [
+    {
+      "name": "AddLabels",
+      "metadata": {
+        "interface": "org.kogito.examples.sw.github.workflow.GithubService",
+        "operation": "addLabels",
+        "type": "service"
+      }
+    },
+    {
+      "name": "AddReviewers",
+      "metadata": {
+        "interface": "org.kogito.examples.sw.github.workflow.GithubService",
+        "operation": "addReviewers",
+        "type": "service"
+      }
+    },
+    {
+      "name": "FetchPRFiles",
+      "metadata": {
+        "interface": "org.kogito.examples.sw.github.workflow.GithubService",
+        "operation": "fetchPRFiles",
+        "type": "service"
+      }
+    }
+  ],
+  "events": [
+    {
+      "name": "PROpened",
+      "source": "github",
+      "type": "cloudevent",
+      "kind": "consumed"
+    },
+    {
+      "name": "ChangedPR",
+      "source": "github",
+      "type": "cloudevent",
+      "kind": "consumed"
+    },
+    {
+      "name": "BackendNewChange",
+      "source": "/checker/workflow",
+      "type": "cloudevent",
+      "kind": "produced"
+    },
+    {
+      "name": "FrontendNewChange",
+      "source": "/checker/workflow",
+      "type": "cloudevent",
+      "kind": "produced"
+    },
+    {
+      "name": "PRChecked",
+      "source": "/checker/workflow",
+      "type": "cloudevent",
+      "kind": "produced"
+    }
+  ],
+  "states": [
+    {
+      "name": "HandleOpenPR",
+      "type": "event",
+      "onEvents": [
+        {
+          "eventRefs": [
+            "PROpened",
+            "ChangedPR"
+          ],
+          "actions": [
+            {
+              "functionRef": "AddLabels"
+            },
+            {
+              "functionRef": "AddReviewers"
+            },
+            {
+              "functionRef": "FetchPRFiles"
+            }
+          ]
+        }
+      ],
+      "transition": "CheckBackend"
+    },
+    {
+      "name": "CheckBackend",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "condition": "{{ $.[?(@.file  == 'backend')] }}",
+          "transition": {
+            "produceEvents": [
+              {
+                "eventRef": "BackendNewChange"
+              }
+            ],
+            "nextState": "CheckFrontend"
+          }
+        },
+        {
+          "condition": "{{ $.[?(@.file  != 'backend')] }}",
+          "transition": "CheckFrontend"
+        }
+      ]
+    },
+    {
+      "name": "CheckFrontend",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "condition": "{{ $.[?(@.file  == 'frontend')] }}",
+          "end": {
+            "produceEvents": [
+              {
+                "eventRef": "FrontendNewChange"
+              },
+              {
+                "eventRef": "PRChecked"
+              }
+            ]
+          }
+        },
+        {
+          "condition": "{{ $.[?(@.file  != 'frontend')] }}",
+          "end": {
+            "produceEvents": [
+              {
+                "eventRef": "PRChecked"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

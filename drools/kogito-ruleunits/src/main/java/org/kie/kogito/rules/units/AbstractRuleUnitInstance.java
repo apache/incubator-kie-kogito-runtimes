@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.lang.reflect.Field;
@@ -24,8 +24,9 @@ import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.time.SessionClock;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitData;
+import org.kie.kogito.rules.RuleUnitInstance;
+import org.kie.kogito.rules.RuleUnitQuery;
 
 public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUnitInstance<T> {
 
@@ -33,20 +34,35 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
     private final RuleUnit<T> unit;
     private final KieSession runtime;
 
-    public AbstractRuleUnitInstance( RuleUnit<T> unit, T unitMemory, KieSession runtime ) {
+    public AbstractRuleUnitInstance(RuleUnit<T> unit, T unitMemory, KieSession runtime) {
         this.unit = unit;
         this.runtime = runtime;
         this.unitMemory = unitMemory;
-        bind( runtime, unitMemory );
+        bind(runtime, unitMemory);
     }
 
+    @Override
     public int fire() {
         return runtime.fireAllRules();
     }
 
-    public List<Map<String, Object>> executeQuery( String query, Object... arguments) {
+    @Override
+    public List<Map<String, Object>> executeQuery(String query) {
         fire();
-        return runtime.getQueryResults(query, arguments).toList();
+        return runtime.getQueryResults(query).toList();
+    }
+
+    @Override
+    public <Q> Q executeQuery(Class<? extends RuleUnitQuery<Q>> query) {
+        return createRuleUnitQuery(query).execute();
+    }
+
+    protected <Q> RuleUnitQuery<Q> createRuleUnitQuery(Class<? extends RuleUnitQuery<Q>> query) {
+        try {
+            return query.getConstructor(RuleUnitInstance.class).newInstance(this);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -71,13 +87,13 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
                 v = f.get(workingMemory);
                 String dataSourceName = String.format(
                         "%s.%s", workingMemory.getClass().getCanonicalName(), f.getName());
-                if ( v instanceof DataSource ) {
-                    DataSource<?> o = ( DataSource<?> ) v;
+                if (v instanceof DataSource) {
+                    DataSource<?> o = (DataSource<?>) v;
                     EntryPoint ep = runtime.getEntryPoint(dataSourceName);
-                    o.subscribe(new EntryPointDataProcessor( ep ));
+                    o.subscribe(new EntryPointDataProcessor(ep));
                 }
                 try {
-                    runtime.setGlobal( dataSourceName, v );
+                    runtime.setGlobal(dataSourceName, v);
                 } catch (RuntimeException e) {
                     // ignore if the global doesn't exist
                 }

@@ -6,12 +6,12 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>drools</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>drools-core-dynamic</artifactId>
 
-  <name>Drools :: Core :: Dynamic</name>
+  <name>Kogito :: Drools :: Drools Core Dynamic</name>
 
   <properties>
     <java.module.name>org.kie.kogito.drools.core.dynamic</java.module.name>
@@ -19,16 +19,13 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core-reflective</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-core-dynamic</artifactId>
+      <version>${version.org.kie7}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
     </dependency>
 
     <!-- test -->

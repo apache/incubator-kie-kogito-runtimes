@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core;
 
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
-import org.jbpm.ruleflow.core.factory.CompositeNodeFactory;
+import org.jbpm.ruleflow.core.factory.CatchLinkNodeFactory;
+import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.EventNodeFactory;
@@ -31,23 +31,32 @@ import org.jbpm.ruleflow.core.factory.MilestoneNodeFactory;
 import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
+import org.jbpm.ruleflow.core.factory.StateNodeFactory;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
+import org.jbpm.ruleflow.core.factory.ThrowLinkNodeFactory;
 import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.kie.api.definition.process.Node;
+
+import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
+import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 
 public abstract class RuleFlowNodeContainerFactory {
+
+    public static final String METHOD_CONNECTION = "connection";
+    public static final String METHOD_ASSOCIATION = "association";
 
     private NodeContainer nodeContainer;
 
     protected void setNodeContainer(NodeContainer nodeContainer) {
-    	this.nodeContainer = nodeContainer;
+        this.nodeContainer = nodeContainer;
     }
-    
+
     protected NodeContainer getNodeContainer() {
-    	return nodeContainer;
+        return nodeContainer;
     }
 
     public StartNodeFactory startNode(long id) {
@@ -56,6 +65,14 @@ public abstract class RuleFlowNodeContainerFactory {
 
     public EndNodeFactory endNode(long id) {
         return new EndNodeFactory(this, nodeContainer, id);
+    }
+
+    public CatchLinkNodeFactory catchLinkNode(long id) {
+        return new CatchLinkNodeFactory(this, nodeContainer, id);
+    }
+
+    public ThrowLinkNodeFactory throwLinkNode(long id) {
+        return new ThrowLinkNodeFactory(this, nodeContainer, id);
     }
 
     public ActionNodeFactory actionNode(long id) {
@@ -102,41 +119,56 @@ public abstract class RuleFlowNodeContainerFactory {
         return new BoundaryEventNodeFactory(this, nodeContainer, id);
     }
 
-    public CompositeNodeFactory compositeNode(long id) {
-        return new CompositeNodeFactory(this, nodeContainer, id);
+    public CompositeContextNodeFactory compositeContextNode(long id) {
+        return new CompositeContextNodeFactory(this, nodeContainer, id);
     }
 
     public ForEachNodeFactory forEachNode(long id) {
         return new ForEachNodeFactory(this, nodeContainer, id);
     }
-    
+
     public DynamicNodeFactory dynamicNode(long id) {
         return new DynamicNodeFactory(this, nodeContainer, id);
     }
-    
+
     public WorkItemNodeFactory workItemNode(long id) {
-    	return new WorkItemNodeFactory(this, nodeContainer, id);
+        return new WorkItemNodeFactory(this, nodeContainer, id);
     }
-    
+
     public EventSubProcessNodeFactory eventSubProcessNode(long id) {
         return new EventSubProcessNodeFactory(this, nodeContainer, id);
     }
 
-    public RuleFlowNodeContainerFactory connection(long fromId, long toId) {        
+    public StateNodeFactory stateNode(long id) {
+        return new StateNodeFactory(this, nodeContainer, id);
+    }
+
+    public RuleFlowNodeContainerFactory connection(long fromId, long toId) {
         return connection(fromId, toId, "");
     }
-    
+
     public RuleFlowNodeContainerFactory connection(long fromId, long toId, String uniqueId) {
-        Node from = nodeContainer.getNode(fromId);
-        Node to = nodeContainer.getNode(toId);
+        org.kie.api.definition.process.Node from = nodeContainer.getNode(fromId);
+        org.kie.api.definition.process.Node to = nodeContainer.getNode(toId);
         ConnectionImpl connection = new ConnectionImpl(
-            from, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE,
-            to, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
-        connection.setMetaData("UniqueId", uniqueId);
+                from, Node.CONNECTION_DEFAULT_TYPE,
+                to, Node.CONNECTION_DEFAULT_TYPE);
+        connection.setMetaData(UNIQUE_ID, uniqueId);
         return this;
     }
-    
+
+    public RuleFlowNodeContainerFactory association(long fromId, long toId, String uniqueId) {
+        org.kie.api.definition.process.Node from = nodeContainer.getNode(fromId);
+        org.kie.api.definition.process.Node to = nodeContainer.getNode(toId);
+        ConnectionImpl connection = new ConnectionImpl(
+                from, Node.CONNECTION_DEFAULT_TYPE,
+                to, Node.CONNECTION_DEFAULT_TYPE);
+        connection.setMetaData(ASSOCIATION, Boolean.TRUE);
+        connection.setMetaData(UNIQUE_ID, uniqueId);
+        connection.setMetaData(HIDDEN, Boolean.TRUE);
+        return this;
+    }
+
     public abstract RuleFlowNodeContainerFactory done();
 
 }
-

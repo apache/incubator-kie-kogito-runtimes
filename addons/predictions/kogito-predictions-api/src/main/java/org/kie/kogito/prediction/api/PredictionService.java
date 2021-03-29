@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.prediction.api;
 
 import java.util.Map;
 
 import org.kie.api.runtime.process.WorkItem;
-
 
 /**
  * Interface which allows a prediction or recommendation service implementation to be trained with task data
@@ -33,6 +31,7 @@ public interface PredictionService {
 
     /**
      * Return an outcome prediction for a set of input attributes.
+     * 
      * @param task Task information to be optionally used by the predictive model
      * @param inputData A map of input attributes with the attribute name as key and the attribute value as value.
      * @return PredictionOutcome object which encapsulates the results from a prediction
@@ -41,6 +40,7 @@ public interface PredictionService {
 
     /**
      * Train a predictive model using task data and a set of input and outcome attributes.
+     * 
      * @param task Task information to be optionally used by the predictive model
      * @param inputData A map of input attributes with the attribute name as key and the attribute value as value.
      * @param outputData A map of output attributes (outcomes) with the attribute name as key and the attribute value as value.

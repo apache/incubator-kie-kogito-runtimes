@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.core.impl;
 
 import java.io.Serializable;
@@ -28,16 +27,16 @@ import org.jbpm.workflow.core.Constraint;
  */
 public class ConstraintImpl implements Constraint, Serializable {
 
-    private static final long  serialVersionUID = 510l;
+    private static final long serialVersionUID = 510l;
 
     private Map<String, Object> metaData = new HashMap<String, Object>();
 
-    private String             name;
-    private String             constraint;
-    private int                priority;
-    private String             dialect = "mvel";
-    private String             type = "rule";
-    private boolean            isDefault = false;
+    private String name;
+    private String constraint;
+    private int priority;
+    private String dialect = "mvel";
+    private String type = "rule";
+    private boolean isDefault = false;
 
     public String getConstraint() {
         return this.constraint;
@@ -84,19 +83,19 @@ public class ConstraintImpl implements Constraint, Serializable {
     }
 
     public boolean isDefault() {
-		return isDefault;
-	}
+        return isDefault;
+    }
 
-	public void setDefault(boolean isDefault) {
-		this.isDefault = isDefault;
-	}
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
 
-	public void setMetaData(String name, Object value) {
+    public void setMetaData(String name, Object value) {
         this.metaData.put(name, value);
     }
-    
+
     public Object getMetaData(String name) {
         return this.metaData.get(name);
     }
-    
+
 }

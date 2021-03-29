@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.test;
 
 import java.lang.reflect.Constructor;
@@ -42,8 +41,8 @@ public class NodeCreator<T extends NodeImpl> {
         result.setId(idGen++);
         result.setName(name);
         this.nodeContainer.addNode(result);
-        
-        if( result instanceof WorkItemNode ) { 
+
+        if (result instanceof WorkItemNode) {
             Work work = new WorkImpl();
             ((WorkItemNode) result).setWork(work);
         }
@@ -54,10 +53,9 @@ public class NodeCreator<T extends NodeImpl> {
         this.nodeContainer = newNodeContainer;
     }
 
-    public static void connect(Node nodeOne, Node nodeTwo ) { 
+    public static void connect(Node nodeOne, Node nodeTwo) {
         new ConnectionImpl(
-                nodeOne, Node.CONNECTION_DEFAULT_TYPE, 
-                nodeTwo, Node.CONNECTION_DEFAULT_TYPE
-        );
+                nodeOne, Node.CONNECTION_DEFAULT_TYPE,
+                nodeTwo, Node.CONNECTION_DEFAULT_TYPE);
     }
 }

@@ -7,13 +7,13 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>jbpm</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>jbpm-flow</artifactId>
   <packaging>jar</packaging>
 
-  <name>jBPM :: Flow</name>
+  <name>Kogito :: jBPM :: Flow</name>
   <description>jBPM Flow</description>
 
   <properties>
@@ -27,11 +27,15 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
+      <artifactId>kogito-events-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-workitems</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -43,8 +47,15 @@
     </dependency>
 
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-mvel</artifactId>
+      <version>${version.org.kie7}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mvel</groupId>

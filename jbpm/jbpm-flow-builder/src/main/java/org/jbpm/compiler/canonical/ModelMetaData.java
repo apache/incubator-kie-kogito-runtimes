@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
-
-import static com.github.javaparser.StaticJavaParser.parse;
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.context.variable.Variable;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.internal.kogito.codegen.Generated;
-import org.kie.internal.kogito.codegen.VariableInfo;
+import org.kie.kogito.codegen.Generated;
+import org.kie.kogito.codegen.VariableInfo;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
@@ -59,6 +56,10 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.drools.core.util.StringUtils.ucFirst;
+
 public class ModelMetaData {
 
     private final String processId;
@@ -69,14 +70,21 @@ public class ModelMetaData {
     private String visibility;
     private boolean hidden;
     private String templateName;
-    
+    private Consumer<CompilationUnit> customGenerator;
+
     private boolean supportsValidation;
 
     public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden) {
         this(processId, packageName, modelClassSimpleName, visibility, variableScope, hidden, "/class-templates/ModelTemplate.java");
     }
-    
+
     public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden, String templateName) {
+        this(processId, packageName, modelClassSimpleName, visibility, variableScope, hidden, templateName, c -> {
+        });
+    }
+
+    public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden, String templateName,
+            Consumer<CompilationUnit> customGenerator) {
         this.processId = processId;
         this.packageName = packageName;
         this.modelClassSimpleName = modelClassSimpleName;
@@ -85,10 +93,12 @@ public class ModelMetaData {
         this.visibility = visibility;
         this.hidden = hidden;
         this.templateName = templateName;
+        this.customGenerator = customGenerator;
     }
 
     public String generate() {
         CompilationUnit modelClass = compilationUnit();
+        customGenerator.accept(modelClass);
         return modelClass.toString();
     }
 
@@ -101,7 +111,9 @@ public class ModelMetaData {
     }
 
     public MethodCallExpr fromMap(String variableName, String mapVarName) {
-        return new MethodCallExpr(new NameExpr(variableName), "fromMap").addArgument(new MethodCallExpr(new ThisExpr(), "id")).addArgument(mapVarName);
+        return new MethodCallExpr(new NameExpr(variableName), "fromMap")
+                .addArgument(new MethodCallExpr(new ThisExpr(), "id"))
+                .addArgument(mapVarName);
     }
 
     public MethodCallExpr toMap(String varName) {
@@ -112,7 +124,7 @@ public class ModelMetaData {
         BlockStmt blockStmt = new BlockStmt();
 
         for (Map.Entry<String, String> e : mapping.entrySet()) {
-            String destField = e.getKey();
+            String destField = variableScope.getTypes().get(e.getKey()).getSanitizedName();
             String sourceField = e.getValue();
             blockStmt.addStatement(
                     dest.callSetter(destVarName, destField, dest.callGetter(sourceVarName, sourceField)));
@@ -120,18 +132,19 @@ public class ModelMetaData {
 
         return blockStmt;
     }
-    
+
     public MethodCallExpr callSetter(String targetVar, String destField, String value) {
         if (value.startsWith("#{")) {
-            value = value.substring(2, value.length() -1);
+            value = value.substring(2, value.length() - 1);
         }
-        
+
         return callSetter(targetVar, destField, new NameExpr(value));
     }
 
     public MethodCallExpr callSetter(String targetVar, String destField, Expression value) {
+        String name = variableScope.getTypes().get(destField).getSanitizedName();
         String type = variableScope.getType(destField);
-        String setter = "set" + StringUtils.capitalize(destField); // todo cache FieldDeclarations in compilationUnit()
+        String setter = "set" + ucFirst(name); // todo cache FieldDeclarations in compilationUnit()
         return new MethodCallExpr(new NameExpr(targetVar), setter).addArgument(
                 new CastExpr(
                         new ClassOrInterfaceType(null, type),
@@ -139,7 +152,7 @@ public class ModelMetaData {
     }
 
     public MethodCallExpr callGetter(String targetVar, String field) {
-        String getter = "get" + StringUtils.capitalize(field); // todo cache FieldDeclarations in compilationUnit()
+        String getter = "get" + ucFirst(field); // todo cache FieldDeclarations in compilationUnit()
         return new MethodCallExpr(new NameExpr(targetVar), getter);
     }
 
@@ -152,20 +165,22 @@ public class ModelMetaData {
             throw new NoSuchElementException("Cannot find class declaration in the template");
         }
         ClassOrInterfaceDeclaration modelClass = processMethod.get();
-        
-        if (!WorkflowProcess.PRIVATE_VISIBILITY.equals(visibility)) {
-            modelClass.addAnnotation(new NormalAnnotationExpr(new Name(Generated.class.getCanonicalName()), NodeList.nodeList(new MemberValuePair("value", new StringLiteralExpr("kogit-codegen")), 
-                                                                                                                          new MemberValuePair("reference", new StringLiteralExpr(processId)),
-                                                                                                                          new MemberValuePair("name", new StringLiteralExpr(StringUtils.capitalize(ProcessToExecModelGenerator.extractProcessId(processId)))),
-                                                                                                                          new MemberValuePair("hidden", new BooleanLiteralExpr(hidden)))));
+
+        if (!KogitoWorkflowProcess.PRIVATE_VISIBILITY.equals(visibility)) {
+            modelClass.addAnnotation(new NormalAnnotationExpr(new Name(Generated.class.getCanonicalName()), NodeList.nodeList(new MemberValuePair("value", new StringLiteralExpr("kogito-codegen")),
+                    new MemberValuePair("reference", new StringLiteralExpr(processId)),
+                    new MemberValuePair("name", new StringLiteralExpr(ucFirst(ProcessToExecModelGenerator.extractProcessId(processId)))),
+                    new MemberValuePair("hidden", new BooleanLiteralExpr(hidden)))));
         }
         modelClass.setName(modelClassSimpleName);
 
         // setup of the toMap method body
         BlockStmt toMapBody = new BlockStmt();
-        ClassOrInterfaceType toMap = new ClassOrInterfaceType(null, new SimpleName(Map.class.getSimpleName()), NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getSimpleName()), new ClassOrInterfaceType(null, Object.class.getSimpleName())));
+        ClassOrInterfaceType toMap = new ClassOrInterfaceType(null, new SimpleName(Map.class.getSimpleName()),
+                NodeList.nodeList(new ClassOrInterfaceType(null, String.class.getSimpleName()), new ClassOrInterfaceType(null, Object.class.getSimpleName())));
         VariableDeclarationExpr paramsField = new VariableDeclarationExpr(toMap, "params");
-        toMapBody.addStatement(new AssignExpr(paramsField, new ObjectCreationExpr(null, new ClassOrInterfaceType(null, HashMap.class.getSimpleName()), NodeList.nodeList()), AssignExpr.Operator.ASSIGN));
+        toMapBody.addStatement(
+                new AssignExpr(paramsField, new ObjectCreationExpr(null, new ClassOrInterfaceType(null, HashMap.class.getSimpleName()), NodeList.nodeList()), AssignExpr.Operator.ASSIGN));
 
         // setup of static fromMap method body        
         BlockStmt staticFromMap = new BlockStmt();
@@ -174,37 +189,43 @@ public class ModelMetaData {
             FieldAccessExpr idField = new FieldAccessExpr(new ThisExpr(), "id");
             staticFromMap.addStatement(new AssignExpr(idField, new NameExpr("id"), AssignExpr.Operator.ASSIGN));
         }
+        for (Map.Entry<String, Variable> variable : variableScope.getTypes().entrySet()) {
+            String varName = variable.getValue().getName();
+            String vtype = variable.getValue().getType().getStringType();
+            String sanitizedName = variable.getValue().getSanitizedName();
 
-        for (String vname : variableScope.getTypes().keySet()) {
-            
-            String vtype = variableScope.getType(vname);
-            FieldDeclaration fd = declareField(vname, vtype);
+            FieldDeclaration fd = declareField(sanitizedName, vtype);
             modelClass.addMember(fd);
-            
-            List<String> tags = variableScope.getTags(vname);
-            fd.addAnnotation(new NormalAnnotationExpr(new Name(VariableInfo.class.getCanonicalName()), NodeList.nodeList(new MemberValuePair("tags", new StringLiteralExpr(tags.stream().collect(Collectors.joining(",")))))));
+
+            List<String> tags = variable.getValue().getTags();
+            fd.addAnnotation(new NormalAnnotationExpr(new Name(VariableInfo.class.getCanonicalName()),
+                    NodeList.nodeList(new MemberValuePair("tags", new StringLiteralExpr(tags.stream().collect(Collectors.joining(",")))))));
+            fd.addAnnotation(new NormalAnnotationExpr(new Name(JsonProperty.class.getCanonicalName()),
+                    NodeList.nodeList(new MemberValuePair("value",
+                            new StringLiteralExpr(varName)))));
 
             applyValidation(fd, tags);
-            
+
             fd.createGetter();
             fd.createSetter();
 
             // toMap method body
             MethodCallExpr putVariable = new MethodCallExpr(new NameExpr("params"), "put");
-            putVariable.addArgument(new StringLiteralExpr(vname));
-            putVariable.addArgument(new FieldAccessExpr(new ThisExpr(), vname));
+            putVariable.addArgument(new StringLiteralExpr(varName));
+            putVariable.addArgument(new FieldAccessExpr(new ThisExpr(), sanitizedName));
             toMapBody.addStatement(putVariable);
 
             ClassOrInterfaceType type = parseClassOrInterfaceType(vtype);
 
             // from map instance method body
-            FieldAccessExpr instanceField = new FieldAccessExpr(new ThisExpr(), vname);
+            FieldAccessExpr instanceField = new FieldAccessExpr(new ThisExpr(), sanitizedName);
             staticFromMap.addStatement(new AssignExpr(instanceField, new CastExpr(
                     type,
                     new MethodCallExpr(
                             new NameExpr("params"),
                             "get")
-                            .addArgument(new StringLiteralExpr(vname))), AssignExpr.Operator.ASSIGN));
+                                    .addArgument(new StringLiteralExpr(varName))),
+                    AssignExpr.Operator.ASSIGN));
         }
 
         Optional<MethodDeclaration> toMapMethod = modelClass.findFirst(MethodDeclaration.class, sl -> sl.getName().asString().equals("toMap"));
@@ -213,7 +234,8 @@ public class ModelMetaData {
         toMapMethod.ifPresent(methodDeclaration -> methodDeclaration.setBody(toMapBody));
 
         modelClass.findFirst(
-                MethodDeclaration.class, sl -> sl.getName().asString().equals("fromMap") && sl.getParameters().size() == 2)// make sure to take only the method with two parameters (id and params)
+                // make sure to take only the method with two parameters (id, businessKey and params)
+                MethodDeclaration.class, sl -> sl.getName().asString().equals("fromMap") && sl.getParameters().size() == 2)
                 .ifPresent(m -> m.setBody(staticFromMap));
 
         return compilationUnit;
@@ -223,12 +245,11 @@ public class ModelMetaData {
 
         if (supportsValidation) {
             fd.addAnnotation("javax.validation.Valid");
-            
+
             if (tags != null && tags.contains(Variable.REQUIRED_TAG)) {
                 fd.addAnnotation("javax.validation.constraints.NotNull");
             }
         }
-        
     }
 
     private FieldDeclaration declareField(String name, String type) {
@@ -250,15 +271,14 @@ public class ModelMetaData {
     public String getGeneratedClassModel() {
         return generate();
     }
-    
+
     public boolean isSupportsValidation() {
         return supportsValidation;
     }
-    
+
     public void setSupportsValidation(boolean supportsValidation) {
         this.supportsValidation = supportsValidation;
     }
-
 
     @Override
     public String toString() {

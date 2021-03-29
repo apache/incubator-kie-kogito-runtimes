@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core;
 
 import java.util.ArrayList;
@@ -145,29 +144,13 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
         return null;
     }
 
-    public List<StartNode> getTimerStart() {
-        Node[] nodes = getNodes();
-
-        List<StartNode> timerStartNodes = new ArrayList<StartNode>();
-        for (int i = 0; i < nodes.length; i++) {
-            if (nodes[i] instanceof StartNode) {
-                // return start node that is not event based node
-                if (((StartNode) nodes[i]).getTimer() != null) {
-                    timerStartNodes.add((StartNode) nodes[i]);
-                }
-            }
-        }
-
-        return timerStartNodes;
-    }
-
     public List<Node> getAutoStartNodes() {
         if (!isDynamic()) {
             return Collections.emptyList();
         }
 
         List<Node> nodes = Arrays.stream(getNodes())
-                .filter(n -> n.getIncomingConnections().isEmpty() && "true".equalsIgnoreCase((String)n.getMetaData().get("customAutoStart")))
+                .filter(n -> n.getIncomingConnections().isEmpty() && "true".equalsIgnoreCase((String) n.getMetaData().get("customAutoStart")))
                 .collect(Collectors.toList());
 
         return nodes;

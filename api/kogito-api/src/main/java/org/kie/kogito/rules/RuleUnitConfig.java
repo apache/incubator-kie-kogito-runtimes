@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.kie.kogito.rules;
 
 import java.util.Optional;
@@ -18,7 +33,7 @@ public final class RuleUnitConfig {
     public RuleUnitConfig(EventProcessingType eventProcessingType, ClockType clockType, Integer sessionPool) {
         this.eventProcessingType = Optional.ofNullable(eventProcessingType);
         this.clockType = Optional.ofNullable(clockType);
-        this.sessionPool = sessionPool == null? OptionalInt.empty() : OptionalInt.of(sessionPool);
+        this.sessionPool = sessionPool == null ? OptionalInt.empty() : OptionalInt.of(sessionPool);
     }
 
     public RuleUnitConfig(Optional<EventProcessingType> eventProcessingType, Optional<ClockType> clockType, OptionalInt sessionPool) {
@@ -48,7 +63,7 @@ public final class RuleUnitConfig {
     }
 
     public OptionalInt getDefaultedSessionPool() {
-        return sessionPool.isPresent() ? sessionPool :  Default.getSessionPool();
+        return sessionPool.isPresent() ? sessionPool : Default.getSessionPool();
     }
 
     /**

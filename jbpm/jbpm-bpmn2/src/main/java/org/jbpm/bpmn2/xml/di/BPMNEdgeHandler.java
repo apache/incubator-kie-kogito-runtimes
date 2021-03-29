@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml.di;
 
 import java.util.HashSet;
@@ -34,21 +33,21 @@ public class BPMNEdgeHandler extends BaseAbstractHandler implements Handler {
         initValidPeers();
         this.allowNesting = false;
     }
-    
+
     protected void initValidParents() {
         this.validParents = new HashSet<Class<?>>();
         this.validParents.add(ProcessInfo.class);
     }
-    
+
     protected void initValidPeers() {
         this.validPeers = new HashSet<Class<?>>();
         this.validPeers.add(null);
         this.validPeers.add(NodeInfo.class);
         this.validPeers.add(ConnectionInfo.class);
     }
-    
+
     public Object start(final String uri, final String localName,
-                        final Attributes attrs, final ExtensibleXmlParser parser)
+            final Attributes attrs, final ExtensibleXmlParser parser)
             throws SAXException {
         parser.startElementBuilder(localName, attrs);
 
@@ -60,7 +59,7 @@ public class BPMNEdgeHandler extends BaseAbstractHandler implements Handler {
     }
 
     public Object end(final String uri, final String localName,
-                      final ExtensibleXmlParser parser) throws SAXException {
+            final ExtensibleXmlParser parser) throws SAXException {
         Element element = parser.endElementBuilder();
         // now get bendpoints
         String bendpoints = null;
@@ -96,16 +95,16 @@ public class BPMNEdgeHandler extends BaseAbstractHandler implements Handler {
     public Class<?> generateNodeFor() {
         return ConnectionInfo.class;
     }
-    
+
     public static class ConnectionInfo {
-        
+
         private String elementRef;
         private String bendpoints;
 
         public ConnectionInfo(String elementRef) {
             this.elementRef = elementRef;
         }
-        
+
         public String getElementRef() {
             return elementRef;
         }
@@ -117,7 +116,7 @@ public class BPMNEdgeHandler extends BaseAbstractHandler implements Handler {
         public void setBendpoints(String bendpoints) {
             this.bendpoints = bendpoints;
         }
-        
+
     }
 
 }

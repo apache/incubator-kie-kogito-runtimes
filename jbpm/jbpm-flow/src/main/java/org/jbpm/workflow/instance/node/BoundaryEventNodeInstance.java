@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,12 +16,13 @@
 package org.jbpm.workflow.instance.node;
 
 import java.util.Collection;
+import java.util.Date;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.impl.WorkflowProcessInstanceImpl;
-
 
 public class BoundaryEventNodeInstance extends EventNodeInstance {
 
@@ -29,19 +30,21 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
 
     @Override
     public void signalEvent(String type, Object event) {
+        if (triggerTime == null) {
+            triggerTime = new Date();
+        }
         BoundaryEventNode boundaryNode = (BoundaryEventNode) getEventNode();
-        
+
         String attachedTo = boundaryNode.getAttachedToNodeId();
-        Collection<NodeInstance> nodeInstances = ((NodeInstanceContainer) getProcessInstance()).getNodeInstances(true);
-        if( type != null && type.startsWith("Compensation") ) { 
+        Collection<NodeInstance> nodeInstances = getProcessInstance().getNodeInstances(true);
+        if (type != null && type.startsWith(Metadata.EVENT_TYPE_COMPENSATION)) {
             // if not active && completed, signal
-            if( ! isAttachedToNodeActive(nodeInstances, attachedTo, type, event) && isAttachedToNodeCompleted(attachedTo)) {
+            if (!isAttachedToNodeActive(nodeInstances, attachedTo, type, event) && isAttachedToNodeCompleted(attachedTo)) {
                 super.signalEvent(type, event);
-            } 
-            else {
+            } else {
                 cancel();
             }
-        } else { 
+        } else {
             if (isAttachedToNodeActive(nodeInstances, attachedTo, type, event)) {
                 super.signalEvent(type, event);
             } else {
@@ -54,11 +57,11 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         if (nodeInstances != null && !nodeInstances.isEmpty()) {
             for (NodeInstance nInstance : nodeInstances) {
                 String nodeUniqueId = (String) nInstance.getNode().getMetaData().get("UniqueId");
-                boolean isActivating = ((WorkflowProcessInstanceImpl)nInstance.getProcessInstance()).getActivatingNodeIds().contains(nodeUniqueId);
+                boolean isActivating = ((WorkflowProcessInstanceImpl) nInstance.getProcessInstance()).getActivatingNodeIds().contains(nodeUniqueId);
                 if (attachedTo.equals(nodeUniqueId) && !isActivating) {
                     // in case this is timer event make sure it corresponds to the proper node instance
                     if (type.startsWith("Timer-")) {
-                        if (nInstance.getId().equals(event)) {
+                        if (nInstance.getStringId().equals(event)) {
                             return true;
                         }
                     } else {
@@ -69,7 +72,7 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
         }
         return false;
     }
-    
+
     private boolean isAttachedToNodeCompleted(String attachedTo) {
         WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) getProcessInstance();
         return processInstance.getCompletedNodeIds().contains(attachedTo);

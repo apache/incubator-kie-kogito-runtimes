@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import org.jbpm.bpmn2.core.Error;
 import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Message;
 import org.jbpm.bpmn2.core.Signal;
+import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTransformerImpl;
@@ -47,8 +47,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING;
+
 public class StartEventHandler extends AbstractNodeHandler {
-    
+
     private static final String TRIGGER_REF = "TriggerRef";
     private static final String MESSAGE_TYPE = "MessageType";
     private static final String TRIGGER_TYPE = "TriggerType";
@@ -69,7 +71,7 @@ public class StartEventHandler extends AbstractNodeHandler {
     @Override
     @SuppressWarnings("unchecked")
     protected void handleNode(final Node node, final Element element, final String uri,
-                              final String localName, final ExtensibleXmlParser parser) throws SAXException {
+            final String localName, final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         StartNode startNode = (StartNode) node;
         // TODO: StartEventHandler.handleNode(): the parser doesn't discriminate between the schema default and the actual set value
@@ -117,18 +119,17 @@ public class StartEventHandler extends AbstractNodeHandler {
                     addTriggerWithInMappings(startNode, type);
                 }
                 startNode.setMetaData(MESSAGE_TYPE, type);
-                startNode.setMetaData(TRIGGER_TYPE, "Signal");
+                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
                 Signal signal = findSignalByName(parser, type);
                 if (signal != null) {
                     String eventType = signal.getStructureRef();
                     startNode.setMetaData(TRIGGER_REF, eventType);
                 } else {
-                    startNode.setMetaData(TRIGGER_REF, type); 
+                    startNode.setMetaData(TRIGGER_REF, type);
                 }
             } else if ("messageEventDefinition".equals(nodeName)) {
                 String messageRef = ((Element) xmlNode).getAttribute("messageRef");
-                Map<String, Message> messages = (Map<String, Message>)
-                        ((ProcessBuildData) parser.getData()).getMetaData("Messages");
+                Map<String, Message> messages = (Map<String, Message>) ((ProcessBuildData) parser.getData()).getMetaData("Messages");
                 if (messages == null) {
                     throw new IllegalArgumentException("No messages found");
                 }
@@ -137,7 +138,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     throw new IllegalArgumentException("Could not find message " + messageRef);
                 }
                 startNode.setMetaData(MESSAGE_TYPE, message.getType());
-                startNode.setMetaData(TRIGGER_TYPE, "ConsumeMessage");
+                startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.ConsumeMessage.name());
                 startNode.setMetaData(TRIGGER_REF, message.getName());
 
                 addTriggerWithInMappings(startNode, "Message-" + message.getName());
@@ -145,13 +146,11 @@ public class StartEventHandler extends AbstractNodeHandler {
                 handleTimerNode(startNode, element, uri, localName, parser);
                 // following event definitions are only for event sub process and will be validated to not be included in top process definitions
             } else if ("errorEventDefinition".equals(nodeName)) {
-                if (!startNode.isInterrupting()) {
-                    // BPMN2 spec (p.245-246, (2011-01-03)) implies that
-                    //   - a <startEvent> in an Event Sub-Process
-                    //    - *without* the 'isInterupting' attribute always interrupts (containing process)
-                    String errorMsg = "Error Start Events in an Event Sub-Process always interrupt the containing (sub)process(es).";
-                    throw new IllegalArgumentException(errorMsg);
-                }
+                // BPMN2 spec (p.245-246, (2011-01-03)) implies that
+                //   - a <startEvent> in an Event Sub-Process
+                //    - *without* the 'isInterupting' attribute always interrupts (containing process)
+                startNode.setInterrupting(true);
+
                 String errorRef = ((Element) xmlNode).getAttribute("errorRef");
                 if (errorRef != null && errorRef.trim().length() > 0) {
                     List<Error> errors = (List<Error>) ((ProcessBuildData) parser.getData()).getMetaData("Errors");
@@ -168,13 +167,16 @@ public class StartEventHandler extends AbstractNodeHandler {
                         throw new IllegalArgumentException("Could not find error " + errorRef);
                     }
                     startNode.setMetaData("FaultCode", error.getErrorCode());
+                    startNode.setMetaData(MESSAGE_TYPE, error.getErrorCode());
+                    startNode.setMetaData(TRIGGER_REF, error.getErrorCode());
+                    startNode.setMetaData(TRIGGER_TYPE, TriggerMetaData.TriggerType.Signal.name());
+
                     addTriggerWithInMappings(startNode, "Error-" + error.getErrorCode());
                 }
             } else if ("escalationEventDefinition".equals(nodeName)) {
                 String escalationRef = ((Element) xmlNode).getAttribute("escalationRef");
                 if (escalationRef != null && escalationRef.trim().length() > 0) {
-                    Map<String, Escalation> escalations = (Map<String, Escalation>)
-                            ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.ESCALATIONS);
+                    Map<String, Escalation> escalations = (Map<String, Escalation>) ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.ESCALATIONS);
                     if (escalations == null) {
                         throw new IllegalArgumentException("No escalations found");
                     }
@@ -198,7 +200,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         eventFilter.setType(triggerEventType);
         trigger.addEventFilter(eventFilter);
 
-        String mapping = (String) startNode.getMetaData("TriggerMapping");
+        String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
             trigger.addInMapping(mapping, startNode.getOutMapping(mapping));
         }
@@ -223,7 +225,7 @@ public class StartEventHandler extends AbstractNodeHandler {
             throw new IllegalArgumentException("No targetRef found in dataOutputAssociation in startEvent");
         }
         String target = subNode.getTextContent();
-        startNode.setMetaData("TriggerMapping", target);
+        startNode.setMetaData(TRIGGER_MAPPING, target);
         // transformation
         Transformation transformation = null;
         subNode = subNode.getNextSibling();
@@ -279,7 +281,8 @@ public class StartEventHandler extends AbstractNodeHandler {
                 ConstraintTrigger constraintTrigger = (ConstraintTrigger) trigger;
                 if (constraintTrigger.getHeader() == null) {
                     xmlDump.append("      <conditionalEventDefinition>" + EOL);
-                    xmlDump.append("        <condition xsi:type=\"tFormalExpression\" language=\"" + XmlBPMNProcessDumper.RULE_LANGUAGE + "\">" + constraintTrigger.getConstraint() + "</condition>" + EOL);
+                    xmlDump.append(
+                            "        <condition xsi:type=\"tFormalExpression\" language=\"" + XmlBPMNProcessDumper.RULE_LANGUAGE + "\">" + constraintTrigger.getConstraint() + "</condition>" + EOL);
                     xmlDump.append("      </conditionalEventDefinition>" + EOL);
                 }
             } else if (trigger instanceof EventTrigger) {
@@ -290,7 +293,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     mapping = eventTrigger.getInMappings().keySet().iterator().next();
                     nameMapping = eventTrigger.getInMappings().values().iterator().next();
                 } else {
-                    mapping = (String) startNode.getMetaData("TriggerMapping");
+                    mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
                 }
 
                 if (mapping != null) {
@@ -333,7 +336,8 @@ public class StartEventHandler extends AbstractNodeHandler {
                     } else if (timer.getTimeType() == Timer.TIME_CYCLE) {
 
                         if (timer.getPeriod() != null) {
-                            xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "###" + XmlDumper.replaceIllegalChars(timer.getPeriod()) + "</timeCycle>" + EOL);
+                            xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "###"
+                                    + XmlDumper.replaceIllegalChars(timer.getPeriod()) + "</timeCycle>" + EOL);
                         } else {
                             xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "</timeCycle>" + EOL);
                         }
@@ -352,7 +356,8 @@ public class StartEventHandler extends AbstractNodeHandler {
                 } else if (timer.getTimeType() == Timer.TIME_CYCLE) {
 
                     if (timer.getPeriod() != null) {
-                        xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "###" + XmlDumper.replaceIllegalChars(timer.getPeriod()) + "</timeCycle>" + EOL);
+                        xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "###" + XmlDumper.replaceIllegalChars(timer.getPeriod())
+                                + "</timeCycle>" + EOL);
                     } else {
                         xmlDump.append("        <timeCycle xsi:type=\"tFormalExpression\">" + XmlDumper.replaceIllegalChars(timer.getDelay()) + "</timeCycle>" + EOL);
                     }
@@ -364,8 +369,8 @@ public class StartEventHandler extends AbstractNodeHandler {
     }
 
     protected void handleTimerNode(final Node node, final Element element,
-                                   final String uri, final String localName,
-                                   final ExtensibleXmlParser parser) throws SAXException {
+            final String uri, final String localName,
+            final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         StartNode startNode = (StartNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -410,7 +415,7 @@ public class StartEventHandler extends AbstractNodeHandler {
                     EventTypeFilter eventFilter = new EventTypeFilter();
                     eventFilter.setType("Timer-" + ((EventSubProcessNode) parser.getParent()).getId());
                     trigger.addEventFilter(eventFilter);
-                    String mapping = (String) startNode.getMetaData("TriggerMapping");
+                    String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
                     if (mapping != null) {
                         trigger.addInMapping(mapping, "event");
                     }
@@ -425,27 +430,28 @@ public class StartEventHandler extends AbstractNodeHandler {
     protected void handleCompensationNode(final StartNode startNode, final org.w3c.dom.Node xmlNode) {
         if (startNode.isInterrupting()) {
             logger.warn("Compensation Event Sub-Processes [" + startNode.getMetaData("UniqueId") + "] may not be specified as interrupting:" +
-                                " overriding attribute and setting to not-interrupting.");
+                    " overriding attribute and setting to not-interrupting.");
         }
         startNode.setInterrupting(false);
 
-        /** From the BPMN2 spec, P.264:
+        /**
+         * From the BPMN2 spec, P.264:
          * "For a Start Event:
-         *  This Event "catches" the compensation for an Event Sub-Process. No further information is required.
-         *  The Event Sub-Process will provide the id necessary to match the Compensation Event with the Event
-         *  that threw the compensation"
+         * This Event "catches" the compensation for an Event Sub-Process. No further information is required.
+         * The Event Sub-Process will provide the id necessary to match the Compensation Event with the Event
+         * that threw the compensation"
          *
-         *  In other words, the id of the Sub-Process containing this Event Sub-Process is what should be used
-         *  as the activityRef value in any Intermediate (throw) or End compensation event that targets
-         *  this particular Event Sub-Process.
+         * In other words, the id of the Sub-Process containing this Event Sub-Process is what should be used
+         * as the activityRef value in any Intermediate (throw) or End compensation event that targets
+         * this particular Event Sub-Process.
          *
-         *  This is similar to the logic used for a Compensation Boundary Event: it's signaled using
-         *  the id of the activity to which the CBE is attached to.
+         * This is similar to the logic used for a Compensation Boundary Event: it's signaled using
+         * the id of the activity to which the CBE is attached to.
          */
         String activityRef = ((Element) xmlNode).getAttribute("activityRef");
         if (activityRef != null && activityRef.length() > 0) {
             logger.warn("activityRef value [" + activityRef + "] on Start Event '" + startNode.getMetaData("UniqueId")
-                                + "' ignored per the BPMN2 specification.");
+                    + "' ignored per the BPMN2 specification.");
         }
 
         // so that this node will get processed in ProcessHandler.postProcessNodes(...)
@@ -456,7 +462,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         List<Trigger> startTriggers = new ArrayList<>();
         startTriggers.add(startTrigger);
         startNode.setTriggers(startTriggers);
-        String mapping = (String) startNode.getMetaData("TriggerMapping");
+        String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
             startTrigger.addInMapping(mapping, startNode.getOutMapping(mapping));
         }

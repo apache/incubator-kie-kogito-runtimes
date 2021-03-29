@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.persistence;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.protostream.MessageMarshaller;
+import org.infinispan.protostream.BaseMarshaller;
 import org.kie.kogito.infinispan.CacheProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstancesFactory;
@@ -29,26 +29,26 @@ import org.kie.kogito.process.ProcessInstancesFactory;
  *
  */
 public abstract class KogitoProcessInstancesFactory implements ProcessInstancesFactory {
-   
-    protected RemoteCacheManager cacheManager; 
+
+    protected RemoteCacheManager cacheManager;
 
     public KogitoProcessInstancesFactory(RemoteCacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
-    
+
     public CacheProcessInstances createProcessInstances(Process<?> process) {
-        List<?> marshallers = marshallers();
-        return new CacheProcessInstances(process, cacheManager, template(), proto(), marshallers.toArray(new MessageMarshaller<?>[marshallers.size()]));
+        List<BaseMarshaller<?>> marshallers = marshallers();
+        return new CacheProcessInstances(process, cacheManager, template(), proto(), marshallers.toArray(new BaseMarshaller<?>[0]));
     }
-    
+
     public String proto() {
         return null;
     }
-    
-    public List<?> marshallers() {
+
+    public List<BaseMarshaller<?>> marshallers() {
         return Collections.emptyList();
     }
-    
+
     public String template() {
         return null;
     }

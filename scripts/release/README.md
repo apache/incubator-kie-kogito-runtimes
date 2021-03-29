@@ -8,9 +8,13 @@ NOTE: Make sure you always run the scripts from this (release) directory
 
 * Set release version number as environment variable
 `export RELEASE_VERSION=0.1.0`
+* Set base branch as environment variable
+`export BASE_BRANCH=master`
+* Set target branch as environment variable
+`export TARGET_BRANCH=0.1.x`
 
 * create local release branches 
-`./01-create-local-release-branches.sh $RELEASE_VERSION`
+`./01-create-local-release-branches.sh $RELEASE_VERSION $BASE_BRANCH $TARGET_BRANCH`
 
 * update version in all repositories of Kogito
 `./02-update-version-all.sh $RELEASE_VERSION`
@@ -22,10 +26,15 @@ NOTE: Make sure you always run the scripts from this (release) directory
 `./04-commit-local-release-branches.sh $RELEASE_VERSION`
 
 * tag and push to origin updates
-`./05-tag-and-push-local-release-branches.sh $RELEASE_VERSION` 
+`./05-tag-and-push-local-release-branches.sh $RELEASE_VERSION $TARGET_BRANCH` 
 
 * deploy to remote maven repository - this is pushing artifacts to remote repository with built version
 `./06-deploy-release.sh`
+
+## Custom Maven settings
+
+To customize the Maven settings, you can follow this [guide](https://maven.apache.org/configure.html).
+Adding a `.mvn/maven.config` file at the root folder of each repository.
 
 ## New development version
 

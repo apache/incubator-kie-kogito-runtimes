@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ public class SequenceFlowHandler extends BaseAbstractHandler implements Handler 
 
     @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
-                        final Attributes attrs, final ExtensibleXmlParser parser)
+            final Attributes attrs, final ExtensibleXmlParser parser)
             throws SAXException {
         parser.startElementBuilder(localName, attrs);
 
@@ -74,7 +73,7 @@ public class SequenceFlowHandler extends BaseAbstractHandler implements Handler 
         final String bendpoints = attrs.getValue("g:bendpoints");
         final String name = attrs.getValue("name");
         final String priority = attrs.getValue("http://www.jboss.org/drools",
-                                               "priority");
+                "priority");
 
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
 
@@ -95,7 +94,7 @@ public class SequenceFlowHandler extends BaseAbstractHandler implements Handler 
             if (connections == null) {
                 connections = new ArrayList<>();
                 compositeNode.setMetaData(ProcessHandler.CONNECTIONS,
-                                          connections);
+                        connections);
             }
         }
 
@@ -114,7 +113,7 @@ public class SequenceFlowHandler extends BaseAbstractHandler implements Handler 
     }
 
     public Object end(final String uri, final String localName,
-                      final ExtensibleXmlParser parser) throws SAXException {
+            final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
         SequenceFlow sequenceFlow = (SequenceFlow) parser.getCurrent();
 
@@ -137,7 +136,7 @@ public class SequenceFlowHandler extends BaseAbstractHandler implements Handler 
                         sequenceFlow.setLanguage("XPath");
                     } else if (XmlBPMNProcessDumper.JAVASCRIPT_LANGUAGE.equals(language)) {
                         sequenceFlow.setLanguage("JavaScript");
-                    } else if (XmlBPMNProcessDumper.FEEL_LANGUAGE.equals(language)) {
+                    } else if (XmlBPMNProcessDumper.FEEL_LANGUAGE.equals(language) || XmlBPMNProcessDumper.DMN_FEEL_LANGUAGE.equals(language)) {
                         sequenceFlow.setLanguage("FEEL");
                     } else {
                         throw new IllegalArgumentException("Unknown language " + language);

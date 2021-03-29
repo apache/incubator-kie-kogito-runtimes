@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.HashSet;
@@ -41,17 +40,17 @@ import org.xml.sax.SAXException;
 
 public class DataObjectHandler extends BaseAbstractHandler implements Handler {
 
-	public DataObjectHandler() {
+    public DataObjectHandler() {
         initValidParents();
         initValidPeers();
         this.allowNesting = false;
     }
-    
+
     protected void initValidParents() {
         this.validParents = new HashSet<Class<?>>();
         this.validParents.add(ContextContainer.class);
     }
-    
+
     protected void initValidPeers() {
         this.validPeers = new HashSet<Class<?>>();
         this.validPeers.add(null);
@@ -59,73 +58,72 @@ public class DataObjectHandler extends BaseAbstractHandler implements Handler {
         this.validPeers.add(Node.class);
         this.validPeers.add(SequenceFlow.class);
     }
-    
-	@SuppressWarnings("unchecked")
-	public Object start(final String uri, final String localName,
-			            final Attributes attrs, final ExtensibleXmlParser parser)
-			throws SAXException {
-		parser.startElementBuilder(localName, attrs);
 
-		final String id = attrs.getValue("id");
-		final String itemSubjectRef = attrs.getValue("itemSubjectRef");
+    @SuppressWarnings("unchecked")
+    public Object start(final String uri, final String localName,
+            final Attributes attrs, final ExtensibleXmlParser parser)
+            throws SAXException {
+        parser.startElementBuilder(localName, attrs);
 
-		Object parent = parser.getParent();
-		if (parent instanceof ContextContainer) {
-		    ContextContainer contextContainer = (ContextContainer) parent;
-		    VariableScope variableScope = (VariableScope) 
-                contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
-			List variables = variableScope.getVariables();
-			Variable variable = new Variable();
-			variable.setMetaData("DataObject", "true");
-			variable.setName(id);
+        final String id = attrs.getValue("id");
+        final String itemSubjectRef = attrs.getValue("itemSubjectRef");
+
+        Object parent = parser.getParent();
+        if (parent instanceof ContextContainer) {
+            ContextContainer contextContainer = (ContextContainer) parent;
+            VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
+            List variables = variableScope.getVariables();
+            Variable variable = new Variable();
+            variable.setMetaData("DataObject", "true");
+            variable.setId(id);
+            variable.setName(id);
             variable.setMetaData(id, variable.getName());
-			// retrieve type from item definition
-			DataType dataType = new ObjectDataType();
-			Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-	            ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
-	        if (itemDefinitions != null) {
-	        	ItemDefinition itemDefinition = itemDefinitions.get(itemSubjectRef);
-	        	if (itemDefinition != null) {
-	        		
-	        	    String structureRef = itemDefinition.getStructureRef();
-	        	    
-	        	    if ("java.lang.Boolean".equals(structureRef) || "Boolean".equals(structureRef)) {
-	        	        dataType = new BooleanDataType();
-	        	        
-	        	    } else if ("java.lang.Integer".equals(structureRef) || "Integer".equals(structureRef)) {
-	        	        dataType = new IntegerDataType();
-	                    
-	        	    } else if ("java.lang.Float".equals(structureRef) || "Float".equals(structureRef)) {
-	        	        dataType = new FloatDataType();
-	                    
-	                } else if ("java.lang.String".equals(structureRef) || "String".equals(structureRef)) {
-	                    dataType = new StringDataType();
-	                    
-	                } else if ("java.lang.Object".equals(structureRef) || "Object".equals(structureRef)) {
-	                	// use FQCN of Object
-	                    dataType = new ObjectDataType("java.lang.Object");
-	                    
-	                } else {
-	                    dataType = new ObjectDataType(structureRef, parser.getClassLoader());
-	                }
-	        	}
-	        }
-			variable.setType(dataType);
-			variables.add(variable);
-			return variable;
-		}
+            // retrieve type from item definition
+            DataType dataType = new ObjectDataType();
+            Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+            if (itemDefinitions != null) {
+                ItemDefinition itemDefinition = itemDefinitions.get(itemSubjectRef);
+                if (itemDefinition != null) {
 
-		return new Variable();
-	}
+                    String structureRef = itemDefinition.getStructureRef();
 
-	public Object end(final String uri, final String localName,
-			          final ExtensibleXmlParser parser) throws SAXException {
-		parser.endElementBuilder();
-		return parser.getCurrent();
-	}
+                    if ("java.lang.Boolean".equals(structureRef) || "Boolean".equals(structureRef)) {
+                        dataType = new BooleanDataType();
 
-	public Class<?> generateNodeFor() {
-		return Variable.class;
-	}
+                    } else if ("java.lang.Integer".equals(structureRef) || "Integer".equals(structureRef)) {
+                        dataType = new IntegerDataType();
+
+                    } else if ("java.lang.Float".equals(structureRef) || "Float".equals(structureRef)) {
+                        dataType = new FloatDataType();
+
+                    } else if ("java.lang.String".equals(structureRef) || "String".equals(structureRef)) {
+                        dataType = new StringDataType();
+
+                    } else if ("java.lang.Object".equals(structureRef) || "Object".equals(structureRef)) {
+                        // use FQCN of Object
+                        dataType = new ObjectDataType("java.lang.Object");
+
+                    } else {
+                        dataType = new ObjectDataType(structureRef, parser.getClassLoader());
+                    }
+                }
+            }
+            variable.setType(dataType);
+            variables.add(variable);
+            return variable;
+        }
+
+        return new Variable();
+    }
+
+    public Object end(final String uri, final String localName,
+            final ExtensibleXmlParser parser) throws SAXException {
+        parser.endElementBuilder();
+        return parser.getCurrent();
+    }
+
+    public Class<?> generateNodeFor() {
+        return Variable.class;
+    }
 
 }

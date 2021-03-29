@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.lang.reflect.Method;
@@ -95,7 +94,7 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         if (returnClass.isArray()) {
             return returnClass.getComponentType();
         }
-        if ( assignableChecker.isAssignableFrom(DataSource.class, returnClass)) {
+        if (assignableChecker.isAssignableFrom(DataSource.class, returnClass)) {
             return getParametricType(m);
         }
         if (Iterable.class.isAssignableFrom(returnClass)) {
@@ -104,11 +103,13 @@ public class ReflectiveRuleUnitDescription extends AbstractRuleUnitDescription {
         return null;
     }
 
+    public AssignableChecker getAssignableChecker() {
+        return assignableChecker;
+    }
+
     private Class<?> getParametricType(Method m) {
         Type returnType = m.getGenericReturnType();
-        return returnType instanceof ParameterizedType ?
-                (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0] :
-                Object.class;
+        return returnType instanceof ParameterizedType ? (Class<?>) ((ParameterizedType) returnType).getActualTypeArguments()[0] : Object.class;
     }
 
     private static RuleUnitConfig loadConfig(Class<? extends RuleUnitData> ruleUnitClass) {

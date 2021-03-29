@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.maven.plugin.util;
 
 import java.io.File;
@@ -32,10 +31,10 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.resolver.filter.CumulativeScopeArtifactFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.kie.builder.impl.InternalKieModule;
 import org.drools.compiler.kie.builder.impl.ZipKieModule;
 import org.drools.compiler.kproject.ReleaseIdImpl;
-import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.model.KieModuleModel;
 
@@ -43,7 +42,8 @@ import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsfor
 
 public final class MojoUtil {
 
-    public static Set<URL> getProjectFiles(final MavenProject mavenProject, final List<InternalKieModule> kmoduleDeps)
+    public static Set<URL> getProjectFiles(final MavenProject mavenProject,
+            final List<InternalKieModule> kmoduleDeps)
             throws DependencyResolutionRequiredException, IOException {
         final Set<URL> urls = new HashSet<>();
         for (final String element : mavenProject.getCompileClasspathElements()) {
@@ -52,23 +52,17 @@ public final class MojoUtil {
 
         mavenProject.setArtifactFilter(new CumulativeScopeArtifactFilter(Arrays.asList("compile", "runtime")));
         for (final Artifact artifact : mavenProject.getArtifacts()) {
-            final File file = artifact.getFile();
-            if (file != null) {
-                urls.add(file.toURI().toURL());
-                final KieModuleModel depModel = getDependencyKieModel(file);
-                if (kmoduleDeps != null && depModel != null) {
-                    final ReleaseId releaseId = new ReleaseIdImpl(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
-                    kmoduleDeps.add(new ZipKieModule(releaseId, depModel, file));
-                }
+            if (artifact.getType().equals("jar")) {
+                populateURLsFromJarArtifact(urls, artifact, kmoduleDeps);
             }
         }
         return urls;
     }
 
     public static ClassLoader createProjectClassLoader(final ClassLoader parentClassLoader,
-                                                       final MavenProject mavenProject,
-                                                       final File outputDirectory,
-                                                       final List<InternalKieModule> kmoduleDeps) throws MojoExecutionException {
+            final MavenProject mavenProject,
+            final File outputDirectory,
+            final List<InternalKieModule> kmoduleDeps) throws MojoExecutionException {
         try {
             final Set<URL> urls = getProjectFiles(mavenProject, kmoduleDeps);
             urls.add(outputDirectory.toURI().toURL());
@@ -79,11 +73,25 @@ public final class MojoUtil {
         }
     }
 
+    private static void populateURLsFromJarArtifact(final Set<URL> toPopulate, final Artifact artifact,
+            final List<InternalKieModule> kmoduleDeps) throws IOException {
+        final File file = artifact.getFile();
+        if (file != null && file.isFile()) {
+            toPopulate.add(file.toURI().toURL());
+            final KieModuleModel depModel = getDependencyKieModel(file);
+            if (kmoduleDeps != null && depModel != null) {
+                final ReleaseId releaseId = new ReleaseIdImpl(artifact.getGroupId(), artifact.getArtifactId(),
+                        artifact.getVersion());
+                kmoduleDeps.add(new ZipKieModule(releaseId, depModel, file));
+            }
+        }
+    }
+
     private static KieModuleModel getDependencyKieModel(final File jar) throws IOException {
         try (final ZipFile zipFile = new ZipFile(jar)) {
-            final ZipEntry zipEntry = zipFile.getEntry(KieModuleModelImpl.KMODULE_JAR_PATH);
+            final ZipEntry zipEntry = zipFile.getEntry(KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
             if (zipEntry != null) {
-                final KieModuleModel kieModuleModel = KieModuleModelImpl.fromXML(zipFile.getInputStream(zipEntry));
+                final KieModuleModel kieModuleModel = KogitoKieModuleModelImpl.fromXML(zipFile.getInputStream(zipEntry));
                 setDefaultsforEmptyKieModule(kieModuleModel);
                 return kieModuleModel;
             }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core.factory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
-import org.jbpm.process.core.timer.Timer;
+import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
-import org.jbpm.workflow.core.node.MilestoneNode;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.kogito.process.ProcessInstance;
 
-/**
- *
- */
-public class SubProcessNodeFactory extends NodeFactory {
+public class SubProcessNodeFactory extends StateBasedNodeFactory implements MappableNodeFactory {
+
+    public static final String METHOD_PROCESS_ID = "processId";
+    public static final String METHOD_PROCESS_NAME = "processName";
+    public static final String METHOD_WAIT_FOR_COMPLETION = "waitForCompletion";
+    public static final String METHOD_INDEPENDENT = "independent";
 
     public SubProcessNodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -50,8 +41,44 @@ public class SubProcessNodeFactory extends NodeFactory {
         return (SubProcessNode) getNode();
     }
 
+    @Override
     public SubProcessNodeFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
+        return this;
+    }
+
+    @Override
+    public SubProcessNodeFactory onEntryAction(String dialect, String action) {
+        super.onEntryAction(dialect, action);
+        return this;
+    }
+
+    @Override
+    public SubProcessNodeFactory onExitAction(String dialect, String action) {
+        super.onExitAction(dialect, action);
+        return this;
+    }
+
+    @Override
+    public SubProcessNodeFactory timer(String delay, String period, String dialect, String action) {
+        super.timer(delay, period, dialect, action);
+        return this;
+    }
+
+    @Override
+    public Mappable getMappableNode() {
+        return getSubProcessNode();
+    }
+
+    @Override
+    public SubProcessNodeFactory inMapping(String parameterName, String variableName) {
+        MappableNodeFactory.super.inMapping(parameterName, variableName);
+        return this;
+    }
+
+    @Override
+    public SubProcessNodeFactory outMapping(String parameterName, String variableName) {
+        MappableNodeFactory.super.outMapping(parameterName, variableName);
         return this;
     }
 
@@ -70,52 +97,12 @@ public class SubProcessNodeFactory extends NodeFactory {
         return this;
     }
 
-    public SubProcessNodeFactory inMapping(String parameterName, String variableName) {
-        getSubProcessNode().addInMapping(parameterName, variableName);
-        return this;
-    }
-
-    public SubProcessNodeFactory outMapping(String parameterName, String variableName) {
-        getSubProcessNode().addOutMapping(parameterName, variableName);
-        return this;
-    }
-
     public SubProcessNodeFactory independent(boolean independent) {
         getSubProcessNode().setIndependent(independent);
         return this;
     }
 
-    public SubProcessNodeFactory onEntryAction(String dialect, String action) {
-        if (getSubProcessNode().getActions(dialect) != null) {
-            getSubProcessNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getSubProcessNode().setActions(MilestoneNode.EVENT_NODE_ENTER, actions);
-        }
-        return this;
-    }
-
-    public SubProcessNodeFactory onExitAction(String dialect, String action) {
-        if (getSubProcessNode().getActions(dialect) != null) {
-            getSubProcessNode().getActions(dialect).add(new DroolsConsequenceAction(dialect, action));
-        } else {
-            List<DroolsAction> actions = new ArrayList<DroolsAction>();
-            actions.add(new DroolsConsequenceAction(dialect, action));
-            getSubProcessNode().setActions(MilestoneNode.EVENT_NODE_EXIT, actions);
-        }
-        return this;
-    }
-
-    public SubProcessNodeFactory timer(String delay, String period, String dialect, String action) {
-        Timer timer = new Timer();
-        timer.setDelay(delay);
-        timer.setPeriod(period);
-        getSubProcessNode().addTimer(timer, new DroolsConsequenceAction(dialect, action));
-        return this;
-    }
-
-    public <T> SubProcessNodeFactory subProcessFactory(SubProcessFactory<T> factory) {
+    public <T> SubProcessNodeFactory subProcessNode(SubProcessFactory<T> factory) {
         getSubProcessNode().setSubProcessFactory(factory);
         return this;
     }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,69 +13,81 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
+import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.impl.actions.ProcessInstanceCompensationAction;
+import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
+import org.jbpm.workflow.core.DroolsAction;
+import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.node.EndNode;
-import org.kie.api.definition.process.Node;
 
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.UnknownType;
 
-public class EndNodeVisitor extends AbstractVisitor {
+import static org.jbpm.ruleflow.core.Metadata.CUSTOM_SCOPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.REF;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
+import static org.jbpm.ruleflow.core.Metadata.VARIABLE;
+import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_ACTION;
+import static org.jbpm.ruleflow.core.factory.EndNodeFactory.METHOD_TERMINATE;
+
+public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
 
     @Override
-    public void visitNode(String factoryField, Node node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        EndNode endNode = (EndNode) node;
-        
-        addFactoryMethodWithArgsWithAssignment(factoryField, body, EndNodeFactory.class, "endNode" + node.getId(), "endNode", new LongLiteralExpr(endNode.getId()));
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "name", new StringLiteralExpr(getOrDefault(endNode.getName(), "End")));
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "terminate", new BooleanLiteralExpr(endNode.isTerminate()));
-        
+    protected String getNodeKey() {
+        return "endNode";
+    }
+
+    @Override
+    public void visitNode(String factoryField, EndNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
+        body.addStatement(getAssignedFactoryMethod(factoryField, EndNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
+                .addStatement(getNameMethod(node, "End"))
+                .addStatement(getFactoryMethod(getNodeId(node), METHOD_TERMINATE, new BooleanLiteralExpr(node.isTerminate())));
+
         // if there is trigger defined on end event create TriggerMetaData for it
-        if (endNode.getMetaData("TriggerRef") != null) {
-            Map<String, Object> nodeMetaData = endNode.getMetaData();
-            TriggerMetaData triggerMetaData = new TriggerMetaData((String)nodeMetaData.get("TriggerRef"), 
-                                                                  (String)nodeMetaData.get("TriggerType"), 
-                                                                  (String)nodeMetaData.get("MessageType"), 
-                                                                  (String)nodeMetaData.get("MappingVariable"),
-                                                                  String.valueOf(node.getId()))
-                                                    .validate();
-            metadata.getTriggers().add(triggerMetaData);
-            
-            // and add trigger action
-            BlockStmt actionBody = new BlockStmt();
-            LambdaExpr lambda = new LambdaExpr(
-                    new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
-                    actionBody
-            );
-
-            CastExpr variable = new CastExpr(
-                         new ClassOrInterfaceType(null, triggerMetaData.getDataType()),
-                         new MethodCallExpr(new NameExpr(KCONTEXT_VAR), "getVariable")
-                             .addArgument(new StringLiteralExpr(triggerMetaData.getModelRef())));
-            
-            MethodCallExpr producerMethodCall = new MethodCallExpr(new NameExpr("producer_" + node.getId()), "produce").addArgument(new MethodCallExpr(new NameExpr("kcontext"), "getProcessInstance")).addArgument(variable);
-            actionBody.addStatement(producerMethodCall);
-            
-            addFactoryMethodWithArgs(body, "endNode" + node.getId(), "action", lambda);
+        Optional<ProcessInstanceCompensationAction> compensationAction = getCompensationAction(node);
+        if (compensationAction.isPresent()) {
+            String compensateNode = CompensationScope.IMPLICIT_COMPENSATION_PREFIX + metadata.getProcessId();
+            if (compensationAction.get().getActivityRef() != null) {
+                compensateNode = compensationAction.get().getActivityRef();
+            }
+            LambdaExpr lambda = TriggerMetaData.buildCompensationLambdaExpr(compensateNode);
+            body.addStatement(getFactoryMethod(getNodeId(node), ActionNodeFactory.METHOD_ACTION, lambda));
+        } else if (node.getMetaData(TRIGGER_REF) != null) {
+            LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata);
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
+        } else if (node.getMetaData(REF) != null && EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String) node.getMetaData(REF),
+                    (String) node.getMetaData(VARIABLE), (String) node.getMetaData(CUSTOM_SCOPE))));
         }
+        visitMetaData(node.getMetaData(), body, getNodeId(node));
+        body.addStatement(getDoneMethod(getNodeId(node)));
+    }
 
-        visitMetaData(endNode.getMetaData(), body, "endNode" + node.getId());
-        
-        addFactoryMethodWithArgs(body, "endNode" + node.getId(), "done");
+    private Optional<ProcessInstanceCompensationAction> getCompensationAction(EndNode node) {
+        List<DroolsAction> actions = node.getActions(ExtendedNodeImpl.EVENT_NODE_ENTER);
+        if (actions == null || actions.isEmpty()) {
+            return Optional.empty();
+        }
+        return actions.stream()
+                .filter(a -> a instanceof DroolsConsequenceAction)
+                .map(d -> d.getMetaData(Metadata.ACTION))
+                .filter(Objects::nonNull)
+                .filter(a -> a instanceof ProcessInstanceCompensationAction)
+                .map(a -> (ProcessInstanceCompensationAction) a)
+                .findFirst();
     }
 }

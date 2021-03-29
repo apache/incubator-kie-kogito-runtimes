@@ -7,52 +7,66 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>archetypes</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-quarkus-archetype</artifactId>
   <packaging>maven-archetype</packaging>
-  <name>Quarkus Kogito Archetype</name>
+  <name>Kogito :: Maven Archetypes :: Quarkus</name>
   <description>Kogito based on Quarkus runtime Archetype</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-  </properties>
+  <dependencies>
+    <!-- this is used implicitly required by quarkus extension so let's make Maven aware of it -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-deployment</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 
   <build>
-
+    <!-- default directory (test-classes) confuses @QuarkusTest -->
+    <!-- see https://github.com/quarkusio/quarkus/issues/9162   -->
+    <testOutputDirectory>${project.build.directory}/test-compile</testOutputDirectory>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
-
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
 
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>3.0.1</version>
       </extension>
     </extensions>
     <pluginManagement>
       <plugins>
         <plugin>
           <artifactId>maven-archetype-plugin</artifactId>
-          <version>3.0.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.5</version>
           <configuration>
             <escapeString>\</escapeString>
           </configuration>

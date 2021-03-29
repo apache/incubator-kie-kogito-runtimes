@@ -2,33 +2,42 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-runtimes</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <artifactId>kogito-build-parent</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <relativePath>../kogito-build-parent/pom.xml</relativePath>
   </parent>
   <artifactId>archetypes</artifactId>
   <packaging>pom</packaging>
-  <name>Kogito Maven Archetypes</name>
+  <name>Kogito :: Maven Archetypes</name>
   <description>Various Kogito Maven archetypes for project generation</description>
 
   <properties>
-    <version.io.quarkus>1.3.0.Alpha2</version.io.quarkus>
+    <maven.compiler.release>11</maven.compiler.release> 
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>kogito-springboot-archetype</module>
+        <module>kogito-quarkus-archetype</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>productized</id>
+      <activation>
+        <property>
+          <name>productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>kogito-springboot-dm-archetype</module>
+        <module>kogito-quarkus-dm-archetype</module>
+      </modules>
+    </profile>
+  </profiles>
 
-  <modules>
-    <module>kogito-springboot-starter</module>    
-    <module>kogito-springboot-archetype</module>
-    <module>kogito-quarkus-archetype</module>    
-  </modules>
 </project>

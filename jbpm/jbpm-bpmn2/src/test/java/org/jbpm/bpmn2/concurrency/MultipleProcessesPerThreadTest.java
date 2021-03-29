@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2012 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.concurrency;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.bpmn2.objects.Status;
 import org.jbpm.bpmn2.objects.TestWorkItemHandler;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
@@ -34,30 +29,26 @@ import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.WorkItem;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.internal.builder.KnowledgeBuilderFactory;
 import org.kie.internal.io.ResourceFactory;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @Disabled("This test costs time and resources, please only run locally for the time being.")
 public class MultipleProcessesPerThreadTest {
-    
+
     private static final int LOOPS = 1000;
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleProcessesPerThreadTest.class);
 
-    protected static KieSession createStatefulKnowledgeSession(KieBase kbase) {
-        return kbase.newKieSession();
-    }
-    
     @Test
     public void doMultipleProcessesInMultipleThreads() {
-        
+
         HelloWorldProcessThread hello = new HelloWorldProcessThread();
         UserTaskProcessThread user = new UserTaskProcessThread();
 
@@ -71,8 +62,8 @@ public class MultipleProcessesPerThreadTest {
             t.printStackTrace();
         }
 
-        assertTrue(hello.status == Status.SUCCESS, "Hello World process thread did not complete successfully");
-        assertTrue(user.status == Status.SUCCESS, "User Task process thread did not complete successfully");
+        assertSame(hello.status, Status.SUCCESS, "Hello World process thread did not complete successfully");
+        assertSame(user.status, Status.SUCCESS, "User Task process thread did not complete successfully");
     }
 
     private static class HelloWorldProcessThread implements Runnable {
@@ -88,16 +79,14 @@ public class MultipleProcessesPerThreadTest {
 
         public void run() {
             this.status = Status.SUCCESS;
-            KieSession ksession = null;
-            
-            try { 
+            KogitoProcessRuntime kruntime = null;
+
+            try {
                 KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
                 kbuilder.add(ResourceFactory.newClassPathResource("BPMN2-MultiThreadServiceProcess-Timer.bpmn", getClass()), ResourceType.BPMN2);
-                InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-                kbase.addPackages(kbuilder.getKnowledgePackages());
 
-                ksession = createStatefulKnowledgeSession(kbase);
-            } catch(Exception e) { 
+                kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(kbuilder.newKieBase().newKieSession());
+            } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Unable to set up knowlede base or session.", e);
                 this.status = Status.FAIL;
@@ -108,10 +97,10 @@ public class MultipleProcessesPerThreadTest {
 
                 latch = new CountDownLatch(1);
                 CompleteProcessListener listener = new CompleteProcessListener(latch);
-                ksession.addEventListener(listener);
+                kruntime.getProcessEventManager().addEventListener(listener);
 
                 try {
-                    ksession.startProcess("hello-world");
+                    kruntime.startProcess("hello-world");
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -122,7 +111,7 @@ public class MultipleProcessesPerThreadTest {
                     t.printStackTrace();
                 }
             }
-            
+
         }
 
         public synchronized void join() throws InterruptedException {
@@ -143,33 +132,31 @@ public class MultipleProcessesPerThreadTest {
 
         public void run() {
             this.status = Status.SUCCESS;
-            KieSession ksession = null;
-            
-            try { 
+            KogitoProcessRuntime kruntime = null;
+
+            try {
                 KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
                 kbuilder.add(ResourceFactory.newClassPathResource("BPMN2-MultiThreadServiceProcess-Task.bpmn", getClass()), ResourceType.BPMN2);
-                InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-                kbase.addPackages(kbuilder.getKnowledgePackages());
 
-                ksession = createStatefulKnowledgeSession(kbase);
-            } catch(Exception e) { 
+                kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(kbuilder.newKieBase().newKieSession());
+            } catch (Exception e) {
                 e.printStackTrace();
                 logger.error("Unable to set up knowlede base or session.", e);
                 this.status = Status.FAIL;
             }
-            
+
             TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
-            ksession.getWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
+            kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", workItemHandler);
 
             for (int i = 1; i <= LOOPS; i++) {
                 logger.debug("Starting user task process, loop {}/{}", i, LOOPS);
 
                 latch = new CountDownLatch(1);
                 CompleteProcessListener listener = new CompleteProcessListener(latch);
-                ksession.addEventListener(listener);
+                kruntime.getProcessEventManager().addEventListener(listener);
 
                 try {
-                    ksession.startProcess("user-task");
+                    kruntime.startProcess("user-task");
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -180,11 +167,11 @@ public class MultipleProcessesPerThreadTest {
                     e.printStackTrace();
                 }
 
-                List<WorkItem> items = new ArrayList<WorkItem>();
+                List<KogitoWorkItem> items;
                 items = workItemHandler.getWorkItems();
-                for (WorkItem item : items) {
+                for (KogitoWorkItem item : items) {
                     try {
-                        ksession.getWorkItemManager().completeWorkItem(item.getId(), null);
+                        kruntime.getKogitoWorkItemManager().completeWorkItem(item.getStringId(), null);
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
@@ -196,7 +183,6 @@ public class MultipleProcessesPerThreadTest {
                     t.printStackTrace();
                 }
             }
-            
 
         }
 

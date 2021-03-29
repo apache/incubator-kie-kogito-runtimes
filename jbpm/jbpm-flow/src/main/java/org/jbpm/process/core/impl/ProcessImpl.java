@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.core.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,15 +31,15 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.AbstractContext;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 /**
  * Default implementation of a Process
  * 
  */
 public class ProcessImpl implements Process, Serializable, ContextResolver {
-    
+
     private static final long serialVersionUID = 510l;
 
     private String id;
@@ -54,9 +54,8 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     private transient Map<String, Object> runtimeMetaData = new HashMap<String, Object>();
     private Set<String> imports = new HashSet<>();
     private Map<String, String> globals;
-    private List<String> functionImports;
+    private List<String> functionImports = new ArrayList<>();
 
-    
     public void setId(final String id) {
         this.id = id;
     }
@@ -89,36 +88,36 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         this.type = type;
     }
 
-	public String getPackageName() {
-		return packageName;
-	}
+    public String getPackageName() {
+        return packageName;
+    }
 
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
-	
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
     public String getVisibility() {
         return visibility;
     }
-    
+
     public void setVisibility(String visibility) {
-        if (WorkflowProcess.NONE_VISIBILITY.equals(visibility)) {
+        if (KogitoWorkflowProcess.NONE_VISIBILITY.equals(visibility)) {
             // since None is default visibility (process type in bpmn) then treat it
             // as public otherwise nothing will be visible
-            visibility = WorkflowProcess.PUBLIC_VISIBILITY;
+            visibility = KogitoWorkflowProcess.PUBLIC_VISIBILITY;
         }
         this.visibility = visibility;
     }
 
     public List<Context> getContexts(String contextType) {
-	    return this.contextContainer.getContexts(contextType);
-	}
-    
+        return this.contextContainer.getContexts(contextType);
+    }
+
     public void addContext(Context context) {
         this.contextContainer.addContext(context);
         ((AbstractContext) context).setContextContainer(this);
     }
-    
+
     public Context getContext(String contextType, long id) {
         return this.contextContainer.getContext(contextType, id);
     }
@@ -127,21 +126,21 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         this.contextContainer.setDefaultContext(context);
         ((AbstractContext) context).setContextContainer(this);
     }
-    
+
     public Context getDefaultContext(String contextType) {
         return this.contextContainer.getDefaultContext(contextType);
     }
 
     public boolean equals(final Object o) {
-        if ( o instanceof ProcessImpl ) {
-        	if (this.id == null) {
-        		return ((ProcessImpl) o).getId() == null;
-        	}
-        	return this.id.equals(((ProcessImpl) o).getId());
+        if (o instanceof ProcessImpl) {
+            if (this.id == null) {
+                return ((ProcessImpl) o).getId() == null;
+            }
+            return this.id.equals(((ProcessImpl) o).getId());
         }
         return false;
     }
-    
+
     public int hashCode() {
         return this.id == null ? 0 : 3 * this.id.hashCode();
     }
@@ -156,15 +155,15 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
         }
         return null;
     }
-    
-	public Map<String, Object> getMetaData() {
-		return this.metaData;
-	}
+
+    public Map<String, Object> getMetaData() {
+        return this.metaData;
+    }
 
     public void setMetaData(String name, Object data) {
         this.metaData.put(name, data);
     }
-    
+
     public Object getMetaData(String name) {
         return this.metaData.get(name);
     }
@@ -174,9 +173,9 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     }
 
     public void setResource(Resource resource) {
-        this.resource = resource;        
+        this.resource = resource;
     }
-    
+
     public Set<String> getImports() {
         return imports;
     }
@@ -184,15 +183,23 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     public void setImports(Set<String> imports) {
         this.imports = imports;
     }
-    
+
+    public void addImports(Collection<String> imports) {
+        this.imports.addAll(imports);
+    }
+
     public List<String> getFunctionImports() {
         return functionImports;
     }
 
     public void setFunctionImports(List<String> functionImports) {
         this.functionImports = functionImports;
-    }    
-    
+    }
+
+    public void addFunctionImports(Collection<String> functionImports) {
+        this.functionImports.addAll(functionImports);
+    }
+
     public Map<String, String> getGlobals() {
         return globals;
     }
@@ -204,7 +211,7 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     public String[] getGlobalNames() {
         final List<String> result = new ArrayList<String>();
         if (this.globals != null) {
-            for ( Iterator<String> iterator = this.globals.keySet().iterator(); iterator.hasNext(); ) {
+            for (Iterator<String> iterator = this.globals.keySet().iterator(); iterator.hasNext();) {
                 result.add(iterator.next());
             }
         }
@@ -226,7 +233,7 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     public void setRuntimeMetaData(Map<String, Object> runtimeMetaData) {
         this.runtimeMetaData = runtimeMetaData;
     }
-    
+
     /*
      * Special handling for serialization to initialize transient (runtime related) meta data
      */

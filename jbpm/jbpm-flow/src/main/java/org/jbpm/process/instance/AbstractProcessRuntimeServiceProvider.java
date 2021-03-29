@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance;
 
 import java.util.Optional;
 
-import org.drools.core.event.ProcessEventSupport;
+import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManager;
 import org.kie.api.event.process.ProcessEventListener;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
@@ -34,12 +36,11 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     private final JobsService jobsService;
     private final ProcessInstanceManager processInstanceManager;
     private final SignalManager signalManager;
-    private final WorkItemManager workItemManager;
-    private final ProcessEventSupport eventSupport;
+    private final KogitoWorkItemManager workItemManager;
+    private final KogitoProcessEventSupportImpl eventSupport;
     private final UnitOfWorkManager unitOfWorkManager;
 
-    public AbstractProcessRuntimeServiceProvider(
-            JobsService jobsService,
+    public AbstractProcessRuntimeServiceProvider(JobsService jobsService,
             WorkItemHandlerConfig workItemHandlerProvider,
             ProcessEventListenerConfig processEventListenerProvider,
             SignalManagerHub compositeSignalManager,
@@ -50,7 +51,7 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
                 id -> Optional.ofNullable(
                         processInstanceManager.getProcessInstance(id)),
                 compositeSignalManager);
-        this.eventSupport = new ProcessEventSupport(this.unitOfWorkManager);
+        this.eventSupport = new KogitoProcessEventSupportImpl(this.unitOfWorkManager);
         this.jobsService = jobsService;
         this.workItemManager = new LightWorkItemManager(processInstanceManager, signalManager, eventSupport);
 
@@ -58,11 +59,9 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
             workItemManager.registerWorkItemHandler(
                     workItem, workItemHandlerProvider.forName(workItem));
         }
-        
-        
-        
+
         for (ProcessEventListener listener : processEventListenerProvider.listeners()) {
-            this.eventSupport.addEventListener(listener);
+            this.eventSupport.addEventListener((KogitoProcessEventListener) listener);
         }
     }
 
@@ -82,12 +81,12 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     }
 
     @Override
-    public WorkItemManager getWorkItemManager() {
+    public KogitoWorkItemManager getKogitoWorkItemManager() {
         return workItemManager;
     }
 
     @Override
-    public ProcessEventSupport getEventSupport() {        
+    public KogitoProcessEventSupport getEventSupport() {
         return eventSupport;
     }
 

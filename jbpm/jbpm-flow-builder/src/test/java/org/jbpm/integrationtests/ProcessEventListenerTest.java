@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /*
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +36,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.core.common.InternalWorkingMemory;
+import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.test.util.AbstractBaseTest;
@@ -49,43 +48,43 @@ import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
 import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.io.ResourceType;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProcessEventListenerTest extends AbstractBaseTest {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ProcessEventListenerTest.class);
 
     @Test
-	public void testInternalNodeSignalEvent() {
+    public void testInternalNodeSignalEvent() {
         Reader source = new StringReader(process);
-        builder.addRuleFlow(source);
-        KieSession session = createKieSession(builder.getPackages());
+        builder.add(new ReaderResource(source), ResourceType.DRF);
 
-        final List<ProcessEvent> processEventList = new ArrayList<ProcessEvent>();
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
+
+        final List<ProcessEvent> processEventList = new ArrayList<>();
 
         final ProcessEventListener listener = createProcessEventListener(processEventList);
 
-        ((InternalWorkingMemory)session).getProcessRuntime().addEventListener(listener);
-        ProcessInstance processInstance =
-        	((InternalWorkingMemory)session).getProcessRuntime().startProcess("org.drools.core.event");
-        assertEquals(ProcessInstance.STATE_COMPLETED, processInstance.getState());
-        assertEquals("MyValue", ((VariableScopeInstance)
-                                    ((org.jbpm.process.instance.ProcessInstance) processInstance)
-                                        .getContextInstance(VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
-        assertEquals( 28, processEventList.size() );
-        for (ProcessEvent e: processEventList) {
+        kruntime.getProcessEventManager().addEventListener(listener);
+        KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.core.event");
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
+        assertEquals("MyValue", ((VariableScopeInstance) ((org.jbpm.process.instance.ProcessInstance) processInstance)
+                .getContextInstance(VariableScope.VARIABLE_SCOPE)).getVariable("MyVar"));
+        assertEquals(28, processEventList.size());
+        for (ProcessEvent e : processEventList) {
             logger.debug(e.toString());
         }
-        assertEquals( "org.drools.core.event", ((ProcessStartedEvent) processEventList.get(2)).getProcessInstance().getProcessId());
+        assertEquals("org.drools.core.event", processEventList.get(2).getProcessInstance().getProcessId());
 
     }
-    
-    private ProcessEventListener createProcessEventListener(final List<ProcessEvent> processEventList) {  
+
+    private ProcessEventListener createProcessEventListener(final List<ProcessEvent> processEventList) {
         return new ProcessEventListener() {
 
             public void afterNodeLeft(ProcessNodeLeftEvent event) {
@@ -129,44 +128,44 @@ public class ProcessEventListenerTest extends AbstractBaseTest {
             }
         };
     }
-    
-    private static final String process = 
+
+    private static final String process =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
-            "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
-            "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.core.event\" package-name=\"org.drools\" version=\"1\" >\n" +
-            "\n" +
-            "  <header>\n" +
-            "    <variables>\n" +
-            "      <variable name=\"MyVar\" >\n" +
-            "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
-            "        <value>SomeText</value>\n" +
-            "      </variable>\n" +
-            "    </variables>\n" +
-            "  </header>\n" +
-            "\n" +
-            "  <nodes>\n" +
-            "    <start id=\"1\" name=\"Start\" />\n" +
-            "    <eventNode id=\"2\" name=\"Event\" variableName=\"MyVar\" >\n" +
-            "      <eventFilters>\n" +
-            "        <eventFilter type=\"eventType\" eventType=\"MyEvent\" />\n" +
-            "      </eventFilters>\n" +
-            "    </eventNode>\n" +
-            "    <actionNode id=\"3\" name=\"Signal Event\" >\n" +
-            "      <action type=\"expression\" dialect=\"java\" >context.getProcessInstance().signalEvent(\"MyEvent\", \"MyValue\");</action>\n" +
-            "    </actionNode>\n" +
-            "    <join id=\"4\" name=\"Join\" type=\"1\" />\n" +
-            "    <end id=\"5\" name=\"End\" />\n" +
-            "  </nodes>\n" +
-            "\n" +
-            "  <connections>\n" +
-            "    <connection from=\"1\" to=\"3\" />\n" +
-            "    <connection from=\"2\" to=\"4\" />\n" +
-            "    <connection from=\"3\" to=\"4\" />\n" +
-            "    <connection from=\"4\" to=\"5\" />\n" +
-            "  </connections>\n" +
-            "\n" +
-            "</process>";
-            
+                    "<process xmlns=\"http://drools.org/drools-5.0/process\"\n" +
+                    "         xmlns:xs=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                    "         xs:schemaLocation=\"http://drools.org/drools-5.0/process drools-processes-5.0.xsd\"\n" +
+                    "         type=\"RuleFlow\" name=\"flow\" id=\"org.drools.core.event\" package-name=\"org.drools\" version=\"1\" >\n" +
+                    "\n" +
+                    "  <header>\n" +
+                    "    <variables>\n" +
+                    "      <variable name=\"MyVar\" >\n" +
+                    "        <type name=\"org.jbpm.process.core.datatype.impl.type.StringDataType\" />\n" +
+                    "        <value>SomeText</value>\n" +
+                    "      </variable>\n" +
+                    "    </variables>\n" +
+                    "  </header>\n" +
+                    "\n" +
+                    "  <nodes>\n" +
+                    "    <start id=\"1\" name=\"Start\" />\n" +
+                    "    <eventNode id=\"2\" name=\"Event\" variableName=\"MyVar\" >\n" +
+                    "      <eventFilters>\n" +
+                    "        <eventFilter type=\"eventType\" eventType=\"MyEvent\" />\n" +
+                    "      </eventFilters>\n" +
+                    "    </eventNode>\n" +
+                    "    <actionNode id=\"3\" name=\"Signal Event\" >\n" +
+                    "      <action type=\"expression\" dialect=\"java\" >context.getProcessInstance().signalEvent(\"MyEvent\", \"MyValue\");</action>\n" +
+                    "    </actionNode>\n" +
+                    "    <join id=\"4\" name=\"Join\" type=\"1\" />\n" +
+                    "    <end id=\"5\" name=\"End\" />\n" +
+                    "  </nodes>\n" +
+                    "\n" +
+                    "  <connections>\n" +
+                    "    <connection from=\"1\" to=\"3\" />\n" +
+                    "    <connection from=\"2\" to=\"4\" />\n" +
+                    "    <connection from=\"3\" to=\"4\" />\n" +
+                    "    <connection from=\"4\" to=\"5\" />\n" +
+                    "  </connections>\n" +
+                    "\n" +
+                    "</process>";
+
 }

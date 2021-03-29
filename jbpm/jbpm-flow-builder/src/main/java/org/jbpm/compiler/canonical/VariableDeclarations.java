@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.util.HashMap;
@@ -33,29 +33,29 @@ public class VariableDeclarations {
             if (variable.hasTag(Variable.INTERNAL_TAG)) {
                 continue;
             }
-            
+
             vs.put(variable.getName(), variable);
         }
         return of(vs);
     }
-    
+
     public static VariableDeclarations ofInput(VariableScope vscope) {
-        
+
         return of(vscope, variable -> variable.hasTag(Variable.INTERNAL_TAG) || variable.hasTag(Variable.OUTPUT_TAG));
     }
-    
+
     public static VariableDeclarations ofOutput(VariableScope vscope) {
-        
+
         return of(vscope, variable -> variable.hasTag(Variable.INTERNAL_TAG) || variable.hasTag(Variable.INPUT_TAG));
     }
-    
+
     public static VariableDeclarations of(VariableScope vscope, Predicate<Variable> filterOut) {
         HashMap<String, Variable> vs = new HashMap<>();
         for (Variable variable : vscope.getVariables()) {
             if (filterOut.test(variable)) {
                 continue;
             }
-            
+
             vs.put(variable.getName(), variable);
         }
         return of(vs);
@@ -64,17 +64,19 @@ public class VariableDeclarations {
     public static VariableDeclarations of(Map<String, Variable> vscope) {
         return new VariableDeclarations(vscope);
     }
-    
+
     public static VariableDeclarations ofRawInfo(Map<String, String> vscope) {
         HashMap<String, Variable> vs = new HashMap<>();
-        
-        for (Entry<String, String> entry : vscope.entrySet()) {
-            Variable variable = new Variable();
-            variable.setName(entry.getKey());
-            variable.setType(new ObjectDataType(entry.getValue()));
-            vs.put(entry.getKey(), variable);
+
+        if (vscope != null) {
+            for (Entry<String, String> entry : vscope.entrySet()) {
+                Variable variable = new Variable();
+                variable.setName(entry.getKey());
+                variable.setType(new ObjectDataType(entry.getValue()));
+                vs.put(entry.getKey(), variable);
+            }
         }
-        
+
         return new VariableDeclarations(vs);
     }
 
@@ -87,7 +89,7 @@ public class VariableDeclarations {
     public String getType(String vname) {
         return vscope.get(vname).getType().getStringType();
     }
-    
+
     public List<String> getTags(String vname) {
         return vscope.get(vname).getTags();
     }

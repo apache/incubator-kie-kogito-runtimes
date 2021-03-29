@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.impl;
 
 import java.util.ArrayList;
@@ -23,10 +23,14 @@ import org.kie.kogito.process.ProcessEventListenerConfig;
 
 public class CachedProcessEventListenerConfig implements ProcessEventListenerConfig {
 
-    private final List<ProcessEventListener> processEventListeners = new ArrayList<>();
+    private final List<ProcessEventListener> processEventListeners;
 
     public CachedProcessEventListenerConfig() {
-        
+        this.processEventListeners = new ArrayList<>();
+    }
+
+    public CachedProcessEventListenerConfig(List<ProcessEventListener> processEventListeners) {
+        this.processEventListeners = processEventListeners;
     }
 
     public CachedProcessEventListenerConfig register(ProcessEventListener listener) {
@@ -35,7 +39,7 @@ public class CachedProcessEventListenerConfig implements ProcessEventListenerCon
     }
 
     @Override
-    public List<ProcessEventListener> listeners() {        
+    public List<ProcessEventListener> listeners() {
         return processEventListeners;
     }
 

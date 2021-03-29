@@ -5,25 +5,23 @@
     <parent>
         <artifactId>drools</artifactId>
         <groupId>org.kie.kogito</groupId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>drools-decisiontables</artifactId>
+    <name>Kogito :: Drools :: Drools DecisionTables</name>
+    
+    <properties>
+      <java.module.name>org.kie.kogito.drools.decisiontables</java.module.name>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-decisiontables</artifactId>
+            <version>${version.org.kie7}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.kie</groupId>
-                    <artifactId>kie-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.kie</groupId>
-                    <artifactId>kie-internal</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.drools</groupId>
                     <artifactId>drools-core</artifactId>

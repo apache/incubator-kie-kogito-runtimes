@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.impl;
 
 import java.util.Collection;
@@ -22,25 +22,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceDuplicatedException;
+import org.kie.kogito.process.ProcessInstanceReadMode;
 
 class MapProcessInstances<T> implements MutableProcessInstances<T> {
 
     private final ConcurrentHashMap<String, ProcessInstance<T>> instances = new ConcurrentHashMap<>();
 
     @Override
-    public Optional<? extends ProcessInstance<T>> findById(String id) {
-        return Optional.ofNullable(instances.get(resolveId(id)));      
+    public Integer size() {
+        return instances.size();
     }
 
     @Override
-    public Collection<? extends ProcessInstance<T>> values() {
+    public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
+        return Optional.ofNullable(instances.get(id));
+    }
+
+    @Override
+    public Collection<ProcessInstance<T>> values(ProcessInstanceReadMode mode) {
         return instances.values();
     }
-    
+
     @Override
     public void create(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
-            ProcessInstance<T> existing = instances.putIfAbsent(resolveId(id), instance);
+            ProcessInstance<T> existing = instances.putIfAbsent(id, instance);
             if (existing != null) {
                 throw new ProcessInstanceDuplicatedException(id);
             }
@@ -50,18 +56,17 @@ class MapProcessInstances<T> implements MutableProcessInstances<T> {
     @Override
     public void update(String id, ProcessInstance<T> instance) {
         if (isActive(instance)) {
-            instances.put(resolveId(id), instance);            
+            instances.put(id, instance);
         }
     }
 
     @Override
     public void remove(String id) {
-        instances.remove(resolveId(id));
+        instances.remove(id);
     }
 
     @Override
     public boolean exists(String id) {
         return instances.containsKey(id);
     }
-
 }

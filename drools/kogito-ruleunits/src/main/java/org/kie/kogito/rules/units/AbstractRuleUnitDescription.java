@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.util.Collection;
@@ -49,7 +48,11 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
 
     @Override
     public RuleUnitVariable getVar(String name) {
-        return varDeclarations.get(name);
+        RuleUnitVariable ruleUnitVariable = varDeclarations.get(name);
+        if (ruleUnitVariable == null) {
+            throw new UndefinedRuleUnitVariable(name, this.getCanonicalName());
+        }
+        return ruleUnitVariable;
     }
 
     @Override
@@ -76,7 +79,6 @@ public abstract class AbstractRuleUnitDescription implements RuleUnitDescription
         this.config = config;
     }
 
-    @Override
     public RuleUnitConfig getConfig() {
         return config;
     }

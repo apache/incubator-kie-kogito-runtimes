@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,12 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.jbpm.workflow.core.node.RuleSetNode;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.rules.RuleUnits;
+import org.kie.kogito.rules.units.AssignableChecker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.ClassExpr;
@@ -28,11 +35,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.jbpm.workflow.core.node.RuleSetNode;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.units.AssignableChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 
@@ -58,7 +60,7 @@ public class RuleUnitHandler {
     private final RuleSetNode ruleSetNode;
     private final AssignableChecker assignableChecker;
 
-    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode, AssignableChecker assignableChecker ) {
+    public RuleUnitHandler(RuleUnitDescription ruleUnit, ProcessContextMetaModel variableScope, RuleSetNode ruleSetNode, AssignableChecker assignableChecker) {
         this.ruleUnit = ruleUnit;
         this.variableScope = variableScope;
         this.ruleSetNode = ruleSetNode;
@@ -88,9 +90,12 @@ public class RuleUnitHandler {
     }
 
     private BlockStmt unit(String unitName) {
+        // app.get(org.kie.kogito.rules.RuleUnits.class).create(unitName)
         MethodCallExpr ruleUnit = new MethodCallExpr(
-                new MethodCallExpr(new NameExpr("app"), "ruleUnits"), "create")
-                .addArgument(new ClassExpr().setType(unitName));
+                new MethodCallExpr(new NameExpr("app"), "get")
+                        .addArgument(new ClassExpr().setType(RuleUnits.class.getCanonicalName())),
+                "create")
+                        .addArgument(new ClassExpr().setType(unitName));
         return new BlockStmt().addStatement(new ReturnStmt(ruleUnit));
     }
 
@@ -99,7 +104,7 @@ public class RuleUnitHandler {
      */
     private BlockStmt bind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker );
+                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker);
 
         BlockStmt actionBody = new BlockStmt();
 
@@ -123,7 +128,7 @@ public class RuleUnitHandler {
                 actionBody.addStatement(variableScope.assignVariable(procVar));
                 actionBody.addStatement(
                         requireNonNull(procVar,
-                                       "The input collection variable of a data source cannot be null:" + procVar));
+                                "The input collection variable of a data source cannot be null:" + procVar));
                 actionBody.addStatement(
                         unit.injectCollection(unitVar, procVar));
             } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
@@ -163,7 +168,7 @@ public class RuleUnitHandler {
 
     private BlockStmt unbind(ProcessContextMetaModel variableScope, RuleSetNode node, RuleUnitDescription unitDescription) {
         RuleUnitMetaModel unit =
-                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker );
+                new RuleUnitMetaModel(unitDescription, "unit", assignableChecker);
 
         BlockStmt actionBody = new BlockStmt();
 
@@ -177,10 +182,11 @@ public class RuleUnitHandler {
                 actionBody.addStatement(variableScope.assignVariable(procVar));
                 actionBody.addStatement(
                         requireNonNull(procVar,
-                                       String.format(
-                                               "Null collection variable used as an output variable: %s. " +
-                                                       "Initialize this variable to get the contents or the data source, " +
-                                                       "or use a non-collection data type to extract one value.", procVar)));
+                                String.format(
+                                        "Null collection variable used as an output variable: %s. " +
+                                                "Initialize this variable to get the contents or the data source, " +
+                                                "or use a non-collection data type to extract one value.",
+                                        procVar)));
                 actionBody.addStatement(unit.extractIntoCollection(unitVar, procVar));
             } else if (procVarIsCollection /* && !unitVarIsDataSource */) {
                 actionBody.addStatement(variableScope.assignVariable(procVar));
@@ -200,7 +206,8 @@ public class RuleUnitHandler {
 
     private Map<String, String> getOutputMappings(ProcessContextMetaModel variableScope, RuleSetNode node) {
         Map<String, String> entries = node.getOutMappings();
-        if (entries.isEmpty()) {
+        // if both are empty we use automatic binding, otherwise we do nothing
+        if (node.getInMappings().isEmpty() && entries.isEmpty()) {
             entries = new HashMap<>();
             for (String varName : variableScope.getVariableNames()) {
                 entries.put(varName, varName);

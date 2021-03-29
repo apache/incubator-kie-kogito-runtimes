@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.services.event.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -24,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ProcessInstanceEventBody {
-    
+
     public static final String ID_META_DATA = "kogito.processinstance.id";
     public static final String PARENT_ID_META_DATA = "kogito.processinstance.parentInstanceId";
     public static final String ROOT_ID_META_DATA = "kogito.processinstance.rootInstanceId";
@@ -40,19 +41,21 @@ public class ProcessInstanceEventBody {
     private String processName;
     private Date startDate;
     private Date endDate;
-    
+
     private Integer state;
-    
+
     private String businessKey;
 
     private Set<NodeInstanceEventBody> nodeInstances = new LinkedHashSet<>();
 
     private Map<String, Object> variables;
-    
+
     private ProcessErrorEventBody error;
-    
+
     private List<String> roles;
-    
+
+    private Set<MilestoneEventBody> milestones = Collections.emptySet();
+
     private ProcessInstanceEventBody() {
     }
 
@@ -71,7 +74,7 @@ public class ProcessInstanceEventBody {
     public String getProcessId() {
         return processId;
     }
-    
+
     public String getRootProcessId() {
         return rootProcessId;
     }
@@ -87,11 +90,11 @@ public class ProcessInstanceEventBody {
     public Date getEndDate() {
         return endDate;
     }
-    
+
     public Integer getState() {
         return state;
-    }    
-    
+    }
+
     public String getBusinessKey() {
         return businessKey;
     }
@@ -106,16 +109,20 @@ public class ProcessInstanceEventBody {
 
     public Map<String, Object> getVariables() {
         return variables;
-    }    
-    
+    }
+
     public List<String> getRoles() {
         return roles;
+    }
+
+    public Set<MilestoneEventBody> getMilestones() {
+        return milestones;
     }
 
     public Builder update() {
         return new Builder(this);
     }
-    
+
     public Map<String, String> metaData() {
         Map<String, String> metadata = new HashMap<>();
         metadata.put(ID_META_DATA, id);
@@ -126,12 +133,14 @@ public class ProcessInstanceEventBody {
         metadata.put(STATE_META_DATA, String.valueOf(state));
         return metadata;
     }
+
     @Override
     public String toString() {
-        return "ProcessInstanceEventBody [id=" + id + ", parentInstanceId=" + parentInstanceId + ", rootInstanceId=" + rootInstanceId + ", processId=" + processId + ", rootProcessId=" + rootProcessId + ", processName=" +
-               processName + ", startDate=" + startDate + ", endDate=" + endDate + ", state=" + state + "]";
+        return "ProcessInstanceEventBody [id=" + id + ", parentInstanceId=" + parentInstanceId + ", rootInstanceId=" + rootInstanceId + ", processId=" + processId + ", rootProcessId=" + rootProcessId
+                + ", processName=" +
+                processName + ", startDate=" + startDate + ", endDate=" + endDate + ", state=" + state + "]";
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -162,9 +171,9 @@ public class ProcessInstanceEventBody {
     }
 
     static class Builder {
-        
+
         private ProcessInstanceEventBody instance;
-        
+
         public Builder(ProcessInstanceEventBody instance) {
             this.instance = instance;
         }
@@ -173,22 +182,22 @@ public class ProcessInstanceEventBody {
             instance.id = id;
             return this;
         }
-        
+
         public Builder parentInstanceId(String parentInstanceId) {
             instance.parentInstanceId = parentInstanceId;
             return this;
         }
-        
+
         public Builder rootInstanceId(String rootInstanceId) {
             instance.rootInstanceId = rootInstanceId;
             return this;
         }
-        
+
         public Builder processId(String processId) {
             instance.processId = processId;
             return this;
         }
-        
+
         public Builder rootProcessId(String rootProcessId) {
             instance.rootProcessId = rootProcessId;
             return this;
@@ -198,7 +207,7 @@ public class ProcessInstanceEventBody {
             instance.processName = processName;
             return this;
         }
-        
+
         public Builder startDate(Date date) {
             instance.startDate = date;
             return this;
@@ -208,37 +217,42 @@ public class ProcessInstanceEventBody {
             instance.endDate = date;
             return this;
         }
-        
+
         public Builder state(Integer state) {
             instance.state = state;
             return this;
         }
-        
+
         public Builder businessKey(String businessKey) {
             instance.businessKey = businessKey;
             return this;
         }
-        
+
         public Builder nodeInstance(NodeInstanceEventBody nodeInstance) {
             instance.nodeInstances.add(nodeInstance);
             return this;
         }
-        
+
         public Builder variables(Map<String, Object> variables) {
             instance.variables = variables;
             return this;
         }
-        
+
         public Builder error(ProcessErrorEventBody error) {
             instance.error = error;
             return this;
         }
-        
-        public Builder roles(String...roles) {
+
+        public Builder roles(String... roles) {
             instance.roles = Arrays.asList(roles);
             return this;
         }
-        
+
+        public Builder milestones(Set<MilestoneEventBody> milestones) {
+            instance.milestones = milestones;
+            return this;
+        }
+
         public ProcessInstanceEventBody build() {
             return instance;
         }

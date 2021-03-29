@@ -5,32 +5,21 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-runtimes</artifactId>
-    <version>8.0.0-SNAPSHOT</version>
+    <artifactId>kogito-build-parent</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+    <relativePath>../kogito-build-parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>kogito-api-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Kogito :: API Parent</name>
+  <name>Kogito :: API</name>
   <description>The common API for Kogito</description>
 
   <properties>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <checkstyle.logViolationsToConsole>true</checkstyle.logViolationsToConsole>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <repositories>
     <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally. -->
@@ -51,9 +40,10 @@
   </repositories>
 
   <modules>
+    <module>kogito-events-api</module>
     <module>kogito-api</module>
-    <module>kogito-internal</module>
     <module>kogito-services</module>
+    <module>kogito-timer</module>
   </modules>
 
 </project>

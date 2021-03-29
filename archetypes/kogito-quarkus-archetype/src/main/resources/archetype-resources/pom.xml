@@ -10,11 +10,11 @@
   <properties>
     <quarkus.version>${version.io.quarkus}</quarkus.version>
     <kogito.version>${project.version}</kogito.version>
-    <surefire.version>${version.surefire}</surefire.version>
+    <surefire.version>${version.surefire.plugin}</surefire.version>
+    <compiler.version>${version.compiler.plugin}</compiler.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.11</maven.compiler.source>
-    <maven.compiler.target>1.11</maven.compiler.target>
+    <maven.compiler.release>${maven.compiler.release}</maven.compiler.release> 
   </properties>
 
   <dependencyManagement>
@@ -48,6 +48,10 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
 
@@ -63,22 +67,37 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler.version}</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.version}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <java.util.logging.manager>${quarkus.logging.manager}</java.util.logging.manager>
+            <maven.home>\${maven.home}</maven.home>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${version.io.quarkus}</version>
+        <version>${quarkus.version}</version>
         <executions>
           <execution>
             <goals>
               <goal>build</goal>
+              <goal>generate-code</goal>
+              <goal>generate-code-tests</goal>
             </goals>
           </execution>
         </executions>
@@ -89,26 +108,30 @@
   <profiles>
     <profile>
       <id>native</id>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
       <build>
         <plugins>
           <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${surefire.version}</version>
             <executions>
               <execution>
                 <goals>
-                  <goal>native-image</goal>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <additionalBuildArgs>--allow-incomplete-classpath</additionalBuildArgs>
+                  <systemPropertyVariables>
+                    <native.image.path>\${project.build.directory}/\${project.build.finalName}-runner</native.image.path>
+                    <java.util.logging.manager>${quarkus.logging.manager}</java.util.logging.manager>
+                    <maven.home>\${maven.home}</maven.home>
+                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${version.surefire}</version>
           </plugin>
         </plugins>
       </build>

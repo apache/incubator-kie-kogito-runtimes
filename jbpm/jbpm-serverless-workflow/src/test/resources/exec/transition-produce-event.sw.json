@@ -1,0 +1,69 @@
+{
+  "id": "produceeventontransition",
+  "name": "Produce Event On Transition",
+  "start": "HelloWorld",
+  "events": [
+    {
+      "name": "TestKafkaEvent",
+      "source": "testtopic",
+      "type": "kafka"
+    }
+  ],
+  "functions": [
+    {
+      "name": "helloOne",
+      "metadata": {
+        "type": "script"
+      }
+    },
+    {
+      "name": "helloTwo",
+      "metadata": {
+        "type": "script"
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "HelloWorld",
+      "type": "operation",
+      "actionMode": "sequential",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "helloOne",
+            "arguments": {
+              "script": ""
+            }
+          }
+        }
+      ],
+      "transition": {
+        "nextState": "HelloWorld2",
+        "produceEvents": [
+          {
+            "eventRef": "TestKafkaEvent"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HelloWorld2",
+      "type": "operation",
+      "actionMode": "sequential",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "helloTwo",
+            "arguments": {
+              "script": ""
+            }
+          }
+        }
+      ],
+      "end": {
+        "terminate": "true"
+      }
+    }
+  ]
+}

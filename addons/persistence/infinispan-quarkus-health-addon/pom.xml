@@ -21,13 +21,27 @@
   <parent>
     <artifactId>persistence</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>infinispan-quarkus-health-addon</artifactId>
+  <name>Kogito :: Add-Ons :: Persistence :: Infinispan Health Check for Quarkus</name>
+
   <description>Infinispan Health Check for Quarkus</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bom</artifactId>
+        <version>${version.io.quarkus}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -44,11 +58,13 @@
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers</artifactId>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
+  
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
@@ -67,6 +83,23 @@
             <goals>
               <goal>jandex</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
+              </systemPropertyVariables>
+            </configuration>
           </execution>
         </executions>
       </plugin>

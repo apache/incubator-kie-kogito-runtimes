@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,43 +21,43 @@ import org.jbpm.process.core.datatype.DataType;
 
 public class DataStore implements Serializable {
 
-	private static final long serialVersionUID = 4L;
-	
-	private String id;
-	private String name;
-	private DataType type;
-	private String itemSubjectRef;
-	
-	public void setId(String id) {
-		this.id = id;
-	}
+    private static final long serialVersionUID = 4L;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    private String id;
+    private String name;
+    private DataType type;
+    private String itemSubjectRef;
 
-	public void setType(DataType dataType) {
-		this.type = dataType;
-	}
-	
-	public String getId() {
-		return this.id;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
-	public DataType getType() {
-		return this.type;
-	}
-	
-	public void setItemSubjectRef(String itemSubjectRef) {
-		this.itemSubjectRef = itemSubjectRef;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getItemSubjectRef() {
-		return this.itemSubjectRef;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(DataType dataType) {
+        this.type = dataType;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public DataType getType() {
+        return this.type;
+    }
+
+    public void setItemSubjectRef(String itemSubjectRef) {
+        this.itemSubjectRef = itemSubjectRef;
+    }
+
+    public String getItemSubjectRef() {
+        return this.itemSubjectRef;
+    }
 
 }

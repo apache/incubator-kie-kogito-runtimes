@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;
@@ -25,10 +24,10 @@ import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.node.Split;
 
-/**
- *
- */
 public class SplitFactory extends NodeFactory {
+
+    public static final String METHOD_TYPE = "type";
+    public static final String METHOD_CONSTRAINT = "constraint";
 
     public SplitFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, id);
@@ -37,48 +36,48 @@ public class SplitFactory extends NodeFactory {
     protected Node createNode() {
         return new Split();
     }
-    
+
     protected Split getSplit() {
-    	return (Split) getNode();
+        return (Split) getNode();
     }
 
+    @Override
     public SplitFactory name(String name) {
-        getNode().setName(name);
+        super.name(name);
         return this;
     }
 
     public SplitFactory type(int type) {
-    	getSplit().setType(type);
+        getSplit().setType(type);
         return this;
     }
-    
+
     public SplitFactory constraint(long toNodeId, String name, String type, String dialect, String constraint) {
-    	return constraint(toNodeId, name, type, dialect, constraint, 0);
+        return constraint(toNodeId, name, type, dialect, constraint, 0);
     }
-    
+
     public SplitFactory constraint(long toNodeId, String name, String type, String dialect, String constraint, int priority) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(name);
-        constraintImpl.setType(type); 
+        constraintImpl.setType(type);
         constraintImpl.setDialect(dialect);
         constraintImpl.setConstraint(constraint);
         constraintImpl.setPriority(priority);
         getSplit().addConstraint(
-    		new ConnectionRef(toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                new ConnectionRef(toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
         return this;
     }
-
 
     public SplitFactory constraint(long toNodeId, String name, String type, String dialect, ReturnValueEvaluator evaluator, int priority) {
         ReturnValueConstraintEvaluator constraintImpl = new ReturnValueConstraintEvaluator();
         constraintImpl.setName(name);
-        constraintImpl.setType(type); 
-        constraintImpl.setDialect(dialect);        
+        constraintImpl.setType(type);
+        constraintImpl.setDialect(dialect);
         constraintImpl.setPriority(priority);
         constraintImpl.setEvaluator(evaluator);
         constraintImpl.setConstraint("expression already given as evaluator");
         getSplit().addConstraint(
-            new ConnectionRef(name, toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                new ConnectionRef(name, toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
         return this;
     }
 }

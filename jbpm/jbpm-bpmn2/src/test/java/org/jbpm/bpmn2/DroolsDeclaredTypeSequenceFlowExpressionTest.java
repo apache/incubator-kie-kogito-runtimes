@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2;
 
 import java.io.ByteArrayInputStream;
@@ -36,41 +35,41 @@ import org.kie.internal.builder.ResultSeverity;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class DroolsDeclaredTypeSequenceFlowExpressionTest {
-	
-	@Test
-	public void testDeclaredTypesInSequenceFlowDroolsExpression() {
-		//DROOLS-1327	
-		
-		String drl = "package org.drools.test;" 
-			+ "declare TestFact \n"
-			+ "value: Integer\n"
-			+ "end\n";
-		
-		KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-		CompositeKnowledgeBuilder ckbuilder = kbuilder.batch();		
-		
-		Resource drlResource = new InputStreamResource(new ByteArrayInputStream(drl.getBytes(StandardCharsets.UTF_8))); 
-		Resource bpmn2Resource = new ClassPathResource("BPMN2-DroolsDeclaredTypeSequenceFlowExpressionTest.bpmn2");
-		
-		ckbuilder.add(drlResource, ResourceType.DRL);
-		ckbuilder.add(bpmn2Resource, ResourceType.BPMN2);
-		
-		ckbuilder.build();
-		
-		//Assert that we don't have any issues in the build.
-		if (kbuilder.hasErrors()) {
-			KnowledgeBuilderErrors kbErrors = kbuilder.getErrors();
-			for (KnowledgeBuilderError nextError: kbErrors) {
-				fail(nextError.getMessage());
-			}	
-		}
-		
-		if(kbuilder.hasResults(ResultSeverity.WARNING)) {
-			KnowledgeBuilderResults kbResults = kbuilder.getResults(ResultSeverity.WARNING);
-			for (KnowledgeBuilderResult nextResult: kbResults) {
-				fail(nextResult.getMessage());
-			}
-		}
-	}
-	
+
+    @Test
+    public void testDeclaredTypesInSequenceFlowDroolsExpression() {
+        //DROOLS-1327	
+
+        String drl = "package org.drools.test;"
+                + "declare TestFact \n"
+                + "value: Integer\n"
+                + "end\n";
+
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        CompositeKnowledgeBuilder ckbuilder = kbuilder.batch();
+
+        Resource drlResource = new InputStreamResource(new ByteArrayInputStream(drl.getBytes(StandardCharsets.UTF_8)));
+        Resource bpmn2Resource = new ClassPathResource("BPMN2-DroolsDeclaredTypeSequenceFlowExpressionTest.bpmn2");
+
+        ckbuilder.add(drlResource, ResourceType.DRL);
+        ckbuilder.add(bpmn2Resource, ResourceType.BPMN2);
+
+        ckbuilder.build();
+
+        //Assert that we don't have any issues in the build.
+        if (kbuilder.hasErrors()) {
+            KnowledgeBuilderErrors kbErrors = kbuilder.getErrors();
+            for (KnowledgeBuilderError nextError : kbErrors) {
+                fail(nextError.getMessage());
+            }
+        }
+
+        if (kbuilder.hasResults(ResultSeverity.WARNING)) {
+            KnowledgeBuilderResults kbResults = kbuilder.getResults(ResultSeverity.WARNING);
+            for (KnowledgeBuilderResult nextResult : kbResults) {
+                fail(nextResult.getMessage());
+            }
+        }
+    }
+
 }
