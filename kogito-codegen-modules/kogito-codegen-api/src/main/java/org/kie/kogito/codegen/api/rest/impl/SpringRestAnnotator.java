@@ -16,12 +16,13 @@
 
 package org.kie.kogito.codegen.api.rest.impl;
 
-import com.github.javaparser.ast.expr.AnnotationExpr;
-import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
-import org.kie.kogito.codegen.api.rest.RestAnnotator;
-
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.kie.kogito.codegen.api.rest.RestAnnotator;
+
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 
 public class SpringRestAnnotator implements RestAnnotator {
 

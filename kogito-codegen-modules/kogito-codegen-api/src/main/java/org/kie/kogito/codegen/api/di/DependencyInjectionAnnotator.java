@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.api.di;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;

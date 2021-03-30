@@ -19,12 +19,10 @@ package org.kie.kogito.codegen.api.di.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.ConditionalExpr;

@@ -34,6 +34,7 @@ public interface KogitoBuildContext {
     String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
     String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
     String KOGITO_GENERATE_REST = "kogito.generate.rest";
+    String KOGITO_GENERATE_DI = "kogito.generate.di";
 
     boolean hasClassAvailable(String fqcn);
 
@@ -52,10 +53,17 @@ public interface KogitoBuildContext {
      */
     void setDependencyInjectionAnnotator(DependencyInjectionAnnotator dependencyInjectionAnnotator);
 
+    /**
+     * Method to check if dependency injection is available and enabled.
+     * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled using
+     * kogito.generate.di property
+     *
+     * @return
+     */
     default boolean hasDI() {
-        return getDependencyInjectionAnnotator() != null;
+        return getDependencyInjectionAnnotator() != null &&
+                "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_DI).orElse("true"));
     }
-
 
     /**
      * Return RestAnnotator if available or null
@@ -72,6 +80,13 @@ public interface KogitoBuildContext {
      */
     void setRestAnnotator(RestAnnotator restAnnotator);
 
+    /**
+     * Method to check if REST is available and enabled.
+     * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled using
+     * kogito.generate.rest property
+     *
+     * @return
+     */
     default boolean hasREST() {
         return getRestAnnotator() != null &&
                 "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_REST).orElse("true"));

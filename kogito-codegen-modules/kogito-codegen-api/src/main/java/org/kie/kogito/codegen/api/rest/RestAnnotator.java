@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.codegen.api.rest;
 
-import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
-
 import java.util.Optional;
+
+import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 
 public interface RestAnnotator {
     <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node);

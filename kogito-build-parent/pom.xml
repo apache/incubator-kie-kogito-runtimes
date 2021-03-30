@@ -174,7 +174,6 @@
     <version.org.infinispan.starter>2.3.3.Final</version.org.infinispan.starter>
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
     <version.org.jboss.resteasy>4.5.9.Final</version.org.jboss.resteasy>
-    <version.org.jboss.resteasy.spi.test>4.5.9.Final</version.org.jboss.resteasy.spi.test> <!-- align codegen test to target platforms, which use Resteasy -->
     <version.org.json>20200518</version.org.json>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.junit.minor>7.0</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->

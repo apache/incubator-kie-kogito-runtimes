@@ -27,12 +27,6 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
         return new JavaKogitoBuildContextBuilder();
     }
 
-    @Override
-    public boolean hasREST() {
-        return super.hasREST() && (hasClassAvailable("javax.ws.rs.Path")
-                || hasClassAvailable("org.springframework.web.bind.annotation.RestController"));
-    }
-
     protected static class JavaKogitoBuildContextBuilder extends AbstractBuilder {
 
         protected JavaKogitoBuildContextBuilder() {
@@ -45,7 +39,7 @@ public class JavaKogitoBuildContext extends AbstractKogitoBuildContext {
 
         @Override
         public String toString() {
-            return "Java";
+            return JavaKogitoBuildContext.CONTEXT_NAME;
         }
     }
 }

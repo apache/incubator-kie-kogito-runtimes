@@ -68,7 +68,7 @@ public class ApplicationGenerator {
     public Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = generateComponents();
         for (Generator generator : generators) {
-            generator.configGenerator().ifPresent(configGenerator -> applicationConfigGenerator.withConfigGenerator(configGenerator));
+            generator.configGenerator().ifPresent(applicationConfigGenerator::addConfigGenerator);
         }
 
         generatedFiles.add(generateApplicationDescriptor());
