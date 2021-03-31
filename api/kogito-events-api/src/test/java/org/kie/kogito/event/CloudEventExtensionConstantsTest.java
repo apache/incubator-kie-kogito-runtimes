@@ -35,6 +35,8 @@ class CloudEventExtensionConstantsTest {
         assertThat(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_START_FROM_NODE).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE).matches(nameValidation);
     }
 
 }

@@ -23,6 +23,8 @@ package org.kie.kogito.event;
  */
 public final class CloudEventExtensionConstants {
 
+    // whenever a new extension is added, please add to the CloudEventExtensionConstantsTest to verify the CE spec requirements
+
     public static final String PROCESS_INSTANCE_ID = "kogitoprocinstanceid";
     public static final String PROCESS_REFERENCE_ID = "kogitoprocrefid";
     public static final String PROCESS_INSTANCE_STATE = "kogitoprocist";
@@ -31,6 +33,8 @@ public final class CloudEventExtensionConstants {
     public static final String PROCESS_ROOT_PROCESS_INSTANCE_ID = "kogitorootprociid";
     public static final String PROCESS_ROOT_PROCESS_ID = "kogitorootprocid";
     public static final String PROCESS_START_FROM_NODE = "kogitoprocstartfrom";
+    public static final String PROCESS_USER_TASK_INSTANCE_ID = "kogitousertaskiid";
+    public static final String PROCESS_USER_TASK_INSTANCE_STATE = "kogitousertaskist";
     public static final String ADDONS = "kogitoaddons";
 
     private CloudEventExtensionConstants() {
