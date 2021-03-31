@@ -44,10 +44,14 @@ pipeline {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    if (isRelease()) {
-                        // Verify version is set and if on right release branch
+                    if (isRelease()|| isCreatePr()) {
+                        // Verify version is set
                         assert getProjectVersion()
-                        assert getBuildBranch() == util.getReleaseBranchFromVersion(getProjectVersion())
+
+                        if(isRelease()) {
+                            // Verify if on right release branch
+                            assert getBuildBranch() == util.getReleaseBranchFromVersion(getProjectVersion())
+                        }
                     }
 
                     checkoutRepo()
@@ -66,7 +70,7 @@ pipeline {
         }
         stage('Prepare for PR') {
             when {
-                expression { return isRelease() }
+                expression { return isRelease()|| isCreatePr() }
             }
             steps {
                 prepareForPR()
@@ -79,7 +83,7 @@ pipeline {
             steps {
                 script {
                     // Set version
-                    maven.mvnVersionsSet(getMavenCommand(), getProjectVersion())
+                    maven.mvnVersionsSet(getMavenCommand(), getProjectVersion(), !isRelease())
                 }
             }
         }
@@ -133,7 +137,7 @@ pipeline {
         }
         stage('Create PR') {
             when {
-                expression { return isRelease() }
+                expression { return isRelease()|| isCreatePr() }
             }
             steps {
                 commitAndCreatePR()
@@ -197,6 +201,10 @@ void commitAndCreatePR() {
 
 boolean isRelease() {
     return env.RELEASE.toBoolean()
+}
+
+boolean isCreatePr() {
+    return params.CREATE_PR
 }
 
 String getRepoName() {
