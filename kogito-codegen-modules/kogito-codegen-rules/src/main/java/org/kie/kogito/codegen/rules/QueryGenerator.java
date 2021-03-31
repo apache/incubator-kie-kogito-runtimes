@@ -106,11 +106,6 @@ public class QueryGenerator implements RuleFileGenerator {
         generateQueryMethod(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
 
-        if (context.hasDI()) {
-            // Enable RuleUnitQuery injection using query name
-            context.getDependencyInjectionAnnotator().withNamedApplicationComponent(clazz, query.getName());
-        }
-
         return new GeneratedFile(QUERY_TYPE,
                 generatedFilePath(),
                 cu.toString());
