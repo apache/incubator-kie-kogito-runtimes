@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApplicationGeneratorTest {
 
-    private static final String EXPECTED_APPLICATION_NAME = KogitoBuildContext.DEFAULT_PACKAGE_NAME + ".Application";
+    private static final String EXPECTED_APPLICATION_NAME = KogitoBuildContext.DEFAULT_PACKAGE_NAME + "." + ApplicationGenerator.APPLICATION_CLASS_NAME;
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -44,6 +44,17 @@ public class ApplicationGeneratorTest {
         final ApplicationGenerator appGenerator = new ApplicationGenerator(contextBuilder.build());
         assertThat(appGenerator.targetCanonicalName()).isNotNull();
         assertThat(appGenerator.targetCanonicalName()).isEqualTo(EXPECTED_APPLICATION_NAME);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    public void targetCanonicalNameDifferentPackage(KogitoBuildContext.Builder contextBuilder) {
+        String differentPackageName = "org.drools.test";
+        String differentPackageExpectedApplicationName = differentPackageName + "." + ApplicationGenerator.APPLICATION_CLASS_NAME;
+        contextBuilder.withPackageName(differentPackageName);
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(contextBuilder.build());
+        assertThat(appGenerator.targetCanonicalName()).isNotNull();
+        assertThat(appGenerator.targetCanonicalName()).isEqualTo(differentPackageExpectedApplicationName);
     }
 
     @ParameterizedTest

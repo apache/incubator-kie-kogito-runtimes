@@ -65,12 +65,11 @@ public class CodegenUserTaskTest {
 
             assertThat(completeTaskMethods).hasSize(2);
 
-            completeTaskMethods.forEach(completeTaskMethod -> assertThat(completeTaskMethod.getAnnotations()
-                    .stream()
-                    .filter(ann -> ann.toString().contains("/{id}/FirstTask/{taskId}") ||
-                            ann.toString().contains("/{id}/SecondTask/{taskId}"))
-                    .count())
-                            .isEqualTo(1));
+            completeTaskMethods.forEach(completeTaskMethod ->
+                    assertThat(context.getRestAnnotator().getEndpointValue(completeTaskMethod)
+                            .map(url -> url.contains("/{id}/FirstTask/{taskId}") ||
+                                    url.contains("/{id}/SecondTask/{taskId}"))
+                    .orElse(true)).isTrue());
         } else {
             assertThat(resources.size()).isZero();
         }
