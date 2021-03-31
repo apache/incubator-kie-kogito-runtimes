@@ -36,6 +36,8 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
+
 public class ApplicationGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationGenerator.class);
@@ -86,6 +88,7 @@ public class ApplicationGenerator {
     public List<GeneratedFile> generateComponents() {
         return generators.stream()
                 .flatMap(gen -> gen.generate().stream())
+                .filter(this::filterGeneratedFile)
                 .collect(Collectors.toList());
     }
 
@@ -99,6 +102,14 @@ public class ApplicationGenerator {
 
         applicationMainGenerator.withSections(sections);
         return applicationMainGenerator.generate();
+    }
+
+    private boolean filterGeneratedFile(GeneratedFile generatedFile) {
+        boolean keepFile = context.hasREST() || !REST_TYPE.equals(generatedFile.type());
+        if (!keepFile) {
+            LOGGER.info("Skipping file because REST is disabled: " + generatedFile.relativePath());
+        }
+        return keepFile;
     }
 
     private Collection<GeneratedFile> generateApplicationSections() {

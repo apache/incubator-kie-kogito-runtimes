@@ -33,6 +33,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
 
 public class ApplicationGeneratorTest {
 
@@ -49,8 +50,8 @@ public class ApplicationGeneratorTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void targetCanonicalNameDifferentPackage(KogitoBuildContext.Builder contextBuilder) {
-        String differentPackageName = "org.drools.test";
-        String differentPackageExpectedApplicationName = differentPackageName + "." + ApplicationGenerator.APPLICATION_CLASS_NAME;
+        final String differentPackageName = "org.drools.test";
+        final String differentPackageExpectedApplicationName = differentPackageName + "." + ApplicationGenerator.APPLICATION_CLASS_NAME;
         contextBuilder.withPackageName(differentPackageName);
         final ApplicationGenerator appGenerator = new ApplicationGenerator(contextBuilder.build());
         assertThat(appGenerator.targetCanonicalName()).isNotNull();
@@ -70,7 +71,7 @@ public class ApplicationGeneratorTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void compilationUnit(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
+        final KogitoBuildContext context = contextBuilder.build();
         final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), context.hasDI());
     }
@@ -78,7 +79,7 @@ public class ApplicationGeneratorTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void compilationUnitWithCDI(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
+        final KogitoBuildContext context = contextBuilder.build();
         final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context);
         assertCompilationUnit(appGenerator.getCompilationUnitOrThrow(), context.hasDI());
     }
@@ -86,7 +87,7 @@ public class ApplicationGeneratorTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void applicationSectionReplace(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
+        final KogitoBuildContext context = contextBuilder.build();
         final ApplicationContainerGenerator appGenerator = new ApplicationContainerGenerator(context);
         assertApplicationPlaceholderReplace(appGenerator, context.hasDI(), 0);
 
@@ -97,7 +98,7 @@ public class ApplicationGeneratorTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void registerGeneratorIfEnabled(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder.build();
+        final KogitoBuildContext context = contextBuilder.build();
         final ApplicationGenerator appGenerator = new ApplicationGenerator(context);
         final MockGenerator disabledGenerator = new MockGenerator(context, false);
         final MockGenerator enabledGenerator = new MockGenerator(context, true);
@@ -108,6 +109,33 @@ public class ApplicationGeneratorTest {
         assertThat(appGenerator.registerGeneratorIfEnabled(enabledGenerator))
                 .isNotEmpty();
         assertThat(appGenerator.getGenerators()).hasSize(1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    public void filterRestIfDisabled(KogitoBuildContext.Builder contextBuilder) {
+        final KogitoBuildContext context = contextBuilder.build();
+        final ApplicationGenerator appGenerator = new ApplicationGenerator(context);
+        final MockGenerator restGenerator = new MockGenerator(context, true, true);
+
+        assertThat(appGenerator.registerGeneratorIfEnabled(restGenerator))
+                .isNotEmpty();
+        assertThat(appGenerator.getGenerators()).hasSize(1);
+
+        if(context.hasREST()) {
+            // disable REST
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            assertThat(appGenerator.generateComponents()).isEmpty();
+
+            // enable REST
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "true");
+            assertThat(appGenerator.generateComponents())
+                    .isNotEmpty()
+                    .hasSize(1)
+                    .matches(files -> files.stream().anyMatch(gf -> REST_TYPE.equals(gf.type())));
+        } else {
+            assertThat(appGenerator.generateComponents()).isEmpty();
+        }
     }
 
     private void assertCompilationUnit(final CompilationUnit compilationUnit, final boolean checkCDI) {
@@ -159,10 +187,16 @@ public class ApplicationGeneratorTest {
     static class MockGenerator extends AbstractGenerator {
 
         private final boolean enabled;
+        private final boolean produceREST;
 
         protected MockGenerator(KogitoBuildContext context, boolean enabled) {
+            this(context, enabled, false);
+        }
+
+        protected MockGenerator(KogitoBuildContext context, boolean enabled, boolean produceREST) {
             super(context, "mockGenerator");
             this.enabled = enabled;
+            this.produceREST = produceREST;
         }
 
         @Override
@@ -172,7 +206,11 @@ public class ApplicationGeneratorTest {
 
         @Override
         public Collection<GeneratedFile> generate() {
-            return Collections.emptyList();
+            if(produceREST) {
+                return Collections.singleton(new GeneratedFile(REST_TYPE, "my/path", ""));
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         @Override
