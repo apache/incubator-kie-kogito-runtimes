@@ -34,6 +34,29 @@
        <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-test-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-management-springboot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>task-management-springboot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.infinispan</groupId>
@@ -92,9 +115,6 @@
           <artifactId>maven-invoker-plugin</artifactId>
           <configuration>
             <streamLogs>true</streamLogs>
-            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-            <useLocalRepository>true</useLocalRepository>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             <properties>
               <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>

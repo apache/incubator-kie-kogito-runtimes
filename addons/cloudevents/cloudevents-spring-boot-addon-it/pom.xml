@@ -25,6 +25,16 @@
       <artifactId>kogito-maven-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-springboot-starter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -33,9 +43,6 @@
             <artifactId>maven-invoker-plugin</artifactId>
             <configuration>
                 <streamLogs>true</streamLogs>
-                <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-                <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-                <useLocalRepository>true</useLocalRepository>
                 <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             </configuration>
             <executions>
