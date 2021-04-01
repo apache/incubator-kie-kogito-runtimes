@@ -27,7 +27,7 @@ public abstract class AbstractProcessDataEvent<T> extends AbstractDataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoParentProcessinstanceId;
 
-    @JsonProperty(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID)
+    @JsonProperty(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoProcessinstanceState;
 
