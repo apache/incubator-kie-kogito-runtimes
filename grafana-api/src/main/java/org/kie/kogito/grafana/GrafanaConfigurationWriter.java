@@ -137,7 +137,7 @@ public class GrafanaConfigurationWriter {
             return jgrafana.serialize();
         } catch (IOException e) {
             logger.error("Could not serialize the grafana dashboard");
-            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
+            throw new UncheckedIOException("Could not serialize the grafana dashboard.", e);
         }
     }
 
