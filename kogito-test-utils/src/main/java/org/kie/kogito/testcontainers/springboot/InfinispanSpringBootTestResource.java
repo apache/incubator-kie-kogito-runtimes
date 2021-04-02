@@ -22,7 +22,7 @@ import org.kie.kogito.testcontainers.KogitoInfinispanContainer;
  * Infinispan spring boot resource that works within the test lifecycle.
  *
  */
-public class InfinispanSpringBootTestResource extends ConditionalSpringBootTestResource {
+public class InfinispanSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoInfinispanContainer> {
 
     public static final String KOGITO_INFINISPAN_PROPERTY = "infinispan.remote.server-list";
 
