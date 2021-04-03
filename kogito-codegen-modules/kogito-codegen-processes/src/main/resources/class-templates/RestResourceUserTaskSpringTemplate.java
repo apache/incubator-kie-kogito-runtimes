@@ -63,7 +63,7 @@ public class $Type$Resource {
                                                         .buildAndExpand(id, task.get().getId());
                                         URI location = uriComponents.toUri();
                                         return ResponseEntity.created(location)
-                                                .body(pi.checkError().variables().toOutput());
+                                                .body(pi.checkError().variables().toModel());
                                     }
                                     return new ResponseEntity<$Type$Output>(HttpStatus.NOT_FOUND);
                                 })
@@ -93,7 +93,7 @@ public class $Type$Resource {
                                                     taskId,
                                                     HumanTaskTransition.withModel(phase, model, Policies.of(user,
                                                             groups)));
-                                    return ResponseEntity.ok(pi.checkError().variables().toOutput());
+                                    return ResponseEntity.ok(pi.checkError().variables().toModel());
                                 })
                                 .orElseGet(() -> ResponseEntity.notFound().build()));
     }
@@ -135,7 +135,7 @@ public class $Type$Resource {
                                     pi.transitionWorkItem(
                                             taskId,
                                             HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
-                                    return ResponseEntity.ok(pi.checkError().variables().toOutput());
+                                    return ResponseEntity.ok(pi.checkError().variables().toModel());
                                 })
                                 .orElseGet(() -> ResponseEntity.notFound().build()));
     }
@@ -398,7 +398,7 @@ public class $Type$Resource {
                                             .transitionWorkItem(
                                                     taskId,
                                                     HumanTaskTransition.withoutModel(phase, Policies.of(user, groups)));
-                                    return ResponseEntity.ok(pi.checkError().variables().toOutput());
+                                    return ResponseEntity.ok(pi.checkError().variables().toModel());
                                 })
                                 .orElseGet(() -> ResponseEntity.notFound().build()));
     }

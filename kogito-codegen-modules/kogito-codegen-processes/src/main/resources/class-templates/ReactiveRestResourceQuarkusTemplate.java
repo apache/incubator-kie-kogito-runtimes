@@ -73,7 +73,7 @@ public class $Type$ReactiveResource {
                             } else {
                                 pi.start();
                             }
-                            return pi.checkError().variables().toOutput();
+                            return pi.checkError().variables().toModel();
                         }));
     }
 
@@ -86,7 +86,7 @@ public class $Type$ReactiveResource {
                     .instances()
                     .values()
                     .stream()
-                    .map(pi -> pi.variables().toOutput())
+                    .map(pi -> pi.variables().toModel())
                     .collect(Collectors.toList()));
     }
 
@@ -99,7 +99,7 @@ public class $Type$ReactiveResource {
                 () -> process
                     .instances()
                     .findById(id, ProcessInstanceReadMode.READ_ONLY)
-                    .map(pi -> pi.variables().toOutput())
+                    .map(pi -> pi.variables().toModel())
                     .orElse(null));
     }
 
@@ -117,7 +117,7 @@ public class $Type$ReactiveResource {
                             .findById(id)
                             .map(pi -> {
                                 pi.abort();
-                                return pi.checkError().variables().toOutput();
+                                return pi.checkError().variables().toModel();
                             })
                             .orElse(null)));
     }
@@ -135,7 +135,7 @@ public class $Type$ReactiveResource {
                         () -> process
                             .instances()
                             .findById(id)
-                            .map(pi -> pi.updateVariables(resource).toOutput())
+                            .map(pi -> pi.updateVariables(resource).toModel())
                             .orElse(null)));
     }
 

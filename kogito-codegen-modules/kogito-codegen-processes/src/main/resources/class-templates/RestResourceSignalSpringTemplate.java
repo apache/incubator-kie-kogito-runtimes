@@ -34,7 +34,7 @@ public class $Type$Resource {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
             return process.instances().findById(id).map(pi -> {
                 pi.send(Sig.of("$signalName$", data));
-                return ResponseEntity.ok(pi.checkError().variables().toOutput());
+                return ResponseEntity.ok(pi.checkError().variables().toModel());
             }).orElseGet(() -> ResponseEntity.notFound().build());
         });
     }

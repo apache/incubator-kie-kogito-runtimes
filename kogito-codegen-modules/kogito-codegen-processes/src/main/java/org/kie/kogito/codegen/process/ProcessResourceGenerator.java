@@ -273,12 +273,14 @@ public class ProcessResourceGenerator {
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isProcessField).forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
 
+            //TODO: remove from template
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isProcessField).forEach(this::initializeProcessField);
 
+            //TODO: remove from template
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }

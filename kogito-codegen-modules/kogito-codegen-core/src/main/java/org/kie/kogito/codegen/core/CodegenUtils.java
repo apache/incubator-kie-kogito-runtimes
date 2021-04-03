@@ -137,6 +137,10 @@ public class CodegenUtils {
         return fd.getElementType().asClassOrInterfaceType().getNameAsString().equals("Application");
     }
 
+    public static boolean isInjectableField(FieldDeclaration fd) {
+        return fd.getVariable(0).getName().asString().contains("Inject");
+    }
+
     public static boolean isObjectMapperField(FieldDeclaration fd) {
         return fd.getElementType().asClassOrInterfaceType().getNameAsString().equals("ObjectMapper");
     }

@@ -85,7 +85,7 @@ public class $Type$Resource {
             UriComponents uriComponents = uriComponentsBuilder.path("/$name$/{id}").buildAndExpand(pi.id());
             URI location = uriComponents.toUri();
             return ResponseEntity.created(location)
-                    .body(pi.checkError().variables().toOutput());
+                    .body(pi.checkError().variables().toModel());
         });
     }
 
@@ -94,7 +94,7 @@ public class $Type$Resource {
         return process.instances()
                 .values()
                 .stream()
-                .map(pi -> pi.variables().toOutput())
+                .map(pi -> pi.variables().toModel())
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class $Type$Resource {
     public ResponseEntity<$Type$Output> getResource_$name$(@PathVariable("id") String id) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
-                .map(m -> ResponseEntity.ok(m.variables().toOutput()))
+                .map(m -> ResponseEntity.ok(m.variables().toModel()))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -115,7 +115,7 @@ public class $Type$Resource {
                         .findById(id)
                         .map(pi -> {
                             pi.abort();
-                            return pi.checkError().variables().toOutput();
+                            return pi.checkError().variables().toModel();
                         })
                         .map(m -> ResponseEntity.ok(m)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -129,7 +129,7 @@ public class $Type$Resource {
                 () -> process
                         .instances()
                         .findById(id)
-                        .map(pi -> pi.updateVariables(resource).toOutput())
+                        .map(pi -> pi.updateVariables(resource).toModel())
                         .map(m -> ResponseEntity.ok(m)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
