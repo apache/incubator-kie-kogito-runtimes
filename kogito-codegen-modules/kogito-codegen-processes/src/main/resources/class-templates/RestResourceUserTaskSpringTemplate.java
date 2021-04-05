@@ -110,7 +110,7 @@ public class $Type$Resource {
                         () -> process
                                 .instances()
                                 .findById(id)
-                                .map(pi -> ResponseEntity.ok($TaskOutput$.fromMap(pi.updateWorkItem(
+                                .map(pi -> ResponseEntity.ok(model.fromMap(pi.updateWorkItem(
                                         taskId,
                                         wi -> HumanTaskHelper.updateContent(wi, model),
                                         Policies.of(user, groups))))).orElseGet(() -> ResponseEntity.notFound()
