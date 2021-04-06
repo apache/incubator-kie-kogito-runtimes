@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Predicate;
 
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
@@ -105,6 +106,8 @@ public interface KogitoBuildContext {
      */
     String name();
 
+    Optional<KogitoGAV> getGAV();
+
     interface Builder {
         Builder withPackageName(String packageName);
 
@@ -119,6 +122,8 @@ public interface KogitoBuildContext {
         Builder withClassLoader(ClassLoader classLoader);
 
         Builder withAppPaths(AppPaths appPaths);
+
+        Builder withGAV(KogitoGAV gav);
 
         KogitoBuildContext build();
     }

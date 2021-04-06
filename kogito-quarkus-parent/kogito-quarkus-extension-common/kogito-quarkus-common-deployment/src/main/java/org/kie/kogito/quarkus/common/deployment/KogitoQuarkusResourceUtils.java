@@ -26,12 +26,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.quarkus.bootstrap.model.AppArtifact;
 import org.jboss.jandex.CompositeIndex;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.memorycompiler.resources.ResourceReader;
@@ -71,11 +74,17 @@ public class KogitoQuarkusResourceUtils {
                     System.getProperty("kogito.codegen.resources.directory", "target/generated-resources/kogito/"),
                     "target/generated-sources/kogito/");
 
-    public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index) {
+    public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, AppArtifact appArtifact) {
         // scan and parse paths
         AppPaths appPaths = AppPaths.fromQuarkus(paths);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        return KogitoQuarkusContextProvider.context(appPaths, classLoader, className -> classAvailabilityResolver(classLoader, index, className));
+        return QuarkusKogitoBuildContext.builder()
+                .withApplicationProperties(appPaths.getResourceFiles())
+                .withClassLoader(classLoader)
+                .withClassAvailabilityResolver(className -> classAvailabilityResolver(classLoader, index, className))
+                .withAppPaths(appPaths)
+                .withGAV(new KogitoGAV(appArtifact.getGroupId(), appArtifact.getArtifactId(), appArtifact.getVersion()))
+                .build();
     }
 
     /**

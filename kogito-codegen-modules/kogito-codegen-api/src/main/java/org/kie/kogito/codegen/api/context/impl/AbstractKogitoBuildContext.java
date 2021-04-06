@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 
 import javax.lang.model.SourceVersion;
 
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
@@ -51,6 +52,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected final AppPaths appPaths;
     protected final String contextName;
     protected final Map<String, Object> contextAttributes;
+    protected final KogitoGAV gav;
 
     protected DependencyInjectionAnnotator dependencyInjectionAnnotator;
 
@@ -64,6 +66,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.addonsConfig = builder.addonsConfig != null ? builder.addonsConfig : AddonsConfigDiscovery.discover(this);
         this.classLoader = builder.classLoader;
         this.appPaths = builder.appPaths;
+        this.gav = builder.gav;
         this.contextName = contextName;
         this.contextAttributes = new HashMap<>();
     }
@@ -138,6 +141,11 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     }
 
     @Override
+    public Optional<KogitoGAV> getGAV() {
+        return Optional.ofNullable(gav);
+    }
+
+    @Override
     public Map<String, Object> getContextAttributes() {
         return Collections.unmodifiableMap(contextAttributes);
     }
@@ -167,6 +175,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         protected ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         protected Predicate<String> classAvailabilityResolver = this::hasClass;
         protected AppPaths appPaths = AppPaths.fromProjectDir(new File(".").toPath());
+        protected KogitoGAV gav;
 
         protected AbstractBuilder() {
         }
@@ -226,6 +235,13 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         public Builder withAppPaths(AppPaths appPaths) {
             Objects.requireNonNull(appPaths, "appPaths cannot be null");
             this.appPaths = appPaths;
+            return this;
+        }
+
+        @Override
+        public Builder withGAV(KogitoGAV gav) {
+            Objects.requireNonNull(gav, "gav cannot be null");
+            this.gav = gav;
             return this;
         }
 
