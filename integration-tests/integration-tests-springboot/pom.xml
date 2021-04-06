@@ -43,28 +43,31 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>process-management-springboot-addon</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>task-management-springboot-addon</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-spring-boot-starter-remote</artifactId>
