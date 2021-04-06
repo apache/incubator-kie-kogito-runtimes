@@ -30,9 +30,9 @@ public class SpringBootProcessSvgService extends AbstractProcessSvgService {
     @Autowired
     public SpringBootProcessSvgService(@Autowired(required = false) DataIndexClient dataIndexClient,
             @Value("${kogito.svg.folder.path:#{null}}") Optional<String> svgResourcesPath,
-            @Value("${kogito.svg.color.completed:#C0C0C0}") String completedColor,
-            @Value("${kogito.svg.color.completed.border:#030303}") String completedBorderColor,
-            @Value("${kogito.svg.color.active.border:#FF0000}") String activeBorderColor) {
+            @Value("${kogito.svg.color.completed:" + DEFAULT_COMPLETED_COLOR + "}") String completedColor,
+            @Value("${kogito.svg.color.completed.border:" + DEFAULT_COMPLETED_BORDER_COLOR + "}") String completedBorderColor,
+            @Value("${kogito.svg.color.active.border:" + DEFAULT_ACTIVE_BORDER_COLOR + "}") String activeBorderColor) {
         super(dataIndexClient, svgResourcesPath, completedColor, completedBorderColor, activeBorderColor);
     }
 }

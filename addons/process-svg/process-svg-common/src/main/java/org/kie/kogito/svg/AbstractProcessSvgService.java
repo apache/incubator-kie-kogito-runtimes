@@ -36,6 +36,9 @@ import org.slf4j.LoggerFactory;
 import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractProcessSvgService implements ProcessSvgService {
+    public static final String DEFAULT_COMPLETED_COLOR = "#C0C0C0";
+    public static final String DEFAULT_COMPLETED_BORDER_COLOR = "#030303";
+    public static final String DEFAULT_ACTIVE_BORDER_COLOR = "#FF0000";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractProcessSvgService.class);
     private static Path svgDir = Paths.get("META-INF", "processSVG");
