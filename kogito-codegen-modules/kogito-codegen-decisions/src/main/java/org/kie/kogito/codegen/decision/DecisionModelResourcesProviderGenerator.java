@@ -102,7 +102,7 @@ public class DecisionModelResourcesProviderGenerator {
         final VariableDeclarator resourcePathsVariable =
                 getResourcesMethod.findFirst(VariableDeclarator.class).orElseThrow(() -> new RuntimeException("Can't find a variable declaration in the \"get()\" method."));
 
-        if(!context.getGAV().isPresent()) {
+        if (!context.getGAV().isPresent()) {
             LOGGER.error("Impossible to obtain project group-artifact-id, using empty value");
         }
         KogitoGAV gav = context.getGAV().orElse(KogitoGAV.EMPTY_GAV);

@@ -26,8 +26,8 @@ public class KogitoGAV {
     private final String version;
 
     public KogitoGAV(final String groupId,
-                     final String artifactId,
-                     final String version) {
+            final String artifactId,
+            final String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -47,8 +47,10 @@ public class KogitoGAV {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         KogitoGAV kogitoGAV = (KogitoGAV) o;
         return Objects.equals(groupId, kogitoGAV.groupId) && Objects.equals(artifactId, kogitoGAV.artifactId) && Objects.equals(version, kogitoGAV.version);
     }
