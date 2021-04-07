@@ -84,7 +84,7 @@ public class KogitoAssetsProcessor {
 
         // The HotReloadSupportClass has to be generated only during the first model generation
         // During actual hot reloads it will be regenrated by the compilation providers in order to retrigger this build step
-        if (liveReload.isLiveReload()) {
+        if (!liveReload.isLiveReload()) {
             generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, HOT_RELOAD_SUPPORT_PATH + ".java", getHotReloadSupportSource()));
         }
 
