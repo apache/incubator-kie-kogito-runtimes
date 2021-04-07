@@ -107,7 +107,7 @@ public class ApplicationGenerator {
     private boolean filterGeneratedFile(GeneratedFile generatedFile) {
         boolean keepFile = context.hasREST() || !REST_TYPE.equals(generatedFile.type());
         if (!keepFile) {
-            LOGGER.info("Skipping file because REST is disabled: " + generatedFile.relativePath());
+            LOGGER.warn("Skipping file because REST is disabled: " + generatedFile.relativePath());
         }
         return keepFile;
     }

@@ -40,16 +40,11 @@ public interface KogitoBuildContext {
 
     /**
      * Return DependencyInjectionAnnotator if available or null
-     *
-     * @return
      */
     DependencyInjectionAnnotator getDependencyInjectionAnnotator();
 
     /**
      * Method to override default dependency injection annotator
-     *
-     * @param dependencyInjectionAnnotator
-     * @return
      */
     void setDependencyInjectionAnnotator(DependencyInjectionAnnotator dependencyInjectionAnnotator);
 
@@ -57,8 +52,6 @@ public interface KogitoBuildContext {
      * Method to check if dependency injection is available and enabled.
      * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled using
      * kogito.generate.di property
-     *
-     * @return
      */
     default boolean hasDI() {
         return getDependencyInjectionAnnotator() != null &&
@@ -67,16 +60,11 @@ public interface KogitoBuildContext {
 
     /**
      * Return RestAnnotator if available or null
-     *
-     * @return
      */
     RestAnnotator getRestAnnotator();
 
     /**
      * Method to override default REST annotator
-     *
-     * @param restAnnotator
-     * @return
      */
     void setRestAnnotator(RestAnnotator restAnnotator);
 
@@ -84,8 +72,6 @@ public interface KogitoBuildContext {
      * Method to check if REST is available and enabled.
      * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled using
      * kogito.generate.rest property
-     *
-     * @return
      */
     default boolean hasREST() {
         return getRestAnnotator() != null &&
@@ -136,8 +122,6 @@ public interface KogitoBuildContext {
     /**
      * Name of the context (e.g. Quarkus, Spring) used to identify a context and for template naming conventions
      * (see {@link TemplatedGenerator})
-     * 
-     * @return
      */
     String name();
 
