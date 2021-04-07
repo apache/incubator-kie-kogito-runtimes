@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class KogitoGAV {
 
-    public static final KogitoGAV EMPTY_GAV = new KogitoGAV(null, null, null);
+    public static final KogitoGAV EMPTY_GAV = new KogitoGAV("", "", "");
 
     private final String groupId;
     private final String artifactId;
