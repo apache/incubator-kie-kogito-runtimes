@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
  * Smoke test of kogito end-to-end scenarios.
  */
 @QuarkusTest
-public class HospitalsStatusTest {
+public class HospitalsStatusIT {
 
     @Test
     public void testHospitalStatus() {

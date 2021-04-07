@@ -15,40 +15,42 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
+import static io.restassured.RestAssured.given;
 
 @QuarkusTest
-class PMMLTreeTest {
-
-    private static final String BASE_PATH = "/SampleMine";
-    private static final String TARGET = "decision";
+@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
+class LinkIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testEvaluateSampleMineResult() {
-        String inputData = "{\"temperature\":30.0, \"humidity\":10.0}";
-        testResult(inputData, BASE_PATH, TARGET, "sunglasses");
+    void testLink() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/SimpleLinkTest")
+                .then()
+                .statusCode(201);
     }
 
     @Test
-    void testEvaluateSampleMineDescriptive() {
-        String inputData = "{\"temperature\":30.0, \"humidity\":10.0}";
-        final Map<String, Object> expectedResultMap = new HashMap<>();
-        expectedResultMap.put(TARGET, "sunglasses");
-        expectedResultMap.put("weatherdecision", "sunglasses");
-        testDescriptive(inputData, BASE_PATH, TARGET, expectedResultMap);
+    void testMultipleLink() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/MultipleThrowLinkProcess")
+                .then()
+                .statusCode(201);
     }
 
 }

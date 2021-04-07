@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
-class DSCoercionTest {
+class DSCoercionIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

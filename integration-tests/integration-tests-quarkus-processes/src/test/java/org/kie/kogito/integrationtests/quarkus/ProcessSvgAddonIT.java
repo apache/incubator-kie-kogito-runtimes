@@ -37,7 +37,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
 @QuarkusTestResource(DataIndexWiremock.class)
-public class ProcessSvgAddonTest {
+public class ProcessSvgAddonIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

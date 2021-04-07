@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
  * Smoke test of kogito end-to-end scenarios.
  */
 @QuarkusTest
-public class FaceMaskTest {
+public class FaceMaskIT {
 
     @Test
     public void testYoungBabyWithoutNeedForAMask() {

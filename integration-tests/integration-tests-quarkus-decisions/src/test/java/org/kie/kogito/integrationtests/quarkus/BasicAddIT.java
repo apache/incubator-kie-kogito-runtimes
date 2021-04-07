@@ -23,49 +23,55 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 
 @QuarkusTest
-class ElementAtIndexTest {
+class BasicAddIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testHeaderEmpty() {
-        given().body(" { \"a list\" : [\"a\", \"b\", \"c\"], \"an index\" : 1 }")
+    void testWholeModel() {
+        given().body("{ \"a\": \"v1\", \"b\": \"v2\" }")
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/ElementAtIndex")
+                .post("/basicAdd")
                 .then()
                 .statusCode(200)
-                .header("X-Kogito-decision-messages", nullValue())
-                .body("'element at index'", is("a"));
+                .body("decision", is("v1v2"));
     }
 
     @Test
-    void testHeaderPopulated() {
-        given().body(" { \"a list\" : [\"a\", \"b\", \"c\"], \"an index\" : 47 }")
+    void testWholeModel_dmnresult() {
+        given().body("{ \"a\": \"v1\", \"b\": \"v2\" }")
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/ElementAtIndex")
+                .post("/basicAdd/dmnresult")
                 .then()
                 .statusCode(200)
-                .header("X-Kogito-decision-messages", notNullValue()) // a warning
-                .body("'element at index'", nullValue());
+                .body("dmnContext.decision", is("v1v2"));
     }
 
     @Test
-    void testGET() {
-        given().accept(ContentType.XML)
+    void testDs1() {
+        given().body("{ \"a\": \"v1\", \"b\": \"v2\" }")
+                .contentType(ContentType.JSON)
                 .when()
-                .get("/ElementAtIndex")
+                .post("/basicAdd/ds1")
                 .then()
                 .statusCode(200)
-                .body("definitions.decision[0].children().size()", is(4))
-                .body("definitions.children().findAll { node -> node.name() == 'literalExpression' }.size()", is(0));
+                .body(is("\"v1v2\"")); // a JSON string literal: "v1v2"
     }
 
+    @Test
+    void testDs1_dmnresult() {
+        given().body("{ \"a\": \"v1\", \"b\": \"v2\" }")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/basicAdd/ds1/dmnresult")
+                .then()
+                .statusCode(200)
+                .body("dmnContext.decision", is("v1v2"));
+    }
 }

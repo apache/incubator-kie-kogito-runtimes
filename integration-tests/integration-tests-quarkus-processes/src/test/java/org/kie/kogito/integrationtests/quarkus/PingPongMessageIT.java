@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 @QuarkusTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
-public class PingPongMessageTest {
+public class PingPongMessageIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

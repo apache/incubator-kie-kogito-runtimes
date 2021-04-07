@@ -31,9 +31,9 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
-public class TopicInformationResourceTest {
+public class TopicInformationResourceIT {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TopicInformationResourceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopicInformationResourceIT.class);
 
     @Test
     void verifyTopicsInformation() {

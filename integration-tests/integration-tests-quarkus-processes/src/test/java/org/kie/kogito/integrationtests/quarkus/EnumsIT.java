@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class EnumsTest {
+class EnumsIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

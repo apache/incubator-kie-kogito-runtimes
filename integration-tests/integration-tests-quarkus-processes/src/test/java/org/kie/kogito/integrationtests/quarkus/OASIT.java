@@ -32,7 +32,7 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
-class OASTest {
+class OASIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

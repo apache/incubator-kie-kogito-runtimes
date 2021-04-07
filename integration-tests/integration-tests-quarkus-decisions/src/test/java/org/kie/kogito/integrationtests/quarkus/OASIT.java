@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.greaterThan;
 
 @QuarkusTest
-class OASTest {
+class OASIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

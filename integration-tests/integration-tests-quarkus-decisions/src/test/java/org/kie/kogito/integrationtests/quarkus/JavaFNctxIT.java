@@ -15,37 +15,37 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import java.util.Collections;
-import java.util.Map;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.path.json.config.JsonPathConfig;
 
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
-import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
+import static io.restassured.RestAssured.given;
+import static io.restassured.config.JsonConfig.jsonConfig;
+import static org.hamcrest.Matchers.closeTo;
 
 @QuarkusTest
-class PMMLRegressionTest {
-
-    private static final String BASE_PATH = "/LinReg";
-    private static final String TARGET = "fld4";
+class JavaFNctxIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testEvaluateLinRegResult() {
-        String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
-        testResult(inputData, BASE_PATH, TARGET, 52.5f);
+    void testJavaFNctx() {
+        given().config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL)))
+                .body(" { \"Input\" : 3.14 }")
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/javaFNctx")
+                .then()
+                .statusCode(200)
+                .body("D1", closeTo(new BigDecimal(-1), new BigDecimal(0.1))) // the scope of this test is verify Math.cos() was invoked correctly on the JDK
+                .body("D2", closeTo(new BigDecimal(-1), new BigDecimal(0.1)));
     }
 
-    @Test
-    void testEvaluateLinRegDescriptive() {
-        String inputData = "{\"fld1\":3.0, \"fld2\":2.0, \"fld3\":\"y\"}";
-        final Map<String, Object> expectedResultMap = Collections.singletonMap(TARGET, 52.5f);
-        testDescriptive(inputData, BASE_PATH, TARGET, expectedResultMap);
-    }
 }

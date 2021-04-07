@@ -33,7 +33,7 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-public class ParentSubProcessTest {
+public class ParentSubProcessIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

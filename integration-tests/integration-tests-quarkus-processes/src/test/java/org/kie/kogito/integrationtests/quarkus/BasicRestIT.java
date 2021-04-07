@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class BasicRestTest {
+class BasicRestIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();

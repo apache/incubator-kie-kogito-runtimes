@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.integrationtests.quarkus.infinispan;
+package org.kie.kogito.integrationtests.quarkus;
 
-import javax.inject.Inject;
-
-import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
@@ -28,28 +25,23 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.nullValue;
 
 @QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.class)
-class InfinispanTest {
+@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
+class SignalProcessIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    @Inject
-    RemoteCacheManager cacheManager;
-
     @Test
-    void testPersistence() {
-        String processId = "greetings";
-        String cacheName = processId + "_store";
-
-        String pid = given().contentType(ContentType.JSON)
+    void testProcessSignals() {
+        String pid = given()
+                .contentType(ContentType.JSON)
                 .when()
                 .post("/greetings")
                 .then()
@@ -59,15 +51,36 @@ class InfinispanTest {
                 .extract()
                 .path("id");
 
-        assertThat(cacheManager.getCacheNames()).contains(cacheName);
-        assertThat(cacheManager.getCache(cacheName).containsKey(pid)).isTrue();
-
-        given().contentType(ContentType.JSON)
+        given()
+                .contentType(ContentType.JSON)
                 .when()
-                .delete("/management/processes/{processId}/instances/{processInstanceId}", processId, pid)
+                .body("testvalue")
+                .post("/greetings/{pid}/signalwithdata", pid)
+                .then()
+                .statusCode(200)
+                .body("id", not(emptyOrNullString()))
+                .body("test", is("testvalue"));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/greetings/{pid}", pid)
+                .then()
+                .statusCode(200)
+                .body("test", is("testvalue"));
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/greetings/{pid}/signalwithoutdata", pid)
                 .then()
                 .statusCode(200);
 
-        assertThat(cacheManager.getCache(cacheName).containsKey(pid)).isFalse();
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/greetings/{pid}", pid)
+                .then()
+                .statusCode(404);
     }
 }

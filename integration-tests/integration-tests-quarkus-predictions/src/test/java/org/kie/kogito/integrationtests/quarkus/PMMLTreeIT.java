@@ -15,42 +15,40 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import java.util.HashMap;
+import java.util.Map;
 
-import io.quarkus.test.common.QuarkusTestResource;
+import org.junit.jupiter.api.Test;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 
-import static io.restassured.RestAssured.given;
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testDescriptive;
+import static org.kie.kogito.integrationtests.quarkus.CommonTestUtils.testResult;
 
 @QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class LinkTest {
+class PMMLTreeIT {
+
+    private static final String BASE_PATH = "/SampleMine";
+    private static final String TARGET = "decision";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testLink() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/SimpleLinkTest")
-                .then()
-                .statusCode(201);
+    void testEvaluateSampleMineResult() {
+        String inputData = "{\"temperature\":30.0, \"humidity\":10.0}";
+        testResult(inputData, BASE_PATH, TARGET, "sunglasses");
     }
 
     @Test
-    void testMultipleLink() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/MultipleThrowLinkProcess")
-                .then()
-                .statusCode(201);
+    void testEvaluateSampleMineDescriptive() {
+        String inputData = "{\"temperature\":30.0, \"humidity\":10.0}";
+        final Map<String, Object> expectedResultMap = new HashMap<>();
+        expectedResultMap.put(TARGET, "sunglasses");
+        expectedResultMap.put("weatherdecision", "sunglasses");
+        testDescriptive(inputData, BASE_PATH, TARGET, expectedResultMap);
     }
 
 }

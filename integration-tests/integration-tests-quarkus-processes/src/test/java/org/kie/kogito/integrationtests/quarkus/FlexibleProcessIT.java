@@ -34,98 +34,52 @@ import static org.hamcrest.Matchers.emptyOrNullString;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class AdHocFragmentsTest {
+class FlexibleProcessIT {
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testUserTaskProcess() {
+    void testInstantiateProcess() {
         Map<String, String> params = new HashMap<>();
-        params.put("var1", "Kermit");
-
-        String id = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(params)
-                .post("/AdHocFragments")
-                .then()
-                .statusCode(201)
-                .header("Location", not(emptyOrNullString()))
-                .extract()
-                .path("id");
-
-        String taskId = extractID(given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/AdHocFragments/{pid}/AdHocTask1", id)
-                .then()
-                .statusCode(201)
-                .header("Location", not(emptyOrNullString()))
-                .extract()
-                .header("Location"));
-
-        params = new HashMap<>();
-        params.put("newVar1", "Gonzo");
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(params)
-                .post("/AdHocFragments/{id}/AdHocTask1/{taskId}", id, taskId)
-                .then()
-                .statusCode(200)
-                .body("var1", equalTo("Gonzo"));
-    }
-
-    @Test
-    void testServiceTaskProcess() {
-        Map<String, String> params = new HashMap<>();
-        params.put("var1", "Kermit");
+        params.put("var1", "first");
+        params.put("var2", "second");
 
         String pid = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .body(params)
-                .post("/AdHocFragments")
+                .post("/AdHocProcess")
                 .then()
                 .statusCode(201)
+                .header("Location", not(emptyOrNullString()))
+                .body("id", not(emptyOrNullString()))
+                .body("var1", equalTo("Hello first! Script"))
+                .body("var2", equalTo("second Script 2"))
                 .extract()
                 .path("id");
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/AdHocFragments/{pid}/Service_Task", pid)
+                .get("/AdHocProcess/{pid}", pid)
                 .then()
-                .statusCode(200)
-                .body("var1", equalTo("Hello Kermit 5!"));
+                .statusCode(200);
     }
 
     @Test
-    void testNonAdHocUserTaskProcess() {
+    void testProcessException() {
         Map<String, String> params = new HashMap<>();
-        params.put("var1", "Kermit");
-
-        String pid = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(params)
-                .post("/AdHocFragments")
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("id");
+        params.put("var1", "exception");
+        params.put("var2", "second");
 
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/AdHocFragments/{pid}/Task", pid)
+                .body(params)
+                .post("/AdHocProcess")
                 .then()
-                .statusCode(404);
-    }
-
-    static String extractID(String location) {
-        return location.substring(location.lastIndexOf("/") + 1);
+                .statusCode(500);
     }
 }

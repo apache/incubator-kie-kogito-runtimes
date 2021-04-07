@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.hasEntry;
 
 @QuarkusTest
 @QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
-class ManagementAddOnTest {
+class ManagementAddOnIT {
 
     private static final String HELLO1_NODE = "_3CDC6E61-DCC5-4831-8BBB-417CFF517CB0";
     private static final String GREETINGS = "greetings";

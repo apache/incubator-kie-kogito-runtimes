@@ -1081,18 +1081,28 @@
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${version.surefire.plugin}</version>
-          <configuration>
-            <includes>
-              <include>${tests.failsafe.include}</include>
-            </includes>
-            <excludes>
-              <exclude>${tests.surefire.include}</exclude>
-            </excludes>
-            <systemPropertyVariables>
-              <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
-              <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
-            </systemPropertyVariables>
-          </configuration>
+          <executions>
+            <execution>
+              <id>integration-test</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+              <configuration>
+                <includes>
+                  <include>${tests.failsafe.include}</include>
+                </includes>
+                <excludes>
+                  <exclude>${tests.surefire.include}</exclude>
+                  <exclude>**/Native*</exclude>
+                </excludes>
+                <systemPropertyVariables>
+                  <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
+                  <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
+                </systemPropertyVariables>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
