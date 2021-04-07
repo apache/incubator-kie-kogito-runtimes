@@ -1100,6 +1100,7 @@
                   <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
                   <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
                 </systemPropertyVariables>
+                <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
               </configuration>
             </execution>
           </executions>
@@ -1115,7 +1116,7 @@
             <excludes>
               <exclude>${tests.failsafe.include}</exclude>
             </excludes>
-            <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
             <systemPropertyVariables>
               <apple.awt.UIElement>true</apple.awt.UIElement>
               <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
