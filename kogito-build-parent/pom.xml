@@ -48,6 +48,7 @@
     <!-- container images for testing -->
     <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>jboss/keycloak:${version.org.keycloak}</container.image.keycloak>
+    <container.image.kafka>confluentinc/cp-kafka:${version.org.confluent.kafka}</container.image.kafka>
 
     <maven.compiler.release>8</maven.compiler.release>
     <jacoco.agent.argLine/>
@@ -174,7 +175,6 @@
     <version.org.infinispan.starter>2.3.3.Final</version.org.infinispan.starter>
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
     <version.org.jboss.resteasy>4.5.9.Final</version.org.jboss.resteasy>
-    <version.org.jboss.resteasy.spi.test>4.5.9.Final</version.org.jboss.resteasy.spi.test> <!-- align codegen test to target platforms, which use Resteasy -->
     <version.org.json>20200518</version.org.json>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.junit.minor>7.0</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->
@@ -184,7 +184,8 @@
     <version.org.junit.platform>1.${version.org.junit.minor}</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
     <version.org.keycloak>11.0.3</version.org.keycloak>
-    <version.org.kie7>7.52.0.t20210322</version.org.kie7>
+    <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
+    <version.org.kie7>7.52.0.Beta1</version.org.kie7>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mongo>4.1.0</version.org.mongo>
     <version.org.mvel>2.4.12.Final</version.org.mvel>
@@ -193,13 +194,13 @@
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
     <version.org.springframework>5.2.9.RELEASE</version.org.springframework>
-    <version.org.springframework.kafka>2.5.6.RELEASE</version.org.springframework.kafka>
     <version.org.springdoc>1.5.2</version.org.springdoc>
     <version.org.testcontainers>1.15.1</version.org.testcontainers>
     <version.org.xmlunit>2.2.1</version.org.xmlunit>
     <version.io.netty>4.1.52.Final</version.io.netty>
     <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
+    <version.io.vertx>3.9.2</version.io.vertx>
     <version.xerces>2.11.0</version.xerces>
   </properties>
 
@@ -709,22 +710,14 @@
         <version>${version.io.jredisearch}</version>
       </dependency>
 
+      <!-- PostgreSQL -->
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-pg-client</artifactId>
+        <version>${version.io.vertx}</version>
+      </dependency>
+
       <!-- spring related -->
-      <dependency>
-        <groupId>org.springframework.kafka</groupId>
-        <artifactId>spring-kafka</artifactId>
-        <version>${version.org.springframework.kafka}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>resteasy-spring-boot-starter</artifactId>
-        <version>${version.org.jboss.resteasy}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${version.org.springframework}</version>
-      </dependency>
       <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
@@ -892,6 +885,12 @@
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
         <version>${version.org.jboss.resteasy}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.resteasy</groupId>

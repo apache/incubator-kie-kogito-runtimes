@@ -93,11 +93,12 @@
           <configuration>
             <streamLogs>true</streamLogs>
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <settingsFile>src/it/settings.xml</settingsFile>
             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+            <useLocalRepository>true</useLocalRepository>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             <properties>
               <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
+              <container.image.kafka>${container.image.kafka}</container.image.kafka>
             </properties>
           </configuration>
         </plugin>

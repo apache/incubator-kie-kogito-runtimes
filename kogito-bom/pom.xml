@@ -432,6 +432,19 @@
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>postgresql-persistence-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>postgresql-persistence-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>filesystem-persistence-addon</artifactId>
@@ -1046,6 +1059,24 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>trusty-storage-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>trusty-storage-infinispan</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1598,6 +1629,23 @@
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-common</artifactId>
+        <version>${project.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-serverless-workflow</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-serverless-workflow</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-serverless-workflow</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>

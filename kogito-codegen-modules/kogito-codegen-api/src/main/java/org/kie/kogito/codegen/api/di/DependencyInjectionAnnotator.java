@@ -17,7 +17,6 @@ package org.kie.kogito.codegen.api.di;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
@@ -41,6 +40,16 @@ import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
  * </ul>
  */
 public interface DependencyInjectionAnnotator {
+
+    /**
+     * Annotates the given node with an annotation to produce a DI instance of the node target class, e.g. Produces,
+     * Bean. This is used by configuration classes in the DI, like a factory method.
+     * 
+     * @param node
+     * @param isDefault indicates if the bean instance is created only if there are not any other bean of this type
+     *        already declared in the application, e.g DefaultBean
+     */
+    <T extends NodeWithAnnotations<?>> T withProduces(T node, boolean isDefault);
 
     /**
      * Annotates given node with name annotation e.g. Named, Qualifier
@@ -236,23 +245,6 @@ public interface DependencyInjectionAnnotator {
      * @param node node to be annotated
      */
     <T extends NodeWithAnnotations<?>> T withEagerStartup(T node);
-
-    /**
-     * Check if provided node has one of REST annotation
-     *
-     * @param node
-     * @param <T>
-     * @return
-     */
-    <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node);
-
-    /**
-     * Gets the URI path template from the framework specific annotation
-     *
-     * @param md the method declaration
-     * @return The URI path template value if exists
-     */
-    <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node);
 
     /**
      * Annotates given node with factory class annotations e.g. Configuration for Spring Boot

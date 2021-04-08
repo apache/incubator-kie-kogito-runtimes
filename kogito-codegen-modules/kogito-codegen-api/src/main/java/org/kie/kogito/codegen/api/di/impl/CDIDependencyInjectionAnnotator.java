@@ -16,13 +16,9 @@
 
 package org.kie.kogito.codegen.api.di.impl;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -36,6 +32,15 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 
 public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnotator {
+
+    @Override
+    public <T extends NodeWithAnnotations<?>> T withProduces(T node, boolean isDefault) {
+        node.addAndGetAnnotation("javax.enterprise.inject.Produces");
+        if (isDefault) {
+            node.addAndGetAnnotation("io.quarkus.arc.DefaultBean");
+        }
+        return node;
+    }
 
     @Override
     public <T extends NodeWithAnnotations<?>> T withNamed(T node, String name) {
@@ -159,19 +164,6 @@ public class CDIDependencyInjectionAnnotator implements DependencyInjectionAnnot
     public <T extends NodeWithAnnotations<?>> T withEagerStartup(T node) {
         node.addAnnotation("io.quarkus.runtime.Startup");
         return node;
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> boolean isRestAnnotated(T node) {
-        return Stream.of("POST", "GET", "PUT", "DELETE")
-                .map(node::getAnnotationByName)
-                .anyMatch(Optional::isPresent);
-    }
-
-    @Override
-    public <T extends NodeWithAnnotations<?>> Optional<String> getEndpointValue(T node) {
-        Optional<AnnotationExpr> path = node.getAnnotationByName("Path");
-        return path.map(annotationExpr -> annotationExpr.asSingleMemberAnnotationExpr().getMemberValue().asStringLiteralExpr().asString());
     }
 
     @Override
