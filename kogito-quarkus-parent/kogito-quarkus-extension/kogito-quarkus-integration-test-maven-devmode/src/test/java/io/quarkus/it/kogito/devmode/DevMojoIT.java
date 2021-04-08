@@ -106,11 +106,12 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
             additionalArguments.add(String.format("-D%s=%s", PROPERTY_MAVEN_REPO_LOCAL, MAVEN_REPO_LOCAL));
         }
         if (MAVEN_SETTINGS != null) {
-            /* Invoker would fail if the received settings.xml file did not exist.
-            *  That can happen when ${session.request.userSettingsFile.path} is passed as value for maven.settings
-            *  property from the pom.xml and at the same time user does not have settings.xml in ~/.m2/ nor they provided
-            *  specific settings.xml using -s argument.
-            */
+            /*
+             * Invoker would fail if the received settings.xml file did not exist.
+             * That can happen when ${session.request.userSettingsFile.path} is passed as value for maven.settings
+             * property from the pom.xml and at the same time user does not have settings.xml in ~/.m2/ nor they provided
+             * specific settings.xml using -s argument.
+             */
             if (new File(MAVEN_SETTINGS).exists()) {
                 additionalArguments.add(String.format("-s %s", MAVEN_SETTINGS));
             }
