@@ -355,18 +355,10 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             return Optional.empty();
         }
 
-        if (context().getAddonsConfig().usePrometheusMonitoring()) {
-            String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                    operationalDashboardDrlTemplate,
-                    query.getEndpointName(),
-                    context().getAddonsConfig().useTracing());
-            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
-        }
-
         if (context().hasREST()) {
             if (context().getAddonsConfig().usePrometheusMonitoring()) {
                 String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                        operationalDashboardDmnTemplate,
+                        operationalDashboardDrlTemplate,
                         query.getEndpointName(),
                         context().getAddonsConfig().useTracing());
                 generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
