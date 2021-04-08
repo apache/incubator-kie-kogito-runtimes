@@ -1530,6 +1530,44 @@ limitations under the License.
         <impsort.goal>check</impsort.goal>
       </properties>
     </profile>
+
+    <profile>
+      <!-- Performs the quick build: validates formatting, compile, run unit tests and install -->
+      <id>quick-test</id>
+      <activation>
+        <property>
+          <name>quickly</name>
+        </property>
+      </activation>
+      <properties>
+        <formatter.skip>false</formatter.skip>
+        <formatter.goal>validate</formatter.goal>
+        <impsort.goal>check</impsort.goal>
+        <skipITs>true</skipITs>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+      <build>
+        <defaultGoal>clean install</defaultGoal>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-invoker-plugin</artifactId>
+              <configuration>
+                <skipInstallation>true</skipInstallation>
+                <skipInvocation>true</skipInvocation>
+              </configuration>
+            </plugin>
+            <plugin>
+              <artifactId>maven-archetype-plugin</artifactId>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
     <!--
       Creates JaCoCo XML reports and invokes the Sonar scanner, which uploads code quality data into the SonarCloud.
     -->

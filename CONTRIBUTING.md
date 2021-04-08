@@ -161,7 +161,11 @@ This build skipped all the tests:
 - `-DskipITs` skips integration tests
 
 By removing the flags, you will run the corresponding tests. 
-It will take much longer to build but will give you more guarantees on your code. 
+It will take much longer to build but will give you more guarantees on your code.
+
+Alternatively, you can invoke `./mvnw clean install -Dquickly` from the root directory.
+It will perform the basic formatting validation and will run all the unit tests.
+Use this command for quick checks.
 
 ### Known Issues
 
