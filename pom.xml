@@ -123,8 +123,7 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>kogito-ide-config</module>
-        <module>kogito-build-parent</module>
+        <module>kogito-build</module>
         <module>kogito-bom</module>
         <module>kogito-test-utils</module>
         <module>api</module>
@@ -150,7 +149,7 @@
         </property>
       </activation>
       <modules>
-        <module>kogito-build-parent</module>
+        <module>kogito-build</module>
         <module>kogito-bom</module>
         <module>api</module>
         <module>drools</module>
@@ -166,6 +165,4 @@
       </modules>
     </profile>
   </profiles>
-
-
 </project>
