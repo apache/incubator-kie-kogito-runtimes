@@ -78,13 +78,23 @@ public class KogitoQuarkusResourceUtils {
         // scan and parse paths
         AppPaths appPaths = AppPaths.fromQuarkus(paths);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        return QuarkusKogitoBuildContext.builder()
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationProperties(appPaths.getResourceFiles())
                 .withClassLoader(classLoader)
                 .withClassAvailabilityResolver(className -> classAvailabilityResolver(classLoader, index, className))
                 .withAppPaths(appPaths)
                 .withGAV(new KogitoGAV(appArtifact.getGroupId(), appArtifact.getArtifactId(), appArtifact.getVersion()))
                 .build();
+
+        if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_REST)) {
+            LOGGER.info("Disabling REST generation because class '" + QuarkusKogitoBuildContext.QUARKUS_REST + "' is not available");
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+        }
+        if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_DI)) {
+            LOGGER.info("Disabling dependency injection generation because class '" + QuarkusKogitoBuildContext.QUARKUS_DI + "' is not available");
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_DI, "false");
+        }
+        return context;
     }
 
     /**
