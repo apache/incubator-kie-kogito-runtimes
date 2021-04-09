@@ -132,11 +132,13 @@ public class ProcessesAssetsProcessor {
                 runTimeConfiguration,
                 liveReload.isLiveReload());
 
-        Map<String, byte[]> generatedClasses = new HashMap<>();
-        generatedKogitoClasses.forEach(g -> generatedClasses.putAll(g.getGeneratedClasses()));
+        Map<String, byte[]> classes = new HashMap<>();
+        for (KogitoGeneratedClassesBuildItem generatedKogitoClass : generatedKogitoClasses) {
+            classes.putAll(generatedKogitoClass.getGeneratedClasses());
+        }
 
         // Json schema files
-        generatedFiles.addAll(generateJsonSchema(context, aggregatedIndex, generatedClasses));
+        generatedFiles.addAll(generateJsonSchema(context, aggregatedIndex, classes));
 
         // Write files to disk
         dumpFilesToDisk(context.getAppPaths(), generatedFiles);
