@@ -151,6 +151,7 @@
       <modules>
         <module>kogito-build</module>
         <module>kogito-bom</module>
+        <module>kogito-test-utils</module>
         <module>api</module>
         <module>drools</module>
         <module>jbpm</module>
