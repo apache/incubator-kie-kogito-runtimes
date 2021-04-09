@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <relativePath>../kogito-build-parent/pom.xml</relativePath>
   </parent>
 
@@ -35,6 +35,7 @@
     <module>kogito-quarkus-rules-extension</module>
     <module>kogito-quarkus-decisions-extension</module>
     <module>kogito-quarkus-predictions-extension</module>
+    <module>kogito-quarkus-serverless-workflow-extension</module>
   </modules>
 
   <build>
