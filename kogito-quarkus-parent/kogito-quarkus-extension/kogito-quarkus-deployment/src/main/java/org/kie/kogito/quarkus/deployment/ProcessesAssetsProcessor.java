@@ -16,15 +16,15 @@
 package org.kie.kogito.quarkus.deployment;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -43,6 +43,7 @@ import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
@@ -59,7 +60,6 @@ import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -132,8 +132,11 @@ public class ProcessesAssetsProcessor {
                 runTimeConfiguration,
                 liveReload.isLiveReload());
 
+        Map<String, byte[]> generatedClasses = new HashMap<>();
+        generatedKogitoClasses.forEach(g -> generatedClasses.putAll(g.getGeneratedClasses()));
+
         // Json schema files
-        generatedFiles.addAll(generateJsonSchema(context, aggregatedIndex));
+        generatedFiles.addAll(generateJsonSchema(context, aggregatedIndex, generatedClasses));
 
         // Write files to disk
         dumpFilesToDisk(context.getAppPaths(), generatedFiles);
@@ -226,27 +229,22 @@ public class ProcessesAssetsProcessor {
         }
     }
 
-    private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, IndexView index) throws IOException {
-        Path tempClassFolder = context.getAppPaths().getFirstProjectPath().resolve(KogitoQuarkusResourceUtils.TEMP_CLASS_FOLDER);
+    private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, IndexView index, Map<String, byte[]> generatedClasses) throws IOException {
+        ClassLoader cl = new InMemoryClassLoader(context.getClassLoader(), generatedClasses);
 
-        URL[] urls = { tempClassFolder.toUri().toURL() };
+        Collection<AnnotationInstance> annotations =
+                index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
 
-        try (URLClassLoader cl = new URLClassLoader(urls, context.getClassLoader())) {
+        Stream<Class<?>> stream = annotations.stream()
+                .map(ann -> loadClassFromAnnotation(ann, cl))
+                .filter(Optional::isPresent)
+                .map(Optional::get);
 
-            Collection<AnnotationInstance> annotations =
-                    index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
+        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
+                .withGenSchemaPredicate(x -> true)
+                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
 
-            Stream<Class<?>> stream = annotations.stream()
-                    .map(ann -> loadClassFromAnnotation(ann, cl))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get);
-
-            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
-                    .withGenSchemaPredicate(x -> true)
-                    .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
-
-            return jsonSchemaGenerator.generate();
-        }
+        return jsonSchemaGenerator.generate();
     }
 
     private Optional<Class<?>> loadClassFromAnnotation(AnnotationInstance annotationInstance, ClassLoader classLoader) {

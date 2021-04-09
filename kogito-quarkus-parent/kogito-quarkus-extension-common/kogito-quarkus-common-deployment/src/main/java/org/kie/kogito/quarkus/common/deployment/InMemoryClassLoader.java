@@ -18,25 +18,20 @@ package org.kie.kogito.quarkus.common.deployment;
 import java.util.Collections;
 import java.util.Map;
 
-import org.jboss.jandex.IndexView;
+public class InMemoryClassLoader extends ClassLoader {
+    private Map<String, byte[]> classes;
 
-import io.quarkus.builder.item.MultiBuildItem;
-
-public final class KogitoGeneratedClassesBuildItem extends MultiBuildItem {
-
-    private final IndexView indexedClasses;
-    private final Map<String, byte[]> generatedClasses;
-
-    public KogitoGeneratedClassesBuildItem(IndexView indexedClasses, Map<String, byte[]> generatedClasses) {
-        this.indexedClasses = indexedClasses;
-        this.generatedClasses = Collections.unmodifiableMap(generatedClasses);
+    public InMemoryClassLoader(ClassLoader parent, Map<String, byte[]> classes) {
+        super(parent);
+        this.classes = Collections.unmodifiableMap(classes);
     }
 
-    public IndexView getIndexedClasses() {
-        return indexedClasses;
-    }
-
-    public Map<String, byte[]> getGeneratedClasses() {
-        return generatedClasses;
+    @Override
+    protected Class<?> findClass(final String name) throws ClassNotFoundException {
+        byte[] byteClass = classes.remove(name);
+        if (byteClass != null) {
+            return defineClass(name, byteClass, 0, byteClass.length);
+        }
+        return super.findClass(name);
     }
 }

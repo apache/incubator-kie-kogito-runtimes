@@ -51,7 +51,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class KogitoQuarkusResourceUtils {
 
-    public static final String TEMP_CLASS_FOLDER = "temp_class_folder";
     static final String HOT_RELOAD_SUPPORT_PACKAGE = "org.kie.kogito.app";
     static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
     static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
@@ -180,8 +179,6 @@ public class KogitoQuarkusResourceUtils {
                         break;
                     }
                 }
-            } else {
-                writeClassInTempForPostProcessing(appPaths, className, data);
             }
 
             buildItems.add(new GeneratedBeanBuildItem(className, data));
@@ -194,16 +191,6 @@ public class KogitoQuarkusResourceUtils {
 
         return buildItems;
     }
-
-    private static void writeClassInTempForPostProcessing(AppPaths appPaths, String className, byte[] data) throws IOException {
-        Path tmpFolder = appPaths.getFirstProjectPath().resolve(TEMP_CLASS_FOLDER);
-        if (Files.notExists(tmpFolder)) {
-            Files.createDirectories(tmpFolder);
-        }
-        Path path = pathOf(tmpFolder.toString(), className + ".class");
-        Files.write(path, data);
-    }
-
 
     public static String toClassName(String sourceName) {
         if (sourceName.startsWith("./")) {
