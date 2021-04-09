@@ -59,6 +59,7 @@ import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -226,9 +227,9 @@ public class ProcessesAssetsProcessor {
     }
 
     private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, IndexView index) throws IOException {
-        Path targetClasses = getTargetClassesPath(context.getAppPaths());
+        Path tempClassFolder = context.getAppPaths().getFirstProjectPath().resolve(KogitoQuarkusResourceUtils.TEMP_CLASS_FOLDER);
 
-        URL[] urls = { targetClasses.toUri().toURL() };
+        URL[] urls = { tempClassFolder.toUri().toURL() };
 
         try (URLClassLoader cl = new URLClassLoader(urls, context.getClassLoader())) {
 
