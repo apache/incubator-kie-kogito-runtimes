@@ -15,15 +15,15 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryClassLoader extends ClassLoader {
-    private Map<String, byte[]> classes;
+    private Map<String, byte[]> classes = new HashMap<>();
 
     public InMemoryClassLoader(ClassLoader parent, Map<String, byte[]> classes) {
         super(parent);
-        this.classes = Collections.unmodifiableMap(classes);
+        this.classes.putAll(classes);
     }
 
     @Override
