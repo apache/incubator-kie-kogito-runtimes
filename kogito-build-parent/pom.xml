@@ -1532,11 +1532,47 @@ limitations under the License.
     </profile>
 
     <profile>
-      <!-- Performs the quick build: validates formatting, compile, run unit tests and install -->
-      <id>quick-test</id>
+      <!-- Performs the quick build: all plugins deactivated -->
+      <id>quick-build</id>
       <activation>
         <property>
           <name>quickly</name>
+        </property>
+      </activation>
+      <properties>
+        <formatter.skip>true</formatter.skip>
+        <skipITs>true</skipITs>
+        <skipTests>true</skipTests>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+      <build>
+        <defaultGoal>clean install</defaultGoal>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-invoker-plugin</artifactId>
+              <configuration>
+                <skipInstallation>true</skipInstallation>
+                <skipInvocation>true</skipInvocation>
+              </configuration>
+            </plugin>
+            <plugin>
+              <artifactId>maven-archetype-plugin</artifactId>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <!-- Performs the quick test: only formatting validation and unit tests enabled -->
+      <id>quick-test</id>
+      <activation>
+        <property>
+          <name>quickTests</name>
         </property>
       </activation>
       <properties>
