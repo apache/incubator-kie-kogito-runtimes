@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.keycloak.KeycloakPrincipal;
 import org.kie.kogito.svg.ProcessSVGException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -74,7 +77,7 @@ public class SpringBootDataIndexClient implements DataIndexClient {
             String requestJson = objectMapper.writeValueAsString(singletonMap("query", query));
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.add("Authorization", authHeader);
+            headers.add("Authorization", getToken(authHeader));
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(requestJson, headers);
             ResponseEntity<String> result = restTemplate.postForEntity(dataIndexHttpURL + "/graphql",
                     request, String.class);
@@ -96,5 +99,19 @@ public class SpringBootDataIndexClient implements DataIndexClient {
         } else {
             return emptyList();
         }
+    }
+
+    protected String getToken(String authHeader) {
+        try {
+            Class.forName("org.springframework.security.core.context.SecurityContextHolder");
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+
+            if (securityContext != null && securityContext.getAuthentication() != null) {
+                return "Bearer " + ((KeycloakPrincipal) securityContext.getAuthentication().getPrincipal()).getKeycloakSecurityContext().getTokenString();
+            }
+        } catch (ClassNotFoundException e) {
+            LOGGER.debug("Security Disabled: just propagating received authentication header");
+        }
+        return authHeader;
     }
 }

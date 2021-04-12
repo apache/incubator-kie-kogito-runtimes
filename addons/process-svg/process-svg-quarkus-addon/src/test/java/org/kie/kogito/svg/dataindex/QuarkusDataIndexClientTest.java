@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.security.credential.TokenCredential;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -30,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 public class QuarkusDataIndexClientTest {
 
@@ -54,7 +58,7 @@ public class QuarkusDataIndexClientTest {
             "  }\n" +
             "}";
 
-    QuarkusDataIndexClient client = new QuarkusDataIndexClient(null, null);
+    QuarkusDataIndexClient client = new QuarkusDataIndexClient(null, null, null);
 
     @Test
     public void testGetNodeInstancesFromResponse() {
@@ -79,7 +83,7 @@ public class QuarkusDataIndexClientTest {
 
     @Test
     public void testSetupMalformedURL() {
-        QuarkusDataIndexClient testClient = new QuarkusDataIndexClient("malformedURL", null);
+        QuarkusDataIndexClient testClient = new QuarkusDataIndexClient("malformedURL", null, null);
         assertThrows(MalformedURLException.class, () -> testClient.setup());
     }
 
@@ -110,4 +114,18 @@ public class QuarkusDataIndexClientTest {
         assertTrue(webClientOptions.isSsl());
     }
 
+    @Test
+    public void testGetTokenWithSecurityIdentity() {
+        String token = "testToken";
+        TokenCredential tokenCredential = new TokenCredential(token, "Bearer");
+        SecurityIdentity identity = mock(SecurityIdentity.class);
+        lenient().when(identity.getCredential(TokenCredential.class)).thenReturn(tokenCredential);
+        QuarkusDataIndexClient testClient = new QuarkusDataIndexClient(null, identity, null);
+        assertThat(testClient.getToken("")).isEqualTo("Bearer " + token);
+    }
+
+    @Test
+    public void testGetTokenWithoutSecurityIdentity() {
+        assertThat(client.getToken("")).isEmpty();
+    }
 }

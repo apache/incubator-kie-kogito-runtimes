@@ -21,11 +21,16 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
 import org.kie.kogito.svg.ProcessSVGException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -104,8 +110,32 @@ public class SpringBootDataIndexClientTest {
 
     @Test
     public void testGetNodeInstancesFromProcessInstance() {
-
         when(restTemplate.postForEntity(eq("data-indexURL/graphql"), any(HttpEntity.class), eq(String.class))).thenThrow(HttpClientErrorException.NotFound.class);
         assertThatThrownBy(() -> client.getNodeInstancesFromProcessInstance(PROCESS_INSTANCE_ID, "authHeader")).isInstanceOf(ProcessSVGException.class);
+    }
+
+    @Test
+    public void testGetTokenWithSecurityContext() {
+        String token = "testToken";
+        SecurityContext securityContextMock = mock(SecurityContext.class);
+        Authentication authenticationMock = mock(Authentication.class);
+        KeycloakPrincipal principalMock = mock(KeycloakPrincipal.class);
+        KeycloakSecurityContext keycloakSecurityContextMock = mock(KeycloakSecurityContext.class);
+
+        // SecurityContextHolder.setContext(securityContextMock);
+        when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        when(authenticationMock.getPrincipal()).thenReturn(principalMock);
+        when(principalMock.getKeycloakSecurityContext()).thenReturn(keycloakSecurityContextMock);
+        when(keycloakSecurityContextMock.getTokenString()).thenReturn(token);
+
+        SecurityContextHolder.setContext(securityContextMock);
+        client.initialize();
+        assertThat(client.getToken("")).isEqualTo("Bearer " + token);
+    }
+
+    @Test
+    public void testGetTokenWithoutSecurityContext() {
+        String authHeader = "Bearer testToken";
+        assertThat(client.getToken(authHeader)).isEqualTo(authHeader);
     }
 }
