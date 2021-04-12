@@ -52,6 +52,8 @@ public class SpringBootDataIndexClient implements DataIndexClient {
     private RestTemplate restTemplate;
     private ObjectMapper objectMapper;
 
+    private boolean isKeycloakAdapterAvailable = false;
+
     @Autowired
     public SpringBootDataIndexClient(
             @Value("${kogito.dataindex.http.url:http://localhost:8180}") String dataIndexHttpURL,
@@ -68,6 +70,21 @@ public class SpringBootDataIndexClient implements DataIndexClient {
             restTemplate = new RestTemplate();
             LOGGER.debug("No RestTemplate found, creating a default one");
         }
+        try {
+            Class.forName("org.springframework.security.core.context.SecurityContextHolder");
+            Class.forName("org.keycloak.KeycloakPrincipal");
+            setKeycloakAdapterAvailable(true);
+        } catch (ClassNotFoundException exception) {
+            LOGGER.debug("No Keycloak Adapter available, continue just propagating received authorization header");
+        }
+    }
+
+    public boolean isKeycloakAdapterAvailable() {
+        return isKeycloakAdapterAvailable;
+    }
+
+    public void setKeycloakAdapterAvailable(boolean keycloakAdapterAvailable) {
+        isKeycloakAdapterAvailable = keycloakAdapterAvailable;
     }
 
     @Override
@@ -77,7 +94,7 @@ public class SpringBootDataIndexClient implements DataIndexClient {
             String requestJson = objectMapper.writeValueAsString(singletonMap("query", query));
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.add("Authorization", getToken(authHeader));
+            headers.add("Authorization", getAuthHeader(authHeader));
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity(requestJson, headers);
             ResponseEntity<String> result = restTemplate.postForEntity(dataIndexHttpURL + "/graphql",
                     request, String.class);
@@ -101,16 +118,14 @@ public class SpringBootDataIndexClient implements DataIndexClient {
         }
     }
 
-    protected String getToken(String authHeader) {
-        try {
-            Class.forName("org.springframework.security.core.context.SecurityContextHolder");
+    protected String getAuthHeader(String authHeader) {
+        if (isKeycloakAdapterAvailable()) {
             SecurityContext securityContext = SecurityContextHolder.getContext();
-
-            if (securityContext != null && securityContext.getAuthentication() != null) {
+            if (securityContext != null &&
+                    securityContext.getAuthentication() != null &&
+                    securityContext.getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
                 return "Bearer " + ((KeycloakPrincipal) securityContext.getAuthentication().getPrincipal()).getKeycloakSecurityContext().getTokenString();
             }
-        } catch (ClassNotFoundException e) {
-            LOGGER.debug("Security Disabled: just propagating received authentication header");
         }
         return authHeader;
     }

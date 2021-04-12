@@ -115,27 +115,27 @@ public class SpringBootDataIndexClientTest {
     }
 
     @Test
-    public void testGetTokenWithSecurityContext() {
+    public void testAuthHeaderWithSecurityContext() {
         String token = "testToken";
         SecurityContext securityContextMock = mock(SecurityContext.class);
         Authentication authenticationMock = mock(Authentication.class);
         KeycloakPrincipal principalMock = mock(KeycloakPrincipal.class);
         KeycloakSecurityContext keycloakSecurityContextMock = mock(KeycloakSecurityContext.class);
 
-        // SecurityContextHolder.setContext(securityContextMock);
         when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
         when(authenticationMock.getPrincipal()).thenReturn(principalMock);
         when(principalMock.getKeycloakSecurityContext()).thenReturn(keycloakSecurityContextMock);
         when(keycloakSecurityContextMock.getTokenString()).thenReturn(token);
 
         SecurityContextHolder.setContext(securityContextMock);
-        client.initialize();
-        assertThat(client.getToken("")).isEqualTo("Bearer " + token);
+        client.setKeycloakAdapterAvailable(true);
+        assertThat(client.getAuthHeader("")).isEqualTo("Bearer " + token);
     }
 
     @Test
-    public void testGetTokenWithoutSecurityContext() {
+    public void testAuthHeaderWithoutKeycloakSecurityContext() {
         String authHeader = "Bearer testToken";
-        assertThat(client.getToken(authHeader)).isEqualTo(authHeader);
+        client.setKeycloakAdapterAvailable(false);
+        assertThat(client.getAuthHeader(authHeader)).isEqualTo(authHeader);
     }
 }
