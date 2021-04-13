@@ -27,7 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 
-public class DataIndexWireMockSpringBootTestResource extends ConditionalSpringBootTestResource {
+public class DataIndexWireMockSpringBootTestResource extends ConditionalSpringBootTestResource<DataIndexWireMockSpringBootTestResource.KogitoDataIndexWiremockTestResource> {
 
     public static final String KOGITO_DATA_INDEX_URL_WIREMOCK_PROPERTY = "kogito.dataindex.http.url";
     public static KogitoDataIndexWiremockTestResource testResource = new KogitoDataIndexWiremockTestResource();
