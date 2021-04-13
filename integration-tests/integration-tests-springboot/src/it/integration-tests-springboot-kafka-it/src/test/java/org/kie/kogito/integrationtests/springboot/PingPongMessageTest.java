@@ -102,7 +102,7 @@ public class PingPongMessageTest extends BaseRestTest {
 
 
     private void validateSubProcess(){
-        await().atMost(Duration.ofSeconds(5))
+        await().atMost(Duration.ofSeconds(10))
                 .untilAsserted(() -> given()
                         .contentType(ContentType.JSON)
                         .when()
