@@ -206,7 +206,7 @@ public class IncrementalRuleCodegenTest {
                                 Paths.get("src/test/resources"),
                                 new File("src/test/resources/org/kie/kogito/codegen/unit/RuleUnitQuery.drl")));
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
-        assertEquals(2, generatedFiles.stream().filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE)).count());
+        assertEquals(3, generatedFiles.stream().filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE)).count());
     }
 
     @ParameterizedTest

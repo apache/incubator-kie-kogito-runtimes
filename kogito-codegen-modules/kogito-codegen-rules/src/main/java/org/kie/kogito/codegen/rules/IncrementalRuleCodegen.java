@@ -114,7 +114,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return new IncrementalRuleCodegen(context, resources);
     }
 
-    private static final String operationalDashboardDmnTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String operationalDashboardDrlTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
     private final Collection<Resource> resources;
     private final List<RuleUnitGenerator> ruleUnitGenerators = new ArrayList<>();
 
@@ -318,6 +319,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     }
 
     private List<String> generateQueriesEndpoint(List<DroolsError> errors, List<GeneratedFile> generatedFiles, RuleUnitHelper ruleUnitHelper, RuleUnitGenerator ruleUnit) {
+
         List<QueryEndpointGenerator> queries = ruleUnit.queries();
         if (queries.isEmpty()) {
             return Collections.emptyList();
@@ -325,6 +327,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         if (!context().hasDI()) {
             generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generateFile(DTO_TYPE));
+        }
+        if (context().getAddonsConfig().useMonitoring()) {
+            String dashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
+                    domainDashboardDrlTemplate,
+                    ruleUnit.typeName(),
+                    context().getAddonsConfig().useTracing());
+            generatedFiles.addAll(DashboardGeneratedFileUtils.domain(dashboard, ruleUnit.typeName() + ".json"));
         }
 
         return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
@@ -344,7 +353,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private Optional<String> generateQueryEndpoint(List<DroolsError> errors, List<GeneratedFile> generatedFiles, QueryEndpointGenerator query) {
         if (context().getAddonsConfig().usePrometheusMonitoring()) {
             String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                    operationalDashboardDmnTemplate,
+                    operationalDashboardDrlTemplate,
                     query.getEndpointName(),
                     context().getAddonsConfig().useTracing());
             generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
