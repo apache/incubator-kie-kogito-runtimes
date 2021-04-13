@@ -21,9 +21,13 @@ public class KogitoGAV {
 
     public static final KogitoGAV EMPTY_GAV = new KogitoGAV("", "", "");
 
-    private final String groupId;
-    private final String artifactId;
-    private final String version;
+    protected String groupId;
+    protected String artifactId;
+    protected String version;
+
+    protected KogitoGAV() {
+        // for serialization
+    }
 
     public KogitoGAV(final String groupId,
             final String artifactId,
