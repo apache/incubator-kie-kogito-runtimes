@@ -10,6 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>integration-tests-quarkus-processes-postgresql</artifactId>
+  <name>Kogito :: Integration Tests :: Processes :: Persistence :: PostgreSQL</name>
 
   <dependencies>
     <dependency>

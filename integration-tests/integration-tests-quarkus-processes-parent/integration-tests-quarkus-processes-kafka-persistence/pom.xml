@@ -9,17 +9,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>integration-tests-quarkus-processes-mongodb</artifactId>
-  <name>Kogito :: Integration Tests :: Processes :: Persistence :: MongoDB</name>
+  <artifactId>integration-tests-quarkus-processes-kafka-persistence</artifactId>
+  <name>Kogito :: Integration Tests :: Processes :: Persistence :: Kafka</name>
 
   <dependencies>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-mongodb-client</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>mongodb-persistence-addon</artifactId>
+      <artifactId>kafka-persistence-addon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -83,6 +79,7 @@
           </excludes>
           <systemProperties>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+            <container.image.kafka>${container.image.kafka}</container.image.kafka>
           </systemProperties>
         </configuration>
         <executions>
@@ -100,6 +97,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
