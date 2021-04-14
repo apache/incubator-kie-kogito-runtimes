@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.protostream.BaseMarshaller;
-import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -40,10 +38,10 @@ public class CacheProcessInstances implements MutableProcessInstances {
     private ProcessInstanceMarshaller marshaller;
     private org.kie.kogito.process.Process<?> process;
 
-    public CacheProcessInstances(Process<?> process, RemoteCacheManager cacheManager, String templateName, String proto, BaseMarshaller<?>... marshallers) {
+    public CacheProcessInstances(Process<?> process, RemoteCacheManager cacheManager, String templateName) {
         this.process = process;
         this.cache = cacheManager.administration().getOrCreateCache(process.id() + "_store", ignoreNullOrEmpty(templateName));
-        this.marshaller = new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers));
+        this.marshaller = new ProcessInstanceMarshaller();
     }
 
     @Override

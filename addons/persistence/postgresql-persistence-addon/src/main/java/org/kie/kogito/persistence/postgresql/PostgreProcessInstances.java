@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.drools.core.util.IoUtils;
-import org.infinispan.protostream.BaseMarshaller;
-import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -62,14 +60,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private final boolean autoDDL;
     private final Long queryTimeoutMillis;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
-            String proto,
-            BaseMarshaller<?>... marshallers) {
+    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis) {
         this.process = process;
         this.client = client;
         this.autoDDL = autoDDL;
         this.queryTimeoutMillis = queryTimeoutMillis;
-        this.marshaller = new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers));
+        this.marshaller = new ProcessInstanceMarshaller();
         init();
     }
 

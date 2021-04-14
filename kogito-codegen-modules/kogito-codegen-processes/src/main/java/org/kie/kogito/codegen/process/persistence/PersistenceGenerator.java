@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.infinispan.protostream.FileDescriptorSource;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -48,6 +49,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -55,10 +57,11 @@ import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.CatchClause;
 import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class PersistenceGenerator extends AbstractGenerator {
@@ -209,7 +212,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
 
-        Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
+        Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName());
 
         List<String> variableMarshallers = new ArrayList<>();
 
@@ -241,43 +244,47 @@ public class PersistenceGenerator extends AbstractGenerator {
                             marshallerClazz.toString()));
                 });
             }
-        }
+            // we build the marshaller for protostream
+            TemplatedGenerator generator = TemplatedGenerator.builder().withTemplateBasePath("/class-templates/persistence/")
+                    .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                    .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
+                    .build(context(), "ProtostreamObjectMarshaller");
+            CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
+            String packageName = parsedClazzFile.getPackageDeclaration().map(pd -> pd.getName().toString()).orElse("");
+            ClassOrInterfaceDeclaration clazz = parsedClazzFile.findFirst(ClassOrInterfaceDeclaration.class)
+                    .orElseThrow(() -> new InvalidTemplateException(generator, "Failed to find template for ProtostreamObjectMarshaller"));
 
-        // handler process variable marshallers
-        if (!variableMarshallers.isEmpty()) {
+            ConstructorDeclaration constructor = clazz.getDefaultConstructor()
+                    .orElseThrow(() -> new InvalidTemplateException(generator, "Failed to find default constructor in template for ProtostreamObjectMarshaller"));
 
-            MethodDeclaration protoMethod = new MethodDeclaration()
-                    .addModifier(Keyword.PUBLIC)
-                    .setName("proto")
-                    .setType(String.class)
-                    .setBody(new BlockStmt()
-                            .addStatement(new ReturnStmt(new StringLiteralExpr().setString(protoContent))));
+            // register protofiles and marshallers
+            String protofileURI = "META-INF/kogito-types.proto";
+            generatedFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
+                    protofileURI,
+                    protoContent));
 
-            persistenceProviderClazz.addMember(protoMethod);
+            BlockStmt body = new BlockStmt();
+            Expression newFileDescriptorSource = new ObjectCreationExpr(null, new ClassOrInterfaceType(null, FileDescriptorSource.class.getCanonicalName()), NodeList.nodeList());
+            Expression getClassLoader = new MethodCallExpr(new MethodCallExpr(null, "getClass", NodeList.nodeList()), "getClassLoader", NodeList.nodeList());
+            Expression protoSourceExpr =
+                    new MethodCallExpr(new EnclosedExpr(newFileDescriptorSource), "addProtoFiles", NodeList.nodeList(getClassLoader, new StringLiteralExpr(protofileURI)));
 
-            ClassOrInterfaceType listType = new ClassOrInterfaceType(null, List.class.getCanonicalName());
-            BlockStmt marshallersMethodBody = new BlockStmt();
-            VariableDeclarationExpr marshallerList = new VariableDeclarationExpr(
-                    new VariableDeclarator(listType, "list", new ObjectCreationExpr(null, new ClassOrInterfaceType(null, ArrayList.class.getCanonicalName()), NodeList.nodeList())));
-            marshallersMethodBody.addStatement(marshallerList);
-
-            for (String marshallerClazz : variableMarshallers) {
-
-                MethodCallExpr addMarshallerMethod =
-                        new MethodCallExpr(new NameExpr("list"), "add").addArgument(new ObjectCreationExpr(null, new ClassOrInterfaceType(null, marshallerClazz), NodeList.nodeList()));
-                marshallersMethodBody.addStatement(addMarshallerMethod);
-
+            body.addStatement(new MethodCallExpr(new NameExpr("context"), "registerProtoFiles", NodeList.nodeList(protoSourceExpr)));
+            for (String baseMarshallers : variableMarshallers) {
+                Expression newMarshallerExpr = new ObjectCreationExpr(null, new ClassOrInterfaceType(null, baseMarshallers), NodeList.nodeList());
+                body.addStatement(new MethodCallExpr(new NameExpr("context"), "registerMarshaller", NodeList.nodeList(newMarshallerExpr)));
             }
+            CatchClause catchClause = new CatchClause(new Parameter().setType(IOException.class).setName("e"), new BlockStmt());
+            TryStmt tryStmt = new TryStmt(body, NodeList.nodeList(catchClause), null);
+            constructor.getBody().addStatement(tryStmt);
+            String fqnProtoStreamMarshaller = packageName + "." + clazz.getName().toString();
+            generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
+                    fqnProtoStreamMarshaller.replace('.', '/') + JAVA,
+                    parsedClazzFile.toString()));
 
-            marshallersMethodBody.addStatement(new ReturnStmt(new NameExpr("list")));
-
-            MethodDeclaration marshallersMethod = new MethodDeclaration()
-                    .addModifier(Keyword.PUBLIC)
-                    .setName("marshallers")
-                    .setType(listType)
-                    .setBody(marshallersMethodBody);
-
-            persistenceProviderClazz.addMember(marshallersMethod);
+            generatedFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
+                    "META-INF/services/org.kie.kogito.serialization.process.ObjectMarshallerStrategy",
+                    fqnProtoStreamMarshaller + "\n"));
         }
 
         generatePersistenceProviderClazz(persistenceProviderClazz, compilationUnit)

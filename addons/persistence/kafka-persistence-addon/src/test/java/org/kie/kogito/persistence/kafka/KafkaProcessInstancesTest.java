@@ -73,14 +73,14 @@ public class KafkaProcessInstancesTest {
     public void setup() {
         doReturn("aProcessId").when(process).id();
 
-        instances = new KafkaProcessInstances(process, producer, null, null);
+        instances = new KafkaProcessInstances(process, producer);
         instances.setStore(store);
         instances.setMarshaller(marshaller);
     }
 
     @Test
     public void testProcessInstancesSetup() {
-        instances = new KafkaProcessInstances(process, producer, null, null);
+        instances = new KafkaProcessInstances(process, producer);
 
         assertThat(instances.getProcess()).isEqualTo(process);
 

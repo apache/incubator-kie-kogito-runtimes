@@ -97,7 +97,7 @@ public class MarshallerGenerator {
         CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
 
         SerializationContext serializationContext = new SerializationContextImpl(Configuration.builder().build());
-        serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(context.getClassLoader(), "kogito-types.proto"));
+        serializationContext.registerProtoFiles(FileDescriptorSource.fromResources(context.getClassLoader()));
         serializationContext.registerProtoFiles(proto);
 
         Map<String, FileDescriptor> descriptors = serializationContext.getFileDescriptors();

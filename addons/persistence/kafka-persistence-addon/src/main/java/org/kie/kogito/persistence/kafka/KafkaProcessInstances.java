@@ -26,8 +26,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
-import org.infinispan.protostream.BaseMarshaller;
-import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -52,11 +50,11 @@ public class KafkaProcessInstances implements MutableProcessInstances {
     private ProcessInstanceMarshaller marshaller;
     private CountDownLatch latch = new CountDownLatch(1);
 
-    public KafkaProcessInstances(Process<?> process, KafkaProducer<String, byte[]> producer, String proto, BaseMarshaller<?>... marshallers) {
+    public KafkaProcessInstances(Process<?> process, KafkaProducer<String, byte[]> producer) {
         this.process = process;
         this.topic = topicName(process.id());
         this.producer = producer;
-        setMarshaller(new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers)));
+        setMarshaller(new ProcessInstanceMarshaller());
     }
 
     protected Process<?> getProcess() {
