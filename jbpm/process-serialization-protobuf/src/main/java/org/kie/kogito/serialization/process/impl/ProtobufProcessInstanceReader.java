@@ -79,6 +79,7 @@ import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.SLACont
 import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.WorkflowContext;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData;
+import org.kie.kogito.transport.TransportConfig;
 
 import com.google.protobuf.Any;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -186,6 +187,12 @@ public class ProtobufProcessInstanceReader {
 
         if (workflowContext.getIterationLevelsCount() > 0) {
             processInstance.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
+        }
+
+        if (workflowContext.getTransportContextCount() > 0) {
+            Map<String, Object> transportContext = new HashMap<>();
+            varReader.buildVariables(workflowContext.getTransportContextList()).forEach(v -> transportContext.put(v.getName(), v.getValue()));
+            processInstance.setMetaData(TransportConfig.TRANSPORT_CONTEXT, transportContext);
         }
 
         return processInstance;
@@ -486,6 +493,11 @@ public class ProtobufProcessInstanceReader {
         }
         if (workflowContext.getIterationLevelsCount() > 0) {
             container.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
+        }
+        if (workflowContext.getTransportContextCount() > 0) {
+            Map<String, Object> transportContext = new HashMap<>();
+            varReader.buildVariables(workflowContext.getTransportContextList()).forEach(v -> transportContext.put(v.getName(), v.getValue()));
+            container.setMetaData(TransportConfig.TRANSPORT_CONTEXT, transportContext);
         }
     }
 

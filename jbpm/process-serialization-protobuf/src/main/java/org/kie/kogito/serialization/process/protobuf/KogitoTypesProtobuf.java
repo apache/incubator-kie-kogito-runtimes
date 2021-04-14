@@ -2313,6 +2313,30 @@ public final class KogitoTypesProtobuf {
      */
     org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevelOrBuilder getIterationLevelsOrBuilder(
         int index);
+
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> 
+        getTransportContextList();
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable getTransportContext(int index);
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    int getTransportContextCount();
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    java.util.List<? extends org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder> 
+        getTransportContextOrBuilderList();
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder getTransportContextOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code org.kie.kogito.serialization.process.protobuf.WorkflowContext}
@@ -2331,6 +2355,7 @@ public final class KogitoTypesProtobuf {
       nodeInstance_ = java.util.Collections.emptyList();
       exclusiveGroup_ = java.util.Collections.emptyList();
       iterationLevels_ = java.util.Collections.emptyList();
+      transportContext_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -2400,6 +2425,15 @@ public final class KogitoTypesProtobuf {
                   input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.IterationLevel.parser(), extensionRegistry));
               break;
             }
+            case 42: {
+              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
+                transportContext_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              transportContext_.add(
+                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.parser(), extensionRegistry));
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -2426,6 +2460,9 @@ public final class KogitoTypesProtobuf {
         }
         if (((mutable_bitField0_ & 0x00000008) != 0)) {
           iterationLevels_ = java.util.Collections.unmodifiableList(iterationLevels_);
+        }
+        if (((mutable_bitField0_ & 0x00000010) != 0)) {
+          transportContext_ = java.util.Collections.unmodifiableList(transportContext_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -2604,6 +2641,46 @@ public final class KogitoTypesProtobuf {
       return iterationLevels_.get(index);
     }
 
+    public static final int TRANSPORT_CONTEXT_FIELD_NUMBER = 5;
+    private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> transportContext_;
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    @java.lang.Override
+    public java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> getTransportContextList() {
+      return transportContext_;
+    }
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder> 
+        getTransportContextOrBuilderList() {
+      return transportContext_;
+    }
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    @java.lang.Override
+    public int getTransportContextCount() {
+      return transportContext_.size();
+    }
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    @java.lang.Override
+    public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable getTransportContext(int index) {
+      return transportContext_.get(index);
+    }
+    /**
+     * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+     */
+    @java.lang.Override
+    public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder getTransportContextOrBuilder(
+        int index) {
+      return transportContext_.get(index);
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2630,6 +2707,9 @@ public final class KogitoTypesProtobuf {
       for (int i = 0; i < iterationLevels_.size(); i++) {
         output.writeMessage(4, iterationLevels_.get(i));
       }
+      for (int i = 0; i < transportContext_.size(); i++) {
+        output.writeMessage(5, transportContext_.get(i));
+      }
       unknownFields.writeTo(output);
     }
 
@@ -2655,6 +2735,10 @@ public final class KogitoTypesProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, iterationLevels_.get(i));
       }
+      for (int i = 0; i < transportContext_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, transportContext_.get(i));
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2678,6 +2762,8 @@ public final class KogitoTypesProtobuf {
           .equals(other.getExclusiveGroupList())) return false;
       if (!getIterationLevelsList()
           .equals(other.getIterationLevelsList())) return false;
+      if (!getTransportContextList()
+          .equals(other.getTransportContextList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -2704,6 +2790,10 @@ public final class KogitoTypesProtobuf {
       if (getIterationLevelsCount() > 0) {
         hash = (37 * hash) + ITERATIONLEVELS_FIELD_NUMBER;
         hash = (53 * hash) + getIterationLevelsList().hashCode();
+      }
+      if (getTransportContextCount() > 0) {
+        hash = (37 * hash) + TRANSPORT_CONTEXT_FIELD_NUMBER;
+        hash = (53 * hash) + getTransportContextList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -2837,6 +2927,7 @@ public final class KogitoTypesProtobuf {
           getNodeInstanceFieldBuilder();
           getExclusiveGroupFieldBuilder();
           getIterationLevelsFieldBuilder();
+          getTransportContextFieldBuilder();
         }
       }
       @java.lang.Override
@@ -2865,6 +2956,12 @@ public final class KogitoTypesProtobuf {
           bitField0_ = (bitField0_ & ~0x00000008);
         } else {
           iterationLevelsBuilder_.clear();
+        }
+        if (transportContextBuilder_ == null) {
+          transportContext_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          transportContextBuilder_.clear();
         }
         return this;
       }
@@ -2928,6 +3025,15 @@ public final class KogitoTypesProtobuf {
           result.iterationLevels_ = iterationLevels_;
         } else {
           result.iterationLevels_ = iterationLevelsBuilder_.build();
+        }
+        if (transportContextBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) != 0)) {
+            transportContext_ = java.util.Collections.unmodifiableList(transportContext_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.transportContext_ = transportContext_;
+        } else {
+          result.transportContext_ = transportContextBuilder_.build();
         }
         onBuilt();
         return result;
@@ -3078,6 +3184,32 @@ public final class KogitoTypesProtobuf {
                    getIterationLevelsFieldBuilder() : null;
             } else {
               iterationLevelsBuilder_.addAllMessages(other.iterationLevels_);
+            }
+          }
+        }
+        if (transportContextBuilder_ == null) {
+          if (!other.transportContext_.isEmpty()) {
+            if (transportContext_.isEmpty()) {
+              transportContext_ = other.transportContext_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureTransportContextIsMutable();
+              transportContext_.addAll(other.transportContext_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.transportContext_.isEmpty()) {
+            if (transportContextBuilder_.isEmpty()) {
+              transportContextBuilder_.dispose();
+              transportContextBuilder_ = null;
+              transportContext_ = other.transportContext_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              transportContextBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getTransportContextFieldBuilder() : null;
+            } else {
+              transportContextBuilder_.addAllMessages(other.transportContext_);
             }
           }
         }
@@ -4069,6 +4201,246 @@ public final class KogitoTypesProtobuf {
           iterationLevels_ = null;
         }
         return iterationLevelsBuilder_;
+      }
+
+      private java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> transportContext_ =
+        java.util.Collections.emptyList();
+      private void ensureTransportContextIsMutable() {
+        if (!((bitField0_ & 0x00000010) != 0)) {
+          transportContext_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable>(transportContext_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder> transportContextBuilder_;
+
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> getTransportContextList() {
+        if (transportContextBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(transportContext_);
+        } else {
+          return transportContextBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public int getTransportContextCount() {
+        if (transportContextBuilder_ == null) {
+          return transportContext_.size();
+        } else {
+          return transportContextBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable getTransportContext(int index) {
+        if (transportContextBuilder_ == null) {
+          return transportContext_.get(index);
+        } else {
+          return transportContextBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder setTransportContext(
+          int index, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable value) {
+        if (transportContextBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransportContextIsMutable();
+          transportContext_.set(index, value);
+          onChanged();
+        } else {
+          transportContextBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder setTransportContext(
+          int index, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder builderForValue) {
+        if (transportContextBuilder_ == null) {
+          ensureTransportContextIsMutable();
+          transportContext_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          transportContextBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder addTransportContext(org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable value) {
+        if (transportContextBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransportContextIsMutable();
+          transportContext_.add(value);
+          onChanged();
+        } else {
+          transportContextBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder addTransportContext(
+          int index, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable value) {
+        if (transportContextBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTransportContextIsMutable();
+          transportContext_.add(index, value);
+          onChanged();
+        } else {
+          transportContextBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder addTransportContext(
+          org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder builderForValue) {
+        if (transportContextBuilder_ == null) {
+          ensureTransportContextIsMutable();
+          transportContext_.add(builderForValue.build());
+          onChanged();
+        } else {
+          transportContextBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder addTransportContext(
+          int index, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder builderForValue) {
+        if (transportContextBuilder_ == null) {
+          ensureTransportContextIsMutable();
+          transportContext_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          transportContextBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder addAllTransportContext(
+          java.lang.Iterable<? extends org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable> values) {
+        if (transportContextBuilder_ == null) {
+          ensureTransportContextIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, transportContext_);
+          onChanged();
+        } else {
+          transportContextBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder clearTransportContext() {
+        if (transportContextBuilder_ == null) {
+          transportContext_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          transportContextBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public Builder removeTransportContext(int index) {
+        if (transportContextBuilder_ == null) {
+          ensureTransportContextIsMutable();
+          transportContext_.remove(index);
+          onChanged();
+        } else {
+          transportContextBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder getTransportContextBuilder(
+          int index) {
+        return getTransportContextFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder getTransportContextOrBuilder(
+          int index) {
+        if (transportContextBuilder_ == null) {
+          return transportContext_.get(index);  } else {
+          return transportContextBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public java.util.List<? extends org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder> 
+           getTransportContextOrBuilderList() {
+        if (transportContextBuilder_ != null) {
+          return transportContextBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(transportContext_);
+        }
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder addTransportContextBuilder() {
+        return getTransportContextFieldBuilder().addBuilder(
+            org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder addTransportContextBuilder(
+          int index) {
+        return getTransportContextFieldBuilder().addBuilder(
+            index, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .org.kie.kogito.serialization.process.protobuf.Variable transport_context = 5;</code>
+       */
+      public java.util.List<org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder> 
+           getTransportContextBuilderList() {
+        return getTransportContextFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder> 
+          getTransportContextFieldBuilder() {
+        if (transportContextBuilder_ == null) {
+          transportContextBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.Variable.Builder, org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf.VariableOrBuilder>(
+                  transportContext_,
+                  ((bitField0_ & 0x00000010) != 0),
+                  getParentForChildren(),
+                  isClean());
+          transportContext_ = null;
+        }
+        return transportContextBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -7103,7 +7475,7 @@ public final class KogitoTypesProtobuf {
       " \001(\003H\001\210\001\001\022K\n\003sla\030\006 \001(\01329.org.kie.kogito." +
       "serialization.process.protobuf.SLAContex" +
       "tH\002\210\001\001B\010\n\006_levelB\017\n\r_trigger_dateB\006\n\004_sl" +
-      "a\"\343\002\n\017WorkflowContext\022I\n\010variable\030\001 \003(\0132" +
+      "a\"\267\003\n\017WorkflowContext\022I\n\010variable\030\001 \003(\0132" +
       "7.org.kie.kogito.serialization.process.p" +
       "rotobuf.Variable\022R\n\rnode_instance\030\002 \003(\0132" +
       ";.org.kie.kogito.serialization.process.p" +
@@ -7111,17 +7483,20 @@ public final class KogitoTypesProtobuf {
       "\003 \003(\0132@.org.kie.kogito.serialization.pro" +
       "cess.protobuf.NodeInstanceGroup\022V\n\017itera" +
       "tionLevels\030\004 \003(\0132=.org.kie.kogito.serial" +
-      "ization.process.protobuf.IterationLevel\"" +
-      "Y\n\017SwimlaneContext\022\025\n\010swimlane\030\001 \001(\tH\000\210\001" +
-      "\001\022\025\n\010actor_id\030\002 \001(\tH\001\210\001\001B\013\n\t_swimlaneB\013\n" +
-      "\t_actor_id\"\224\001\n\nSLAContext\022\031\n\014sla_timer_i" +
-      "d\030\001 \001(\tH\000\210\001\001\022\031\n\014sla_due_date\030\002 \001(\003H\001\210\001\001\022" +
-      "\033\n\016sla_compliance\030\003 \001(\005H\002\210\001\001B\017\n\r_sla_tim" +
-      "er_idB\017\n\r_sla_due_dateB\021\n\017_sla_complianc" +
-      "e\"F\n\016IterationLevel\022\017\n\002id\030\001 \001(\tH\000\210\001\001\022\022\n\005" +
-      "level\030\002 \001(\005H\001\210\001\001B\005\n\003_idB\010\n\006_level\"3\n\021Nod" +
-      "eInstanceGroup\022\036\n\026group_node_instance_id" +
-      "\030\001 \003(\tB\025B\023KogitoTypesProtobufb\006proto3"
+      "ization.process.protobuf.IterationLevel\022" +
+      "R\n\021transport_context\030\005 \003(\01327.org.kie.kog" +
+      "ito.serialization.process.protobuf.Varia" +
+      "ble\"Y\n\017SwimlaneContext\022\025\n\010swimlane\030\001 \001(\t" +
+      "H\000\210\001\001\022\025\n\010actor_id\030\002 \001(\tH\001\210\001\001B\013\n\t_swimlan" +
+      "eB\013\n\t_actor_id\"\224\001\n\nSLAContext\022\031\n\014sla_tim" +
+      "er_id\030\001 \001(\tH\000\210\001\001\022\031\n\014sla_due_date\030\002 \001(\003H\001" +
+      "\210\001\001\022\033\n\016sla_compliance\030\003 \001(\005H\002\210\001\001B\017\n\r_sla" +
+      "_timer_idB\017\n\r_sla_due_dateB\021\n\017_sla_compl" +
+      "iance\"F\n\016IterationLevel\022\017\n\002id\030\001 \001(\tH\000\210\001\001" +
+      "\022\022\n\005level\030\002 \001(\005H\001\210\001\001B\005\n\003_idB\010\n\006_level\"3\n" +
+      "\021NodeInstanceGroup\022\036\n\026group_node_instanc" +
+      "e_id\030\001 \003(\tB\025B\023KogitoTypesProtobufb\006proto" +
+      "3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -7145,7 +7520,7 @@ public final class KogitoTypesProtobuf {
     internal_static_org_kie_kogito_serialization_process_protobuf_WorkflowContext_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_kie_kogito_serialization_process_protobuf_WorkflowContext_descriptor,
-        new java.lang.String[] { "Variable", "NodeInstance", "ExclusiveGroup", "IterationLevels", });
+        new java.lang.String[] { "Variable", "NodeInstance", "ExclusiveGroup", "IterationLevels", "TransportContext", });
     internal_static_org_kie_kogito_serialization_process_protobuf_SwimlaneContext_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_org_kie_kogito_serialization_process_protobuf_SwimlaneContext_fieldAccessorTable = new

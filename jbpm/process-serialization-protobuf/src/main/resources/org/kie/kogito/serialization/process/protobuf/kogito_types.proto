@@ -28,6 +28,7 @@ message WorkflowContext {
     repeated NodeInstance node_instance = 2;
     repeated NodeInstanceGroup exclusive_group = 3;
     repeated IterationLevel iterationLevels = 4;
+    repeated Variable transport_context = 5;
 }
 
 message SwimlaneContext {

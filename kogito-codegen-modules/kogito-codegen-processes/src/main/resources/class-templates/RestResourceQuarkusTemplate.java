@@ -43,17 +43,20 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
+
 import org.jbpm.util.JsonSchemaUtil;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.transport.TransportConfig;
 
 @Path("/$name$")
 public class $Type$Resource {
@@ -62,6 +65,9 @@ public class $Type$Resource {
 
     @Inject
     ProcessService processService;
+
+    @Inject
+    ConfigBean configBean;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -74,6 +80,7 @@ public class $Type$Resource {
                                                                           businessKey,
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
                                                                           httpHeaders.getHeaderString("X-KOGITO-StartFromNode"));
+        addTransportHeaders(pi, httpHeaders);
         return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
                 .entity(pi.checkError().variables().toModel())
                 .build();
@@ -118,5 +125,11 @@ public class $Type$Resource {
                 .stream()
                 .map($TaskModelFactory$::from)
                 .collect(Collectors.toList());
+    }
+
+    private void addTransportHeaders(ProcessInstance<$Type$> instance, HttpHeaders httpHeaders) {
+        Map<String, String> transportContext = configBean.transportConfig()
+                .buildContext(httpHeaders.getRequestHeaders());
+        instance.setContextAttr(TransportConfig.TRANSPORT_CONTEXT, transportContext);
     }
 }
