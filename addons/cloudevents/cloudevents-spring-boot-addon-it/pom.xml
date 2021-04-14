@@ -51,6 +51,7 @@
             <configuration>
                 <streamLogs>true</streamLogs>
                 <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
+                <settingsFile>src/it/settings.xml</settingsFile>
             </configuration>
             <executions>
                 <execution>

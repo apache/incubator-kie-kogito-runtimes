@@ -52,6 +52,7 @@
           <properties>
             <version.io.quarkus>${version.io.quarkus}</version.io.quarkus>
           </properties>
+          <settingsFile>src/it/settings.xml</settingsFile>
         </configuration>
         <executions>
           <execution>
