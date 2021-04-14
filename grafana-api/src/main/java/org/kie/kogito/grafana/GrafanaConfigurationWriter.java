@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 
 import org.kie.dmn.model.api.Decision;
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.grafana.dmn.SupportedDecisionTypes;
 import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.functions.Label;
@@ -128,6 +130,13 @@ public class GrafanaConfigurationWriter {
             logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", endpoint), e);
             throw new RuntimeException("Could not serialize the grafana dashboard.", e);
         }
+    }
+
+    public static String buildDashboardName(Optional<KogitoGAV> gav, String handlerName){
+        if (gav.isPresent()){
+            return String.format("%s:%s - %s", gav.get().getArtifactId(), gav.get().getVersion(), handlerName);
+        }
+        return handlerName;
     }
 
     private static String readStandardDashboard(String templatePath) {

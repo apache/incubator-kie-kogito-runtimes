@@ -233,11 +233,11 @@ public class DecisionCodegen extends AbstractGenerator {
 
         String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
                 operationalDashboardDmnTemplate,
-                resourceGenerator.getNameURL(),
+                GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), resourceGenerator.getNameURL()),
                 context().getAddonsConfig().useTracing());
         String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
                 domainDashboardDmnTemplate,
-                resourceGenerator.getNameURL(),
+                GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), resourceGenerator.getNameURL()),
                 decisions,
                 context().getAddonsConfig().useTracing());
         generatedFiles.addAll(DashboardGeneratedFileUtils.operational(operationalDashboard, resourceGenerator.getNameURL() + ".json"));
