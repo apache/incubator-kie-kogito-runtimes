@@ -31,8 +31,6 @@
   <modules>
     <module>kogito-springboot-archetype</module>
     <module>kogito-quarkus-archetype</module>
-    <module>kogito-springboot-dm-archetype</module>
-    <module>kogito-quarkus-dm-archetype</module>
   </modules>
 
   <profiles>
