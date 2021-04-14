@@ -1095,6 +1095,10 @@
             <excludes>
               <exclude>${tests.surefire.include}</exclude>
             </excludes>
+            <systemPropertyVariables>
+              <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
+              <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
         <plugin>
@@ -1114,6 +1118,8 @@
               <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
               <org.uberfire.nio.git.ssh.enabled>false</org.uberfire.nio.git.ssh.enabled>
               <org.uberfire.sys.repo.monitor.disabled>true</org.uberfire.sys.repo.monitor.disabled>
+              <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
+              <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
             </systemPropertyVariables>
           </configuration>
         </plugin>
@@ -1202,6 +1208,9 @@
             <skipInstallation>${skipTests}</skipInstallation>
             <skipInvocation>${skipTests}</skipInvocation>
             <failIfNoProjects>true</failIfNoProjects>
+            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+            <useLocalRepository>true</useLocalRepository>
           </configuration>
         </plugin>
         <plugin>
