@@ -6,6 +6,9 @@ changeAuthor = env.ghprbPullAuthorLogin ?: CHANGE_AUTHOR
 changeBranch = env.ghprbSourceBranch ?: CHANGE_BRANCH
 changeTarget = env.ghprbTargetBranch ?: CHANGE_TARGET
 
+quarkusRepo = 'quarkus'
+kogitoRuntimesRepo = 'kogito-runtimes'
+
 pipeline {
     agent {
         label 'kie-rhel7 && kie-mem16g'
@@ -15,6 +18,7 @@ pipeline {
         jdk 'kie-jdk11'
     }
     options {
+        timestamps()
         timeout(time: getTimeoutValue(), unit: 'MINUTES')
     }
     environment {
@@ -27,8 +31,7 @@ pipeline {
                 script {
                     mailer.buildLogScriptPR()
 
-                    checkoutRepo('kogito-runtimes')
-                    checkoutRepo('kogito-runtimes', 'integration-tests')
+                    checkoutRepo(kogitoRuntimesRepo)
                 }
             }
         }
@@ -39,48 +42,33 @@ pipeline {
             steps {
                 script {
                     checkoutQuarkusRepo()
-                    getMavenCommand('quarkus', false)
-                        .withProperty('quickly')
-                        .run('clean install')
+                    runQuickBuild(quarkusRepo)
                 }
             }
         }
-        stage('Build Runtimes') {
+        stage('Runtimes Build&Test') {
             steps {
                 script {
-                    mvnCmd = getMavenCommand('kogito-runtimes', true, true)
                     if (isNormalPRCheck()) {
-                        mvnCmd.withProperty('validate-formatting')
-                            .withProfiles(['run-code-coverage'])
-                    }
-                    mvnCmd.run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
+                        runUnitTests({ mvnCmd -> mvnCmd.withProperty('validate-formatting').withProfiles(['run-code-coverage']) })
+                        runSonarcloudAnalysis()
+                    } else {
+                        runUnitTests(saveReports)
                     }
                 }
             }
         }
-        stage('Analyze Runtimes by SonarCloud') {
-            when {
-                expression { isNormalPRCheck() }
-            }
+        stage('Runtimes integration-tests') {
             steps {
                 script {
-                    getMavenCommand('kogito-runtimes')
-                            .withOptions(['-e', '-nsu'])
-                            .withProfiles(['sonarcloud-analysis'])
-                            .run('validate')
+                    runIntegrationTests()
                 }
             }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
+        }
+        stage('Runtimes integration-tests with persistence') {
+            steps {
+                script {
+                    runIntegrationTests(['persistence'])
                 }
             }
         }
@@ -89,7 +77,6 @@ pipeline {
         always {
             script {
                 sh '$WORKSPACE/trace.sh'
-                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
             }
         }
         failure {
@@ -115,10 +102,8 @@ pipeline {
     }
 }
 
-void checkoutRepo(String repo, String dirName=repo) {
-    dir(dirName) {
-        githubscm.checkoutIfExists(repo, changeAuthor, changeBranch, 'kiegroup', changeTarget, true)
-    }
+void checkoutRepo(String repo) {
+    checkoutRepo(repo, changeAuthor, changeBranch, changeTarget)
 }
 
 void checkoutQuarkusRepo() {
@@ -127,7 +112,7 @@ void checkoutQuarkusRepo() {
     }
 }
 
-MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, boolean canNative = false) {
+MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, boolean canNative = true) {
     mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .withSnapshotsDisabledInSettings()
@@ -143,6 +128,10 @@ MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, b
             .withProperty('quarkus.profile', 'native') // Added due to https://github.com/quarkusio/quarkus/issues/13341
     }
     return mvnCmd
+}
+
+void saveReports() {
+    junit '**/target/surefire-reports/**/*.xml,**/target/failsafe-reports/**/*.xml'
 }
 
 void cleanContainers() {
@@ -171,4 +160,58 @@ boolean isNormalPRCheck() {
 
 Integer getTimeoutValue() {
     return isNative() ? 600 : 240
+}
+
+void runQuickBuild(String project) {
+    getMavenCommand(project, false, false)
+            .withProperty('quickly')
+            .run('clean install')
+}
+
+void runUnitTests(Closure alterMvnCmd = null) {
+    def mvnCmd = getMavenCommand(kogitoRuntimesRepo)
+                    .withProperty('quickTests')
+
+    if (alterMvnCmd) {
+        alterMvnCmd(mvnCmd)
+    }
+
+    runMavenTests(mvnCmd, 'clean install')
+}
+
+void runSonarcloudAnalysis(Closure alterMvnCmd = null) {
+    def mvnCmd = getMavenCommand(kogitoRuntimesRepo)
+        .withOptions(['-e', '-nsu'])
+        .withProfiles(['sonarcloud-analysis'])
+
+    if (alterMvnCmd) {
+        alterMvnCmd(mvnCmd)
+    }
+
+    mvnCmd.run('validate')
+}
+
+void runIntegrationTests(List profiles=[], Closure alterMvnCmd = null) {
+    String profileSuffix = profiles ? "-${profiles.join('-')}" : ''
+    String itFolder = "${kogitoRuntimesRepo}-it${profileSuffix}"
+    sh "cp -r ${kogitoRuntimesRepo} ${itFolder}"
+
+    def mvnCmd = getMavenCommand(itFolder)
+
+    if (alterMvnCmd) {
+        alterMvnCmd(mvnCmd)
+    }
+
+    runMavenTests(mvnCmd.withProfiles(profiles), 'verify')
+}
+
+void runMavenTests(MavenCommand mvnCmd, String mvnRunCmd) {
+    try {
+        mvnCmd.run(mvnRunCmd)
+    } catch (err) {
+        throw err
+    } finally {
+        saveReports()
+        cleanContainers()
+    }
 }
