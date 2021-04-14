@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,27 +56,13 @@ public class GrafanaConfigurationWriter {
      * @param handlerName: The name of the endpoint.
      * @return: The template customized for the endpoint.
      */
-    public static String generateOperationalDashboard(String templatePath, String handlerName, boolean generateAuditLink) {
+    public static String generateOperationalDashboard(String templatePath, String dashboardName, String handlerName, boolean generateAuditLink) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, handlerName);
-        JGrafana jgrafana;
-        try {
-            jgrafana = JGrafana.parse(template).setTitle(String.format("%s - Operational Dashboard", handlerName));
-        } catch (IOException e) {
-            logger.error(String.format("Could not parse the grafana template for the endpoint %s", handlerName), e);
-            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
-        }
 
-        if (generateAuditLink) {
-            jgrafana.addLink(AUDIT_LINK_NAME, AUDIT_LINK_URL_PLACEHOLDER);
-        }
+        JGrafana jgrafana = initialize(template, String.format("%s - Operational Dashboard", dashboardName), generateAuditLink);
 
-        try {
-            return jgrafana.serialize();
-        } catch (IOException e) {
-            logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", handlerName), e);
-            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
-        }
+        return serialize(jgrafana);
     }
 
     /**
@@ -86,21 +73,11 @@ public class GrafanaConfigurationWriter {
      * @param decisions: The decisions in the DMN model.
      * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
      */
-    public static String generateDomainSpecificDMNDashboard(String templatePath, String endpoint, List<Decision> decisions, boolean generateAuditLink) {
+    public static String generateDomainSpecificDMNDashboard(String templatePath, String dashboardName, String endpoint, List<Decision> decisions, boolean generateAuditLink) {
         String template = readStandardDashboard(templatePath);
         template = customizeTemplate(template, endpoint);
 
-        JGrafana jgrafana = null;
-        try {
-            jgrafana = JGrafana.parse(template).setTitle(String.format("%s - Domain Dashboard", endpoint));
-        } catch (IOException e) {
-            logger.error(String.format("Could not parse the grafana template for the endpoint %s", endpoint), e);
-            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
-        }
-
-        if (generateAuditLink) {
-            jgrafana.addLink(AUDIT_LINK_NAME, AUDIT_LINK_URL_PLACEHOLDER);
-        }
+        JGrafana jgrafana = initialize(template, String.format("%s - Domain Dashboard", dashboardName), generateAuditLink);
 
         for (Decision decision : decisions) {
             QName type = decision.getVariable().getTypeRef();
@@ -124,16 +101,51 @@ public class GrafanaConfigurationWriter {
             }
         }
 
+        return serialize(jgrafana);
+    }
+
+    /**
+     * Generates domain specific DRL dashboard from a given dashboard template.
+     *
+     * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
+     * @param endpoint: The name of the endpoint.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
+     */
+    public static String generateDomainSpecificDrlDashboard(String templatePath, String dashboardName, String endpoint, boolean generateAuditLink) {
+        String template = readStandardDashboard(templatePath);
+        template = customizeTemplate(template, endpoint);
+
+        JGrafana jgrafana = initialize(template, String.format("%s - Domain Dashboard", dashboardName), generateAuditLink);
+
+        return serialize(jgrafana);
+    }
+
+    private static JGrafana initialize(String template, String name, boolean generateAuditLink) {
+        JGrafana jgrafana;
+        try {
+            jgrafana = JGrafana.parse(template).setTitle(name);
+        } catch (IOException e) {
+            logger.error(String.format("Could not parse the grafana template for the dashboard %s", name), e);
+            throw new IllegalArgumentException("Could not parse the dashboard template.", e);
+        }
+
+        if (generateAuditLink) {
+            jgrafana.addLink(AUDIT_LINK_NAME, AUDIT_LINK_URL_PLACEHOLDER);
+        }
+        return jgrafana;
+    }
+
+    private static String serialize(JGrafana jgrafana) {
         try {
             return jgrafana.serialize();
         } catch (IOException e) {
-            logger.error(String.format("Could not serialize the grafana dashboard for the endpoint %s", endpoint), e);
-            throw new RuntimeException("Could not serialize the grafana dashboard.", e);
+            logger.error("Could not serialize the grafana dashboard");
+            throw new UncheckedIOException("Could not serialize the grafana dashboard.", e);
         }
     }
 
-    public static String buildDashboardName(Optional<KogitoGAV> gav, String handlerName){
-        if (gav.isPresent()){
+    public static String buildDashboardName(Optional<KogitoGAV> gav, String handlerName) {
+        if (gav.isPresent()) {
             return String.format("%s:%s - %s", gav.get().getArtifactId(), gav.get().getVersion(), handlerName);
         }
         return handlerName;
