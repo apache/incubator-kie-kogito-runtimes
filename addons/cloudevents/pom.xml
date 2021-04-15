@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>addons</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.0.Final</version>
   </parent>
   <artifactId>cloudevents</artifactId>
   <packaging>pom</packaging>
