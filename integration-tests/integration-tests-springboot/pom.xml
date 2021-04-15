@@ -60,10 +60,9 @@
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-test-utils</artifactId>instance
+      <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-spring-boot-starter-remote</artifactId>
