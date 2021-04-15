@@ -22,6 +22,8 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -29,6 +31,8 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
  * Quarkus resource to be run if and only if it was enabled.
  */
 public abstract class ConditionalQuarkusTestResource<T extends TestResource> implements QuarkusTestResourceLifecycleManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConditionalQuarkusTestResource.class);
 
     private final T testResource;
     private final ConditionHolder condition;
@@ -39,6 +43,7 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
     }
 
     public ConditionalQuarkusTestResource(T testResource, ConditionHolder condition) {
+        LOGGER.info("Create Test resource of class {}", testResource.getClass());
         this.testResource = testResource;
         this.condition = condition;
     }
@@ -54,10 +59,12 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
     @Override
     public Map<String, String> start() {
         if (condition.isEnabled()) {
+            LOGGER.info("Start Test resource of class {}", testResource.getClass());
             testResource.start();
             return Collections.singletonMap(getKogitoProperty(), getKogitoPropertyValue());
         }
 
+        LOGGER.info("Ignore Test resource of class {}", testResource.getClass());
         return Collections.emptyMap();
     }
 

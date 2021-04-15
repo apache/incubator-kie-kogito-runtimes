@@ -44,6 +44,7 @@ public class KogitoKeycloakContainer extends GenericContainer<KogitoKeycloakCont
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoKeycloakContainer.class);
 
     public KogitoKeycloakContainer() {
+        LOGGER.info("Creating the KogitoKeycloakContainer container");
         addExposedPort(PORT);
         withEnv("KEYCLOAK_USER", USER);
         withEnv("KEYCLOAK_PASSWORD", PASSWORD);
@@ -52,6 +53,12 @@ public class KogitoKeycloakContainer extends GenericContainer<KogitoKeycloakCont
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forHttp("/auth").withStartupTimeout(Duration.ofMinutes(5)));
         setDockerImageName(System.getProperty(KEYCLOAK_PROPERTY));
+    }
+
+    @Override
+    public void start() {
+        LOGGER.info("Starting the KogitoKeycloakContainer container");
+        super.start();
     }
 
     @Override

@@ -32,8 +32,15 @@ public class KogitoMongoDBContainer extends MongoDBContainer implements TestReso
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoMongoDBContainer.class);
 
     public KogitoMongoDBContainer() {
+        LOGGER.info("Creating the KogitoMongoDBContainer container");
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         addFixedExposedPort(MONGODB_INTERNAL_PORT, MONGODB_INTERNAL_PORT);
+    }
+
+    @Override
+    public void start() {
+        LOGGER.info("Starting the KogitoMongoDBContainer container");
+        super.start();
     }
 
     @Override

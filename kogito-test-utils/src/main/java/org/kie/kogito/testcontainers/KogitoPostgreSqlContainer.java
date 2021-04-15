@@ -32,11 +32,13 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements Te
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoPostgreSqlContainer.class);
 
     public KogitoPostgreSqlContainer() {
+        LOGGER.info("Creating the KogitoPostgreSqlContainer container");
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
     }
 
     @Override
     public void start() {
+        LOGGER.info("Starting the KogitoPostgreSqlContainer container");
         super.start();
         LOGGER.info("PostgreSql server: {}", this.getContainerIpAddress() + ":" + this.getMappedPort(POSTGRESQL_PORT));
     }

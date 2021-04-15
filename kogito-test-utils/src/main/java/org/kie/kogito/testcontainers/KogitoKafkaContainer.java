@@ -37,12 +37,14 @@ public class KogitoKafkaContainer extends KafkaContainer implements TestResource
 
     public KogitoKafkaContainer() {
         super(DockerImageName.parse(System.getProperty(KAFKA_PROPERTY)));
+        LOGGER.info("Creating the KogitoKafkaContainer container");
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forLogMessage(".*Startup complete.*", 2).withStartupTimeout(Duration.ofMinutes(5)));
     }
 
     @Override
     public void start() {
+        LOGGER.info("Starting the KogitoKafkaContainer container");
         super.start();
         LOGGER.info("Kafka servers: {}", getBootstrapServers());
     }

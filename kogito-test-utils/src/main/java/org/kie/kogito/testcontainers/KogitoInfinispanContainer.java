@@ -39,6 +39,7 @@ public class KogitoInfinispanContainer extends GenericContainer<KogitoInfinispan
     public static final String CONF_PATH = "/opt/infinispan/server/conf/";
 
     public KogitoInfinispanContainer() {
+        LOGGER.info("Creating the KogitoInfinispanContainer container");
         addExposedPort(PORT);
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forHttp("/").withStartupTimeout(Duration.ofMinutes(5)));
@@ -47,6 +48,12 @@ public class KogitoInfinispanContainer extends GenericContainer<KogitoInfinispan
         withClasspathResourceMapping("testcontainers/infinispan/users.properties", CONF_PATH + "users.properties", BindMode.READ_ONLY);
         withClasspathResourceMapping("testcontainers/infinispan/groups.properties", CONF_PATH + "groups.properties", BindMode.READ_ONLY);
         setCommand("/opt/infinispan/bin/server.sh -c infinispan-local.xml");
+    }
+
+    @Override
+    public void start() {
+        LOGGER.info("Starting the KogitoInfinispanContainer container");
+        super.start();
     }
 
     @Override

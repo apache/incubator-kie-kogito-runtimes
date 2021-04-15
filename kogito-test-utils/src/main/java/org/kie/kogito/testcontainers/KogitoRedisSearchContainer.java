@@ -33,10 +33,17 @@ public class KogitoRedisSearchContainer extends GenericContainer<KogitoRedisSear
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoRedisSearchContainer.class);
 
     public KogitoRedisSearchContainer() {
+        LOGGER.info("Creating the KogitoRedisSearchContainer container");
         addExposedPort(PORT);
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         waitingFor(Wait.forLogMessage(".*Ready to accept connections.*\\s", 1).withStartupTimeout(Duration.ofMinutes(5)));
         setDockerImageName(System.getProperty(REDIS_PROPERTY));
+    }
+
+    @Override
+    public void start() {
+        LOGGER.info("Starting the KogitoRedisSearchContainer container");
+        super.start();
     }
 
     @Override
