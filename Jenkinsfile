@@ -55,7 +55,7 @@ pipeline {
                 script {
                     mvnCmd = getMavenCommand('kogito-runtimes', true, true)
                     if (isNormalPRCheck()) {
-                        mvnCmd.withProperty('validate-formatting')
+                        mvnCmd
                             .withProfiles(['run-code-coverage'])
                     }
                     mvnCmd.run('clean install')

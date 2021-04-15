@@ -22,17 +22,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  *
  * Spring Boot test resource.
  *
  */
 public abstract class ConditionalSpringBootTestResource<T extends TestResource> implements ApplicationContextInitializer<ConfigurableApplicationContext>, ApplicationListener<ContextClosedEvent> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConditionalQuarkusTestResource.class);
 
     private final T testResource;
     private final ConditionHolder condition;
@@ -43,7 +38,6 @@ public abstract class ConditionalSpringBootTestResource<T extends TestResource> 
     }
 
     public ConditionalSpringBootTestResource(T testResource, ConditionHolder condition) {
-        LOGGER.info("Create Test resource of class {}", testResource.getClass());
         this.testResource = testResource;
         this.condition = condition;
     }
@@ -59,12 +53,10 @@ public abstract class ConditionalSpringBootTestResource<T extends TestResource> 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         if (condition.isEnabled()) {
-            LOGGER.info("Start Test resource of class {}", testResource.getClass());
             testResource.start();
             updateBeanFactory(applicationContext.getBeanFactory());
             updateContextProperty(applicationContext, getKogitoProperty(), getKogitoPropertyValue());
         }
-        LOGGER.info("Ignore Test resource of class {}", testResource.getClass());
     }
 
     @Override
