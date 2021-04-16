@@ -1088,22 +1088,22 @@
                 <goal>integration-test</goal>
                 <goal>verify</goal>
               </goals>
-              <configuration>
-                <includes>
-                  <include>${tests.failsafe.include}</include>
-                </includes>
-                <excludes>
-                  <exclude>${tests.surefire.include}</exclude>
-                  <exclude>**/Native*</exclude>
-                </excludes>
-                <systemPropertyVariables>
-                  <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
-                  <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
-                </systemPropertyVariables>
-                <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
-              </configuration>
             </execution>
           </executions>
+          <configuration>
+            <includes>
+              <include>${tests.failsafe.include}</include>
+            </includes>
+            <excludes>
+              <exclude>${tests.surefire.include}</exclude>
+              <exclude>**/Native*</exclude>
+            </excludes>
+            <systemPropertyVariables>
+              <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
+              <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
+            </systemPropertyVariables>
+            <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1551,6 +1551,26 @@ limitations under the License.
         <pluginManagement>
           <plugins>
             <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>set-system-properties</goal>
+                  </goals>
+                  <configuration>
+                    <properties>
+                      <property>
+                        <name>quarkus.container-image.build</name>
+                        <value>false</value>
+                      </property>
+                    </properties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
               <artifactId>maven-invoker-plugin</artifactId>
               <configuration>
                 <skipInstallation>true</skipInstallation>
@@ -1587,6 +1607,26 @@ limitations under the License.
         <defaultGoal>clean install</defaultGoal>
         <pluginManagement>
           <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>set-system-properties</goal>
+                  </goals>
+                  <configuration>
+                    <properties>
+                      <property>
+                        <name>quarkus.container-image.build</name>
+                        <value>false</value>
+                      </property>
+                    </properties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
               <artifactId>maven-invoker-plugin</artifactId>
               <configuration>

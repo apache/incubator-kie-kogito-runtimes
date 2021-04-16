@@ -24,11 +24,14 @@ import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnits;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class AnnotatedRuleUnitCompilerIT extends AbstractCodegenIT {
 
     @Test
     public void testAnnotatedRuleUnit() throws Exception {
         Application application = generateRulesFromJava("org/kie/kogito/codegen/unit/AnnotatedRules.java");
+        assertNotNull(application);
 
         AnnotatedRules adults = new AnnotatedRules();
 
@@ -40,7 +43,7 @@ public class AnnotatedRuleUnitCompilerIT extends AbstractCodegenIT {
 
         RuleUnit<AnnotatedRules> unit = application.get(RuleUnits.class).create(AnnotatedRules.class);
         RuleUnitInstance<AnnotatedRules> instance = unit.createInstance(adults);
-
+        assertNotNull(instance);
     }
 
 }

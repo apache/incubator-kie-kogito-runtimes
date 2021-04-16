@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.componenttests.handler.TestWorkItemHandler;
@@ -275,7 +276,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
     }
 
     @Test
-    @Disabled
+    @Disabled("Needs fix")
     public void testMarshallingProcessInstanceWithTimer() throws Exception {
         String process =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -311,7 +312,7 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         int sleeps = 3;
         int procInstsAlive = session2.getProcessInstances().size();
         while (procInstsAlive > 0 && sleeps > 0) {
-            Thread.sleep(1000);
+            TimeUnit.SECONDS.sleep(1);
             --sleeps;
             procInstsAlive = session2.getProcessInstances().size();
         }

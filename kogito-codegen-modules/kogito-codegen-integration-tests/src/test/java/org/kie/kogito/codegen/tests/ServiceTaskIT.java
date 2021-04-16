@@ -30,6 +30,7 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ServiceTaskIT extends AbstractCodegenIT {
@@ -154,7 +155,7 @@ public class ServiceTaskIT extends AbstractCodegenIT {
     }
 
     @Test
-    public void malformedShouldThrowException() throws Exception {
+    public void malformedShouldThrowException() {
         assertThrows(ProcessCodegenException.class, () -> {
             generateCodeProcessesOnly("servicetask/ServiceProcessMalformed.bpmn2");
         });
@@ -163,7 +164,7 @@ public class ServiceTaskIT extends AbstractCodegenIT {
     @Test
     public void shouldInferMethodSignatureFromClass() throws Exception {
         // should no throw
-        generateCodeProcessesOnly("servicetask/ServiceProcessInferMethod.bpmn2");
+        assertNotNull(generateCodeProcessesOnly("servicetask/ServiceProcessInferMethod.bpmn2"));
     }
 
     @Test
