@@ -129,6 +129,8 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('kogito-apps', true, true)
+                        .withProperty('skip.ui.build')
+                        .withProperty('skip.ui.deps')
                         .run('clean install')
                 }
             }
@@ -249,6 +251,7 @@ void checkoutOptaplannerRepo() {
 MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, boolean canNative = false) {
     mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
+                .withSnapshotsDisabledInSettings()
                 // add timestamp to Maven logs
                 .withOptions(['-Dorg.slf4j.simpleLogger.showDateTime=true', '-Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS'])
                 .inDirectory(directory)

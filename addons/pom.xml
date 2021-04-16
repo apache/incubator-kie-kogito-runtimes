@@ -20,6 +20,8 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
+        <module>mail</module>
+        <module>task-notification</module>
         <module>persistence</module>
         <module>cloudevents</module>
         <module>events</module>
@@ -42,6 +44,8 @@
         </property>
       </activation>
       <modules>
+        <module>cloudevents</module>
+        <module>events</module>
         <module>monitoring</module>
       </modules>
     </profile>
