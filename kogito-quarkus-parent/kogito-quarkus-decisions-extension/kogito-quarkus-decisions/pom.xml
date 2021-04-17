@@ -13,6 +13,12 @@
     <name>Kogito :: Quarkus Decisions Extension :: Runtime</name>
     <description>Add Kogito decision (DMN) capabilities - Include Drools DMN engine</description>
     <dependencies>
+    
+        <dependency> <!-- used only to switch log level in a substitution -->
+            <groupId>org.graalvm.nativeimage</groupId>
+            <artifactId>svm</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
