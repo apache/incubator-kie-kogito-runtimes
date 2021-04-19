@@ -17,10 +17,9 @@ package org.kie.kogito.services.event.impl;
 
 import java.util.Optional;
 
-import org.kie.kogito.event.CloudEventEmitter;
+import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
-import org.kie.kogito.services.event.EventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +27,8 @@ public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEv
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractMessageProducer.class);
 
-    private Optional<Boolean> useCloudEvents;
-    private EventMarshaller marshaller;
     private String trigger;
-    private CloudEventEmitter emitter;
+    private EventEmitter emitter;
 
     // in general we should favor the non-empty constructor
     // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
@@ -40,39 +37,24 @@ public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEv
     }
 
     public AbstractMessageProducer(
-            CloudEventEmitter emitter,
-            EventMarshaller marshaller,
-            String trigger,
-            Optional<Boolean> useCloudEvents) {
-        this.emitter = emitter;
-        this.marshaller = marshaller;
-        this.trigger = trigger;
-        this.useCloudEvents = useCloudEvents;
+            EventEmitter emitter,
+            String trigger) {
+        setParams(emitter, trigger);
     }
 
     protected void setParams(
-            CloudEventEmitter emitter,
-            EventMarshaller marshaller,
-            String trigger,
-            Optional<Boolean> useCloudEvents) {
+            EventEmitter emitter,
+            String trigger) {
         this.emitter = emitter;
-        this.marshaller = marshaller;
         this.trigger = trigger;
-        this.useCloudEvents = useCloudEvents;
     }
 
     public void produce(KogitoProcessInstance pi, D eventData) {
-        emitter.emit(this.marshall(pi, eventData))
+        emitter.emit(eventData, trigger, Optional.of(e -> dataEventTypeConstructor(e, pi, trigger)))
                 .exceptionally(ex -> {
                     logger.error("An error was caught while process " + pi.getProcessId() + " produced message " + eventData, ex);
                     return null;
                 });
-    }
-
-    protected String marshall(KogitoProcessInstance pi, D eventData) {
-        return marshaller.marshall(eventData,
-                e -> dataEventTypeConstructor(e, pi, trigger),
-                useCloudEvents);
     }
 
     protected abstract T dataEventTypeConstructor(D e, KogitoProcessInstance pi, String trigger);

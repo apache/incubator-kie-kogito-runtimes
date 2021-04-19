@@ -15,10 +15,15 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
-import org.kie.kogito.event.CloudEventEmitter;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
+import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,7 +32,7 @@ import org.springframework.stereotype.Component;
  * Spring implementation delegating to kafka template
  */
 @Component
-public class SpringKafkaCloudEventEmitter implements CloudEventEmitter {
+public class SpringKafkaCloudEventEmitter implements EventEmitter {
 
     @Autowired
     org.springframework.kafka.core.KafkaTemplate<String, String> emitter;
@@ -36,8 +41,18 @@ public class SpringKafkaCloudEventEmitter implements CloudEventEmitter {
     @Value(value = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + ":" + KogitoEventStreams.OUTGOING + "}")
     String kafkaTopicName;
 
-    public CompletionStage<Void> emit(String e) {
-        return emitter.send(kafkaTopicName, e)
+    // TODO @Autowired change when this class is added https://github.com/kiegroup/kogito-runtimes/pull/1195/files#diff-32eeb9c913dc61f24f8b4d27a8dca87f5e907de83b81e210e59bd67193a9cdfd
+    EventMarshaller marshaller = new DefaultEventMarshaller();
+
+    @Autowired
+    ConfigBean configBean;
+
+    @Override
+    public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
+        return emitter.send(kafkaTopicName, marshaller.marshall(configBean.useCloudEvents()
+                .orElse(true)
+                        ? processDecorator.map(d -> d.apply(e)).orElse(e)
+                        : e))
                 .completable()
                 .thenApply(r -> null); // discard return to comply with the signature
     }

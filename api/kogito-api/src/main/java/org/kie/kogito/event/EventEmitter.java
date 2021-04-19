@@ -15,18 +15,23 @@
  */
 package org.kie.kogito.event;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 /**
- * Generic emitter for cloud events.
+ * Generic emitter for events.
  *
  * Implementations provide their specific (usually injectable) behavior.
  *
  */
-public interface CloudEventEmitter {
-
+public interface EventEmitter {
     /**
-     * @param e cloud event payload in string form
+     * @param e object to emit
+     * @param type type of object to emit
+     * @param optional process decorator
      */
-    CompletionStage<Void> emit(String e);
+    <T> CompletionStage<Void> emit(T e,
+            String type,
+            Optional<Function<T, Object>> processDecorator);
 }

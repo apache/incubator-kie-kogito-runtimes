@@ -118,6 +118,10 @@
       <version>${version.org.junit.pioneer}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>jbpm-flow</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

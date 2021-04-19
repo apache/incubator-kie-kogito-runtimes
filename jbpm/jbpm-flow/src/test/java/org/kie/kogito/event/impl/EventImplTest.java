@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.event.CloudEventExtensionConstants;
+import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
@@ -32,7 +33,6 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.EventConsumerFactory;
-import org.kie.kogito.services.event.EventMarshaller;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.ArgumentCaptor;
@@ -182,13 +182,13 @@ public class EventImplTest {
         DummyEvent dataEvent = new DummyEvent("pepe");
         assertEquals(
                 "{\"dummyField\":\"pepe\"}",
-                marshaller.marshall(dataEvent, DummyCloudEvent::new, Optional.of(false)));
+                marshaller.marshall(dataEvent));
     }
 
     @Test
     void testCloudEventMarshaller() {
         DummyEvent dataEvent = new DummyEvent("pepe");
-        String jsonString = marshaller.marshall(dataEvent, DummyCloudEvent::new, Optional.empty());
+        String jsonString = marshaller.marshall(dataEvent);
         assertTrue(jsonString.contains("\"dummyField\":\"pepe\""));
         assertTrue(jsonString.contains("\"" + CloudEventExtensionConstants.PROCESS_INSTANCE_ID + "\":\"1\""));
     }

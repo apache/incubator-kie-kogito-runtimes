@@ -31,8 +31,8 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.decision.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
+import org.kie.kogito.event.EventEmitter;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -141,7 +141,7 @@ class EventDrivenDecisionControllerTest {
     private static DMNRuntime runtime;
 
     private EventDrivenDecisionController controller;
-    private CloudEventEmitter eventEmitterMock;
+    private EventEmitter eventEmitterMock;
     private DecisionModel decisionModelSpy;
     private DecisionModels decisionModelsMock;
 
@@ -154,7 +154,7 @@ class EventDrivenDecisionControllerTest {
     @BeforeEach
     void beforeEach() {
         decisionModelsMock = mock(DecisionModels.class);
-        eventEmitterMock = mock(CloudEventEmitter.class);
+        eventEmitterMock = mock(EventEmitter.class);
 
         // by default there's no execution id supplier, if needed it will be overridden in the specific test
         mockDecisionModel();
@@ -166,7 +166,7 @@ class EventDrivenDecisionControllerTest {
     void testSubscribe() {
         DecisionModels decisionModelsMock = mock(DecisionModels.class);
         ConfigBean configMock = mock(ConfigBean.class);
-        CloudEventEmitter eventEmitterMock = mock(CloudEventEmitter.class);
+        EventEmitter eventEmitterMock = mock(EventEmitter.class);
         CloudEventReceiver eventReceiverMock = mock(CloudEventReceiver.class);
 
         // option #1: parameters via constructor + parameterless setup

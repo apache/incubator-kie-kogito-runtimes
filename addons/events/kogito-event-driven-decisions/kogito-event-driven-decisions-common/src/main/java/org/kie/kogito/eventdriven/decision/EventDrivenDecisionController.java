@@ -31,8 +31,8 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
-import org.kie.kogito.event.CloudEventEmitter;
 import org.kie.kogito.event.CloudEventReceiver;
+import org.kie.kogito.event.EventEmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,20 +50,20 @@ public class EventDrivenDecisionController {
 
     private DecisionModels decisionModels;
     private ConfigBean config;
-    private CloudEventEmitter eventEmitter;
+    private EventEmitter eventEmitter;
     private CloudEventReceiver eventReceiver;
 
     protected EventDrivenDecisionController() {
     }
 
-    protected EventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+    protected EventDrivenDecisionController(DecisionModels decisionModels, ConfigBean config, EventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
         this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
     }
 
-    protected void setup(DecisionModels decisionModels, ConfigBean config, CloudEventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
+    protected void setup(DecisionModels decisionModels, ConfigBean config, EventEmitter eventEmitter, CloudEventReceiver eventReceiver) {
         this.decisionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -85,8 +85,7 @@ public class EventDrivenDecisionController {
         buildEvaluationContext(event)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
-                .flatMap(CloudEventUtils::encode)
-                .ifPresent(eventEmitter::emit);
+                .ifPresent(e -> eventEmitter.emit(event, event.getType(), Optional.empty()));
     }
 
     private Optional<EvaluationContext> buildEvaluationContext(CloudEvent event) {

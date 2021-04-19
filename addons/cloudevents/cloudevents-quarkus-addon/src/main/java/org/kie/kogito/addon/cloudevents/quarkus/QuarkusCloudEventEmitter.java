@@ -15,7 +15,9 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus;
 
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -25,8 +27,11 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecorator;
 import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecoratorFactory;
-import org.kie.kogito.event.CloudEventEmitter;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
+import org.kie.kogito.event.impl.DefaultEventMarshaller;
 
 /**
  * the quarkus implementation just delegates to a real emitter,
@@ -34,10 +39,17 @@ import org.kie.kogito.event.KogitoEventStreams;
  *
  */
 @ApplicationScoped
-public class QuarkusCloudEventEmitter implements CloudEventEmitter {
+public class QuarkusCloudEventEmitter implements EventEmitter {
+
     @Inject
     @Channel(KogitoEventStreams.OUTGOING)
     Emitter<String> emitter;
+
+    @Inject
+    ConfigBean configBean;
+
+    // TODO @Inject change when this class is added https://github.com/kiegroup/kogito-runtimes/pull/1195/files#diff-32eeb9c913dc61f24f8b4d27a8dca87f5e907de83b81e210e59bd67193a9cdfd
+    EventMarshaller marshaller = new DefaultEventMarshaller();
 
     final MessageDecorator messageDecorator;
 
@@ -45,8 +57,12 @@ public class QuarkusCloudEventEmitter implements CloudEventEmitter {
         this.messageDecorator = MessageDecoratorFactory.newInstance();
     }
 
-    public CompletionStage<Void> emit(String e) {
-        final Message<String> message = this.messageDecorator.decorate(e);
+    @Override
+    public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
+        final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(configBean.useCloudEvents()
+                .orElse(true)
+                        ? processDecorator.map(d -> d.apply(e)).orElse(e)
+                        : e));
         emitter.send(message);
         return message.getAck().get();
     }
