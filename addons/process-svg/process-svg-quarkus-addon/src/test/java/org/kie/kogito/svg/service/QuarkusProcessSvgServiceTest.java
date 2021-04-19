@@ -39,9 +39,9 @@ public class QuarkusProcessSvgServiceTest extends ProcessSvgServiceTest {
 
         tested = spy(new QuarkusProcessSvgService(dataIndexClient,
                 Optional.empty(),
-                "#C0C0C0",
-                "#030303",
-                "#FF0000"));
+                AbstractProcessSvgService.DEFAULT_COMPLETED_COLOR,
+                AbstractProcessSvgService.DEFAULT_COMPLETED_BORDER_COLOR,
+                AbstractProcessSvgService.DEFAULT_ACTIVE_BORDER_COLOR));
     }
 
     @Override
