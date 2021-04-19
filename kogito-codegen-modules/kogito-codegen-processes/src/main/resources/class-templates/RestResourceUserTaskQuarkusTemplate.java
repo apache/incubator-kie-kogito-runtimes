@@ -98,6 +98,18 @@ public class $Type$Resource {
                 .orElseThrow(NotFoundException::new);
     }
 
+    @DELETE
+    @Path("/{id}/$taskName$/{taskId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public $Type$Output abortTask(@PathParam("id") final String id,
+                                  @PathParam("taskId") final String taskId,
+                                  @QueryParam("phase") @DefaultValue("abort") final String phase,
+                                  @QueryParam("user") final String user,
+                                  @QueryParam("group") final List<String> groups) {
+        return processService.abortTask(process, id, taskId, phase, user, groups)
+                .orElseThrow(() -> new NotFoundException());
+    }
+
     @GET
     @Path("$taskName$/schema")
     @Produces(MediaType.APPLICATION_JSON)

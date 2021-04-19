@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.process;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,10 +42,13 @@ public class StaticDependencyInjectionProducerGenerator {
 
     /**
      * Key is the FilePath, Value is the content
-     * 
+     *
      * @return Map with the generated resources
      */
     public Map<String, String> generate() {
+        if (!context.hasDI()) {
+            return Collections.emptyMap();
+        }
         return producerTemplates.stream()
                 .map(this::buildProducerTemplatedGenerator)
                 .collect(Collectors.toMap(TemplatedGenerator::generatedFilePath,
