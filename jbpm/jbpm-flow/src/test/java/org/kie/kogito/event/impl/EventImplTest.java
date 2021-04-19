@@ -186,15 +186,14 @@ public class EventImplTest {
     }
 
     @Test
-    void testCloudEventMarshaller() {
+    void testEventMarshaller() {
         DummyEvent dataEvent = new DummyEvent("pepe");
         String jsonString = marshaller.marshall(dataEvent);
         assertTrue(jsonString.contains("\"dummyField\":\"pepe\""));
-        assertTrue(jsonString.contains("\"" + CloudEventExtensionConstants.PROCESS_INSTANCE_ID + "\":\"1\""));
     }
 
     @Test
-    void testCloudEventPayloadException() {
+    void testEventPayloadException() {
         EventConsumer<DummyModel> consumer = factory.get(DummyModel::new, DummyEvent.class, DummyCloudEvent.class, Optional.empty());
         final String trigger = "dummyTopic";
         final String payload = "{ a = b }";

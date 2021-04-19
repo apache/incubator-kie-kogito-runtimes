@@ -24,9 +24,9 @@
     <artifactId>cloudevents</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
-  <name>Kogito :: Add-Ons :: CloudEvents :: Quarkus</name>
-  <description>Kogito Events handling for CloudEvents AddOn (Quarkus) </description>
+  <artifactId>kogito-cloudevents-quarkus-common-addon</artifactId>
+  <name>Kogito :: Add-Ons :: CloudEvents :: Common:: Quarkus</name>
+  <description>Common classes for Kogito CloudEvents AddOn (Quarkus)</description>
 
   <dependencyManagement>
     <dependencies>
@@ -44,10 +44,6 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-cloudevents-common-addon</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-cloudevents-quarkus-common-addon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
