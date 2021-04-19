@@ -31,6 +31,7 @@ import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessService;
@@ -398,7 +399,7 @@ public class ProcessServiceImpl implements ProcessService {
             List<String> groups) {
         return JsonSchemaUtil.addPhases(
                 process,
-                application,
+                application.config().get(ProcessConfig.class).workItemHandlers().forName("Human Task"),
                 id,
                 taskId,
                 Policies.of(user, groups),
