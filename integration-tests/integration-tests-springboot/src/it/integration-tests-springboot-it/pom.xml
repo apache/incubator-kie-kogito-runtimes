@@ -16,6 +16,7 @@
         <java.version>@maven.compiler.release@</java.version>
         <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
         <infinispan.version>@version.org.infinispan@</infinispan.version>
+        <version.com.github.tomakehurst.wiremock>@version.com.github.tomakehurst.wiremock@</version.com.github.tomakehurst.wiremock>
     </properties>
     
     <dependencyManagement>
@@ -57,6 +58,12 @@
         <dependency>
           <groupId>org.kie.kogito</groupId>
           <artifactId>task-management-springboot-addon</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>process-svg-springboot-addon</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -102,7 +109,13 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
+            <version>@version.com.github.tomakehurst.wiremock@</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
           <groupId>org.springdoc</groupId>
           <artifactId>springdoc-openapi-ui</artifactId>

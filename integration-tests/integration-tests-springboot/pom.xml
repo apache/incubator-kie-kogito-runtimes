@@ -28,9 +28,6 @@
           <artifactId>maven-invoker-plugin</artifactId>
           <configuration>
             <streamLogs>true</streamLogs>
-            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-            <useLocalRepository>true</useLocalRepository>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             <properties>
               <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
@@ -63,6 +60,13 @@
           <name>persistence</name>
         </property>
       </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>infinispan-persistence-addon</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
