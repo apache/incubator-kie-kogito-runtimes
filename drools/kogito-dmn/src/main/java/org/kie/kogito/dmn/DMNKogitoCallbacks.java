@@ -38,21 +38,41 @@ public final class DMNKogitoCallbacks {
     }
 
     public static void beforeCreateGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction, Reader[] readers) {
-        LOG.debug("createGenericDMNRuntime with {} model(s) for DMNRuntime initialization...", readers.length);
+        if (isGraalVMNIRuntime()) {
+            LOG.warn("createGenericDMNRuntime with {} model(s) for DMNRuntime initialization...", readers.length);
+        } else {
+            LOG.debug("createGenericDMNRuntime with {} model(s) for DMNRuntime initialization...", readers.length);
+        }
     }
 
     public static void afterCreateGenericDMNRuntime(DMNRuntime dmnRuntime) {
-        LOG.debug("createGenericDMNRuntime done. DMNRuntime contains {} DMNModel(s).", dmnRuntime.getModels().size());
+        if (isGraalVMNIRuntime()) {
+            LOG.warn("createGenericDMNRuntime done. DMNRuntime contains {} DMNModel(s).", dmnRuntime.getModels().size());
+        } else {
+            LOG.debug("createGenericDMNRuntime done. DMNRuntime contains {} DMNModel(s).", dmnRuntime.getModels().size());
+        }
     }
 
     public static void beforeAbstractDecisionModelsInit(Function<String, KieRuntimeFactory> sKieRuntimeFactoryFunction,
             ExecutionIdSupplier executionIdSupplier,
             Function<DecisionModel, DecisionModel> decisionModelTransformerInit,
             Reader[] readers) {
-        LOG.debug("AbstractDecisionModels.init() called.");
+        if (isGraalVMNIRuntime()) {
+            LOG.warn("AbstractDecisionModels.init() called.");
+        } else {
+            LOG.debug("AbstractDecisionModels.init() called.");
+        }
     }
 
     public static void afterAbstractDecisionModelsInit(DMNRuntime dmnRuntime) {
-        LOG.debug("AbstractDecisionModels.init() done.");
+        if (isGraalVMNIRuntime()) {
+            LOG.warn("AbstractDecisionModels.init() done.");
+        } else {
+            LOG.debug("AbstractDecisionModels.init() done.");
+        }
+    }
+
+    private static boolean isGraalVMNIRuntime() {
+        return "runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
     }
 }
