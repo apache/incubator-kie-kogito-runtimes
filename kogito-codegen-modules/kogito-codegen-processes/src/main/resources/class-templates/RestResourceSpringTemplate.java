@@ -28,7 +28,7 @@ import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
-import org.kie.kogito.process.impl.ProcessService;
+import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.WorkItem;

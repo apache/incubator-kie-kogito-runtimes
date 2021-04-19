@@ -45,12 +45,12 @@ public class $Type$Resource {
     public ResponseEntity<$Type$Output> signal(@PathVariable("id") final String id,
                                                final UriComponentsBuilder uriComponentsBuilder) {
 
-        return processService.signalTask(process, id, "$taskNodeName$")
-                .map(pi -> processService.getTaskByName(pi, "$taskName$")
-                        .map(task -> ResponseEntity
-                                .created(uriComponentsBuilder.path("/$name$/{id}/$taskName$/{taskId}")
-                                                 .buildAndExpand(id, task.getId()).toUri())
-                                .body(pi.variables().toModel())).orElse(null))
+        return processService.signalTask(process, id, "$taskNodeName$", "$taskName$")
+                .map(task -> ResponseEntity
+                        .created(uriComponentsBuilder
+                                         .path("/$name$/{id}/$taskName$/{taskId}")
+                                         .buildAndExpand(id, task.getId()).toUri())
+                        .body(pi.variables().toModel()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

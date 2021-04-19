@@ -33,6 +33,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
+import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
@@ -41,14 +42,15 @@ import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
-public class ProcessService {
+public class ProcessServiceImpl implements ProcessService {
 
     private final Application application;
 
-    public ProcessService(Application application) {
+    public ProcessServiceImpl(Application application) {
         this.application = application;
     }
 
+    @Override
     public <T extends Model> ProcessInstance<T> createProcessInstance(Process<T> process, String businessKey,
             T model,
             String startFromNodeId) {
@@ -63,6 +65,7 @@ public class ProcessService {
         });
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process) {
         return process.instances().values().stream()
                 .map(pi -> pi.variables())
@@ -70,6 +73,7 @@ public class ProcessService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
@@ -77,6 +81,7 @@ public class ProcessService {
                 .map(MappableToModel::toModel);
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
@@ -92,6 +97,7 @@ public class ProcessService {
                         .map(MappableToModel::toModel));
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> update(Process<T> process, String id, T resource) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
@@ -102,22 +108,26 @@ public class ProcessService {
                         .map(MappableToModel::toModel));
     }
 
+    @Override
     public <T extends Model> Optional<List<WorkItem>> getTasks(Process<T> process, String id, String user, List<String> groups) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(pi -> pi.workItems(Policies.of(user, groups)));
     }
 
-    public <T extends Model> Optional<ProcessInstance<T>> signalTask(Process<T> process, String id, String taskNodeName) {
+    @Override
+    public <T extends Model> Optional<WorkItem> signalTask(Process<T> process, String id, String taskNodeName, String taskName) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
                 .findById(id)
                 .map(pi -> {
                     pi.send(Sig.of(taskNodeName, Collections.emptyMap()));
                     return pi;
-                }));
+                })
+                .map(pi -> getTaskByName(pi, taskName).orElse(null)));
     }
 
+    @Override
     public <T extends Model> Optional<WorkItem> getTaskByName(ProcessInstance<T> pi, String taskName) {
         return pi
                 .workItems()
@@ -126,6 +136,7 @@ public class ProcessService {
                 .findFirst();
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> completeTask(Process<T> process,
             String id,
             String taskId,
@@ -146,6 +157,7 @@ public class ProcessService {
                 .map(MappableToModel::toModel));
     }
 
+    @Override
     public <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
             String id,
             String taskId,
@@ -160,6 +172,7 @@ public class ProcessService {
                 .map(mapper::apply);
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> taskTransition(
             Process<T> process,
             String id,
@@ -180,6 +193,7 @@ public class ProcessService {
                         }));
     }
 
+    @Override
     public <T extends MappableToModel<?>, R> Optional<R> getTask(Process<T> process,
             String id,
             String taskId,
@@ -192,6 +206,7 @@ public class ProcessService {
                 .map(mapper::apply);
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> abortTask(Process<T> process,
             String id,
             String taskId,
@@ -210,6 +225,7 @@ public class ProcessService {
                         }));
     }
 
+    @Override
     public <T extends Model> Optional<Comment> addComment(Process<T> process,
             String id,
             String taskId,
@@ -226,6 +242,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Comment> updateComment(Process<T> process,
             String id,
             String taskId,
@@ -243,6 +260,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Boolean> deleteComment(Process<T> process,
             String id,
             String taskId,
@@ -259,6 +277,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Attachment> addAttachment(Process<T> process,
             String id,
             String taskId,
@@ -275,6 +294,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Attachment> updateAttachment(Process<T> process,
             String id,
             String taskId,
@@ -292,6 +312,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Boolean> deleteAttachment(Process<T> process,
             String id,
             String taskId,
@@ -308,6 +329,7 @@ public class ProcessService {
                                 Policies.of(user, groups))));
     }
 
+    @Override
     public <T extends Model> Optional<Attachment> getAttachment(Process<T> process,
             String id,
             String taskId,
@@ -320,6 +342,7 @@ public class ProcessService {
                 .map(attachments -> attachments.get(attachmentId));
     }
 
+    @Override
     public <T extends Model> Optional<Collection<Attachment>> getAttachments(Process<T> process,
             String id,
             String taskId,
@@ -331,6 +354,7 @@ public class ProcessService {
                 .map(Map::values);
     }
 
+    @Override
     public <T extends Model> Optional<Comment> getComment(Process<T> process,
             String id,
             String taskId,
@@ -343,6 +367,7 @@ public class ProcessService {
                 .map(comments -> comments.get(commentId));
     }
 
+    @Override
     public <T extends Model> Optional<Collection<Comment>> getComments(Process<T> process,
             String id,
             String taskId,
@@ -354,6 +379,7 @@ public class ProcessService {
                 .map(Map::values);
     }
 
+    @Override
     public <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(),
                 () -> process.instances().findById(id)
@@ -364,6 +390,7 @@ public class ProcessService {
     }
 
     //Schema
+    @Override
     public <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,
             String id,
             String taskId,

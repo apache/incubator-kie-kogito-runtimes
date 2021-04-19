@@ -15,15 +15,9 @@
  */
 package $Package$;
 
-import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Application;
-import org.kie.kogito.event.EventPublisher;
-import org.kie.kogito.jobs.JobsService;
-import org.kie.kogito.process.ProcessEventListenerConfig;
-import org.kie.kogito.process.WorkItemHandlerConfig;
-import org.kie.kogito.process.impl.ProcessService;
-import org.kie.kogito.uow.UnitOfWorkManager;
-import org.kie.kogito.uow.events.UnitOfWorkEventListener;
+import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.process.impl.ProcessServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,6 +26,6 @@ public class ProcessServiceProducer {
 
     @Bean
     public ProcessService processService(Application application){
-        return new ProcessService(application);
+        return new ProcessServiceImpl(application);
     }
 }

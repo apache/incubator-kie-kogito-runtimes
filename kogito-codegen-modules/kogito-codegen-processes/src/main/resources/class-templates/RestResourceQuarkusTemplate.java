@@ -51,7 +51,7 @@ import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.ProcessInstanceNotFoundException;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.impl.ProcessService;
+import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.process.workitem.Comment;

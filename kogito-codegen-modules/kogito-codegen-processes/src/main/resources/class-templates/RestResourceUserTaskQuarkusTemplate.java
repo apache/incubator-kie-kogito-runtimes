@@ -26,7 +26,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.impl.ProcessService;
 import org.kie.kogito.process.impl.Sig;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
@@ -37,12 +36,11 @@ public class $Type$Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response signal(@PathParam("id") final String id, @Context UriInfo uriInfo) {
-        return processService.signalTask(process, id, "$taskNodeName$")
-                .map(pi -> processService.getTaskByName(pi, "$taskName$")
-                        .map(task -> Response
-                                .created(uriInfo.getAbsolutePathBuilder().path(task.getId()).build())
-                                .entity(pi.variables().toModel())
-                                .build()).orElse(null))
+        return processService.signalTask(process, id, "$taskNodeName$", "$taskName$")
+                .map(task -> Response
+                        .created(uriInfo.getAbsolutePathBuilder().path(task.getId()).build())
+                        .entity(pi.variables().toModel())
+                        .build())
                 .orElseThrow(NotFoundException::new);
     }
 

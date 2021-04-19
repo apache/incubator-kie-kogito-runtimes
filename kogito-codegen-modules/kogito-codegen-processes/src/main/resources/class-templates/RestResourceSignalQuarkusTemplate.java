@@ -15,12 +15,7 @@
  */
 package com.myspace.demo;
 
-import java.util.List;
-
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.impl.ProcessService;
-import org.kie.kogito.process.impl.Sig;
 
 public class $Type$Resource {
 
