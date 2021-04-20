@@ -55,12 +55,14 @@ public class ProjectSourceClass {
                         "public class ProjectRuntime implements " + KieRuntimeBuilder.class.getCanonicalName() + " {\n" +
                         "\n" +
                         "    private static final ProjectModel model = new ProjectModel();\n" +
-//                        "    private final java.util.Map<String, KieBase> kbases = new java.util.HashMap<>();\n" +
+                        "    private static final java.util.Map<String, KieBase> kbases = initKieBases();\n" +
                         "\n" +
                         "    public static final ProjectRuntime INSTANCE = new ProjectRuntime();\n" +
                         "\n");
-        //        sb.append(modelMethod.toGetKieBaseMethods());
-        sb.append(toGetKieBaseMethods());
+
+        sb.append(initKieBaseMethod());
+        sb.append("\n");
+        sb.append(modelMethod.toGetKieBaseMethods());
         sb.append("\n");
         sb.append(modelMethod.toNewKieSessionMethods());
         sb.append("\n");
@@ -79,33 +81,21 @@ public class ProjectSourceClass {
         return PROJECT_RUNTIME_SOURCE;
     }
 
-    public String toGetKieBaseMethods() {
+    public String initKieBaseMethod() {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "    @Override\n" +
-                        "    public KieBase getKieBase() {\n" +
-                        "        throw new UnsupportedOperationException(\"There is no default KieBase\");\n" +
-                        "    }\n\n");
+                "    private static java.util.Map<String, KieBase> initKieBases() {\n" +
+                        "        java.util.Map<String, KieBase> kbaseMap = new java.util.HashMap<>();\n" +
+                        "        if (org.kie.kogito.internal.RuntimeEnvironment.isNative()) {\n");
 
         for (String kbaseName : modelMethod.getKieBaseNames()) {
-            sb.append(
-                    "    private static final KieBase KBASE_" + kbaseName +
-                            " = KieBaseBuilder.createKieBaseFromModel( model.getModelsForKieBase( \"" + kbaseName + "\" ), model.getKieModuleModel().getKieBaseModels().get( \"" + kbaseName
-                            + "\" ) );\n");
+            sb.append("            kbaseMap.put( \"" + kbaseName + "\", ");
+            sb.append("KieBaseBuilder.createKieBaseFromModel( model.getModelsForKieBase( \"" + kbaseName + "\" ), model.getKieModuleModel().getKieBaseModels().get( \"" + kbaseName + "\" ) ) );\n");
         }
 
-        sb.append(
-                "\n" +
-                        "    @Override\n" +
-                        "    public KieBase getKieBase(String name) {\n" +
-                        "        switch (name) {\n");
-        for (String kbaseName : modelMethod.getKieBaseNames()) {
-            sb.append(
-                    "            case \"" + kbaseName + "\": return KBASE_" + kbaseName + ";\n");
-        }
         sb.append(
                 "        }\n" +
-                        "        throw new UnsupportedOperationException(\"Unknown KieBase\");\n" +
+                        "        return kbaseMap;\n" +
                         "    }\n\n");
 
         return sb.toString();

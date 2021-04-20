@@ -57,7 +57,6 @@ public class $Name$ extends AbstractRuleUnit<$ModelName$> {
     }
 
     private static InternalKnowledgeBase createKnowledgeBase() {
-        System.out.println("*** createKnowledgeBase ***");
         RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
         ruleBaseConfig.setEventProcessingMode($EventProcessingMode$);
         ruleBaseConfig.setSessionPoolSize($SessionPoolSize$);
