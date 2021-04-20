@@ -72,9 +72,7 @@ public class MonitoredDecisionModel implements DecisionModel {
     @Override
     public DMNResult evaluateDecisionService(DMNContext context, String decisionServiceName) {
         DMNResult result = originalModel.evaluateDecisionService(context, decisionServiceName);
-        System.out.println("SUCA1");
         if (!shouldSkipMonitoring(context.getMetadata())) {
-            System.out.println("SUCA2");
             dmnResultMetricsBuilder.generateMetrics(result, originalModel.getDMNModel().getName());
         }
         return result;
