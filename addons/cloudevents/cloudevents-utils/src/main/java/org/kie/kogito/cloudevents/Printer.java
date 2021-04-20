@@ -35,6 +35,7 @@ public final class Printer {
                 "\ttype: " + event.getType() + "\n" +
                 "\tsource: " + event.getSource() + "\n" +
                 "\tid: " + event.getId() + "\n" +
+                "\tdatatype: " + event.getDataContentType() + "\n" +
                 "Extensions," + beautifyExtensions(event) +
                 "Data,\n\t" + new String(event.getData());
     }
