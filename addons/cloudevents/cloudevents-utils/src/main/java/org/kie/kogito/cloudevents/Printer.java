@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.cloudevents;
 
+import java.util.Objects;
+
 import io.cloudevents.CloudEvent;
 
 /**
@@ -37,7 +39,7 @@ public final class Printer {
                 "\tid: " + event.getId() + "\n" +
                 "\tdatatype: " + event.getDataContentType() + "\n" +
                 "Extensions," + beautifyExtensions(event) +
-                "Data,\n\t" + new String(event.getData());
+                "Data,\n\t" + Objects.toString(event.getData(), "");
     }
 
     private static String beautifyExtensions(CloudEvent event) {
