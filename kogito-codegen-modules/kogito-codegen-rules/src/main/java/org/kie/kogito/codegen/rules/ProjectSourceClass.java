@@ -15,13 +15,23 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.drools.modelcompiler.builder.ModelSourceClass;
-import org.kie.api.KieBase;
-import org.kie.api.builder.model.KieBaseModel;
-import org.kie.api.runtime.KieSession;
-import org.kie.kogito.rules.KieRuntimeBuilder;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class ProjectSourceClass {
 
@@ -29,11 +39,13 @@ public class ProjectSourceClass {
     private static final String PROJECT_RUNTIME_RESOURCE_CLASS = PROJECT_RUNTIME_CLASS.replace('.', '/') + ".class";
     private static final String PROJECT_RUNTIME_SOURCE = PROJECT_RUNTIME_CLASS.replace('.', '/') + ".java";
 
-    final ModelSourceClass.KieModuleModelMethod modelMethod;
+    private final ModelSourceClass.KieModuleModelMethod modelMethod;
+    private final KogitoBuildContext context;
     private String dependencyInjection = "";
 
-    public ProjectSourceClass(ModelSourceClass.KieModuleModelMethod modelMethod) {
+    public ProjectSourceClass(ModelSourceClass.KieModuleModelMethod modelMethod, KogitoBuildContext context) {
         this.modelMethod = modelMethod;
+        this.context = context;
     }
 
     public ProjectSourceClass withDependencyInjection(String dependencyInjection) {
@@ -42,35 +54,43 @@ public class ProjectSourceClass {
     }
 
     public String generate() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "package org.drools.project.model;\n" +
-                        "\n" +
-                        "import " + KieBase.class.getCanonicalName() + ";\n" +
-                        "import " + KieBaseModel.class.getCanonicalName() + ";\n" +
-                        "import " + KieSession.class.getCanonicalName() + ";\n" +
-                        "import " + KieBaseBuilder.class.getCanonicalName() + ";\n" +
-                        "\n" +
-                        dependencyInjection + "\n" +
-                        "public class ProjectRuntime implements " + KieRuntimeBuilder.class.getCanonicalName() + " {\n" +
-                        "\n" +
-                        "    private static final ProjectModel model = new ProjectModel();\n" +
-                        "    private static final java.util.Map<String, KieBase> kbases = initKieBases();\n" +
-                        "\n" +
-                        "    public static final ProjectRuntime INSTANCE = new ProjectRuntime();\n" +
-                        "\n");
+        TemplatedGenerator generator = TemplatedGenerator.builder()
+                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
+                .withPackageName("org.drools.project.model")
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .build(context, "ProjectRuntime");
 
-        sb.append(initKieBaseMethod());
-        sb.append("\n");
-        sb.append(modelMethod.toGetKieBaseMethods());
-        sb.append("\n");
-        sb.append(modelMethod.toNewKieSessionMethods());
-        sb.append("\n");
-        sb.append(modelMethod.toGetKieBaseForSessionMethod());
-        sb.append("\n");
-        sb.append(modelMethod.toKieSessionConfMethod());
-        sb.append("\n}");
-        return sb.toString();
+        CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
+        ClassOrInterfaceDeclaration clazz = cu
+                .findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+
+        if (dependencyInjection != null && dependencyInjection.length() > 0) {
+            clazz.addAnnotation( dependencyInjection );
+        }
+
+        writeInitKieBasesMethod(clazz);
+        toMethods(modelMethod.toGetKieBaseMethods()).forEach(clazz::addMember);
+        toMethods(modelMethod.toNewKieSessionMethods()).forEach(clazz::addMember);
+        toMethods(modelMethod.toGetKieBaseForSessionMethod()).forEach(clazz::addMember);
+        toMethods(modelMethod.toKieSessionConfMethod()).forEach(clazz::addMember);
+
+        return cu.toString();
+    }
+
+    private void writeInitKieBasesMethod(ClassOrInterfaceDeclaration clazz) {
+        MethodDeclaration initKieBasesMethod = clazz.findAll(MethodDeclaration.class).stream()
+                .filter(m -> m.getNameAsString().equals("initKieBases"))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Cannot find initKieBases method"));
+
+        IfStmt ifStmt = initKieBasesMethod.findFirst(IfStmt.class).orElseThrow(() -> new NoSuchElementException());
+        BlockStmt ifBlock = ifStmt.getThenStmt().asBlockStmt();
+        for (String kbaseName : modelMethod.getKieBaseNames()) {
+            ifBlock.addStatement("kbaseMap.put( \"" + kbaseName + "\", " +
+                    "KieBaseBuilder.createKieBaseFromModel( model.getModelsForKieBase( \"" + kbaseName + "\" ), " +
+                    "model.getKieModuleModel().getKieBaseModels().get( \"" + kbaseName + "\" ) ) );\n");
+        }
     }
 
     public void write(MemoryFileSystem srcMfs) {
@@ -81,23 +101,7 @@ public class ProjectSourceClass {
         return PROJECT_RUNTIME_SOURCE;
     }
 
-    public String initKieBaseMethod() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "    private static java.util.Map<String, KieBase> initKieBases() {\n" +
-                        "        java.util.Map<String, KieBase> kbaseMap = new java.util.HashMap<>();\n" +
-                        "        if (org.kie.kogito.internal.RuntimeEnvironment.isNative()) {\n");
-
-        for (String kbaseName : modelMethod.getKieBaseNames()) {
-            sb.append("            kbaseMap.put( \"" + kbaseName + "\", ");
-            sb.append("KieBaseBuilder.createKieBaseFromModel( model.getModelsForKieBase( \"" + kbaseName + "\" ), model.getKieModuleModel().getKieBaseModels().get( \"" + kbaseName + "\" ) ) );\n");
-        }
-
-        sb.append(
-                "        }\n" +
-                        "        return kbaseMap;\n" +
-                        "    }\n\n");
-
-        return sb.toString();
+    private List<MethodDeclaration> toMethods(String s) {
+        return parse("public class MyClass { " + s + " }").findAll(MethodDeclaration.class);
     }
 }

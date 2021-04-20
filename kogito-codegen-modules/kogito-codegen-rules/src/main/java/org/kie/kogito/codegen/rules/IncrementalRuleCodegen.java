@@ -279,9 +279,9 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 modelSourceClass.getName(),
                 modelSourceClass.generate()));
 
-        ProjectSourceClass projectSourceClass = new ProjectSourceClass(modelSourceClass.getModelMethod());
+        ProjectSourceClass projectSourceClass = new ProjectSourceClass(modelSourceClass.getModelMethod(), context());
         if (context().hasDI()) {
-            projectSourceClass.withDependencyInjection("@" + context().getDependencyInjectionAnnotator().applicationComponentType());
+            projectSourceClass.withDependencyInjection(context().getDependencyInjectionAnnotator().applicationComponentType());
         }
 
         generatedFiles.add(new GeneratedFile(

@@ -19,16 +19,16 @@ package org.kie.kogito.internal;
 public enum RuntimeEnvironment {
 
     JDK,
-    BUILDING_GRAAL,
-    RUNNING_GRAAL;
+    BUILDING_NATIVE,
+    RUNNING_NATIVE;
 
     public static RuntimeEnvironment get() {
         String graalvmNativeImage = System.getProperty("org.graalvm.nativeimage.imagecode");
         if ("buildtime".equals(graalvmNativeImage)) {
-            return BUILDING_GRAAL;
+            return BUILDING_NATIVE;
         }
         if ("runtime".equals(graalvmNativeImage)) {
-            return RUNNING_GRAAL;
+            return RUNNING_NATIVE;
         }
         return JDK;
     }
