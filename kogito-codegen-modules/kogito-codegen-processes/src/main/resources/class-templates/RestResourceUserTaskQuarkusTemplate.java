@@ -39,7 +39,7 @@ public class $Type$Resource {
         return processService.signalTask(process, id, "$taskNodeName$", "$taskName$")
                 .map(task -> Response
                         .created(uriInfo.getAbsolutePathBuilder().path(task.getId()).build())
-                        .entity(pi.variables().toModel())
+                        .entity(task.getResults())
                         .build())
                 .orElseThrow(NotFoundException::new);
     }

@@ -42,7 +42,7 @@ public class $Type$Resource {
 
     @PostMapping(value = "/{id}/$taskName$", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<$Type$Output> signal(@PathVariable("id") final String id,
+    public ResponseEntity signal(@PathVariable("id") final String id,
                                                final UriComponentsBuilder uriComponentsBuilder) {
 
         return processService.signalTask(process, id, "$taskNodeName$", "$taskName$")
@@ -50,7 +50,7 @@ public class $Type$Resource {
                         .created(uriComponentsBuilder
                                          .path("/$name$/{id}/$taskName$/{taskId}")
                                          .buildAndExpand(id, task.getId()).toUri())
-                        .body(pi.variables().toModel()))
+                        .body(task.getResults()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
