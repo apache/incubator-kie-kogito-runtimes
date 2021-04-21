@@ -65,8 +65,8 @@ public class ProjectSourceClass {
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
-        if (dependencyInjection != null && dependencyInjection.length() > 0) {
-            clazz.addAnnotation(dependencyInjection);
+        if (context.hasDI()) {
+            context.getDependencyInjectionAnnotator().withApplicationComponent(clazz);
         }
 
         writeInitKieBasesMethod(clazz);
