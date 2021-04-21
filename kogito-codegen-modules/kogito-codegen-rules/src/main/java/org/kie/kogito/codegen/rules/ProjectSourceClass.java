@@ -82,7 +82,7 @@ public class ProjectSourceClass {
         MethodDeclaration initKieBasesMethod = clazz.findAll(MethodDeclaration.class).stream()
                 .filter(m -> m.getNameAsString().equals("initKieBases"))
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Cannot find initKieBases method"));
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find initKieBases method"));
 
         IfStmt ifStmt = initKieBasesMethod.findFirst(IfStmt.class).orElseThrow(() -> new NoSuchElementException());
         BlockStmt ifBlock = ifStmt.getThenStmt().asBlockStmt();
