@@ -66,7 +66,7 @@ public class ProjectSourceClass {
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
 
         if (dependencyInjection != null && dependencyInjection.length() > 0) {
-            clazz.addAnnotation( dependencyInjection );
+            clazz.addAnnotation(dependencyInjection);
         }
 
         writeInitKieBasesMethod(clazz);
