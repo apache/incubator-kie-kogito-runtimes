@@ -22,6 +22,7 @@ import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.modelcompiler.builder.ModelSourceClass;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -33,32 +34,23 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
-public class ProjectSourceClass {
-
-    public static final String PROJECT_RUNTIME_CLASS = "org.drools.project.model.ProjectRuntime";
-    private static final String PROJECT_RUNTIME_RESOURCE_CLASS = PROJECT_RUNTIME_CLASS.replace('.', '/') + ".class";
-    private static final String PROJECT_RUNTIME_SOURCE = PROJECT_RUNTIME_CLASS.replace('.', '/') + ".java";
+public class ProjectRuntimeGenerator {
 
     private final ModelSourceClass.KieModuleModelMethod modelMethod;
     private final KogitoBuildContext context;
-    private String dependencyInjection = "";
+    private final TemplatedGenerator generator;
 
-    public ProjectSourceClass(ModelSourceClass.KieModuleModelMethod modelMethod, KogitoBuildContext context) {
+    public ProjectRuntimeGenerator(ModelSourceClass.KieModuleModelMethod modelMethod, KogitoBuildContext context) {
         this.modelMethod = modelMethod;
         this.context = context;
-    }
-
-    public ProjectSourceClass withDependencyInjection(String dependencyInjection) {
-        this.dependencyInjection = dependencyInjection;
-        return this;
-    }
-
-    public String generate() {
-        TemplatedGenerator generator = TemplatedGenerator.builder()
+        this.generator = TemplatedGenerator.builder()
                 .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withPackageName("org.drools.project.model")
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .build(context, "ProjectRuntime");
+    }
+
+    public String generate() {
 
         CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
         ClassOrInterfaceDeclaration clazz = cu
@@ -98,7 +90,7 @@ public class ProjectSourceClass {
     }
 
     public String getName() {
-        return PROJECT_RUNTIME_SOURCE;
+        return generator.generatedFilePath();
     }
 
     private List<MethodDeclaration> toMethods(String s) {
