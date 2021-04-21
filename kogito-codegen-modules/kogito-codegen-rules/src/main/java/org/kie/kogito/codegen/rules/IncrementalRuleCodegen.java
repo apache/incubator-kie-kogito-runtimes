@@ -51,6 +51,7 @@ import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.internal.builder.DecisionTableConfiguration;
 import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -333,6 +334,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                     domainDashboardDrlTemplate,
                     dashboardName,
                     ruleUnit.typeName(),
+                    context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                     context().getAddonsConfig().useTracing());
             generatedFiles.addAll(DashboardGeneratedFileUtils.domain(dashboard, dashboardName + ".json"));
         }
@@ -364,6 +366,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                         operationalDashboardDrlTemplate,
                         dashboardName,
                         query.getEndpointName(),
+                        context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                         context().getAddonsConfig().useTracing());
                 generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, dashboardName + ".json"));
             }
