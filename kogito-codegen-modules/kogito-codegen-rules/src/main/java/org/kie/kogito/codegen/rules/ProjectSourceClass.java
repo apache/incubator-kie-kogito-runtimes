@@ -63,7 +63,7 @@ public class ProjectSourceClass {
         CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
-                .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Compilation unit doesn't contain a class or interface declaration!"));
 
         if (dependencyInjection != null && dependencyInjection.length() > 0) {
             clazz.addAnnotation(dependencyInjection);
