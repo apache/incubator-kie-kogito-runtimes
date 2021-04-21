@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.rules;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.modelcompiler.builder.ModelSourceClass;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
@@ -83,10 +82,6 @@ public class ProjectRuntimeGenerator {
                     "KieBaseBuilder.createKieBaseFromModel( model.getModelsForKieBase( \"" + kbaseName + "\" ), " +
                     "model.getKieModuleModel().getKieBaseModels().get( \"" + kbaseName + "\" ) ) );\n");
         }
-    }
-
-    public void write(MemoryFileSystem srcMfs) {
-        srcMfs.write(getName(), generate().getBytes());
     }
 
     public String getName() {
