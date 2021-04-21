@@ -136,6 +136,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>@version.surefire.plugin@</version>
+                <configuration>
+                    <systemPropertyVariables combine.children="append">
+                        <container.image.infinispan>@container.image.infinispan@</container.image.infinispan>
+                        <container.image.kafka>@container.image.kafka@</container.image.kafka>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>

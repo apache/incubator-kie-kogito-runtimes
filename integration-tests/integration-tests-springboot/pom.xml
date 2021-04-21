@@ -29,10 +29,6 @@
           <configuration>
             <streamLogs>true</streamLogs>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
-            <properties>
-              <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
-              <container.image.kafka>${container.image.kafka}</container.image.kafka>
-            </properties>
           </configuration>
         </plugin>
       </plugins>
@@ -60,13 +56,6 @@
           <name>persistence</name>
         </property>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.kie.kogito</groupId>
-          <artifactId>infinispan-persistence-addon</artifactId>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
       <build>
         <plugins>
           <plugin>
@@ -75,9 +64,6 @@
               <profiles>
                 <profile>persistence</profile>
               </profiles>
-              <properties>
-                <enable.resource.infinispan>true</enable.resource.infinispan>
-              </properties>
             </configuration>
             <executions>
               <execution>

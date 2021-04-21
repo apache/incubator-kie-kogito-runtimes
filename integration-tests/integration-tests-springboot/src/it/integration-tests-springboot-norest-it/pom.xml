@@ -15,7 +15,6 @@
     <properties>
         <java.version>@maven.compiler.release@</java.version>
         <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
-        <infinispan.version>@version.org.infinispan@</infinispan.version>
     </properties>
     
     <dependencyManagement>
@@ -135,6 +134,10 @@
                     <includes>
                         <include>org/kie/kogito/integrationtests/springboot/*</include>
                     </includes>
+                    <systemPropertyVariables combine.children="append">
+                        <container.image.infinispan>@container.image.infinispan@</container.image.infinispan>
+                        <container.image.kafka>@container.image.kafka@</container.image.kafka>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
