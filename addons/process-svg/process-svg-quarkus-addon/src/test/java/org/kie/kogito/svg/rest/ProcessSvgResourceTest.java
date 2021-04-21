@@ -47,7 +47,8 @@ class ProcessSvgResourceTest {
 
     @Test
     void getExecutionPathByProcessInstanceIdTest() throws IOException {
-        processSvgResourceTest.getExecutionPathByProcessInstanceId(PROCESS_ID, PROCESS_INSTANCE_ID);
-        verify(processSvgServiceMock).getProcessInstanceSvg(PROCESS_ID, PROCESS_INSTANCE_ID);
+        String authHeader = "Bearer: token";
+        processSvgResourceTest.getExecutionPathByProcessInstanceId(PROCESS_ID, PROCESS_INSTANCE_ID, authHeader);
+        verify(processSvgServiceMock).getProcessInstanceSvg(PROCESS_ID, PROCESS_INSTANCE_ID, authHeader);
     }
 }
