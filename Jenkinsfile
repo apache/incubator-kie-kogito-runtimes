@@ -15,7 +15,7 @@ pipeline {
         jdk 'kie-jdk11'
     }
     options {
-        timeout(time: env.TIMEOUT_VALUE, unit: 'MINUTES')
+        timeout(time: getTimeoutValue(), unit: 'MINUTES')
     }
     environment {
         SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
@@ -29,11 +29,14 @@ pipeline {
 
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
-                    checkoutOptaplannerRepo()
-                    checkoutRepo('kogito-apps')
-                    checkoutRepo('kogito-examples')
-                    checkoutRepo('kogito-examples', 'kogito-examples-persistence')
-                    checkoutRepo('kogito-examples', 'kogito-examples-events')
+
+                    if(!isMultijobPRCheck()) {
+                        checkoutOptaplannerRepo()
+                        checkoutRepo('kogito-apps')
+                        checkoutRepo('kogito-examples')
+                        checkoutRepo('kogito-examples', 'kogito-examples-persistence')
+                        checkoutRepo('kogito-examples', 'kogito-examples-events')
+                    }
                 }
             }
         }
@@ -106,6 +109,7 @@ pipeline {
             }
         }
         stage('Build OptaPlanner') {
+            when { expression { return !isMultijobPRCheck() } }
             steps {
                 script {
                     // Skip unnecessary plugins to save time.
@@ -126,6 +130,7 @@ pipeline {
             }
         }
         stage('Build Apps') {
+            when { expression { return !isMultijobPRCheck() } }
             steps {
                 script {
                     getMavenCommand('kogito-apps', true, true)
@@ -143,6 +148,7 @@ pipeline {
             }
         }
         stage('Build Examples') {
+            when { expression { return !isMultijobPRCheck() } }
             steps {
                 script {
                     getMavenCommand('kogito-examples', true, true)
@@ -158,6 +164,7 @@ pipeline {
             }
         }
         stage('Check Examples with persistence') {
+            when { expression { return !isMultijobPRCheck() } }
             steps {
                 script {
                     getMavenCommand('kogito-examples-persistence', true, true)
@@ -174,6 +181,7 @@ pipeline {
             }
         }
         stage('Check Examples with events') {
+            when { expression { return !isMultijobPRCheck() } }
             steps {
                 script {
                     getMavenCommand('kogito-examples-events', true, true)
@@ -252,8 +260,6 @@ MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, b
     mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .withSnapshotsDisabledInSettings()
-                // add timestamp to Maven logs
-                .withOptions(['-Dorg.slf4j.simpleLogger.showDateTime=true', '-Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS'])
                 .withProperty('java.net.preferIPv4Stack', true)
                 .inDirectory(directory)
     if (addQuarkusVersion && getQuarkusBranch()) {
@@ -282,4 +288,12 @@ boolean isNative() {
 
 boolean isNormalPRCheck() {
     return !(getQuarkusBranch() || isNative())
+}
+
+boolean isMultijobPRCheck() {
+    return env['MULTIJOB_PR_CHECK'] && env['MULTIJOB_PR_CHECK'].toBoolean()
+}
+
+Integer getTimeoutValue() {
+    return isNative() ? 600 : 240
 }
