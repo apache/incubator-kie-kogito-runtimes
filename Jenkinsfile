@@ -12,13 +12,14 @@ kogitoAppsRepo = 'kogito-apps'
 kogitoExamplesRepo = 'kogito-examples'
 
 pipeline {
-    agent {
-        label 'kie-rhel7 && kie-mem16g'
-    }
-    tools {
-        maven 'kie-maven-3.6.2'
-        jdk 'kie-jdk11'
-    }
+    agent any
+    // agent {
+    //     label 'kie-rhel7 && kie-mem16g'
+    // }
+    // tools {
+    //     maven 'kie-maven-3.6.2'
+    //     jdk 'kie-jdk11'
+    // }
     options {
         timestamps()
         timeout(time: 600, unit: 'MINUTES')
@@ -34,87 +35,84 @@ pipeline {
                     mailer.buildLogScriptPR()
 
                     checkoutRepo(kogitoRuntimesRepo)
-                    checkoutRepo(optaplannerRepo)
-                    checkoutRepo(kogitoAppsRepo)
-                    checkoutRepo(kogitoExamplesRepo)
                 }
             }
         }
-        stage('Build quarkus') {
-            when {
-                expression { return getQuarkusBranch() }
-            }
-            steps {
-                script {
-                    checkoutQuarkusRepo()
-                    runQuickBuild(getMavenCommand('quarkus', false))
-                }
-            }
-        }
-        stage('Runtimes Build&Test') {
-            steps {
-                script {
-                    if (isNormalPRCheck()) {
-                        runUnitTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true).withProfiles(['run-code-coverage']))
-                        runSonarcloudAnalysis(getMavenCommand(kogitoRuntimesRepo, true, true))
-                    } else {
-                        runUnitTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true))
-                    }
-                }
-            }
-        }
-        stage('Runtimes integration-tests') {
-            steps {
-                script {
-                    runIntegrationTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true))
-                }
-            }
-        }
-        stage('Runtimes integration-tests with persistence') {
-            steps {
-                script {
-                    runIntegrationTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true), ['persistence'])
-                }
-            }
-        }
-        stage('OptaPlanner Build') {
-            steps {
-                script {
-                    runUnitTests(optaplannerRepo, getMavenCommand(optaplannerRepo, true, true))
-                }
-            }
-        }
-        stage('Apps Build&Test') {
-            steps {
-                script {
-                    mvncmd = getMavenCommand('kogito-apps', true, true)
-                        .withProperty('skip.ui.build')
-                        .withProperty('skip.ui.deps')
-                    runUnitTests(kogitoAppsRepo, mvncmd, 'clean install')
-                }
-            }
-        }
-        stage('Examples Build&Test') {
-            steps {
-                script {
-                    runUnitTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), 'clean install')
-                }
-            }
-        }
-        stage('Examples integration-tests with persistence') {
-            steps {
-                script {
-                    runIntegrationTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), ['persistence'])
-                }
-            }
-        }
-        stage('Check Examples with events') {
-            steps {
-                script {
-                    runIntegrationTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), ['events'])
-                }
-            }
-        }
+        // stage('Build quarkus') {
+        //     when {
+        //         expression { return getQuarkusBranch() }
+        //     }
+        //     steps {
+        //         script {
+        //             checkoutQuarkusRepo()
+        //             runQuickBuild(getMavenCommand('quarkus', false))
+        //         }
+        //     }
+        // }
+        // stage('Runtimes Build&Test') {
+        //     steps {
+        //         script {
+        //             if (isNormalPRCheck()) {
+        //                 runUnitTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true).withProfiles(['run-code-coverage']))
+        //                 runSonarcloudAnalysis(getMavenCommand(kogitoRuntimesRepo, true, true))
+        //             } else {
+        //                 runUnitTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true))
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Runtimes integration-tests') {
+        //     steps {
+        //         script {
+        //             runIntegrationTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true))
+        //         }
+        //     }
+        // }
+        // stage('Runtimes integration-tests with persistence') {
+        //     steps {
+        //         script {
+        //             runIntegrationTests(kogitoRuntimesRepo, getMavenCommand(kogitoRuntimesRepo, true, true), ['persistence'])
+        //         }
+        //     }
+        // }
+        // stage('OptaPlanner Build') {
+        //     steps {
+        //         script {
+        //             runUnitTests(optaplannerRepo, getMavenCommand(optaplannerRepo, true, true))
+        //         }
+        //     }
+        // }
+        // stage('Apps Build&Test') {
+        //     steps {
+        //         script {
+        //             mvncmd = getMavenCommand('kogito-apps', true, true)
+        //                 .withProperty('skip.ui.build')
+        //                 .withProperty('skip.ui.deps')
+        //             runUnitTests(kogitoAppsRepo, mvncmd, 'clean install')
+        //         }
+        //     }
+        // }
+        // stage('Examples Build&Test') {
+        //     steps {
+        //         script {
+        //             runUnitTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), 'clean install')
+        //         }
+        //     }
+        // }
+        // stage('Examples integration-tests with persistence') {
+        //     steps {
+        //         script {
+        //             runIntegrationTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), ['persistence'])
+        //         }
+        //     }
+        // }
+        // stage('Check Examples with events') {
+        //     steps {
+        //         script {
+        //             runIntegrationTests(kogitoExamplesRepo, getMavenCommand(kogitoExamplesRepo, true, true), ['events'])
+        //         }
+        //     }
+        // }
     }
     post {
         always {
