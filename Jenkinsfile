@@ -29,11 +29,6 @@ pipeline {
 
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
-                    checkoutOptaplannerRepo()
-                    checkoutRepo('kogito-apps')
-                    checkoutRepo('kogito-examples')
-                    checkoutRepo('kogito-examples', 'kogito-examples-persistence')
-                    checkoutRepo('kogito-examples', 'kogito-examples-events')
                 }
             }
         }
@@ -105,96 +100,12 @@ pipeline {
                 }
             }
         }
-        stage('Build OptaPlanner') {
-            steps {
-                script {
-                    // Skip unnecessary plugins to save time.
-                    getMavenCommand('optaplanner', true, true)
-                        .withProperty('enforcer.skip')
-                        .withProperty('formatter.skip')
-                        .withProperty('impsort.skip')
-                        .withProperty('revapi.skip')
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Build Apps') {
-            steps {
-                script {
-                    getMavenCommand('kogito-apps', true, true)
-                        .withProperty('skip.ui.build')
-                        .withProperty('skip.ui.deps')
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Build Examples') {
-            steps {
-                script {
-                    getMavenCommand('kogito-examples', true, true)
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Check Examples with persistence') {
-            steps {
-                script {
-                    getMavenCommand('kogito-examples-persistence', true, true)
-                        .withProfiles(['persistence'])
-                        .run('clean verify')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Check Examples with events') {
-            steps {
-                script {
-                    getMavenCommand('kogito-examples-events', true, true)
-                        .withProfiles(['events'])
-                        .run('clean verify')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
     }
     post {
         always {
             script {
                 sh '$WORKSPACE/trace.sh'
-                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+                //junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
             }
         }
         failure {
@@ -252,9 +163,8 @@ MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, b
     mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .withSnapshotsDisabledInSettings()
-                // add timestamp to Maven logs
-                .withOptions(['-Dorg.slf4j.simpleLogger.showDateTime=true', '-Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS'])
                 .withProperty('java.net.preferIPv4Stack', true)
+                .skipTests() // TODO
                 .inDirectory(directory)
     if (addQuarkusVersion && getQuarkusBranch()) {
         mvnCmd.withProperty('version.io.quarkus', '999-SNAPSHOT')

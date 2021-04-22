@@ -40,7 +40,7 @@ def releaseBranchFolder = "${KogitoConstants.KOGITO_DSL_RELEASE_FOLDER}/${JOB_BR
 if (isMainBranch()) {
     folder(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
 
-    setupPrJob(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
+    setupPrsJob(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
     setupQuarkusLTSPrJob(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
     setupNativePrJob(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
 
@@ -77,9 +77,77 @@ if (!isMainBranch()) {
 // Methods
 /////////////////////////////////////////////////////////////////
 
-void setupPrJob(String jobFolder) {
+void setupPrsJob(String jobFolder) {
+    // Setup the different PR jobs
+
+    // Unit tests
+    setupPrJob(jobFolder) { jobParams ->
+        jobParams.job.description = "Run tests from ${jobParams.git.repository} repository"
+        jobParams.job.name += '.tests'
+        jobParams.pr = [
+            // TODO to change back the first phrase to `(.*[j|J]enkins,?.*(retest|test) this.*)`
+            trigger_phrase : '(.*[j|J]enkins,?.*(retestesting) this.*)|(.*[j|J]enkins,? run tests.*)',
+            trigger_phrase_only: true, // TODO be removed once tests are finished
+            commitContext: 'Runtimes'
+        ]
+    }
+
+    // Optaplanner tests
+    setupPrJob(jobFolder) { jobParams ->
+        jobParams.job.description = "Run tests of Optaplanner due to changes in ${jobParams.git.repository} repository"
+        jobParams.git.project_url = "https://github.com/${jobParams.git.author}/kogito-runtimes/"
+        jobParams.git.repository = 'optaplanner'
+        jobParams.job.name += '.tests.optaplanner'
+        jobParams.pr = [
+            merge_repo: true,
+            trigger_phrase : '(.*[j|J]enkins,? run [O|o]ptaplanner[ tests]?.*)|(.*Runtimes.*successful.*)',
+            trigger_phrase_only: true,
+            commitContext: 'Optaplanner'
+        ]
+        jobParams.env = [
+            DOWNSTREAM : true
+        ]
+    }
+
+    // Kogito-apps tests
+    setupPrJob(jobFolder) { jobParams ->
+        jobParams.job.description = "Run tests of Kogito-apps due to changes in ${jobParams.git.repository} repository"
+        jobParams.git.project_url = "https://github.com/${jobParams.git.author}/kogito-runtimes/"
+        jobParams.git.repository = 'kogito-apps'
+        jobParams.job.name += '.tests.apps'
+        jobParams.pr = [
+            merge_repo: true,
+            trigger_phrase : '(.*[j|J]enkins,? run [A|a]pps[ tests]?.*)|(.*Optaplanner.*successful.*)',
+            trigger_phrase_only: true,
+            commitContext: 'Kogito-apps'
+        ]
+        jobParams.env = [
+            DOWNSTREAM : true
+        ]
+    }
+
+    // Kogito-examples tests
+    setupPrJob(jobFolder) { jobParams ->
+        jobParams.job.description = "Run tests of Kogito-examples due to changes in ${jobParams.git.repository} repository"
+        jobParams.git.project_url = "https://github.com/${jobParams.git.author}/kogito-runtimes/"
+        jobParams.git.repository = 'kogito-examples'
+        jobParams.job.name += '.tests.examples'
+        jobParams.pr = [
+            merge_repo: true,
+            trigger_phrase : '(.*[j|J]enkins,? run [E|e]xamples[ tests]?.*)|(.*Optaplanner.*successful.*)',
+            trigger_phrase_only: true,
+            commitContext: 'Kogito-examples'
+        ]
+        jobParams.env = [
+            DOWNSTREAM : true
+        ]
+    }
+}
+
+void setupPrJob(String jobFolder, Closure updateJobParams) {
     def jobParams = getDefaultJobParams()
     jobParams.job.folder = jobFolder
+    updateJobParams(jobParams)
     jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createPRJob(this, jobParams)
 }
