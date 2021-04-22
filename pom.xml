@@ -119,6 +119,7 @@
   <modules>
     <module>kogito-build-parent</module>
     <module>kogito-bom</module>
+    <module>kogito-codegen-modules</module>
     <module>kogito-test-utils</module>
     <module>api</module>
     <module>drools</module>
@@ -131,7 +132,7 @@
     <module>addons</module> 
     <module>kogito-workitems</module>
   </modules>
-  
+
   <profiles>
     <profile>
       <id>default</id>
@@ -142,8 +143,7 @@
       </activation>
       <modules>
         <module>kogito-ide-config</module>
-        <module>kogito-cloud-services</module>        
-        <module>kogito-codegen-modules</module>        
+        <module>kogito-cloud-services</module>
         <module>integration-tests</module>
       </modules>
     </profile>
