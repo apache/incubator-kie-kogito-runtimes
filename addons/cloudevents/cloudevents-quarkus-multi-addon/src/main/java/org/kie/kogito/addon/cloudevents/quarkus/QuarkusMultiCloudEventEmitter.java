@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.kie.kogito.addon.cloudevents.quarkus;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -34,15 +34,14 @@ import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.quarkus.runtime.Startup;
+import io.smallrye.reactive.messaging.ChannelRegistar;
 import io.smallrye.reactive.messaging.ChannelRegistry;
 import io.smallrye.reactive.messaging.extension.EmitterConfiguration;
 import io.smallrye.reactive.messaging.extension.MediatorManager;
 
-@Startup(0)
-public class QuarkusMultiCloudEventEmitter implements EventEmitter {
+@ApplicationScoped
+public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegistar {
 
-    private static final Pattern OUTGOING_PATTERN = Pattern.compile("mp\\.messaging\\.outgoing\\.([a-zA-Z].*)\\..*");
     private static Logger logger = LoggerFactory.getLogger(QuarkusMultiCloudEventEmitter.class);
 
     private MessageDecorator messageDecorator;
@@ -56,9 +55,11 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter {
     @Inject
     private ConfigBean configBean;
 
+    @Inject
+    private ChannelResolver channelResolver;
+
     @PostConstruct
     private void init() {
-        QuarkusMultiCloudUtils.getChannels(OUTGOING_PATTERN).stream().map(this::emitterConf).forEach(mediatorManager::addEmitter);
         messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents().orElse(true));
     }
 
@@ -73,6 +74,7 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter {
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
         final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(
                 configBean.useCloudEvents().orElse(true) ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
+        type = type.trim().replace(" ", "_");
         Emitter<String> emitter = (Emitter<String>) channelRegistry.getEmitter(type);
         if (emitter != null) {
             emitter.send(message);
@@ -80,5 +82,10 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter {
             logger.warn("Cannot found channel {}. Please add it to application.properties", type);
         }
         return message.getAck().get();
+    }
+
+    @Override
+    public void initialize() {
+        channelResolver.getOuputChannels().stream().map(this::emitterConf).forEach(mediatorManager::addEmitter);
     }
 }

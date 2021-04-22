@@ -22,6 +22,5 @@ import org.kie.kogito.Model;
 
 public interface EventConsumerFactory {
 
-    <M extends Model, D, T extends AbstractProcessDataEvent<D>> EventConsumer<M> get(Function<D, M> function,
-            Class<D> dataEventClass, Class<T> cloudEventClass, Optional<Boolean> cloudEvents);
+    <M extends Model, D> EventConsumer<M> get(Function<D, M> function, Optional<Boolean> cloudEvents);
 }

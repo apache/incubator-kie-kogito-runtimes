@@ -31,8 +31,8 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.decision.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.event.CloudEventReceiver;
 import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventReceiver;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -159,7 +159,7 @@ class EventDrivenDecisionControllerTest {
         // by default there's no execution id supplier, if needed it will be overridden in the specific test
         mockDecisionModel();
 
-        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, mock(CloudEventReceiver.class));
+        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, mock(EventReceiver.class));
     }
 
     @Test
@@ -167,31 +167,31 @@ class EventDrivenDecisionControllerTest {
         DecisionModels decisionModelsMock = mock(DecisionModels.class);
         ConfigBean configMock = mock(ConfigBean.class);
         EventEmitter eventEmitterMock = mock(EventEmitter.class);
-        CloudEventReceiver eventReceiverMock = mock(CloudEventReceiver.class);
+        EventReceiver eventReceiverMock = mock(EventReceiver.class);
 
         // option #1: parameters via constructor + parameterless setup
         EventDrivenDecisionController controller1 = new EventDrivenDecisionController(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
         controller1.setup();
-        verify(eventReceiverMock).subscribe(any());
+        verify(eventReceiverMock).subscribe(any(), any());
 
         reset(eventReceiverMock);
 
         // option #2: parameterless via constructor + parameters via setup (introduced for Quarkus CDI)
         EventDrivenDecisionController controller2 = new EventDrivenDecisionController();
         controller2.setup(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
-        verify(eventReceiverMock).subscribe(any());
+        verify(eventReceiverMock).subscribe(any(), any());
     }
 
     @Test
     void testHandleEventWithMalformedInput() {
         controller.handleEvent("this-is-not-a-cloudevent");
-        verify(eventEmitterMock, never()).emit(any());
+        verify(eventEmitterMock, never()).emit(any(), any(), any());
     }
 
     @Test
     void testHandleEventWithIgnoredCloudEvent() {
         controller.handleEvent(CLOUDEVENT_IGNORED);
-        verify(eventEmitterMock, never()).emit(any());
+        verify(eventEmitterMock, never()).emit(any(), any(), any());
     }
 
     @Test
@@ -301,21 +301,14 @@ class EventDrivenDecisionControllerTest {
     private <T> void testCloudEventEmitted(RequestData requestData, Boolean fullResult, Boolean filteredCtx, Class<T> responseDataClass, String expectedType,
             TriConsumer<CloudEvent, KogitoExtension, T> callback) {
         try {
-            ArgumentCaptor<String> eventCaptor = ArgumentCaptor.forClass(String.class);
+            ArgumentCaptor<CloudEvent> eventCaptor = ArgumentCaptor.forClass(CloudEvent.class);
 
             String inputEvent = cloudEventOkWith(requestData, fullResult, filteredCtx);
             controller.handleEvent(inputEvent);
 
-            verify(eventEmitterMock).emit(eventCaptor.capture());
-            String emittedCloudEventJson = eventCaptor.getValue();
+            verify(eventEmitterMock).emit(eventCaptor.capture(), any(), any());
 
-            Optional<CloudEvent> optEmittedCloudEvent = CloudEventUtils.decode(emittedCloudEventJson);
-
-            if (!optEmittedCloudEvent.isPresent()) {
-                fail("Can't decode emitted CloudEvent");
-            }
-
-            CloudEvent emittedCloudEvent = optEmittedCloudEvent.get();
+            CloudEvent emittedCloudEvent = eventCaptor.getValue();
 
             assertEquals(expectedType, emittedCloudEvent.getType());
 
@@ -323,7 +316,7 @@ class EventDrivenDecisionControllerTest {
                     .parseExtension(KogitoExtension.class, emittedCloudEvent);
 
             if (kogitoExtension == null) {
-                fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEventJson);
+                fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEvent);
             }
 
             assertEquals(requestData.getModelName(), kogitoExtension.getDmnModelName());
@@ -333,7 +326,7 @@ class EventDrivenDecisionControllerTest {
             Optional<T> optResponseEvent = CloudEventUtils.decodeData(emittedCloudEvent, responseDataClass);
 
             if (!optResponseEvent.isPresent()) {
-                fail("Can't decode emitted CloudEvent data of: " + emittedCloudEventJson);
+                fail("Can't decode emitted CloudEvent data of: " + emittedCloudEvent);
             }
 
             assertSubject(emittedCloudEvent);

@@ -26,6 +26,7 @@ import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.event.impl.DefaultEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +40,9 @@ public class SpringKafkaCloudEventEmitter implements EventEmitter {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     String kafkaBootstrapAddress;
     @Value(value = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + ":" + KogitoEventStreams.OUTGOING + "}")
-    String kafkaTopicName;
+    String defaultTopicName;
+    @Autowired
+    Environment env;
 
     // TODO @Autowired change when this class is added https://github.com/kiegroup/kogito-runtimes/pull/1195/files#diff-32eeb9c913dc61f24f8b4d27a8dca87f5e907de83b81e210e59bd67193a9cdfd
     EventMarshaller marshaller = new DefaultEventMarshaller();
@@ -49,10 +52,12 @@ public class SpringKafkaCloudEventEmitter implements EventEmitter {
 
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
-        return emitter.send(kafkaTopicName, marshaller.marshall(configBean.useCloudEvents()
-                .orElse(true)
-                        ? processDecorator.map(d -> d.apply(e)).orElse(e)
-                        : e))
+        return emitter
+                .send(
+                        env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + type,
+                                defaultTopicName),
+                        marshaller.marshall(configBean.useCloudEvents().orElse(true) ? processDecorator.map(d -> d
+                                .apply(e)).orElse(e) : e))
                 .completable()
                 .thenApply(r -> null); // discard return to comply with the signature
     }

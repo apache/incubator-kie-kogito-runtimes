@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.services.event;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.Model;
-import org.kie.kogito.process.Process;
-
-public interface EventConsumer<T extends Model> {
-
-    void consume(Application application, Process<T> process, Object payload, String trigger);
-
+public interface OutputTriggerAware {
+    String getOutputTrigger();
 }

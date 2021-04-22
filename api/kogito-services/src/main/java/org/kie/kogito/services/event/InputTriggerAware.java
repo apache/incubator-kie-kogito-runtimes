@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
+package org.kie.kogito.services.event;
 
-import org.kie.kogito.Model;
-import org.kie.kogito.services.event.EventConsumer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public abstract class JacksonEventConsumer<M extends Model> implements EventConsumer<M> {
-
-    final ObjectMapper mapper;
-
-    public JacksonEventConsumer(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
+public interface InputTriggerAware {
+    String getInputTrigger();
 }

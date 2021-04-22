@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -34,20 +33,20 @@ import org.kie.kogito.event.KogitoEventStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
+import io.smallrye.reactive.messaging.ChannelRegistar;
 import io.smallrye.reactive.messaging.DefaultMediatorConfiguration;
 import io.smallrye.reactive.messaging.MediatorConfiguration;
 import io.smallrye.reactive.messaging.Shape;
 import io.smallrye.reactive.messaging.extension.MediatorManager;
 
-@Startup(0)
+@ApplicationScoped
 @RegisterForReflection
-public class QuarkusMultiCloudEventPublisher {
+public class QuarkusMultiCloudEventPublisher implements ChannelRegistar {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(QuarkusMultiCloudEventPublisher.class);
-    private static final Pattern INCOMING_PATTERN = Pattern.compile("mp\\.messaging\\.incoming\\.([a-zA-Z].*)\\..*");
 
     @Inject
     private MediatorManager mediatorManager;
@@ -55,12 +54,14 @@ public class QuarkusMultiCloudEventPublisher {
     @Inject
     private BeanManager beanManager;
 
+    @Inject
+    private ChannelResolver channelResolver;
+
     private BroadcastProcessor<String> processor;
 
     @PostConstruct
-    private void init() throws NoSuchMethodException {
+    private void init() {
         processor = BroadcastProcessor.create();
-        mediatorManager.addAnalyzed(mediatorConf(QuarkusMultiCloudUtils.getChannels(INCOMING_PATTERN)));
     }
 
     private Collection<MediatorConfiguration> mediatorConf(Collection<String> channels) throws NoSuchMethodException {
@@ -116,6 +117,15 @@ public class QuarkusMultiCloudEventPublisher {
                     processor.onNext(message.getPayload());
                     return null;
                 });
+    }
+
+    @Override
+    public void initialize() {
+        try {
+            mediatorManager.addAnalyzed(mediatorConf(channelResolver.getInputChannels()));
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 }
