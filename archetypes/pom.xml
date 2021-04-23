@@ -27,10 +27,7 @@
       </plugins>
     </pluginManagement>
   </build>
-  <modules>
-    <module>kogito-springboot-dm-archetype</module>
-    <module>kogito-quarkus-dm-archetype</module>
-  </modules>
+
   <profiles>
     <profile>
       <id>default</id>
@@ -44,7 +41,6 @@
         <module>kogito-quarkus-archetype</module>
       </modules>
     </profile>
-
     <profile>
       <!--
         This profile serves at optionally passing settingsFile property to archetype::integration-test goal.
@@ -69,5 +65,4 @@
       </build>
     </profile>
   </profiles>
-
 </project>
