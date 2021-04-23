@@ -59,7 +59,7 @@ public class KogitoKafkaContainer extends KafkaContainer implements TestResource
 
     private static String kafkaImage() {
         String kafkaImage = System.getProperty(KAFKA_PROPERTY);
-        if(kafkaImage == null) {
+        if (kafkaImage == null) {
             throw new IllegalStateException("Please provide '" + KAFKA_PROPERTY + "' system property");
         }
         return kafkaImage;
