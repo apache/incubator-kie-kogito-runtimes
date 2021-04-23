@@ -13,5 +13,5 @@ dependencies:
 
   - project: kiegroup/kogito-examples
     dependencies:
-      - project: kiegroup/optaplanner
       - project: kiegroup/kogito-runtimes
+      - project: kiegroup/optaplanner
