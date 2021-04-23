@@ -19,6 +19,7 @@ pipeline {
     }
     environment {
         SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
+	TESTCONTAINERS_RYUK_DISABLED = true
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
     }
     stages {
