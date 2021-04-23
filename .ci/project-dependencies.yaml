@@ -1,10 +1,15 @@
 version: "2.0"
 dependencies:
   - project: kiegroup/kogito-runtimes
-
+  
+  - project: kiegroup/optaplanner
+    dependencies:
+      - project: kiegroup/kogito-runtimes
+  
   - project: kiegroup/kogito-apps
     dependencies:
       - project: kiegroup/kogito-runtimes
+      - project: kiegroup/optaplanner
 
   - project: kiegroup/kogito-examples
     dependencies:
