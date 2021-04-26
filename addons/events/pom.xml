@@ -13,6 +13,7 @@
   
   <modules>
     <module>kogito-event-driven-decisions</module>
+    <module>knative-eventing-addon</module>
   </modules>
   
   <profiles>
@@ -29,6 +30,5 @@
         <module>knative-eventing-addon</module>
       </modules>
     </profile>
-
   </profiles>
 </project>
