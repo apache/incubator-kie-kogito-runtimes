@@ -80,7 +80,7 @@ public class KogitoAssetsProcessor {
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex());
+        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
@@ -230,7 +230,7 @@ public class KogitoAssetsProcessor {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent"));
         reflectiveClass.produce(
-                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent$GAV"));
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.KogitoGAV"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.decision.DecisionModelType"));
         reflectiveClass.produce(

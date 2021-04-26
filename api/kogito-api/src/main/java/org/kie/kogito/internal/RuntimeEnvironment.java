@@ -13,21 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package $Package$;
 
-@javax.inject.Singleton
-public class ConfigBean extends org.kie.kogito.conf.StaticConfigBean {
+package org.kie.kogito.internal;
 
-    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.service.url")
-    java.util.Optional<java.lang.String> kogitoService;
+public enum RuntimeEnvironment {
 
-    @org.eclipse.microprofile.config.inject.ConfigProperty(name = "kogito.messaging.as-cloudevents")
-    java.util.Optional<Boolean> useCloudEvents = java.util.Optional.of(true);
+    JDK,
+    BUILDING_NATIVE,
+    RUNNING_NATIVE;
 
-    @javax.annotation.PostConstruct
-    protected void init() {
-        setServiceUrl(kogitoService.orElse(""));
-        setCloudEvents(useCloudEvents);
-        setGav($gav$);
+    public static RuntimeEnvironment get() {
+        String graalvmNativeImage = System.getProperty("org.graalvm.nativeimage.imagecode");
+        if ("buildtime".equals(graalvmNativeImage)) {
+            return BUILDING_NATIVE;
+        }
+        if ("runtime".equals(graalvmNativeImage)) {
+            return RUNNING_NATIVE;
+        }
+        return JDK;
+    }
+
+    public static boolean isNative() {
+        return !isJdk();
+    }
+
+    public static boolean isJdk() {
+        return get() == JDK;
     }
 }
