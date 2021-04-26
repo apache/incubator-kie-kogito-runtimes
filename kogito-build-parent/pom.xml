@@ -95,8 +95,8 @@
     <version.license.plugin>4.0.rc2</version.license.plugin>
     <version.enforcer.plugin>3.0.0-M2</version.enforcer.plugin>
     <version.de.skuzzle.enforcer>1.1.0</version.de.skuzzle.enforcer>
-    <version.maven>3.6.2</version.maven>
-    <version.maven.plugin>3.4</version.maven.plugin>
+    <version.maven>3.6.3</version.maven>
+    <version.maven.plugin>3.6.0</version.maven.plugin>
     <version.native2ascii.plugin>1.0-beta-1</version.native2ascii.plugin>
     <version.plexus>1.6</version.plexus>
     <version.plexus.classworld>2.5.2</version.plexus.classworld>
@@ -132,7 +132,7 @@
     <version.com.google.guava>16.0.1</version.com.google.guava>
     <version.org.openapitools>5.0.1</version.org.openapitools>
     <version.org.openapitools.jackson.databind.nullable>0.2.0</version.org.openapitools.jackson.databind.nullable>
-    <version.com.squareup.okhttp3>3.14.6</version.com.squareup.okhttp3>
+    <version.com.squareup.okhttp3>3.14.9</version.com.squareup.okhttp3>
     <version.com.sun.xml.bind>2.3.0</version.com.sun.xml.bind>
     <version.com.sun.activation>1.2.0</version.com.sun.activation>
     <version.com.thoughtworks.xstream>1.4.14</version.com.thoughtworks.xstream>
@@ -143,13 +143,13 @@
     <version.javax.json>1.1.4</version.javax.json>
     <version.javax.json.bind>1.0</version.javax.json.bind>
     <version.javax.validation>2.0.1.Final</version.javax.validation>
-    <version.javax.xml.bind>2.3.0</version.javax.xml.bind>
+    <version.javax.xml.bind>2.3.1</version.javax.xml.bind>
 
     <version.io.cloudevents>2.0.0-milestone3</version.io.cloudevents>
     <version.io.jredisearch>2.0.0</version.io.jredisearch>
-    <version.io.fabric8.kubernetes-client>5.0.0</version.io.fabric8.kubernetes-client>
+    <version.io.fabric8.kubernetes-client>5.3.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.6.5</version.io.micrometer>
-    <version.io.rest-assured>4.3.0</version.io.rest-assured>
+    <version.io.rest-assured>4.3.3</version.io.rest-assured>
     <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.serverlessworkflow>2.0.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.0.26</version.io.smallrye-open-api-core>
@@ -160,7 +160,7 @@
 
     <version.org.antlr>3.5.2</version.org.antlr>
     <version.org.antlr4>4.8</version.org.antlr4>
-    <version.org.apache.commons>3.8.1</version.org.apache.commons>
+    <version.org.apache.commons>3.12.0</version.org.apache.commons>
     <version.org.apache.kafka>2.7.0</version.org.apache.kafka>
     <version.org.apache.xmlgraphics.batik>1.13</version.org.apache.xmlgraphics.batik>
     <version.org.assertj>3.19.0</version.org.assertj>
@@ -172,7 +172,7 @@
     <version.org.redis>2.0.4</version.org.redis>
     <version.org.infinispan.protostream>4.3.4.Final</version.org.infinispan.protostream>
     <version.org.infinispan.starter>2.3.3.Final</version.org.infinispan.starter>
-    <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>1.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
+    <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>2.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
     <version.org.jboss.resteasy>4.5.9.Final</version.org.jboss.resteasy>
     <version.org.json>20200518</version.org.json>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
@@ -199,7 +199,7 @@
     <version.io.netty>4.1.52.Final</version.io.netty>
     <version.io.projectreactor>3.3.10.RELEASE</version.io.projectreactor>
     <version.io.projectreactor.kafka>1.2.2.RELEASE</version.io.projectreactor.kafka>
-    <version.io.vertx>3.9.2</version.io.vertx>
+    <version.io.vertx>3.9.6</version.io.vertx>
     <version.xerces>2.11.0</version.xerces>
   </properties>
 
