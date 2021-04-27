@@ -170,7 +170,7 @@
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
     <version.org.keycloak>11.0.3</version.org.keycloak>
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
-    <version.org.kie7>7.52.0.Beta1</version.org.kie7>
+    <version.org.kie7>7.52.0.Final</version.org.kie7>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mongo>4.1.0</version.org.mongo>
     <version.org.mvel>2.4.12.Final</version.org.mvel>
@@ -179,7 +179,7 @@
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
     <version.org.springdoc>1.5.2</version.org.springdoc>
-    <version.org.testcontainers>1.15.1</version.org.testcontainers>
+    <version.org.testcontainers>1.15.3</version.org.testcontainers>
     <version.io.vertx>3.9.2</version.io.vertx>
   </properties>
 
@@ -924,6 +924,7 @@
             <excludes>
               <exclude>${tests.surefire.include}</exclude>
             </excludes>
+            <argLine>-Xms1024m -Xmx4g</argLine>
             <systemPropertyVariables>
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
