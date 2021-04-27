@@ -15,4 +15,3 @@ dependencies:
     dependencies:
       - project: kiegroup/kogito-runtimes
       - project: kiegroup/optaplanner
-
