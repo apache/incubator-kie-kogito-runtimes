@@ -177,14 +177,13 @@ public interface ProcessInstance<T> {
      * Returns list of currently active work items.
      *
      * <strong>this is an experimental API.</strong>
-     *  Will be renamed to <code>workItems</code> when
-     *  {@link #workItems(Policy[])} is removed
+     * Will be renamed to <code>workItems</code> when
+     * {@link #workItems(Policy[])} is removed
      *
      * @param policies optional list of policies to be enforced
      * @return non empty list of identifiers of currently active tasks.
      */
     WorkItemCatalog getWorkItems(Policy<?>... policies);
-
 
     /**
      * Returns identifier of this process instance

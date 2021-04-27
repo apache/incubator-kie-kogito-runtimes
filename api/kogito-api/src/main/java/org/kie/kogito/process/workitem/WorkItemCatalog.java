@@ -15,11 +15,11 @@
  */
 package org.kie.kogito.process.workitem;
 
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.WorkItem;
-
 import java.util.Collection;
 import java.util.function.Function;
+
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.process.WorkItem;
 
 public interface WorkItemCatalog {
 

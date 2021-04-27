@@ -50,7 +50,6 @@ public class WorkItemCatalogImpl<T> implements WorkItemCatalog {
         this.updateNotifier = updateNotifier;
     }
 
-
     @Override
     public void complete(String id, Object variables, Policy<?>... policies) {
         workItemManager.completeWorkItem(id, (Map<String, Object>) variables, policies);
