@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process;
 
 import java.util.HashMap;
@@ -33,9 +32,9 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
     protected String processInstanceId;
 
     protected T dataType;
-    
+
     protected Map<String, String> properties = new HashMap<>();
-       
+
     public AbstractEventDescription(String event, String nodeId, String nodeName, String eventType, String nodeInstanceId, String processInstanceId, T dataType) {
         this.id = nodeInstanceId != null ? nodeInstanceId : nodeId;
         this.event = event;
@@ -46,7 +45,7 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
         this.processInstanceId = processInstanceId;
         this.dataType = dataType;
     }
-    
+
     public AbstractEventDescription(String event, String nodeId, String nodeName, String eventType, String nodeInstanceId, String processInstanceId, T dataType, Map<String, String> properties) {
         this.id = nodeInstanceId != null ? nodeInstanceId : nodeId;
         this.event = event;
@@ -78,7 +77,7 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
     public String getNodeName() {
         return nodeName;
     }
-    
+
     @Override
     public String getEventType() {
         return eventType;
@@ -98,7 +97,7 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
     public T getDataType() {
         return dataType;
     }
-    
+
     @Override
     public Map<String, String> getProperties() {
         return properties;
@@ -106,8 +105,9 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
 
     @Override
     public String toString() {
-        return "EventDesciption [event=" + event + ", nodeId=" + nodeId + ", nodeName=" + nodeName + ", eventType=" + eventType + ", nodeInstanceId=" + nodeInstanceId + ", processInstanceId=" + processInstanceId +
-               ", dataType=" + dataType + ", properties=" + properties + "]";
+        return "EventDesciption [event=" + event + ", nodeId=" + nodeId + ", nodeName=" + nodeName + ", eventType=" + eventType + ", nodeInstanceId=" + nodeInstanceId + ", processInstanceId="
+                + processInstanceId +
+                ", dataType=" + dataType + ", properties=" + properties + "]";
     }
 
     @Override
@@ -164,6 +164,5 @@ public class AbstractEventDescription<T> implements EventDescription<T> {
             return false;
         return true;
     }
-    
-    
+
 }

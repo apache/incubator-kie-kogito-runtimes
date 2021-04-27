@@ -1,6 +1,7 @@
 {
   "id": "produceeventontransition",
   "name": "Produce Event On Transition",
+  "start": "HelloWorld",
   "events": [
     {
       "name": "TestKafkaEvent",
@@ -26,26 +27,27 @@
   "functions": [
     {
       "name": "helloOne",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     },
     {
       "name": "helloTwo",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     }
   ],
   "states": [
     {
       "name": "HelloWorld",
       "type": "operation",
-      "start": {
-        "kind": "default"
-      },
       "actionMode": "sequential",
       "actions": [
         {
           "functionRef": {
             "refName": "helloOne",
-            "parameters": {
+            "arguments": {
               "script": ""
             }
           }
@@ -77,14 +79,14 @@
         {
           "functionRef": {
             "refName": "helloTwo",
-            "parameters": {
+            "arguments": {
               "script": ""
             }
           }
         }
       ],
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

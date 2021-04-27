@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core;
 
 import java.util.ArrayList;
@@ -21,10 +20,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.exception.ExceptionHandler;
+import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.swimlane.Swimlane;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.datatype.DataType;
@@ -34,6 +35,7 @@ import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
@@ -46,6 +48,7 @@ import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +74,9 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     public static final String METHOD_GLOBAL = "global";
     public static final String METHOD_VARIABLE = "variable";
     public static final String METHOD_ADD_COMPENSATION_CONTEXT = "addCompensationContext";
+    public static final String METHOD_ERROR_EXCEPTION_HANDLER = "errorExceptionHandler";
 
     private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
-
 
     public static RuleFlowProcessFactory createProcess(String id) {
         return new RuleFlowProcessFactory(id);
@@ -191,6 +194,21 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         exceptionHandler.setAction(new DroolsConsequenceAction(dialect, action));
         return exceptionHandler(exception, exceptionHandler);
+    }
+
+    public RuleFlowProcessFactory errorExceptionHandler(String signalType, String faultCode, String faultVariable) {
+        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+        DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
+        action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+        exceptionHandler.setAction(action);
+        exceptionHandler.setFaultVariable(faultVariable);
+
+        if (Objects.isNull(getRuleFlowProcess().getExceptionScope())) {
+            getRuleFlowProcess().addContext(new ExceptionScope());
+        }
+
+        getRuleFlowProcess().getExceptionScope().setExceptionHandler(faultCode, exceptionHandler);
+        return this;
     }
 
     public RuleFlowProcessFactory metaData(String name, Object value) {
@@ -316,7 +334,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory {
     protected DroolsAction timerAction(String type) {
         DroolsAction signal = new DroolsAction();
 
-        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type, kcontext.getNodeInstance().getId());
+        Action action = kcontext -> kcontext.getProcessInstance().signalEvent(type, ((KogitoNodeInstance) kcontext.getNodeInstance()).getStringId());
         signal.wire(action);
 
         return signal;

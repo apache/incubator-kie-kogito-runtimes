@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ public class AssociationHandler extends BaseAbstractHandler implements Handler {
     }
 
     public Object start(final String uri, final String localName,
-                        final Attributes attrs, final ExtensibleXmlParser parser)
+            final Attributes attrs, final ExtensibleXmlParser parser)
             throws SAXException {
         parser.startElementBuilder(localName, attrs);
 
@@ -70,7 +70,7 @@ public class AssociationHandler extends BaseAbstractHandler implements Handler {
         if (direction != null) {
             boolean acceptableDirection = false;
             direction = direction.toLowerCase();
-            String[] possibleDirections = {"none", "one", "both"};
+            String[] possibleDirections = { "none", "one", "both" };
             for (String acceptable : possibleDirections) {
                 if (acceptable.equals(direction)) {
                     acceptableDirection = true;
@@ -86,10 +86,10 @@ public class AssociationHandler extends BaseAbstractHandler implements Handler {
         /**
          * BPMN2 spec, p. 66:
          * "At this point, BPMN provides three standard Artifacts: Associations,
-         *  Groups, and Text Annotations.
+         * Groups, and Text Annotations.
          * ...
-         *  When an Artifact is defined it is contained within a Collaboration
-         *  or a FlowElementsContainer (a Process or Choreography)."
+         * When an Artifact is defined it is contained within a Collaboration
+         * or a FlowElementsContainer (a Process or Choreography)."
          *
          * (In other words: associations must be defined within a process, not outside)
          */
@@ -118,7 +118,7 @@ public class AssociationHandler extends BaseAbstractHandler implements Handler {
     }
 
     public Object end(final String uri, final String localName,
-                      final ExtensibleXmlParser parser) throws SAXException {
+            final ExtensibleXmlParser parser) throws SAXException {
         parser.endElementBuilder();
         return parser.getCurrent();
     }

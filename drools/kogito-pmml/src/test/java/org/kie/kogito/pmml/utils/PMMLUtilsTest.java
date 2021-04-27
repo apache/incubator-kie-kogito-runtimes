@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +35,7 @@ class PMMLUtilsTest {
         final Map<String, Object> parameters = getParameters();
         final PMMLRequestData retrieved = PMMLUtils.getPMMLRequestData(modelName, parameters);
         assertNotNull(retrieved);
-        assertEquals(modelName,  retrieved.getModelName());
+        assertEquals(modelName, retrieved.getModelName());
         final Map<String, ParameterInfo> parameterInfos = retrieved.getMappedRequestParams();
         assertEquals(parameters.size(), parameterInfos.size());
         parameters.forEach((key, value) -> {

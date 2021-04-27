@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,17 +17,21 @@ package org.kie.kogito.conf;
 
 import java.util.Optional;
 
+import org.kie.kogito.KogitoGAV;
+
 public class StaticConfigBean implements ConfigBean {
 
     private String serviceUrl;
     private Optional<Boolean> useCloudEvents = Optional.empty();
+    private KogitoGAV gav;
 
     public StaticConfigBean() {
     }
 
-    public StaticConfigBean(String serviceUrl, boolean useCloudEvents) {
+    public StaticConfigBean(String serviceUrl, boolean useCloudEvents, KogitoGAV gav) {
         this.serviceUrl = serviceUrl;
         this.useCloudEvents = Optional.of(useCloudEvents);
+        this.gav = gav;
     }
 
     protected void setServiceUrl(String serviceUrl) {
@@ -37,6 +42,10 @@ public class StaticConfigBean implements ConfigBean {
         this.useCloudEvents = useCloudEvents;
     }
 
+    public void setGav(KogitoGAV gav) {
+        this.gav = gav;
+    }
+
     @Override
     public Optional<Boolean> useCloudEvents() {
         return useCloudEvents;
@@ -45,5 +54,10 @@ public class StaticConfigBean implements ConfigBean {
     @Override
     public String getServiceUrl() {
         return serviceUrl;
+    }
+
+    @Override
+    public Optional<KogitoGAV> getGav() {
+        return Optional.ofNullable(gav);
     }
 }

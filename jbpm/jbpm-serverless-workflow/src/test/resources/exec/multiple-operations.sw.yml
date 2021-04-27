@@ -1,46 +1,45 @@
----
 id: function
 name: test-wf
+start: HelloWorld
 functions:
   - name: helloOne
-    type: script
+    metadata:
+      type: script
   - name: helloTwo
-    type: script
+    metadata:
+      type: script
   - name: helloThree
-    type: script
+    metadata:
+      type: script
 states:
   - name: HelloWorld
     type: operation
-    start:
-      kind: default
     actionMode: sequential
     actions:
       - functionRef:
           refName: helloOne
-          parameters:
+          arguments:
             script: System.out.println("First Serverless Workflow World");
-    transition:
-      nextState: UpdateArg
+    transition: UpdateArg
   - name: UpdateArg
     type: operation
     actionMode: sequential
     stateDataFilter:
-      dataInputPath: "{{ $.trace }}"
-      dataOutputPath: "{{ $.trace }}"
+      input: "{{ $.trace }}"
+      output: "{{ $.trace }}"
     actions:
       - functionRef:
           refName: helloTwo
-          parameters:
+          arguments:
             script: System.out.println("Second Serverless Workflow World");
-    transition:
-      nextState: SaveResult
+    transition: SaveResult
   - name: SaveResult
     type: operation
     actionMode: sequential
     actions:
       - functionRef:
           refName: helloThree
-          parameters:
+          arguments:
             script: System.out.println("Third Serverless Workflow World");
     end:
-      kind: terminate
+      terminate: true

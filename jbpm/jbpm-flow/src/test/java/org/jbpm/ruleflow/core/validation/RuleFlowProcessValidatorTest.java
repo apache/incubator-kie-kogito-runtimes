@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core.validation;
 
 import java.util.ArrayList;
@@ -55,13 +54,13 @@ public class RuleFlowProcessValidatorTest {
         when(node.getName()).thenReturn("nodeName");
         when(node.getId()).thenReturn(Long.MAX_VALUE);
         validator.addErrorMessage(process,
-                                  node,
-                                  errors,
-                                  "any message");
+                node,
+                errors,
+                "any message");
         assertEquals(1,
-                     errors.size());
+                errors.size());
         assertEquals("Node 'nodeName' [" + Long.MAX_VALUE + "] any message",
-                     errors.get(0).getMessage());
+                errors.get(0).getMessage());
     }
 
     @Test
@@ -84,19 +83,19 @@ public class RuleFlowProcessValidatorTest {
         // in non-dynamic processes all check should be triggered
         // they should also include process level checks (start node, end node etc)
         assertEquals(6,
-                     errors.length);
+                errors.length);
         assertEquals("Process has no start node.",
-                     errors[0].getMessage());
+                errors[0].getMessage());
         assertEquals("Process has no end node.",
-                     errors[1].getMessage());
+                errors[1].getMessage());
         assertEquals("Node 'MyDynamicNode' [1] Dynamic has no incoming connection",
-                     errors[2].getMessage());
+                errors[2].getMessage());
         assertEquals("Node 'MyDynamicNode' [1] Dynamic has no outgoing connection",
-                     errors[3].getMessage());
+                errors[3].getMessage());
         assertEquals("Node 'MyDynamicNode' [1] Dynamic has no completion condition set",
-                     errors[4].getMessage());
+                errors[4].getMessage());
         assertEquals("Node 'MyDynamicNode' [1] Has no connection to the start node.",
-                     errors[5].getMessage());
+                errors[5].getMessage());
     }
 
     @Test
@@ -118,7 +117,7 @@ public class RuleFlowProcessValidatorTest {
         assertNotNull(errors);
         // if dynamic process no longer triggering incoming / outgoing connection errors for dynamic nodes
         assertEquals(0,
-                     errors.length);
+                errors.length);
 
         // empty completion expression to trigger validation error
         process.removeNode(dynamicNode);
@@ -132,9 +131,9 @@ public class RuleFlowProcessValidatorTest {
         assertNotNull(errors2);
         // autocomplete set to false and empty completion condition triggers error
         assertEquals(1,
-                     errors2.length);
+                errors2.length);
         assertEquals("Node 'MyDynamicNode' [1] Dynamic has no completion condition set",
-                     errors2[0].getMessage());
+                errors2[0].getMessage());
     }
 
     @Test
@@ -148,7 +147,7 @@ public class RuleFlowProcessValidatorTest {
         ProcessValidationError[] errors = validator.validateProcess(process);
         assertNotNull(errors);
         assertEquals(0,
-                     errors.length);
+                errors.length);
     }
 
     @Test
@@ -161,7 +160,7 @@ public class RuleFlowProcessValidatorTest {
         ProcessValidationError[] errors = validator.validateProcess(process);
         assertNotNull(errors);
         assertEquals(0,
-                     errors.length);
+                errors.length);
     }
 
     @Test
@@ -186,20 +185,18 @@ public class RuleFlowProcessValidatorTest {
                 startNode,
                 Node.CONNECTION_DEFAULT_TYPE,
                 compositeNode,
-                Node.CONNECTION_DEFAULT_TYPE
-        );
+                Node.CONNECTION_DEFAULT_TYPE);
         new org.jbpm.workflow.core.impl.ConnectionImpl(
                 compositeNode,
                 Node.CONNECTION_DEFAULT_TYPE,
                 endNode,
-                Node.CONNECTION_DEFAULT_TYPE
-        );
+                Node.CONNECTION_DEFAULT_TYPE);
 
         ProcessValidationError[] errors = validator.validateProcess(process);
         assertNotNull(errors);
         assertEquals(1,
-                     errors.length);
+                errors.length);
         assertEquals("Node 'CompositeNode' [3] Composite has no start node defined.",
-                     errors[0].getMessage());
+                errors[0].getMessage());
     }
 }

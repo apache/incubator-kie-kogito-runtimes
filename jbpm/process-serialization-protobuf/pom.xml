@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>jbpm</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+  
+ 
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>process-serialization-protobuf</artifactId>
+  <name>Kogito :: Process :: Protobuf Serialization</name>
+  <description>Kogito Process Protobuf Serialization</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>jbpm-flow</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-drools</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-serialization-protobuf</artifactId>
+      <version>${version.org.kie7}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+  <profiles>
+    <profile>
+    <id>sonarcloud-analysis</id>
+      <properties>
+        <sonar.exclusions>org.jbpm.marshalling.impl.JBPMMessages</sonar.exclusions>
+      </properties>
+    </profile>
+    <profile>
+    <id>proto</id>
+    <build>
+        <plugins>
+          <plugin>
+            <groupId>org.xolstice.maven.plugins</groupId>
+            <artifactId>protobuf-maven-plugin</artifactId>
+            <version>0.6.1</version>
+            <configuration>
+              <protocArtifact>com.google.protobuf:protoc:3.12.0:exe:</protocArtifact>
+              <protoSourceRoot>${basedir}/src/main/resources/org/jbpm/marshalling</protoSourceRoot>
+              <clearOutputDirectory>false</clearOutputDirectory>
+              <outputDirectory>${basedir}/src/main/java</outputDirectory>
+             </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>compile</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <configuration>
+              <failOnViolation>false</failOnViolation>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+   </profile>
+  </profiles>
+</project>

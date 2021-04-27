@@ -1,5 +1,7 @@
 @Library('jenkins-pipeline-shared-libraries')_
 
+import org.kie.jenkins.MavenCommand
+
 pipeline {
     agent {
         label 'kie-rhel7 && kie-mem16g'
@@ -8,38 +10,46 @@ pipeline {
         maven 'kie-maven-3.6.2'
         jdk 'kie-jdk11'
     }
-    triggers {
-        cron ('H 10 * * *')
-    }
     options {
-        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '5')
         timeout(time: 360, unit: 'MINUTES')
     }
-    parameters {
-        string(name: 'BRANCH_NAME', defaultValue: "master", description: 'Set the branch to build&test')
-    }
+
     environment {
-        KOGITO_CI_EMAIL_TO = credentials('KOGITO_CI_EMAIL_TO')
+        // Some generated env is also defined into .jenkins/dsl/jobs.groovy file
+
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
 
         // Set into 'Initialize' stage
         // DROOLS_VERSION
-        // MAVEN_EXTRA_ARGS
     }
     stages {
-        stage("Initialize"){
+        stage('Initialize') {
             steps {
                 script {
-                    dir('kogito-build-parent'){
+                    checkoutDroolsRepo()
+
+                    checkoutRepo('kogito-runtimes')
+                    checkoutRepo('kogito-runtimes', 'integration-tests')
+                    checkoutOptaplannerRepo()
+                    checkoutRepo('kogito-apps')
+                    checkoutRepo('kogito-examples')
+                    checkoutRepo('kogito-examples', 'kogito-examples-persistence')
+                    checkoutRepo('kogito-examples', 'kogito-examples-events')
+                }
+            }
+        }
+        stage('Retrieve drools snapshot version') {
+            steps {
+                script {
+                    dir('drools') {
                         // query mvn to get the latest version
                         env.DROOLS_VERSION = """${sh (
-                                script: 'mvn versions:display-property-updates -DincludeProperties=version.org.kie7 -DallowSnapshots -N  | grep version.org.kie7 | awk \'{print $4}\' ',
+                                script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout',
                                 returnStdout: true
                             ).trim()}"""
-                        assert env.DROOLS_VERSION != ""
+                        assert env.DROOLS_VERSION != ''
                         echo "Latest kie7 version is: ${env.DROOLS_VERSION}"
-
-                        env.MAVEN_EXTRA_ARGS="-Dversion.org.kie7=${DROOLS_VERSION}"
                     }
                 }
             }
@@ -47,56 +57,108 @@ pipeline {
         stage('Build kogito-runtimes') {
             steps {
                 script {
-                    checkoutAndMavenCleanInstall("kogito-runtimes")
+                    getMavenCommandWithDroolsVersion('kogito-runtimes')
+                        .run('clean install')
                 }
             }
             post {
                 always {
-                    saveReports()
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Check Runtimes integration-tests with persistence') {
+            steps {
+                script {
+                    getMavenCommandWithDroolsVersion('integration-tests')
+                        .withProfiles(['persistence'])
+                        .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build optaplanner') {
+            steps {
+                script {
+                    getMavenCommandWithDroolsVersion('optaplanner')
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
         stage('Build kogito-apps') {
             steps {
                 script {
-                    checkoutAndMavenCleanInstall("kogito-apps")
+                    getMavenCommandWithDroolsVersion('kogito-apps')
+                        .run('clean install')
                 }
             }
             post {
                 always {
-                    saveReports()
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
         stage('Build kogito-examples') {
             steps {
                 script {
-                    checkoutAndMavenCleanInstall("kogito-examples")
+                    getMavenCommandWithDroolsVersion('kogito-examples')
+                        .run('clean install')
                 }
             }
             post {
                 always {
-                    saveReports()
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
         stage('Build kogito-examples with persistence') {
             steps {
-                checkoutAndMavenCleanInstall("kogito-examples", "kogito-examples-persistence", "-Ppersistence")
+                script {
+                    getMavenCommandWithDroolsVersion('kogito-examples-persistence')
+                        .withProfiles(['persistence'])
+                        .run('clean verify')
+                }
             }
             post {
                 always {
-                    saveReports()
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
         stage('Build kogito-examples with events') {
             steps {
-                checkoutAndMavenCleanInstall("kogito-examples", "kogito-examples-events", "-Pevents")
+                script {
+                    getMavenCommandWithDroolsVersion('kogito-examples-events')
+                        .withProfiles(['events'])
+                        .run('clean verify')
+                }
             }
             post {
                 always {
-                    saveReports()
+                    script {
+                        cleanContainers()
+                    }
                 }
             }
         }
@@ -106,32 +168,59 @@ pipeline {
             sendNotification()
         }
         always {
-            junit '**/target/surefire-reports/**/*.xml'
-            cleanWs()
+            script {
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
+            }
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
+            }
         }
     }
 }
 
-void sendNotification(){
+void sendNotification() {
     emailext body: "Kogito daily Drools #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
-             subject: "[${params.BRANCH_NAME}][d] Runtimes Drools snapshot",
+             subject: "[${params.BUILD_BRANCH_NAME}][d] Runtimes Drools snapshot",
              to: env.KOGITO_CI_EMAIL_TO
 }
 
-void saveReports(boolean allowEmpty=false){
-    junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
-}
-
-void checkoutAndMavenCleanInstall(String repoName, String dirName = "", String mavenExtraArgs = ""){
-    if(dirName == ""){
-        dirName = repoName
-    }
-    dir(dirName){
-        checkout(githubscm.resolveRepository(repoName, "kiegroup", params.BRANCH_NAME, false))
-        mavenCleanInstall(mavenExtraArgs)
+void checkoutRepo(String repoName, String dirName=repoName) {
+    dir(dirName) {
+        checkout(githubscm.resolveRepository(repoName, params.GIT_AUTHOR, params.BUILD_BRANCH_NAME, false))
     }
 }
 
-void mavenCleanInstall(String extraArgs){
-    maven.runMavenWithSubmarineSettings("clean install ${env.MAVEN_EXTRA_ARGS} ${extraArgs}", false)
+void checkoutDroolsRepo() {
+    dir('drools') {
+        checkout(githubscm.resolveRepository('drools', 'kiegroup', 'master', false))
+    }
+}
+
+void checkoutOptaplannerRepo() {
+    String targetBranch = params.BUILD_BRANCH_NAME
+    String [] versionSplit = targetBranch.split("\\.")
+    if (versionSplit.length == 3
+        && versionSplit[0].isNumber()
+        && versionSplit[1].isNumber()
+       && versionSplit[2] == 'x') {
+        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
+    } else {
+        echo "Cannot parse branch as release branch so going further with current value: ${targetBranch}"
+    }
+    dir('optaplanner') {
+        checkout(githubscm.resolveRepository('optaplanner', params.GIT_AUTHOR, targetBranch, false))
+    }
+}
+
+MavenCommand getMavenCommandWithDroolsVersion(String directory) {
+    return new MavenCommand(this, ['-fae'])
+                .withSettingsXmlId('kogito_release_settings')
+                .inDirectory(directory)
+                .withProperty('version.org.kie7', "${DROOLS_VERSION}")
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('docker')
 }

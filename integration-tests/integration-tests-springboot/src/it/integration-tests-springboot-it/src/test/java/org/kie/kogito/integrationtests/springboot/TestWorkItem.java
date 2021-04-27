@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +16,10 @@
 package org.kie.kogito.integrationtests.springboot;
 
 import java.util.Map;
+import org.kie.kogito.process.workitem.TaskModel;
 
-import org.kie.kogito.process.WorkItem;
 
-
-public class TestWorkItem implements WorkItem {
+public class TestWorkItem implements TaskModel<Map<String,Object>,Map<String,Object>> {
 /*
  * It is interesting to have an implementation of WorkItem for testing that
  * the information returned by REST API is consistent with the interface definition. 
@@ -29,7 +29,6 @@ public class TestWorkItem implements WorkItem {
  */
 
     private String id;
-    private String nodeInstanceId;
     private String name;
     private int state;
     private String phase;
@@ -43,14 +42,6 @@ public class TestWorkItem implements WorkItem {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
-    }
-
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
     }
 
     public String getName() {
@@ -100,6 +91,4 @@ public class TestWorkItem implements WorkItem {
     public void setResults(Map<String, Object> results) {
         this.results = results;
     }
-
-
 }

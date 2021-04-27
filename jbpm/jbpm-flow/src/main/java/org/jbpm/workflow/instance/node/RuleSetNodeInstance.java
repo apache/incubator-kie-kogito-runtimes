@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.common.KogitoInternalAgenda;
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.ExceptionScope;
@@ -45,6 +44,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
@@ -57,7 +57,6 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNMessage.Severity;
@@ -66,6 +65,7 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
  * Runtime counterpart of a ruleset node.
  */
 public class RuleSetNodeInstance extends StateBasedNodeInstance implements EventListener,
-                                                                           ContextInstanceContainer {
+        ContextInstanceContainer {
 
     private static final long serialVersionUID = 510L;
     private static final Logger logger = LoggerFactory.getLogger(RuleSetNodeInstance.class);
@@ -97,14 +97,14 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     }
 
     @Override
-    public void internalTrigger(final NodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         try {
             super.internalTrigger(from, type);
             // if node instance was cancelled, abort
-            if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+            if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
                 return;
             }
-            if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
+            if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
                 throw new IllegalArgumentException("A RuleSetNode only accepts default incoming connections!");
             }
             RuleSetNode ruleSetNode = getRuleSetNode();
@@ -123,7 +123,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                 .orElse(() -> new DmnDecisionModel(
                                         ((KieSession) kruntime).getKieRuntime(DMNRuntime.class),
                                         namespace,
-                                        model)).get();
+                                        model))
+                                .get();
 
                 DMNContext context = modelInstance.newContext(inputs);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
@@ -148,7 +149,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         continue;
                     }
 
-                    String inputKey = getRuleFlowGroup() + "_" + getProcessInstance().getId() + "_" + entry.getKey();
+                    String inputKey = getRuleFlowGroup() + "_" + getProcessInstance().getStringId() + "_" + entry.getKey();
 
                     factHandles.put(inputKey, kruntime.insert(entry.getValue()));
                 }
@@ -156,7 +157,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 if (actAsWaitState()) {
                     addRuleSetListener();
                     ((KogitoInternalAgenda) kruntime.getAgenda())
-                            .activateRuleFlowGroup(getRuleFlowGroup(), getProcessInstance().getId(), getUniqueId());
+                            .activateRuleFlowGroup(getRuleFlowGroup(), getProcessInstance().getStringId(), getUniqueId());
                 } else {
                     int fireLimit = DEFAULT_FIRE_RULE_LIMIT;
                     WorkflowProcessInstance processInstance = getProcessInstance();
@@ -165,12 +166,12 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         fireLimit = Integer.parseInt(inputs.get(FIRE_RULE_LIMIT_PARAMETER).toString());
                     }
                     ((KogitoInternalAgenda) kruntime.getAgenda())
-                            .activateRuleFlowGroup(getRuleFlowGroup(), processInstance.getId(), getUniqueId());
+                            .activateRuleFlowGroup(getRuleFlowGroup(), processInstance.getStringId(), getUniqueId());
 
                     int fired = ((KieSession) kruntime).fireAllRules(processInstance.getAgendaFilter(), fireLimit);
                     if (fired == fireLimit) {
                         throw new RuntimeException("Fire rule limit reached " + fireLimit + ", limit can be set via system property " + FIRE_RULE_LIMIT_PROPERTY
-                                                           + " or via data input of business rule task named " + FIRE_RULE_LIMIT_PARAMETER);
+                                + " or via data input of business rule task named " + FIRE_RULE_LIMIT_PARAMETER);
                     }
 
                     removeEventListeners();
@@ -179,7 +180,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 }
             } else if (ruleType.isRuleUnit()) {
                 RuleUnitFactory<RuleUnitData> factory = ruleSetNode.getRuleUnitFactory();
-                KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+                KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
                 context.setNodeInstance(this);
                 RuleUnitData model = factory.bind(context);
                 RuleUnitInstance<RuleUnitData> instance = factory.unit().createInstance(model);
@@ -275,7 +276,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             Object object = kruntime.getObject(entry.getValue());
             String key = entry.getKey();
             key = key.replaceAll(getRuleFlowGroup() + "_", "");
-            key = key.replaceAll(getProcessInstance().getId() + "_", "");
+            key = key.replaceAll(getProcessInstance().getStringId() + "_", "");
             objects.put(key, object);
 
             kruntime.delete(entry.getValue());
@@ -288,15 +289,14 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     private void processOutputs(Map<String, Object> objects) {
         RuleSetNode ruleSetNode = getRuleSetNode();
         if (ruleSetNode != null) {
-            for (Iterator<DataAssociation> iterator = ruleSetNode.getOutAssociations().iterator(); iterator.hasNext(); ) {
+            for (Iterator<DataAssociation> iterator = ruleSetNode.getOutAssociations().iterator(); iterator.hasNext();) {
                 DataAssociation association = iterator.next();
                 if (association.getTransformation() != null) {
                     Transformation transformation = association.getTransformation();
                     DataTransformer transformer = DataTransformerRegistry.get().find(transformation.getLanguage());
                     if (transformer != null) {
                         Object parameterValue = transformer.transform(transformation.getCompiledExpression(), objects);
-                        VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                                resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
+                        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
                         if (variableScopeInstance != null && parameterValue != null) {
                             variableScopeInstance.setVariable(this, association.getTarget(), parameterValue);
                         } else {
@@ -305,8 +305,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                         }
                     }
                 } else if (association.getAssignments() == null || association.getAssignments().isEmpty()) {
-                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                            resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
+                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getTarget());
                     if (variableScopeInstance != null) {
                         Object value = objects.get(association.getSources().get(0));
                         if (value == null) {
@@ -326,17 +325,17 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                     } else {
                         String output = association.getSources().get(0);
                         String target = association.getTarget();
-                                                
+
                         Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(target);
                         if (matcher.find()) {
                             String paramName = matcher.group(1);
-                            
+
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(objects);
                             Serializable compiled = MVELProcessHelper.compileExpression(expression);
                             MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
-                        } else { 
+                        } else {
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                         }
                     }
@@ -348,7 +347,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     protected Map<String, Object> evaluateParameters(RuleSetNode ruleSetNode) {
         Map<String, Object> replacements = new HashMap<>();
 
-        for (Iterator<DataAssociation> iterator = ruleSetNode.getInAssociations().iterator(); iterator.hasNext(); ) {
+        for (Iterator<DataAssociation> iterator = ruleSetNode.getInAssociations().iterator(); iterator.hasNext();) {
             DataAssociation association = iterator.next();
             if (association.getTransformation() != null) {
                 Transformation transformation = association.getTransformation();
@@ -361,8 +360,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 }
             } else if (association.getAssignments() == null || association.getAssignments().isEmpty()) {
                 Object parameterValue = null;
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getSources().get(0));
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, association.getSources().get(0));
                 if (variableScopeInstance != null) {
                     parameterValue = variableScopeInstance.getVariable(association.getSources().get(0));
                 } else {
@@ -400,8 +398,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             while (matcher.find()) {
                 String paramName = matcher.group(1);
 
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                        resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
+                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, paramName);
                 if (variableScopeInstance != null) {
                     Object variableValue = variableScopeInstance.getVariable(paramName);
                     if (variableValue != null) {
@@ -427,8 +424,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
         Map<String, Object> parameters = new HashMap<>();
         for (String sourceParam : association.getSources()) {
             Object parameterValue = null;
-            VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                    resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
+            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, sourceParam);
             if (variableScopeInstance != null) {
                 parameterValue = variableScopeInstance.getVariable(sourceParam);
             } else {

@@ -1,23 +1,23 @@
----
 id: prchecker
 name: Github PR Checker Workflow
 version: '1.0'
+start: HandleOpenPR
 functions:
   - name: AddLabels
-    type: service
     metadata:
       interface: org.kogito.examples.sw.github.workflow.GithubService
       operation: addLabels
+      type: service
   - name: AddReviewers
-    type: service
     metadata:
       interface: org.kogito.examples.sw.github.workflow.GithubService
       operation: addReviewers
+      type: service
   - name: FetchPRFiles
-    type: service
     metadata:
       interface: org.kogito.examples.sw.github.workflow.GithubService
       operation: fetchPRFiles
+      type: service
 events:
   - name: PROpened
     source: github
@@ -42,21 +42,15 @@ events:
 states:
   - name: HandleOpenPR
     type: event
-    start:
-      kind: default
     onEvents:
       - eventRefs:
           - PROpened
           - ChangedPR
         actions:
-          - functionRef:
-              refName: AddLabels
-          - functionRef:
-              refName: AddReviewers
-          - functionRef:
-              refName: FetchPRFiles
-    transition:
-      nextState: CheckBackend
+          - functionRef: AddLabels
+          - functionRef: AddReviewers
+          - functionRef: FetchPRFiles
+    transition: CheckBackend
   - name: CheckBackend
     type: switch
     dataConditions:
@@ -66,19 +60,16 @@ states:
             - eventRef: BackendNewChange
           nextState: CheckFrontend
       - condition: "{{ $.[?(@.file  != 'backend')] }}"
-        transition:
-          nextState: CheckFrontend
+        transition: CheckFrontend
   - name: CheckFrontend
     type: switch
     dataConditions:
       - condition: "{{ $.[?(@.file  == 'frontend')] }}"
         end:
-          kind: event
           produceEvents:
             - eventRef: FrontendNewChange
             - eventRef: PRChecked
       - condition: "{{ $.[?(@.file  != 'frontend')] }}"
         end:
-          kind: event
           produceEvents:
             - eventRef: PRChecked

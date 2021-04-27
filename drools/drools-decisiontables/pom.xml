@@ -11,20 +11,17 @@
 
     <artifactId>drools-decisiontables</artifactId>
     <name>Kogito :: Drools :: Drools DecisionTables</name>
+    
+    <properties>
+      <java.module.name>org.kie.kogito.drools.decisiontables</java.module.name>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-decisiontables</artifactId>
+            <version>${version.org.kie7}</version>
             <exclusions>
-                <exclusion>
-                    <groupId>org.kie</groupId>
-                    <artifactId>kie-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.kie</groupId>
-                    <artifactId>kie-internal</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>org.drools</groupId>
                     <artifactId>drools-core</artifactId>

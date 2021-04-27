@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.io.IOException;
@@ -23,14 +22,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import io.cloudevents.CloudEvent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.dmn.feel.util.Pair;
+import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.conf.StaticConfigBean;
-import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.mock.MockDefaultAggregator;
 import org.kie.kogito.tracing.decision.terminationdetector.BoundariesTerminationDetector;
@@ -38,14 +36,16 @@ import org.kie.kogito.tracing.decision.terminationdetector.CounterTerminationDet
 import org.kie.kogito.tracing.decision.terminationdetector.TerminationDetector;
 import org.mockito.ArgumentCaptor;
 
+import io.cloudevents.CloudEvent;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNModel;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.readEvaluateEventsFromJsonResource;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNModel;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_ALL_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.EVALUATE_DECISION_SERVICE_JSON_RESOURCE;
+import static org.kie.kogito.tracing.decision.DecisionTracingTestUtils.readEvaluateEventsFromJsonResource;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,8 +80,7 @@ class DecisionTracingCollectorTest {
                 payloadConsumer,
                 (namespace, name) -> model,
                 terminationDetectorSupplier,
-                configBean
-        );
+                configBean);
 
         List<EvaluateEvent> evaluateAllEvents = readEvaluateEventsFromJsonResource(EVALUATE_ALL_JSON_RESOURCE);
         List<EvaluateEvent> evaluateDecisionServiceEvents = readEvaluateEventsFromJsonResource(EVALUATE_DECISION_SERVICE_JSON_RESOURCE);

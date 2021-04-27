@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.bpmn2;
 
 import java.util.ArrayList;
@@ -30,16 +30,16 @@ public class BpmnVariables implements Model {
 
     public static final Predicate<Variable> OUTPUTS_ONLY = v -> v.hasTag(Variable.OUTPUT_TAG);
     public static final Predicate<Variable> INPUTS_ONLY = v -> v.hasTag(Variable.INPUT_TAG);
-    public static final Predicate<Variable> INTERNAL_ONLY = v -> v.hasTag(Variable.INTERNAL_TAG);    
-    
+    public static final Predicate<Variable> INTERNAL_ONLY = v -> v.hasTag(Variable.INTERNAL_TAG);
+
     private final Map<String, Object> variables = new HashMap<>();
 
     private List<Variable> definitions = new ArrayList<>();
 
     protected BpmnVariables() {
-        
+
     }
-    
+
     protected BpmnVariables(Map<String, Object> variables) {
         this.variables.putAll(variables);
     }
@@ -52,7 +52,7 @@ public class BpmnVariables implements Model {
     public static BpmnVariables create() {
         return new BpmnVariables();
     }
-    
+
     public static BpmnVariables create(Map<String, Object> variables) {
         return new BpmnVariables(variables);
     }
@@ -84,12 +84,12 @@ public class BpmnVariables implements Model {
     public Map<String, Object> toMap() {
         return Collections.unmodifiableMap(variables);
     }
-    
+
     public Map<String, Object> toMap(Predicate<Variable> filter) {
-        
+
         return definitions.stream()
-            .filter(filter)
-            .filter(v -> variables.containsKey(v.getName()))
-            .collect(Collectors.toMap(v -> v.getName(), v -> variables.get(v.getName())));              
+                .filter(filter)
+                .filter(v -> variables.containsKey(v.getName()))
+                .collect(Collectors.toMap(v -> v.getName(), v -> variables.get(v.getName())));
     }
 }

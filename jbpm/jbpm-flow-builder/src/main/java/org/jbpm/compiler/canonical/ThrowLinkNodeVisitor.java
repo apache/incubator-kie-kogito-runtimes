@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,12 @@
  */
 package org.jbpm.compiler.canonical;
 
-import com.github.javaparser.ast.expr.LongLiteralExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.factory.ThrowLinkNodeFactory;
 import org.jbpm.workflow.core.node.ThrowLinkNode;
+
+import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class ThrowLinkNodeVisitor extends AbstractNodeVisitor<ThrowLinkNode> {
 
@@ -30,13 +31,13 @@ public class ThrowLinkNodeVisitor extends AbstractNodeVisitor<ThrowLinkNode> {
 
     @Override
     public void visitNode(String factoryField,
-                          ThrowLinkNode node,
-                          BlockStmt body,
-                          VariableScope variableScope,
-                          ProcessMetaData metadata) {
+            ThrowLinkNode node,
+            BlockStmt body,
+            VariableScope variableScope,
+            ProcessMetaData metadata) {
         String nodeId = getNodeId(node);
         body.addStatement(getAssignedFactoryMethod(factoryField, ThrowLinkNodeFactory.class, nodeId,
-                                                   getNodeKey(), new LongLiteralExpr(node.getId())));
+                getNodeKey(), new LongLiteralExpr(node.getId())));
         body.addStatement(getDoneMethod(nodeId));
     }
 

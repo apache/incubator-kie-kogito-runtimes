@@ -1,6 +1,6 @@
----
 id: produceeventontransition
 name: Produce Event On Transition
+start: HelloWorld
 events:
   - name: TestKafkaEvent
     source: testtopic
@@ -16,19 +16,19 @@ events:
     type: kafka
 functions:
   - name: helloOne
-    type: script
+    metadata:
+      type: script
   - name: helloTwo
-    type: script
+    metadata:
+      type: script
 states:
   - name: HelloWorld
     type: operation
-    start:
-      kind: default
     actionMode: sequential
     actions:
       - functionRef:
           refName: helloOne
-          parameters:
+          arguments:
             script: ''
     transition:
       nextState: HelloWorld2
@@ -43,7 +43,7 @@ states:
     actions:
       - functionRef:
           refName: helloTwo
-          parameters:
+          arguments:
             script: ''
     end:
-      kind: terminate
+      terminate: true

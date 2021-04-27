@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.util.ArrayList;
@@ -33,23 +32,23 @@ import org.jbpm.workflow.core.node.CompositeContextNode;
 
 public class CompositeContextNodeInstance extends CompositeNodeInstance implements ContextInstanceContainer, ContextableInstance {
 
-	private static final long serialVersionUID = 510l;
-	
-	private Map<String, ContextInstance> contextInstances = new HashMap<String, ContextInstance>();
+    private static final long serialVersionUID = 510l;
+
+    private Map<String, ContextInstance> contextInstances = new HashMap<String, ContextInstance>();
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<String, List<ContextInstance>>();
 
     protected CompositeContextNode getCompositeContextNode() {
         return (CompositeContextNode) getNode();
     }
-    
+
     public ContextContainer getContextContainer() {
         return getCompositeContextNode();
     }
-    
+
     public void setContextInstance(String contextId, ContextInstance contextInstance) {
         this.contextInstances.put(contextId, contextInstance);
     }
-    
+
     public ContextInstance getContextInstance(String contextId) {
         ContextInstance contextInstance = this.contextInstances.get(contextId);
         if (contextInstance != null) {
@@ -62,11 +61,11 @@ public class CompositeContextNodeInstance extends CompositeNodeInstance implemen
         }
         return null;
     }
-    
+
     public List<ContextInstance> getContextInstances(String contextId) {
         return this.subContextInstances.get(contextId);
     }
-    
+
     public void addContextInstance(String contextId, ContextInstance contextInstance) {
         List<ContextInstance> list = this.subContextInstances.get(contextId);
         if (list == null) {
@@ -75,7 +74,7 @@ public class CompositeContextNodeInstance extends CompositeNodeInstance implemen
         }
         list.add(contextInstance);
     }
-    
+
     public void removeContextInstance(String contextId, ContextInstance contextInstance) {
         List<ContextInstance> list = this.subContextInstances.get(contextId);
         if (list != null) {
@@ -86,7 +85,7 @@ public class CompositeContextNodeInstance extends CompositeNodeInstance implemen
     public ContextInstance getContextInstance(String contextId, long id) {
         List<ContextInstance> contextInstances = subContextInstances.get(contextId);
         if (contextInstances != null) {
-            for (ContextInstance contextInstance: contextInstances) {
+            for (ContextInstance contextInstance : contextInstances) {
                 if (contextInstance.getContextId() == id) {
                     return contextInstance;
                 }

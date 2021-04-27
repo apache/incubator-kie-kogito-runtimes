@@ -20,14 +20,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import org.acme.travels.Traveller;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.integrationtests.UnitOfWorkTestEventListener;
+import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -42,6 +49,20 @@ class BasicRestTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
+    @Inject
+    UnitOfWorkTestEventListener uowEventListener;
+
+    @BeforeEach
+    void resetEventListener() {
+        uowEventListener.reset();
+    }
+
+    void assertExpectedUnitOfWorkEvents(Integer events) {
+        assertThat(uowEventListener.getStartEvents()).hasSize(events);
+        assertThat(uowEventListener.getEndEvents()).hasSize(events);
+        assertThat(uowEventListener.getAbortEvents()).isEmpty();
+    }
+
     @Test
     void testGeneratedId() {
         Map<String, String> params = new HashMap<>();
@@ -49,25 +70,54 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
                 .header("Location", not(emptyOrNullString()))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .get("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
+
+        assertExpectedUnitOfWorkEvents(1);
+    }
+
+    @Test
+    void testWithInaccurateModel() {
+
+        Traveller traveller = new Traveller("Javierito", "Dimequienes", "pepe@pepe.com", "Spanish");
+        String processId = given()
+                .contentType(ContentType.JSON)
+                .body(traveller)
+                .when()
+                .post("/approvals")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam("user", "admin")
+                .queryParam("group", "managers")
+                .pathParam("processId", processId)
+                .when()
+                .get("/approvals/{processId}/tasks")
+                .then()
+                .statusCode(200);
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 
     @Test
@@ -79,15 +129,15 @@ class BasicRestTest {
         String id = given()
                 .contentType(ContentType.JSON)
                 .queryParam("businessKey", businessKey)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         // UUID is no longer the BusinessKey or generated from it
@@ -97,12 +147,14 @@ class BasicRestTest {
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .get("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 
     @Test
@@ -112,11 +164,13 @@ class BasicRestTest {
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .get("/AdHocFragments/FOO")
-            .then()
+                .then()
                 .statusCode(404);
+
+        assertExpectedUnitOfWorkEvents(0);
     }
 
     @Test
@@ -126,28 +180,30 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
-                .header("Location",not(emptyOrNullString()))
+                .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         // Update the previously model
         params.put("var1", "Gonzo");
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .put("/AdHocFragments/{customId}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Gonzo"));
+
+        assertExpectedUnitOfWorkEvents(2);
     }
 
     @Test
@@ -157,23 +213,23 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
                 .body("id", not(emptyOrNullString()))
                 .body("var1", equalTo("Kermit"))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .delete("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
@@ -181,11 +237,13 @@ class BasicRestTest {
         //Resource already deleted
         given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .delete("/AdHocFragments/{id}", id)
-            .then()
+                .then()
                 .statusCode(404);
+
+        assertExpectedUnitOfWorkEvents(3);
     }
 
     @Test
@@ -195,21 +253,23 @@ class BasicRestTest {
 
         String id = given()
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .body(params)
                 .post("/AdHocFragments")
-            .then()
+                .then()
                 .statusCode(201)
                 .header("Location", not(emptyOrNullString()))
-            .extract()
+                .extract()
                 .path("id");
 
         given()
-            .when()
-            .get("/AdHocFragments/{id}/tasks", id)
-            .then()
-            .statusCode(200)
-            .body("$.size", is(1))
-            .body("[0].name", is("Task"));
+                .when()
+                .get("/AdHocFragments/{id}/tasks", id)
+                .then()
+                .statusCode(200)
+                .body("$.size", is(1))
+                .body("[0].name", is("Task"));
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 }

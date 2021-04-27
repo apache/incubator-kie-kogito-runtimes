@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl.demo;
 
 import java.awt.BorderLayout;
@@ -27,7 +26,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -40,34 +38,34 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 /**
  * 
  */
-public class UIWorkItemHandler extends JFrame implements WorkItemHandler {
+public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
 
     private static final long serialVersionUID = 510l;
-    
-    private Map<WorkItem, WorkItemManager> workItems = new HashMap<WorkItem, WorkItemManager>();
+
+    private Map<KogitoWorkItem, KogitoWorkItemManager> workItems = new HashMap<>();
     private JList workItemsList;
     private JButton selectButton;
-    
+
     public UIWorkItemHandler() {
         setSize(new Dimension(400, 300));
         setTitle("Work Items");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         initializeComponent();
     }
-    
+
     private void initializeComponent() {
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         getRootPane().setLayout(new BorderLayout());
         getRootPane().add(panel, BorderLayout.CENTER);
-        
+
         workItemsList = new JList();
         workItemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workItemsList.addMouseListener(new MouseAdapter() {
@@ -89,7 +87,7 @@ public class UIWorkItemHandler extends JFrame implements WorkItemHandler {
         c.fill = GridBagConstraints.BOTH;
         c.insets = new Insets(5, 5, 5, 5);
         panel.add(workItemsList, c);
-        
+
         selectButton = new JButton("Select");
         selectButton.setEnabled(false);
         selectButton.addActionListener(new ActionListener() {
@@ -104,16 +102,16 @@ public class UIWorkItemHandler extends JFrame implements WorkItemHandler {
         c.insets = new Insets(5, 5, 5, 5);
         panel.add(selectButton, c);
     }
-    
+
     private void select() {
-        WorkItem workItem = getSelectedWorkItem();
+        KogitoWorkItem workItem = getSelectedWorkItem();
         if (workItem != null) {
             UIWorkItemHandlerDialog dialog = new UIWorkItemHandlerDialog(UIWorkItemHandler.this, workItem);
             dialog.setVisible(true);
         }
     }
-    
-    public WorkItem getSelectedWorkItem() {
+
+    public KogitoWorkItem getSelectedWorkItem() {
         int index = workItemsList.getSelectedIndex();
         if (index != -1) {
             Object selected = workItemsList.getModel().getElementAt(index);
@@ -123,61 +121,60 @@ public class UIWorkItemHandler extends JFrame implements WorkItemHandler {
         }
         return null;
     }
-    
+
     private void reloadWorkItemsList() {
         List<WorkItemWrapper> result = new ArrayList<WorkItemWrapper>();
-        for (Iterator<WorkItem> iterator = workItems.keySet().iterator(); iterator.hasNext(); ) {
-            WorkItem workItem = iterator.next();
+        for (KogitoWorkItem workItem : workItems.keySet()) {
             result.add(new WorkItemWrapper(workItem));
         }
         workItemsList.setListData(result.toArray());
     }
-    
-    public void complete(WorkItem workItem, Map<String, Object> results) {
-        WorkItemManager manager = workItems.get(workItem);
+
+    public void complete(KogitoWorkItem workItem, Map<String, Object> results) {
+        KogitoWorkItemManager manager = workItems.get(workItem);
         if (manager != null) {
-            manager.completeWorkItem(workItem.getId(), results);
+            manager.completeWorkItem(workItem.getStringId(), results);
             workItems.remove(workItem);
             reloadWorkItemsList();
         }
         selectButton.setEnabled(getSelectedWorkItem() != null);
     }
-    
-    public void abort(WorkItem workItem) {
-        WorkItemManager manager = workItems.get(workItem);
+
+    public void abort(KogitoWorkItem workItem) {
+        KogitoWorkItemManager manager = workItems.get(workItem);
         if (manager != null) {
-            manager.abortWorkItem(workItem.getId());
+            manager.abortWorkItem(workItem.getStringId());
             workItems.remove(workItem);
             reloadWorkItemsList();
         }
         selectButton.setEnabled(getSelectedWorkItem() != null);
     }
-    
-    public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
+
+    public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         workItems.remove(workItem);
         reloadWorkItemsList();
     }
 
-    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         workItems.put(workItem, manager);
         reloadWorkItemsList();
     }
 
     private class WorkItemWrapper {
-        
-        private WorkItem workItem;
-        
-        public WorkItemWrapper(WorkItem workItem) {
+
+        private KogitoWorkItem workItem;
+
+        public WorkItemWrapper(KogitoWorkItem workItem) {
             this.workItem = workItem;
         }
-        
-        public WorkItem getWorkItem() {
+
+        public KogitoWorkItem getWorkItem() {
             return workItem;
         }
-        
+
         public String toString() {
-            return workItem.getName() + " [" + workItem.getId() + "]";
+            return workItem.getName() + " [" + workItem.getStringId() + "]";
         }
     }
-    
+
 }

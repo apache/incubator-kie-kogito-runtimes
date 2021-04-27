@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.grafana;
 
 import java.io.BufferedReader;
@@ -21,13 +21,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.grafana.model.functions.GrafanaFunction;
-import org.kie.kogito.grafana.model.functions.SumFunction;
 import org.kie.kogito.grafana.model.panel.PanelType;
 import org.kie.kogito.grafana.model.panel.common.YAxis;
 import org.kie.kogito.grafana.model.panel.graph.GraphPanel;
@@ -37,6 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JGrafanaTest {
+
+    public static String readStandardDashboard() {
+
+        InputStream is = JGrafanaTest.class.getResourceAsStream("/org/kie/kogito/grafana/test_dashboard.json");
+        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+    }
 
     @Test
     public void givenANewContextWhenANewJGrafanaObjectIsCreatedThenTheDefaultObjectIsCreated() {
@@ -120,9 +122,7 @@ public class JGrafanaTest {
         grafanaObj.addPanel(PanelType.HEATMAP, "My Graph 2", "sum(increase(api_execution_elapsed_nanosecond_bucket{handler=\"hello\"}[1m])) by (le)");
         grafanaObj.addPanel(PanelType.STAT, "My Graph 2", "sum(api_http_stacktrace_exceptions)");
         grafanaObj.addPanel(PanelType.TABLE, "My Graph 2", "api_http_stacktrace_exceptions");
-        SortedMap<Integer, GrafanaFunction> map = new TreeMap();
-        map.put(1, new SumFunction());
-        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", map, null);
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 3", "api_http_response_code{handler=\"world\"}", null);
         grafanaObj.removePanelByTitle("My Graph 2");
 
         // Assert
@@ -153,7 +153,7 @@ public class JGrafanaTest {
         yaxes.add(new YAxis("sc", false));
 
         // Act
-        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}", new TreeMap<>(), yaxes);
+        grafanaObj.addPanel(PanelType.GRAPH, "My Graph 1", "api_http_response_code{handler=\"world\"}", yaxes);
 
         // Assert
         assertEquals(2, ((GraphPanel) grafanaObj.getPanelByTitle("My Graph 1")).yaxes.size());
@@ -164,11 +164,5 @@ public class JGrafanaTest {
         assertDoesNotThrow(() -> {
             JGrafana dash = JGrafana.parse(readStandardDashboard());
         });
-    }
-
-    public static String readStandardDashboard() {
-
-        InputStream is = JGrafanaTest.class.getResourceAsStream("/org/kie/kogito/grafana/test_dashboard.json");
-        return new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
     }
 }

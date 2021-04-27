@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.dmn;
 
 import java.io.Reader;
@@ -33,7 +32,7 @@ import org.kie.dmn.core.internal.utils.DMNEvaluationUtils.DMNEvaluationResult;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.dmn.feel.util.EvalHelper;
 import org.kie.kogito.Application;
-import org.kie.kogito.dmn.rest.DMNResult;
+import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +59,7 @@ public class DMNKogito {
     }
 
     public static DMNRuntime createGenericDMNRuntime(Function<String, KieRuntimeFactory> kiePMMLRuntimeFactoryFunction, Reader... readers) {
+        DMNKogitoCallbacks.beforeCreateGenericDMNRuntime(kiePMMLRuntimeFactoryFunction, readers);
         List<Resource> resources = Stream.of(readers).map(ReaderResource::new).collect(Collectors.toList());
         EvalHelper.clearGenericAccessorCache(); // KOGITO-3325 DMN hot reload manage accessor cache when stronglytyped
         DMNRuntime dmnRuntime = DMNRuntimeBuilder.fromDefaults()
@@ -67,6 +67,7 @@ public class DMNKogito {
                 .buildConfiguration()
                 .fromResources(resources)
                 .getOrElseThrow(e -> new RuntimeException("Error initializing DMNRuntime", e));
+        DMNKogitoCallbacks.afterCreateGenericDMNRuntime(dmnRuntime);
         return dmnRuntime;
     }
 
@@ -80,20 +81,19 @@ public class DMNKogito {
         }
     }
 
-    public static DMNResult evaluate(DMNRuntime dmnRuntime, String modelName, Map<String, Object> dmnContext) {
+    public static KogitoDMNResult evaluate(DMNRuntime dmnRuntime, String modelName, Map<String, Object> dmnContext) {
         return evaluate(dmnRuntime, modelByName(dmnRuntime, modelName).getNamespace(), modelName, dmnContext);
     }
 
-    public static DMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName, Map<String,
-            Object> dmnContext) {
+    public static KogitoDMNResult evaluate(DMNRuntime dmnRuntime, String modelNamespace, String modelName, Map<String, Object> dmnContext) {
         DMNEvaluationResult evaluationResult = DMNEvaluationUtils.evaluate(dmnRuntime,
-                                                                           modelNamespace,
-                                                                           modelName,
-                                                                           dmnContext,
-                                                                           null,
-                                                                           null,
-                                                                           null);
-        return new DMNResult(modelNamespace, modelName, evaluationResult.result);
+                modelNamespace,
+                modelName,
+                dmnContext,
+                null,
+                null,
+                null);
+        return new KogitoDMNResult(modelNamespace, modelName, evaluationResult.result);
     }
 
 }

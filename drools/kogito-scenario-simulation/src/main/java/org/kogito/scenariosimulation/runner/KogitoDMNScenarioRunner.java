@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,13 +15,13 @@
  */
 package org.kogito.scenariosimulation.runner;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+
 import org.drools.scenariosimulation.backend.runner.AbstractRunnerHelper;
 import org.drools.scenariosimulation.backend.runner.DMNScenarioRunner;
 import org.drools.scenariosimulation.backend.runner.model.ScenarioRunnerDTO;
 import org.kie.api.runtime.KieContainer;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 
 public class KogitoDMNScenarioRunner extends DMNScenarioRunner {
 
@@ -38,6 +38,7 @@ public class KogitoDMNScenarioRunner extends DMNScenarioRunner {
 
     /**
      * Temporary hack, it is needed because AbstractScenarioRunner invokes kieContainer.getClassLoader() in the constructor
+     * 
      * @return
      */
     private static KieContainer mockKieContainer() {

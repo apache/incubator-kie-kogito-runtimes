@@ -1,13 +1,11 @@
----
 id: function
 name: test-wf
 version: '1.0'
+start: SimpleSubFlow
 states:
   - name: SimpleSubFlow
     type: subflow
-    start:
-      kind: default
     workflowId: abc
     waitForCompletion: true
     end:
-      kind: terminate
+      terminate: true

@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,25 +35,25 @@ public class KubernetesServiceDiscovery extends BaseServiceDiscovery {
     @Override
     protected List<Map<String, Object>> query(String namespace, Map<String, String> labels) {
         return kubeClient.services()
-                         .listNamespaced(namespace, labels)
-                         .asMapWalker()
-                         .mapToListMap(KEY_ITEMS)
-                         .asList();
+                .listNamespaced(namespace, labels)
+                .asMapWalker()
+                .mapToListMap(KEY_ITEMS)
+                .asList();
     }
 
     @Override
     protected ServiceInfo buildService(List<Map<String, Object>> services, String service) {
         final StringBuilder url = new StringBuilder();
         url
-           .append(DEFAULT_PROTOCOL)
-           .append(new MapWalker(services.get(0)).mapToMap(KEY_SPEC).asMap().get(KEY_CLUSTER_IP))
-           .append(":")
-           .append(new MapWalker(services.get(0)).mapToMap(KEY_SPEC)
-                                                 .mapToListMap(KEY_PORTS)
-                                                 .listToMap(0)
-                                                 .asMap().get(KEY_PORT))
-           .append("/")
-           .append(service);
+                .append(DEFAULT_PROTOCOL)
+                .append(new MapWalker(services.get(0)).mapToMap(KEY_SPEC).asMap().get(KEY_CLUSTER_IP))
+                .append(":")
+                .append(new MapWalker(services.get(0)).mapToMap(KEY_SPEC)
+                        .mapToListMap(KEY_PORTS)
+                        .listToMap(0)
+                        .asMap().get(KEY_PORT))
+                .append("/")
+                .append(service);
 
         return new ServiceInfo(url.toString(), new HashMap<>());
     }

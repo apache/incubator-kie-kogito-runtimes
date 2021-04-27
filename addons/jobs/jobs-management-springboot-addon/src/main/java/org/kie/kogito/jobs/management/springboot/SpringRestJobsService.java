@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.jobs.management.springboot;
 
 import java.time.ZonedDateTime;
@@ -75,8 +74,8 @@ public class SpringRestJobsService extends RestJobsService {
         LOGGER.debug("Job to be scheduled {} with callback URL {}", description, callback);
         final Job job = buildJob(description, callback);
         ResponseEntity<String> result = restTemplate.postForEntity(getJobsServiceUri(),
-                                                                   job,
-                                                                   String.class);
+                job,
+                String.class);
         if (result.getStatusCode().ordinal() == 200) {
             LOGGER.debug("Creating of the job {} done with status code {} ", job, result.getStatusCode());
         }

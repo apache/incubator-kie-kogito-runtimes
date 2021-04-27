@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.rules.units;
 
 import java.util.function.Function;
@@ -82,11 +81,11 @@ public class GeneratedRuleUnitDescription extends AbstractRuleUnitDescription {
 
     @Override
     public RuleUnitVariable getVar(String name) {
-         try {
-             return super.getVar(name);
-         } catch (UndefinedRuleUnitVariable e) {
-             throw new UndefinedGeneratedRuleUnitVariable(e.getVariable(), e.getUnit());
-         }
+        try {
+            return super.getVar(name);
+        } catch (UndefinedRuleUnitVariable e) {
+            throw new UndefinedGeneratedRuleUnitVariable(e.getVariable(), e.getUnit());
+        }
     }
 
     public void putSimpleVar(String name, String varTypeFQCN) {

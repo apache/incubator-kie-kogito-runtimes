@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.bpmn2;
 
 import java.util.ArrayList;
@@ -58,16 +58,16 @@ public class BpmnProcessCompiler {
         try {
             List<Process> processes = new ArrayList<>();
             XmlProcessReader xmlReader = new XmlProcessReader(
-                                                              getSemanticModules(),
-                                                              Thread.currentThread().getContextClassLoader());
+                    getSemanticModules(),
+                    Thread.currentThread().getContextClassLoader());
             configureProcessReader(xmlReader, config);
 
             for (Resource resource : resources) {
                 processes.addAll(xmlReader.read(resource.getReader()));
             }
             List<BpmnProcess> bpmnProcesses = processes.stream()
-                                                       .map(p -> create(p, config))
-                                                       .collect(Collectors.toList());
+                    .map(p -> create(p, config))
+                    .collect(Collectors.toList());
 
             bpmnProcesses.forEach(p -> {
 
@@ -82,11 +82,11 @@ public class BpmnProcessCompiler {
             throw new BpmnProcessReaderException(e);
         }
     }
-    
+
     protected void configureProcessReader(XmlProcessReader xmlReader, ProcessConfig config) {
-        
+
     }
-    
+
     protected BpmnProcess create(Process process, ProcessConfig config) {
         return config == null ? new BpmnProcess(process) : new BpmnProcess(process, config);
     }

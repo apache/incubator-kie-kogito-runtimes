@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl;
 
 import java.io.Externalizable;
@@ -22,7 +21,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.drools.core.spi.CompiledInvoker;
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.core.spi.Wireable;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.core.Constraint;
@@ -34,20 +33,20 @@ import org.kie.api.definition.process.Connection;
  * 
  */
 public class ReturnValueConstraintEvaluator
-    implements
-    Constraint,
-    ConstraintEvaluator,
-    Wireable,
-    Externalizable {
+        implements
+        Constraint,
+        ConstraintEvaluator,
+        Wireable,
+        Externalizable {
 
     private static final long serialVersionUID = 510l;
 
-    private String            name;
-    private String            constraint;
-    private int               priority;
-    private String            dialect;
-    private String            type;
-    private boolean           isDefault = false;
+    private String name;
+    private String constraint;
+    private int priority;
+    private String dialect;
+    private String type;
+    private boolean isDefault = false;
 
     public ReturnValueConstraintEvaluator() {
     }
@@ -99,15 +98,15 @@ public class ReturnValueConstraintEvaluator
     }
 
     public boolean isDefault() {
-		return isDefault;
-	}
+        return isDefault;
+    }
 
-	public void setDefault(boolean isDefault) {
-		this.isDefault = isDefault;
-	}
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
+    }
 
-	public void wire(Object object) {
-        setEvaluator( (ReturnValueEvaluator) object );
+    public void wire(Object object) {
+        setEvaluator((ReturnValueEvaluator) object);
     }
 
     public void setEvaluator(ReturnValueEvaluator evaluator) {
@@ -119,25 +118,25 @@ public class ReturnValueConstraintEvaluator
     }
 
     public boolean evaluate(NodeInstance instance,
-                            Connection connection,
-                            Constraint constraint) {
+            Connection connection,
+            Constraint constraint) {
         Object value;
         try {
-            KogitoProcessContext context = new KogitoProcessContext(((ProcessInstance)instance.getProcessInstance()).getKnowledgeRuntime());
-            context.setNodeInstance( instance );
-            value = this.evaluator.evaluate( context );
-        } catch ( Exception e ) {
-            throw new RuntimeException( "unable to execute ReturnValueEvaluator: ",
-                                        e );
+            KogitoProcessContextImpl context = new KogitoProcessContextImpl(((ProcessInstance) instance.getProcessInstance()).getKnowledgeRuntime());
+            context.setNodeInstance(instance);
+            value = this.evaluator.evaluate(context);
+        } catch (Exception e) {
+            throw new RuntimeException("unable to execute ReturnValueEvaluator: ",
+                    e);
         }
-        if ( !(value instanceof Boolean) ) {
-            throw new RuntimeException( "Constraints must return boolean values: " + value + " for expression " + constraint);
+        if (!(value instanceof Boolean)) {
+            throw new RuntimeException("Constraints must return boolean values: " + value + " for expression " + constraint);
         }
         return ((Boolean) value).booleanValue();
     }
 
     public void readExternal(ObjectInput in) throws IOException,
-                                            ClassNotFoundException {
+            ClassNotFoundException {
         this.evaluator = (ReturnValueEvaluator) in.readObject();
         this.name = in.readUTF();
         this.constraint = (String) in.readObject();
@@ -148,24 +147,24 @@ public class ReturnValueConstraintEvaluator
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
-        if ( this.evaluator instanceof CompiledInvoker ) {
-            out.writeObject( null );
+        if (this.evaluator instanceof CompiledInvoker) {
+            out.writeObject(null);
         } else {
-            out.writeObject( this.evaluator );
+            out.writeObject(this.evaluator);
         }
-        out.writeUTF( this.name );
-        out.writeObject( this.constraint );
-        out.writeInt( this.priority );
-        out.writeUTF( dialect );
-        out.writeObject( type );
+        out.writeUTF(this.name);
+        out.writeObject(this.constraint);
+        out.writeInt(this.priority);
+        out.writeUTF(dialect);
+        out.writeObject(type);
     }
 
     public void setMetaData(String name, Object value) {
-    	// Do nothing
+        // Do nothing
     }
-    
+
     public Object getMetaData(String name) {
         return null;
     }
-    
+
 }

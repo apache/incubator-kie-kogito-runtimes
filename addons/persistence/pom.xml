@@ -17,6 +17,8 @@
     <module>infinispan-quarkus-health-addon</module>
     <module>filesystem-persistence-addon</module>
     <module>mongodb-persistence-addon</module>
+    <module>kafka-persistence-addon</module>
+    <module>postgresql-persistence-addon</module>
   </modules>
 
 </project>

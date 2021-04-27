@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
 
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
+import org.jbpm.workflow.core.node.RuleSetNode;
+import org.kie.internal.ruleunit.RuleUnitComponentFactory;
+import org.kie.internal.ruleunit.RuleUnitDescription;
+import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.rules.RuleConfig;
+import org.kie.kogito.rules.RuleUnitData;
+import org.kie.kogito.rules.SingletonStore;
+import org.kie.kogito.rules.units.AssignableChecker;
+import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
+import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
+import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
@@ -30,20 +47,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.UnknownType;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.RuleSetNodeFactory;
-import org.jbpm.workflow.core.node.RuleSetNode;
-import org.kie.internal.ruleunit.RuleUnitComponentFactory;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.SingletonStore;
-import org.kie.kogito.rules.units.AssignableChecker;
-import org.kie.kogito.rules.units.GeneratedRuleUnitDescription;
-import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
-import org.kie.kogito.rules.units.impl.RuleUnitComponentFactoryImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_DECISION;
 import static org.jbpm.ruleflow.core.factory.RuleSetNodeFactory.METHOD_PARAMETER;
@@ -109,11 +112,12 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
 
         StringLiteralExpr namespace = new StringLiteralExpr(ruleType.getNamespace());
         StringLiteralExpr model = new StringLiteralExpr(ruleType.getModel());
-        Expression decision = ruleType.getDecision() == null ?
-                new NullLiteralExpr() : new StringLiteralExpr(ruleType.getDecision());
+        Expression decision = ruleType.getDecision() == null ? new NullLiteralExpr() : new StringLiteralExpr(ruleType.getDecision());
 
+        // app.get(org.kie.kogito.decision.DecisionModels.class).getDecisionModel(namespace, model)
         MethodCallExpr decisionModels =
-                new MethodCallExpr(new NameExpr("app"), "decisionModels");
+                new MethodCallExpr(new NameExpr("app"), "get")
+                        .addArgument(new ClassExpr().setType(DecisionModels.class.getCanonicalName()));
         MethodCallExpr decisionModel =
                 new MethodCallExpr(decisionModels, "getDecisionModel")
                         .addArgument(namespace)
@@ -173,9 +177,15 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         BlockStmt actionBody = new BlockStmt();
         LambdaExpr lambda = new LambdaExpr(new Parameter(new UnknownType(), "()"), actionBody);
 
+        // app.config().get(org.kie.kogito.rules.RuleConfig.class)
+        MethodCallExpr ruleConfig = new MethodCallExpr(
+                new MethodCallExpr(new NameExpr("app"), "config"), "get")
+                        .addArgument(new ClassExpr().setType(RuleConfig.class.getCanonicalName()));
+
         MethodCallExpr ruleRuntimeSupplier = new MethodCallExpr(
                 new NameExpr("org.drools.project.model.ProjectRuntime.INSTANCE"), "newKieSession",
-                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"), new NameExpr("app.config().rule()")));
+                NodeList.nodeList(new StringLiteralExpr("defaultStatelessKieSession"),
+                        ruleConfig));
         actionBody.addStatement(new ReturnStmt(ruleRuntimeSupplier));
 
         return new MethodCallExpr("ruleFlowGroup")

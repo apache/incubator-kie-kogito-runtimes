@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.services.event.impl;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.kie.kogito.process.workitem.Attachment;
+import org.kie.kogito.process.workitem.Comment;
 
 public class UserTaskInstanceEventBody {
 
@@ -45,6 +49,9 @@ public class UserTaskInstanceEventBody {
     private Map<String, Object> inputs;
     private Map<String, Object> outputs;
 
+    private Collection<Comment> comments;
+    private Collection<Attachment> attachments;
+
     private String processInstanceId;
     private String rootProcessInstanceId;
     private String processId;
@@ -65,11 +72,11 @@ public class UserTaskInstanceEventBody {
     public String getTaskDescription() {
         return taskDescription;
     }
-    
+
     public String getTaskPriority() {
         return taskPriority;
     }
-    
+
     public String getReferenceName() {
         return referenceName;
     }
@@ -133,7 +140,23 @@ public class UserTaskInstanceEventBody {
     public String getRootProcessId() {
         return rootProcessId;
     }
-    
+
+    public Collection<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Collection<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Collection<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Collection<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
     public Map<String, String> metaData() {
         Map<String, String> metadata = new HashMap<>();
         metadata.put(UT_ID_META_DATA, id);
@@ -147,8 +170,9 @@ public class UserTaskInstanceEventBody {
 
     @Override
     public String toString() {
-        return "UserTaskInstanceEventBody [id=" + id + ", taskName=" + taskName + ", taskDescription=" + taskDescription + ", startDate=" + startDate + ", completeDate=" + completeDate + ", state=" + state +
-               ", actualOwner=" + actualOwner + "]";
+        return "UserTaskInstanceEventBody [id=" + id + ", taskName=" + taskName + ", taskDescription=" + taskDescription + ", startDate=" + startDate + ", completeDate=" + completeDate + ", state="
+                + state +
+                ", actualOwner=" + actualOwner + "]";
     }
 
     public static Builder create() {
@@ -202,12 +226,12 @@ public class UserTaskInstanceEventBody {
             instance.taskDescription = taskDescription;
             return this;
         }
-        
+
         public Builder taskPriority(String taskPriority) {
             instance.taskPriority = taskPriority;
             return this;
         }
-        
+
         public Builder referenceName(String referenceName) {
             instance.referenceName = referenceName;
             return this;
@@ -271,22 +295,32 @@ public class UserTaskInstanceEventBody {
             instance.outputs = outputs;
             return this;
         }
-        
+
+        public Builder comments(Collection<Comment> comments) {
+            instance.comments = comments;
+            return this;
+        }
+
+        public Builder attachments(Collection<Attachment> attachments) {
+            instance.attachments = attachments;
+            return this;
+        }
+
         public Builder processInstanceId(String processInstanceId) {
             instance.processInstanceId = processInstanceId;
             return this;
         }
-        
+
         public Builder rootProcessInstanceId(String rootProcessInstanceId) {
             instance.rootProcessInstanceId = rootProcessInstanceId;
             return this;
         }
-        
+
         public Builder processId(String processId) {
             instance.processId = processId;
             return this;
         }
-        
+
         public Builder rootProcessId(String rootProcessId) {
             instance.rootProcessId = rootProcessId;
             return this;

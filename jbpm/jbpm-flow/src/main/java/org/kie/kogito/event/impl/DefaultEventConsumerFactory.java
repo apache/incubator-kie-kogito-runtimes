@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +19,13 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import org.kie.kogito.Model;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.EventConsumerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 public class DefaultEventConsumerFactory implements EventConsumerFactory {
 
@@ -34,7 +36,7 @@ public class DefaultEventConsumerFactory implements EventConsumerFactory {
     }
 
     public DefaultEventConsumerFactory(ObjectMapper mapper) {
-        if(mapper == null) {
+        if (mapper == null) {
             this.mapper = new ObjectMapper().setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
         } else {
             this.mapper = mapper;

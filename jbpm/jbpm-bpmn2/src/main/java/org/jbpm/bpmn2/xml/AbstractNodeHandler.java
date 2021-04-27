@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,8 +71,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     protected static final Logger logger = LoggerFactory.getLogger(AbstractNodeHandler.class);
 
     static final String PROCESS_INSTANCE_SIGNAL_EVENT = "kcontext.getProcessInstance().signalEvent(";
-    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKnowledgeRuntime().signalEvent(";
-    static final String RUNTIME_MANAGER_SIGNAL_EVENT = "((org.kie.api.runtime.manager.RuntimeManager)kcontext.getKnowledgeRuntime().getEnvironment().get(\"RuntimeManager\")).signalEvent(";
+    static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKogitoProcessRuntime().signalEvent(";
 
     protected static final String EVENT_TYPE = "EventType";
 
@@ -112,7 +109,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     public Object start(final String uri, final String localName, final Attributes attrs,
-                        final ExtensibleXmlParser parser) throws SAXException {
+            final ExtensibleXmlParser parser) throws SAXException {
         parser.startElementBuilder(localName, attrs);
         final Node node = createNode(attrs);
         String id = attrs.getValue("id");
@@ -137,7 +134,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                         newId = n.getId();
                     }
                 }
-                ((org.jbpm.workflow.core.Node) node).setId(++newId);
+                ((Node) node).setId(++newId);
             }
         } else {
             AtomicInteger idGen = (AtomicInteger) parser.getMetaData().get("idGen");
@@ -149,7 +146,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     protected abstract Node createNode(Attributes attrs);
 
     public Object end(final String uri, final String localName,
-                      final ExtensibleXmlParser parser) throws SAXException {
+            final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
         Node node = (Node) parser.getCurrent();
         handleNode(node, element, uri, localName, parser);
@@ -160,7 +157,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void handleNode(final Node node, final Element element, final String uri,
-                              final String localName, final ExtensibleXmlParser parser)
+            final String localName, final ExtensibleXmlParser parser)
             throws SAXException {
         final String x = element.getAttribute("x");
         if (x != null && x.length() != 0) {
@@ -197,10 +194,10 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     public abstract void writeNode(final Node node, final StringBuilder xmlDump,
-                                   final int metaDataType);
+            final int metaDataType);
 
     protected void writeNode(final String name, final Node node,
-                             final StringBuilder xmlDump, int metaDataType) {
+            final StringBuilder xmlDump, int metaDataType) {
         xmlDump.append("    <" + name + " ");
         xmlDump.append("id=\"" + XmlBPMNProcessDumper.getUniqueNodeId(node) + "\" ");
         if (node.getName() != null) {
@@ -327,7 +324,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 xmlDump.append(" name=\"" + name + "\"");
             }
             String dialect = consequenceAction.getDialect();
-            if ( JavaDialect.ID.equals(dialect)) {
+            if (JavaDialect.ID.equals(dialect)) {
                 xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVA_LANGUAGE + "\"");
             } else if ("JavaScript".equals(dialect)) {
                 xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVASCRIPT_LANGUAGE + "\"");
@@ -346,7 +343,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    protected void readIoSpecification(org.w3c.dom.Node xmlNode, Map<String, String> dataInputs, Map<String, String> dataOutputs, Map<String, String> dataInputTypes, Map<String, String> dataOutputTypes) {
+    protected void readIoSpecification(org.w3c.dom.Node xmlNode, Map<String, String> dataInputs, Map<String, String> dataOutputs, Map<String, String> dataInputTypes,
+            Map<String, String> dataOutputTypes) {
         org.w3c.dom.Node subNode = xmlNode.getFirstChild();
         while (subNode instanceof Element) {
             String subNodeName = subNode.getNodeName();
@@ -428,8 +426,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 String variableName = ((Element) subNode).getAttribute("id");
                 String itemSubjectRef = ((Element) subNode).getAttribute("itemSubjectRef");
                 DataType dataType = null;
-                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-                        ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
                 dataType = getDataType(itemSubjectRef, itemDefinitions, parser.getClassLoader());
 
                 if (variableName != null && variableName.trim().length() > 0) {
@@ -439,8 +436,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 String variableName = ((Element) subNode).getAttribute("id");
                 String itemSubjectRef = ((Element) subNode).getAttribute("itemSubjectRef");
                 DataType dataType = null;
-                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-                        ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+                Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
                 dataType = getDataType(itemSubjectRef, itemDefinitions, parser.getClassLoader());
 
                 if (variableName != null && variableName.trim().length() > 0) {
@@ -540,7 +536,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void handleThrowCompensationEventNode(final Node node, final Element element,
-                                                    final String uri, final String localName, final ExtensibleXmlParser parser) {
+            final String uri, final String localName, final ExtensibleXmlParser parser) {
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         assert node instanceof ActionNode || node instanceof EndNode
                 : "Node is neither an ActionNode nor an EndNode but a " + node.getClass().getSimpleName();
@@ -556,9 +552,9 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                  * waitForCompletion:
                  * BPMN 2.0 Spec, p. 304:
                  * "By default, compensation is triggered synchronously, that is the compensation throw event
-                 *  waits for the completion of the triggered compensation handler.
-                 *  Alternatively, compensation can be triggered without waiting for its completion,
-                 *  by setting the throw compensation event's waitForCompletion attribute to false."
+                 * waits for the completion of the triggered compensation handler.
+                 * Alternatively, compensation can be triggered without waiting for its completion,
+                 * by setting the throw compensation event's waitForCompletion attribute to false."
                  */
                 String nodeId = (String) node.getMetaData().get("UniqueId");
                 String waitForCompletionString = ((Element) xmlNode).getAttribute("waitForCompletion");
@@ -629,8 +625,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
 
         if (itemSubjectRef != null && !itemSubjectRef.isEmpty()) {
-            Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-                    ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
+            Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>) ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
 
             return itemDefinitions.get(itemSubjectRef).getStructureRef();
         }
@@ -638,12 +633,11 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return null;
     }
 
-
     /**
      * Finds the right variable by its name to make sure that when given as id it will be also matched
      *
      * @param variableName name or id of the variable
-     * @param parser       parser instance
+     * @param parser parser instance
      * @return returns found variable name or given 'variableName' otherwise
      */
     protected String findVariable(String variableName, final ExtensibleXmlParser parser) {

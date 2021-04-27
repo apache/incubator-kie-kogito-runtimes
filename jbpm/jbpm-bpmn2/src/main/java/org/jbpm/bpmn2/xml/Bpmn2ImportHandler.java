@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2012 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ public class Bpmn2ImportHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(Signal.class);
             this.validPeers.add(DataStore.class);
             this.validPeers.add(RuleFlowProcess.class);
-            
+
             this.allowNesting = false;
         }
     }
@@ -64,7 +64,7 @@ public class Bpmn2ImportHandler extends BaseAbstractHandler implements Handler {
         if (type != null && location != null && namespace != null) {
             List<Bpmn2Import> typedImports = (List<Bpmn2Import>) buildData.getMetaData("Bpmn2Imports");
             if (typedImports == null) {
-                typedImports = new ArrayList< Bpmn2Import>();
+                typedImports = new ArrayList<Bpmn2Import>();
                 buildData.setMetaData("Bpmn2Imports", typedImports);
             }
             typedImports.add(new Bpmn2Import(type, location, namespace));

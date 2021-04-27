@@ -20,25 +20,12 @@
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-core-reflective</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>drools-core-dynamic</artifactId>
+      <version>${version.org.kie7}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
     </dependency>
 
     <!-- test -->

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2016 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.impl;
 
-import org.kie.api.runtime.process.EventListener;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
 
-public class DummyEventListener implements EventListener {
+public class DummyEventListener implements KogitoEventListener {
 
     public final static DummyEventListener EMPTY_EVENT_LISTENER = new DummyEventListener();
 
@@ -26,9 +25,12 @@ public class DummyEventListener implements EventListener {
     }
 
     @Override
-    public void signalEvent( String type, Object event ) { }
+    public void signalEvent(String type, Object event) {
+    }
 
     @Override
-    public String[] getEventTypes() { return null; }
+    public String[] getEventTypes() {
+        return null;
+    }
 
 }

@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.cloud.workitems;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.kie.kogito.cloud.kubernetes.client.DefaultKogitoKubeClient;
+import org.kie.kogito.cloud.kubernetes.client.KogitoKubeConfig;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.ServiceResource;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.kie.kogito.cloud.kubernetes.client.DefaultKogitoKubeClient;
-import org.kie.kogito.cloud.kubernetes.client.KogitoKubeConfig;
 
 /**
  * Base class for tests with Kubernetes API. In this scenario, nor Istio or KNative is available.
@@ -71,14 +72,14 @@ public abstract class BaseKubernetesDiscoveredServiceTest {
      * Enables Istio in the test environment.
      */
     private void createsIstioIngressGateway() {
-        final ServiceResource<Service, ?> serviceResource =
+        final ServiceResource<Service> serviceResource =
                 this.server.getClient()
-                           .inNamespace(KogitoKubeConfig.KNATIVE_ISTIO_NAMESPACE)
-                           .services()
-                           .load(this.getClass().getResource("/mock/responses/ocp4.x/istio/services-istio-ingressgateway.json"));
+                        .inNamespace(KogitoKubeConfig.KNATIVE_ISTIO_NAMESPACE)
+                        .services()
+                        .load(this.getClass().getResource("/mock/responses/ocp4.x/istio/services-istio-ingressgateway.json"));
         this.server.getClient()
-                   .inNamespace(KogitoKubeConfig.KNATIVE_ISTIO_NAMESPACE)
-                   .services().create(serviceResource.get());
+                .inNamespace(KogitoKubeConfig.KNATIVE_ISTIO_NAMESPACE)
+                .services().create(serviceResource.get());
         this.istioEnabled = true;
     }
 
@@ -89,10 +90,12 @@ public abstract class BaseKubernetesDiscoveredServiceTest {
         }
 
         @Override
-        public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {}
+        public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        }
 
         @Override
-        public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {}
+        public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        }
 
     }
 

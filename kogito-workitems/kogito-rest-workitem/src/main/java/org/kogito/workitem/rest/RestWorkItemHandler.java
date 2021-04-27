@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,20 +25,17 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.web.client.HttpRequest;
-import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.client.WebClient;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
-import org.kie.api.runtime.process.WorkItemManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 
-public class RestWorkItemHandler implements WorkItemHandler {
+import io.vertx.core.http.HttpMethod;
+import io.vertx.mutiny.core.buffer.Buffer;
+import io.vertx.mutiny.ext.web.client.HttpRequest;
+import io.vertx.mutiny.ext.web.client.HttpResponse;
+import io.vertx.mutiny.ext.web.client.WebClient;
+
+public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     public static final String REST_TASK_TYPE = "Rest Task";
     public static final String ENDPOINT = "endpoint";
@@ -49,8 +47,6 @@ public class RestWorkItemHandler implements WorkItemHandler {
     public static final String PASSWORD = "password";
     public static final String HOST = "host";
     public static final String PORT = "port";
-
-    private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
 
     // package scoped to allow unit test
     static class RestUnaryOperator implements UnaryOperator<Object> {
@@ -64,7 +60,8 @@ public class RestWorkItemHandler implements WorkItemHandler {
         @Override
         public Object apply(Object value) {
             return value instanceof RestWorkItemHandlerParamResolver
-                    ? ((RestWorkItemHandlerParamResolver) value).apply(inputModel) : value;
+                    ? ((RestWorkItemHandlerParamResolver) value).apply(inputModel)
+                    : value;
         }
     }
 
@@ -75,7 +72,7 @@ public class RestWorkItemHandler implements WorkItemHandler {
     }
 
     @Override
-    public void executeWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         // retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
         String endPoint = getParam(parameters, ENDPOINT, String.class);
@@ -96,32 +93,23 @@ public class RestWorkItemHandler implements WorkItemHandler {
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
-        // execute request
-        Handler<AsyncResult<HttpResponse<Buffer>>> handler = event -> {
-            if (event.failed()) {
-                logger.error("Rest invocation failed", event.cause());
-                manager.abortWorkItem(workItem.getId());
-            } else if (event.result().statusCode() >= 300) {
-                logger.error("Rest invocation returns invalid code {}", event.result().statusCode());
-                manager.abortWorkItem(workItem.getId());
-            } else {
-                manager.completeWorkItem(workItem.getId(), Collections.singletonMap(RESULT, resultHandler.apply(
-                        inputModel, event.result().bodyAsJsonObject())));
-            }
-        };
+        HttpResponse<Buffer> response;
         if (method == HttpMethod.POST || method == HttpMethod.PUT) {
             // if parameters is empty at this stage, assume post content is the whole input model
             // if not, build a map from parameters remaining
-            Object body = parameters.isEmpty() ? inputModel : parameters.entrySet().stream().collect(Collectors.toMap(
-                    Entry::getKey, e -> resolver.apply(e.getValue())));
-            request.sendJson(body, handler);
+            Object body = parameters.isEmpty() ? inputModel
+                    : parameters.entrySet().stream().collect(Collectors.toMap(
+                            Entry::getKey, e -> resolver.apply(e.getValue())));
+            response = request.sendJsonAndAwait(body);
         } else {
-            request.send(handler);
+            response = request.sendAndAwait();
         }
+        manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(inputModel,
+                response.bodyAsJsonObject())));
     }
 
     @Override
-    public void abortWorkItem(WorkItem workItem, WorkItemManager manager) {
+    public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         // rest item handler does not support abort
     }
 

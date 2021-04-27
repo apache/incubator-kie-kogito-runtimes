@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,57 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process;
 
-import org.jbpm.process.core.ContextContainer;
-import org.jbpm.process.core.context.exception.CompensationHandler;
-import org.jbpm.process.core.context.exception.CompensationScope;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.process.core.event.EventFilter;
-import org.jbpm.process.core.event.EventTypeFilter;
-import org.jbpm.process.core.event.NonAcceptingEventTypeFilter;
-import org.jbpm.process.instance.impl.Action;
-import org.jbpm.process.test.NodeCreator;
-import org.jbpm.process.test.TestWorkItemHandler;
-import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
-import org.jbpm.ruleflow.core.factory.DynamicNodeFactory;
-import org.jbpm.ruleflow.core.factory.FaultNodeFactory;
-import org.jbpm.ruleflow.core.factory.HumanTaskNodeFactory;
-import org.jbpm.test.util.AbstractBaseTest;
-import org.jbpm.workflow.core.DroolsAction;
-import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
-import org.jbpm.workflow.core.node.ActionNode;
-import org.jbpm.workflow.core.node.BoundaryEventNode;
-import org.jbpm.workflow.core.node.CompositeContextNode;
-import org.jbpm.workflow.core.node.CompositeNode;
-import org.jbpm.workflow.core.node.EndNode;
-import org.jbpm.workflow.core.node.EventSubProcessNode;
-import org.jbpm.workflow.core.node.StartNode;
-import org.jbpm.workflow.core.node.WorkItemNode;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessContext;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
 
-import static org.jbpm.process.test.NodeCreator.connect;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.slf4j.LoggerFactory;
 
 public class FactoryTest extends AbstractBaseTest {
 
@@ -135,10 +98,9 @@ public class FactoryTest extends AbstractBaseTest {
         parameters.put("x", "oldValue");
         parameters.put("list", list);
 
-        KieSession ksession = createKieSession(factory.getProcess());
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(factory.getProcess());
 
-        ksession.startProcess("ExampleProcess", parameters);
+        kruntime.startProcess("ExampleProcess", parameters);
     }
-
 
 }

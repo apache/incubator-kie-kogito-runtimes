@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.infinispan.health;
 
 import java.net.SocketAddress;
@@ -58,28 +57,28 @@ public class InfinispanHealthCheck implements HealthCheck {
             final Codec codec = cacheManager.getCodec();
             final Configuration configuration = cacheManager.getConfiguration();
             final ClientListenerNotifier listenerNotifier = new ClientListenerNotifier(codec,
-                                                                                       cacheManager.getMarshaller(),
-                                                                                       channelFactory,
-                                                                                       configuration);
+                    cacheManager.getMarshaller(),
+                    channelFactory,
+                    configuration);
             final OperationsFactory operationsFactory = new OperationsFactory(channelFactory,
-                                                                              codec,
-                                                                              listenerNotifier,
-                                                                              configuration);
+                    codec,
+                    listenerNotifier,
+                    configuration);
 
             return Optional.of(channelFactory
-                                       .getServers()
-                                       .stream()
-                                       .map(server -> invokePingOperation(channelFactory, operationsFactory, server)
-                                               .thenApply(PingResponse::isSuccess)
-                                               .exceptionally(ex -> false))
-                                       .map(op -> {
-                                           try {
-                                               return op.get(500, TimeUnit.MILLISECONDS);
-                                           } catch (Exception e) {
-                                               return false;
-                                           }
-                                       })
-                                       .allMatch(Boolean.FALSE::equals))
+                    .getServers()
+                    .stream()
+                    .map(server -> invokePingOperation(channelFactory, operationsFactory, server)
+                            .thenApply(PingResponse::isSuccess)
+                            .exceptionally(ex -> false))
+                    .map(op -> {
+                        try {
+                            return op.get(500, TimeUnit.MILLISECONDS);
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    })
+                    .allMatch(Boolean.FALSE::equals))
                     .map(allDown -> buildResponse(channelFactory, !allDown))
                     .orElse(buildResponse(channelFactory, false));
         }).orElse(null);

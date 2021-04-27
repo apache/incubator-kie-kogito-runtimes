@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,61 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.objects;
 
 import java.io.Serializable;
 
 public class Order implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	
-	private String id;
-	private boolean valid;
-	private double discount;
-	
-	/**
-	 * Constructor
-	 */
-	public Order() {
-	}
-	
-	public String getId() {
-		return this.id;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setId(String anId) {
-		this.id = anId;
-	}
+    private String id;
+    private boolean valid;
+    private double discount;
 
-	public boolean isValid() {
-		return valid;
-	}
+    /**
+     * Constructor
+     */
+    public Order() {
+    }
 
-	public void setValid(boolean valid) {
-		this.valid = valid;
-	}
+    public String getId() {
+        return this.id;
+    }
 
-	public double getDiscount() {
-		return this.discount;
-	}
+    public void setId(String anId) {
+        this.id = anId;
+    }
 
-	public void setDiscount(double d) {
-		this.discount = d;
-	}
+    public boolean isValid() {
+        return valid;
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		buf.append(this.id);
-		buf.append(",");
-		buf.append("valid: ");
-		buf.append(this.valid);
-		buf.append(",");
-		buf.append("discount: ");
-		buf.append(this.discount);
-		return buf.toString();
-	}
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    public double getDiscount() {
+        return this.discount;
+    }
+
+    public void setDiscount(double d) {
+        this.discount = d;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        buf.append(this.id);
+        buf.append(",");
+        buf.append("valid: ");
+        buf.append(this.valid);
+        buf.append(",");
+        buf.append("discount: ");
+        buf.append(this.discount);
+        return buf.toString();
+    }
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.core.context.variable;
 
 import java.io.Serializable;
@@ -39,9 +38,9 @@ import org.jbpm.process.core.datatype.impl.type.UndefinedDataType;
 public class Variable implements TypeObject, ValueObject, Serializable {
 
     private static final long serialVersionUID = 510l;
-        
+
     public static final String VARIABLE_TAGS = "customTags";
-    
+
     public static final String READONLY_TAG = "readonly";
     public static final String REQUIRED_TAG = "required";
     public static final String INTERNAL_TAG = "internal";
@@ -56,7 +55,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     private DataType type;
     private Object value;
     private Map<String, Object> metaData = new HashMap<String, Object>();
-    
+
     private List<String> tags = new ArrayList<>();
 
     public Variable() {
@@ -81,20 +80,21 @@ public class Variable implements TypeObject, ValueObject, Serializable {
      * reserved words.
      * In case the input is valid it is returned itself otherwise a valid identifier is generated prefixing v$ based
      * on the @param input excluding invalid characters.
+     * 
      * @param name the input
      * @return the output valid Java identifier
      */
     private static String sanitizeIdentifier(String name) {
         return Optional.ofNullable(name)
-                        .filter(SourceVersion::isName)
-                        .orElseGet(() -> {
-                            String identifier = StringUtils.extractFirstIdentifier(name, 0);
-                            return Optional.ofNullable(identifier)
-                                    .filter(s -> !StringUtils.isEmpty(s))
-                                    .filter(SourceVersion::isName)
-                                    // prepend v$ in front of the variable name to prevent clashing with reserved keywords
-                                    .orElseGet(() -> String.format("v$%s", identifier));
-                        });
+                .filter(SourceVersion::isName)
+                .orElseGet(() -> {
+                    String identifier = StringUtils.extractFirstIdentifier(name, 0);
+                    return Optional.ofNullable(identifier)
+                            .filter(s -> !StringUtils.isEmpty(s))
+                            .filter(SourceVersion::isName)
+                            // prepend v$ in front of the variable name to prevent clashing with reserved keywords
+                            .orElseGet(() -> String.format("v$%s", identifier));
+                });
     }
 
     public String getId() {
@@ -105,13 +105,13 @@ public class Variable implements TypeObject, ValueObject, Serializable {
         this.id = id;
     }
 
-	public DataType getType() {
+    public DataType getType() {
         return this.type;
     }
 
     public void setType(final DataType type) {
-        if ( type == null ) {
-            throw new IllegalArgumentException( "type is null" );
+        if (type == null) {
+            throw new IllegalArgumentException("type is null");
         }
         this.type = type;
     }
@@ -121,51 +121,51 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     }
 
     public void setValue(final Object value) {
-        if ( this.type.verifyDataType( value ) ) {
+        if (this.type.verifyDataType(value)) {
             this.value = value;
         } else {
             final StringBuilder sb = new StringBuilder();
-            sb.append( "Value <" );
-            sb.append( value );
-            sb.append( "> is not valid for datatype: " );
-            sb.append( this.type );
-            throw new IllegalArgumentException( sb.toString() );
+            sb.append("Value <");
+            sb.append(value);
+            sb.append("> is not valid for datatype: ");
+            sb.append(this.type);
+            throw new IllegalArgumentException(sb.toString());
         }
     }
 
     public void setMetaData(String name, Object value) {
         this.metaData.put(name, value);
-        
+
         if (VARIABLE_TAGS.equals(name) && value != null) {
             tags = Arrays.asList(value.toString().split(","));
         }
     }
-    
+
     public Object getMetaData(String name) {
         return this.metaData.get(name);
     }
-    
+
     public Map<String, Object> getMetaData() {
-    	return this.metaData;
+        return this.metaData;
     }
-    
+
     public String toString() {
         return this.name;
     }
-    
+
     public List<String> getTags() {
         if (tags.isEmpty() && this.metaData.containsKey(VARIABLE_TAGS)) {
             tags = Arrays.asList(metaData.get(VARIABLE_TAGS).toString().split(","));
-            
+
         }
         return tags;
     }
-    
+
     public boolean hasTag(String tagName) {
         return getTags().contains(tagName);
     }
-    
+
     public boolean matchByIdOrName(String nameOrId) {
-        return (id.equals(nameOrId) || name.equals(nameOrId));        
+        return (id.equals(nameOrId) || name.equals(nameOrId));
     }
 }

@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +23,12 @@ import com.oracle.svm.core.annotate.Substitute;
 import com.oracle.svm.core.annotate.TargetClass;
 
 /**
- * Removes EC Keys support from Fabric8 Kubernetes client dependency on native binaries. 
+ * Removes EC Keys support from Fabric8 Kubernetes client dependency on native binaries.
  * This avoids clients to add <code>--allow-incomplete-classpath</code> option on their build configuration.
  * <p/>
- * Cloned from <a href="https://github.com/quarkusio/quarkus/blob/master/extensions/kubernetes-client/runtime/src/main/java/io/quarkus/kubernetes/client/runtime/graal/CertUtilsSubstitutions.java">Quarkus Kubernetes Extension</a> to not add Quarkus dependencies to this project
+ * Cloned from
+ * <a href="https://github.com/quarkusio/quarkus/blob/master/extensions/kubernetes-client/runtime/src/main/java/io/quarkus/kubernetes/client/runtime/graal/CertUtilsSubstitutions.java">Quarkus
+ * Kubernetes Extension</a> to not add Quarkus dependencies to this project
  */
 @TargetClass(className = "io.fabric8.kubernetes.client.internal.CertUtils")
 public final class KubernetesClientCertUtilsSubstitutions {

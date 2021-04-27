@@ -1,11 +1,11 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.timer.impl;
 
 import java.util.List;
@@ -25,38 +24,37 @@ import org.kie.kogito.timer.JobHandle;
  * A JobHandle container for scheduling multiple jobs
  */
 public class MultiJobHandle extends AbstractJobHandle {
-    
-    private static final long serialVersionUID = 510l;
-    
-    private long id;
-    
-    private AtomicBoolean cancel = new AtomicBoolean(false);    
-    
-    private final List<JobHandle>     jobHandles;
 
-    public MultiJobHandle(long id, List<JobHandle>   jobHandles) {
+    private static final long serialVersionUID = 510l;
+
+    private long id;
+
+    private AtomicBoolean cancel = new AtomicBoolean(false);
+
+    private final List<JobHandle> jobHandles;
+
+    public MultiJobHandle(long id, List<JobHandle> jobHandles) {
         this.id = id;
         this.jobHandles = jobHandles;
     }
-    
+
     public long getId() {
         return this.id;
-    }   
+    }
 
     public Object getJobHandles() {
         return jobHandles;
     }
-    
+
     public void setCancel(boolean cancel) {
-        for (JobHandle handle : jobHandles ) {
-            handle.setCancel( cancel );
+        for (JobHandle handle : jobHandles) {
+            handle.setCancel(cancel);
         }
-        this.cancel.set( cancel );
+        this.cancel.set(cancel);
     }
-    
+
     public boolean isCancel() {
         return cancel.get();
-    }        
+    }
 
-    
 }

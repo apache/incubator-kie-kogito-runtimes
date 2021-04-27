@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.serverless.workflow;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jbpm.serverless.workflow.api.Workflow;
-import org.jbpm.serverless.workflow.api.events.EventDefinition;
-import org.jbpm.serverless.workflow.api.functions.FunctionDefinition;
-import org.jbpm.serverless.workflow.api.interfaces.State;
-import org.jbpm.serverless.workflow.api.mapper.BaseObjectMapper;
-import org.jbpm.serverless.workflow.api.mapper.JsonObjectMapper;
-import org.jbpm.serverless.workflow.api.mapper.YamlObjectMapper;
-import org.jbpm.serverless.workflow.api.states.DefaultState;
-import org.jbpm.serverless.workflow.api.states.InjectState;
+import java.util.HashMap;
+import java.util.List;
+
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.events.EventDefinition;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
+import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.mapper.BaseObjectMapper;
+import io.serverlessworkflow.api.mapper.JsonObjectMapper;
+import io.serverlessworkflow.api.mapper.YamlObjectMapper;
+import io.serverlessworkflow.api.states.DefaultState;
+import io.serverlessworkflow.api.states.InjectState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,21 +51,15 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
         assertNotNull(objectMapper);
         assertThat(objectMapper).isInstanceOf(YamlObjectMapper.class);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ServerlessWorkflowUtils.getObjectMapper("unsupported");
-        });
+        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper("unsupported"));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            ServerlessWorkflowUtils.getObjectMapper(null);
-        });
-
+        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper(null));
     }
 
     @Test
     public void testGetWorkflowStartState() {
         assertThat(ServerlessWorkflowUtils.getWorkflowStartState(singleInjectStateWorkflow)).isNotNull();
         assertThat(ServerlessWorkflowUtils.getWorkflowStartState(singleInjectStateWorkflow)).isInstanceOf(InjectState.class);
-
     }
 
     @Test
@@ -141,17 +137,18 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     public void testDataConditionScript() {
         assertThat(ServerlessWorkflowUtils.conditionScript("$.customers[?(@.age  > 18)]")).isNotNull();
         assertThat(ServerlessWorkflowUtils.conditionScript("$.customers[?(@.age  > 18)]"))
-                .isEqualTo("return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")).toString()).read(\"$.customers[?(@.age  > 18)]\")).isEmpty();");
-
+                .isEqualTo(
+                        "return !((java.util.List<java.lang.String>) com.jayway.jsonpath.JsonPath.parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")).toString()).read(\"$.customers[?(@.age  > 18)]\")).isEmpty();");
     }
 
     @Test
-    public void testResolveFunctionMetadata() throws Exception {
+    public void testResolveFunctionMetadata() {
         FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(
-                new HashMap() {{
-                    put("testprop1", "customtestprop1val");
-                }}
-        );
+                new HashMap<String, String>() {
+                    {
+                        put("testprop1", "customtestprop1val");
+                    }
+                });
 
         String testProp1Val = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "testprop1",
                 WorkflowAppContext.ofAppResources());
@@ -165,12 +162,13 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveEvenDefinitiontMetadata() throws Exception {
+    public void testResolveEvenDefinitiontMetadata() {
         EventDefinition eventDefinition = new EventDefinition().withName("testevent1").withMetadata(
-                new HashMap() {{
-                    put("testprop1", "customtestprop1val");
-                }}
-        );
+                new HashMap<String, String>() {
+                    {
+                        put("testprop1", "customtestprop1val");
+                    }
+                });
 
         String testProp1Val = ServerlessWorkflowUtils.resolveEvenDefinitiontMetadata(eventDefinition, "testprop1",
                 WorkflowAppContext.ofAppResources());
@@ -184,12 +182,13 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
     }
 
     @Test
-    public void testResolveStatetMetadata() throws Exception {
+    public void testResolveStatetMetadata() {
         DefaultState defaultState = new DefaultState().withName("teststate1").withMetadata(
-                new HashMap() {{
-                    put("testprop1", "customtestprop1val");
-                }}
-        );
+                new HashMap<String, String>() {
+                    {
+                        put("testprop1", "customtestprop1val");
+                    }
+                });
 
         String testProp1Val = ServerlessWorkflowUtils.resolveStatetMetadata(defaultState, "testprop1",
                 WorkflowAppContext.ofAppResources());
@@ -200,16 +199,16 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
                 WorkflowAppContext.ofAppResources());
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
-
     }
 
     @Test
-    public void testResolveWorkflowMetadata() throws Exception {
+    public void testResolveWorkflowMetadata() {
         Workflow workflow = new Workflow().withId("workflowid1").withMetadata(
-                new HashMap() {{
-                    put("testprop1", "customtestprop1val");
-                }}
-        );
+                new HashMap<String, String>() {
+                    {
+                        put("testprop1", "customtestprop1val");
+                    }
+                });
 
         String testProp1Val = ServerlessWorkflowUtils.resolveWorkflowMetadata(workflow, "testprop1",
                 WorkflowAppContext.ofAppResources());
@@ -221,5 +220,4 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
         assertThat(testProp2Val).isNotNull();
         assertThat(testProp2Val).isEqualTo("testprop2val");
     }
-
 }

@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +32,7 @@ public final class SimpleRuleUnitVariable implements RuleUnitVariable {
     public SimpleRuleUnitVariable(String name, Class<?> type, Class<?> dataSourceParameterType, boolean writable) {
         this.name = name;
         this.getter = "get" + capitalize(name);
-        this.setter = writable? "set" + capitalize(name) : null;
+        this.setter = writable ? "set" + capitalize(name) : null;
         this.type = type;
         this.dataSourceParameterType = dataSourceParameterType;
         this.boxedVarType = convertFromPrimitiveType(type);
@@ -41,30 +42,37 @@ public final class SimpleRuleUnitVariable implements RuleUnitVariable {
         this(name, type, null, true);
     }
 
+    @Override
     public boolean isDataSource() {
         return dataSourceParameterType != null;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getter() {
         return getter;
     }
 
+    @Override
     public String setter() {
         return setter;
     }
 
+    @Override
     public Class<?> getType() {
         return type;
     }
 
+    @Override
     public Class<?> getDataSourceParameterType() {
         return dataSourceParameterType;
     }
 
+    @Override
     public Class<?> getBoxedVarType() {
         return boxedVarType;
     }

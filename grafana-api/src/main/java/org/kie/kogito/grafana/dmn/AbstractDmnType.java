@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.grafana.dmn;
 
 import java.util.List;
-import java.util.SortedMap;
 
 import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.panel.common.YAxis;
@@ -27,29 +26,40 @@ public class AbstractDmnType {
 
     private String dmnType;
 
-    private SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply;
+    private GrafanaFunction grafanaFunction;
 
     private List<YAxis> yaxes;
 
+    private String nameSuffix;
+
     public AbstractDmnType(Class internalRepresentationClass, String dmnType) {
-        this.internalRepresentationClass = internalRepresentationClass;
-        this.dmnType = dmnType;
+        this(internalRepresentationClass, dmnType, "");
     }
 
-    protected void addFunctions(SortedMap<Integer, GrafanaFunction> grafanaFunctionsToApply) {
-        this.grafanaFunctionsToApply = grafanaFunctionsToApply;
+    public AbstractDmnType(Class internalRepresentationClass, String dmnType, String nameSuffix) {
+        this.internalRepresentationClass = internalRepresentationClass;
+        this.dmnType = dmnType;
+        this.nameSuffix = nameSuffix;
+    }
+
+    protected void setGrafanaFunction(GrafanaFunction grafanaFunction) {
+        this.grafanaFunction = grafanaFunction;
     }
 
     protected void setYAxes(List<YAxis> yaxes) {
         this.yaxes = yaxes;
     }
 
+    public String getNameSuffix() {
+        return nameSuffix;
+    }
+
     public Class getInternalClass() {
         return internalRepresentationClass;
     }
 
-    public SortedMap<Integer, GrafanaFunction> getGrafanaFunctions() {
-        return grafanaFunctionsToApply;
+    public GrafanaFunction getGrafanaFunction() {
+        return grafanaFunction;
     }
 
     public List<YAxis> getYaxes() {

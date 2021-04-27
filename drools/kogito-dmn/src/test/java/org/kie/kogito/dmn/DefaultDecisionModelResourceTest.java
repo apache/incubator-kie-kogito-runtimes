@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,40 +19,43 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 
 import org.junit.jupiter.api.Test;
-import org.kie.api.management.GAV;
-import org.kie.internal.decision.DecisionModelResource;
-import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.decision.DecisionModelResource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultDecisionModelResourceTest {
 
-    private static final GAV GAV = new GAV("groupID", "artifactId", "version");
+    private static final KogitoGAV GAV = new KogitoGAV("groupID", "artifactId", "version");
 
     private static final String CONTENT = "content";
 
     @Test
     public void testGetters() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                DecisionModelType.DMN,
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
-
+                "namespace",
+                "name",
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(GAV, resource.getGav());
         assertEquals("name", resource.getModelName());
         assertEquals("namespace", resource.getNamespace());
-        assertEquals(DecisionModelType.DMN, resource.getModelType());
+        assertEquals(DecisionModelMetadata.Type.DMN, resource.getModelMetadata().getType());
+        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", resource.getModelMetadata().getSpecVersion());
     }
 
     @Test
     public void testLoad() {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
-                                                                                "namespace",
-                                                                                "name",
-                                                                                DecisionModelType.DMN,
-                                                                                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
-
+                "namespace",
+                "name",
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(CONTENT, resource.get().trim());
     }
 }

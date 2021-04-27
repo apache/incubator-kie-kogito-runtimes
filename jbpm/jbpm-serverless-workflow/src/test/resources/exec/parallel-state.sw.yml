@@ -1,16 +1,13 @@
----
 id: parallelworkflow
 name: parallel-wf
 version: '1.0'
+start: ExecInParallel
 states:
   - name: ExecInParallel
     type: parallel
-    start:
-      kind: default
     branches:
       - name: branch1
         workflowId: branch1abc
       - name: branch2
         workflowId: branch2abc
-    end:
-      kind: default
+    end: true

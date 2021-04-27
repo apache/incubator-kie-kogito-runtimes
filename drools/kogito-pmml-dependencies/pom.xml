@@ -16,14 +16,16 @@
   <description>
     Declare this artifact as "pom" dependency to import all default kie-pmml-trusty modules with exclusions needed for Kogito environment.
   </description>
+  
+  <properties>
+    <java.module.name>org.kie.kogito.kogito.pmml.dependencies</java.module.name>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.kie</groupId>
         <artifactId>kie-pmml-dependencies</artifactId>
-        <type>pom</type>
-        <scope>import</scope>
         <version>${version.org.kie7}</version>
       </dependency>
     </dependencies>
@@ -34,19 +36,14 @@
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-pmml-dependencies</artifactId>
-      <type>pom</type>
       <exclusions>
         <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
+          <groupId>org.drools</groupId>
+          <artifactId>drools-mvel</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-mvel-parser</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
@@ -72,15 +69,7 @@
           <groupId>org.drools</groupId>
           <artifactId>drools-ruleunit</artifactId>
         </exclusion>
-        <!-- NEEDED FOR PMML+SPRINGBOOT -->
-        <!--   DO NOT EXCLUDE!!!! -->
-<!--        <exclusion>-->
-<!--          <groupId>org.glassfish.jaxb</groupId>-->
-<!--          <artifactId>jaxb-runtime</artifactId>-->
-<!--        </exclusion>-->
       </exclusions>
     </dependency>
   </dependencies>
-
-
 </project>

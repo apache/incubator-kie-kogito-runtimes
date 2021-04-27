@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.Context;
@@ -103,12 +102,12 @@ public class BoundaryEventNodeFactory extends EventNodeFactory {
     }
 
     public BoundaryEventNodeFactory addCompensationHandler(String compensationHandlerId) {
-        if(!(nodeContainer instanceof ContextContainer)) {
+        if (!(nodeContainer instanceof ContextContainer)) {
             return this;
         }
         ContextContainer contextContainer = (ContextContainer) nodeContainer;
         Context compensationScope = contextContainer.getDefaultContext(CompensationScope.COMPENSATION_SCOPE);
-        if(compensationScope instanceof CompensationScope) {
+        if (compensationScope instanceof CompensationScope) {
             CompensationHandler handler = new CompensationHandler();
             handler.setNode(getBoundaryEventNode());
             ((CompensationScope) compensationScope).setExceptionHandler(compensationHandlerId, handler);
@@ -118,7 +117,7 @@ public class BoundaryEventNodeFactory extends EventNodeFactory {
 
     @Override
     public BoundaryEventNodeFactory eventType(String eventType) {
-        if(Metadata.EVENT_TYPE_COMPENSATION.equalsIgnoreCase(eventType)) {
+        if (Metadata.EVENT_TYPE_COMPENSATION.equalsIgnoreCase(eventType)) {
             EventTypeFilter eventFilter = new NonAcceptingEventTypeFilter();
             eventFilter.setType(eventType);
             eventFilter(eventFilter);

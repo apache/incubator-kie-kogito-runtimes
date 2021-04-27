@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,36 +19,36 @@ import java.io.Serializable;
 
 public class Association implements Serializable {
 
-	private static final long serialVersionUID = 4L;
-	
-	private String id;
-	private String sourceRef;
-	private String targetRef;
-	private String direction = "none";
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String getSourceRef() {
-		return sourceRef;
-	}
-	
-	public void setSourceRef(String sourceRef) {
-		this.sourceRef = sourceRef;
-	}
-	
-	public String getTargetRef() {
-		return targetRef;
-	}
-	
-	public void setTargetRef(String targetRef) {
-		this.targetRef = targetRef;
-	}
+    private static final long serialVersionUID = 4L;
+
+    private String id;
+    private String sourceRef;
+    private String targetRef;
+    private String direction = "none";
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSourceRef() {
+        return sourceRef;
+    }
+
+    public void setSourceRef(String sourceRef) {
+        this.sourceRef = sourceRef;
+    }
+
+    public String getTargetRef() {
+        return targetRef;
+    }
+
+    public void setTargetRef(String targetRef) {
+        this.targetRef = targetRef;
+    }
 
     public String getDirection() {
         return direction;
@@ -57,8 +57,8 @@ public class Association implements Serializable {
     public void setDirection(String direction) {
         this.direction = direction;
     }
-    
-    public String toString() { 
+
+    public String toString() {
         return "Association (" + this.id + ") [" + this.sourceRef + " -> " + this.targetRef + "]";
     }
 }

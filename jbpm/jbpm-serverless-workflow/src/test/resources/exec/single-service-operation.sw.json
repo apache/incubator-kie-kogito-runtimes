@@ -2,33 +2,29 @@
   "id": "function",
   "name": "test-wf",
   "version": "1.0",
+  "start": "HelloWorld",
   "functions": [
     {
       "name": "helloWorld",
-      "type": "service",
       "metadata": {
         "interface": "org.something.other.TestService",
-        "operation": "get"
+        "operation": "get",
+        "type": "service"
       }
     }
   ],
-  "states":[
+  "states": [
     {
-      "name":"HelloWorld",
-      "type":"operation",
-      "start": {
-        "kind": "default"
-      },
-      "actionMode":"sequential",
-      "actions":[
+      "name": "HelloWorld",
+      "type": "operation",
+      "actionMode": "sequential",
+      "actions": [
         {
-          "functionRef": {
-            "refName": "helloWorld"
-          }
+          "functionRef": "helloWorld"
         }
       ],
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

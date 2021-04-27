@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package org.jbpm.util;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import org.jbpm.process.core.datatype.DataType;
 
 public class CustomDataType implements DataType {
@@ -31,9 +32,9 @@ public class CustomDataType implements DataType {
     }
 
     public boolean verifyDataType(final Object value) {
-        if ( value instanceof String ) {
+        if (value instanceof String) {
             return true;
-        } else if ( value == null ) {
+        } else if (value == null) {
             return true;
         } else {
             return false;

@@ -35,19 +35,27 @@
       <artifactId>jackson-annotations</artifactId>
     </dependency>
 
+    <!--
+    This dependency is marked as optional because it is only needed if events are used.
+    All event-related addons and also user code can bring it back but in this way this module
+    by default has no transitive dependencies from kogito-events-api.
+    -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-events-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>kie-api</artifactId>
+      <version>${version.org.kie7}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-dmn-api</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-internal</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.kie</groupId>
-          <artifactId>kie-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>${version.org.kie7}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -74,6 +82,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

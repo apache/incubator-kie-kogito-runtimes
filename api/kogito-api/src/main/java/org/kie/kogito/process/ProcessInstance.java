@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process;
 
 import java.util.Collection;
@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import org.kie.api.runtime.process.WorkItemNotFoundException;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.workitem.Policy;
@@ -52,8 +55,8 @@ public interface ProcessInstance<T> {
     /**
      * Starts process instance with trigger
      *
-     * @param trigger     name of the trigger that will indicate what start node to trigger
-     * @param referenceId optional reference id that points to a another  component triggering this instance
+     * @param trigger name of the trigger that will indicate what start node to trigger
+     * @param referenceId optional reference id that points to a another component triggering this instance
      */
     void start(String trigger, String referenceId);
 
@@ -67,8 +70,8 @@ public interface ProcessInstance<T> {
     /**
      * Starts process instance from given node
      *
-     * @param nodeId      node id that should be used as the first node
-     * @param referenceId optional reference id that points to a another  component triggering this instance
+     * @param nodeId node id that should be used as the first node
+     * @param referenceId optional reference id that points to a another component triggering this instance
      */
     void startFrom(String nodeId, String referenceId);
 
@@ -106,39 +109,54 @@ public interface ProcessInstance<T> {
     /**
      * Completes work item belonging to this process instance with given variables
      *
-     * @param id        id of the work item to complete
+     * @param id id of the work item to complete
      * @param variables optional variables
-     * @param policies  optional list of policies to be enforced
-     * @throws WorkItemNotFoundException in case work item with given id does not exist
+     * @param policies optional list of policies to be enforced
      */
     void completeWorkItem(String id, Map<String, Object> variables, Policy<?>... policies);
 
     /**
+     * Updates work item according to provided consumer
+     * 
+     * @param id the id of the work item that has been completed
+     * @param updater consumer implementation that contains the logic to update workitem
+     * @param policies optional security information
+     * @return result of the operation performed by the updater
+     */
+    <R> R updateWorkItem(String id, Function<KogitoWorkItem, R> updater, Policy<?>... policies);
+
+    /**
      * Aborts work item belonging to this process instance
      *
-     * @param id       id of the work item to complete
+     * @param id id of the work item to complete
      * @param policies optional list of policies to be enforced
-     * @throws WorkItemNotFoundException in case work item with given id does not exist
      */
     void abortWorkItem(String id, Policy<?>... policies);
 
     /**
      * Transition work item belonging to this process instance not another life cycle phase
      *
-     * @param id         id of the work item to complete
+     * @param id id of the work item to complete
      * @param transition target transition including phase, identity and data
-     * @throws WorkItemNotFoundException in case work item with given id does not exist
      */
     void transitionWorkItem(String id, Transition<?> transition);
+
     /**
      * Returns work item identified by given id if found
      *
      * @param workItemId id of the work item
-     * @param policies   optional list of policies to be enforced
+     * @param policies optional list of policies to be enforced
      * @return work item with its parameters if found
-     * @throws WorkItemNotFoundException in case work item with given id does not exist
      */
     WorkItem workItem(String workItemId, Policy<?>... policies);
+
+    /**
+     * Return nodes that fulfills a particular filter
+     * 
+     * @filter filter the returned nodes should fulfill
+     * @return collections of nodes that match the filter
+     */
+    Collection<KogitoNodeInstance> findNodes(Predicate<KogitoNodeInstance> filter);
 
     /**
      * Returns list of currently active work items.
@@ -171,6 +189,7 @@ public interface ProcessInstance<T> {
 
     /**
      * Returns startDate of this process instance
+     * 
      * @return
      */
     Date startDate();

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.explainability;
+
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,15 +26,9 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.StaticApplication;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
-import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
-
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SEPARATOR;
@@ -43,9 +41,8 @@ public class ExplainabilityServiceTest {
 
     final static String TEST_EXECUTION_ID = "test";
     final static DMNRuntime genericDMNRuntime = DMNKogito.createGenericDMNRuntime(new InputStreamReader(
-            ExplainabilityServiceTest.class.getResourceAsStream(MODEL_RESOURCE)
-    ));
-    final static DmnDecisionModel decisionModel = new DmnDecisionModel(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
+            ExplainabilityServiceTest.class.getResourceAsStream(MODEL_RESOURCE)));
+    final static DmnDecisionModelSpy decisionModel = new DmnDecisionModelSpy(genericDMNRuntime, MODEL_NAMESPACE, MODEL_NAME, () -> TEST_EXECUTION_ID);
 
     @Test
     public void testPerturbedExecution() {
@@ -77,6 +74,8 @@ public class ExplainabilityServiceTest {
         Assertions.assertEquals("No", perturbedResult.get("Should the driver be suspended?"));
         Assertions.assertTrue(perturbedResult.containsKey("Fine"));
         Assertions.assertNull(perturbedResult.get("Fine"));
+
+        Assertions.assertTrue(decisionModel.getEvaluationSkipMonitoringHistory().stream().allMatch(x -> x.equals(true)));
     }
 
     private Map<String, Object> createRequest() {

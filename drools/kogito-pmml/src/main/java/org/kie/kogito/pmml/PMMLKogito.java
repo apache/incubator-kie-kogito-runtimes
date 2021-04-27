@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.pmml;
 
 import java.util.List;
@@ -62,6 +61,7 @@ public class PMMLKogito {
     /**
      * This method is equivalents to createKieRuntimeFactories but it also compiles the PMML models in memory instead of
      * just load it. It is used by Kogito Test Scenario to load and run the tests
+     * 
      * @param pmmlPaths
      * @return
      */
@@ -76,9 +76,9 @@ public class PMMLKogito {
             return modelsWithName.get(0);
         } else {
             String errorMessage =
-                    String.format ("Wrong number of model(s) with name '%s': %s",
-                                   modelName,
-                                   modelsWithName.size());
+                    String.format("Wrong number of model(s) with name '%s': %s",
+                            modelName,
+                            modelsWithName.size());
             throw new KiePMMLException(errorMessage);
         }
     }

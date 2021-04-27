@@ -1,6 +1,11 @@
+import org.jenkinsci.plugins.workflow.libs.Library
 @Library('jenkins-pipeline-shared-libraries')_
 
+import org.kie.jenkins.MavenCommand
+import org.kie.jenkins.MavenStagingHelper
+
 deployProperties = [:]
+
 pipeline {
     agent {
         label 'kie-rhel7 && kie-mem16g'
@@ -10,37 +15,23 @@ pipeline {
         maven 'kie-maven-3.6.2'
         jdk 'kie-jdk11'
     }
-    
+
     options {
-        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10')
+        timeout(time: 360, unit: 'MINUTES')
     }
 
-    parameters {
-        string(name: 'DISPLAY_NAME', defaultValue: '', description: 'Setup a specific build display name')
-        
-        // Git information
-        string(name: 'BUILD_BRANCH_NAME', defaultValue: 'master', description: 'Which branch to build? Set if you are not on a multibranch pipeline.')
-        string(name: 'GIT_AUTHOR', defaultValue: 'kiegroup', description: 'Which Git author repository ?')
-
-        // Build&test information
-        booleanParam(name: 'SKIP_TESTS', defaultValue: false, description: 'Skip tests')
-
-        // Deploy information
-        string(name: 'MAVEN_DEPLOY_REPOSITORY', defaultValue: '', description: 'Specify a Maven repository to deploy the artifacts.')
-
-        // Release information
-        booleanParam(name: 'RELEASE', defaultValue: false, description: 'Is this build for a release?')
-        string(name: 'PROJECT_VERSION', defaultValue: '', description: 'Optional if not RELEASE. If RELEASE, cannot be empty.')
-
-        // Bot author information. Set as params for easy testing.
-        string(name: 'GIT_AUTHOR_BOT', defaultValue: 'bsig-gh-bot', description: 'From which author should the PR be created ?')
-        string(name: 'BOT_CREDENTIALS_ID', defaultValue: 'bsig-gh-bot', description: 'Credentials for PR creation')
-    }
+    // parameters {
+    // For parameters, check into .jenkins/dsl/jobs.groovy file
+    // }
 
     environment {
+        // Static env is defined into .jenkins/dsl/jobs.groovy file
+
+        // Keep here for visitibility
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
 
         BOT_BRANCH_HASH = "${util.generateHash(10)}"
+        MAVEN_DEPLOY_LOCAL_DIR = "${WORKSPACE}/maven_deploy_dir"
     }
 
     stages {
@@ -48,13 +39,23 @@ pipeline {
             steps {
                 script {
                     cleanWs()
-                    
-                    if (params.DISPLAY_NAME != '') {
+
+                    if (params.DISPLAY_NAME) {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    if (isRelease()) {
-                        assert getProjectVersion() != ''
+                    if (isRelease() || isCreatePr()) {
+                        // Verify version is set
+                        assert getProjectVersion()
+
+                        if (isRelease()) {
+                            // Verify if on right release branch
+                            assert getBuildBranch() == util.getReleaseBranchFromVersion(getProjectVersion())
+                        }
+                    }
+
+                    dir(getRepoName()) {
+                        checkoutRepo()
                     }
                 }
             }
@@ -69,60 +70,34 @@ pipeline {
                 }
             }
         }
-        stage('Clone repositories') { 
-            steps {
-                checkoutRepo('kogito-runtimes')
-                checkoutRepo('kogito-apps')
-            }
-        }
-        stage('Prepare for PR'){
+        stage('Prepare for PR') {
             when {
-                expression { return isRelease() }
+                expression { return isRelease() || isCreatePr() }
             }
             steps {
-                prepareForPR('kogito-runtimes')
-                prepareForPR('kogito-apps')
-            }
-        }
-        stage('Setup Maven release config'){
-            when {
-                expression { return isRelease() }
-            }
-            steps {
-                echo 'Setup Maven release config'
-                configFileProvider([configFile(fileId: maven.getSubmarineSettingsXmlId(), targetLocation: 'maven-settings.xml', variable: 'MAVEN_SETTINGS_FILE')]){
-                    sh "echo '\n-B -s ${MAVEN_SETTINGS_FILE}' | tee -a kogito-{runtimes,apps}/.mvn/maven.config"
-                }
-            }
-        }
-        stage('Update project version'){
-            when {
-                expression { return getProjectVersion() != '' }
-            }
-            steps {
-                // kogito-runtimes
                 script {
-                    // first build&install the current version (usually SNAPSHOT) locally as it is needed later by other repos
-                    mavenCleanInstall('kogito-runtimes', true, ['full'], '-U')
-                    dir('kogito-runtimes') {
-                        maven.mvnVersionsSet(getProjectVersion())
-                    }
-                    // Step needed to have runtimes artifacts into the local repository, in order to set apps version correctly
-                    mavenCleanInstall('kogito-runtimes', true, [], '-U')
-                    
-                }
-
-                // kogito-apps
-                dir('kogito-apps') {
-                    script {
-                        maven.mvnVersionsUpdateParentAndChildModules(getProjectVersion())
+                    dir(getRepoName()) {
+                        prepareForPR()
                     }
                 }
             }
         }
-        stage('Build kogito-runtimes') {
+        stage('Update project version') {
+            when {
+                expression { return getProjectVersion() }
+            }
             steps {
-                mavenCleanInstall('kogito-runtimes', params.SKIP_TESTS)
+                script {
+                    // Set version
+                    maven.mvnVersionsSet(getMavenCommand(), getProjectVersion(), !isRelease())
+                }
+            }
+        }
+        stage('Build & Test') {
+            steps {
+                script {
+                    getMavenCommand().skipTests(params.SKIP_TESTS).run('clean install')
+                }
             }
             post {
                 always {
@@ -130,9 +105,16 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-apps') {
+        stage('Check integration tests with persistence') {
             steps {
-                mavenCleanInstall('kogito-apps', params.SKIP_TESTS)
+                script {
+                    sh 'cp -r kogito-runtimes integration-tests'
+
+                    getMavenCommand('integration-tests')
+                        .withProfiles(['persistence'])
+                        .skipTests(params.SKIP_TESTS)
+                        .run('clean verify')
+                }
             }
             post {
                 always {
@@ -142,32 +124,45 @@ pipeline {
         }
         stage('Deploy artifacts') {
             steps {
-                mavenDeploy('kogito-runtimes')
-                mavenDeploy('kogito-apps')
+                script {
+                    // Usually `env.MAVEN_DEPLOY_REPOSITORY` is used for testing purpose
+                    if (env.MAVEN_DEPLOY_REPOSITORY && env.MAVEN_REPO_CREDS_ID) {
+                        // Deploy to specific repository with credentials
+                        runMavenDeployLocally()
+                        maven.uploadLocalArtifacts(env.MAVEN_REPO_CREDS_ID, getLocalDeploymentFolder(), getMavenRepoZipUrl())
+                    } else if (!isRelease() || env.MAVEN_DEPLOY_REPOSITORY) {
+                        // Normal deploy
+                        runMavenDeploy()
+                    } else {
+                        // Deploy locally and then to staging
+                        runMavenDeployLocally()
+                        runMavenStage()
+                    }
+                }
             }
         }
-        stage('Create PR'){
+        stage('Create PR') {
             when {
-                expression { return isRelease() }
+                expression { return isRelease() || isCreatePr() }
             }
             steps {
-                commitAndCreatePR('kogito-runtimes')
-                commitAndCreatePR('kogito-apps')
+                script {
+                    dir(getRepoName()) {
+                        if (githubscm.isThereAnyChanges()) {
+                            commitAndCreatePR()
+                        } else {
+                            println '[WARN] no changes to commit'
+                        }
+                    }
+                }
             }
             post {
                 success {
                     script {
-                        // Runtimes
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.source.uri', "https://github.com/${getBotAuthor()}/kogito-runtimes")
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.source.ref', getBotBranch())
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.target.uri', "https://github.com/${getGitAuthor()}/kogito-runtimes")
-                        setDeployPropertyIfNeeded('kogito-runtimes.pr.target.ref', getBuildBranch())
-
-                        // Apps
-                        setDeployPropertyIfNeeded('kogito-apps.pr.source.uri', "https://github.com/${getBotAuthor()}/kogito-apps")
-                        setDeployPropertyIfNeeded('kogito-apps.pr.source.ref', getBotBranch())
-                        setDeployPropertyIfNeeded('kogito-apps.pr.target.uri', "https://github.com/${getGitAuthor()}/kogito-apps")
-                        setDeployPropertyIfNeeded('kogito-apps.pr.target.ref', getBuildBranch())
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.source.uri", "https://github.com/${getBotAuthor()}/${getRepoName()}")
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.source.ref", getBotBranch())
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.target.uri", "https://github.com/${getGitAuthor()}/${getRepoName()}")
+                        setDeployPropertyIfNeeded("${getRepoName()}.pr.target.ref", getBuildBranch())
                     }
                 }
             }
@@ -176,114 +171,126 @@ pipeline {
     post {
         always {
             script {
-                def propertiesStr = deployProperties.collect{ entry ->  "${entry.key}=${entry.value}" }.join("\n")
+                def propertiesStr = deployProperties.collect { entry ->  "${entry.key}=${entry.value}" }.join('\n')
                 writeFile(text: propertiesStr, file: 'deployment.properties')
                 archiveArtifacts(artifacts: 'deployment.properties')
             }
-            cleanWs()
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
+            }
         }
     }
 }
 
-void saveReports(boolean allowEmpty=false){
+void saveReports(boolean allowEmpty=false) {
     junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
 }
 
-void checkoutRepo(String repo, String dirName=repo) {
-    dir(dirName) {
-        deleteDir()
-        checkout(githubscm.resolveRepository(repo, getGitAuthor(), getBuildBranch(), false))
-    }
+void checkoutRepo() {
+    deleteDir()
+    checkout(githubscm.resolveRepository(getRepoName(), getGitAuthor(), getBuildBranch(), false))
 }
 
-void prepareForPR(String repo) {
-    dir(repo) {
-        githubscm.forkRepo(getBotAuthorCredsID())
-        githubscm.createBranch(getBotBranch())
-    }
+void prepareForPR() {
+    githubscm.forkRepo(getBotAuthorCredsID())
+    githubscm.createBranch(getBotBranch())
 }
 
-void addNotIgnoredPoms() {
-    // based on https://stackoverflow.com/a/59888964/8811872
-    sh '''
-    find . -type f -name 'pom.xml' > found_poms.txt
-    poms_to_add=""
-    while IFS= read -r pom; do
-        if ! git check-ignore -q "\$pom"; then
-            poms_to_add="\$poms_to_add \$pom"
-        fi
-    done < found_poms.txt
-    rm found_poms.txt
-    git add \$poms_to_add
-    git status
-    '''
-}
+void commitAndCreatePR() {
+    def commitMsg = "[${getBuildBranch()}] Update version to ${getProjectVersion()}"
+    def prBody = "Generated by build ${BUILD_TAG}: ${BUILD_URL}.\nPlease do not merge, it should be merged automatically."
 
-void commitAndCreatePR(String repo) {
-    def commitMsg = "Update project version to ${getProjectVersion()} for release"
-    def prBody = "Generated by build ${BUILD_TAG}: ${BUILD_URL}.\nPlease do not merge, it will be merged automatically after testing."
-    // Not using githubscm.commitChanges() because globbing won't work.
-    // See: https://github.com/kiegroup/kogito-runtimes/pull/570#discussion_r449268738
-    dir(repo) {
-        addNotIgnoredPoms()
-        sh "git commit -m '${commitMsg}'"
-        githubscm.pushObject('origin', getBotBranch(), getBotAuthorCredsID())
-        deployProperties["${repo}.pr.link"] = githubscm.createPR(commitMsg, prBody, getBuildBranch(), getBotAuthorCredsID())
-    }
+    githubscm.commitChanges(commitMsg, { githubscm.findAndStageNotIgnoredFiles('pom.xml') })
+    githubscm.pushObject('origin', getBotBranch(), getBotAuthorCredsID())
+    deployProperties["${getRepoName()}.pr.link"] = githubscm.createPR(commitMsg, prBody, getBuildBranch(), getBotAuthorCredsID())
 }
 
 boolean isRelease() {
-    return params.RELEASE
+    return env.RELEASE.toBoolean()
 }
 
-String getGitAuthor(){
-    return params.GIT_AUTHOR
+boolean isCreatePr() {
+    return params.CREATE_PR
 }
 
-String getBuildBranch(){
+String getRepoName() {
+    return env.REPO_NAME
+}
+
+String getGitAuthor() {
+    // GIT_AUTHOR can be env or param
+    return "${GIT_AUTHOR}"
+}
+
+String getBuildBranch() {
     return params.BUILD_BRANCH_NAME
 }
 
-String getProjectVersion(){
+String getProjectVersion() {
     return params.PROJECT_VERSION
 }
 
-String getBotBranch(){
+String getBotBranch() {
     return "${getProjectVersion()}-${env.BOT_BRANCH_HASH}"
 }
 
-String getBotAuthor(){
-    return params.GIT_AUTHOR_BOT
+String getBotAuthor() {
+    return env.GIT_AUTHOR_BOT
 }
 
-String getBotAuthorCredsID(){
-    return params.BOT_CREDENTIALS_ID
+String getBotAuthorCredsID() {
+    return env.BOT_CREDENTIALS_ID
 }
 
-void setDeployPropertyIfNeeded(String key, def value){
-    if (value != null && value != ''){
+void setDeployPropertyIfNeeded(String key, def value) {
+    if (value) {
         deployProperties[key] = value
     }
 }
 
-void mavenCleanInstall(String directory, boolean skipTests = false, List profiles = [], String extraArgs = '') {
-    runMaven('clean install', directory, skipTests, profiles, extraArgs)
+MavenCommand getMavenCommand(String directory = '') {
+    directory = directory ?: getRepoName()
+    return new MavenCommand(this, ['-fae'])
+                .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
+                .inDirectory(directory)
+                .withProperty('full')
 }
 
-void mavenDeploy(String directory) {
-    extraArgs = params.MAVEN_DEPLOY_REPOSITORY != '' ? "-DaltDeploymentRepository=runtimes-artifacts::default::${params.MAVEN_DEPLOY_REPOSITORY} -Denforcer.skip=true" : ''
-    runMaven('clean deploy', directory, true, [], extraArgs)
+void runMavenDeploy() {
+    mvnCmd = getMavenCommand()
+
+    if (env.MAVEN_DEPLOY_REPOSITORY) {
+        mvnCmd.withDeployRepository(env.MAVEN_DEPLOY_REPOSITORY)
+    }
+
+    mvnCmd.skipTests(true).run('clean deploy')
 }
 
-void runMaven(String command, String directory, boolean skipTests = false, List profiles = [], String extraArgs = '') {
-    mvnCmd = command
-    if(profiles.size() > 0){
-        mvnCmd += " -P${profiles.join(',')}"
-    }
-    if(extraArgs != ''){
-        mvnCmd += " ${extraArgs}"
-    }
-    dir(directory) {
-        maven.runMavenWithSubmarineSettings(mvnCmd, skipTests)
-    }
+String getMavenRepoZipUrl() {
+    return "${env.MAVEN_DEPLOY_REPOSITORY.replaceAll('/content/', '/service/local/').replaceFirst('/*$', '')}/content-compressed"
+}
+
+void runMavenDeployLocally() {
+    getMavenCommand()
+        .skipTests(true)
+        .withLocalDeployFolder(getLocalDeploymentFolder())
+        .run('clean deploy')
+}
+
+void runMavenStage() {
+    MavenStagingHelper stagingHelper = getStagingHelper()
+    deployProperties.putAll(stagingHelper.stageLocalArtifacts(env.NEXUS_STAGING_PROFILE_ID, getLocalDeploymentFolder()))
+    stagingHelper.promoteStagingRepository(env.NEXUS_BUILD_PROMOTION_PROFILE_ID)
+}
+
+MavenStagingHelper getStagingHelper() {
+    return new MavenStagingHelper(this, getMavenCommand())
+        .withNexusReleaseUrl(env.NEXUS_RELEASE_URL)
+        .withNexusReleaseRepositoryId(env.NEXUS_RELEASE_REPOSITORY_ID)
+}
+
+String getLocalDeploymentFolder() {
+    return "${env.MAVEN_DEPLOY_LOCAL_DIR}/${getRepoName()}"
 }

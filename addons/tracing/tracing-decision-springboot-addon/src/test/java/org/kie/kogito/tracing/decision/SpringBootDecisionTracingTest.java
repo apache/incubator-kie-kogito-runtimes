@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.io.IOException;
@@ -21,25 +20,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.Application;
+import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.conf.StaticConfigBean;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.event.trace.TraceEvent;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.KafkaTemplate;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,17 +62,23 @@ public class SpringBootDecisionTracingTest {
     private static final String TEST_MODEL_NAME = "Traffic Violation";
 
     private static final String TEST_EXECUTION_ID = "7c50581e-6e5b-407b-91d6-2ffb1d47ebc0";
-    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {{
-        put("Driver", new HashMap<String, Object>() {{
-            put("Age", 25);
-            put("Points", 10);
-        }});
-        put("Violation", new HashMap<String, Object>() {{
-            put("Type", "speed");
-            put("Actual Speed", 105);
-            put("Speed Limit", 100);
-        }});
-    }};
+    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<String, Object>() {
+        {
+            put("Driver", new HashMap<String, Object>() {
+                {
+                    put("Age", 25);
+                    put("Points", 10);
+                }
+            });
+            put("Violation", new HashMap<String, Object>() {
+                {
+                    put("Type", "speed");
+                    put("Actual Speed", 105);
+                    put("Speed Limit", 100);
+                }
+            });
+        }
+    };
     private static final String TEST_SERVICE_URL = "localhost:8080";
     private static final String TEST_KAFKA_TOPIC = "kogito-tracing-decision";
 
@@ -93,8 +100,7 @@ public class SpringBootDecisionTracingTest {
 
     private DMNRuntime buildDMNRuntime() {
         return DMNKogito.createGenericDMNRuntime(new java.io.InputStreamReader(
-                SpringBootDecisionTracingTest.class.getResourceAsStream(TEST_MODEL_RESOURCE)
-        ));
+                SpringBootDecisionTracingTest.class.getResourceAsStream(TEST_MODEL_RESOURCE)));
     }
 
     private DecisionModel buildDecisionModel(DMNRuntime runtime) {
@@ -131,9 +137,9 @@ public class SpringBootDecisionTracingTest {
         when(mockedDecisionModels.getDecisionModel(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME)).thenReturn(model);
 
         final Application mockedApplication = mock(Application.class);
-        when(mockedApplication.decisionModels()).thenReturn(mockedDecisionModels);
+        when(mockedApplication.get(any())).thenReturn(mockedDecisionModels);
 
-        final ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL, true);
+        final ConfigBean configBean = new StaticConfigBean(TEST_SERVICE_URL, true, null);
 
         final KafkaTemplate<String, String> mockedTemplate = mock(KafkaTemplate.class);
         final SpringBootTraceEventEmitter eventEmitter = new SpringBootTraceEventEmitter(mockedTemplate, TEST_KAFKA_TOPIC);

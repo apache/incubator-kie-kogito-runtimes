@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
@@ -21,9 +20,10 @@ import java.util.Date;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a start node.
@@ -33,45 +33,44 @@ public class StartNodeInstance extends NodeInstanceImpl {
 
     private static final long serialVersionUID = 510l;
 
-    public void internalTrigger(final NodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         if (type != null) {
             throw new IllegalArgumentException(
-                "A StartNode does not accept incoming connections!");
+                    "A StartNode does not accept incoming connections!");
         }
         if (from != null) {
             throw new IllegalArgumentException(
-                "A StartNode can only be triggered by the process itself!");
+                    "A StartNode can only be triggered by the process itself!");
         }
         triggerTime = new Date();
         triggerCompleted();
     }
-    
+
     public void signalEvent(String type, Object event) {
         String variableName = (String) getStartNode().getMetaData("TriggerMapping");
         if (variableName != null) {
-            VariableScopeInstance variableScopeInstance = (VariableScopeInstance)
-                resolveContextInstance(VariableScope.VARIABLE_SCOPE, variableName);
+            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, variableName);
             if (variableScopeInstance == null) {
                 throw new IllegalArgumentException(
-                    "Could not find variable for start node: " + variableName);
+                        "Could not find variable for start node: " + variableName);
             }
-            
+
             EventTransformer transformer = getStartNode().getEventTransformer();
-    		if (transformer != null) {
-    			event = transformer.transformEvent(event);
-    		}
-            
+            if (transformer != null) {
+                event = transformer.transformEvent(event);
+            }
+
             variableScopeInstance.setVariable(this, variableName, event);
         }
         triggerCompleted();
     }
-    
+
     public StartNode getStartNode() {
         return (StartNode) getNode();
     }
-   
+
     public void triggerCompleted() {
-        ((org.jbpm.workflow.instance.NodeInstanceContainer)getNodeInstanceContainer()).setCurrentLevel(getLevel());
-        triggerCompleted(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, true);
+        ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer()).setCurrentLevel(getLevel());
+        triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
     }
 }

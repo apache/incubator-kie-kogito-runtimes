@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.mongodb.utils;
 
 import java.util.Map;
@@ -20,15 +20,16 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.bson.Document;
+import org.jbpm.marshalling.impl.JBPMMessages;
+import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance;
+import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
+import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
+import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.util.JsonFormat;
-import org.bson.Document;
-import org.jbpm.marshalling.impl.KogitoProcessMarshallerWriteContext;
-import org.jbpm.marshalling.impl.JBPMMessages;
-import org.jbpm.marshalling.impl.JBPMMessages.ProcessInstance;
-import org.kie.kogito.mongodb.marshalling.DocumentMarshallingException;
-import org.kie.kogito.mongodb.model.ProcessInstanceDocument;
 
 import static org.kie.kogito.mongodb.utils.DocumentConstants.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.VALUE;

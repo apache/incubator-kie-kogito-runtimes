@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance;
 
 import java.util.Map;
@@ -26,43 +25,41 @@ import org.kie.api.definition.process.Process;
 import org.kie.internal.process.CorrelationKey;
 
 public abstract class AbstractProcessInstanceFactory implements ProcessInstanceFactory {
-	
-	public ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey, 
-			                                     InternalKnowledgeRuntime kruntime,
-			                                     Map<String, Object> parameters) {
-		ProcessInstance processInstance = createProcessInstance();
-		processInstance.setKnowledgeRuntime( kruntime );
-        processInstance.setProcess( process );
-        
+
+    public ProcessInstance createProcessInstance(Process process, CorrelationKey correlationKey,
+            InternalKnowledgeRuntime kruntime,
+            Map<String, Object> parameters) {
+        ProcessInstance processInstance = createProcessInstance();
+        processInstance.setKnowledgeRuntime(kruntime);
+        processInstance.setProcess(process);
+
         if (correlationKey != null) {
-        	processInstance.getMetaData().put("CorrelationKey", correlationKey);
+            processInstance.getMetaData().put("CorrelationKey", correlationKey);
         }
-        
+
         ((InternalProcessRuntime) kruntime.getProcessRuntime()).getProcessInstanceManager().addProcessInstance(processInstance);
 
         // set variable default values
         // TODO: should be part of processInstanceImpl?
-        VariableScope variableScope = (VariableScope) ((ContextContainer) process).getDefaultContext( VariableScope.VARIABLE_SCOPE );
-        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) processInstance.getContextInstance( VariableScope.VARIABLE_SCOPE );
+        VariableScope variableScope = (VariableScope) ((ContextContainer) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) processInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         // set input parameters
-        if ( parameters != null ) {
-            if ( variableScope != null ) {
-                for ( Map.Entry<String, Object> entry : parameters.entrySet() ) {
-                	
-                	variableScope.validateVariable(process.getName(), entry.getKey(), entry.getValue());
-                    variableScopeInstance.setVariable( entry.getKey(), entry.getValue() );
+        if (parameters != null) {
+            if (variableScope != null) {
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+
+                    variableScope.validateVariable(process.getName(), entry.getKey(), entry.getValue());
+                    variableScopeInstance.setVariable(entry.getKey(), entry.getValue());
                 }
             } else {
-                throw new IllegalArgumentException( "This process does not support parameters!" );
+                throw new IllegalArgumentException("This process does not support parameters!");
             }
         }
         variableScopeInstance.enforceRequiredVariables();
-        
-        return processInstance;
-	}
-	
 
-	
-	public abstract ProcessInstance createProcessInstance();
+        return processInstance;
+    }
+
+    public abstract ProcessInstance createProcessInstance();
 
 }

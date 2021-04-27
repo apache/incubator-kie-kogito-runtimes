@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.util.LinkedList;
@@ -26,10 +25,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.kie.dmn.api.core.DMNModel;
+import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.tracing.decision.aggregator.Aggregator;
 import org.kie.kogito.tracing.decision.aggregator.DefaultAggregator;
-import org.kie.kogito.tracing.decision.event.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.terminationdetector.CounterTerminationDetector;
 import org.kie.kogito.tracing.decision.terminationdetector.TerminationDetector;
@@ -57,8 +56,7 @@ public class DecisionTracingCollector {
             Consumer<String> payloadConsumer,
             BiFunction<String, String, DMNModel> modelSupplier,
             Supplier<TerminationDetector> terminationDetectorSupplier,
-            ConfigBean configBean
-    ) {
+            ConfigBean configBean) {
         this.cacheMap = new ConcurrentHashMap<>();
         this.terminationDetectorMap = new ConcurrentHashMap<>();
         this.aggregator = aggregator;

@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.cloud.workitems.service.discovery;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import io.fabric8.kubernetes.api.model.IntOrString;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.ServiceBuilder;
-import io.fabric8.kubernetes.api.model.ServicePort;
-import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloud.kubernetes.client.DefaultKogitoKubeClient;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeConfig;
 import org.kie.kogito.cloud.workitems.ServiceInfo;
+
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePort;
+import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,19 +141,19 @@ public class KubernetesServiceDiscoveryTest {
         assertThat(endpoint).isEmpty();
     }
 
-    private void createServiceInMockServer(String name, String serviceIp, Map<String,String> labels) {
-        final ServicePort port = new ServicePort(SERVICE_PROTOCOL, 0, SERVICE_PORT, SERVICE_PROTOCOL, new IntOrString(SERVICE_PORT));
+    private void createServiceInMockServer(String name, String serviceIp, Map<String, String> labels) {
+        final ServicePort port = new ServicePort(SERVICE_PROTOCOL, name, 0, SERVICE_PORT, SERVICE_PROTOCOL, new IntOrString(SERVICE_PORT));
         final Service service = new ServiceBuilder().withNewMetadata()
-                                                        .withName(name)
-                                                        .withLabels(labels)
-                                                    .endMetadata()
-                                                    .withNewSpec()
-                                                        .withClusterIP(serviceIp)
-                                                        .withType("ClusterIP")
-                                                        .withSessionAffinity("ClientIP")
-                                                        .withPorts(port)
-                                                    .endSpec()
-                                                    .build();
+                .withName(name)
+                .withLabels(labels)
+                .endMetadata()
+                .withNewSpec()
+                .withClusterIP(serviceIp)
+                .withType("ClusterIP")
+                .withSessionAffinity("ClientIP")
+                .withPorts(port)
+                .endSpec()
+                .build();
         server.getClient().services().inNamespace(NAMESPACE).create(service);
     }
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.impl;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +48,7 @@ import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.DroolsAction;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
@@ -71,14 +72,15 @@ import org.jbpm.workflow.instance.node.EventNodeInstanceInterface;
 import org.jbpm.workflow.instance.node.EventSubProcessNodeInstance;
 import org.jbpm.workflow.instance.node.FaultNodeInstance;
 import org.jbpm.workflow.instance.node.StateBasedNodeInstance;
-import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.api.runtime.rule.AgendaFilter;
 import org.kie.internal.process.CorrelationKey;
+import org.kie.kogito.internal.process.event.KogitoEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.jobs.DurationExpirationTime;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
@@ -117,8 +119,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private final List<NodeInstance> nodeInstances = new ArrayList<>();
 
-    private Map<String, List<EventListener>> eventListeners = new HashMap<>();
-    private Map<String, List<EventListener>> externalEventListeners = new HashMap<>();
+    private Map<String, List<KogitoEventListener>> eventListeners = new HashMap<>();
+    private Map<String, List<KogitoEventListener>> externalEventListeners = new HashMap<>();
 
     private List<String> completedNodeIds = new ArrayList<>();
     private List<String> activatingNodeIds;
@@ -138,13 +140,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private String nodeIdInError;
     private String errorMessage;
 
-    private int slaCompliance = SLA_NA;
+    private int slaCompliance = KogitoProcessInstance.SLA_NA;
     private Date slaDueDate;
     private String slaTimerId;
-    
+
     private String referenceId;
 
-	private AgendaFilter agendaFilter;
+    private AgendaFilter agendaFilter;
 
     @Override
     public NodeContainer getNodeContainer() {
@@ -153,7 +155,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public void addNodeInstance(final NodeInstance nodeInstance) {
-        if (nodeInstance.getId() == null) {
+        if (nodeInstance.getStringId() == null) {
             // assign new id only if it does not exist as it might already be set by marshalling
             // it's important to keep same ids of node instances as they might be references e.g. exclusive group
             ((NodeInstanceImpl) nodeInstance).setId(UUID.randomUUID().toString());
@@ -200,7 +202,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         if (recursive) {
             result = new ArrayList<>(result);
             for (NodeInstance nodeInstance : nodeInstances) {
-                if (nodeInstance instanceof NodeInstanceContainer) {
+                if (nodeInstance instanceof KogitoNodeInstanceContainer) {
                     result.addAll(((org.jbpm.workflow.instance.NodeInstanceContainer) nodeInstance).getNodeInstances(true));
                 }
             }
@@ -209,14 +211,35 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public NodeInstance getNodeInstance(String nodeInstanceId) {
+    public Collection<KogitoNodeInstance> getKogitoNodeInstances(Predicate<KogitoNodeInstance> filter,
+            boolean recursive) {
+        Collection<KogitoNodeInstance> result = new ArrayList<>();
+        for (NodeInstance nodeInstance : nodeInstances) {
+            if (nodeInstance instanceof KogitoNodeInstance && filter.test(nodeInstance)) {
+                result.add(nodeInstance);
+            }
+            if (nodeInstance instanceof KogitoNodeInstanceContainer && recursive) {
+                result.addAll(((KogitoNodeInstanceContainer) nodeInstance).getKogitoNodeInstances(
+                        filter, true));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public NodeInstance getNodeInstance(long nodeInstanceId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public KogitoNodeInstance getNodeInstance(String nodeInstanceId) {
         return getNodeInstance(nodeInstanceId, false);
     }
 
     @Override
     public NodeInstance getNodeInstance(String nodeInstanceId, boolean recursive) {
         return getNodeInstances(recursive).stream()
-                .filter(nodeInstance -> Objects.equals(nodeInstance.getId(), nodeInstanceId))
+                .filter(nodeInstance -> Objects.equals(nodeInstance.getStringId(), nodeInstanceId))
                 .findFirst()
                 .orElse(null);
     }
@@ -227,11 +250,11 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return result;
     }
 
-    private void addActiveNodeIds(NodeInstanceContainer container, List<String> result) {
+    private void addActiveNodeIds(KogitoNodeInstanceContainer container, List<String> result) {
         for (org.kie.api.runtime.process.NodeInstance nodeInstance : container.getNodeInstances()) {
             result.add(((NodeImpl) nodeInstance.getNode()).getUniqueId());
-            if (nodeInstance instanceof NodeInstanceContainer) {
-                addActiveNodeIds((NodeInstanceContainer) nodeInstance, result);
+            if (nodeInstance instanceof KogitoNodeInstanceContainer) {
+                addActiveNodeIds((KogitoNodeInstanceContainer) nodeInstance, result);
             }
         }
     }
@@ -267,17 +290,17 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public NodeInstance getNodeInstance(final Node node) {
+    public NodeInstance getNodeInstance(final org.kie.api.definition.process.Node node) {
         NodeInstanceFactory conf = NodeInstanceFactoryRegistry.getInstance(getKnowledgeRuntime().getEnvironment()).getProcessNodeInstanceFactory(node);
         if (conf == null) {
             throw new IllegalArgumentException("Illegal node type: "
-                                                       + node.getClass());
+                    + node.getClass());
         }
         NodeInstanceImpl nodeInstance = (NodeInstanceImpl) conf.getNodeInstance(node, this, this);
 
         if (nodeInstance == null) {
             throw new IllegalArgumentException("Illegal node type: "
-                                                       + node.getClass());
+                    + node.getClass());
         }
         if (nodeInstance.isInversionOfControl()) {
             getKnowledgeRuntime().insert(nodeInstance);
@@ -285,8 +308,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return nodeInstance;
     }
 
-    public WorkflowProcess getWorkflowProcess() {
-        return (WorkflowProcess) getProcess();
+    public KogitoWorkflowProcess getWorkflowProcess() {
+        return (KogitoWorkflowProcess) getProcess();
     }
 
     @Override
@@ -360,15 +383,15 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     @Override
     public void setState(final int state, String outcome) {
         // TODO move most of this to ProcessInstanceImpl
-        if (state == ProcessInstance.STATE_COMPLETED
-                || state == ProcessInstance.STATE_ABORTED) {
+        if (state == KogitoProcessInstance.STATE_COMPLETED
+                || state == KogitoProcessInstance.STATE_ABORTED) {
             this.endDate = new Date();
-            if (this.slaCompliance == SLA_PENDING) {
+            if (this.slaCompliance == KogitoProcessInstance.SLA_PENDING) {
                 if (System.currentTimeMillis() > slaDueDate.getTime()) {
                     // completion of the process instance is after expected SLA due date, mark it accordingly
-                    this.slaCompliance = SLA_VIOLATED;
+                    this.slaCompliance = KogitoProcessInstance.SLA_VIOLATED;
                 } else {
-                    this.slaCompliance = state == ProcessInstance.STATE_COMPLETED ? SLA_MET : SLA_ABORTED;
+                    this.slaCompliance = state == KogitoProcessInstance.STATE_COMPLETED ? KogitoProcessInstance.SLA_MET : KogitoProcessInstance.SLA_ABORTED;
                 }
             }
 
@@ -393,14 +416,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
             if (isSignalCompletion()) {
 
-                List<EventListener> listeners = eventListeners.get("processInstanceCompleted:" + getId());
+                List<KogitoEventListener> listeners = eventListeners.get("processInstanceCompleted:" + getStringId());
                 if (listeners != null) {
-                    for (EventListener listener : listeners) {
-                        listener.signalEvent("processInstanceCompleted:" + getId(), this);
+                    for (KogitoEventListener listener : listeners) {
+                        listener.signalEvent("processInstanceCompleted:" + getStringId(), this);
                     }
                 }
 
-                processRuntime.getSignalManager().signalEvent("processInstanceCompleted:" + getId(), this);
+                processRuntime.getSignalManager().signalEvent("processInstanceCompleted:" + getStringId(), this);
             }
         } else {
             super.setState(state, outcome);
@@ -440,7 +463,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public String toString() {
         return new StringBuilder("WorkflowProcessInstance")
                 .append(" [Id=")
-                .append(getId())
+                .append(getStringId())
                 .append(",processId=")
                 .append(getProcessId())
                 .append(",state=")
@@ -460,13 +483,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             setStartDate(new Date());
             registerExternalEventNodeListeners();
             // activate timer event sub processes
-            Node[] nodes = getNodeContainer().getNodes();
-            for (Node node : nodes) {
+            org.kie.api.definition.process.Node[] nodes = getNodeContainer().getNodes();
+            for (org.kie.api.definition.process.Node node : nodes) {
                 if (node instanceof EventSubProcessNode) {
                     Map<Timer, DroolsAction> timers = ((EventSubProcessNode) node).getTimers();
                     if (timers != null && !timers.isEmpty()) {
                         EventSubProcessNodeInstance eventSubProcess = (EventSubProcessNodeInstance) getNodeInstance(node);
-                        eventSubProcess.trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                        eventSubProcess.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                     }
                 }
             }
@@ -482,8 +505,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             if (timer != null) {
                 this.slaTimerId = timer.getId();
                 this.slaDueDate = new Date(System.currentTimeMillis() + timer.getDelay());
-                this.slaCompliance = SLA_PENDING;
-                logger.debug("SLA for process instance {} is PENDING with due date {}", this.getId(), this.slaDueDate);
+                this.slaCompliance = KogitoProcessInstance.SLA_PENDING;
+                logger.debug("SLA for process instance {} is PENDING with due date {}", this.getStringId(), this.slaDueDate);
             }
         }
     }
@@ -510,14 +533,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         timerInstance.setDelay(duration);
         timerInstance.setPeriod(0);
         if (useTimerSLATracking()) {
-            ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(-1L, DurationExpirationTime.after(duration), getId(), getProcessId());
-            timerInstance.setId(kruntime.getProcessRuntime().getJobsService().scheduleProcessInstanceJob(description));
+            ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(-1L, DurationExpirationTime.after(duration), getStringId(), getProcessId());
+            timerInstance.setId((KogitoProcessRuntime.asKogitoProcessRuntime(kruntime.getProcessRuntime()).getJobsService().scheduleProcessInstanceJob(description)));
         }
         return timerInstance;
     }
 
     private void registerExternalEventNodeListeners() {
-        for (Node node : getWorkflowProcess().getNodes()) {
+        for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
             if (node instanceof EventNode && "external".equals(((EventNode) node).getScope())) {
                 addEventListener(((EventNode) node).getType(), EMPTY_EVENT_LISTENER, true);
             } else if (node instanceof EventSubProcessNode) {
@@ -536,7 +559,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void unregisterExternalEventNodeListeners() {
-        for (Node node : getWorkflowProcess().getNodes()) {
+        for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
             if (node instanceof EventNode && "external".equals(((EventNode) node).getScope())) {
                 externalEventListeners.remove(((EventNode) node).getType());
             }
@@ -544,13 +567,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private void handleSLAViolation() {
-        if (slaCompliance == SLA_PENDING) {
+        if (slaCompliance == KogitoProcessInstance.SLA_PENDING) {
 
             InternalKnowledgeRuntime kruntime = getKnowledgeRuntime();
             InternalProcessRuntime processRuntime = (InternalProcessRuntime) kruntime.getProcessRuntime();
             processRuntime.getProcessEventSupport().fireBeforeSLAViolated(this, kruntime);
-            logger.debug("SLA violated on process instance {}", getId());
-            this.slaCompliance = SLA_VIOLATED;
+            logger.debug("SLA violated on process instance {}", getStringId());
+            this.slaCompliance = KogitoProcessInstance.SLA_VIOLATED;
             this.slaTimerId = null;
             processRuntime.getProcessEventSupport().fireAfterSLAViolated(this, kruntime);
         }
@@ -559,9 +582,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     @Override
     @SuppressWarnings("unchecked")
     public void signalEvent(String type, Object event) {
-        logger.debug("Signal {} received with data {} in process instance {}", type, event, getId());
+        logger.debug("Signal {} received with data {} in process instance {}", type, event, getStringId());
         synchronized (this) {
-            if (getState() != ProcessInstance.STATE_ACTIVE) {
+            if (getState() != KogitoProcessInstance.STATE_ACTIVE) {
                 return;
             }
 
@@ -583,19 +606,19 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
             try {
                 this.activatingNodeIds = new ArrayList<>();
-                List<EventListener> listeners = eventListeners.get(type);
+                List<KogitoEventListener> listeners = eventListeners.get(type);
                 if (listeners != null) {
-                    for (EventListener listener : listeners) {
+                    for (KogitoEventListener listener : listeners) {
                         listener.signalEvent(type, event);
                     }
                 }
                 listeners = externalEventListeners.get(type);
                 if (listeners != null) {
-                    for (EventListener listener : listeners) {
+                    for (KogitoEventListener listener : listeners) {
                         listener.signalEvent(type, event);
                     }
                 }
-                for (Node node : getWorkflowProcess().getNodes()) {
+                for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
                     if (node instanceof EventNodeInterface
                             && ((EventNodeInterface) node).acceptsEvent(type, event, getResolver(node, currentView))) {
                         if (node instanceof EventNode && ((EventNode) node).getFrom() == null) {
@@ -617,7 +640,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                     }
                 }
                 if (((org.jbpm.workflow.core.WorkflowProcess) getWorkflowProcess()).isDynamic()) {
-                    for (Node node : getWorkflowProcess().getNodes()) {
+                    for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
                         if (type.equals(node.getName()) && node.getIncomingConnections().isEmpty()) {
                             NodeInstance nodeInstance = getNodeInstance(node);
                             if (event != null) {
@@ -629,7 +652,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                                 }
                                 nodeInstance.setDynamicParameters(dynamicParams);
                             }
-                            nodeInstance.trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                            nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
                         } else if (node instanceof CompositeNode) {
                             Optional<NodeInstance> instance = this.nodeInstances.stream().filter(ni -> ni.getNodeId() == node.getId()).findFirst();
                             instance.ifPresent(n -> ((CompositeNodeInstance) n).signalEvent(type, event));
@@ -645,7 +668,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         }
     }
 
-    private Function<String, String> getResolver(Node node, List<NodeInstance> currentView) {
+    private Function<String, String> getResolver(org.kie.api.definition.process.Node node, List<NodeInstance> currentView) {
         if (node instanceof DynamicNode) {
             // special handling for dynamic node to allow to resolve variables from individual node instances of the dynamic node
             // instead of just relying on process instance's variables
@@ -704,10 +727,10 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public void addEventListener(String type, EventListener listener, boolean external) {
-        Map<String, List<EventListener>> eventListeners = external ? this.externalEventListeners : this.eventListeners;
-        List<EventListener> listeners = eventListeners.computeIfAbsent(type, listenerType -> {
-            final List<EventListener> newListenersList = new CopyOnWriteArrayList<>();
+    public void addEventListener(String type, KogitoEventListener listener, boolean external) {
+        Map<String, List<KogitoEventListener>> eventListeners = external ? this.externalEventListeners : this.eventListeners;
+        List<KogitoEventListener> listeners = eventListeners.computeIfAbsent(type, listenerType -> {
+            final List<KogitoEventListener> newListenersList = new CopyOnWriteArrayList<>();
             if (external) {
                 ((InternalProcessRuntime) getKnowledgeRuntime().getProcessRuntime())
                         .getSignalManager().addEventListener(listenerType, this);
@@ -718,9 +741,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public void removeEventListener(String type, EventListener listener, boolean external) {
-        Map<String, List<EventListener>> eventListeners = external ? this.externalEventListeners : this.eventListeners;
-        List<EventListener> listeners = eventListeners.get(type);
+    public void removeEventListener(String type, KogitoEventListener listener, boolean external) {
+        Map<String, List<KogitoEventListener>> eventListeners = external ? this.externalEventListeners : this.eventListeners;
+        List<KogitoEventListener> listeners = eventListeners.get(type);
         if (listeners != null) {
             listeners.remove(listener);
             if (listeners.isEmpty()) {
@@ -746,38 +769,38 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     public String[] getEventTypes() {
         return externalEventListeners.keySet().stream().map(this::resolveVariable).collect(Collectors.toList()).toArray(new String[externalEventListeners.size()]);
     }
-    
+
     @Override
     public Set<EventDescription<?>> getEventDescriptions() {
-        if (getState() == ProcessInstance.STATE_COMPLETED || getState() == ProcessInstance.STATE_ABORTED) {
+        if (getState() == KogitoProcessInstance.STATE_COMPLETED || getState() == KogitoProcessInstance.STATE_ABORTED) {
             return Collections.emptySet();
         }
         VariableScope variableScope = (VariableScope) ((ContextContainer) getProcess()).getDefaultContext(VariableScope.VARIABLE_SCOPE);
         Set<EventDescription<?>> eventDesciptions = new LinkedHashSet<>();
-        
-        List<EventListener> activeListeners = eventListeners.values().stream()
+
+        List<KogitoEventListener> activeListeners = eventListeners.values().stream()
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-        
+
         activeListeners.addAll(externalEventListeners.values().stream()
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList()));
-        
+                .flatMap(List::stream)
+                .collect(Collectors.toList()));
+
         activeListeners.forEach(el -> eventDesciptions.addAll(el.getEventDescriptions()));
-        
- 
-        ((org.jbpm.workflow.core.WorkflowProcess)getProcess()).getNodesRecursively().stream().filter(n -> n instanceof EventNodeInterface).forEach(n -> {
-            
+
+        ((org.jbpm.workflow.core.WorkflowProcess) getProcess()).getNodesRecursively().stream().filter(n -> n instanceof EventNodeInterface).forEach(n -> {
+
             NamedDataType dataType = null;
-            if (((EventNodeInterface)n).getVariableName() != null) {
-                Variable eventVar = variableScope.findVariable(((EventNodeInterface)n).getVariableName());
+            if (((EventNodeInterface) n).getVariableName() != null) {
+                Variable eventVar = variableScope.findVariable(((EventNodeInterface) n).getVariableName());
                 if (eventVar != null) {
                     dataType = new NamedDataType(eventVar.getName(), eventVar.getType());
                 }
             }
             if (n instanceof BoundaryEventNode) {
                 BoundaryEventNode boundaryEventNode = (BoundaryEventNode) n;
-                StateBasedNodeInstance attachedToNodeInstance = (StateBasedNodeInstance) getNodeInstances(true).stream().filter( ni -> ni.getNode().getMetaData().get(UNIQUE_ID).equals(boundaryEventNode.getAttachedToNodeId())).findFirst().orElse(null);
+                StateBasedNodeInstance attachedToNodeInstance = (StateBasedNodeInstance) getNodeInstances(true).stream()
+                        .filter(ni -> ni.getNode().getMetaData().get(UNIQUE_ID).equals(boundaryEventNode.getAttachedToNodeId())).findFirst().orElse(null);
                 if (attachedToNodeInstance != null) {
                     Map<String, String> properties = new HashMap<>();
                     properties.put("AttachedToID", attachedToNodeInstance.getNodeDefinitionId());
@@ -789,33 +812,34 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         properties.putAll(timerProperties);
                         eventType = "timer";
                         eventName = "timerTriggered";
-                    } 
-                
-                    eventDesciptions.add(new BaseEventDescription(eventName, (String)n.getMetaData().get(UNIQUE_ID), n.getName(), eventType, null, getId(), dataType, properties));
-                    
+                    }
+
+                    eventDesciptions.add(new BaseEventDescription(eventName, (String) n.getMetaData().get(UNIQUE_ID), n.getName(), eventType, null, getStringId(), dataType, properties));
+
                 }
-                
+
             } else if (n instanceof EventSubProcessNode) {
                 EventSubProcessNode eventSubProcessNode = (EventSubProcessNode) n;
-                Node startNode = eventSubProcessNode.findStartNode();
+                org.kie.api.definition.process.Node startNode = eventSubProcessNode.findStartNode();
                 Map<Timer, DroolsAction> timers = eventSubProcessNode.getTimers();
                 if (timers != null && !timers.isEmpty()) {
                     getNodeInstances(eventSubProcessNode.getId()).forEach(ni -> {
-                        
+
                         Map<String, String> timerProperties = ((StateBasedNodeInstance) ni).extractTimerEventInformation();
                         if (timerProperties != null) {
-                         
-                            eventDesciptions.add(new BaseEventDescription("timerTriggered", (String)startNode.getMetaData().get("UniqueId"), startNode.getName(), "timer", ni.getId(), getId(), null, timerProperties));
-                          
+
+                            eventDesciptions.add(new BaseEventDescription("timerTriggered", (String) startNode.getMetaData().get("UniqueId"), startNode.getName(), "timer", ni.getStringId(),
+                                    getStringId(), null, timerProperties));
+
                         }
                     });
                 } else {
-                
+
                     for (String eventName : eventSubProcessNode.getEvents()) {
-                        
-                        eventDesciptions.add(new BaseEventDescription(eventName, (String)startNode.getMetaData().get("UniqueId"), startNode.getName(), "signal", null, getId(), dataType));
+
+                        eventDesciptions.add(new BaseEventDescription(eventName, (String) startNode.getMetaData().get("UniqueId"), startNode.getName(), "signal", null, getStringId(), dataType));
                     }
-                
+
                 }
             } else if (n instanceof EventNode) {
                 NamedDataType finalDataType = dataType;
@@ -825,8 +849,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                                 (String) n.getMetaData().get(UNIQUE_ID),
                                 n.getName(),
                                 (String) n.getMetaData().getOrDefault(EVENT_TYPE, EVENT_TYPE_SIGNAL),
-                                ni.getId(),
-                                getId(),
+                                ni.getStringId(),
+                                getStringId(),
                                 finalDataType)));
             } else if (n instanceof StateNode) {
                 getNodeInstances(n.getId()).forEach(ni -> eventDesciptions.add(
@@ -835,20 +859,19 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                                 (String) n.getMetaData().get(UNIQUE_ID),
                                 n.getName(),
                                 (String) n.getMetaData().getOrDefault(EVENT_TYPE, EVENT_TYPE_SIGNAL),
-                                ni.getId(),
-                                getId(),
+                                ni.getStringId(),
+                                getStringId(),
                                 null)));
             }
-            
+
         });
-        
-        
+
         return eventDesciptions;
     }
 
     @Override
     public void nodeInstanceCompleted(NodeInstance nodeInstance, String outType) {
-        Node nodeInstanceNode = nodeInstance.getNode();
+        org.kie.api.definition.process.Node nodeInstanceNode = nodeInstance.getNode();
         if (nodeInstanceNode != null) {
             Object compensationBoolObj = nodeInstanceNode.getMetaData().get(IS_FOR_COMPENSATION);
             boolean isForCompensation = compensationBoolObj != null && (Boolean) compensationBoolObj;
@@ -860,7 +883,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 ((org.jbpm.workflow.core.WorkflowProcess) getWorkflowProcess()).isDynamic()
                 || nodeInstance instanceof CompositeNodeInstance) {
             if (((org.jbpm.workflow.core.WorkflowProcess) getProcess()).isAutoComplete() && canComplete()) {
-                setState(ProcessInstance.STATE_COMPLETED);
+                setState(KogitoProcessInstance.STATE_COMPLETED);
             }
         } else {
             throw new IllegalArgumentException(
@@ -874,7 +897,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         } else {
             int eventSubprocessCounter = 0;
             for (NodeInstance nodeInstance : nodeInstances) {
-                Node node = nodeInstance.getNode();
+                org.kie.api.definition.process.Node node = nodeInstance.getNode();
                 if (node instanceof EventSubProcessNode) {
                     if (((EventSubProcessNodeInstance) nodeInstance).getNodeInstances().isEmpty()) {
                         eventSubprocessCounter++;
@@ -948,6 +971,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         this.deploymentId = deploymentId;
     }
 
+    @Override
     public String getCorrelationKey() {
         if (correlationKey == null && getMetaData().get(CORRELATION_KEY) != null) {
             this.correlationKey = ((CorrelationKey) getMetaData().get(CORRELATION_KEY)).toExternalForm();
@@ -969,6 +993,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return endDate;
     }
 
+    @Override
     public void setStartDate(Date startDate) {
         if (this.startDate == null) {
             this.startDate = startDate;
@@ -979,7 +1004,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         return this.deploymentId != null && !this.deploymentId.isEmpty();
     }
 
-    protected boolean useAsync(final Node node) {
+    protected boolean useAsync(final org.kie.api.definition.process.Node node) {
         if (!(node instanceof EventSubProcessNode) && (node instanceof ActionNode || node instanceof StateBasedNode || node instanceof EndNode)) {
             boolean asyncMode = Boolean.parseBoolean((String) node.getMetaData().get(CUSTOM_ASYNC));
             if (asyncMode) {
@@ -1063,7 +1088,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         Throwable rootException = getRootException(e);
         this.errorMessage = errorId + " - " + rootException.getClass().getCanonicalName() + " - " + rootException.getMessage();
         setState(STATE_ERROR);
-        logger.error("Unexpected error (id {}) while executing node {} in process instance {}", errorId, nodeInstanceInError.getNode().getName(), this.getId(), e);
+        logger.error("Unexpected error (id {}) while executing node {} in process instance {}", errorId, nodeInstanceInError.getNode().getName(), this.getStringId(), e);
         // remove node instance that caused an error
         ((org.jbpm.workflow.instance.NodeInstanceContainer) nodeInstanceInError.getNodeInstanceContainer()).removeNodeInstance(nodeInstanceInError);
     }
@@ -1087,7 +1112,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                         .build())
                 .collect(Collectors.toSet());
     }
-    
+
     @Override
     public Collection<Milestone> milestones() {
         return getNodesByType(MilestoneNode.class)
@@ -1102,7 +1127,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 .collect(Collectors.toSet());
     }
 
-    private <N extends Node> Stream<N> getNodesByType(Class<N> nodeClass) {
+    private <N extends org.kie.api.definition.process.Node> Stream<N> getNodesByType(Class<N> nodeClass) {
         return getWorkflowProcess().getNodesRecursively().stream().filter(nodeClass::isInstance).map(nodeClass::cast);
     }
 
@@ -1130,7 +1155,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public void setAgendaFilter( AgendaFilter agendaFilter ) {
+    public void setAgendaFilter(AgendaFilter agendaFilter) {
         this.agendaFilter = agendaFilter;
     }
 }

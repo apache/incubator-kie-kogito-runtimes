@@ -29,16 +29,16 @@
   <name>Kogito :: Drools :: Kogito RuleUnits</name>
 
   <packaging>jar</packaging>
+  
+  <properties>
+    <java.module.name>org.kie.kogito.kogito.ruleunits</java.module.name>
+  </properties>
 
   <!-- Logging -->
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

@@ -1,11 +1,11 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.timer;
 
 import java.util.Collection;
@@ -24,8 +23,8 @@ import org.kie.kogito.timer.impl.TimerJobInstance;
 /**
  * An interface for all timer service implementations used in a drools session.
  */
-public interface TimerService <T extends JobHandle> extends SchedulerService <T> {
-    
+public interface TimerService<T extends JobHandle> extends SchedulerService<T> {
+
     /**
      * Returns the current time from the scheduler clock
      * 
@@ -51,9 +50,10 @@ public interface TimerService <T extends JobHandle> extends SchedulerService <T>
      *         there is no job scheduled
      */
     long getTimeToNextJob();
-    
+
     /**
      * This method may return null for some TimerService implementations that do not want the overhead of maintain this.
+     * 
      * @return
      */
     Collection<TimerJobInstance> getTimerJobInstances(long id);

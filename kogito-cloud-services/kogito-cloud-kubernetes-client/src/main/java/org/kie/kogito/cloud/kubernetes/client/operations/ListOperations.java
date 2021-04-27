@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +32,7 @@ public interface ListOperations extends Operations {
     OperationsResponseParser listNamespaced(final String namespace, final Map<String, String> labels);
 
     /**
-     * Queries for a list of services in the entire cluster. A service account with permissions to query the cluster might be needed. 
+     * Queries for a list of services in the entire cluster. A service account with permissions to query the cluster might be needed.
      * 
      * @param labels
      * @return A JSON Document reference of the Service API response

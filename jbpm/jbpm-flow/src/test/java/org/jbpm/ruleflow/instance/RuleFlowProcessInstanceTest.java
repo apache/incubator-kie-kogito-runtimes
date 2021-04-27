@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2018 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.instance;
 
 import org.drools.core.runtime.process.ProcessRuntimeFactory;
@@ -21,21 +20,21 @@ import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.test.util.AbstractBaseTest;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
+public class RuleFlowProcessInstanceTest extends AbstractBaseTest {
 
     private static String PROCESS_ID = "process.test";
     static {
         ProcessRuntimeFactory.setProcessRuntimeFactoryService(new ProcessRuntimeFactoryServiceImpl());
     }
 
-    public void addLogger() { 
+    public void addLogger() {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
@@ -46,9 +45,9 @@ public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
         process.setName("test");
         process.setPackageName("org.mycomp.myprocess");
 
-        KieSession workingMemory = createKieSession(process);
-        assertThatThrownBy(() -> workingMemory.startProcess(PROCESS_ID))
-                           .isInstanceOf(IllegalArgumentException.class);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
+        assertThatThrownBy(() -> kruntime.startProcess(PROCESS_ID))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -59,8 +58,8 @@ public class RuleFlowProcessInstanceTest extends AbstractBaseTest  {
         process.setPackageName("org.mycomp.myprocess");
         process.setDynamic(true);
 
-        KieSession workingMemory = createKieSession(process);
-        ProcessInstance instance = workingMemory.startProcess(PROCESS_ID);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
+        KogitoProcessInstance instance = kruntime.startProcess(PROCESS_ID);
         assertNotNull(instance);
     }
 

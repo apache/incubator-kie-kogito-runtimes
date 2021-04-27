@@ -1,18 +1,18 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
-
+ */
 package org.kie.kogito.timer.impl;
 
 import java.io.Serializable;
@@ -28,56 +28,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultTimerJobInstance
-    implements
-    Callable<Void>,
-    Comparable<DefaultTimerJobInstance>,
-    TimerJobInstance, Serializable {
+        implements
+        Callable<Void>,
+        Comparable<DefaultTimerJobInstance>,
+        TimerJobInstance, Serializable {
 
     private static final long serialVersionUID = -4441139572159254264L;
 
     protected static final transient Logger logger = LoggerFactory.getLogger(DefaultTimerJobInstance.class);
-    
-    private final Job                         job;
+
+    private final Job job;
     private final Trigger trigger;
     private final JobContext ctx;
     protected transient InternalSchedulerService scheduler;
     private final JobHandle handle;
 
     public DefaultTimerJobInstance(Job job,
-                          JobContext ctx,
-                          Trigger trigger,
-                          JobHandle handle,
-                          InternalSchedulerService scheduler) {
+            JobContext ctx,
+            Trigger trigger,
+            JobHandle handle,
+            InternalSchedulerService scheduler) {
         this.job = job;
         this.ctx = ctx;
         this.trigger = trigger;
         this.handle = handle;
         this.scheduler = scheduler;
     }
-    
 
     public int compareTo(DefaultTimerJobInstance o) {
-        return this.trigger.hasNextFireTime().compareTo( o.getTrigger().hasNextFireTime() );
-    }    
+        return this.trigger.hasNextFireTime().compareTo(o.getTrigger().hasNextFireTime());
+    }
 
     public Void call() throws Exception {
-        try { 
+        try {
             this.trigger.nextFireTime(); // need to pop
-            if ( handle.isCancel() ) {
+            if (handle.isCancel()) {
                 return null;
             }
-            this.job.execute( this.ctx );
-            if ( handle.isCancel() ) {
+            this.job.execute(this.ctx);
+            if (handle.isCancel()) {
                 return null;
             }
 
             // our triggers allow for flexible rescheduling
             Date date = this.trigger.hasNextFireTime();
-            if ( date != null ) {
-                scheduler.internalSchedule( this );
+            if (date != null) {
+                scheduler.internalSchedule(this);
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             logger.warn("Unable to execute timer job!", e);
             throw e;
         }

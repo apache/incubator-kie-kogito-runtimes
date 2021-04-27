@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +25,7 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.builder.KnowledgeBuilder;
 import org.kie.kogito.Config;
+import org.kie.kogito.KogitoEngine;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
@@ -73,17 +75,22 @@ public class InterpretedRuleUnit<T extends RuleUnitData> extends AbstractRuleUni
             return null;
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends KogitoEngine> T get(Class<T> clazz) {
+            if (clazz.isAssignableFrom(org.kie.kogito.rules.RuleUnits.class)) {
+                return (T) ruleUnits;
+            }
+            return null;
+        }
+
         public UnitOfWorkManager unitOfWorkManager() {
             return null;
         }
 
-        public RuleUnits ruleUnits() {
-            return ruleUnits;
-        }
-
-        public class RuleUnits extends AbstractRuleUnits {
+        public static class RuleUnits extends AbstractRuleUnits {
             @Override
-            protected RuleUnit<?> create( String fqcn ) {
+            protected RuleUnit<?> create(String fqcn) {
                 throw new UnsupportedOperationException();
             }
         }

@@ -17,7 +17,7 @@
 package org.kie.kogito.services.event.impl;
 
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.flexible.Milestone;
 
 import static java.util.Collections.emptyList;
@@ -58,7 +58,7 @@ public class ProcessInstanceEventBatchTest {
     public void testMilestones() {
         ProcessInstanceEventBatch batch = new ProcessInstanceEventBatch(null, null);
 
-        WorkflowProcessInstance pi = mock(WorkflowProcessInstance.class);
+        KogitoWorkflowProcessInstance pi = mock(KogitoWorkflowProcessInstance.class);
 
         when(pi.milestones()).thenReturn(null);
         assertThat(batch.createMilestones(pi)).isNull();
@@ -68,7 +68,7 @@ public class ProcessInstanceEventBatchTest {
 
         Milestone milestone = Milestone.builder().withId("id").withName("name").withStatus(Status.AVAILABLE).build();
         when(pi.milestones()).thenReturn(singleton(milestone));
-        
+
         MilestoneEventBody milestoneEventBody = MilestoneEventBody.create().id("id").name("name").status(Status.AVAILABLE.name()).build();
         assertThat(batch.createMilestones(pi)).containsOnly(milestoneEventBody);
     }

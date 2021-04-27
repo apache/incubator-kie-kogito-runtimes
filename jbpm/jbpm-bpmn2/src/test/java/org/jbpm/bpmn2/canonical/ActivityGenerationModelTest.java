@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.canonical;
 
 import java.lang.reflect.Method;
@@ -26,10 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.drools.compiler.commons.jci.compilers.CompilationResult;
-import org.drools.compiler.commons.jci.compilers.JavaCompiler;
-import org.drools.compiler.commons.jci.compilers.JavaCompilerFactory;
-import org.drools.compiler.compiler.JavaConfiguration;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.drools.core.io.impl.ClassPathResource;
 import org.jbpm.bpmn2.JbpmBpmn2TestCase;
@@ -41,9 +36,10 @@ import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
-import org.kie.api.runtime.process.WorkItem;
-import org.kie.api.runtime.process.WorkItemHandler;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -56,19 +52,22 @@ import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
 import org.kie.kogito.services.identity.StaticIdentityProvider;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
+import org.kie.memorycompiler.CompilationResult;
+import org.kie.memorycompiler.JavaCompiler;
+import org.kie.memorycompiler.JavaCompilerFactory;
+import org.kie.memorycompiler.JavaConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ERROR;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 
 public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
-    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.INSTANCE.loadCompiler( JavaConfiguration.CompilerType.NATIVE, "1.8" );
+    private static final JavaCompiler JAVA_COMPILER = JavaCompilerFactory.loadCompiler(JavaConfiguration.CompilerType.NATIVE, "1.8");
 
     @Test
     public void testMinimalProcess() throws Exception {
@@ -89,13 +88,12 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
-    
+
     @Test
     public void testProcessEmptyScript() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ProcessEmptyScript.bpmn2")).get(0);
 
         assertThrows(IllegalStateException.class, () -> ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.process()));
-        
 
     }
 
@@ -135,11 +133,10 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
 
-
-        WorkItem workItem = workItemHandler.getWorkItem();
+        KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
-        processInstance.completeWorkItem(workItem.getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        processInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
 
@@ -162,11 +159,11 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
-        WorkItem workItem = workItemHandler.getWorkItem();
+        KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("Executing task of process instance " + processInstance.id() + " as work item with Hello",
                 workItem.getParameter("Description").toString().trim());
-        processInstance.completeWorkItem(workItem.getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        processInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
 
@@ -215,7 +212,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         assertEquals(STATE_COMPLETED, processInstance.status());
 
     }
-    
+
     @Test
     public void testExclusiveSplitRetriggerAfterError() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ExclusiveSplit.bpmn2")).get(0);
@@ -238,18 +235,18 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
 
-        assertEquals(STATE_ERROR, processInstance.status());
+        assertEquals(KogitoProcessInstance.STATE_ERROR, processInstance.status());
 
         Optional<ProcessError> errorOptional = processInstance.error();
         assertThat(errorOptional).isPresent();
-        
+
         ProcessError error = errorOptional.get();
         assertThat(error.failedNodeId()).isEqualTo("_2");
         assertThat(error.errorMessage()).contains("XOR split could not find at least one valid outgoing connection for split Split");
-        
+
         params.put("x", "First");
         processInstance.updateVariables(BpmnVariables.create(params));
-        
+
         error.retrigger();
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
@@ -342,25 +339,24 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
 
-        List<WorkItem> activeWorkItems = workItemHandler.getWorkItems();
+        List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
         assertEquals(2, activeWorkItems.size());
 
-
-        for (WorkItem wi : activeWorkItems) {
-            processInstance.completeWorkItem(wi.getId(), null);
+        for (KogitoWorkItem wi : activeWorkItems) {
+            processInstance.completeWorkItem(wi.getStringId(), null);
         }
 
         activeWorkItems = workItemHandler.getWorkItems();
         assertEquals(2, activeWorkItems.size());
 
-        for (WorkItem wi : activeWorkItems) {
-            processInstance.completeWorkItem(wi.getId(), null);
+        for (KogitoWorkItem wi : activeWorkItems) {
+            processInstance.completeWorkItem(wi.getStringId(), null);
         }
         assertEquals(STATE_COMPLETED, processInstance.status());
 
     }
-    
+
     @Test
     public void testInclusiveSplitAndJoinNestedWithBusinessKey() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-InclusiveSplitAndJoinNested.bpmn2")).get(0);
@@ -373,7 +369,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         classData.put("org.drools.bpmn2.TestProcess", content);
 
         String businessKey = "custom";
-        
+
         TestWorkItemHandler workItemHandler = new TestWorkItemHandler();
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("x", 15);
@@ -386,9 +382,9 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         ProcessInstance<BpmnVariables> loadedProcessInstance = processes.get("com.sample.test").instances().findById(processInstance.id()).orElse(null);
         assertThat(loadedProcessInstance).isNotNull();
         assertThat(loadedProcessInstance.businessKey()).isEqualTo(businessKey);
-        
+
         loadedProcessInstance.abort();
-        
+
         assertEquals(STATE_ABORTED, processInstance.status());
 
     }
@@ -414,12 +410,12 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
 
-        WorkItem workItem = workItemHandler.getWorkItem();
+        KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
 
         assertEquals("john", workItem.getParameter("Parameter"));
 
-        processInstance.completeWorkItem(workItem.getId(), Collections.singletonMap("Result", "john doe"));
+        processInstance.completeWorkItem(workItem.getStringId(), Collections.singletonMap("Result", "john doe"));
 
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
@@ -444,10 +440,10 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         assertThat(metaData.getWorkItems())
-        .hasSize(1)
-        .contains("org.jbpm.bpmn2.objects.HelloService_hello_2_Handler");
+                .hasSize(1)
+                .contains("org.jbpm.bpmn2.objects.HelloService_hello_2_Handler");
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testUserTaskProcessWithMarshalling() throws Exception {
@@ -467,22 +463,21 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
-        
+
         ProcessInstanceMarshaller marshaller = new ProcessInstanceMarshaller();
-        
+
         byte[] data = marshaller.marshallProcessInstance(processInstance);
         assertNotNull(data);
-        
+
         processInstance = (ProcessInstance<BpmnVariables>) marshaller.unmarshallProcessInstance(data, process);
 
-
-        WorkItem workItem = workItemHandler.getWorkItem();
+        KogitoWorkItem workItem = workItemHandler.getWorkItem();
         assertNotNull(workItem);
         assertEquals("john", workItem.getParameter("ActorId"));
-        processInstance.completeWorkItem(workItem.getId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
+        processInstance.completeWorkItem(workItem.getStringId(), null, SecurityPolicy.of(new StaticIdentityProvider("john")));
         assertEquals(STATE_COMPLETED, processInstance.status());
     }
-    
+
     @Test
     public void testCallActivityProcess() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("PrefixesProcessIdCallActivity.bpmn2")).get(0);
@@ -493,9 +488,9 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         log(content);
 
         assertThat(metaData.getSubProcesses())
-        .hasSize(1)
-        .containsKey("SubProcess")
-        .containsValue("test.SubProcess");
+                .hasSize(1)
+                .containsKey("SubProcess")
+                .containsValue("test.SubProcess");
     }
 
     /*
@@ -506,8 +501,8 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         logger.debug(content);
     }
 
-    protected Map<String, BpmnProcess> createProcesses(Map<String, String> classData, Map<String, WorkItemHandler> handlers) throws Exception {
-       MemoryFileSystem srcMfs = new MemoryFileSystem();
+    protected Map<String, BpmnProcess> createProcesses(Map<String, String> classData, Map<String, KogitoWorkItemHandler> handlers) throws Exception {
+        MemoryFileSystem srcMfs = new MemoryFileSystem();
         MemoryFileSystem trgMfs = new MemoryFileSystem();
 
         String[] sources = new String[classData.size()];
@@ -524,7 +519,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         assertThat(result.getErrors()).hasSize(0);
 
         CachedWorkItemHandlerConfig wiConfig = new CachedWorkItemHandlerConfig();
-        for (Entry<String, WorkItemHandler> entry : handlers.entrySet()) {
+        for (Entry<String, KogitoWorkItemHandler> entry : handlers.entrySet()) {
             wiConfig.register(entry.getKey(), entry.getValue());
         }
 
@@ -539,7 +534,6 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
             Process process = (Process) processMethod.invoke(null);
             assertThat(process).isNotNull();
 
-
             processes.put(process.getId(), new BpmnProcess(process, config));
         }
 
@@ -550,22 +544,22 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
         private final Map<String, byte[]> extraClassDefs;
 
         public TestClassLoader(ClassLoader parent, Map<String, byte[]> extraClassDefs) {
-          super(new URL[0], parent);
-          this.extraClassDefs = new HashMap<String, byte[]>();
+            super(new URL[0], parent);
+            this.extraClassDefs = new HashMap<String, byte[]>();
 
-          for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
-              this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""), entry.getValue());
-          }
+            for (Entry<String, byte[]> entry : extraClassDefs.entrySet()) {
+                this.extraClassDefs.put(entry.getKey().replaceAll("/", ".").replaceFirst("\\.class", ""), entry.getValue());
+            }
         }
 
         @Override
         protected Class<?> findClass(final String name) throws ClassNotFoundException {
-          byte[] classBytes = this.extraClassDefs.remove(name);
-          if (classBytes != null) {
-            return defineClass(name, classBytes, 0, classBytes.length);
-          }
-          return super.findClass(name);
+            byte[] classBytes = this.extraClassDefs.remove(name);
+            if (classBytes != null) {
+                return defineClass(name, classBytes, 0, classBytes.length);
+            }
+            return super.findClass(name);
         }
 
-      }
+    }
 }

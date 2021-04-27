@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.io.ByteArrayInputStream;
@@ -21,12 +20,13 @@ import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 
-import io.quarkus.test.Mock;
-import org.kie.api.management.GAV;
-import org.kie.internal.decision.DecisionModelResource;
-import org.kie.internal.decision.DecisionModelResourcesProvider;
-import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.decision.DecisionModelResource;
+import org.kie.kogito.decision.DecisionModelResourcesProvider;
 import org.kie.kogito.dmn.DefaultDecisionModelResource;
+
+import io.quarkus.test.Mock;
 
 import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAME;
 import static org.kie.kogito.tracing.decision.QuarkusDecisionTracingTest.TEST_MODEL_NAMESPACE;
@@ -39,10 +39,12 @@ public class DecisionModelResourcesProviderMock implements DecisionModelResource
     @Override
     public List<DecisionModelResource> get() {
         DecisionModelResource resource = new DefaultDecisionModelResource(
-                new GAV("test", "test", "test"),
+                new KogitoGAV("test", "test", "test"),
                 TEST_MODEL_NAMESPACE,
                 TEST_MODEL_NAME,
-                DecisionModelType.DMN,
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
                 new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
 
         return Collections.singletonList(resource);

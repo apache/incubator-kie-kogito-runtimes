@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.util.function.BiFunction;
@@ -21,11 +20,12 @@ import java.util.function.BiFunction;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.quarkus.vertx.ConsumeEvent;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.kie.kogito.tracing.decision.modelsupplier.ApplicationModelSupplier;
+
+import io.quarkus.vertx.ConsumeEvent;
 
 @Singleton
 public class QuarkusDecisionTracingCollector {
@@ -33,15 +33,15 @@ public class QuarkusDecisionTracingCollector {
     private final DecisionTracingCollector collector;
 
     public QuarkusDecisionTracingCollector(final QuarkusTraceEventEmitter eventEmitter,
-                                           final ConfigBean configBean,
-                                           final BiFunction<String, String, org.kie.dmn.api.core.DMNModel> modelSupplier) {
+            final ConfigBean configBean,
+            final BiFunction<String, String, org.kie.dmn.api.core.DMNModel> modelSupplier) {
         this.collector = new DecisionTracingCollector(eventEmitter::emit, modelSupplier, configBean);
     }
 
     @Inject
     public QuarkusDecisionTracingCollector(final QuarkusTraceEventEmitter eventEmitter,
-                                           final ConfigBean configBean,
-                                           final Application application) {
+            final ConfigBean configBean,
+            final Application application) {
         this(eventEmitter, configBean, new ApplicationModelSupplier(application));
     }
 

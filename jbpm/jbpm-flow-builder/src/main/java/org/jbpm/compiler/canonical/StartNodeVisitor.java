@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.timer.Timer;
+import org.jbpm.ruleflow.core.factory.StartNodeFactory;
+import org.jbpm.workflow.core.node.StartNode;
 
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.timer.Timer;
-import org.jbpm.ruleflow.core.factory.StartNodeFactory;
-import org.jbpm.workflow.core.node.StartNode;
 
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
@@ -87,7 +87,7 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
                 Entry<String, String> varInfo = variableMapping.entrySet().iterator().next();
 
                 body.addStatement(getFactoryMethod(getNodeId(startNode), METHOD_TRIGGER,
-                        new StringLiteralExpr((String) nodeMetaData.get(MESSAGE_TYPE)),
+                        new StringLiteralExpr((String) nodeMetaData.get(TRIGGER_REF)),
                         getOrNullExpr(varInfo.getKey()),
                         getOrNullExpr(varInfo.getValue())));
                 variable = variableScope.findVariable(varInfo.getKey());

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.HashSet;
@@ -28,56 +27,56 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 public class DocumentationHandler extends BaseAbstractHandler implements Handler {
-	
-	@SuppressWarnings("unchecked")
-	public DocumentationHandler() {
-		if ((this.validParents == null) && (this.validPeers == null)) {
-			this.validParents = new HashSet();
-			this.validParents.add(Object.class);
 
-			this.validPeers = new HashSet();
-			this.validPeers.add(null);
+    @SuppressWarnings("unchecked")
+    public DocumentationHandler() {
+        if ((this.validParents == null) && (this.validPeers == null)) {
+            this.validParents = new HashSet();
+            this.validParents.add(Object.class);
+
+            this.validPeers = new HashSet();
+            this.validPeers.add(null);
             this.validPeers.add(Object.class);
 
-			this.allowNesting = false;
-		}
-	}
+            this.allowNesting = false;
+        }
+    }
 
     public Object start(final String uri,
-			            final String localName,
-			            final Attributes attrs,
-			            final ExtensibleXmlParser parser) throws SAXException {
-		parser.startElementBuilder( localName, attrs );
-		return null;
-	}    
+            final String localName,
+            final Attributes attrs,
+            final ExtensibleXmlParser parser) throws SAXException {
+        parser.startElementBuilder(localName, attrs);
+        return null;
+    }
 
-	public Object end(final String uri, final String localName,
-			          final ExtensibleXmlParser parser) throws SAXException {
-		Element element = parser.endElementBuilder();
-		Object parent = parser.getParent();
-		if (parent instanceof NodeImpl) {
-	        
-	        ((NodeImpl) parent).getMetaData().put("Documentation", extractDocumentationText(element));
-		} else if (parent instanceof org.jbpm.process.core.Process) {
-            
+    public Object end(final String uri, final String localName,
+            final ExtensibleXmlParser parser) throws SAXException {
+        Element element = parser.endElementBuilder();
+        Object parent = parser.getParent();
+        if (parent instanceof NodeImpl) {
+
+            ((NodeImpl) parent).getMetaData().put("Documentation", extractDocumentationText(element));
+        } else if (parent instanceof org.jbpm.process.core.Process) {
+
             ((org.jbpm.process.core.Process) parent).getMetaData().put("Documentation", extractDocumentationText(element));
         }
-		return parser.getCurrent();
-	}
+        return parser.getCurrent();
+    }
 
-	public Class<?> generateNodeFor() {
-		return null;
-	}
+    public Class<?> generateNodeFor() {
+        return null;
+    }
 
-	protected String extractDocumentationText(Element element) {
-	    String text = ((Text)element.getChildNodes().item( 0 )).getWholeText();
+    protected String extractDocumentationText(Element element) {
+        String text = ((Text) element.getChildNodes().item(0)).getWholeText();
         if (text != null) {
             text = text.trim();
             if ("".equals(text)) {
                 text = null;
             }
         }
-        
+
         return text;
-	}
+    }
 }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
@@ -81,8 +80,7 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
         }
-        VariableScope variableScope = (VariableScope)
-                getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
+        VariableScope variableScope = (VariableScope) getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE);
         if (variableScope == null) {
             variableScope = new VariableScope();
             getCompositeNode().addContext(variableScope);
@@ -93,8 +91,7 @@ public class CompositeContextNodeFactory extends RuleFlowNodeContainerFactory {
     }
 
     public CompositeContextNodeFactory exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
-        ExceptionScope exceptionScope = (ExceptionScope)
-                getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        ExceptionScope exceptionScope = (ExceptionScope) getCompositeNode().getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
         if (exceptionScope == null) {
             exceptionScope = new ExceptionScope();
             getCompositeNode().addContext(exceptionScope);

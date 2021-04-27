@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.management;
 
 import java.util.HashMap;
@@ -23,10 +22,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.WorkflowProcess;
+import org.jbpm.workflow.core.Node;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
@@ -57,11 +56,11 @@ public abstract class BaseProcessInstanceManagementResource<T> implements Proces
 
     public T doGetProcessNodes(String processId) {
         return executeOnProcess(processId, process -> {
-            List<Node> nodes = ((WorkflowProcess) ((AbstractProcess<?>) process).process()).getNodesRecursively();
+            List<org.kie.api.definition.process.Node> nodes = ((KogitoWorkflowProcess) ((AbstractProcess<?>) process).process()).getNodesRecursively();
             List<Map<String, Object>> list = nodes.stream().map(n -> {
                 Map<String, Object> data = new HashMap<>();
                 data.put("id", n.getId());
-                data.put("uniqueId", ((org.jbpm.workflow.core.Node) n).getUniqueId());
+                data.put("uniqueId", ((Node) n).getUniqueId());
                 data.put("nodeDefinitionId", n.getMetaData().get(UNIQUE_ID));
                 data.put("type", n.getClass().getSimpleName());
                 data.put("name", n.getName());

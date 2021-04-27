@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.grafana;
 
 import java.io.File;
@@ -20,21 +20,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.SortedMap;
 import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.grafana.factories.GridPosFactory;
 import org.kie.kogito.grafana.factories.PanelFactory;
 import org.kie.kogito.grafana.model.GrafanaDashboard;
-import org.kie.kogito.grafana.model.functions.ExprBuilder;
-import org.kie.kogito.grafana.model.functions.GrafanaFunction;
 import org.kie.kogito.grafana.model.link.GrafanaLink;
 import org.kie.kogito.grafana.model.panel.GrafanaPanel;
 import org.kie.kogito.grafana.model.panel.PanelType;
 import org.kie.kogito.grafana.model.panel.common.YAxis;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Java configurator to create standard grafana dashboards
@@ -56,7 +54,7 @@ public class JGrafana {
      * Create a new JGrafana instance.
      *
      * @param title: The title of your dashboard.
-     * @param uuid:  The uuid of your dashboard.
+     * @param uuid: The uuid of your dashboard.
      */
     public JGrafana(String title, String uuid) {
         this.dashboard = new GrafanaDashboard(null, uuid, title);
@@ -102,13 +100,13 @@ public class JGrafana {
     /**
      * Adds a panel of a type to the dashboard.
      *
-     * @param type:  The type of the panel to be added.
+     * @param type: The type of the panel to be added.
      * @param title: Title of the panel.
-     * @param expr:  Prompql expression of the panel.
+     * @param expr: Prompql expression of the panel.
      * @return: The grafana panel added to the dashboard.
      */
     public GrafanaPanel addPanel(PanelType type, String title, String expr) {
-        return addPanel(type, title, expr, null, null);
+        return addPanel(type, title, expr, null);
     }
 
     /**
@@ -124,18 +122,14 @@ public class JGrafana {
     /**
      * Adds a panel of a type to the dashboard.
      *
-     * @param type:  The type of the panel to be added.
+     * @param type: The type of the panel to be added.
      * @param title: Title of the panel.
-     * @param expr:  Prompql expression of the panel.
-     * @param functions: The Grafana functions to be applied to the PrompQL query.
+     * @param expr: Prompql expression of the panel.
      * @param yaxes: The YAxis of the panel.
      * @return: The grafana panel added to the dashboard.
      */
-    public GrafanaPanel addPanel(PanelType type, String title, String expr, SortedMap<Integer, GrafanaFunction> functions, List<YAxis> yaxes) {
+    public GrafanaPanel addPanel(PanelType type, String title, String expr, List<YAxis> yaxes) {
         int id = this.dashboard.panels.size() + 1;
-        if (functions != null && functions.size() != 0) {
-            expr = ExprBuilder.apply(expr, functions);
-        }
         GrafanaPanel panel = PanelFactory.createPanel(type, id, title, expr, yaxes);
         this.dashboard.panels.add(panel);
         return panel;
@@ -173,7 +167,7 @@ public class JGrafana {
      * @param url: The url of the link.
      * @return: The updated object.
      */
-    public JGrafana addLink(String title, String url){
+    public JGrafana addLink(String title, String url) {
         this.dashboard.links.add(new GrafanaLink(title, url));
         return this;
     }

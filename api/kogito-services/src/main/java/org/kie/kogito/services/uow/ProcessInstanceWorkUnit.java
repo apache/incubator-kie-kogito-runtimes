@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.services.uow;
 
 import java.util.function.Consumer;
@@ -21,9 +20,8 @@ import java.util.function.Consumer;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.uow.WorkUnit;
 
-
 public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> {
-    
+
     private ProcessInstance<T> data;
     private Consumer<Object> action;
     private Consumer<Object> compensation;
@@ -32,7 +30,7 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
         this.data = data;
         this.action = action;
     }
-    
+
     public ProcessInstanceWorkUnit(ProcessInstance<T> data, Consumer<Object> action, Consumer<Object> compensation) {
         this.data = data;
         this.action = action;
@@ -55,7 +53,7 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
             compensation.accept(data());
         }
     }
-    
+
     @Override
     public Integer priority() {
         return 10;
@@ -86,5 +84,4 @@ public class ProcessInstanceWorkUnit<T> implements WorkUnit<ProcessInstance<T>> 
         return true;
     }
 
-    
 }

@@ -1,19 +1,18 @@
 /*
- *  Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision.event.evaluate;
 
 import java.lang.reflect.Method;
@@ -49,32 +48,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class EvaluateEventTypeTest {
 
-    private static final Map<EvaluateEventType, Pair<String, Class<?>>> CHECK_MAP = new HashMap<EvaluateEventType, Pair<String, Class<?>>>() {{
-        put(EvaluateEventType.BEFORE_EVALUATE_ALL, new Pair<>("beforeEvaluateAll", BeforeEvaluateAllEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_ALL, new Pair<>("afterEvaluateAll", AfterEvaluateAllEvent.class));
-        put(EvaluateEventType.BEFORE_EVALUATE_BKM, new Pair<>("beforeEvaluateBKM", BeforeEvaluateBKMEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_BKM, new Pair<>("afterEvaluateBKM", AfterEvaluateBKMEvent.class));
-        put(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, new Pair<>("beforeEvaluateContextEntry", BeforeEvaluateContextEntryEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, new Pair<>("afterEvaluateContextEntry", AfterEvaluateContextEntryEvent.class));
-        put(EvaluateEventType.BEFORE_EVALUATE_DECISION, new Pair<>("beforeEvaluateDecision", BeforeEvaluateDecisionEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_DECISION, new Pair<>("afterEvaluateDecision", AfterEvaluateDecisionEvent.class));
-        put(EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE, new Pair<>("beforeEvaluateDecisionService", BeforeEvaluateDecisionServiceEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE, new Pair<>("afterEvaluateDecisionService", AfterEvaluateDecisionServiceEvent.class));
-        put(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, new Pair<>("beforeEvaluateDecisionTable", BeforeEvaluateDecisionTableEvent.class));
-        put(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, new Pair<>("afterEvaluateDecisionTable", AfterEvaluateDecisionTableEvent.class));
-        put(EvaluateEventType.BEFORE_INVOKE_BKM, new Pair<>("beforeInvokeBKM", BeforeInvokeBKMEvent.class));
-        put(EvaluateEventType.AFTER_INVOKE_BKM, new Pair<>("afterInvokeBKM", AfterInvokeBKMEvent.class));
-    }};
+    private static final Map<EvaluateEventType, Pair<String, Class<?>>> CHECK_MAP = new HashMap<EvaluateEventType, Pair<String, Class<?>>>() {
+        {
+            put(EvaluateEventType.BEFORE_EVALUATE_ALL, new Pair<>("beforeEvaluateAll", BeforeEvaluateAllEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_ALL, new Pair<>("afterEvaluateAll", AfterEvaluateAllEvent.class));
+            put(EvaluateEventType.BEFORE_EVALUATE_BKM, new Pair<>("beforeEvaluateBKM", BeforeEvaluateBKMEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_BKM, new Pair<>("afterEvaluateBKM", AfterEvaluateBKMEvent.class));
+            put(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, new Pair<>("beforeEvaluateContextEntry", BeforeEvaluateContextEntryEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, new Pair<>("afterEvaluateContextEntry", AfterEvaluateContextEntryEvent.class));
+            put(EvaluateEventType.BEFORE_EVALUATE_DECISION, new Pair<>("beforeEvaluateDecision", BeforeEvaluateDecisionEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_DECISION, new Pair<>("afterEvaluateDecision", AfterEvaluateDecisionEvent.class));
+            put(EvaluateEventType.BEFORE_EVALUATE_DECISION_SERVICE, new Pair<>("beforeEvaluateDecisionService", BeforeEvaluateDecisionServiceEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_DECISION_SERVICE, new Pair<>("afterEvaluateDecisionService", AfterEvaluateDecisionServiceEvent.class));
+            put(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, new Pair<>("beforeEvaluateDecisionTable", BeforeEvaluateDecisionTableEvent.class));
+            put(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, new Pair<>("afterEvaluateDecisionTable", AfterEvaluateDecisionTableEvent.class));
+            put(EvaluateEventType.BEFORE_INVOKE_BKM, new Pair<>("beforeInvokeBKM", BeforeInvokeBKMEvent.class));
+            put(EvaluateEventType.AFTER_INVOKE_BKM, new Pair<>("afterInvokeBKM", AfterInvokeBKMEvent.class));
+        }
+    };
     private static final Class<DMNRuntimeEventListener> LISTENER_CLASS = DMNRuntimeEventListener.class;
 
     @Test
     void testExistingEvents() {
-        CHECK_MAP.forEach((type, checkPair) ->
-                assertDoesNotThrow(
-                        () -> LISTENER_CLASS.getDeclaredMethod(checkPair.getLeft(), checkPair.getRight()),
-                        () -> String.format("Listener method \"%s(%s)\" not found for EvaluateEventType.%s", checkPair.getLeft(), checkPair.getRight().getSimpleName(), type)
-                )
-        );
+        CHECK_MAP.forEach((type, checkPair) -> assertDoesNotThrow(
+                () -> LISTENER_CLASS.getDeclaredMethod(checkPair.getLeft(), checkPair.getRight()),
+                () -> String.format("Listener method \"%s(%s)\" not found for EvaluateEventType.%s", checkPair.getLeft(), checkPair.getRight().getSimpleName(), type)));
     }
 
     @Test
@@ -85,8 +83,7 @@ class EvaluateEventTypeTest {
                     .findAny();
             assertTrue(
                     optEntry.isPresent(),
-                    () -> String.format("No EvaluateEventType for listener method \"%s\"", listenerMethod.getName())
-            );
+                    () -> String.format("No EvaluateEventType for listener method \"%s\"", listenerMethod.getName()));
         }
     }
 

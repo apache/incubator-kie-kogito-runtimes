@@ -1,17 +1,17 @@
-/**
- *  Copyright 2020 Red Hat, Inc. and/or its affiliates.
+/*
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.kie.kogito.resources;
 
@@ -21,28 +21,29 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 /**
  * Quarkus resource to be run if and only if it was enabled.
  */
-public abstract class ConditionalQuarkusTestResource implements QuarkusTestResourceLifecycleManager {
+public abstract class ConditionalQuarkusTestResource<T extends TestResource> implements QuarkusTestResourceLifecycleManager {
 
-    private final TestResource testResource;
+    private final T testResource;
     private final ConditionHolder condition;
     private boolean conditionalEnabled = false;
 
-    public ConditionalQuarkusTestResource(TestResource testResource) {
+    public ConditionalQuarkusTestResource(T testResource) {
         this(testResource, new ConditionHolder(testResource.getResourceName()));
     }
 
-    public ConditionalQuarkusTestResource(TestResource testResource, ConditionHolder condition) {
+    public ConditionalQuarkusTestResource(T testResource, ConditionHolder condition) {
         this.testResource = testResource;
         this.condition = condition;
     }
 
-    public TestResource getTestResource() {
+    public T getTestResource() {
         return testResource;
     }
 

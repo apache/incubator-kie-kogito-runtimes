@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +18,7 @@ package org.kie.kogito.cloud.kubernetes.client.operations;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.cloud.kubernetes.client.KogitoKubeClientException;
 import org.kie.kogito.cloud.kubernetes.client.MockKubernetesServerSupport;
@@ -57,6 +59,7 @@ public class ServiceOperationsStatusCodeHandlingTest extends MockKubernetesServe
     }
 
     @Test
+    @Disabled("See: https://github.com/fabric8io/kubernetes-client/issues/2631")
     public void whenUnauthorizedResponse() {
         try {
             getServer().expect().get().withPath("/api/v1/services").andReturn(HttpURLConnection.HTTP_UNAUTHORIZED, null).once();

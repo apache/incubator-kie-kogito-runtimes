@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.github.javaparser.ast.CompilationUnit;
+import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
+import org.jbpm.compiler.canonical.descriptors.TaskDescriptorBuilder;
+import org.jbpm.process.core.Work;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.jbpm.workflow.core.node.WorkItemNode;
+
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -30,10 +35,6 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
-import org.jbpm.process.core.Work;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
-import org.jbpm.workflow.core.node.WorkItemNode;
 
 import static org.jbpm.ruleflow.core.factory.WorkItemNodeFactory.METHOD_WORK_NAME;
 import static org.jbpm.ruleflow.core.factory.WorkItemNodeFactory.METHOD_WORK_PARAMETER;
@@ -56,8 +57,8 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         }
 
         public static ParamType fromString(String name) {
-            for(ParamType p : ParamType.values()) {
-                if(Objects.equals(p.name, name)) {
+            for (ParamType p : ParamType.values()) {
+                if (Objects.equals(p.name, name)) {
                     return p;
                 }
             }
@@ -81,17 +82,14 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         Work work = node.getWork();
         String workName = node.getWork().getName();
 
-        if (workName.equals("Service Task")) {
-            ServiceTaskDescriptor d = new ServiceTaskDescriptor(node, contextClassLoader);
-            String mangledName = d.mangledName();
-            CompilationUnit generatedHandler = d.generateHandlerClassForService();
-            metadata.getGeneratedHandlers().put(mangledName, generatedHandler);
-            workName = mangledName;
-        } else if (workName.equals("Rest Task")) {
-            workName = RestTaskDescriptor.getClassName(metadata);
-            metadata
-                .getGeneratedHandlers()
-                .computeIfAbsent(workName, RestTaskDescriptor::generateHandlerClassForService);
+        if (TaskDescriptorBuilder.isBuilderSupported(workName)) {
+            final TaskDescriptor taskDescriptor = new TaskDescriptorBuilder(workName)
+                    .withProcessMetadata(metadata)
+                    .withWorkItemNode(node)
+                    .withClassloader(contextClassLoader)
+                    .build();
+            workName = taskDescriptor.getName();
+            metadata.getGeneratedHandlers().put(workName, taskDescriptor.generateHandlerClassForService());
         }
 
         body.addStatement(getAssignedFactoryMethod(factoryField, WorkItemNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
@@ -114,14 +112,12 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 continue; // interfaceImplementationRef ?
             }
             String paramType = null;
-            if(work.getParameterDefinition(entry.getKey()) != null) {
+            if (work.getParameterDefinition(entry.getKey()) != null) {
                 paramType = work.getParameterDefinition(entry.getKey()).getType().getStringType();
             }
             body.addStatement(getFactoryMethod(variableName, METHOD_WORK_PARAMETER, new StringLiteralExpr(entry.getKey()), getParameterExpr(paramType, entry.getValue())));
         }
     }
-    
-  
 
     private Expression getParameterExpr(String type, Object value) {
         if (value == null) {
@@ -141,9 +137,9 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
                 return new BooleanLiteralExpr(asBoolean(value));
             case FLOAT:
                 return new MethodCallExpr()
-                    .setScope(new NameExpr(Float.class.getName()))
-                    .setName("parseFloat")
-                    .addArgument(new StringLiteralExpr(value.toString()));
+                        .setScope(new NameExpr(Float.class.getName()))
+                        .setName("parseFloat")
+                        .addArgument(new StringLiteralExpr(value.toString()));
             case INTEGER:
                 return new IntegerLiteralExpr(asInteger(value));
             default:

@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance;
 
 import java.util.Date;
@@ -23,15 +22,16 @@ import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.rule.AgendaFilter;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 /**
  * A process instance is the representation of a process during its execution.
  * It contains all the runtime status information about the running process.
  * A process can have multiple instances.
  */
-public interface ProcessInstance extends org.kie.api.runtime.process.ProcessInstance,
-                                         ContextInstanceContainer,
-                                         ContextableInstance {
+public interface ProcessInstance extends KogitoProcessInstance,
+        ContextInstanceContainer,
+        ContextableInstance {
 
     void setId(String id);
 
@@ -95,5 +95,5 @@ public interface ProcessInstance extends org.kie.api.runtime.process.ProcessInst
 
     AgendaFilter getAgendaFilter();
 
-    void setAgendaFilter( AgendaFilter agendaFilter );
+    void setAgendaFilter(AgendaFilter agendaFilter);
 }

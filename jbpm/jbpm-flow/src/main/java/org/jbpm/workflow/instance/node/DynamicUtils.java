@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.util.ArrayList;
@@ -22,11 +21,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.drools.core.command.impl.CommandBasedStatefulKnowledgeSession;
-import org.drools.core.event.ProcessEventSupport;
 import org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl;
 import org.drools.core.impl.StatefulKnowledgeSessionImpl;
-import org.drools.core.process.instance.KogitoWorkItemManager;
-import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
@@ -44,12 +40,17 @@ import org.kie.api.runtime.ExecutableRunner;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.WorkItem;
 import org.kie.internal.KieInternalServices;
 import org.kie.internal.command.RegistryContext;
 import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.process.CorrelationKeyFactory;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
+import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,10 +65,10 @@ public class DynamicUtils {
             Map<String, Object> parameters) {
         final WorkflowProcessInstance processInstance = dynamicContext.getProcessInstance();
         internalAddDynamicWorkItem(processInstance,
-                                   dynamicContext,
-                                   ksession,
-                                   workItemName,
-                                   parameters);
+                dynamicContext,
+                ksession,
+                workItemName,
+                parameters);
     }
 
     public static void addDynamicWorkItem(
@@ -76,10 +77,10 @@ public class DynamicUtils {
             String workItemName,
             Map<String, Object> parameters) {
         internalAddDynamicWorkItem((WorkflowProcessInstance) dynamicProcessInstance,
-                                   null,
-                                   ksession,
-                                   workItemName,
-                                   parameters);
+                null,
+                ksession,
+                workItemName,
+                parameters);
     }
 
     private static void internalAddDynamicWorkItem(
@@ -89,8 +90,8 @@ public class DynamicUtils {
             String workItemName,
             Map<String, Object> parameters) {
         final KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
-        workItem.setState(WorkItem.ACTIVE);
-        workItem.setProcessInstanceId(processInstance.getId());
+        workItem.setState(KogitoWorkItem.ACTIVE);
+        workItem.setProcessInstanceId(processInstance.getStringId());
         workItem.setDeploymentId((String) ksession.getEnvironment().get(EnvironmentName.DEPLOYMENT_ID));
         workItem.setName(workItemName);
         workItem.setParameters(parameters);
@@ -106,19 +107,19 @@ public class DynamicUtils {
                     if (variableValue == null) {
                         try {
                             variableValue = MVELProcessHelper.evaluator().eval(paramName,
-                                                                                            new ProcessInstanceResolverFactory(processInstance));
+                                    new ProcessInstanceResolverFactory(processInstance));
                         } catch (Throwable t) {
                             logger.error("Could not find variable scope for variable {}",
-                                         paramName);
+                                    paramName);
                             logger.error("when trying to replace variable in string for Dynamic Work Item {}",
-                                         workItemName);
+                                    workItemName);
                             logger.error("Continuing without setting parameter.");
                         }
                     }
                 }
                 if (variableValue != null) {
                     workItem.setParameter(entry.getKey(),
-                                          variableValue);
+                            variableValue);
                 }
             }
         }
@@ -126,15 +127,15 @@ public class DynamicUtils {
         final WorkItemNodeInstance workItemNodeInstance = new WorkItemNodeInstance();
         workItemNodeInstance.internalSetWorkItem(workItem);
         workItemNodeInstance.setMetaData("NodeType",
-                                         workItemName);
-        workItem.setNodeInstanceId(workItemNodeInstance.getId());
+                workItemName);
+        workItem.setNodeInstanceId(workItemNodeInstance.getStringId());
         if (ksession instanceof StatefulKnowledgeSessionImpl) {
             workItemNodeInstance.setProcessInstance(processInstance);
             workItemNodeInstance.setNodeInstanceContainer(dynamicContext == null ? processInstance : dynamicContext);
             workItemNodeInstance.addEventListeners();
             executeWorkItem((StatefulKnowledgeSessionImpl) ksession,
-                            workItem,
-                            workItemNodeInstance);
+                    workItem,
+                    workItemNodeInstance);
         } else if (ksession instanceof CommandBasedStatefulKnowledgeSession) {
             ExecutableRunner runner = ((CommandBasedStatefulKnowledgeSession) ksession).getRunner();
             runner.execute(new ExecutableCommand<Void>() {
@@ -142,42 +143,41 @@ public class DynamicUtils {
 
                 public Void execute(Context context) {
                     StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) ((RegistryContext) context).lookup(KieSession.class);
-                    WorkflowProcessInstance realProcessInstance = (WorkflowProcessInstance) ksession.getProcessInstance(processInstance.getId());
+                    KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+                    WorkflowProcessInstance realProcessInstance = (WorkflowProcessInstance) kruntime.getProcessInstance(processInstance.getStringId());
                     workItemNodeInstance.setProcessInstance(realProcessInstance);
                     if (dynamicContext == null) {
                         workItemNodeInstance.setNodeInstanceContainer(realProcessInstance);
                     } else {
                         DynamicNodeInstance realDynamicContext = findDynamicContext(realProcessInstance,
-                                                                                    dynamicContext.getUniqueId());
+                                dynamicContext.getUniqueId());
                         workItemNodeInstance.setNodeInstanceContainer(realDynamicContext);
                     }
                     workItemNodeInstance.addEventListeners();
                     executeWorkItem((StatefulKnowledgeSessionImpl) ksession,
-                                    workItem,
-                                    workItemNodeInstance);
+                            workItem,
+                            workItemNodeInstance);
                     return null;
                 }
             });
         } else {
-            throw new IllegalArgumentException("Unsupported ksession: " + ksession == null ? "null" : ksession.getClass().getName());
+            throw new IllegalArgumentException("Unsupported ksession: " + (ksession == null ? "null" : ksession.getClass().getName()));
         }
     }
 
     private static void executeWorkItem(StatefulKnowledgeSessionImpl ksession,
-                                        KogitoWorkItemImpl workItem,
-                                        WorkItemNodeInstance workItemNodeInstance) {
-        ProcessEventSupport eventSupport = ((InternalProcessRuntime)
-                ksession.getProcessRuntime()).getProcessEventSupport();
-        eventSupport.fireBeforeNodeTriggered(workItemNodeInstance,
-                                             ksession);
-        (( KogitoWorkItemManager ) ksession.getWorkItemManager()).internalExecuteWorkItem(workItem);
-        workItemNodeInstance.internalSetWorkItemId(workItem.getId());
-        eventSupport.fireAfterNodeTriggered(workItemNodeInstance,
-                                            ksession);
+            KogitoWorkItemImpl workItem,
+            WorkItemNodeInstance workItemNodeInstance) {
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+        KogitoProcessEventSupport eventSupport = kruntime.getProcessEventSupport();
+        eventSupport.fireBeforeNodeTriggered(workItemNodeInstance, ksession);
+        ((InternalKogitoWorkItemManager) kruntime.getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);
+        workItemNodeInstance.internalSetWorkItemId(workItem.getStringId());
+        eventSupport.fireAfterNodeTriggered(workItemNodeInstance, ksession);
     }
 
     private static DynamicNodeInstance findDynamicContext(WorkflowProcessInstance processInstance,
-                                                          String uniqueId) {
+            String uniqueId) {
         for (NodeInstance nodeInstance : ((WorkflowProcessInstanceImpl) processInstance).getNodeInstances(true)) {
             if (uniqueId.equals(((NodeInstanceImpl) nodeInstance).getUniqueId())) {
                 return (DynamicNodeInstance) nodeInstance;
@@ -193,10 +193,10 @@ public class DynamicUtils {
             final Map<String, Object> parameters) {
         final WorkflowProcessInstance processInstance = dynamicContext.getProcessInstance();
         return internalAddDynamicSubProcess(processInstance,
-                                            dynamicContext,
-                                            ksession,
-                                            processId,
-                                            parameters);
+                dynamicContext,
+                ksession,
+                processId,
+                parameters);
     }
 
     public static String addDynamicSubProcess(
@@ -205,10 +205,10 @@ public class DynamicUtils {
             final String processId,
             final Map<String, Object> parameters) {
         return internalAddDynamicSubProcess((WorkflowProcessInstance) processInstance,
-                                            null,
-                                            ksession,
-                                            processId,
-                                            parameters);
+                null,
+                ksession,
+                processId,
+                parameters);
     }
 
     public static String internalAddDynamicSubProcess(
@@ -221,13 +221,13 @@ public class DynamicUtils {
         subProcessNodeInstance.setNodeInstanceContainer(dynamicContext == null ? processInstance : dynamicContext);
         subProcessNodeInstance.setProcessInstance(processInstance);
         subProcessNodeInstance.setMetaData("NodeType",
-                                           "SubProcessNode");
+                "SubProcessNode");
         if (ksession instanceof StatefulKnowledgeSessionImpl) {
             return executeSubProcess((StatefulKnowledgeSessionImpl) ksession,
-                                     processId,
-                                     parameters,
-                                     processInstance,
-                                     subProcessNodeInstance);
+                    processId,
+                    parameters,
+                    processInstance,
+                    subProcessNodeInstance);
         } else if (ksession instanceof CommandBasedStatefulKnowledgeSession) {
             ExecutableRunner commandService = ((CommandBasedStatefulKnowledgeSession) ksession).getRunner();
             return commandService.execute(new ExecutableCommand<String>() {
@@ -235,20 +235,21 @@ public class DynamicUtils {
 
                 public String execute(Context context) {
                     StatefulKnowledgeSession ksession = (StatefulKnowledgeSession) ((RegistryContext) context).lookup(KieSession.class);
-                    WorkflowProcessInstance realProcessInstance = (WorkflowProcessInstance) ksession.getProcessInstance(processInstance.getId());
+                    KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(ksession);
+                    WorkflowProcessInstance realProcessInstance = (WorkflowProcessInstance) kruntime.getProcessInstance(processInstance.getStringId());
                     subProcessNodeInstance.setProcessInstance(realProcessInstance);
                     if (dynamicContext == null) {
                         subProcessNodeInstance.setNodeInstanceContainer(realProcessInstance);
                     } else {
                         DynamicNodeInstance realDynamicContext = findDynamicContext(realProcessInstance,
-                                                                                    dynamicContext.getUniqueId());
+                                dynamicContext.getUniqueId());
                         subProcessNodeInstance.setNodeInstanceContainer(realDynamicContext);
                     }
                     return executeSubProcess((StatefulKnowledgeSessionImpl) ksession,
-                                             processId,
-                                             parameters,
-                                             processInstance,
-                                             subProcessNodeInstance);
+                            processId,
+                            parameters,
+                            processInstance,
+                            subProcessNodeInstance);
                 }
             });
         } else {
@@ -257,19 +258,19 @@ public class DynamicUtils {
     }
 
     private static String executeSubProcess(StatefulKnowledgeSessionImpl ksession,
-                                          String processId,
-                                          Map<String, Object> parameters,
-                                          ProcessInstance processInstance,
-                                          SubProcessNodeInstance subProcessNodeInstance) {
+            String processId,
+            Map<String, Object> parameters,
+            ProcessInstance processInstance,
+            SubProcessNodeInstance subProcessNodeInstance) {
         Process process = ksession.getKieBase().getProcess(processId);
         if (process == null) {
             logger.error("Could not find process {}",
-                         processId);
+                    processId);
             throw new IllegalArgumentException("No process definition found with id: " + processId);
         } else {
-            ProcessEventSupport eventSupport = ((InternalProcessRuntime) ksession.getProcessRuntime()).getProcessEventSupport();
+            KogitoProcessEventSupport eventSupport = ((InternalProcessRuntime) ksession.getProcessRuntime()).getProcessEventSupport();
             eventSupport.fireBeforeNodeTriggered(subProcessNodeInstance,
-                                                 ksession);
+                    ksession);
 
             ProcessInstance subProcessInstance = null;
             if (((WorkflowProcessInstanceImpl) processInstance).getCorrelationKey() != null) {
@@ -280,25 +281,25 @@ public class DynamicUtils {
                 CorrelationKeyFactory correlationKeyFactory = KieInternalServices.Factory.get().newCorrelationKeyFactory();
                 CorrelationKey subProcessCorrelationKey = correlationKeyFactory.newCorrelationKey(businessKeys);
                 subProcessInstance = (ProcessInstance) ksession.createProcessInstance(processId,
-                                                                                      subProcessCorrelationKey,
-                                                                                      parameters);
+                        subProcessCorrelationKey,
+                        parameters);
             } else {
                 subProcessInstance = (ProcessInstance) ksession.createProcessInstance(processId,
-                                                                                      parameters);
+                        parameters);
             }
 
             ((ProcessInstanceImpl) subProcessInstance).setMetaData("ParentProcessInstanceId",
-                                                                   processInstance.getId());
-            ((ProcessInstanceImpl) subProcessInstance).setParentProcessInstanceId(processInstance.getId());
+                    processInstance.getStringId());
+            ((ProcessInstanceImpl) subProcessInstance).setParentProcessInstanceId(processInstance.getStringId());
 
             KogitoStatefulKnowledgeSessionImpl kogitoSession = (KogitoStatefulKnowledgeSessionImpl) ksession;
-            String subProcessInstanceId = subProcessInstance.getId();
-            subProcessInstance = (ProcessInstance) kogitoSession.startProcessInstance(subProcessInstanceId);
+            String subProcessInstanceId = subProcessInstance.getStringId();
+            subProcessInstance = (ProcessInstance) kogitoSession.getKogitoProcessRuntime().startProcessInstance(subProcessInstanceId);
             subProcessNodeInstance.internalSetProcessInstanceId(subProcessInstanceId);
 
             eventSupport.fireAfterNodeTriggered(subProcessNodeInstance,
-                                                ksession);
-            if (subProcessInstance.getState() == org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED) {
+                    ksession);
+            if (subProcessInstance.getState() == KogitoProcessInstance.STATE_COMPLETED) {
                 subProcessNodeInstance.triggerCompleted();
             } else {
 

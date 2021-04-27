@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.util.Arrays;
@@ -54,7 +53,7 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
     @SuppressWarnings("unchecked")
     @Override
     protected void handleNode(final Node node, final Element element, final String uri,
-                              final String localName, final ExtensibleXmlParser parser) throws SAXException {
+            final String localName, final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         DynamicNode dynamicNode = (DynamicNode) node;
         String cancelRemainingInstances = element.getAttribute("cancelRemainingInstances");
@@ -76,8 +75,7 @@ public class AdHocSubProcessHandler extends CompositeContextNodeHandler {
             }
             xmlNode = xmlNode.getNextSibling();
         }
-        List<SequenceFlow> connections = (List<SequenceFlow>)
-                dynamicNode.getMetaData(ProcessHandler.CONNECTIONS);
+        List<SequenceFlow> connections = (List<SequenceFlow>) dynamicNode.getMetaData(ProcessHandler.CONNECTIONS);
         ProcessHandler.linkConnections(dynamicNode, connections);
         ProcessHandler.linkBoundaryEvents(dynamicNode);
 

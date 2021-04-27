@@ -1,11 +1,11 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.timer.impl;
 
 import java.io.Externalizable;
@@ -25,42 +24,43 @@ import java.util.Date;
 import org.kie.kogito.timer.Trigger;
 
 public class CompositeMaxDurationTrigger
-    implements
-    Trigger, Externalizable {
-    private Trigger            timerTrigger;
-    private Date               maxDurationTimestamp;
-    private Date               timerCurrentDate;
+        implements
+        Trigger, Externalizable {
+    private Trigger timerTrigger;
+    private Date maxDurationTimestamp;
+    private Date timerCurrentDate;
 
-    public CompositeMaxDurationTrigger() { }
+    public CompositeMaxDurationTrigger() {
+    }
 
     public CompositeMaxDurationTrigger(Date maxDurationTimestamp, // this max duration of when rules are allowed to fire (cep rules like 'not')
-                                       Trigger timerTrigger) { // trigger of when a rule should try to fire, should not execute before maxDurationTimestamp
+            Trigger timerTrigger) { // trigger of when a rule should try to fire, should not execute before maxDurationTimestamp
         this.maxDurationTimestamp = maxDurationTimestamp;
         this.timerTrigger = timerTrigger;
-        
-        if ( this.timerTrigger != null ) {
+
+        if (this.timerTrigger != null) {
             // if there is a timerTrigger, make sure it's scheduler AFTER the current max duration.
-            while ( this.timerTrigger.hasNextFireTime() != null && this.timerTrigger.hasNextFireTime().getTime() <= this.maxDurationTimestamp.getTime() ) {
-                this.timerTrigger.nextFireTime(); 
+            while (this.timerTrigger.hasNextFireTime() != null && this.timerTrigger.hasNextFireTime().getTime() <= this.maxDurationTimestamp.getTime()) {
+                this.timerTrigger.nextFireTime();
             }
         }
     }
 
     public Date hasNextFireTime() {
-        if (  this.maxDurationTimestamp != null ) {
+        if (this.maxDurationTimestamp != null) {
             return this.maxDurationTimestamp;
-        } else if ( this.timerTrigger != null ){
+        } else if (this.timerTrigger != null) {
             return this.timerTrigger.hasNextFireTime();
         } else {
             return null;
         }
     }
 
-    public Date nextFireTime() { 
-        if (  this.maxDurationTimestamp != null ) {
+    public Date nextFireTime() {
+        if (this.maxDurationTimestamp != null) {
             this.maxDurationTimestamp = null;
         }
-        if ( this.timerTrigger != null ) {
+        if (this.timerTrigger != null) {
             return this.timerTrigger.nextFireTime();
         } else {
             return null;
@@ -93,15 +93,15 @@ public class CompositeMaxDurationTrigger
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject( maxDurationTimestamp );
-        out.writeObject( timerCurrentDate );
-        out.writeObject( timerTrigger );
+        out.writeObject(maxDurationTimestamp);
+        out.writeObject(timerCurrentDate);
+        out.writeObject(timerTrigger);
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        maxDurationTimestamp = ( Date ) in.readObject();
-        timerCurrentDate = ( Date ) in.readObject();
-        timerTrigger = ( Trigger )in.readObject();
+        maxDurationTimestamp = (Date) in.readObject();
+        timerCurrentDate = (Date) in.readObject();
+        timerTrigger = (Trigger) in.readObject();
     }
 }

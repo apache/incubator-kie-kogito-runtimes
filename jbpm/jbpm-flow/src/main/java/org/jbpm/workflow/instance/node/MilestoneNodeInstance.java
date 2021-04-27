@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.MilestoneNode;
-import org.kie.api.event.process.ContextAwareEventListener;
-import org.kie.api.runtime.process.NodeInstance;
+import org.kie.kogito.event.process.ContextAwareEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 
 /**
  * Runtime counterpart of a milestone node.
@@ -33,13 +33,13 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     }
 
     @Override
-    public void internalTrigger(final NodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         // if node instance was cancelled, abort
-        if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+        if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
-        if (!org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
+        if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
             throw new IllegalArgumentException(
                     "A MilestoneNode only accepts default incoming connections!");
         }
@@ -51,7 +51,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
     }
 
     private boolean isCompleted() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
         context.setNodeInstance(this);
         return getMilestoneNode().canComplete(context);
     }
@@ -64,7 +64,7 @@ public class MilestoneNodeInstance extends StateBasedNodeInstance {
 
     private void addCompletionEventListener() {
         getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener(ContextAwareEventListener.using(listener -> {
-            if(isCompleted()) {
+            if (isCompleted()) {
                 triggerCompleted();
                 getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);
             }

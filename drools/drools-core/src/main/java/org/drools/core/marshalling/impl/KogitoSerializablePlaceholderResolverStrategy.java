@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.drools.core.marshalling.impl;
 
 import java.io.IOException;
@@ -21,16 +21,16 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
+import org.kie.kogito.internal.process.marshalling.KogitoObjectMarshallingStrategy;
 
-public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMarshallingStrategy {
+public class KogitoSerializablePlaceholderResolverStrategy implements KogitoObjectMarshallingStrategy {
 
     private int index;
 
     private ObjectMarshallingStrategyAcceptor acceptor;
 
-    public KogitoSerializablePlaceholderResolverStrategy( ObjectMarshallingStrategyAcceptor acceptor) {
+    public KogitoSerializablePlaceholderResolverStrategy(ObjectMarshallingStrategyAcceptor acceptor) {
         this.acceptor = acceptor;
     }
 
@@ -44,35 +44,35 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
 
     public Object read(ObjectInputStream os) throws IOException,
             ClassNotFoundException {
-        return  os.readObject();
+        return os.readObject();
     }
 
     public void write(ObjectOutputStream os,
-                      Object object) throws IOException {
-        os.writeObject( object );
+            Object object) throws IOException {
+        os.writeObject(object);
     }
 
     public boolean accept(Object object) {
-        return acceptor.accept( object );
+        return acceptor.accept(object);
     }
 
     public byte[] marshal(Context context,
-                          ObjectOutputStream os,
-                          Object object) throws IOException {
+            ObjectOutputStream os,
+            Object object) throws IOException {
 
-        SerializablePlaceholderStrategyContext ctx = (SerializablePlaceholderStrategyContext)context;
+        SerializablePlaceholderStrategyContext ctx = (SerializablePlaceholderStrategyContext) context;
         int index = ctx.data.size();
-        ctx.data.add( object );
-        return MarshallingHelper.intToByteArray( index );
+        ctx.data.add(object);
+        return MarshallingHelper.intToByteArray(index);
     }
 
     public Object unmarshal(String dataType,
-                            Context context,
-                            ObjectInputStream is,
-                            byte[] object,
-                            ClassLoader classloader) throws IOException, ClassNotFoundException {
-        SerializablePlaceholderStrategyContext ctx = (SerializablePlaceholderStrategyContext)context;
-        return ctx.data.get( MarshallingHelper.byteArrayToInt( object ) );
+            Context context,
+            ObjectInputStream is,
+            byte[] object,
+            ClassLoader classloader) throws IOException, ClassNotFoundException {
+        SerializablePlaceholderStrategyContext ctx = (SerializablePlaceholderStrategyContext) context;
+        return ctx.data.get(MarshallingHelper.byteArrayToInt(object));
     }
 
     public Context createContext() {
@@ -91,8 +91,8 @@ public class KogitoSerializablePlaceholderResolverStrategy implements ObjectMars
             this.data = (List<Object>) ois.readObject();
         }
 
-        public void write( ObjectOutputStream oos) throws IOException {
-            oos.writeObject( this.data );
+        public void write(ObjectOutputStream oos) throws IOException {
+            oos.writeObject(this.data);
         }
     }
 

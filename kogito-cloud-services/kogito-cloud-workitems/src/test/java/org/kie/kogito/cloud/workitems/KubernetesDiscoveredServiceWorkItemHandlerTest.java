@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.cloud.workitems;
 
 import java.io.IOException;
 import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
 
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LoadBalancerStatus;
@@ -25,7 +27,6 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.api.model.ServiceSpec;
 import io.fabric8.kubernetes.api.model.ServiceStatus;
-import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -33,13 +34,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
 public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseKubernetesDiscoveredServiceTest {
 
     @Test
     public void testGivenServiceExists() {
         final ServiceSpec serviceSpec = new ServiceSpec();
-        serviceSpec.setPorts(Collections.singletonList(new ServicePort("http", 0, 8080, "http", new IntOrString(8080))));
+        serviceSpec.setPorts(Collections.singletonList(new ServicePort("http", "test-kieserver", 0, 8080, "http", new IntOrString(8080))));
         serviceSpec.setClusterIP("172.30.158.31");
         serviceSpec.setType("ClusterIP");
         serviceSpec.setSessionAffinity("ClientIP");

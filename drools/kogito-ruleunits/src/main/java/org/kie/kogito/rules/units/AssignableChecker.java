@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +29,7 @@ public interface AssignableChecker {
     }
 
     static AssignableChecker create(ClassLoader classLoader, boolean classLoaderSafe) {
-        return classLoaderSafe ? new ClassLoaderSafeAssignableChecker( classLoader ) : DummyAssignableChecker.INSTANCE;
+        return classLoaderSafe ? new ClassLoaderSafeAssignableChecker(classLoader) : DummyAssignableChecker.INSTANCE;
     }
 
     enum DummyAssignableChecker implements AssignableChecker {
@@ -36,8 +37,8 @@ public interface AssignableChecker {
         INSTANCE;
 
         @Override
-        public boolean isAssignableFrom( Class<?> source, Class<?> target ) {
-            return source.isAssignableFrom( target );
+        public boolean isAssignableFrom(Class<?> source, Class<?> target) {
+            return source.isAssignableFrom(target);
         }
     }
 
@@ -53,11 +54,11 @@ public interface AssignableChecker {
         public boolean isAssignableFrom(Class<?> source, Class<?> target) {
             return classes.computeIfAbsent(source.getCanonicalName(), name -> {
                 try {
-                    return classLoader.loadClass( name );
+                    return classLoader.loadClass(name);
                 } catch (ClassNotFoundException e) {
                     return source;
                 }
-            } ).isAssignableFrom( target );
+            }).isAssignableFrom(target);
         }
     }
 }

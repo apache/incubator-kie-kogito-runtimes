@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,56 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito;
 
-import org.kie.kogito.decision.DecisionConfig;
-import org.kie.kogito.prediction.PredictionConfig;
-import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.rules.RuleConfig;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StaticConfig implements Config {
 
     private final Addons addons;
-    private final ProcessConfig processConfig;
-    private final RuleConfig ruleConfig;
-    private final PredictionConfig predictionConfig;
-    private final DecisionConfig decisionConfig;
+    private final Map<Class<? extends KogitoConfig>, KogitoConfig> configMap = new HashMap<>();
 
-    public StaticConfig(Addons addons, ProcessConfig processConfig, RuleConfig ruleConfig, DecisionConfig decisionConfig, PredictionConfig predictionConfig) {
+    public StaticConfig(Addons addons,
+            KogitoConfig... configs) {
+        this(addons, Arrays.asList(configs));
+    }
+
+    protected StaticConfig(Addons addons,
+            Iterable<KogitoConfig> configs) {
         this.addons = addons;
-        this.processConfig = processConfig;
-        this.ruleConfig = ruleConfig;
-        this.decisionConfig = decisionConfig;
-        this.predictionConfig = predictionConfig;
-
-        if (processConfig != null) {
-            processConfig.unitOfWorkManager().eventManager().setAddons(addons);
-        }
+        configs.forEach(this::loadConfig);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ProcessConfig process() {
-        return this.processConfig;
-    }
-
-    @Override
-    public RuleConfig rule() {
-        return this.ruleConfig;
-    }
-
-    @Override
-    public PredictionConfig prediction() {
-        return predictionConfig;
-    }
-
-    @Override
-    public DecisionConfig decision() {
-        return decisionConfig;
+    public <T extends KogitoConfig> T get(Class<T> clazz) {
+        return (T) configMap.entrySet().stream()
+                .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public Addons addons() {
         return addons;
+    }
+
+    private void loadConfig(KogitoConfig config) {
+        if (config != null) {
+            configMap.put(config.getClass(), config);
+        }
     }
 }

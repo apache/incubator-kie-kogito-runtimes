@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
 
 import java.text.MessageFormat;
@@ -47,7 +46,7 @@ import org.xml.sax.SAXException;
 
 public class IntermediateCatchEventHandler extends AbstractNodeHandler {
 
-	private DataTransformerRegistry transformerRegistry = DataTransformerRegistry.get();
+    private DataTransformerRegistry transformerRegistry = DataTransformerRegistry.get();
 
     public static final String LINK_NAME = "LinkName";
 
@@ -173,7 +172,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	protected void handleSignalNode(final Node node, final Element element,
+    protected void handleSignalNode(final Node node, final Element element,
             final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
@@ -185,7 +184,7 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
                 String id = ((Element) xmlNode).getAttribute("id");
                 String outputName = ((Element) xmlNode).getAttribute("name");
                 dataOutputs.put(id, outputName);
-            }  else if ("dataOutputAssociation".equals(nodeName)) {
+            } else if ("dataOutputAssociation".equals(nodeName)) {
                 readDataOutputAssociation(xmlNode, eventNode);
             } else if ("signalEventDefinition".equals(nodeName)) {
                 String type = ((Element) xmlNode).getAttribute("signalRef");
@@ -261,14 +260,14 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
                     String subNodeName = subNode.getNodeName();
                     if ("timeCycle".equals(subNodeName)) {
                         String delay = subNode.getTextContent();
-                    	int index = delay.indexOf("###");
-                    	if (index != -1) {
-                    		String period = delay.substring(index + 3);
-                    		delay = delay.substring(0, index);
+                        int index = delay.indexOf("###");
+                        if (index != -1) {
+                            String period = delay.substring(index + 3);
+                            delay = delay.substring(0, index);
                             timer.setPeriod(period);
-                    	}
-                    	timer.setTimeType(Timer.TIME_CYCLE);
-                    	timer.setDelay(delay);
+                        }
+                        timer.setTimeType(Timer.TIME_CYCLE);
+                        timer.setDelay(delay);
                         break;
                     } else if ("timeDuration".equals(subNodeName)) {
                         String delay = subNode.getTextContent();
@@ -323,20 +322,20 @@ public class IntermediateCatchEventHandler extends AbstractNodeHandler {
         String to = subNode.getTextContent();
         eventNode.setVariableName(to);
         // transformation
-  		Transformation transformation = null;
-  		subNode = subNode.getNextSibling();
-  		if (subNode != null && "transformation".equals(subNode.getNodeName())) {
-  			String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
-  			String expression = subNode.getTextContent();
-  			DataTransformer transformer = transformerRegistry.find(lang);
-  			if (transformer == null) {
-  				throw new IllegalArgumentException("No transformer registered for language " + lang);
-  			}
-  			transformation = new Transformation(lang, expression, dataOutputs.get(from));
-  			eventNode.setMetaData("Transformation", transformation);
+        Transformation transformation = null;
+        subNode = subNode.getNextSibling();
+        if (subNode != null && "transformation".equals(subNode.getNodeName())) {
+            String lang = subNode.getAttributes().getNamedItem("language").getNodeValue();
+            String expression = subNode.getTextContent();
+            DataTransformer transformer = transformerRegistry.find(lang);
+            if (transformer == null) {
+                throw new IllegalArgumentException("No transformer registered for language " + lang);
+            }
+            transformation = new Transformation(lang, expression, dataOutputs.get(from));
+            eventNode.setMetaData("Transformation", transformation);
 
-  			eventNode.setEventTransformer(new EventTransformerImpl(transformation));
-  		}
+            eventNode.setEventTransformer(new EventTransformerImpl(transformation));
+        }
     }
 
     public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 package org.kogito.scenariosimulation.runner;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.scenariosimulation.api.model.ScenarioSimulationModel;
@@ -37,16 +47,6 @@ import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.pmml.PMMLKogito;
 import org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Stream;
-
 import static java.util.stream.Collectors.toList;
 import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_MODEL;
 import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_RESULT;
@@ -57,10 +57,10 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
 
     @Override
     protected Map<String, Object> executeScenario(KieContainer kieContainer,
-                                                  ScenarioRunnerData scenarioRunnerData,
-                                                  ExpressionEvaluatorFactory expressionEvaluatorFactory,
-                                                  ScesimModelDescriptor scesimModelDescriptor,
-                                                  Settings settings) {
+            ScenarioRunnerData scenarioRunnerData,
+            ExpressionEvaluatorFactory expressionEvaluatorFactory,
+            ScesimModelDescriptor scesimModelDescriptor,
+            Settings settings) {
         if (!ScenarioSimulationModel.Type.DMN.equals(settings.getType())) {
             throw new ScenarioException("Impossible to run a not-DMN simulation with DMN runner");
         }

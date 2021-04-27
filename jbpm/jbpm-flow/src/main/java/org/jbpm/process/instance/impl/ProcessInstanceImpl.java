@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl;
 
 import java.io.Serializable;
@@ -38,7 +37,7 @@ import org.kie.api.runtime.rule.Agenda;
  * Default implementation of a process instance.
  */
 public abstract class ProcessInstanceImpl implements ProcessInstance,
-                                                     Serializable {
+        Serializable {
 
     private static final long serialVersionUID = 510l;
 
@@ -57,7 +56,11 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     private String description;
     private String rootProcessId;
 
-    public String getId() {
+    public long getId() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getStringId() {
         return this.id;
     }
 
@@ -282,7 +285,12 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     }
 
     @Override
-    public String getParentProcessInstanceId() {
+    public long getParentProcessInstanceId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getParentProcessInstanceStringId() {
         return parentProcessInstanceId;
     }
 
@@ -311,7 +319,6 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
         this.rootProcessId = rootProcessId;
     }
 
-    @Override
     public String getDescription() {
         if (description == null) {
             description = process.getName();

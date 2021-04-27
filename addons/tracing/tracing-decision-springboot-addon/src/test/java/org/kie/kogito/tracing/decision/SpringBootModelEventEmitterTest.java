@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.util.Arrays;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cloudevents.CloudEvent;
-import io.cloudevents.jackson.JsonFormat;
 import org.junit.jupiter.api.Test;
-import org.kie.api.management.GAV;
-import org.kie.internal.decision.DecisionModelResource;
-import org.kie.internal.decision.DecisionModelResourcesProvider;
-import org.kie.kogito.decision.DecisionModelType;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.decision.DecisionModelResource;
+import org.kie.kogito.decision.DecisionModelResourcesProvider;
 import org.mockito.ArgumentCaptor;
 import org.springframework.kafka.core.KafkaTemplate;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.jackson.JsonFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -69,10 +70,13 @@ public class SpringBootModelEventEmitterTest {
 
     private DecisionModelResource makeModel() {
         final DecisionModelResource model = mock(DecisionModelResource.class);
-        when(model.getGav()).thenReturn(new GAV("groupId", "artifactId", "version"));
+        when(model.getGav()).thenReturn(new KogitoGAV("groupId", "artifactId", "version"));
         when(model.getModelName()).thenReturn("name");
         when(model.getNamespace()).thenReturn("namespace");
-        when(model.getModelType()).thenReturn(DecisionModelType.DMN);
+        when(model.getModelMetadata()).thenReturn(
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"));
         when(model.get()).thenReturn("model");
         return model;
     }

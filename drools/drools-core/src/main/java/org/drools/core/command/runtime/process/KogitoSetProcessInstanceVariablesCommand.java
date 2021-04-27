@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.drools.core.command.runtime.process;
 
 import java.util.HashMap;
@@ -21,13 +21,12 @@ import java.util.Map;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.runtime.Context;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
-import org.kie.api.runtime.process.WorkflowProcessInstance;
-import org.kie.internal.command.ProcessInstanceIdCommand;
 import org.kie.internal.command.RegistryContext;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 
-public class KogitoSetProcessInstanceVariablesCommand implements ExecutableCommand<Void>,
-        ProcessInstanceIdCommand {
+public class KogitoSetProcessInstanceVariablesCommand implements ExecutableCommand<Void> {
 
     /**
      * Generated serial version UID
@@ -41,19 +40,17 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
     public KogitoSetProcessInstanceVariablesCommand() {
     }
 
-    public KogitoSetProcessInstanceVariablesCommand( String processInstanceId,
-                                                     Map<String, Object> variables) {
+    public KogitoSetProcessInstanceVariablesCommand(String processInstanceId,
+            Map<String, Object> variables) {
         this.processInstanceId = processInstanceId;
         this.variables = variables;
     }
 
-    @Override
     public String getProcessInstanceId() {
         return processInstanceId;
     }
 
-    @Override
-    public void setProcessInstanceId( String processInstanceId) {
+    public void setProcessInstanceId(String processInstanceId) {
         this.processInstanceId = processInstanceId;
     }
 
@@ -61,17 +58,17 @@ public class KogitoSetProcessInstanceVariablesCommand implements ExecutableComma
         return variables;
     }
 
-    public void setVariables( Map<String, Object> variables) {
+    public void setVariables(Map<String, Object> variables) {
         this.variables = variables;
     }
 
-    public Void execute( Context context) {
-        KieSession ksession = (( RegistryContext ) context).lookup( KieSession.class);
-        ProcessInstance processInstance = ksession.getProcessInstance(processInstanceId);
+    public Void execute(Context context) {
+        KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(((RegistryContext) context).lookup(KieSession.class));
+        KogitoProcessInstance processInstance = kruntime.getProcessInstance(processInstanceId);
         if (processInstance != null) {
             if (variables != null) {
                 for (Map.Entry<String, Object> entry : variables.entrySet()) {
-                    (( WorkflowProcessInstance ) processInstance).setVariable(entry.getKey(), entry.getValue());
+                    ((KogitoWorkflowProcessInstance) processInstance).setVariable(entry.getKey(), entry.getValue());
                 }
             }
         }

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.management;
 
 import org.kie.kogito.Application;
@@ -63,7 +62,7 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
     @Override
     @GetMapping(value = "{processId}/instances/{processInstanceId}/error", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity getInstanceInError(@PathVariable("processId") String processId,
-                                             @PathVariable("processInstanceId") String processInstanceId) {
+            @PathVariable("processInstanceId") String processInstanceId) {
         return doGetInstanceInError(processId, processInstanceId);
     }
 
@@ -75,8 +74,7 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
 
     @Override
     @PostMapping(value = "{processId}/instances/{processInstanceId}/retrigger", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity retriggerInstanceInError(@PathVariable("processId") String processId, @PathVariable(
-            "processInstanceId") String processInstanceId) {
+    public ResponseEntity retriggerInstanceInError(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId) {
         return doRetriggerInstanceInError(processId, processInstanceId);
     }
 
@@ -93,16 +91,16 @@ public class ProcessInstanceManagementRestController extends BaseProcessInstance
     }
 
     @Override
-    @PostMapping(value = "{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}", produces =
-            APPLICATION_JSON_VALUE)
-    public ResponseEntity retriggerNodeInstanceId(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId, @PathVariable("nodeInstanceId") String nodeInstanceId) {
+    @PostMapping(value = "{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity retriggerNodeInstanceId(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId,
+            @PathVariable("nodeInstanceId") String nodeInstanceId) {
         return doRetriggerNodeInstanceId(processId, processInstanceId, nodeInstanceId);
     }
 
     @Override
-    @DeleteMapping(value = "{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}", produces =
-            APPLICATION_JSON_VALUE)
-    public ResponseEntity cancelNodeInstanceId(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId, @PathVariable("nodeInstanceId") String nodeInstanceId) {
+    @DeleteMapping(value = "{processId}/instances/{processInstanceId}/nodeInstances/{nodeInstanceId}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity cancelNodeInstanceId(@PathVariable("processId") String processId, @PathVariable("processInstanceId") String processInstanceId,
+            @PathVariable("nodeInstanceId") String nodeInstanceId) {
         return doCancelNodeInstanceId(processId, processInstanceId, nodeInstanceId);
     }
 

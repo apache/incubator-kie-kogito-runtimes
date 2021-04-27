@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.jobs.management.quarkus;
 
 import java.net.URI;
@@ -25,12 +24,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.jackson.DatabindCodec;
-import io.vertx.ext.web.client.WebClient;
-import io.vertx.ext.web.client.WebClientOptions;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
@@ -39,6 +32,14 @@ import org.kie.kogito.jobs.api.JobNotFoundException;
 import org.kie.kogito.jobs.management.RestJobsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.client.WebClientOptions;
 
 @ApplicationScoped
 public class VertxJobsService extends RestJobsService {
@@ -53,9 +54,9 @@ public class VertxJobsService extends RestJobsService {
 
     @Inject
     public VertxJobsService(@ConfigProperty(name = "kogito.jobs-service.url") String jobServiceUrl,
-                            @ConfigProperty(name = "kogito.service.url") String callbackEndpoint,
-                            Vertx vertx,
-                            Instance<WebClient> providedWebClient) {
+            @ConfigProperty(name = "kogito.service.url") String callbackEndpoint,
+            Vertx vertx,
+            Instance<WebClient> providedWebClient) {
         super(jobServiceUrl, callbackEndpoint);
         this.vertx = vertx;
         this.providedWebClient = providedWebClient;
@@ -83,9 +84,9 @@ public class VertxJobsService extends RestJobsService {
         } else {
             final URI jobServiceURL = getJobsServiceUri();
             this.client = WebClient.create(vertx,
-                                           new WebClientOptions()
-                                                   .setDefaultHost(jobServiceURL.getHost())
-                                                   .setDefaultPort(jobServiceURL.getPort()));
+                    new WebClientOptions()
+                            .setDefaultHost(jobServiceURL.getHost())
+                            .setDefaultPort(jobServiceURL.getPort()));
             LOGGER.debug("Creating new instance of web client for host {} and port {}", jobServiceURL.getHost(), jobServiceURL.getPort());
         }
     }

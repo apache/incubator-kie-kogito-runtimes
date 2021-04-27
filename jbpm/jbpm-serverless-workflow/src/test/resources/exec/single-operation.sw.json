@@ -2,32 +2,32 @@
   "id": "function",
   "name": "test-wf",
   "version": "1.0",
+  "start": "HelloWorld",
   "functions": [
     {
       "name": "helloWorld",
-      "type": "script"
+      "metadata": {
+        "type": "script"
+      }
     }
   ],
-  "states":[
+  "states": [
     {
-      "name":"HelloWorld",
-      "type":"operation",
-      "start": {
-        "kind": "default"
-      },
-      "actionMode":"sequential",
-      "actions":[
+      "name": "HelloWorld",
+      "type": "operation",
+      "actionMode": "sequential",
+      "actions": [
         {
           "functionRef": {
             "refName": "helloWorld",
-            "parameters" : {
-              "script" : "System.out.println(\"Hello Serverless Workflow World\");"
+            "arguments": {
+              "script": "System.out.println(\"Hello Serverless Workflow World\");"
             }
           }
         }
       ],
       "end": {
-        "kind": "terminate"
+        "terminate": "true"
       }
     }
   ]

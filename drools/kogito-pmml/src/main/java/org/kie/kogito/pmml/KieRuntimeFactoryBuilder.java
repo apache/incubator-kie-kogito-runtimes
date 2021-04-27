@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -117,13 +117,13 @@ public class KieRuntimeFactoryBuilder {
     }
 
     private static List<PMMLRuleMapper> loadPMMLRuleMappers(final ClassLoader classLoader,
-                                                            final Resource resource) {
+            final Resource resource) {
         Optional<PMMLRuleMappers> predictionRuleMappers = loadPMMLRuleMappersClass(classLoader, resource);
         return predictionRuleMappers.map(PMMLRuleMappers::getPMMLRuleMappers).orElse(Collections.emptyList());
     }
 
     private static Optional<PMMLRuleMappers> loadPMMLRuleMappersClass(final ClassLoader classLoader,
-                                                                            final Resource resource) {
+            final Resource resource) {
         String[] classNamePackageName = getFactoryClassNamePackageName(resource);
         String packageName = classNamePackageName[1];
         String fullPMMLRuleMappersClassName = packageName + "." + KIE_PMML_RULE_MAPPERS_CLASS_NAME;
@@ -136,7 +136,7 @@ public class KieRuntimeFactoryBuilder {
             return Optional.empty();
         } catch (Exception e) {
             throw new RuntimeException(String.format("%s class not instantiable",
-                                                     fullPMMLRuleMappersClassName), e);
+                    fullPMMLRuleMappersClassName), e);
         }
     }
 }

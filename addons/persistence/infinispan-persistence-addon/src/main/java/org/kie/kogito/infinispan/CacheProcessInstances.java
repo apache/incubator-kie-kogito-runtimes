@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.infinispan;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
 
 import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
-@SuppressWarnings({"rawtypes"})
+@SuppressWarnings({ "rawtypes" })
 public class CacheProcessInstances implements MutableProcessInstances {
 
     private final RemoteCache<String, byte[]> cache;
@@ -58,18 +58,14 @@ public class CacheProcessInstances implements MutableProcessInstances {
             return Optional.empty();
         }
 
-        return Optional.of(mode == MUTABLE ?
-                                   marshaller.unmarshallProcessInstance(data, process) :
-                                   marshaller.unmarshallReadOnlyProcessInstance(data, process));
+        return Optional.of(mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process) : marshaller.unmarshallReadOnlyProcessInstance(data, process));
     }
 
     @Override
     public Collection<? extends ProcessInstance> values(ProcessInstanceReadMode mode) {
         return cache.values()
                 .parallelStream()
-                .map(data -> mode == MUTABLE ?
-                        marshaller.unmarshallProcessInstance(data, process) :
-                        marshaller.unmarshallReadOnlyProcessInstance(data, process))
+                .map(data -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process) : marshaller.unmarshallReadOnlyProcessInstance(data, process))
                 .collect(Collectors.toList());
     }
 

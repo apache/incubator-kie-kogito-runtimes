@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +17,11 @@ package org.kogito.workitem.rest.jsonpath.suppliers;
 
 import java.util.function.Supplier;
 
+import org.kogito.workitem.rest.jsonpath.functions.JsonPathResolver;
+
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import org.kogito.workitem.rest.jsonpath.functions.JsonPathResolver;
 
 public class JsonPathExprSupplier implements Supplier<Expression> {
 
@@ -32,8 +34,8 @@ public class JsonPathExprSupplier implements Supplier<Expression> {
     @Override
     public Expression get() {
         return new ObjectCreationExpr()
-            .setType(JsonPathResolver.class.getCanonicalName())
-            .addArgument(new StringLiteralExpr(jsonPathExpr));
+                .setType(JsonPathResolver.class.getCanonicalName())
+                .addArgument(new StringLiteralExpr(jsonPathExpr));
     }
 
 }

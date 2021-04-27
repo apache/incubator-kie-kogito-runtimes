@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.drools.core.WorkItemHandlerNotFoundException;
-import org.drools.core.process.instance.KogitoWorkItem;
-import org.drools.core.process.instance.KogitoWorkItemManager;
-import org.drools.core.process.instance.impl.KogitoWorkItemImpl;
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ParameterDefinition;
@@ -52,6 +50,7 @@ import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.Transformation;
@@ -61,31 +60,33 @@ import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkItemResolverFactory;
-import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.EnvironmentName;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.DataTransformer;
 import org.kie.api.runtime.process.EventListener;
-import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.GroupedNamedDataType;
 import org.kie.kogito.process.IOEventDescription;
 import org.kie.kogito.process.NamedDataType;
-import org.kie.kogito.process.workitem.WorkItemExecutionError;
-import org.mvel2.MVEL;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
+import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
+import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.jbpm.process.core.context.variable.VariableScope.VARIABLE_SCOPE;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED;
-import static org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
 import static org.kie.api.runtime.process.WorkItem.ABORTED;
 import static org.kie.api.runtime.process.WorkItem.COMPLETED;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
+import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 
 /**
  * Runtime counterpart of a work item node.
- * 
+ *
  */
 public class WorkItemNodeInstance extends StateBasedNodeInstance implements EventListener, ContextInstanceContainer {
 
@@ -97,17 +98,16 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private String workItemId;
-    private transient KogitoWorkItem workItem;
-    
+    private transient InternalKogitoWorkItem workItem;
     private String exceptionHandlingProcessInstanceId;
 
     protected WorkItemNode getWorkItemNode() {
         return (WorkItemNode) getNode();
     }
 
-    public KogitoWorkItem getWorkItem() {
+    public InternalKogitoWorkItem getWorkItem() {
         if (workItem == null && workItemId != null) {
-            workItem = (( KogitoWorkItemManager ) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).getWorkItem(workItemId);
+            workItem = ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).getWorkItem(workItemId);
         }
         return workItem;
     }
@@ -120,7 +120,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         this.workItemId = workItemId;
     }
 
-    public void internalSetWorkItem( KogitoWorkItem workItem) {
+    public void internalSetWorkItem(InternalKogitoWorkItem workItem) {
         this.workItem = workItem;
         this.workItem.setProcessInstance(getProcessInstance());
         this.workItem.setNodeInstance(this);
@@ -131,16 +131,16 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         // TODO WorkItemNodeInstance.isInversionOfControl
         return false;
     }
-    
+
     public void internalRegisterWorkItem() {
-        (( KogitoWorkItemManager ) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalAddWorkItem(workItem);
+        ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalAddWorkItem(workItem);
     }
 
     @Override
-    public void internalTrigger(final NodeInstance from, String type) {
+    public void internalTrigger(final KogitoNodeInstance from, String type) {
         super.internalTrigger(from, type);
         // if node instance was cancelled, abort
-        if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+        if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
         // TODO this should be included for ruleflow only, not for BPEL
@@ -155,7 +155,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         }
         String deploymentId = (String) getProcessInstance().getKnowledgeRuntime().getEnvironment().get(EnvironmentName.DEPLOYMENT_ID);
         workItem.setDeploymentId(deploymentId);
-        workItem.setNodeInstanceId(this.getId());
+        workItem.setNodeInstanceId(this.getStringId());
         workItem.setNodeId(getNodeId());
         workItem.setNodeInstance(this);
         workItem.setProcessInstance(getProcessInstance());
@@ -163,14 +163,14 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             getProcessInstance().getKnowledgeRuntime().update(getProcessInstance().getKnowledgeRuntime().getFactHandle(this), this);
         } else {
             try {
-                (( KogitoWorkItemManager ) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
+                ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalExecuteWorkItem(workItem);
             } catch (WorkItemHandlerNotFoundException wihnfe) {
                 getProcessInstance().setState(STATE_ABORTED);
                 throw wihnfe;
             } catch (ProcessWorkItemHandlerException handlerException) {
-                this.workItemId = workItem.getId();
+                this.workItemId = workItem.getStringId();
                 handleWorkItemHandlerException(handlerException, workItem);
-            } catch (WorkItemExecutionError e) {
+            } catch (WorkItemExecutionException e) {
                 handleException(e.getErrorCode(), e);
             } catch (Exception e) {
                 String exceptionName = e.getClass().getName();
@@ -180,7 +180,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         if (!workItemNode.isWaitForCompletion()) {
             triggerCompleted();
         }
-        this.workItemId = workItem.getId();
+        this.workItemId = workItem.getStringId();
     }
 
     protected void handleException(String exceptionName, Exception e) {
@@ -189,20 +189,27 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }
         // workItemId must be set otherwise cancel activity will not find the right work item
-        this.workItemId = workItem.getId();
+        this.workItemId = workItem.getStringId();
         exceptionScopeInstance.handleException(exceptionName, e);
     }
 
-    protected KogitoWorkItem newWorkItem() {
+    protected InternalKogitoWorkItem newWorkItem() {
         return new KogitoWorkItemImpl();
     }
 
-    protected KogitoWorkItem createWorkItem( WorkItemNode workItemNode) {
+    protected InternalKogitoWorkItem createWorkItem(WorkItemNode workItemNode) {
         Work work = workItemNode.getWork();
         workItem = newWorkItem();
         workItem.setName(work.getName());
-        workItem.setProcessInstanceId(getProcessInstance().getId());
-        workItem.setParameters(new HashMap<>(work.getParameters()));
+        workItem.setProcessInstanceId(getProcessInstance().getStringId());
+
+        Collection<String> metaParameters = work.getMetaParameters();
+        for (Entry<String, Object> e : work.getParameters().entrySet()) {
+            if (!metaParameters.contains(e.getKey())) {
+                workItem.setParameter(e.getKey(), e.getValue());
+            }
+        }
+
         workItem.setStartDate(new Date());
         // if there are any dynamic parameters add them
         if (dynamicParameters != null) {
@@ -237,7 +244,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                     workItem.setParameter(association.getTarget(), parameterValue);
                 }
             } else {
-                association.getAssignments().stream().forEach(this::handleAssignment);
+                association.getAssignments().forEach(this::handleAssignment);
             }
         }
 
@@ -281,7 +288,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     private void handleAssignment(Assignment assignment) {
         AssignmentAction action = (AssignmentAction) assignment.getMetaData("Action");
         try {
-            KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+            KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
             context.setNodeInstance(this);
             action.execute(getWorkItem(), context);
         } catch (Exception e) {
@@ -289,7 +296,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         }
     }
 
-    public void triggerCompleted( KogitoWorkItem workItem) {
+    public void triggerCompleted(InternalKogitoWorkItem workItem) {
         this.workItem = workItem;
         WorkItemNode workItemNode = getWorkItemNode();
 
@@ -332,7 +339,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                         DataType dataType = varDef.getType();
                         // exclude java.lang.Object as it is considered unknown type
                         if (!dataType.getStringType().endsWith("java.lang.Object") &&
-                            !dataType.getStringType().endsWith("Object") && value instanceof String) {
+                                !dataType.getStringType().endsWith("Object") && value instanceof String) {
                             value = dataType.readValue((String) value);
                         } else {
                             variableScopeInstance.getVariableScope().validateVariable(getProcessInstance().getProcessName(), association.getTarget(), value);
@@ -341,17 +348,17 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                     } else {
                         String output = association.getSources().get(0);
                         String target = association.getTarget();
-                                                
+
                         Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(target);
                         if (matcher.find()) {
                             String paramName = matcher.group(1);
-                            
+
                             String expression = paramName + " = " + output;
                             NodeInstanceResolverFactory resolver = new NodeInstanceResolverFactory(this);
                             resolver.addExtraParameters(workItem.getResults());
                             Serializable compiled = MVELProcessHelper.compileExpression(expression);
                             MVELProcessHelper.evaluator().executeExpression(compiled, resolver);
-                        } else {                        
+                        } else {
                             logger.warn("Could not find variable scope for variable {}", association.getTarget());
                             logger.warn("when trying to complete Work Item {}", workItem.getName());
                             logger.warn("Continuing without setting variable.");
@@ -382,18 +389,18 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
     @Override
     public void cancel() {
-        KogitoWorkItem item = getWorkItem();
+        InternalKogitoWorkItem item = getWorkItem();
         if (item != null && item.getState() != COMPLETED && item.getState() != ABORTED) {
             try {
-                (( KogitoWorkItemManager ) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalAbortWorkItem(item.getId());
+                ((InternalKogitoWorkItemManager) getProcessInstance().getKnowledgeRuntime().getWorkItemManager()).internalAbortWorkItem(item.getStringId());
             } catch (WorkItemHandlerNotFoundException wihnfe) {
                 getProcessInstance().setState(STATE_ABORTED);
                 throw wihnfe;
             }
         }
-        
+
         if (exceptionHandlingProcessInstanceId != null) {
-            KieRuntime kruntime = getKieRuntimeForSubprocess();
+            KogitoProcessRuntime kruntime = getKieRuntimeForSubprocess();
             ProcessInstance processInstance = (ProcessInstance) kruntime.getProcessInstance(exceptionHandlingProcessInstanceId);
             if (processInstance != null) {
                 processInstance.setState(STATE_ABORTED);
@@ -409,51 +416,57 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         addExceptionProcessListener();
     }
 
-    private void addWorkItemListener() {
+    protected void addWorkItemListener() {
         getProcessInstance().addEventListener("workItemCompleted", this, false);
         getProcessInstance().addEventListener("workItemAborted", this, false);
     }
 
-    @Override
-    public void removeEventListeners() {
-        super.removeEventListeners();
+    protected void removeWorkItemListener() {
         getProcessInstance().removeEventListener("workItemCompleted", this, false);
         getProcessInstance().removeEventListener("workItemAborted", this, false);
     }
 
     @Override
+    public void removeEventListeners() {
+        super.removeEventListeners();
+        removeWorkItemListener();
+
+    }
+
+    @Override
     public void signalEvent(String type, Object event) {
         if ("workItemCompleted".equals(type)) {
-            workItemCompleted(( KogitoWorkItem ) event);
+            workItemCompleted((InternalKogitoWorkItem) event);
         } else if ("workItemAborted".equals(type)) {
-            workItemAborted(( KogitoWorkItem ) event);
+            workItemAborted((InternalKogitoWorkItem) event);
         } else if (("processInstanceCompleted:" + exceptionHandlingProcessInstanceId).equals(type)) {
             exceptionHandlingCompleted((ProcessInstance) event, null);
         } else if (type.equals("RuleFlow-Activate" + getProcessInstance().getProcessId() + "-" + getNode().getMetaData().get("UniqueId"))) {
 
-            trigger(null, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+            trigger(null, Node.CONNECTION_DEFAULT_TYPE);
         } else {
             super.signalEvent(type, event);
         }
     }
 
+    @Override
     public String[] getEventTypes() {
         if (exceptionHandlingProcessInstanceId != null) {
-            return new String[] {"workItemCompleted", "processInstanceCompleted:" + exceptionHandlingProcessInstanceId };
+            return new String[] { "workItemCompleted", "processInstanceCompleted:" + exceptionHandlingProcessInstanceId };
         } else {
-            return new String[]{"workItemCompleted"};
+            return new String[] { "workItemCompleted" };
         }
     }
 
-    public void workItemAborted( KogitoWorkItem workItem) {
-        if (workItem.getId().equals(workItemId) || (workItemId == null && getWorkItem().getId().equals(workItem.getId()))) {
+    public void workItemAborted(InternalKogitoWorkItem workItem) {
+        if (workItem.getStringId().equals(workItemId) || (workItemId == null && getWorkItem().getStringId().equals(workItem.getStringId()))) {
             removeEventListeners();
             triggerCompleted(workItem);
         }
     }
 
-    public void workItemCompleted( KogitoWorkItem workItem) {
-        if (workItem.getId().equals(workItemId) || (workItemId == null && getWorkItem().getId().equals(workItem.getId()))) {
+    public void workItemCompleted(InternalKogitoWorkItem workItem) {
+        if (workItem.getStringId().equals(workItemId) || (workItemId == null && getWorkItem().getStringId().equals(workItem.getStringId()))) {
             removeEventListeners();
             triggerCompleted(workItem);
         }
@@ -461,10 +474,10 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
     @Override
     public String getNodeName() {
-        Node node = getNode();
+        org.kie.api.definition.process.Node node = getNode();
         if (node == null) {
             String nodeName = "[Dynamic]";
-            KogitoWorkItem item = getWorkItem();
+            InternalKogitoWorkItem item = getWorkItem();
             if (item != null) {
                 nodeName += " " + item.getParameter("TaskName");
             }
@@ -546,7 +559,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         return parameters;
     }
 
-    public void validateWorkItemResultVariable(String processName, List<DataAssociation> outputs, KogitoWorkItem workItem) {
+    public void validateWorkItemResultVariable(String processName, List<DataAssociation> outputs, InternalKogitoWorkItem workItem) {
         // in case work item results are skip validation as there is no notion of mandatory data outputs
         if (!VariableScope.isVariableStrictEnabled() || workItem.getResults().isEmpty()) {
             return;
@@ -568,37 +581,36 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             }
         }
     }
-    
-    /*
-     * Work item handler exception handling 
-     */
-    
 
-    private void handleWorkItemHandlerException(ProcessWorkItemHandlerException handlerException, KogitoWorkItem workItem) {
+    /*
+     * Work item handler exception handling
+     */
+
+    private void handleWorkItemHandlerException(ProcessWorkItemHandlerException handlerException, InternalKogitoWorkItem workItem) {
         Map<String, Object> parameters = new HashMap<>();
-        
+
         parameters.put("DeploymentId", workItem.getDeploymentId());
-        parameters.put("ProcessInstanceId", workItem.getProcessInstanceId());
-        parameters.put("WorkItemId", workItem.getId());
-        parameters.put("NodeInstanceId", this.getId());
-        parameters.put("ErrorMessage", handlerException.getMessage());        
-        parameters.put("Error", handlerException);  
-        
+        parameters.put("ProcessInstanceId", workItem.getProcessInstanceStringId());
+        parameters.put("WorkItemId", workItem.getStringId());
+        parameters.put("NodeInstanceId", this.getStringId());
+        parameters.put("ErrorMessage", handlerException.getMessage());
+        parameters.put("Error", handlerException);
+
         // add all parameters of the work item to the newly started process instance
         parameters.putAll(workItem.getParameters());
-        
-        KieRuntime kruntime = getKieRuntimeForSubprocess();
+
+        KogitoProcessRuntime kruntime = getKieRuntimeForSubprocess();
 
         ProcessInstance processInstance = (ProcessInstance) kruntime.createProcessInstance(handlerException.getProcessId(), parameters);
-        
-        this.exceptionHandlingProcessInstanceId = processInstance.getId(); 
-        ((ProcessInstanceImpl) processInstance).setMetaData("ParentProcessInstanceId", getProcessInstance().getId());
+
+        this.exceptionHandlingProcessInstanceId = processInstance.getStringId();
+        ((ProcessInstanceImpl) processInstance).setMetaData("ParentProcessInstanceId", getProcessInstance().getStringId());
         ((ProcessInstanceImpl) processInstance).setMetaData("ParentNodeInstanceId", getUniqueId());
-        
-        processInstance.setParentProcessInstanceId(getProcessInstance().getId());
+
+        processInstance.setParentProcessInstanceId(getProcessInstance().getStringId());
         processInstance.setSignalCompletion(true);
 
-        kruntime.startProcessInstance(processInstance.getId());
+        kruntime.startProcessInstance(processInstance.getStringId());
         if (processInstance.getState() == STATE_COMPLETED
                 || processInstance.getState() == STATE_ABORTED) {
             exceptionHandlingCompleted(processInstance, handlerException);
@@ -608,14 +620,14 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     private void exceptionHandlingCompleted(ProcessInstance processInstance, ProcessWorkItemHandlerException handlerException) {
-        
+
         if (handlerException == null) {
-            handlerException = (ProcessWorkItemHandlerException) ((WorkflowProcessInstance)processInstance).getVariable("Error");
+            handlerException = (ProcessWorkItemHandlerException) ((WorkflowProcessInstance) processInstance).getVariable("Error");
         }
-                
+
         switch (handlerException.getStrategy()) {
             case ABORT:
-                getProcessInstance().getKnowledgeRuntime().getWorkItemManager().abortWorkItem(getWorkItem().getId());
+                KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager().abortWorkItem(getWorkItem().getStringId());
                 break;
             case RETHROW:
                 String exceptionName = handlerException.getCause().getClass().getName();
@@ -623,26 +635,25 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 if (exceptionScopeInstance == null) {
                     throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute work item " + handlerException.getMessage(), handlerException.getCause());
                 }
-               
+
                 exceptionScopeInstance.handleException(exceptionName, handlerException.getCause());
                 break;
             case RETRY:
                 Map<String, Object> parameters = new HashMap<>(getWorkItem().getParameters());
-                
+
                 parameters.putAll(processInstance.getVariables());
-                
-                (( KogitoWorkItemManager ) getProcessInstance()
-                        .getKnowledgeRuntime().getWorkItemManager()).retryWorkItem(getWorkItem().getId(), parameters);
+
+                ((InternalKogitoWorkItemManager) getProcessInstance()
+                        .getKnowledgeRuntime().getWorkItemManager()).retryWorkItem(getWorkItem().getStringId(), parameters);
                 break;
             case COMPLETE:
-                getProcessInstance().getKnowledgeRuntime().getWorkItemManager().completeWorkItem(
-                        getWorkItem().getId(),
-                        processInstance.getVariables());
+                KogitoProcessRuntime kruntime = KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
+                kruntime.getKogitoWorkItemManager().completeWorkItem(getWorkItem().getStringId(), processInstance.getVariables());
                 break;
             default:
                 break;
         }
-        
+
     }
 
     public void addExceptionProcessListener() {
@@ -655,19 +666,19 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         super.removeEventListeners();
         getProcessInstance().removeEventListener("processInstanceCompleted:" + exceptionHandlingProcessInstanceId, this, true);
     }
-    
+
     public String getExceptionHandlingProcessInstanceId() {
         return exceptionHandlingProcessInstanceId;
     }
-    
+
     public void internalSetProcessInstanceId(String processInstanceId) {
         if (processInstanceId != null && !processInstanceId.isEmpty()) {
             this.exceptionHandlingProcessInstanceId = processInstanceId;
         }
     }
-    
-    protected KieRuntime getKieRuntimeForSubprocess() {
-        return getProcessInstance().getKnowledgeRuntime();
+
+    protected KogitoProcessRuntime getKieRuntimeForSubprocess() {
+        return KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
     }
 
     @Override
@@ -686,6 +697,6 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         dataTypes.add("Output", outputs);
 
         // return just the main completion type of an event
-        return Collections.singleton(new IOEventDescription("workItemCompleted", getNodeDefinitionId(), getNodeName(), "workItem", getWorkItemId(), getProcessInstance().getId(), dataTypes));
+        return Collections.singleton(new IOEventDescription("workItemCompleted", getNodeDefinitionId(), getNodeName(), "workItem", getWorkItemId(), getProcessInstance().getStringId(), dataTypes));
     }
 }

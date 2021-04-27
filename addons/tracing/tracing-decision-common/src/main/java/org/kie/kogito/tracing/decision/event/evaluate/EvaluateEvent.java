@@ -1,19 +1,18 @@
 /*
- *  Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision.event.evaluate;
 
 import java.util.HashMap;
@@ -70,8 +69,7 @@ public class EvaluateEvent {
             Map<String, Object> context,
             EvaluateResult result,
             EvaluateContextEntryResult contextEntryResult,
-            EvaluateDecisionTableResult decisionTableResult
-    ) {
+            EvaluateDecisionTableResult decisionTableResult) {
         this.type = type;
         this.timestamp = timestamp;
         this.nanoTime = nanoTime;
@@ -159,8 +157,8 @@ public class EvaluateEvent {
 
     public TraceResourceId toTraceResourceId(String serviceUrl) {
         return getType() == BEFORE_EVALUATE_DECISION_SERVICE || getType() == AFTER_EVALUATE_DECISION_SERVICE
-               ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
-               : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
+                ? new TraceResourceId(serviceUrl, getModelNamespace(), getModelName(), getNodeId(), getNodeName())
+                : new TraceResourceId(serviceUrl, getModelNamespace(), getModelName());
     }
 
     public static EvaluateEvent from(BeforeEvaluateAllEvent event) {
@@ -180,11 +178,13 @@ public class EvaluateEvent {
     }
 
     public static EvaluateEvent from(BeforeEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
+                EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateContextEntryEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateContextEntryResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_CONTEXT_ENTRY, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
+                EvaluateContextEntryResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionEvent event) {
@@ -204,11 +204,13 @@ public class EvaluateEvent {
     }
 
     public static EvaluateEvent from(BeforeEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.BEFORE_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
+                EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(AfterEvaluateDecisionTableEvent event) {
-        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(), EvaluateDecisionTableResult.from(event));
+        return new EvaluateEvent(EvaluateEventType.AFTER_EVALUATE_DECISION_TABLE, System.currentTimeMillis(), System.nanoTime(), event.getResult(), event.getNodeName(),
+                EvaluateDecisionTableResult.from(event));
     }
 
     public static EvaluateEvent from(BeforeInvokeBKMEvent event) {

@@ -20,13 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import io.restassured.http.ContentType;
+import org.acme.travels.Traveller;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.integrationtests.UnitOfWorkTestEventListener;
 import org.kie.kogito.testcontainers.springboot.InfinispanSpringBootTestResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
+import io.restassured.http.ContentType;
+
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.is;
@@ -38,6 +44,20 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @ContextConfiguration(initializers = InfinispanSpringBootTestResource.Conditional.class)
 class BasicRestTest extends BaseRestTest {
 
+    @Autowired
+    UnitOfWorkTestEventListener uowEventListener;
+
+    @BeforeEach
+    void resetEventListener() {
+        uowEventListener.reset();
+    }
+
+    void assertExpectedUnitOfWorkEvents(Integer events) {
+        assertThat(uowEventListener.getStartEvents()).hasSize(events);
+        assertThat(uowEventListener.getEndEvents()).hasSize(events);
+        assertThat(uowEventListener.getAbortEvents()).isEmpty();
+    }
+    
     @Test
     void testGeneratedId() {
         Map<String, String> params = new HashMap<>();
@@ -64,6 +84,35 @@ class BasicRestTest extends BaseRestTest {
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
+
+        assertExpectedUnitOfWorkEvents(1);
+    }
+    
+    @Test
+    void testWithInaccurateModel () {
+        
+        Traveller traveller = new Traveller ("Javierito","Dimequienes","pepe@pepe.com","Spanish", null);
+        String processId = given()
+                .contentType(ContentType.JSON)
+                .body(traveller)
+                .when()
+                .post("/approvals")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+        
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam("user", "admin")
+                .queryParam("group", "managers")
+                .pathParam("processId", processId)
+                .when()
+                .get("/approvals/{processId}/tasks")
+                .then()
+                .statusCode(200);
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 
     @Test
@@ -99,6 +148,8 @@ class BasicRestTest extends BaseRestTest {
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Kermit"));
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 
     @Test
@@ -113,6 +164,8 @@ class BasicRestTest extends BaseRestTest {
                 .get("/AdHocFragments/FOO")
             .then()
                 .statusCode(404);
+
+        assertExpectedUnitOfWorkEvents(0);
     }
 
     @Test
@@ -144,6 +197,8 @@ class BasicRestTest extends BaseRestTest {
                 .statusCode(200)
                 .body("id", equalTo(id))
                 .body("var1", equalTo("Gonzo"));
+
+        assertExpectedUnitOfWorkEvents(2);
     }
 
     @Test
@@ -182,6 +237,8 @@ class BasicRestTest extends BaseRestTest {
                 .delete("/AdHocFragments/{id}", id)
             .then()
                 .statusCode(404);
+
+        assertExpectedUnitOfWorkEvents(3);
     }
 
     @Test
@@ -208,5 +265,7 @@ class BasicRestTest extends BaseRestTest {
                 .statusCode(200)
                 .body("$.size", is(1))
                 .body("[0].name", is("Task"));
+
+        assertExpectedUnitOfWorkEvents(1);
     }
 }

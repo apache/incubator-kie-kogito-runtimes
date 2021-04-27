@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.compiler.canonical;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
+
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
+import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.node.SubProcessNode;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -32,13 +40,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
-import org.jbpm.util.PatternConstants;
-import org.jbpm.workflow.core.node.SubProcessNode;
-import org.kie.api.definition.process.WorkflowProcess;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.drools.core.util.StringUtils.ucFirst;
@@ -56,15 +57,18 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
 
     @Override
     public void visitNode(String factoryField, SubProcessNode node, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
-        InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/SubProcessFactoryTemplate.java");
-        Optional<Expression> retValue = parse(resourceAsStream).findFirst(Expression.class);
+        Optional<Expression> retValue;
+        try (InputStream resourceAsStream = this.getClass().getResourceAsStream("/class-templates/SubProcessFactoryTemplate.java")) {
+            retValue = parse(resourceAsStream).findFirst(Expression.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         String name = node.getName();
         String subProcessId = node.getProcessId();
 
         NodeValidator.of(getNodeKey(), name)
                 .notEmpty("subProcessId", subProcessId)
                 .validate();
-
 
         body.addStatement(getAssignedFactoryMethod(factoryField, SubProcessNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "Call Activity"))
@@ -79,7 +83,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         ModelMetaData subProcessModel = new ModelMetaData(subProcessId,
                 metadata.getPackageName(),
                 subProcessModelClassName,
-                WorkflowProcess.PRIVATE_VISIBILITY,
+                KogitoWorkflowProcess.PRIVATE_VISIBILITY,
                 VariableDeclarations.ofRawInfo(inputTypes),
                 false);
 
@@ -115,7 +119,6 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
             // check if given mapping is an expression
             Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(e.getValue());
             if (matcher.find()) {
-
                 String expression = matcher.group(1);
                 String topLevelVariable = expression.split("\\.")[0];
                 Variable v = variableScope.findVariable(topLevelVariable);
@@ -123,7 +126,6 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 actionBody.addStatement(makeAssignment(v));
                 actionBody.addStatement(subProcessModel.callSetter("model", e.getKey(), dotNotationToGetExpression(expression)));
             } else {
-
                 Variable v = variableScope.findVariable(e.getValue());
                 if (v != null) {
                     actionBody.addStatement(makeAssignment(v));
@@ -132,6 +134,12 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
             }
         }
 
+        subProcessNode.getInAssociations().stream().filter(da -> da.getAssignments() != null && !da.getAssignments().isEmpty()).forEach(da -> {
+            if (da.getTransformation() == null && da.getSources().size() == 1) {
+                actionBody.addStatement(subProcessModel.callSetter("model", da.getTarget(), new StringLiteralExpr(da.getSources().get(0))));
+            }
+        });
+
         actionBody.addStatement(new ReturnStmt(new NameExpr("model")));
         return actionBody;
     }
@@ -139,9 +147,9 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
     private BlockStmt createInstance(SubProcessNode subProcessNode, ProcessMetaData metadata) {
 
         String processId = ProcessToExecModelGenerator.extractProcessId(subProcessNode.getProcessId());
-        String processFielName = "process" + processId;
+        String processFieldName = "process" + processId;
 
-        MethodCallExpr processInstanceSupplier = new MethodCallExpr(new NameExpr(processFielName), "createInstance").addArgument("model");
+        MethodCallExpr processInstanceSupplier = new MethodCallExpr(new NameExpr(processFieldName), "createInstance").addArgument("model");
 
         metadata.addSubProcess(processId, subProcessNode.getProcessId());
 

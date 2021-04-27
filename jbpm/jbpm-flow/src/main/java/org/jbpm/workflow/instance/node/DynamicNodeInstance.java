@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
@@ -22,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.core.common.InternalAgenda;
-import org.drools.core.spi.KogitoProcessContext;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.kie.api.definition.process.Node;
-import org.kie.api.event.process.ContextAwareEventListener;
-import org.kie.api.runtime.process.NodeInstance;
-import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.kogito.event.process.ContextAwareEventListener;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.jbpm.ruleflow.core.Metadata.IS_FOR_COMPENSATION;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
@@ -51,44 +50,44 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
     }
 
     @Override
-    public void internalTrigger(NodeInstance from, String type) {
+    public void internalTrigger(KogitoNodeInstance from, String type) {
         triggerTime = new Date();
         triggerEvent(EVENT_NODE_ENTER);
 
         // if node instance was cancelled, abort
-        if (getNodeInstanceContainer().getNodeInstance(getId()) == null) {
+        if (getNodeInstanceContainer().getNodeInstance(getStringId()) == null) {
             return;
         }
         if (canActivate()) {
             triggerActivated();
         } else {
-            setState(ProcessInstance.STATE_PENDING);
+            setState(KogitoProcessInstance.STATE_PENDING);
             addActivationListener();
         }
     }
 
     private void triggerActivated() {
-        setState(ProcessInstance.STATE_ACTIVE);
+        setState(KogitoProcessInstance.STATE_ACTIVE);
         // activate ad hoc fragments if they are marked as such
         List<Node> autoStartNodes = getDynamicNode().getAutoStartNodes();
         autoStartNodes.forEach(autoStartNode -> triggerSelectedNode(autoStartNode, null));
     }
 
     private boolean canActivate() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
         context.setNodeInstance(this);
         return getDynamicNode().canActivate(context);
     }
 
     private boolean canComplete() {
-        KogitoProcessContext context = new KogitoProcessContext(getProcessInstance().getKnowledgeRuntime());
+        KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
         context.setNodeInstance(this);
         return getNodeInstances(false).isEmpty() && getDynamicNode().canComplete(context);
     }
 
     private void addActivationListener() {
         getProcessInstance().getKnowledgeRuntime().getProcessRuntime().addEventListener(ContextAwareEventListener.using(listener -> {
-            if (canActivate() && getState() == ProcessInstance.STATE_PENDING) {
+            if (canActivate() && getState() == KogitoProcessInstance.STATE_PENDING) {
                 triggerActivated();
                 getProcessInstance().getKnowledgeRuntime().getProcessRuntime().removeEventListener(listener);
             }
@@ -133,7 +132,7 @@ public class DynamicNodeInstance extends CompositeContextNodeInstance {
         super.triggerCompleted(outType);
     }
 
-    protected boolean isTerminated(NodeInstance from) {
+    protected boolean isTerminated(KogitoNodeInstance from) {
         if (from instanceof EndNodeInstance) {
             return ((EndNodeInstance) from).getEndNode().isTerminate();
         }

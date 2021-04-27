@@ -1,19 +1,18 @@
 /*
- *  Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.kie.kogito.tracing.decision;
 
 import java.io.IOException;
@@ -21,13 +20,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
@@ -38,14 +30,22 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.tracing.decision.event.evaluate.EvaluateEvent;
 import org.mockito.ArgumentCaptor;
 
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAME;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.MODEL_NAMESPACE;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.createDMNRuntime;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateAllContext;
-import static org.kie.kogito.tracing.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import static org.kie.kogito.decision.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_ALL_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.EVALUATE_DECISION_SERVICE_EXECUTION_ID;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.decision.DecisionTestUtils.MODEL_NAMESPACE;
+import static org.kie.kogito.decision.DecisionTestUtils.createDMNRuntime;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateAllContext;
+import static org.kie.kogito.decision.DecisionTestUtils.getEvaluateDecisionServiceContext;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -106,8 +106,7 @@ class EvaluateEventJsonGeneratorTest {
         }
 
         @Override
-        public void writeEndObject(JsonGenerator g, int nrOfEntries) throws IOException
-        {
+        public void writeEndObject(JsonGenerator g, int nrOfEntries) throws IOException {
             if (!_objectIndenter.isInline()) {
                 --_nesting;
             }
@@ -118,8 +117,7 @@ class EvaluateEventJsonGeneratorTest {
         }
 
         @Override
-        public void writeEndArray(JsonGenerator g, int nrOfValues) throws IOException
-        {
+        public void writeEndArray(JsonGenerator g, int nrOfValues) throws IOException {
             if (!_arrayIndenter.isInline()) {
                 --_nesting;
             }

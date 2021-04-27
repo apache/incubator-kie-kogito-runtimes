@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.workflow.core.impl;
 
 import java.util.ArrayList;
@@ -200,7 +199,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getFrom() {
         final List<Connection> list =
-                getIncomingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -220,7 +219,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
      */
     public Connection getTo() {
         final List<Connection> list =
-                getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
         if (list.size() == 0) {
             return null;
         }
@@ -239,14 +238,14 @@ public abstract class NodeImpl implements Node, ContextResolver {
      * Helper method for nodes that have multiple default incoming connections
      */
     public List<Connection> getDefaultIncomingConnections() {
-        return getIncomingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        return getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
     }
 
     /**
      * Helper method for nodes that have multiple default outgoing connections
      */
     public List<Connection> getDefaultOutgoingConnections() {
-        return getOutgoingConnections(org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+        return getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
     }
 
     public NodeContainer getParentContainer() {
@@ -297,7 +296,6 @@ public abstract class NodeImpl implements Node, ContextResolver {
             throw new IllegalArgumentException("connection is null");
         }
 
-
         ConnectionRef ref = new ConnectionRef((String) connection.getMetaData().get("UniqueId"), connection.getTo().getId(), connection.getToType());
         return this.constraints.get(ref);
 
@@ -308,7 +306,7 @@ public abstract class NodeImpl implements Node, ContextResolver {
     }
 
     public void setConstraint(final Connection connection,
-                              final Constraint constraint) {
+            final Constraint constraint) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
         }
@@ -333,4 +331,13 @@ public abstract class NodeImpl implements Node, ContextResolver {
         return Collections.unmodifiableMap(this.constraints);
     }
 
+    @Override
+    public String getNodeUniqueId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public NodeContainer getNodeContainer() {
+        throw new UnsupportedOperationException();
+    }
 }

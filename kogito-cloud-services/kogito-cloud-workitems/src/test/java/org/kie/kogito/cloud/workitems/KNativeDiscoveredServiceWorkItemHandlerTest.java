@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.cloud.workitems;
+
+import org.junit.jupiter.api.Test;
 
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.client.dsl.RecreateFromServerGettable;
-import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -31,7 +32,7 @@ public class KNativeDiscoveredServiceWorkItemHandlerTest extends BaseKubernetesD
 
     @Test
     public void whenExistsAServiceWithKNative() {
-        final RecreateFromServerGettable<KubernetesList, KubernetesList, ?> serviceResource =
+        final RecreateFromServerGettable<KubernetesList> serviceResource =
                 this.getClient().lists().load(this.getClass().getResource("/mock/responses/ocp4.x/knative/serving.knative.dev-services.json"));
         this.getClient().lists().create(serviceResource.get());
 

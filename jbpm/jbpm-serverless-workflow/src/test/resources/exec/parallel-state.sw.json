@@ -2,13 +2,11 @@
   "id": "parallelworkflow",
   "name": "parallel-wf",
   "version": "1.0",
-  "states":[
+  "start": "ExecInParallel",
+  "states": [
     {
-      "name":"ExecInParallel",
-      "type":"parallel",
-      "start": {
-        "kind": "default"
-      },
+      "name": "ExecInParallel",
+      "type": "parallel",
       "branches": [
         {
           "name": "branch1",
@@ -19,9 +17,7 @@
           "workflowId": "branch2abc"
         }
       ],
-      "end": {
-        "kind": "default"
-      }
+      "end": true
     }
   ]
 }

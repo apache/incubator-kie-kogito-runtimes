@@ -1,10 +1,11 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,6 +28,7 @@ import org.drools.core.time.TimerService;
 import org.jbpm.workflow.instance.impl.CodegenNodeInstanceFactoryRegistry;
 import org.kie.api.KieBase;
 import org.kie.api.event.process.ProcessEventListener;
+import org.kie.api.event.process.ProcessEventManager;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.RuleRuntimeEventListener;
 import org.kie.api.logger.KieRuntimeLogger;
@@ -34,6 +36,8 @@ import org.kie.api.runtime.Calendars;
 import org.kie.api.runtime.Channel;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.Globals;
+import org.kie.api.runtime.KieRuntime;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -45,13 +49,17 @@ import org.kie.api.runtime.rule.LiveQuery;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
+import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.jobs.JobsService;
 
 /**
  * A severely limited implementation of the WorkingMemory interface.
  * It only exists for legacy reasons.
  */
-class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
+class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRuntime {
 
     private final EnvironmentImpl environment;
     private InternalProcessRuntime processRuntime;
@@ -94,13 +102,27 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public KogitoProcessEventSupport getProcessEventSupport() {
+        return ((org.jbpm.process.instance.InternalProcessRuntime) processRuntime).getProcessEventSupport();
+    }
+
+    @Override
+    public ProcessEventManager getProcessEventManager() {
+        return processRuntime;
+    }
+
+    @Override
     public Environment getEnvironment() {
         return environment;
     }
 
-    @Override
     public JobsService getJobsService() {
         return null;
+    }
+
+    @Override
+    public KieRuntime getKieRuntime() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -145,6 +167,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
 
     @Override
     public KieBase getKieBase() {
+        return null;
+    }
+
+    @Override
+    public KieSession getKieSession() {
         return null;
     }
 
@@ -219,37 +246,47 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public ProcessInstance startProcess(String processId) {
+    public KogitoProcessInstance startProcess(String processId) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess(String processId, Map<String, Object> parameters) {
+    public KogitoProcessInstance startProcess(String processId, Map<String, Object> parameters) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess( String processId, AgendaFilter agendaFilter ) {
+    public KogitoProcessInstance startProcess(String processId, AgendaFilter agendaFilter) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcess(String processId, Map<String, Object> parameters, AgendaFilter agendaFilter) {
+    public KogitoProcessInstance startProcess(String processId, Map<String, Object> parameters, AgendaFilter agendaFilter) {
         return null;
     }
 
     @Override
-    public ProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
+    public ProcessInstance startProcessFromNodeIds(String s, Map<String, Object> map, String... strings) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.startProcessFromNodeIds -> TODO");
+
+    }
+
+    @Override
+    public KogitoProcessInstance createProcessInstance(String processId, Map<String, Object> parameters) {
         return null;
     }
 
     @Override
-    public ProcessInstance startProcessInstance(String processInstanceId) {
+    public ProcessInstance startProcessInstance(long l) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.startProcessInstance -> TODO");
+
+    }
+
+    public KogitoProcessInstance startProcessInstance(String processInstanceId) {
         return null;
     }
-    
-    @Override
-    public ProcessInstance startProcessInstance(String processInstanceId, String trigger) {
+
+    public KogitoProcessInstance startProcessInstance(String processInstanceId, String trigger) {
         return null;
     }
 
@@ -259,6 +296,11 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
+    public void signalEvent(String s, Object o, long l) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.signalEvent -> TODO");
+
+    }
+
     public void signalEvent(String type, Object event, String processInstanceId) {
 
     }
@@ -269,23 +311,48 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime {
     }
 
     @Override
-    public ProcessInstance getProcessInstance(String processInstanceId) {
+    public Collection<KogitoProcessInstance> getKogitoProcessInstances() {
         return null;
     }
 
     @Override
-    public ProcessInstance getProcessInstance(String processInstanceId, boolean readonly) {
-        return null;
+    public ProcessInstance getProcessInstance(long l) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.getProcessInstance -> TODO");
+
     }
 
     @Override
-    public void abortProcessInstance(String processInstanceId) {
+    public ProcessInstance getProcessInstance(long l, boolean b) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.getProcessInstance -> TODO");
+
+    }
+
+    @Override
+    public void abortProcessInstance(long l) {
+        throw new UnsupportedOperationException("org.jbpm.process.instance.DummyKnowledgeRuntime.abortProcessInstance -> TODO");
 
     }
 
     @Override
     public WorkItemManager getWorkItemManager() {
-        return this.processRuntime.getWorkItemManager();
+        return (WorkItemManager) getKogitoWorkItemManager();
+    }
+
+    public KogitoProcessInstance getProcessInstance(String processInstanceId) {
+        return null;
+    }
+
+    public KogitoProcessInstance getProcessInstance(String processInstanceId, boolean readonly) {
+        return null;
+    }
+
+    public void abortProcessInstance(String processInstanceId) {
+
+    }
+
+    @Override
+    public KogitoWorkItemManager getKogitoWorkItemManager() {
+        return (KogitoWorkItemManager) this.processRuntime.getWorkItemManager();
     }
 
     @Override

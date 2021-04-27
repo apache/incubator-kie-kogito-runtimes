@@ -3,8 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process.instance.impl.humantask;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class HumanTaskTransition implements Transition<Map<String, Object>> {
     private String phase;
     private Map<String, Object> data;
     private List<Policy<?>> policies = new ArrayList<>();
-    
+
     public static HumanTaskTransition withModel(String phase, MapOutput data, Policy<?>... policies) {
         return new HumanTaskTransition(phase, data.toMap(), policies);
     }
@@ -48,11 +48,11 @@ public class HumanTaskTransition implements Transition<Map<String, Object>> {
     public HumanTaskTransition(String phase) {
         this(phase, Collections.emptyMap());
     }
-    
+
     public HumanTaskTransition(String phase, Map<String, Object> data, IdentityProvider identity) {
         this(phase, data, SecurityPolicy.of(identity));
     }
-    
+
     public HumanTaskTransition(String phase, Map<String, Object> data, Policy<?>... policies) {
         this.phase = phase;
         this.data = data;

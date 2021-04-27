@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus</artifactId>
+      <artifactId>kogito-quarkus-rules</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -90,9 +90,16 @@
     <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-deployment</artifactId>
+      <artifactId>kogito-quarkus-rules-deployment</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>
@@ -125,7 +132,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <systemPropertyVariables>
+          <systemPropertyVariables combine.children="append">
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
           </systemPropertyVariables>
@@ -136,12 +143,15 @@
 
   <profiles>
     <profile>
-      <id>native-image</id>
+      <id>native</id>
       <activation>
         <property>
           <name>native</name>
         </property>
       </activation>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -154,26 +164,9 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <systemProperties>
+                  <systemPropertyVariables combine.children="append">
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>native-image</id>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <cleanupServer>true</cleanupServer>
-                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                  <graalvmHome>${graalvmHome}</graalvmHome>
+                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.process;
 
 import java.io.InputStreamReader;
@@ -34,11 +33,11 @@ import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.StartNode;
 import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,7 +58,7 @@ public class RuleSetTest extends AbstractBaseTest {
 
         RuleFlowProcess process = createProcess(namespace, modelName, decisionName);
 
-        KieSession ksession = createKieSession(process);
+        KogitoProcessRuntime kruntime = createKogitoProcessRuntime(process);
 
         Map<String, Object> parameters = new HashMap<>();
         Person person = new Person("John", 25);
@@ -67,12 +66,12 @@ public class RuleSetTest extends AbstractBaseTest {
         parameters.put("person", person);
         parameters.put("isAdult", false);
 
-        ProcessInstance pi = ksession.startProcess("org.drools.core.process.process", parameters);
-        assertEquals(ProcessInstance.STATE_COMPLETED, pi.getState());
+        KogitoProcessInstance pi = kruntime.startProcess("org.drools.core.process.process", parameters);
+        assertEquals(KogitoProcessInstance.STATE_COMPLETED, pi.getState());
 
         boolean result = (boolean) pi.getVariables().get("isAdult");
 
-        assertEquals(true, result);
+        assertTrue(result);
     }
 
     @Test
@@ -134,6 +133,6 @@ public class RuleSetTest extends AbstractBaseTest {
 
     private void connect(Node sourceNode, Node targetNode) {
         new ConnectionImpl(sourceNode, Node.CONNECTION_DEFAULT_TYPE,
-                           targetNode, Node.CONNECTION_DEFAULT_TYPE);
+                targetNode, Node.CONNECTION_DEFAULT_TYPE);
     }
 }

@@ -34,9 +34,20 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>task-management-quarkus-addon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-svg-quarkus-addon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
@@ -49,7 +60,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-infinispan-client</artifactId>
@@ -91,15 +102,40 @@
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.parser.v3</groupId>
+      <artifactId>swagger-parser</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion> <!-- Kogito-on-Quarkus uses Kogito-Codegen's CP instead of PCL, so we need to manually exclude. -->
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-annotations</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- this is used implicitly by quarkus tests so let's make Maven aware of it -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-deployment</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
   </dependencies>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -132,9 +168,10 @@
           <includes>
             <include>org/kie/kogito/integrationtests/quarkus/*</include>
           </includes>
-          <systemPropertyVariables>
+          <systemPropertyVariables combine.children="append">
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
+            <container.image.kafka>${container.image.kafka}</container.image.kafka>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -169,7 +206,7 @@
                 <include>org/kie/kogito/integrationtests/quarkus/*</include>
                 <include>org/kie/kogito/integrationtests/quarkus/infinispan/*</include>
               </includes>
-              <systemPropertyVariables>
+              <systemPropertyVariables combine.children="append">
                 <enable.resource.infinispan>true</enable.resource.infinispan>
               </systemPropertyVariables>
             </configuration>
@@ -184,12 +221,15 @@
     </profile>
 
     <profile>
-      <id>native-image</id>
+      <id>native</id>
       <activation>
         <property>
           <name>native</name>
         </property>
       </activation>
+      <properties>
+        <quarkus.package.type>native</quarkus.package.type>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -202,26 +242,9 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <systemProperties>
+                  <systemPropertyVariables combine.children="append">
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>native-image</id>
-                <goals>
-                  <goal>native-image</goal>
-                </goals>
-                <configuration>
-                  <cleanupServer>true</cleanupServer>
-                  <enableHttpUrlHandler>true</enableHttpUrlHandler>
-                  <graalvmHome>${graalvmHome}</graalvmHome>
+                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>

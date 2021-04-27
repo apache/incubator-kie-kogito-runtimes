@@ -8,6 +8,11 @@
   <artifactId>integration-tests-springboot</artifactId>
   <name>Kogito :: Integration Tests :: SpringBoot</name>
 
+  <properties>
+    <!-- Override version to match the one used by spring-kafka -->
+    <version.org.apache.kafka>2.5.0</version.org.apache.kafka>
+  </properties>
+  
   <dependencies>
     <dependency> <!-- make this IT module to depend on the plugin for Maven reactor build intention -->
       <groupId>org.kie.kogito</groupId>
@@ -19,8 +24,56 @@
       <artifactId>kogito-springboot-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-svg-springboot-addon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Force resolving dependencies in local Maven repo, needed for it tests -->
+    <dependency>
+       <groupId>io.rest-assured</groupId>
+       <artifactId>json-schema-validator</artifactId>
+       <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common internally -->
+       <version>${version.io.rest-assured.springboot}</version>
+       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-test-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-management-springboot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>task-management-springboot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-spring-boot-starter-remote</artifactId>
@@ -36,25 +89,37 @@
     <dependency>
       <groupId>io.projectreactor.kafka</groupId>
       <artifactId>reactor-kafka</artifactId>
-      <version>${version.spring.reactor.kafka}</version>
+      <version>${version.io.projectreactor.kafka}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.projectreactor</groupId>
       <artifactId>reactor-core</artifactId>
-      <version>${version.spring.reactor}</version>
+      <version>${version.io.projectreactor}</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-handler</artifactId>
-      <version>${version.spring.netty}</version>
+      <version>${version.io.netty}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-epoll</artifactId>
-      <version>${version.spring.netty}</version>
+      <version>${version.io.netty}</version>
       <classifier>linux-x86_64</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>${version.com.github.ben-manes.caffeine}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${version.com.google.guava}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -66,12 +131,10 @@
           <artifactId>maven-invoker-plugin</artifactId>
           <configuration>
             <streamLogs>true</streamLogs>
-            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <settingsFile>src/it/settings.xml</settingsFile>
-            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
             <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
             <properties>
               <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
+              <container.image.kafka>${container.image.kafka}</container.image.kafka>
             </properties>
           </configuration>
         </plugin>
@@ -100,6 +163,13 @@
           <name>persistence</name>
         </property>
       </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>infinispan-persistence-addon</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>

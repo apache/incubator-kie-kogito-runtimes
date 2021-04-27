@@ -41,10 +41,6 @@
       <artifactId>kogito-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-internal</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
     </dependency>
@@ -79,6 +75,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-core-dynamic</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-serialization-protobuf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -128,10 +128,10 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <systemProperties>
+          <systemPropertyVariables>
             <!-- enforce strict variable checking for the sake of tests -->
             <org.jbpm.variable.strict>true</org.jbpm.variable.strict>
-          </systemProperties>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>

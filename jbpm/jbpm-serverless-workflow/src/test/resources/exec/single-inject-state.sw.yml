@@ -1,13 +1,11 @@
----
 id: function
 name: test-wf
 version: '1.0'
+start: SimpleInject
 states:
   - name: SimpleInject
     type: inject
-    start:
-      kind: default
     data:
       name: john
     end:
-      kind: terminate
+      terminate: true

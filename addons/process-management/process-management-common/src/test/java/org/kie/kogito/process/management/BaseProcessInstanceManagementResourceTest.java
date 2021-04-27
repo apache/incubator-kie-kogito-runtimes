@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.process.management;
 
 import java.util.List;
@@ -24,9 +23,9 @@ import org.jbpm.workflow.core.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.Application;
 import org.kie.kogito.auth.SecurityPolicy;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
@@ -79,10 +78,10 @@ class BaseProcessInstanceManagementResourceTest {
 
     @Mock
     private AbstractProcess process;
-    
+
     @Mock
-    private WorkflowProcess wp;
-    
+    private KogitoWorkflowProcess wp;
+
     @Mock
     private Node node;
 
@@ -206,7 +205,7 @@ class BaseProcessInstanceManagementResourceTest {
         when(processInstance.workItems(any(SecurityPolicy.class))).thenReturn(singletonList(workItem));
         Object response = tested.doGetWorkItemsInProcessInstance(PROCESS_ID, PROCESS_INSTANCE_ID);
         assertThat(response).isInstanceOf(List.class);
-        assertThat(((List)response).get(0)).isEqualTo(workItem);
+        assertThat(((List) response).get(0)).isEqualTo(workItem);
     }
 
     @Test

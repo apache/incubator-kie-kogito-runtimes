@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2013 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * 
  */
@@ -26,24 +25,24 @@ import java.util.List;
 
 public class Message implements Serializable {
 
-	private static final long serialVersionUID = 4L;
-	
-	private String          message1 = "One";
-    private String          message2 = "Two";
-    private String          message3 = "Three";
-    private String          message4 = "Four";
+    private static final long serialVersionUID = 4L;
 
-    public static final int HELLO    = 0;
-    public static final int GOODBYE  = 1;
+    private String message1 = "One";
+    private String message2 = "Two";
+    private String message3 = "Three";
+    private String message4 = "Four";
 
-    private String          message;
+    public static final int HELLO = 0;
+    public static final int GOODBYE = 1;
 
-    private int             status;
+    private String message;
 
-    private List<String>    list     = new ArrayList<String>();
-    private int             number   = 0;
-    private Date            birthday = new Date();
-    private boolean         fired    = false;
+    private int status;
+
+    private List<String> list = new ArrayList<String>();
+    private int number = 0;
+    private Date birthday = new Date();
+    private boolean fired = false;
 
     public Message() {
     }
@@ -133,6 +132,6 @@ public class Message implements Serializable {
     }
 
     public void addToList(final String s) {
-        this.list.add( s );
+        this.list.add(s);
     }
 }

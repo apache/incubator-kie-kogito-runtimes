@@ -15,13 +15,14 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -64,6 +65,7 @@ public class ParentSubProcessTest {
                 .body("[0].id", notNullValue())
                 .body("[0].name", is(name))
                 .body("[0].review", nullValue())
+                .body("[0].constant", is("aString"))
                 .extract().path("[0].id");
 
         // get task

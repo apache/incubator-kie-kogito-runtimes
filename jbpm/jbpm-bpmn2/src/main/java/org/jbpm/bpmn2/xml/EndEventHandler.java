@@ -1,11 +1,11 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2010 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.jbpm.bpmn2.xml;
-
-import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +26,7 @@ import org.jbpm.bpmn2.core.Message;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
@@ -42,19 +40,24 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
+
 public class EndEventHandler extends AbstractNodeHandler {
 
+    @Override
     protected Node createNode(Attributes attrs) {
         EndNode node = new EndNode();
         node.setTerminate(false);
         return node;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-	public Class generateNodeFor() {
+    public Class generateNodeFor() {
         return EndNode.class;
     }
 
+    @Override
     public Object end(final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
         final Element element = parser.endElementBuilder();
@@ -146,17 +149,18 @@ public class EndEventHandler extends AbstractNodeHandler {
 
                 signalName = checkSignalAndConvertToRealSignalNam(parser, signalName);
 
-                endNode.setMetaData("EventType", "signal");
-                endNode.setMetaData("Ref", signalName);
-                endNode.setMetaData("Variable", variable);
+                endNode.setMetaData(Metadata.EVENT_TYPE, "signal");
+                endNode.setMetaData(Metadata.REF, signalName);
+                endNode.setMetaData(Metadata.VARIABLE, variable);
 
                 // check if signal should be send async
                 if (dataInputs.containsValue("async")) {
                     signalName = "ASYNC-" + signalName;
                 }
-                
-                DroolsConsequenceAction action = createJavaAction(new SignalProcessInstanceAction(signalName, variable, (String) endNode.getMetaData("customScope"), (Transformation)endNode.getMetaData().get("Transformation")));
-                
+
+                DroolsConsequenceAction action = createJavaAction(
+                        new SignalProcessInstanceAction(signalName, variable, (String) endNode.getMetaData("customScope"), (Transformation) endNode.getMetaData().get("Transformation")));
+
                 List<DroolsAction> actions = new ArrayList<DroolsAction>();
                 actions.add(action);
                 endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
@@ -176,8 +180,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 readEndDataInputAssociation(xmlNode, endNode);
             } else if ("messageEventDefinition".equals(nodeName)) {
                 String messageRef = ((Element) xmlNode).getAttribute("messageRef");
-                Map<String, Message> messages = (Map<String, Message>)
-                    ((ProcessBuildData) parser.getData()).getMetaData("Messages");
+                Map<String, Message> messages = (Map<String, Message>) ((ProcessBuildData) parser.getData()).getMetaData("Messages");
                 if (messages == null) {
                     throw new IllegalArgumentException("No messages found");
                 }
@@ -186,13 +189,13 @@ public class EndEventHandler extends AbstractNodeHandler {
                     throw new IllegalArgumentException("Could not find message " + messageRef);
                 }
                 String variable = (String) endNode.getMetaData("MappingVariable");
-                endNode.setMetaData("MessageType", message.getType());
-                endNode.setMetaData("TriggerType", "ProduceMessage");
-                endNode.setMetaData("TriggerRef", message.getName());
+                endNode.setMetaData(Metadata.MESSAGE_TYPE, message.getType());
+                endNode.setMetaData(Metadata.TRIGGER_TYPE, "ProduceMessage");
+                endNode.setMetaData(Metadata.TRIGGER_REF, message.getName());
                 List<DroolsAction> actions = new ArrayList<DroolsAction>();
-                
+
                 DroolsConsequenceAction action = createJavaAction(new HandleMessageAction(message.getType(), variable));
-                
+
                 actions.add(action);
                 endNode.setActions(EndNode.EVENT_NODE_ENTER, actions);
             }
@@ -209,7 +212,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 if (dataInputs.containsKey(eventVariable)) {
                     eventVariable = dataInputs.get(eventVariable);
                 }
-                
+
                 endNode.setMetaData("MappingVariable", eventVariable);
             }
         } else {
@@ -230,7 +233,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 if (from instanceof Text) {
                     String text = ((Text) from).getTextContent();
                     if (text.startsWith("\"") && text.endsWith("\"")) {
-                        result = text.substring(1, text.length() -1);
+                        result = text.substring(1, text.length() - 1);
                     } else {
                         result = text;
                     }
@@ -243,7 +246,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	public void handleErrorNode(final Node node, final Element element, final String uri,
+    public void handleErrorNode(final Node node, final Element element, final String uri,
             final String localName, final ExtensibleXmlParser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -255,21 +258,21 @@ public class EndEventHandler extends AbstractNodeHandler {
                 String errorRef = ((Element) xmlNode).getAttribute("errorRef");
                 if (errorRef != null && errorRef.trim().length() > 0) {
                     List<Error> errors = (List<Error>) ((ProcessBuildData) parser.getData()).getMetaData("Errors");
-		            if (errors == null) {
-		                throw new IllegalArgumentException("No errors found");
-		            }
-		            Error error = null;
-		            for( Error listError: errors ) {
-		                if( errorRef.equals(listError.getId()) ) {
-		                    error = listError;
-		                    break;
-		                }
-		            }
-		            if (error == null) {
-		                throw new IllegalArgumentException("Could not find error " + errorRef);
-		            }
-		            faultNode.setFaultName(error.getErrorCode());
-	                faultNode.setTerminateParent(true);
+                    if (errors == null) {
+                        throw new IllegalArgumentException("No errors found");
+                    }
+                    Error error = null;
+                    for (Error listError : errors) {
+                        if (errorRef.equals(listError.getId())) {
+                            error = listError;
+                            break;
+                        }
+                    }
+                    if (error == null) {
+                        throw new IllegalArgumentException("Could not find error " + errorRef);
+                    }
+                    faultNode.setFaultName(error.getErrorCode());
+                    faultNode.setTerminateParent(true);
                 }
             }
             xmlNode = xmlNode.getNextSibling();
@@ -277,7 +280,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-	public void handleEscalationNode(final Node node, final Element element, final String uri,
+    public void handleEscalationNode(final Node node, final Element element, final String uri,
             final String localName, final ExtensibleXmlParser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -288,16 +291,15 @@ public class EndEventHandler extends AbstractNodeHandler {
             } else if ("escalationEventDefinition".equals(nodeName)) {
                 String escalationRef = ((Element) xmlNode).getAttribute("escalationRef");
                 if (escalationRef != null && escalationRef.trim().length() > 0) {
-                    Map<String, Escalation> escalations = (Map<String, Escalation>)
-		                ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.ESCALATIONS);
-		            if (escalations == null) {
-		                throw new IllegalArgumentException("No escalations found");
-		            }
-		            Escalation escalation = escalations.get(escalationRef);
-		            if (escalation == null) {
-		                throw new IllegalArgumentException("Could not find escalation " + escalationRef);
-		            }
-		            faultNode.setFaultName(escalation.getEscalationCode());
+                    Map<String, Escalation> escalations = (Map<String, Escalation>) ((ProcessBuildData) parser.getData()).getMetaData(ProcessHandler.ESCALATIONS);
+                    if (escalations == null) {
+                        throw new IllegalArgumentException("No escalations found");
+                    }
+                    Escalation escalation = escalations.get(escalationRef);
+                    if (escalation == null) {
+                        throw new IllegalArgumentException("Could not find escalation " + escalationRef);
+                    }
+                    faultNode.setFaultName(escalation.getEscalationCode());
                 } else {
                     // BPMN2 spec, p. 83: end event's with <escalationEventDefintions>
                     // are _required_ to reference a specific escalation(-code).
@@ -315,6 +317,7 @@ public class EndEventHandler extends AbstractNodeHandler {
         faultNode.setFaultVariable(faultVariable);
     }
 
+    @Override
     public void writeNode(Node node, StringBuilder xmlDump, int metaDataType) {
         throw new IllegalArgumentException("Writing out should be handled by specific handlers");
     }

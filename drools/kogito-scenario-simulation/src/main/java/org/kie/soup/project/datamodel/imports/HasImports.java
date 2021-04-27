@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package org.kie.soup.project.datamodel.imports;
 
@@ -23,6 +22,6 @@ public interface HasImports {
 
     Imports getImports();
 
-    void setImports( final Imports imports );
+    void setImports(final Imports imports);
 
 }
