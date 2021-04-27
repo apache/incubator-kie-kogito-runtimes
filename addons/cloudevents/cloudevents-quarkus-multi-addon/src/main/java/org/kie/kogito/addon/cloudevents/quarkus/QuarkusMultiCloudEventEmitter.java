@@ -74,7 +74,6 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
         final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(
                 configBean.useCloudEvents().orElse(true) ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
-        type = type.trim().replace(" ", "_");
         Emitter<String> emitter = (Emitter<String>) channelRegistry.getEmitter(type);
         if (emitter != null) {
             emitter.send(message);

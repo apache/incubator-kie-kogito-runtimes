@@ -39,11 +39,11 @@ public class $Type$MessageConsumer {
         eventConsumerFactory = new DefaultEventConsumerFactory();
     }
 
-    public void consume(Object payload) {
+    public void consume($DataType$ payload) {
         eventConsumerFactory
-            .get(event -> {
+            .<$Type$,$DataType$>get(event -> {
                 $Type$ model = new $Type$();
-                model.set$DataType$($DataType$.class.cast(event));
+                model.set$DataType$(event);
                 return model;
             }, useCloudEvents)
             .consume(application, process, payload, "$Trigger$");

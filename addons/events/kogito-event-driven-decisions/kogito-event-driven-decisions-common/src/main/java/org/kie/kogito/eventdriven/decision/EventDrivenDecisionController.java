@@ -73,7 +73,7 @@ public class EventDrivenDecisionController {
     }
 
     protected void setup() {
-        eventReceiver.subscribe(this::handleEvent, new SubscriptionInfo<>(String.class));
+        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo(CloudEvent.class));
     }
 
     void handleEvent(String event) {
@@ -86,7 +86,8 @@ public class EventDrivenDecisionController {
         buildEvaluationContext(event)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
-                .ifPresent(e -> eventEmitter.emit(e, e.getType(), Optional.empty()));
+                .flatMap(CloudEventUtils::toDataEvent)
+                .ifPresent(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()));
     }
 
     private Optional<EvaluationContext> buildEvaluationContext(CloudEvent event) {
