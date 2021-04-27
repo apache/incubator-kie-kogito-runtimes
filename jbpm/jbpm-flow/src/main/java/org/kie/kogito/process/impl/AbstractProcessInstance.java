@@ -16,20 +16,12 @@
 package org.kie.kogito.process.impl;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -49,7 +41,7 @@ import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
+import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
@@ -64,6 +56,8 @@ import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
+import org.kie.kogito.process.workitem.WorkItemCatalog;
+import org.kie.kogito.process.workitem.impl.WorkItemCatalogImpl;
 import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
@@ -72,6 +66,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected final T variables;
     protected final AbstractProcess<T> process;
+    protected final WorkItemCatalogImpl<T> workItemCatalog;
+
     protected InternalProcessRuntime rt;
     protected WorkflowProcessInstance processInstance;
 
@@ -94,6 +90,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
+        this.workItemCatalog = makeWorkItemCatalog();
 
         setCorrelationKey(businessKey);
 
@@ -113,6 +110,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
         this.process = process;
         this.variables = variables;
+        this.workItemCatalog = makeWorkItemCatalog();
+
         syncProcessInstance((WorkflowProcessInstance) wpi);
         unbind(variables, processInstance.getVariables());
     }
@@ -121,8 +120,18 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
+        this.workItemCatalog = makeWorkItemCatalog();
+
         syncProcessInstance((WorkflowProcessInstance) wpi);
         reconnect();
+    }
+
+    private WorkItemCatalogImpl<T> makeWorkItemCatalog() {
+        return new WorkItemCatalogImpl<>(
+                (KogitoWorkItemManager) rt.getWorkItemManager(),
+                this::processInstance,
+                this::removeOnFinish,
+                this::notifyUpdate);
     }
 
     protected void reconnect() {
@@ -396,63 +405,32 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public WorkItem workItem(String workItemId, Policy<?>... policies) {
-        WorkItemNodeInstance workItemInstance = (WorkItemNodeInstance) processInstance().getNodeInstances(true)
-                .stream()
-                .filter(ni -> ni instanceof WorkItemNodeInstance && ((WorkItemNodeInstance) ni).getWorkItemId().equals(workItemId) && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
-                .findFirst()
-                .orElseThrow(() -> new WorkItemNotFoundException("Work item with id " + workItemId + " was not found in process instance " + id(), workItemId));
-        return new BaseWorkItem(workItemInstance.getStringId(),
-                workItemInstance.getWorkItem().getStringId(),
-                Long.toString(workItemInstance.getNode().getId()),
-                (String) workItemInstance.getWorkItem().getParameters().getOrDefault("TaskName", workItemInstance.getNodeName()),
-                workItemInstance.getWorkItem().getState(),
-                workItemInstance.getWorkItem().getPhaseId(),
-                workItemInstance.getWorkItem().getPhaseStatus(),
-                workItemInstance.getWorkItem().getParameters(),
-                workItemInstance.getWorkItem().getResults());
+        return workItemCatalog.get(workItemId, policies);
     }
 
     @Override
     public List<WorkItem> workItems(Policy<?>... policies) {
-        return processInstance().getNodeInstances(true)
-                .stream()
-                .filter(ni -> ni instanceof WorkItemNodeInstance && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
-                .map(ni -> new BaseWorkItem(ni.getStringId(),
-                        ((WorkItemNodeInstance) ni).getWorkItemId(),
-                        Long.toString(((WorkItemNodeInstance) ni).getNode().getId()),
-                        (String) ((WorkItemNodeInstance) ni).getWorkItem().getParameters().getOrDefault("TaskName", ni.getNodeName()),
-                        ((WorkItemNodeInstance) ni).getWorkItem().getState(),
-                        ((WorkItemNodeInstance) ni).getWorkItem().getPhaseId(),
-                        ((WorkItemNodeInstance) ni).getWorkItem().getPhaseStatus(),
-                        ((WorkItemNodeInstance) ni).getWorkItem().getParameters(),
-                        ((WorkItemNodeInstance) ni).getWorkItem().getResults()))
-                .collect(Collectors.toList());
+        return (List<WorkItem>) workItemCatalog.get(policies);
     }
 
     @Override
     public void completeWorkItem(String id, Map<String, Object> variables, Policy<?>... policies) {
-        getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().completeWorkItem(id, variables, policies);
-        removeOnFinish();
+        workItemCatalog.complete(id, variables, policies);
     }
 
     @Override
     public <R> R updateWorkItem(String id, Function<KogitoWorkItem, R> updater, Policy<?>... policies) {
-        R result = getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().updateWorkItem(id, updater,
-                policies);
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
-        return result;
+        return workItemCatalog.update(id, updater, policies);
     }
 
     @Override
     public void abortWorkItem(String id, Policy<?>... policies) {
-        getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().abortWorkItem(id, policies);
-        removeOnFinish();
+        workItemCatalog.abort(id, policies);
     }
 
     @Override
     public void transitionWorkItem(String id, Transition<?> transition) {
-        getProcessRuntime().getKogitoProcessRuntime().getKogitoWorkItemManager().transitionWorkItem(id, transition);
-        removeOnFinish();
+        workItemCatalog.transition(id, transition);
     }
 
     @Override
@@ -480,6 +458,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         }
         unbind(this.variables, processInstance().getVariables());
         this.status = processInstance.getState();
+    }
+
+    protected void notifyUpdate() {
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
     }
 
     // this must be overridden at compile time

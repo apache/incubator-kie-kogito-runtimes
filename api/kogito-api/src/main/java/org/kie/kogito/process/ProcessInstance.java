@@ -30,6 +30,7 @@ import org.kie.kogito.process.flexible.AdHocFragment;
 import org.kie.kogito.process.flexible.Milestone;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
+import org.kie.kogito.process.workitem.WorkItemCatalog;
 
 public interface ProcessInstance<T> {
 
@@ -113,6 +114,7 @@ public interface ProcessInstance<T> {
      * @param variables optional variables
      * @param policies optional list of policies to be enforced
      */
+    @Deprecated
     void completeWorkItem(String id, Map<String, Object> variables, Policy<?>... policies);
 
     /**
@@ -123,6 +125,7 @@ public interface ProcessInstance<T> {
      * @param policies optional security information
      * @return result of the operation performed by the updater
      */
+    @Deprecated
     <R> R updateWorkItem(String id, Function<KogitoWorkItem, R> updater, Policy<?>... policies);
 
     /**
@@ -131,6 +134,7 @@ public interface ProcessInstance<T> {
      * @param id id of the work item to complete
      * @param policies optional list of policies to be enforced
      */
+    @Deprecated
     void abortWorkItem(String id, Policy<?>... policies);
 
     /**
@@ -139,6 +143,7 @@ public interface ProcessInstance<T> {
      * @param id id of the work item to complete
      * @param transition target transition including phase, identity and data
      */
+    @Deprecated
     void transitionWorkItem(String id, Transition<?> transition);
 
     /**
@@ -148,6 +153,7 @@ public interface ProcessInstance<T> {
      * @param policies optional list of policies to be enforced
      * @return work item with its parameters if found
      */
+    @Deprecated
     WorkItem workItem(String workItemId, Policy<?>... policies);
 
     /**
@@ -164,7 +170,21 @@ public interface ProcessInstance<T> {
      * @param policies optional list of policies to be enforced
      * @return non empty list of identifiers of currently active tasks.
      */
+    @Deprecated
     List<WorkItem> workItems(Policy<?>... policies);
+
+    /**
+     * Returns list of currently active work items.
+     *
+     * <strong>this is an experimental API.</strong>
+     *  Will be renamed to <code>workItems</code> when
+     *  {@link #workItems(Policy[])} is removed
+     *
+     * @param policies optional list of policies to be enforced
+     * @return non empty list of identifiers of currently active tasks.
+     */
+    WorkItemCatalog getWorkItems(Policy<?>... policies);
+
 
     /**
      * Returns identifier of this process instance
