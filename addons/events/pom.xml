@@ -27,7 +27,6 @@
       <modules>
         <module>kogito-events-reactive-messaging-addon</module>
         <module>kogito-events-spring-boot-addon</module>
-        <module>knative-eventing-addon</module>
       </modules>
     </profile>
   </profiles>

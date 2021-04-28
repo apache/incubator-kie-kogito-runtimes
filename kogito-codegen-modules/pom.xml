@@ -35,7 +35,6 @@
             </property>
         </activation>
         <modules>
-            <module>kogito-codegen-openapi</module>
             <module>kogito-codegen-integration-tests</module>
             <module>kogito-codegen-sample</module>
         </modules>
