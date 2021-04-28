@@ -404,6 +404,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
+    public WorkItemCatalog getWorkItems(Policy<?>... policies) {
+        return workItemCatalog;
+    }
+
+    @Override
     public WorkItem workItem(String workItemId, Policy<?>... policies) {
         return workItemCatalog.get(workItemId, policies);
     }

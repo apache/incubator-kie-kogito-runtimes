@@ -15,6 +15,12 @@
  */
 package org.kie.kogito.process.workitem.impl;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -25,12 +31,6 @@ import org.kie.kogito.process.impl.BaseWorkItem;
 import org.kie.kogito.process.workitem.Policy;
 import org.kie.kogito.process.workitem.Transition;
 import org.kie.kogito.process.workitem.WorkItemCatalog;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class WorkItemCatalogImpl<T> implements WorkItemCatalog {
 
