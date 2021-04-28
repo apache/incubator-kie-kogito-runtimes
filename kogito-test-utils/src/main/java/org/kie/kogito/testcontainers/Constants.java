@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.rules;
+package org.kie.kogito.testcontainers;
 
-public interface RuleUnit<T extends RuleUnitData> {
+import java.time.Duration;
 
-    String id();
+public class Constants {
 
-    default RuleUnitInstance<T> createInstance(T data) {
-        return createInstance(data, null);
-    }
+    public static final Duration CONTAINER_START_TIMEOUT = Duration.ofMinutes(3);
+    public static final String CONTAINER_NAME_PREFIX = "container.image.";
 
-    RuleUnitInstance<T> createInstance(T data, String name);
 }
