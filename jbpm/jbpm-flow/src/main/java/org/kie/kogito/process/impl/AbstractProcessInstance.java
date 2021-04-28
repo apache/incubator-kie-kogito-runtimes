@@ -128,7 +128,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     private WorkItemCatalogImpl<T> makeWorkItemCatalog() {
         return new WorkItemCatalogImpl<>(
-                (KogitoWorkItemManager) rt.getWorkItemManager(),
+                () -> (KogitoWorkItemManager) rt.getWorkItemManager(),
                 this::processInstance,
                 this::removeOnFinish,
                 this::notifyUpdate);

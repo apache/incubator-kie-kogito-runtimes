@@ -34,17 +34,17 @@ import org.kie.kogito.process.workitem.WorkItemCatalog;
 
 public class WorkItemCatalogImpl<T> implements WorkItemCatalog {
 
-    private final KogitoWorkItemManager workItemManager;
+    private final Supplier<KogitoWorkItemManager> workItemManagerSupplier;
     private final Supplier<WorkflowProcessInstance> processInstanceSupplier;
     private final Runnable removeOnFinish;
     private final Runnable updateNotifier;
 
     public WorkItemCatalogImpl(
-            KogitoWorkItemManager workItemManager,
+            Supplier<KogitoWorkItemManager> workItemManagerSupplier,
             Supplier<WorkflowProcessInstance> processInstanceSupplier,
             Runnable removeOnFinish,
             Runnable updateNotifier) {
-        this.workItemManager = workItemManager;
+        this.workItemManagerSupplier = workItemManagerSupplier;
         this.processInstanceSupplier = processInstanceSupplier;
         this.removeOnFinish = removeOnFinish;
         this.updateNotifier = updateNotifier;
@@ -52,13 +52,13 @@ public class WorkItemCatalogImpl<T> implements WorkItemCatalog {
 
     @Override
     public void complete(String id, Object variables, Policy<?>... policies) {
-        workItemManager.completeWorkItem(id, (Map<String, Object>) variables, policies);
+        workItemManagerSupplier.get().completeWorkItem(id, (Map<String, Object>) variables, policies);
         removeOnFinish.run();
     }
 
     @Override
     public <R> R update(String id, Function<KogitoWorkItem, R> updater, Policy<?>... policies) {
-        R result = workItemManager.updateWorkItem(id, updater,
+        R result = workItemManagerSupplier.get().updateWorkItem(id, updater,
                 policies);
         updateNotifier.run();
         return result;
@@ -66,13 +66,13 @@ public class WorkItemCatalogImpl<T> implements WorkItemCatalog {
 
     @Override
     public void abort(String id, Policy<?>... policies) {
-        workItemManager.abortWorkItem(id, policies);
+        workItemManagerSupplier.get().abortWorkItem(id, policies);
         removeOnFinish.run();
     }
 
     @Override
     public void transition(String id, Transition<?> transition) {
-        workItemManager.transitionWorkItem(id, transition);
+        workItemManagerSupplier.get().transitionWorkItem(id, transition);
         removeOnFinish.run();
     }
 
