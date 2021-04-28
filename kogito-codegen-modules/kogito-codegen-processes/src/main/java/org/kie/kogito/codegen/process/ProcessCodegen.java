@@ -104,7 +104,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
-        HashMap<String, String> processSVGs = new HashMap<>();
+        Map<String, String> processSVGMap = new HashMap<>();
         boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
         List<Process> processes = resources.stream()
                 .map(CollectedResource::resource)
@@ -112,19 +112,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
                         Collection<Process> p = parseProcessFile(resource);
                         if (useSvgAddon && resource instanceof FileSystemResource) {
-                            File f = ((FileSystemResource) resource).getFile();
-                            String processFileCompleteName = f.getName();
-                            String fileName = processFileCompleteName.substring(0, processFileCompleteName.lastIndexOf("."));
-                            p.stream().forEach(process -> {
-                                resources.stream().filter(r -> r.resource().getSourcePath().endsWith(String.format(SVG_EXPORT_NAME_EXPRESION, fileName)))
-                                        .forEach(svg -> {
-                                            try {
-                                                processSVGs.put(process.getId(), new String(Files.readAllBytes(Paths.get(svg.resource().getSourcePath()))));
-                                            } catch (IOException e) {
-                                                LOGGER.error("\n IOException trying to add " + svg.resource().getSourcePath() + " with processId:" + process.getId() + "\n" + e.getMessage());
-                                            }
-                                        });
-                            });
+                            processSVG((FileSystemResource) resource, resources, p, processSVGMap);
                         }
                         return p.stream();
                     } else {
@@ -136,10 +124,42 @@ public class ProcessCodegen extends AbstractGenerator {
                 })
                 .collect(toList());
         if (useSvgAddon) {
-            context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGs);
+            context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
 
         return ofProcesses(context, processes);
+    }
+
+    private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,
+            Collection<Process> processes, Map<String, String> processSVGMap) {
+        File f = resource.getFile();
+        String processFileCompleteName = f.getName();
+        String fileName = processFileCompleteName.substring(0, processFileCompleteName.lastIndexOf("."));
+        processes.stream().forEach(process -> {
+            if (isFilenameValid(process.getId() + ".svg")) {
+                resources.stream()
+                        .filter(r -> r.resource().getSourcePath().endsWith(String.format(SVG_EXPORT_NAME_EXPRESION, fileName)))
+                        .forEach(svg -> {
+                            try {
+                                processSVGMap.put(process.getId(),
+                                        new String(Files.readAllBytes(Paths.get(svg.resource().getSourcePath()))));
+                            } catch (IOException e) {
+                                LOGGER.error("\n IOException trying to add " + svg.resource().getSourcePath() +
+                                        " with processId:" + process.getId() + "\n" + e.getMessage(), e);
+                            }
+                        });
+            }
+        });
+    }
+
+    public static boolean isFilenameValid(String file) {
+        File f = new File(file);
+        try {
+            f.getCanonicalPath();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private static ProcessCodegen ofProcesses(KogitoBuildContext context, List<Process> processes) {
@@ -430,7 +450,7 @@ public class ProcessCodegen extends AbstractGenerator {
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
         if ((context().getAddonsConfig().useProcessSVG())) {
-            HashMap<String, String> svgs = context().getContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, HashMap.class);
+            Map<String, String> svgs = context().getContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, Map.class);
             svgs.keySet().stream().forEach(key -> storeFile(GeneratedFileType.RESOURCE, "META-INF/processSVG/" + key + ".svg", svgs.get(key)));
         }
 
