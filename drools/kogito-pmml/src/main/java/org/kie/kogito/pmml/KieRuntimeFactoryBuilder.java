@@ -113,7 +113,7 @@ public class KieRuntimeFactoryBuilder {
     }
 
     private static List<PMMLRuleMapper> loadPMMLRuleMappers(final KnowledgeBuilderImpl kbuilderImpl,
-                                                            final Resource resource) {
+            final Resource resource) {
         try {
             final KiePMMLModelFactory kiePMMLModelFactory = PMMLLoaderService.loadKiePMMLModelFactory(kbuilderImpl, resource);
             return PMMLLoaderService.getPMMLRuleMappers(kbuilderImpl, kiePMMLModelFactory);
