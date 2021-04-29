@@ -35,6 +35,7 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@org.junit.jupiter.api.Disabled
 public class KubernetesServiceDiscoveryTest {
 
     public static final String NAMESPACE = "mockns";
