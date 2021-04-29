@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,19 +59,20 @@ public class KieRuntimeFactoryBuilder {
     }
 
     public static Map<KieBase, KieRuntimeFactory> fromResources(final Stream<Resource> resources) {
-        return commonFromResources(resources, PMMLLoaderService::getKiePMMLModelsLoadedFromResource);
+        return commonFromResources(resources, PMMLLoaderService::getKiePMMLModelsLoadedFromResource, KieRuntimeFactoryBuilder::createPopulatedKnowledgeBuilderImpl);
     }
 
     public static Map<KieBase, KieRuntimeFactory> fromResourcesWithInMemoryCompilation(final Stream<Resource> resources) {
-        return commonFromResources(resources, PMMLCompilerService::getKiePMMLModelsCompiledFromResource);
+        return commonFromResources(resources, PMMLCompilerService::getKiePMMLModelsCompiledFromResource, KieRuntimeFactoryBuilder::createEmptyKnowledgeBuilderImpl);
     }
 
     private static Map<KieBase, KieRuntimeFactory> commonFromResources(
             final Stream<Resource> resources,
-            final BiFunction<KnowledgeBuilderImpl, Resource, List<KiePMMLModel>> modelProducer) {
+            final BiFunction<KnowledgeBuilderImpl, Resource, List<KiePMMLModel>> modelProducer,
+            final Function<Resource, KnowledgeBuilderImpl> kbuilderImplProvider) {
         final Map<KieBase, KieRuntimeFactory> toReturn = new HashMap<>();
         resources.forEach(resource -> {
-            final KnowledgeBuilderImpl kbuilderImpl = createKnowledgeBuilderImpl(resource);
+            final KnowledgeBuilderImpl kbuilderImpl = kbuilderImplProvider.apply(resource);
             List<KiePMMLModel> toAdd = modelProducer.apply(kbuilderImpl, resource);
             if (toAdd.isEmpty()) {
                 throw new KiePMMLException("Failed to retrieve compiled models");
@@ -98,9 +100,13 @@ public class KieRuntimeFactoryBuilder {
         }
     }
 
-    private static KnowledgeBuilderImpl createKnowledgeBuilderImpl(final Resource resource) {
+    private static KnowledgeBuilderImpl createEmptyKnowledgeBuilderImpl(final Resource resource) {
         KnowledgeBaseImpl defaultKnowledgeBase = new KnowledgeBaseImpl("PMML", null);
-        KnowledgeBuilderImpl toReturn = new KnowledgeBuilderImpl(defaultKnowledgeBase);
+        return new KnowledgeBuilderImpl(defaultKnowledgeBase);
+    }
+
+    private static KnowledgeBuilderImpl createPopulatedKnowledgeBuilderImpl(final Resource resource) {
+        KnowledgeBuilderImpl toReturn = createEmptyKnowledgeBuilderImpl(resource);
         List<PMMLRuleMapper> pmmlRuleMappers = loadPMMLRuleMappers(toReturn, resource);
         if (!pmmlRuleMappers.isEmpty()) {
             List<Model> models =
