@@ -9,7 +9,6 @@ build:
         mvn clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -DskipTests
       current: |
         mvn -f kogito-runtimes/pom.xml clean install -fae -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
-        mvn -f kogito-runtimes/pom.xml validate -Psonarcloud-analysis -Dsonar.login=$SONAR_TOKEN -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f kogito-runtimes-integration-tests/pom.xml -fae -Ppersistence clean verify
     clone:
       - kogito-runtimes
