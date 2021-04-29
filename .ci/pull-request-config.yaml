@@ -8,30 +8,35 @@ build:
       upstream: |
         mvn clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -DskipTests
       current: |
-        mvn clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
-        mvn validate -Psonarcloud-analysis -Dsonar.login=$SONAR_TOKEN -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn -f kogito-runtimes/pom.xml clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn -f kogito-runtimes/pom.xml validate -Psonarcloud-analysis -Dsonar.login=$SONAR_TOKEN -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f kogito-runtimes-integration-tests/pom.xml clean
     clone:
+      - kogito-runtimes
       - kogito-runtimes-integration-tests
 
   - project: kiegroup/optaplanner
     build-command:
-      current: mvn -e clean install -nsu -Prun-code-coverage,wildfly -Dfull  -Dintegration-tests=false -Dmaven.test.failure.ignore=true -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+      current: mvn -f optaplanner/pom.xml -e clean install -nsu -Prun-code-coverage,wildfly -Dfull  -Dintegration-tests=false -Dmaven.test.failure.ignore=true -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
       upstream: mvn -e clean install -Dquickly -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+    clone:
+      - optaplanner
 
   - project: kiegroup/kogito-apps
     build-command:
       current: |
-        mvn clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
-        mvn validate -Psonarcloud-analysis -e -nsu -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn -f kogito-apps/pom.xml clean install -Prun-code-coverage -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+    clone:
+      - kogito-apps
 
   - project: kiegroup/kogito-examples
     build-command:
       current: |
-        mvn clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+        mvn -f kogito-examples/pom.xml clean install -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f kogito-examples-persistence/pom.xml clean install -Ppersistence -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
         mvn -f kogito-examples-events/pom.xml clean install -Pevents -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
     clone:
+      - kogito-examples
       - kogito-examples-persistence
       - kogito-examples-events
             
