@@ -38,12 +38,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
-      <dependency>
-        <groupId>org.apache.kafka</groupId>
-        <artifactId>kafka-streams</artifactId>
-        <version>${version.org.apache.kafka}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   

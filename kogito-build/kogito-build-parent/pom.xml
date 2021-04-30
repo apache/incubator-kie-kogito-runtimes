@@ -149,7 +149,6 @@
     <version.io.swagger.parser.v3>2.0.24</version.io.swagger.parser.v3>
 
     <version.org.apache.commons>3.12.0</version.org.apache.commons>
-    <version.org.apache.kafka>2.7.0</version.org.apache.kafka>
     <version.org.apache.xmlgraphics.batik>1.13</version.org.apache.xmlgraphics.batik>
     <version.org.assertj>3.19.0</version.org.assertj>
     <version.org.graalvm.nativeimage>21.0.0</version.org.graalvm.nativeimage>
@@ -567,11 +566,6 @@
       </dependency>
 
       <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>${version.io.swagger.core.v3}</version>
-      </dependency>
-      <dependency>
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.io.swagger.parser.v3}</version>
@@ -641,6 +635,11 @@
       <dependency>
         <groupId>io.cloudevents</groupId>
         <artifactId>cloudevents-api</artifactId>
+        <version>${version.io.cloudevents}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.cloudevents</groupId>
+        <artifactId>cloudevents-core</artifactId>
         <version>${version.io.cloudevents}</version>
       </dependency>
       <dependency>
