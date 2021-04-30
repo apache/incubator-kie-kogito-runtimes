@@ -24,39 +24,29 @@ import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.impl.ConstraintImpl;
 import org.jbpm.workflow.core.node.Split;
 
-public class SplitFactory extends NodeFactory {
+public class SplitFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends NodeFactory<SplitFactory<T>, T> {
 
     public static final String METHOD_TYPE = "type";
     public static final String METHOD_CONSTRAINT = "constraint";
 
-    public SplitFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
-        super(nodeContainerFactory, nodeContainer, id);
-    }
-
-    protected Node createNode() {
-        return new Split();
+    public SplitFactory(T nodeContainerFactory, NodeContainer nodeContainer, long id) {
+        super(nodeContainerFactory, nodeContainer, new Split(), id);
     }
 
     protected Split getSplit() {
         return (Split) getNode();
     }
 
-    @Override
-    public SplitFactory name(String name) {
-        super.name(name);
-        return this;
-    }
-
-    public SplitFactory type(int type) {
+    public SplitFactory<T> type(int type) {
         getSplit().setType(type);
         return this;
     }
 
-    public SplitFactory constraint(long toNodeId, String name, String type, String dialect, String constraint) {
+    public SplitFactory<T> constraint(long toNodeId, String name, String type, String dialect, String constraint) {
         return constraint(toNodeId, name, type, dialect, constraint, 0);
     }
 
-    public SplitFactory constraint(long toNodeId, String name, String type, String dialect, String constraint, int priority) {
+    public SplitFactory<T> constraint(long toNodeId, String name, String type, String dialect, String constraint, int priority) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(name);
         constraintImpl.setType(type);
@@ -68,7 +58,7 @@ public class SplitFactory extends NodeFactory {
         return this;
     }
 
-    public SplitFactory constraint(long toNodeId, String name, String type, String dialect, ReturnValueEvaluator evaluator, int priority) {
+    public SplitFactory<T> constraint(long toNodeId, String name, String type, String dialect, ReturnValueEvaluator evaluator, int priority) {
         ReturnValueConstraintEvaluator constraintImpl = new ReturnValueConstraintEvaluator();
         constraintImpl.setName(name);
         constraintImpl.setType(type);

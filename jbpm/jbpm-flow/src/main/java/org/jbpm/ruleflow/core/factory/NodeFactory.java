@@ -19,41 +19,43 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 
-public abstract class NodeFactory {
+public abstract class NodeFactory<T extends NodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> {
 
     public static final String METHOD_NAME = "name";
     public static final String METHOD_METADATA = "metaData";
     public static final String METHOD_DONE = "done";
 
-    private Node node;
-    private NodeContainer nodeContainer;
-    protected RuleFlowNodeContainerFactory nodeContainerFactory;
+    protected Object node;
+    protected NodeContainer nodeContainer;
+    protected P nodeContainerFactory;
 
-    protected NodeFactory(RuleFlowNodeContainerFactory nodeContainerFactory, NodeContainer nodeContainer, long id) {
+    protected NodeFactory(P nodeContainerFactory, NodeContainer nodeContainer, Object node, Object id) {
         this.nodeContainerFactory = nodeContainerFactory;
         this.nodeContainer = nodeContainer;
-        this.node = createNode();
-        this.node.setId(id);
+        this.node = node;
+        setId(node, id);
     }
 
-    protected abstract Node createNode();
+    protected void setId(Object node, Object id) {
+        ((Node) node).setId((long) id);
+    }
 
     protected Node getNode() {
-        return node;
+        return (Node) node;
     }
 
-    public NodeFactory name(String name) {
+    public T name(String name) {
         getNode().setName(name);
-        return this;
+        return (T) this;
     }
 
-    public NodeFactory metaData(String name, Object value) {
+    public T metaData(String name, Object value) {
         getNode().setMetaData(name, value);
-        return this;
+        return (T) this;
     }
 
-    public RuleFlowNodeContainerFactory done() {
-        nodeContainer.addNode(node);
+    public P done() {
+        nodeContainer.addNode((Node) node);
         return this.nodeContainerFactory;
     }
 }
