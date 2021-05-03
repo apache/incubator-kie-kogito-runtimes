@@ -27,7 +27,7 @@ jobs:
         id: build-chain
         uses: kiegroup/github-action-build-chain@v2.3
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-runtimes/${BRANCH}/.ci/pull-request-config.yaml
+          definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH}/.ci/pull-request-config.yaml
           flow-type: full-downstream
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
