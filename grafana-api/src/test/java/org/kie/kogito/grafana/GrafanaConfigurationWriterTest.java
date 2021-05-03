@@ -33,4 +33,14 @@ public class GrafanaConfigurationWriterTest {
 
         Assertions.assertEquals(expected, dashboardName);
     }
+
+    @Test
+    public void testGrafanaDashboardNameWithEmptyGav(){
+        String handlerName = "myHandler";
+        String expected = "myHandler";
+
+        String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.empty(), handlerName);
+
+        Assertions.assertEquals(expected, dashboardName);
+    }
 }
