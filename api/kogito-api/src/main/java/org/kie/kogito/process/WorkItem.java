@@ -21,6 +21,10 @@ public interface WorkItem {
 
     String getId();
 
+    default String getNodeId() {
+        throw new UnsupportedOperationException();
+    }
+
     String getNodeInstanceId();
 
     String getName();
