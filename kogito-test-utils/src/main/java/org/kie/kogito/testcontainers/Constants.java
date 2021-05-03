@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.app;
+package org.kie.kogito.testcontainers;
 
-import javax.ws.rs.Path;
+import java.time.Duration;
 
-import org.kie.kogito.addon.cloudevents.quarkus.http.AbstractQuarkusCloudEventResource;
+public class Constants {
 
-@Path("/")
-public class CloudEventListenerResource extends AbstractQuarkusCloudEventResource {
+    public static final Duration CONTAINER_START_TIMEOUT = Duration.ofMinutes(3);
+    public static final String CONTAINER_NAME_PREFIX = "container.image.";
 
 }
