@@ -22,24 +22,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceReadMode;
-import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.process.impl.Sig;
-import org.kie.kogito.process.ProcessInstanceExecutionException;
 import org.kie.kogito.process.WorkItem;
+import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
-import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
-import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
+import org.kie.kogito.auth.IdentityProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -67,8 +60,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class $Type$Resource {
 
     Process<$Type$> process;
-
-    Application application;
 
     @Autowired
     ProcessService processService;

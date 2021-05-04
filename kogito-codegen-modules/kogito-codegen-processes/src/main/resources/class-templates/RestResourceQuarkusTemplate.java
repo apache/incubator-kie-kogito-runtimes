@@ -44,12 +44,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceExecutionException;
-import org.kie.kogito.process.ProcessInstanceNotFoundException;
-import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.workitem.Attachment;
@@ -57,18 +53,12 @@ import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
-import org.kie.kogito.process.impl.Sig;
-import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 import org.kie.kogito.auth.IdentityProvider;
-import org.jbpm.process.instance.impl.humantask.HumanTaskHelper;
-import org.jbpm.process.instance.impl.humantask.HumanTaskTransition;
 
 @Path("/$name$")
 public class $Type$Resource {
 
     Process<$Type$> process;
-
-    Application application;
 
     @Inject
     ProcessService processService;
