@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.process;
+package org.kie.kogito.testcontainers;
 
-import java.util.Map;
+import java.time.Duration;
 
-public interface WorkItem {
+public class Constants {
 
-    String getId();
+    public static final Duration CONTAINER_START_TIMEOUT = Duration.ofMinutes(3);
+    public static final String CONTAINER_NAME_PREFIX = "container.image.";
 
-    default String getNodeId() {
-        throw new UnsupportedOperationException();
-    }
-
-    String getNodeInstanceId();
-
-    String getName();
-
-    int getState();
-
-    String getPhase();
-
-    String getPhaseStatus();
-
-    Map<String, Object> getParameters();
-
-    Map<String, Object> getResults();
 }
