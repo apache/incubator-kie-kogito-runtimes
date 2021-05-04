@@ -106,7 +106,7 @@ public class $Type$ReactiveResource {
     @GET()
     @Path("/{id}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
-    public CompletionStage<List<WorkItem>> getTasks_$name$(@PathParam("id") String id,
+    public CompletionStage<List<TaskModel>> getTasks_$name$(@PathParam("id") String id,
                                                            @QueryParam("user") final String user,
                                                            @QueryParam("group") final List<String> groups) {
         return CompletableFuture.supplyAsync(

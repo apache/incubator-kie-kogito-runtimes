@@ -62,7 +62,7 @@ public interface ProcessService {
             String user,
             List<String> groups,
             MapOutput model,
-            Function<Map, R> mapper);
+            Function<Map<String, Object>, R> mapper);
 
     <T extends MappableToModel<R>, R> Optional<R> taskTransition(
             Process<T> process,

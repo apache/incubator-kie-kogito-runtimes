@@ -69,7 +69,7 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process) {
         return process.instances().values().stream()
-                .map(pi -> pi.variables())
+                .map(ProcessInstance::variables)
                 .map(MappableToModel::toModel)
                 .collect(Collectors.toList());
     }
@@ -78,7 +78,7 @@ public class ProcessServiceImpl implements ProcessService {
     public <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
-                .map(pi -> pi.variables())
+                .map(ProcessInstance::variables)
                 .map(MappableToModel::toModel);
     }
 
@@ -165,7 +165,7 @@ public class ProcessServiceImpl implements ProcessService {
             String user,
             List<String> groups,
             MapOutput model,
-            Function<Map, R> mapper) {
+            Function<Map<String, Object>, R> mapper) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
                 .findById(id)

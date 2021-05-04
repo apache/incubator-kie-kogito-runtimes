@@ -312,10 +312,6 @@ public class ProcessResourceGenerator {
         fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(processClazzName));
     }
 
-    private void initializeApplicationField(FieldDeclaration fd) {
-        fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
-    }
-
     private void interpolateStrings(StringLiteralExpr vv) {
         String s = vv.getValue();
         String documentation =
