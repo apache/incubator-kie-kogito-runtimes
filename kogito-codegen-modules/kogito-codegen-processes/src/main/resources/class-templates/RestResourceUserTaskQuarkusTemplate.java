@@ -125,18 +125,6 @@ public class $Type$Resource {
         return processService.getSchemaAndPhases(process, id, taskId, user, groups);
     }
 
-    @DELETE
-    @Path("/{id}/$taskName$/{taskId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public $Type$Output abortTask(@PathParam("id") final String id,
-                                  @PathParam("taskId") final String taskId,
-                                  @QueryParam("phase") @DefaultValue("abort") final String phase,
-                                  @QueryParam("user") final String user,
-                                  @QueryParam("group") final List<String> groups) {
-        return processService.abortTask(process, id, taskId, phase, user, groups)
-                .orElseThrow(NotFoundException::new);
-    }
-
     @POST
     @Path("/{id}/$taskName$/{taskId}/comments")
     @Consumes(MediaType.TEXT_PLAIN)
