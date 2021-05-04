@@ -15,12 +15,14 @@
  */
 package org.kie.kogito.pmml;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +40,7 @@ import org.kie.api.runtime.KieRuntimeFactory;
 import org.kie.pmml.api.exceptions.KiePMMLException;
 import org.kie.pmml.commons.model.HasNestedModels;
 import org.kie.pmml.commons.model.KiePMMLModel;
+import org.kie.pmml.compiler.commons.factories.KiePMMLModelFactory;
 import org.kie.pmml.evaluator.api.container.PMMLPackage;
 import org.kie.pmml.evaluator.assembler.container.PMMLPackageImpl;
 import org.kie.pmml.evaluator.assembler.rulemapping.PMMLRuleMapper;
@@ -62,19 +65,20 @@ public class KieRuntimeFactoryBuilder {
     }
 
     public static Map<KieBase, KieRuntimeFactory> fromResources(final Stream<Resource> resources) {
-        return commonFromResources(resources, PMMLLoaderService::getKiePMMLModelsLoadedFromResource);
+        return commonFromResources(resources, PMMLLoaderService::getKiePMMLModelsLoadedFromResource, KieRuntimeFactoryBuilder::createPopulatedKnowledgeBuilderImpl);
     }
 
     public static Map<KieBase, KieRuntimeFactory> fromResourcesWithInMemoryCompilation(final Stream<Resource> resources) {
-        return commonFromResources(resources, PMMLCompilerService::getKiePMMLModelsCompiledFromResource);
+        return commonFromResources(resources, PMMLCompilerService::getKiePMMLModelsCompiledFromResource, KieRuntimeFactoryBuilder::createEmptyKnowledgeBuilderImpl);
     }
 
     private static Map<KieBase, KieRuntimeFactory> commonFromResources(
             final Stream<Resource> resources,
-            final BiFunction<KnowledgeBuilderImpl, Resource, List<KiePMMLModel>> modelProducer) {
+            final BiFunction<KnowledgeBuilderImpl, Resource, List<KiePMMLModel>> modelProducer,
+            final Function<Resource, KnowledgeBuilderImpl> kbuilderImplProvider) {
         final Map<KieBase, KieRuntimeFactory> toReturn = new HashMap<>();
         resources.forEach(resource -> {
-            final KnowledgeBuilderImpl kbuilderImpl = createKnowledgeBuilderImpl(resource);
+            final KnowledgeBuilderImpl kbuilderImpl = kbuilderImplProvider.apply(resource);
             List<KiePMMLModel> toAdd = modelProducer.apply(kbuilderImpl, resource);
             if (toAdd.isEmpty()) {
                 throw new KiePMMLException("Failed to retrieve compiled models");
@@ -102,10 +106,14 @@ public class KieRuntimeFactoryBuilder {
         }
     }
 
-    private static KnowledgeBuilderImpl createKnowledgeBuilderImpl(final Resource resource) {
+    private static KnowledgeBuilderImpl createEmptyKnowledgeBuilderImpl(final Resource resource) {
         KnowledgeBaseImpl defaultKnowledgeBase = new KnowledgeBaseImpl("PMML", null);
-        KnowledgeBuilderImpl toReturn = new KnowledgeBuilderImpl(defaultKnowledgeBase);
-        List<PMMLRuleMapper> pmmlRuleMappers = loadPMMLRuleMappers(toReturn.getRootClassLoader(), resource);
+        return new KnowledgeBuilderImpl(defaultKnowledgeBase);
+    }
+
+    private static KnowledgeBuilderImpl createPopulatedKnowledgeBuilderImpl(final Resource resource) {
+        KnowledgeBuilderImpl toReturn = createEmptyKnowledgeBuilderImpl(resource);
+        List<PMMLRuleMapper> pmmlRuleMappers = loadPMMLRuleMappers(toReturn, resource);
         if (!pmmlRuleMappers.isEmpty()) {
             List<Model> models =
                     pmmlRuleMappers.stream()
@@ -116,27 +124,72 @@ public class KieRuntimeFactoryBuilder {
         return toReturn;
     }
 
-    private static List<PMMLRuleMapper> loadPMMLRuleMappers(final ClassLoader classLoader,
+    // From now on the code is available inside PMMLLoaderService >= 7.53.x
+
+    private static List<PMMLRuleMapper> loadPMMLRuleMappers(final KnowledgeBuilderImpl kbuilderImpl,
             final Resource resource) {
-        Optional<PMMLRuleMappers> predictionRuleMappers = loadPMMLRuleMappersClass(classLoader, resource);
-        return predictionRuleMappers.map(PMMLRuleMappers::getPMMLRuleMappers).orElse(Collections.emptyList());
+        try {
+            final KiePMMLModelFactory kiePMMLModelFactory = loadKiePMMLModelFactory(kbuilderImpl, resource);
+            return getPMMLRuleMappers(kbuilderImpl, kiePMMLModelFactory);
+        } catch (Exception e) {
+            throw new KiePMMLException("Failed to retrieve RuleMappers for " + resource.getSourcePath(), e);
+        }
+    }
+
+    private static KiePMMLModelFactory loadKiePMMLModelFactory(final KnowledgeBuilderImpl kbuilderImpl,
+            final Resource resource) throws Exception {
+        String[] classNamePackageName = getFactoryClassNamePackageName(resource);
+        String factoryClassName = classNamePackageName[0];
+        String packageName = classNamePackageName[1];
+        String fullFactoryClassName = packageName + "." + factoryClassName;
+        final Class<? extends KiePMMLModelFactory> aClass =
+                (Class<? extends KiePMMLModelFactory>) kbuilderImpl.getRootClassLoader().loadClass(fullFactoryClassName);
+        return aClass.getDeclaredConstructor().newInstance();
+    }
+
+    private static List<PMMLRuleMapper> getPMMLRuleMappers(final KnowledgeBuilderImpl kbuilderImpl,
+            final KiePMMLModelFactory modelFactory) {
+        final List<PMMLRuleMapper> toReturn = new ArrayList<>();
+        for (KiePMMLModel kiePMMLModel : modelFactory.getKiePMMLModels()) {
+            toReturn.addAll(loadPMMLRuleMappers(kbuilderImpl.getRootClassLoader(), kiePMMLModel.getKModulePackageName()));
+            if (kiePMMLModel instanceof HasNestedModels) {
+                populatePMMLRuleMappers(kbuilderImpl, ((HasNestedModels) kiePMMLModel).getNestedModels(), toReturn);
+            }
+        }
+        return toReturn;
+    }
+
+    private static List<PMMLRuleMapper> loadPMMLRuleMappers(final ClassLoader classLoader,
+            final String packageName) {
+        Optional<PMMLRuleMappers> pmmlRuleMappers = loadPMMLRuleMappersClass(classLoader, packageName);
+        return pmmlRuleMappers.map(PMMLRuleMappers::getPMMLRuleMappers).orElse(Collections.emptyList());
     }
 
     private static Optional<PMMLRuleMappers> loadPMMLRuleMappersClass(final ClassLoader classLoader,
-            final Resource resource) {
-        String[] classNamePackageName = getFactoryClassNamePackageName(resource);
-        String packageName = classNamePackageName[1];
+            final String packageName) {
         String fullPMMLRuleMappersClassName = packageName + "." + KIE_PMML_RULE_MAPPERS_CLASS_NAME;
         try {
-            PMMLRuleMappers predictionRuleMappers =
+            PMMLRuleMappers pmmlRuleMappers =
                     (PMMLRuleMappers) classLoader.loadClass(fullPMMLRuleMappersClassName).getDeclaredConstructor().newInstance();
-            return Optional.of(predictionRuleMappers);
+            return Optional.of(pmmlRuleMappers);
         } catch (ClassNotFoundException e) {
             logger.debug("{} class not found in rootClassLoader", fullPMMLRuleMappersClassName);
             return Optional.empty();
         } catch (Exception e) {
-            throw new RuntimeException(String.format("%s class not instantiable",
+            throw new KiePMMLException(String.format("%s class not instantiable",
                     fullPMMLRuleMappersClassName), e);
         }
     }
+
+    private static void populatePMMLRuleMappers(final KnowledgeBuilderImpl kbuilderImpl,
+            final List<KiePMMLModel> kiePMMLModels,
+            final List<PMMLRuleMapper> toPopulate) {
+        for (KiePMMLModel kiePMMLModel : kiePMMLModels) {
+            toPopulate.addAll(loadPMMLRuleMappers(kbuilderImpl.getRootClassLoader(), kiePMMLModel.getKModulePackageName()));
+            if (kiePMMLModel instanceof HasNestedModels) {
+                populatePMMLRuleMappers(kbuilderImpl, ((HasNestedModels) kiePMMLModel).getNestedModels(), toPopulate);
+            }
+        }
+    }
+
 }

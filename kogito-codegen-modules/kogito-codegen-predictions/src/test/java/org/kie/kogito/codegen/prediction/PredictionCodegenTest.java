@@ -40,6 +40,7 @@ class PredictionCodegenTest {
     private static final Path REGRESSION_FULL_SOURCE = BASE_PATH.resolve(REGRESSION_SOURCE);
     private static final String SCORECARD_SOURCE = "prediction/test_scorecard.pmml";
     private static final Path SCORECARD_FULL_SOURCE = BASE_PATH.resolve(SCORECARD_SOURCE);
+    private static final String REFLECT_JSON = "reflect-config.json";
 
     @Test
     void generateAllFilesRegression() {
@@ -87,7 +88,7 @@ class PredictionCodegenTest {
         assertEquals(1, generatedFiles.stream()
                 .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.RESOURCE) &&
                         generatedFile.type().name().equals(GeneratedFileType.RESOURCE.name()) &&
-                        generatedFile.relativePath().equals("META-INF/native-image/testscorecard/reflect-config.json"))
+                        generatedFile.relativePath().endsWith(REFLECT_JSON))
                 .count());
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertTrue(optionalApplicationSection.isPresent());
