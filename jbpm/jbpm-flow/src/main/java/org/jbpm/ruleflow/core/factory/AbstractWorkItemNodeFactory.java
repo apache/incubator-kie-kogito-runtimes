@@ -28,8 +28,8 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.WorkItemNode;
 
-public class AbstractWorkItemNodeFactory<T extends AbstractWorkItemNodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends StateBasedNodeFactory<AbstractWorkItemNodeFactory<T, P>, P>
-        implements MappableNodeFactory<AbstractWorkItemNodeFactory<T, P>> {
+public class AbstractWorkItemNodeFactory<T extends AbstractWorkItemNodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends StateBasedNodeFactory<T, P>
+        implements MappableNodeFactory<T> {
 
     public static final String METHOD_WORK_NAME = "workName";
     public static final String METHOD_WORK_PARAMETER = "workParameter";
@@ -83,5 +83,4 @@ public class AbstractWorkItemNodeFactory<T extends AbstractWorkItemNodeFactory<T
         work.setParameterDefinitions(parameterDefinitions);
         return (T) this;
     }
-
 }

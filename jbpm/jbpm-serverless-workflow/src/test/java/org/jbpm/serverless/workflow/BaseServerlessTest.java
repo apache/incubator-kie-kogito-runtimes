@@ -20,8 +20,8 @@ import java.io.Reader;
 import java.util.Properties;
 
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.jbpm.serverless.workflow.parser.core.ServerlessWorkflowFactory;
-import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
@@ -49,7 +49,6 @@ public abstract class BaseServerlessTest {
                     new InjectState().withName("relayState2").withType(DefaultState.Type.INJECT).withEnd(new End())));
     protected static final Workflow eventDefOnlyWorkflow = new Workflow().withEvents(
             new Events(singletonList(new EventDefinition().withName("sampleEvent").withSource("sampleSource").withType("sampleType"))));
-    protected static ServerlessWorkflowFactory testFactory = new ServerlessWorkflowFactory(WorkflowAppContext.ofProperties(testWorkflowProperties()));
 
     protected static Properties testWorkflowProperties() {
         Properties properties = new Properties();
@@ -62,14 +61,10 @@ public abstract class BaseServerlessTest {
         return properties;
     }
 
-    protected ServerlessWorkflowParser getWorkflowParser(String workflowLocation) {
-        ServerlessWorkflowParser parser;
-        if (workflowLocation.endsWith(".sw.json")) {
-            parser = new ServerlessWorkflowParser("json");
-        } else {
-            parser = new ServerlessWorkflowParser("yml");
-        }
-        return parser;
+    protected org.kie.api.definition.process.Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {
+        String format = workflowLocation.endsWith(".sw.json") ? "json" : "yml";
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(classpathResourceReader(workflowLocation), format);
+        return parser.getProcess();
     }
 
     protected Reader classpathResourceReader(String location) {

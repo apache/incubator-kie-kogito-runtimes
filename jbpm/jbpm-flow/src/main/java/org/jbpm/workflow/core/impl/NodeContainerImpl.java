@@ -15,7 +15,7 @@
  */
 package org.jbpm.workflow.core.impl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jbpm.process.core.Context;
@@ -32,9 +32,10 @@ public class NodeContainerImpl implements NodeContainer {
     private Map<Long, Node> nodes;
 
     public NodeContainerImpl() {
-        this.nodes = new HashMap<Long, Node>();
+        this.nodes = new LinkedHashMap<Long, Node>();
     }
 
+    @Override
     public void addNode(final Node node) {
         validateAddNode(node);
         if (!this.nodes.containsValue(node)) {
@@ -48,11 +49,13 @@ public class NodeContainerImpl implements NodeContainer {
         }
     }
 
+    @Override
     public Node[] getNodes() {
-        return (Node[]) this.nodes.values()
+        return this.nodes.values()
                 .toArray(new Node[this.nodes.size()]);
     }
 
+    @Override
     public Node getNode(final long id) {
         Node node = this.nodes.get(id);
         if (node == null) {
@@ -66,10 +69,12 @@ public class NodeContainerImpl implements NodeContainer {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Node internalGetNode(long id) {
         return getNode(id);
     }
 
+    @Override
     public void removeNode(final Node node) {
         validateRemoveNode(node);
         this.nodes.remove(new Long(node.getId()));
@@ -84,6 +89,7 @@ public class NodeContainerImpl implements NodeContainer {
         }
     }
 
+    @Override
     public Context resolveContext(String contextId, Object param) {
         return null;
     }

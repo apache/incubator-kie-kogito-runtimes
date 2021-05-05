@@ -158,12 +158,12 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
         return (T) this;
     }
 
-    public RuleFlowNodeContainerFactory<T, P> exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
+    public T exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
         getScope(ExceptionScope.EXCEPTION_SCOPE, ExceptionScope.class).setExceptionHandler(exception, exceptionHandler);
-        return this;
+        return (T) this;
     }
 
-    public RuleFlowNodeContainerFactory<T, P> exceptionHandler(String exception, String dialect, String action) {
+    public T exceptionHandler(String exception, String dialect, String action) {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         exceptionHandler.setAction(new DroolsConsequenceAction(dialect, action));
         return exceptionHandler(exception, exceptionHandler);

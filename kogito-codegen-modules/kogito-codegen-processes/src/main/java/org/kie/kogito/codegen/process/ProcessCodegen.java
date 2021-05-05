@@ -193,8 +193,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static Process parseWorkflowFile(Resource r, String parser) {
         try (Reader reader = r.getReader()) {
-            ServerlessWorkflowParser workflowParser = new ServerlessWorkflowParser(parser);
-            return workflowParser.parseWorkFlow(reader);
+            ServerlessWorkflowParser workflowParser = ServerlessWorkflowParser.of(reader, parser);
+            return workflowParser.getProcess();
         } catch (IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
         } catch (RuntimeException e) {

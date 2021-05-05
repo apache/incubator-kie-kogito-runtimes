@@ -34,13 +34,16 @@ public abstract class NodeFactory<T extends NodeFactory<T, P>, P extends RuleFlo
         this.nodeContainer = nodeContainer;
         this.node = node;
         setId(node, id);
+        if (node instanceof Node) {
+            nodeContainer.addNode((Node) node);
+        }
     }
 
     protected void setId(Object node, Object id) {
         ((Node) node).setId((long) id);
     }
 
-    protected Node getNode() {
+    public Node getNode() {
         return (Node) node;
     }
 
@@ -55,7 +58,6 @@ public abstract class NodeFactory<T extends NodeFactory<T, P>, P extends RuleFlo
     }
 
     public P done() {
-        nodeContainer.addNode((Node) node);
         return this.nodeContainerFactory;
     }
 }

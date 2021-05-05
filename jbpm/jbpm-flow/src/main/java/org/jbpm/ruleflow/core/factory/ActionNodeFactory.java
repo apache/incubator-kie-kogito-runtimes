@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.node.ActionNode;
 
 public class ActionNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends NodeFactory<ActionNodeFactory<T>, T> {
 
-    public static final String METHOD_ACTION = "action";
+    public static final String METHOD_ACTION = "Action";
 
     public ActionNodeFactory(T nodeContainerFactory,
             NodeContainer nodeContainer,

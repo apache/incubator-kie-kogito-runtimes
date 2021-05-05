@@ -47,14 +47,19 @@ public class SplitFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends 
     }
 
     public SplitFactory<T> constraint(long toNodeId, String name, String type, String dialect, String constraint, int priority) {
+        return constraint(toNodeId, name, type, dialect, constraint, priority, false);
+    }
+
+    public SplitFactory<T> constraint(long toNodeId, String name, String type, String dialect, String constraint, int priority, boolean isDefault) {
         ConstraintImpl constraintImpl = new ConstraintImpl();
         constraintImpl.setName(name);
         constraintImpl.setType(type);
         constraintImpl.setDialect(dialect);
         constraintImpl.setConstraint(constraint);
         constraintImpl.setPriority(priority);
+        constraintImpl.setDefault(isDefault);
         getSplit().addConstraint(
-                new ConnectionRef(toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
+                new ConnectionRef(name, toNodeId, Node.CONNECTION_DEFAULT_TYPE), constraintImpl);
         return this;
     }
 

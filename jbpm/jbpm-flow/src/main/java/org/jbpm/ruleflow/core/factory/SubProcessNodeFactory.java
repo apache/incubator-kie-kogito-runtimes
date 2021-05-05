@@ -15,13 +15,15 @@
  */
 package org.jbpm.ruleflow.core.factory;
 
+import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
 
-public class SubProcessNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends StateBasedNodeFactory<SubProcessNodeFactory<T>, T> implements MappableNodeFactory<SubProcessNodeFactory<T>> {
+public class SubProcessNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends StateBasedNodeFactory<SubProcessNodeFactory<T>, T>
+        implements MappableNodeFactory<SubProcessNodeFactory<T>>, ContextContainerFactory<SubProcessNodeFactory<T>> {
 
     public static final String METHOD_PROCESS_ID = "processId";
     public static final String METHOD_PROCESS_NAME = "processName";
@@ -64,5 +66,10 @@ public class SubProcessNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>>
     public SubProcessNodeFactory<T> subProcessNode(SubProcessFactory<T> factory) {
         getSubProcessNode().setSubProcessFactory(factory);
         return this;
+    }
+
+    @Override
+    public ContextContainer getContextNode() {
+        return getSubProcessNode();
     }
 }

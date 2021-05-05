@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.jbpm.process.core.Work;
-import org.jbpm.process.core.impl.WorkImpl;
+import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
+import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
@@ -226,32 +226,24 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
             return this;
         }
 
-        public WorkItemNode build() {
-            WorkItemNode workItemNode = new WorkItemNode();
-            workItemNode.setMetaData(KEY_WORKITEM_TYPE, TYPE);
-
-            Work work = new WorkImpl();
-            work.setName(TYPE);
-            work.setParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
-            work.setParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
-            work.setParameter(KEY_WORKITEM_OPERATION, this.operation);
-
-            this.paramResolvers.forEach(work::setParameter);
-
+        public <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> build(WorkItemNodeFactory<T> factory) {
+            factory.metaData(KEY_WORKITEM_TYPE, TYPE);
+            factory.workName(TYPE);
+            factory.workParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
+            factory.workParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
+            factory.workParameter(KEY_WORKITEM_OPERATION, this.operation);
+            this.paramResolvers.forEach(factory::workParameter);
             if (this.paramResolverType != null && !this.paramResolverType.isEmpty()) {
-                workItemNode.setMetaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverType);
+                factory.metaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverType);
             }
             if (this.resultHandlerType != null && !this.resultHandlerType.isEmpty()) {
-                workItemNode.setMetaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType);
+                factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType);
             }
             if (this.resultHandlerExpression != null) {
-                work.setParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
+                factory.metaData(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
             }
-
-            workItemNode.setWork(work);
-            return workItemNode;
+            return factory;
         }
-
     }
 
     /**
