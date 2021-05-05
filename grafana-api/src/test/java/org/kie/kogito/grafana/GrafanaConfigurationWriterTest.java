@@ -24,7 +24,7 @@ import org.kie.kogito.KogitoGAV;
 public class GrafanaConfigurationWriterTest {
 
     @Test
-    public void testGrafanaDashboardName(){
+    public void testGrafanaDashboardName() {
         KogitoGAV gav = new KogitoGAV("groupId", "artifactId", "versionId");
         String handlerName = "myHandler";
         String expected = "artifactId:versionId - myHandler";
@@ -35,7 +35,7 @@ public class GrafanaConfigurationWriterTest {
     }
 
     @Test
-    public void testGrafanaDashboardNameWithEmptyGav(){
+    public void testGrafanaDashboardNameWithEmptyGav() {
         String handlerName = "myHandler";
         String expected = "myHandler";
 
