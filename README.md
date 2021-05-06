@@ -1,4 +1,4 @@
-Kogito
+Kogito test
 ------
 
 **Kogito** is the next generation of business automation platform focused on cloud-native development, deployment and execution.
