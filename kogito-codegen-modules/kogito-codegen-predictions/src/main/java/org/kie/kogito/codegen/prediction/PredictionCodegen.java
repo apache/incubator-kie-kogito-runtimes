@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
@@ -104,7 +103,11 @@ public class PredictionCodegen extends AbstractGenerator {
 
     @Override
     public List<GeneratedFile> generate() {
-        return resources.stream().flatMap(this::generateModelsFromResource).collect(toList());
+        List<GeneratedFile> files = new ArrayList<>();
+        for (PMMLResource resource : resources) {
+            generateModelsFromResource(files, resource);
+        }
+        return files;
     }
 
     @Override
@@ -112,24 +115,24 @@ public class PredictionCodegen extends AbstractGenerator {
         return 40;
     }
 
-    private Stream<GeneratedFile> generateModelsFromResource(PMMLResource resource) {
-        return resource.getKiePmmlModels().stream().flatMap(model -> generateModel(model, resource));
+    private void generateModelsFromResource(List<GeneratedFile> files, PMMLResource resource) {
+        for (KiePMMLModel model : resource.getKiePmmlModels()) {
+            generateModel(files, model, resource);
+        }
     }
 
-    private Stream<GeneratedFile> generateModel(KiePMMLModel model, PMMLResource resource) {
+    private void generateModel(List<GeneratedFile> files, KiePMMLModel model, PMMLResource resource) {
         if (model.getName() == null || model.getName().isEmpty()) {
             String errorMessage = String.format("Model name should not be empty inside %s",
                     resource.getModelPath());
             throw new RuntimeException(errorMessage);
         }
 
-        Stream.Builder<GeneratedFile> streamBuilder = Stream.builder();
-        generateModelBaseFiles(streamBuilder, model, resource);
-        generateModelRESTFiles(streamBuilder, model);
-        return streamBuilder.build();
+        generateModelBaseFiles(files, model, resource);
+        generateModelRESTFiles(files, model);
     }
 
-    private void generateModelBaseFiles(Stream.Builder<GeneratedFile> streamBuilder, KiePMMLModel model, PMMLResource resource) {
+    private void generateModelBaseFiles(List<GeneratedFile> files, KiePMMLModel model, PMMLResource resource) {
         if (!(model instanceof HasSourcesMap)) {
             String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
                     model.getClass().getName(), resource.getModelPath());
@@ -139,7 +142,7 @@ public class PredictionCodegen extends AbstractGenerator {
         Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
         for (Map.Entry<String, String> sourceMapEntry : sourceMap.entrySet()) {
             String path = sourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
-            streamBuilder.accept(new GeneratedFile(PMML_TYPE, path, sourceMapEntry.getValue()));
+            files.add(new GeneratedFile(PMML_TYPE, path, sourceMapEntry.getValue()));
         }
 
         Map<String, String> rulesSourceMap = ((HasSourcesMap) model).getRulesSourcesMap();
@@ -148,7 +151,7 @@ public class PredictionCodegen extends AbstractGenerator {
 
             for (Map.Entry<String, String> rulesSourceMapEntry : rulesSourceMap.entrySet()) {
                 String path = rulesSourceMapEntry.getKey().replace('.', File.separatorChar) + ".java";
-                streamBuilder.accept(new GeneratedFile(IncrementalRuleCodegen.RULE_TYPE, path, rulesSourceMapEntry.getValue()));
+                files.add(new GeneratedFile(IncrementalRuleCodegen.RULE_TYPE, path, rulesSourceMapEntry.getValue()));
 
                 if (rulesSourceMapEntry.getValue().contains(DECLARED_TYPE_IDENTIFIER)) {
                     pojoClasses.add(rulesSourceMapEntry.getKey());
@@ -158,31 +161,31 @@ public class PredictionCodegen extends AbstractGenerator {
             if (!pojoClasses.isEmpty()) {
                 org.drools.modelcompiler.builder.GeneratedFile reflectConfigFile =
                         getReflectConfigFile(model.getKModulePackageName(), pojoClasses);
-                streamBuilder.accept(new GeneratedFile(GeneratedFileType.RESOURCE, reflectConfigFile.getPath(), new String(reflectConfigFile.getData())));
+                files.add(new GeneratedFile(GeneratedFileType.RESOURCE, reflectConfigFile.getPath(), new String(reflectConfigFile.getData())));
             }
         }
 
         if (model instanceof HasNestedModels) {
             for (KiePMMLModel nestedModel : ((HasNestedModels) model).getNestedModels()) {
-                generateModelBaseFiles(streamBuilder, nestedModel, resource);
+                generateModelBaseFiles(files, nestedModel, resource);
             }
         }
     }
 
-    private void generateModelRESTFiles(Stream.Builder<GeneratedFile> streamBuilder, KiePMMLModel model) {
+    private void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
         if (!context().hasREST() || (model instanceof KiePMMLFactoryModel)) {
             return;
         }
 
         PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model, applicationCanonicalName());
-        streamBuilder.accept(new GeneratedFile(REST_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate()));
+        files.add(new GeneratedFile(REST_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate()));
 
         PMMLOASResult oasResult = PMMLOASResultFactory.getPMMLOASResult(model);
         try {
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode());
             String jsonFile = String.format("%s.json", getSanitizedClassName(model.getName()));
             String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
-            streamBuilder.accept(new GeneratedFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent));
+            files.add(new GeneratedFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent));
         } catch (Exception e) {
             LOGGER.warn("Failed to write OAS schema");
         }
