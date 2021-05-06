@@ -110,7 +110,7 @@ public class PredictionCodegen extends AbstractGenerator {
         }
         for (PMMLResource resource : resources) {
             List<KiePMMLModel> kiepmmlModels = resource.getKiePmmlModels();
-            addModels(kiepmmlModels, resource);
+            addModels(kiepmmlModels, resource, true);
         }
         return generatedFiles;
     }
@@ -120,7 +120,7 @@ public class PredictionCodegen extends AbstractGenerator {
         return 40;
     }
 
-    private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource) {
+    private void addModels(final List<KiePMMLModel> kiepmmlModels, final PMMLResource resource, boolean includeREST) {
         for (KiePMMLModel model : kiepmmlModels) {
             if (model.getName() == null || model.getName().isEmpty()) {
                 String errorMessage = String.format("Model name should not be empty inside %s",
@@ -154,7 +154,7 @@ public class PredictionCodegen extends AbstractGenerator {
                     storeFile(GeneratedFileType.RESOURCE, reflectConfigFile.getPath(), new String(reflectConfigFile.getData()));
                 }
             }
-            if (context().hasREST() && !(model instanceof KiePMMLFactoryModel)) {
+            if (includeREST && context().hasREST() && !(model instanceof KiePMMLFactoryModel)) {
                 PMMLRestResourceGenerator resourceGenerator = new PMMLRestResourceGenerator(context(), model,
                         applicationCanonicalName());
                 storeFile(REST_TYPE, resourceGenerator.generatedFilePath(), resourceGenerator.generate());
@@ -169,7 +169,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 }
             }
             if (model instanceof HasNestedModels) {
-                addModels(((HasNestedModels) model).getNestedModels(), resource);
+                addModels(((HasNestedModels) model).getNestedModels(), resource, false);
             }
         }
     }
