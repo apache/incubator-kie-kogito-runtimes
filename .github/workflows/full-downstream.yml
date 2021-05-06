@@ -6,7 +6,7 @@ jobs:
   build-chain:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-18.04]
         java-version: [11]
       fail-fast: false
     runs-on: ${{ matrix.os }}
