@@ -66,8 +66,8 @@ public class QuarkusMultiCloudEventPublisher implements ChannelRegistar {
 
     private Collection<MediatorConfiguration> mediatorConf(Collection<String> channels) throws NoSuchMethodException {
         return Collections.singletonList(new DefaultMediatorConfiguration(
-                getClass().getMethod("produce", Message.class),
-                beanManager.resolve(beanManager.getBeans(getClass()))) {
+                QuarkusMultiCloudEventPublisher.class.getMethod("produce", Message.class),
+                beanManager.resolve(beanManager.getBeans(QuarkusMultiCloudEventPublisher.class))) {
 
             @Override
             public List<String> getIncoming() {
