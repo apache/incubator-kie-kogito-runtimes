@@ -23,7 +23,7 @@ import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.event.impl.DefaultEventMarshaller;
+import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -44,7 +44,7 @@ public class SpringKafkaCloudEventEmitter implements EventEmitter {
     @Autowired
     Environment env;
 
-    // TODO @Autowired change when this class is added https://github.com/kiegroup/kogito-runtimes/pull/1195/files#diff-32eeb9c913dc61f24f8b4d27a8dca87f5e907de83b81e210e59bd67193a9cdfd
+    // TODO https://issues.redhat.com/browse/KOGITO-5094
     EventMarshaller marshaller = new DefaultEventMarshaller();
 
     @Autowired
@@ -56,7 +56,7 @@ public class SpringKafkaCloudEventEmitter implements EventEmitter {
                 .send(
                         env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + type,
                                 defaultTopicName),
-                        marshaller.marshall(configBean.useCloudEvents().orElse(true) ? processDecorator.map(d -> d
+                        marshaller.marshall(configBean.useCloudEvents() ? processDecorator.map(d -> d
                                 .apply(e)).orElse(e) : e))
                 .completable()
                 .thenApply(r -> null); // discard return to comply with the signature

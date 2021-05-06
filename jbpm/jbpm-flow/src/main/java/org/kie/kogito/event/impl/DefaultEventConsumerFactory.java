@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.event.impl;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.kie.kogito.Model;
@@ -25,8 +24,8 @@ import org.kie.kogito.services.event.EventConsumerFactory;
 public class DefaultEventConsumerFactory implements EventConsumerFactory {
 
     @Override
-    public <M extends Model, D> EventConsumer<M> get(Function<D, M> function, Optional<Boolean> cloudEvents) {
-        return cloudEvents.orElse(true)
+    public <M extends Model, D> EventConsumer<M> get(Function<D, M> function, boolean cloudEvents) {
+        return cloudEvents
                 ? new CloudEventConsumer<>(function)
                 : new DataEventConsumer<>(function);
     }

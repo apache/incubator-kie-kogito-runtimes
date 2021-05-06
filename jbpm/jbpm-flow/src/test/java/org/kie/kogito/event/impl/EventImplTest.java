@@ -32,6 +32,7 @@ import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.EventConsumerFactory;
+import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.ArgumentCaptor;
@@ -135,7 +136,7 @@ public class EventImplTest {
 
     @Test
     void testSigCloudEvent() {
-        EventConsumer<DummyModel> consumer = factory.get(DummyModel::new, Optional.of(true));
+        EventConsumer<DummyModel> consumer = factory.get(DummyModel::new, true);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyCloudEvent(new DummyEvent("pepe"), "1"), trigger);
         ArgumentCaptor<Signal> signal = ArgumentCaptor.forClass(Signal.class);
@@ -148,7 +149,7 @@ public class EventImplTest {
     @Test
     void testCloudEvent() {
         EventConsumer<DummyModel> consumer =
-                factory.get(DummyModel::new, Optional.empty());
+                factory.get(DummyModel::new, true);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyCloudEvent(new DummyEvent("pepe")), trigger);
         verify(processInstance, times(1)).start(trigger, "1");
@@ -157,7 +158,7 @@ public class EventImplTest {
     @Test
     void testDataEvent() {
         EventConsumer<DummyModel> consumer =
-                factory.get(DummyModel::new, Optional.of(false));
+                factory.get(DummyModel::new, false);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyEvent("pepe"), trigger);
         verify(processInstance, times(1)).start(trigger, null);
@@ -180,7 +181,7 @@ public class EventImplTest {
 
     @Test
     void testEventPayloadException() {
-        EventConsumer<DummyModel> consumer = factory.get(DummyModel::new, Optional.empty());
+        EventConsumer<DummyModel> consumer = factory.get(DummyModel::new, true);
         final String trigger = "dummyTopic";
         final String payload = "{ a = b }";
         assertThrows(ClassCastException.class, () -> consumer.consume(application, process, payload, trigger));

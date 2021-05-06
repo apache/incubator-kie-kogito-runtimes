@@ -16,15 +16,18 @@
 package org.kie.kogito.addon.cloudevents.quarkus;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.kie.kogito.services.event.InputTriggerAware;
-import org.kie.kogito.services.event.OutputTriggerAware;
+import org.kie.kogito.event.InputTriggerAware;
+import org.kie.kogito.event.OutputTriggerAware;
 
 @ApplicationScoped
 public class ProcessChannelResolver implements ChannelResolver {
@@ -33,16 +36,8 @@ public class ProcessChannelResolver implements ChannelResolver {
     private Instance<InputTriggerAware> inputChannelsProvider;
     @Inject
     private Instance<OutputTriggerAware> outputChannelsProvider;
-    private Collection<String> inputChannels;
-    private Collection<String> outputChannels;
-
-    @PostConstruct
-    private void init() {
-        inputChannels = new HashSet<>();
-        inputChannelsProvider.forEach(instance -> inputChannels.add(instance.getInputTrigger()));
-        outputChannels = new HashSet<>();
-        outputChannelsProvider.forEach(instance -> outputChannels.add(instance.getOutputTrigger()));
-    }
+    private Set<String> inputChannels;
+    private Set<String> outputChannels;
 
     @Override
     public Collection<String> getOuputChannels() {
@@ -53,4 +48,17 @@ public class ProcessChannelResolver implements ChannelResolver {
     public Collection<String> getInputChannels() {
         return inputChannels;
     }
+
+    @PostConstruct
+    private void init() {
+        inputChannels = getChannels(inputChannelsProvider, InputTriggerAware::getInputTrigger);
+        outputChannels = getChannels(outputChannelsProvider, OutputTriggerAware::getOutputTrigger);
+    }
+
+    private <T> Set<String> getChannels(Instance<T> channelProvider, Function<T, String> triggerResolver) {
+        final Set<String> channels = new HashSet<>();
+        channelProvider.forEach(instance -> channels.add(triggerResolver.apply(instance)));
+        return Collections.unmodifiableSet(channels);
+    }
+
 }

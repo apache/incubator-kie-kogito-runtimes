@@ -20,12 +20,12 @@ import java.util.Optional;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.event.EventReceiver;
+import org.kie.kogito.event.InputTriggerAware;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.EventConsumerFactory;
-import org.kie.kogito.services.event.InputTriggerAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +38,9 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
     private String trigger;
     private EventConsumer<M> eventConsumer;
 
+    // in general we should favor the non-empty constructor
+    // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
+    // use this in conjuction with setParams()
     public AbstractMessageConsumer() {
     }
 
@@ -48,7 +51,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             EventReceiver eventReceiver,
             Class<D> dataEventClass,
             Class<T> cloudEventClass,
-            Optional<Boolean> useCloudEvents) {
+            boolean useCloudEvents) {
         init(application, process, trigger, eventConsumerFactory, eventReceiver, dataEventClass, cloudEventClass, useCloudEvents);
     }
 
@@ -59,12 +62,12 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             EventReceiver eventReceiver,
             Class<D> dataEventClass,
             Class<T> cloudEventClass,
-            Optional<Boolean> useCloudEvents) {
+            boolean useCloudEvents) {
         this.process = process;
         this.application = application;
         this.trigger = trigger;
         this.eventConsumer = eventConsumerFactory.get(this::eventToModel, useCloudEvents);
-        if (useCloudEvents.orElse(true)) {
+        if (useCloudEvents) {
             eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(cloudEventClass, Optional.of(trigger)));
         } else {
             eventReceiver.subscribe(this::consume, new SubscriptionInfo<>(dataEventClass, Optional.of(trigger)));

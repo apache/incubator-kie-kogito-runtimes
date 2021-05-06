@@ -106,15 +106,10 @@ public class QuarkusMultiCloudEventPublisher implements ChannelRegistar {
      */
     public CompletionStage<Void> produce(Message<String> message) {
         LOGGER.debug("Received message from channel {}: {}", KogitoEventStreams.INCOMING, message);
-        return message
-                .ack()
+        processor.onNext(message.getPayload());
+        return message.ack()
                 .exceptionally(e -> {
                     LOGGER.error("Failed to ack message", e);
-                    return null;
-                })
-                .thenApply(r -> {
-                    LOGGER.debug("Producing message to internal bus: {}", message);
-                    processor.onNext(message.getPayload());
                     return null;
                 });
     }

@@ -31,7 +31,7 @@ public class $Type$MessageConsumer {
 
     ObjectMapper objectMapper;
 
-    Optional<Boolean> useCloudEvents = Optional.of(true);
+    boolean useCloudEvents = true;
 
     EventConsumerFactory eventConsumerFactory;
 

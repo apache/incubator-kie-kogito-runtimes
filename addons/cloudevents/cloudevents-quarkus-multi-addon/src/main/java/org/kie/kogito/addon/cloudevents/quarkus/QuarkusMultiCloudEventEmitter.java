@@ -30,7 +30,7 @@ import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecoratorFacto
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
-import org.kie.kogito.event.impl.DefaultEventMarshaller;
+import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,20 +60,20 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
 
     @PostConstruct
     private void init() {
-        messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents().orElse(true));
+        messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
     }
 
     private EmitterConfiguration emitterConf(String name) {
         return new EmitterConfiguration(name, false, null, null);
     }
 
-    // TODO @Inject change when this class is added https://github.com/kiegroup/kogito-runtimes/pull/1195/files#diff-32eeb9c913dc61f24f8b4d27a8dca87f5e907de83b81e210e59bd67193a9cdfd
+    // TODO https://issues.redhat.com/browse/KOGITO-5094
     EventMarshaller marshaller = new DefaultEventMarshaller();
 
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
         final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(
-                configBean.useCloudEvents().orElse(true) ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
+                configBean.useCloudEvents() ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
         Emitter<String> emitter = (Emitter<String>) channelRegistry.getEmitter(type);
         if (emitter != null) {
             emitter.send(message);

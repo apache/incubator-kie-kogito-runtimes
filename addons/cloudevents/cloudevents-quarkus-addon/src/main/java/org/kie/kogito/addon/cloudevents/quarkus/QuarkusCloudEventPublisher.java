@@ -60,14 +60,11 @@ public class QuarkusCloudEventPublisher {
     @Incoming(KogitoEventStreams.INCOMING)
     public CompletionStage<Void> onEvent(Message<String> message) {
         LOGGER.debug("Received message from channel {}: {}", KogitoEventStreams.INCOMING, message);
+        produce(message.getPayload());
         return message
                 .ack()
                 .exceptionally(e -> {
                     LOGGER.error("Failed to ack message", e);
-                    return null;
-                })
-                .thenApply(r -> {
-                    produce(message.getPayload());
                     return null;
                 });
     }

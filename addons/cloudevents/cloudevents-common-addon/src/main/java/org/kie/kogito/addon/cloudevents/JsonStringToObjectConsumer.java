@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonStringToObjectConsumer<T> implements Consumer<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonStringToObjectConsumer.class);
-    private Class<T> clazz;
-    private Consumer<T> realConsumer;
-    private ObjectMapper objectMapper;
+    private final Class<T> clazz;
+    private final Consumer<T> realConsumer;
+    private final ObjectMapper objectMapper;
 
     public JsonStringToObjectConsumer(ObjectMapper objectMapper, Consumer<T> realConsumer, Class<T> clazz) {
         this.objectMapper = objectMapper;

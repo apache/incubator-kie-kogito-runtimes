@@ -15,12 +15,11 @@
  */
 package org.kie.kogito.services.event;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.kie.kogito.Model;
 
 public interface EventConsumerFactory {
 
-    <M extends Model, D> EventConsumer<M> get(Function<D, M> function, Optional<Boolean> cloudEvents);
+    <M extends Model, D> EventConsumer<M> get(Function<D, M> function, boolean cloudEvents);
 }

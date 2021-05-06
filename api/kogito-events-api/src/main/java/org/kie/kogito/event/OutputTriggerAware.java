@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.services.event;
+package org.kie.kogito.event;
 
-public interface InputTriggerAware {
-    String getInputTrigger();
+/**
+ * Indicates that a class is providing an output trigger.
+ * This is used to resolve all classes providing output triggers for a particular process
+ */
+public interface OutputTriggerAware {
+    String getOutputTrigger();
 }

@@ -18,9 +18,9 @@ package org.kie.kogito.services.event.impl;
 import java.util.Optional;
 
 import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.OutputTriggerAware;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.services.event.AbstractProcessDataEvent;
-import org.kie.kogito.services.event.OutputTriggerAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
