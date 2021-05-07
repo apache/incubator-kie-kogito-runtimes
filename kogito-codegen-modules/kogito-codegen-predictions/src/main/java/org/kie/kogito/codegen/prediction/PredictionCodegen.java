@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseImpl;
@@ -46,6 +45,8 @@ import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.codegen.rules.KogitoPackageSources.getReflectConfigFile;
@@ -115,28 +116,25 @@ public class PredictionCodegen extends AbstractGenerator {
         return 40;
     }
 
-    private void generateModelsFromResource(List<GeneratedFile> files, PMMLResource resource) {
+    void generateModelsFromResource(List<GeneratedFile> files, PMMLResource resource) {
         for (KiePMMLModel model : resource.getKiePmmlModels()) {
-            generateModel(files, model, resource);
+            generateModel(files, model, resource.getModelPath());
         }
     }
 
-    private void generateModel(List<GeneratedFile> files, KiePMMLModel model, PMMLResource resource) {
-        if (model.getName() == null || model.getName().isEmpty()) {
-            String errorMessage = String.format("Model name should not be empty inside %s",
-                    resource.getModelPath());
-            throw new RuntimeException(errorMessage);
-        }
-
-        generateModelBaseFiles(files, model, resource);
+    void generateModel(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
+        generateModelBaseFiles(files, model, modelPath);
         generateModelRESTFiles(files, model);
     }
 
-    private void generateModelBaseFiles(List<GeneratedFile> files, KiePMMLModel model, PMMLResource resource) {
+    void generateModelBaseFiles(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
+        if (model.getName() == null || model.getName().isEmpty()) {
+            String errorMessage = String.format("Model name should not be empty inside %s", modelPath);
+            throw new IllegalArgumentException(errorMessage);
+        }
         if (!(model instanceof HasSourcesMap)) {
-            String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s",
-                    model.getClass().getName(), resource.getModelPath());
-            throw new RuntimeException(errorMessage);
+            String errorMessage = String.format("Expecting HasSourcesMap instance, retrieved %s inside %s", model.getClass().getName(), modelPath);
+            throw new IllegalStateException(errorMessage);
         }
 
         Map<String, String> sourceMap = ((HasSourcesMap) model).getSourcesMap();
@@ -167,12 +165,12 @@ public class PredictionCodegen extends AbstractGenerator {
 
         if (model instanceof HasNestedModels) {
             for (KiePMMLModel nestedModel : ((HasNestedModels) model).getNestedModels()) {
-                generateModelBaseFiles(files, nestedModel, resource);
+                generateModelBaseFiles(files, nestedModel, modelPath);
             }
         }
     }
 
-    private void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
+    void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
         if (!context().hasREST() || (model instanceof KiePMMLFactoryModel)) {
             return;
         }
