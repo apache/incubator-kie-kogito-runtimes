@@ -3,7 +3,7 @@ name: Build Chain Full Downstream
 on: [pull_request]
 
 jobs:
-  build-chain:
+  build-chain: Runtimes
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -35,7 +35,7 @@ jobs:
         with:
           report_paths: '**/*-reports/TEST-*.xml'
 
-  optaplanner-downstream:
+  optaplanner-downstream: OptaPlanner
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -68,7 +68,7 @@ jobs:
         with:
           report_paths: '**/*-reports/TEST-*.xml'
 
-  apps-downstream:
+  apps-downstream: Apps
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -101,7 +101,7 @@ jobs:
         with:
           report_paths: '**/*-reports/TEST-*.xml'
 
-  example-downstream:
+  example-downstream: Examples
     strategy:
       matrix:
         os: [ubuntu-latest]
