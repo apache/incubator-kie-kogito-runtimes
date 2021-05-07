@@ -155,7 +155,7 @@
     <version.io.smallrye-open-api-core>2.0.26</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive>2.9.0</version.io.smallrye.reactive>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>1.5.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
-    <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
+    <version.io.swagger.core.v3>2.1.7</version.io.swagger.core.v3>
     <version.io.swagger.parser.v3>2.0.24</version.io.swagger.parser.v3>
 
     <version.org.antlr>3.5.2</version.org.antlr>
@@ -1534,7 +1534,7 @@ limitations under the License.
         <!--suppress UnresolvedMavenProperty -->
         <sonar.login>${env.SONARCLOUD_TOKEN}</sonar.login>
         <sonar.organization>kiegroup</sonar.organization>
-        <sonar.exclusions></sonar.exclusions> <!-- KOGITO-4895 keep it here, if removed exclusions are not scoped to a particular defining module -->
+        <sonar.exclusions/> <!-- KOGITO-4895 keep it here, if removed exclusions are not scoped to a particular defining module -->
         <enforcer.skip>true</enforcer.skip>
         <checkstyle.skip>true</checkstyle.skip>
       </properties>
