@@ -1,6 +1,6 @@
 name: OptaPlanner Build Chain Full Downstream
 
-on: [pull_request_target]
+on: [pull_request]
 
 jobs:
   optaplanner-downstream:
@@ -35,3 +35,4 @@ jobs:
         uses: scacap/action-surefire-report@v1
         with:
           report_paths: '**/*-reports/TEST-*.xml'
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
