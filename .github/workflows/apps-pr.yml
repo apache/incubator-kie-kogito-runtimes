@@ -1,9 +1,9 @@
-name: Runtime Build Chain Full Downstream
+name: Apps Build Chain Full Downstream
 
 on: [pull_request]
 
 jobs:
-  build-chain:
+  apps-downstream:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -28,6 +28,7 @@ jobs:
         uses: kiegroup/github-action-build-chain@v2.3
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH}/.ci/pull-request-config.yaml
+          starting-project: kiegroup/kogito-apps
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: Publish Test Report
