@@ -16,6 +16,8 @@
 package org.kie.kogito.persistence.postgresql;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,7 +32,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.drools.core.util.IoUtils;
 import org.infinispan.protostream.BaseMarshaller;
 import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
@@ -290,10 +291,8 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
     private String getQueryFromFile(String scriptName) {
         try {
-            return new String(IoUtils.readBytesFromInputStream(
-                    Thread.currentThread()
-                            .getContextClassLoader()
-                            .getResourceAsStream(String.format("sql/%s.sql", scriptName))));
+            String path = Thread.currentThread().getContextClassLoader().getResource(String.format("sql/%s.sql", scriptName)).getPath();
+            return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {
             throw uncheckedException(e, "Error reading query script file %s", scriptName);
         }
