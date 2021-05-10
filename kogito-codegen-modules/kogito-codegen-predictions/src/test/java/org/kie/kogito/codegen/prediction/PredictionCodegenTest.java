@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.codegen.prediction;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.javaparser.ast.CompilationUnit;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.ApplicationSection;
@@ -35,8 +37,6 @@ import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.prediction.mock.KiePMMLModelWithSourcesAndNestedModelsMock;
 import org.kie.kogito.codegen.prediction.mock.KiePMMLModelWithSourcesMock;
 import org.kie.pmml.commons.model.KiePMMLModel;
-
-import com.github.javaparser.ast.CompilationUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -66,16 +66,16 @@ class PredictionCodegenTest {
     private static final String NAME_RESOURCE = "RESOURCE";
 
     private static final String SRC_1_NAME = "com.example.model.Class";
-    private static final String SRC_1_PATH = "com/example/model/Class.java";
+    private static final String SRC_1_PATH = nameToPath(SRC_1_NAME, '.', "java");
     private static final String SRC_2_NAME = "com.example.model.rule.Rule1";
-    private static final String SRC_2_PATH = "com/example/model/rule/Rule1.java";
+    private static final String SRC_2_PATH = nameToPath(SRC_2_NAME, '.', "java");
     private static final String SRC_3_NAME = "com.example.model.nested.Class";
-    private static final String SRC_3_PATH = "com/example/model/nested/Class.java";
+    private static final String SRC_3_PATH = nameToPath(SRC_3_NAME, '.', "java");
     private static final String SRC_4_NAME = "com.example.model.nested.rule.Rule1";
-    private static final String SRC_4_PATH = "com/example/model/nested/rule/Rule1.java";
+    private static final String SRC_4_PATH = nameToPath(SRC_4_NAME, '.', "java");
 
-    private static final String REST_PATH = "org/kie/kogito/org_46kie_46kogito_46codegen_46prediction_46mock/MockResource.java";
-    private static final String RESOURCE_PATH = "META-INF/resources/Mock.json";
+    private static final String REST_PATH = nameToPath("org.kie.kogito.org_46kie_46kogito_46codegen_46prediction_46mock.MockResource", '.', "java");
+    private static final String RESOURCE_PATH = nameToPath("META-INF/resources/Mock", '/', "json");
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -300,5 +300,9 @@ class PredictionCodegenTest {
         mocks.add(mock5);
 
         return mocks;
+    }
+
+    private static String nameToPath(String name, char separator, String extension) {
+        return name.replace(separator, File.separatorChar) + "." + extension;
     }
 }
