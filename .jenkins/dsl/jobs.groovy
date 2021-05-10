@@ -80,18 +80,21 @@ if (!isMainBranch()) {
 void setupPrJob(String jobFolder) {
     def jobParams = getDefaultJobParams()
     jobParams.job.folder = jobFolder
+    jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createPRJob(this, jobParams)
 }
 
 void setupQuarkusLTSPrJob(String jobFolder) {
     def jobParams = getDefaultJobParams()
     jobParams.job.folder = jobFolder
+    jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createQuarkusLTSPRJob(this, jobParams)
 }
 
 void setupNativePrJob(String jobFolder) {
     def jobParams = getDefaultJobParams()
     jobParams.job.folder = jobFolder
+    jobParams.env = [ TIMEOUT_VALUE : 600 ]
     KogitoJobTemplate.createNativePRJob(this, jobParams)
 }
 
@@ -102,6 +105,9 @@ void setupDroolsJob(String jobFolder) {
         parameters {
             stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
             stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+
+            stringParam('DROOLS_VERSION', '', '(optional) If not set, then it will be guessed from drools repository')
+            stringParam('DROOLS_REPOSITORY', '', '(optional) In case Drools given version is in a specific repository')
         }
         environmentVariables {
             env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
