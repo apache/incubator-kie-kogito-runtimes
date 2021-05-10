@@ -152,7 +152,7 @@
     <version.io.rest-assured>4.3.3</version.io.rest-assured>
     <version.io.rest-assured.springboot>3.3.0</version.io.rest-assured.springboot>    <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common@3.3.0, otherwise error: The type io.restassured.common.mapper.TypeRef cannot be resolved. It is indirectly referenced from required .class files -->
     <version.io.serverlessworkflow>2.0.0.Final</version.io.serverlessworkflow>
-    <version.io.smallrye-open-api-core>2.0.26</version.io.smallrye-open-api-core>
+    <version.io.smallrye-open-api-core>2.1.4</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive>2.9.0</version.io.smallrye.reactive>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>2.3.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
     <version.io.swagger.core.v3>2.0.6</version.io.swagger.core.v3>
