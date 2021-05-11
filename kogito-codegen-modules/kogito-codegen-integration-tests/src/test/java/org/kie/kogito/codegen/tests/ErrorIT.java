@@ -30,12 +30,32 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.process.impl.AbstractProcess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 public class ErrorIT extends AbstractCodegenIT {
+
+    @Test
+    void testBoundaryError() throws Exception {
+        Application app = generateCodeProcessesOnly("error/BoundaryError.bpmn2");
+        assertThat(app).isNotNull();
+
+        List<String> completedNodesNames = completedNodesListener(app);
+
+        Process<? extends Model> p = app.get(Processes.class).processById("BoundaryError");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+        assertState(processInstance, ProcessInstance.STATE_PENDING);
+
+        processInstance.start();
+
+        assertState(processInstance, ProcessInstance.STATE_COMPLETED);
+
+        assertTrue(completedNodesNames.contains("AfterErrorTask"));
+    }
 
     @Test
     void testEndError() throws Exception {

@@ -70,4 +70,8 @@ public class HelloService {
 
     }
 
+    public void error() {
+        System.out.println("Mocking Throw Error");
+        throw new RuntimeException();
+    }
 }
