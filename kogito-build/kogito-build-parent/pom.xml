@@ -1041,6 +1041,7 @@
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
             <useLocalRepository>true</useLocalRepository>
+            <debug>true</debug>
           </configuration>
         </plugin>
         <plugin>
