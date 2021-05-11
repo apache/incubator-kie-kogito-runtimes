@@ -13,6 +13,13 @@
     <name>Kogito :: Quarkus Extension Common :: Deployment</name>
 
     <dependencies>
+        <!-- temporarily force-pin version -->
+        <!-- see https://github.com/quarkusio/quarkus/pull/17043 -->
+        <dependency>
+            <groupId>io.smallrye</groupId>
+            <artifactId>smallrye-open-api-core</artifactId>
+            <version>${version.io.smallrye-open-api-core}</version>
+        </dependency>
 
 
         <!-- kogito -->
