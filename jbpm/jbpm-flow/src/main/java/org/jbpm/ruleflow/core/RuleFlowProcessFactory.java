@@ -264,6 +264,8 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
                             linkBoundaryTimerEvent(node, attachedTo, attachedNode);
                         } else if (node.getMetaData().get(SIGNAL_NAME) != null || type.startsWith("Message-")) {
                             linkBoundarySignalEvent(node, attachedTo);
+                        } else if (type.startsWith("Error-")) {
+                            linkBoundaryErrorEvent(node, attachedTo, attachedNode);
                         }
                     }
                 }
@@ -322,6 +324,19 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
             actions.add(action);
             ((EventNode) node).setActions(EVENT_NODE_EXIT, actions);
         }
+    }
+
+    protected void linkBoundaryErrorEvent(Node node, String attachedTo, Node attachedNode) {
+     //TODO: implement the logic in the ProcessHandler.linkBoundaryErrorEvent
+
+        String hasErrorCode = (String) node.getMetaData().get("HasErrorEvent");
+        String errorCode = (String) node.getMetaData().get("ErrorEvent");
+
+        //Creating the action
+        DroolsConsequenceAction action = new DroolsConsequenceAction("java", null);
+        action.setMetaData(ACTION, new CancelNodeInstanceAction(attachedTo));
+
+
     }
 
     protected DroolsAction timerAction(String type) {

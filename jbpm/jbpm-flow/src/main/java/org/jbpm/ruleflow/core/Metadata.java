@@ -31,6 +31,7 @@ public class Metadata {
     public static final String EVENT_TYPE_SIGNAL = "signal";
     public static final String EVENT_TYPE_MESSAGE = "message";
     public static final String EVENT_TYPE_COMPENSATION = "Compensation";
+    public static final String EVENT_TYPE_ERROR = "error";
     public static final String CUSTOM_SCOPE = "customScope";
     public static final String ATTACHED_TO = "AttachedTo";
     public static final String TIME_CYCLE = "TimeCycle";
