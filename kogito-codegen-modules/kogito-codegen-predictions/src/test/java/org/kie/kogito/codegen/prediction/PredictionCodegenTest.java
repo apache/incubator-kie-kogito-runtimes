@@ -56,6 +56,8 @@ class PredictionCodegenTest {
     private static final Path SCORECARD_FULL_SOURCE = BASE_PATH.resolve(SCORECARD_SOURCE);
     private static final String MINING_SOURCE = "prediction/test_miningmodel.pmml";
     private static final Path MINING_FULL_SOURCE = BASE_PATH.resolve(MINING_SOURCE);
+    private static final String MULTIPLE_SOURCE = "prediction/test_multiplemodels.pmml";
+    private static final Path MULTIPLE_FULL_SOURCE = BASE_PATH.resolve(MULTIPLE_SOURCE);
     private static final String REFLECT_JSON = "reflect-config.json";
 
     private static final String CODE = "CODE";
@@ -86,7 +88,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, REGRESSION_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 3, 3, false);
+        generateAllFiles(context, codeGenerator, 5, 3, 1, false);
     }
 
     @ParameterizedTest
@@ -95,7 +97,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, SCORECARD_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 25, 4, true);
+        generateAllFiles(context, codeGenerator, 27, 4, 1, true);
     }
 
     @ParameterizedTest
@@ -104,22 +106,30 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MINING_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 65, 18, true);
+        generateAllFiles(context, codeGenerator, 67, 18, 1, true);
     }
 
-    private static void generateAllFiles(KogitoBuildContext context, PredictionCodegen codeGenerator, int expectedFiles, int expectedJavaSources, boolean assertReflect) {
-        // for each REST endpoint it also generates OpenAPI json schema
-        int expectedRestResources = context.hasREST() ? 2 : 0;
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void generateAllFilesMultiple(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder.build();
+        PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
+                context, CollectedResourceProducer.fromFiles(BASE_PATH, MULTIPLE_FULL_SOURCE.toFile()));
+        generateAllFiles(context, codeGenerator, 36, 6, 2, true);
+    }
 
+    private static void generateAllFiles(KogitoBuildContext context, PredictionCodegen codeGenerator, int expectedTotalFiles, int expectedJavaSources, int expectedRestEndpoints,
+            boolean assertReflect) {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertEquals(expectedFiles + expectedRestResources, generatedFiles.size());
+
+        int expectedGeneratedFilesSize = expectedTotalFiles - (context.hasREST() ? 0 : expectedRestEndpoints * 2);
+        assertEquals(expectedGeneratedFilesSize, generatedFiles.size());
+
         assertEquals(expectedJavaSources, generatedFiles.stream()
                 .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.SOURCE) &&
                         generatedFile.type().name().equals(NAME_PMML) &&
                         generatedFile.relativePath().endsWith(".java"))
                 .count());
-
-        assertEndpoints(context, generatedFiles);
 
         int expectedReflectResource = assertReflect ? 1 : 0;
         assertEquals(expectedReflectResource, generatedFiles.stream()
@@ -128,8 +138,11 @@ class PredictionCodegenTest {
                         generatedFile.relativePath().endsWith(REFLECT_JSON))
                 .count());
 
+        assertEndpoints(context, generatedFiles, expectedRestEndpoints);
+
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertTrue(optionalApplicationSection.isPresent());
+
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
         assertNotNull(compilationUnit);
     }
@@ -231,14 +244,14 @@ class PredictionCodegenTest {
         }
     }
 
-    private static void assertEndpoints(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles) {
+    private static void assertEndpoints(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles, int expectedRestEndpoints) {
         if (context.hasREST()) {
             // REST resource
-            assertEquals(1, generatedFiles.stream()
+            assertEquals(expectedRestEndpoints, generatedFiles.stream()
                     .filter(generatedFile -> generatedFile.type().equals(REST_TYPE))
                     .count());
             // OpenAPI Json schema
-            assertEquals(1, generatedFiles.stream()
+            assertEquals(expectedRestEndpoints, generatedFiles.stream()
                     .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.RESOURCE) &&
                             generatedFile.type().name().equals(GeneratedFileType.RESOURCE.name()) &&
                             !generatedFile.relativePath().endsWith(REFLECT_JSON))
