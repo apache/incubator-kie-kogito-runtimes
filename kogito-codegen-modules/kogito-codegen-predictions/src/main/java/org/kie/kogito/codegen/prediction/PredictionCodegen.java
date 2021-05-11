@@ -116,18 +116,18 @@ public class PredictionCodegen extends AbstractGenerator {
         return 40;
     }
 
-    void generateModelsFromResource(List<GeneratedFile> files, PMMLResource resource) {
+    private void generateModelsFromResource(List<GeneratedFile> files, PMMLResource resource) {
         for (KiePMMLModel model : resource.getKiePmmlModels()) {
             generateModel(files, model, resource.getModelPath());
         }
     }
 
-    void generateModel(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
+    private void generateModel(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
         generateModelBaseFiles(files, model, modelPath);
         generateModelRESTFiles(files, model);
     }
 
-    void generateModelBaseFiles(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
+    private void generateModelBaseFiles(List<GeneratedFile> files, KiePMMLModel model, String modelPath) {
         if (model.getName() == null || model.getName().isEmpty()) {
             String errorMessage = String.format("Model name should not be empty inside %s", modelPath);
             throw new IllegalArgumentException(errorMessage);
@@ -170,7 +170,7 @@ public class PredictionCodegen extends AbstractGenerator {
         }
     }
 
-    void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
+    private void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
         if (!context().hasREST() || (model instanceof KiePMMLFactoryModel)) {
             return;
         }
