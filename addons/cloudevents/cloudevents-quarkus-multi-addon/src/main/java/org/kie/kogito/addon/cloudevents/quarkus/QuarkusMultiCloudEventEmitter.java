@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -58,17 +59,19 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
     @Inject
     private ChannelResolver channelResolver;
 
+    @Inject
+    private Instance<EventMarshaller> marshallerInstance;
+    private EventMarshaller marshaller;
+
     @PostConstruct
     private void init() {
+        marshaller = marshallerInstance.isResolvable() ? marshallerInstance.get() : new DefaultEventMarshaller();
         messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
     }
 
     private EmitterConfiguration emitterConf(String name) {
         return new EmitterConfiguration(name, false, null, null);
     }
-
-    // TODO https://issues.redhat.com/browse/KOGITO-5094
-    EventMarshaller marshaller = new DefaultEventMarshaller();
 
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {

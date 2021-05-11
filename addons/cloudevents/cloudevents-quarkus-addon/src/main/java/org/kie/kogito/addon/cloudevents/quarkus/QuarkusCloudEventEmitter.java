@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -51,11 +52,13 @@ public class QuarkusCloudEventEmitter implements EventEmitter {
     @Inject
     ConfigBean configBean;
 
-    // TODO https://issues.redhat.com/browse/KOGITO-5094
-    EventMarshaller marshaller = new DefaultEventMarshaller();
+    @Inject
+    Instance<EventMarshaller> marshallerInstance;
+    EventMarshaller marshaller;
 
     @PostConstruct
     private void init() {
+        marshaller = marshallerInstance.isResolvable() ? marshallerInstance.get() : new DefaultEventMarshaller();
         messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
     }
 

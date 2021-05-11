@@ -15,20 +15,16 @@
  */
 package $Package$;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.process.impl.ProcessServiceImpl;
+@Configuration
+public class EventMarshallerProducer {
 
-
-
-@ApplicationScoped
-public class ProcessServiceProducer {
-
-    @Produces
-    public ProcessService processService(Application application){
-        return new ProcessServiceImpl(application);
+    @Bean
+    public EventMarshaller eventMarshaller(){
+        return new DefaultEventMarshaller();
     }
 }

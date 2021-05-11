@@ -18,17 +18,15 @@ package $Package$;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
-import org.kie.kogito.Application;
-import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.process.impl.ProcessServiceImpl;
 
-
+import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 
 @ApplicationScoped
-public class ProcessServiceProducer {
+public class EventMarshallerProducer {
 
     @Produces
-    public ProcessService processService(Application application){
-        return new ProcessServiceImpl(application);
+    public EventMarshaller eventMarshaller(){
+        return new DefaultEventMarshaller();
     }
 }

@@ -19,11 +19,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+import javax.annotation.PostConstruct;
+
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -43,12 +46,16 @@ public class SpringKafkaCloudEventEmitter implements EventEmitter {
     String defaultTopicName;
     @Autowired
     Environment env;
-
-    // TODO https://issues.redhat.com/browse/KOGITO-5094
-    EventMarshaller marshaller = new DefaultEventMarshaller();
-
+    @Autowired
+    ObjectProvider<EventMarshaller> marshallerInstance;
+    private EventMarshaller marshaller;
     @Autowired
     ConfigBean configBean;
+
+    @PostConstruct
+    void init() {
+        marshaller = marshallerInstance.getIfAvailable(DefaultEventMarshaller::new);
+    }
 
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
