@@ -2,20 +2,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>integration-tests-quarkus-processes-parent</artifactId>
+    <artifactId>integration-tests-quarkus-processes-persistence</artifactId>
     <groupId>org.kie.kogito</groupId>
     <version>2.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>integration-tests-quarkus-processes-kafka-persistence</artifactId>
-  <name>Kogito :: Integration Tests :: Processes :: Persistence :: Kafka</name>
+  <artifactId>integration-tests-quarkus-processes-postgresql</artifactId>
+  <name>Kogito :: Integration Tests :: Quarkus :: Processes :: Persistence :: PostgreSQL</name>
 
   <dependencies>
     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-reactive-pg-client</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kafka-persistence-addon</artifactId>
+      <artifactId>postgresql-persistence-addon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

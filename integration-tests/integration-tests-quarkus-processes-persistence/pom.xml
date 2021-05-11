@@ -7,8 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <packaging>pom</packaging>
-  <artifactId>integration-tests-quarkus-processes-parent</artifactId>
-  <name>Kogito :: Integration Tests :: Processes :: Parent</name>
+  <artifactId>integration-tests-quarkus-processes-persistence</artifactId>
+  <name>Kogito :: Integration Tests :: Quarkus :: Processes :: Persistence</name>
 
   <dependencyManagement>
     <dependencies>
@@ -23,7 +23,6 @@
   </dependencyManagement>
 
   <modules>
-    <module>integration-tests-quarkus-processes</module>
     <module>integration-tests-processes-persistence-common</module>
     <module>integration-tests-quarkus-processes-postgresql</module>
     <module>integration-tests-quarkus-processes-infinispan</module>
