@@ -34,8 +34,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-cloudevents-quarkus-common-addon</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.cloudevents</groupId>
+      <artifactId>cloudevents-http-restful-ws</artifactId>
+    </dependency>
   </dependencies>
-  
   
     <build>
     <plugins>
