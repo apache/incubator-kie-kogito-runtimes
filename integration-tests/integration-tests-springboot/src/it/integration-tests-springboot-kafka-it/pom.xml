@@ -116,8 +116,7 @@
             <plugin>
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>kogito-maven-plugin</artifactId>
-                <version>${project.version}
-                </version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
+                <version>${project.version}</version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
                 <extensions>true</extensions>
             </plugin>
             <plugin>
