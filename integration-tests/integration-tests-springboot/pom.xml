@@ -90,6 +90,14 @@
           <name>persistence</name>
         </property>
       </activation>
+      <dependencies>
+        <!-- All the dependency of this module are here just to make Maven reactor aware that invoker tests need them -->
+        <!-- NOTE: don't change their scope because otherwise maven-invoker-plugin is not going to install them in localRepositoryPath  -->
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>infinispan-persistence-addon</artifactId>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
