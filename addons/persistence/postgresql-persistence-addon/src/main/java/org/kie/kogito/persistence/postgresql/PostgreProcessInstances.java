@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.persistence.postgresql;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,18 +27,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import org.drools.core.util.IoUtils;
-import org.infinispan.protostream.BaseMarshaller;
-import org.kie.kogito.persistence.protobuf.ProtoStreamObjectMarshallingStrategy;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.process.impl.marshalling.ProcessInstanceMarshaller;
+import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,18 +56,16 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
     private final Process<?> process;
     private final PgPool client;
-    private final ProcessInstanceMarshaller marshaller;
+    private final ProcessInstanceMarshallerService marshaller;
     private final boolean autoDDL;
     private final Long queryTimeoutMillis;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
-            String proto,
-            BaseMarshaller<?>... marshallers) {
+    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis) {
         this.process = process;
         this.client = client;
         this.autoDDL = autoDDL;
         this.queryTimeoutMillis = queryTimeoutMillis;
-        this.marshaller = new ProcessInstanceMarshaller(new ProtoStreamObjectMarshallingStrategy(proto, marshallers));
+        this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
         init();
     }
 
@@ -111,15 +107,8 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     }
 
     private void disconnect(ProcessInstance instance) {
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(() -> {
-            try {
-                byte[] reloaded = findByIdInternal(UUID.fromString(instance.id())).get();
-                return marshaller.unmarshallWorkflowProcessInstance(reloaded, process);
-            } catch (RuntimeException e) {
-                LOGGER.error("Unexpected exception thrown when reloading process instance {}", instance.id(), e);
-                return null;
-            }
-        });
+        Supplier<byte[]> supplier = () -> findByIdInternal(UUID.fromString(instance.id())).get();
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(supplier));
     }
 
     private boolean insertInternal(UUID id, byte[] payload) {
@@ -289,12 +278,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     }
 
     private String getQueryFromFile(String scriptName) {
-        try {
-            return new String(IoUtils.readBytesFromInputStream(
-                    Thread.currentThread()
-                            .getContextClassLoader()
-                            .getResourceAsStream(String.format("sql/%s.sql", scriptName))));
-        } catch (IOException e) {
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format("sql/%s.sql", scriptName))) {
+            byte[] buffer = new byte[stream.available()];
+            stream.read(buffer);
+            return new String(buffer);
+        } catch (Exception e) {
             throw uncheckedException(e, "Error reading query script file %s", scriptName);
         }
     }
