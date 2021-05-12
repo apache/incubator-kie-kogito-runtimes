@@ -1,9 +1,9 @@
-name: Examples Build Chain Full Downstream
+name: Examples Build
 
-on: [pull_request]
+on: [pull_request_target]
 
 jobs:
-  example-downstream:
+  example-build:
     strategy:
       matrix:
         os: [ubuntu-latest]

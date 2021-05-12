@@ -1,9 +1,9 @@
-name: OptaPlanner Build Chain Full Downstream
+name: OptaPlanner Build
 
-on: [pull_request]
+on: [pull_request_target]
 
 jobs:
-  optaplanner-downstream:
+  optaplanner-build:
     strategy:
       matrix:
         os: [ubuntu-latest]
