@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.jbpm.process.core.context.variable.Variable;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
@@ -55,6 +54,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parse;
@@ -216,7 +216,6 @@ public class ModelMetaData {
 
         toMapBody.addStatement(new ReturnStmt(new NameExpr("params")));
         toMapMethod.ifPresent(methodDeclaration -> methodDeclaration.setBody(toMapBody));
-
 
         return compilationUnit;
     }
