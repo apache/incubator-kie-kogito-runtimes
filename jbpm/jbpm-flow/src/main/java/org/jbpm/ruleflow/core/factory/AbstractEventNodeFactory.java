@@ -23,7 +23,7 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.EventNode;
 
-public abstract class AbstractEventNodeFactory<T extends AbstractEventNodeFactory<T, ?>, P extends RuleFlowNodeContainerFactory<P, ?>> extends ExtendedNodeFactory<AbstractEventNodeFactory<T, P>, P> {
+public abstract class AbstractEventNodeFactory<T extends AbstractEventNodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends ExtendedNodeFactory<T, P> {
 
     protected AbstractEventNodeFactory(P nodeContainerFactory, NodeContainer nodeContainer, Node node, long id) {
         super(nodeContainerFactory, nodeContainer, node, id);

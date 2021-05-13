@@ -36,6 +36,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.Process;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -693,7 +694,7 @@ public class ServerlessWorkflowParsingTest {
         assertNotNull(process.getId());
     }
 
-    private org.kie.api.definition.process.Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {
+    private Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {
         String format = workflowLocation.endsWith(".sw.json") ? "json" : "yml";
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(new InputStreamReader(this.getClass().getResourceAsStream(workflowLocation)), format);
         return parser.getProcess();

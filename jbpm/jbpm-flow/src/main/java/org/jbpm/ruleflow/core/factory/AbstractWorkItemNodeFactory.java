@@ -38,7 +38,7 @@ public class AbstractWorkItemNodeFactory<T extends AbstractWorkItemNodeFactory<T
         super(nodeContainerFactory, nodeContainer, node, id);
     }
 
-    protected WorkItemNode getWorkItemNode() {
+    public WorkItemNode getWorkItemNode() {
         return (WorkItemNode) getNode();
     }
 
