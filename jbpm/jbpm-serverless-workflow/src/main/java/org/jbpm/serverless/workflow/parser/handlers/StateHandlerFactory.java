@@ -16,6 +16,7 @@
 package org.jbpm.serverless.workflow.parser.handlers;
 
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
 
 import io.serverlessworkflow.api.Workflow;
@@ -33,22 +34,24 @@ public class StateHandlerFactory {
     private StateHandlerFactory() {
     }
 
-    public static StateHandler<?, ?, ?> getStateHandler(State state, Workflow workflow, RuleFlowProcessFactory factory, NodeIdGenerator idGenerator) {
+    @SuppressWarnings("unchecked")
+    public static <S extends State, T extends NodeFactory<T, RuleFlowProcessFactory>> StateHandler<S, T, RuleFlowProcessFactory> getStateHandler(S state, Workflow workflow,
+            RuleFlowProcessFactory factory, NodeIdGenerator idGenerator) {
         switch (state.getType()) {
             case EVENT:
-                return new EventHandler((EventState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new EventHandler<>((EventState) state, workflow, factory, idGenerator);
             case OPERATION:
-                return new OperationHandler((OperationState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new OperationHandler<>((OperationState) state, workflow, factory, idGenerator);
             case DELAY:
-                return new DelayHandler((DelayState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new DelayHandler<>((DelayState) state, workflow, factory, idGenerator);
             case INJECT:
-                return new InjectHandler((InjectState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new InjectHandler<>((InjectState) state, workflow, factory, idGenerator);
             case SUBFLOW:
-                return new SubflowHandler((SubflowState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new SubflowHandler<>((SubflowState) state, workflow, factory, idGenerator);
             case SWITCH:
-                return new SwitchHandler((SwitchState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new SwitchHandler<>((SwitchState) state, workflow, factory, idGenerator);
             case PARALLEL:
-                return new ParallelHandler((ParallelState) state, workflow, factory, idGenerator);
+                return (StateHandler<S, T, RuleFlowProcessFactory>) new ParallelHandler<>((ParallelState) state, workflow, factory, idGenerator);
             default:
                 return null;
         }

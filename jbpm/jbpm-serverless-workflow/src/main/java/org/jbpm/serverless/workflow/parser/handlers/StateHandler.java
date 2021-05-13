@@ -73,21 +73,28 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
             }
             endNodeFactory.done();
         }
-
     }
 
     public void handleState() {
         node = makeNode();
         node.done();
         connectStart();
-        if (endNodeFactory != null) {
-            factory.connection(getConnectionNode().getNode().getId(), endNodeFactory.getNode().getId());
-        }
+        connectEnd();
+    }
+
+    public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {
+        handleTransition(state.getTransition(), getConnectionNode().getNode().getId(), stateConnection);
     }
 
     protected void connectStart() {
         if (startNodeFactory != null) {
             factory.connection(startNodeFactory.getNode().getId(), node.getNode().getId());
+        }
+    }
+
+    protected void connectEnd() {
+        if (endNodeFactory != null) {
+            factory.connection(getConnectionNode().getNode().getId(), endNodeFactory.getNode().getId());
         }
     }
 
@@ -99,8 +106,9 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
         return state;
     }
 
-    public NodeFactory<?, P> getConnectionNode() {
-        return node;
+    @SuppressWarnings("unchecked")
+    public <N extends NodeFactory<N, P>> N getConnectionNode() {
+        return (N) getNode();
     }
 
     protected abstract T makeNode();
@@ -134,10 +142,5 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
             }
         }
         return Optional.empty();
-    }
-
-    public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {
-        handleTransition(state.getTransition(), getConnectionNode().getNode().getId(), stateConnection);
-
     }
 }

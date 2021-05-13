@@ -17,5 +17,4 @@ package org.jbpm.serverless.workflow.parser;
 
 public interface NodeIdGenerator {
     long getId();
-
 }

@@ -15,7 +15,10 @@
  */
 package org.jbpm.serverless.workflow;
 
+import java.io.InputStreamReader;
+
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.jbpm.serverless.workflow.utils.WorkflowTestUtils;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.node.ActionNode;
@@ -42,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
+public class ServerlessWorkflowParsingTest {
 
     @BeforeAll
     public static void init() {
@@ -688,5 +691,11 @@ public class ServerlessWorkflowParsingTest extends BaseServerlessTest {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation);
         assertNotNull(process);
         assertNotNull(process.getId());
+    }
+
+    private org.kie.api.definition.process.Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {
+        String format = workflowLocation.endsWith(".sw.json") ? "json" : "yml";
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(new InputStreamReader(this.getClass().getResourceAsStream(workflowLocation)), format);
+        return parser.getProcess();
     }
 }
