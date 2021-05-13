@@ -26,7 +26,6 @@ import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
-import org.jbpm.serverless.workflow.parser.ConnectionInfo;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -104,15 +103,11 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
         return node;
     }
 
-    public void done(Map<String, ConnectionInfo> stateConnection) {
-
-    }
-
     protected abstract T makeNode();
 
-    protected Optional<Long> handleTransition(Transition transition, long sourceId, Map<String, ConnectionInfo> stateConnection) {
+    protected Optional<Long> handleTransition(Transition transition, long sourceId, Map<String, StateHandler<?, ?, ?>> stateConnection) {
         if (transition != null && transition.getNextState() != null) {
-            long targetId = stateConnection.get(transition.getNextState()).start().getNode().getId();
+            long targetId = stateConnection.get(transition.getNextState()).getNode().getNode().getId();
             List<ProduceEvent> produceEvents = transition.getProduceEvents();
             if (produceEvents.isEmpty()) {
                 factory.connection(sourceId, targetId);
@@ -141,8 +136,8 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
         return Optional.empty();
     }
 
-    public void handleTransition(Map<String, ConnectionInfo> stateConnection) {
-        handleTransition(state.getTransition(), stateConnection.get(state.getName()).end().getNode().getId(), stateConnection);
+    public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {
+        handleTransition(state.getTransition(), getConnectionNode().getNode().getId(), stateConnection);
 
     }
 }

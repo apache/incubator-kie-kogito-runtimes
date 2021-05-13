@@ -16,10 +16,8 @@
 package org.jbpm.serverless.workflow.parser.util;
 
 import java.io.Reader;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
 import org.slf4j.Logger;
@@ -72,13 +70,6 @@ public class ServerlessWorkflowUtils {
 
     public static String readWorkflowFile(Reader reader) {
         return StringUtils.readFileAsString(reader);
-    }
-
-    public static <S extends State> List<S> getStatesByType(Workflow workflow, Class<S> s) {
-        return workflow.getStates().stream()
-                .filter(ws -> s.isAssignableFrom(ws.getClass()))
-                .map(s::cast)
-                .collect(Collectors.toList());
     }
 
     public static EventDefinition getWorkflowEventFor(Workflow workflow, String eventName) {

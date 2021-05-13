@@ -16,10 +16,8 @@
 package org.jbpm.serverless.workflow.parser;
 
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -69,12 +67,21 @@ public class ServerlessWorkflowParser {
         return new ServerlessWorkflowParser(workflow);
     }
 
+    public ServerlessWorkflowParser withIdGenerator(NodeIdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+        return this;
+    }
+
     private ServerlessWorkflowParser(Workflow workflow) {
         this.workflow = workflow;
-        this.process = parseProcess();
     }
 
     private Process parseProcess() {
+        String workflowStartStateName = workflow.getStart().getStateName();
+        if (workflowStartStateName == null || workflowStartStateName.trim().isEmpty()) {
+            throw new IllegalArgumentException("workflow does not define a starting state");
+        }
+
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess(workflow.getId())
                 .name(workflow.getName() == null ? "workflow" : workflow.getName())
                 .version(workflow.getVersion() == null ? "1.0" : workflow.getVersion())
@@ -82,41 +89,26 @@ public class ServerlessWorkflowParser {
                         DEFAULT_PACKAGE) : DEFAULT_PACKAGE)
                 .visibility("Public")
                 .variable(DEFAULT_WORKFLOW_VAR, JsonNode.class);
-        Map<String, ConnectionInfo> stateConnection = new HashMap<>();
-        String workflowStartStateName = workflow.getStart().getStateName();
-        if (workflowStartStateName == null || workflowStartStateName.trim().isEmpty()) {
-            throw new IllegalArgumentException("workflow does not define a starting state");
-        }
-
-        List<StateHandler<?, ?, ?>> stateHandlers = new ArrayList<>();
+        Map<String, StateHandler<?, ?, ?>> stateHandlers = new LinkedHashMap<>();
         for (State state : workflow.getStates()) {
             StateHandler<?, ?, ?> stateHandler = StateHandlerFactory.getStateHandler(state, workflow, factory, idGenerator);
             if (stateHandler == null) {
                 logger.warn("Unsupported state {}. Ignoring it", state.getName());
             } else {
-                stateHandlers.add(stateHandler);
+                stateHandlers.put(state.getName(), stateHandler);
                 stateHandler.handleStart(workflowStartStateName);
             }
         }
-
-        for (StateHandler<?, ?, ?> stateHandler : stateHandlers) {
-            stateHandler.handleEnd();
-        }
-
-        for (StateHandler<?, ?, ?> stateHandler : stateHandlers) {
-            stateHandler.handleState();
-            stateConnection.put(stateHandler.getState().getName(), new ConnectionInfo(stateHandler.getNode(),
-                    stateHandler.getConnectionNode()));
-        }
-
-        for (StateHandler<?, ?, ?> stateHandler : stateHandlers) {
-            stateHandler.handleTransition(stateConnection);
-            stateHandler.done(stateConnection);
-        }
+        stateHandlers.values().forEach(StateHandler::handleEnd);
+        stateHandlers.values().forEach(StateHandler::handleState);
+        stateHandlers.values().forEach(s -> s.handleTransitions(stateHandlers));
         return factory.validate().getProcess();
     }
 
     public Process getProcess() {
+        if (process == null) {
+            process = parseProcess();
+        }
         return process;
     }
 
@@ -165,5 +157,4 @@ public class ServerlessWorkflowParser {
                 .metaData(Metadata.TRIGGER_TYPE, "ConsumeMessage")
                 .eventType("Message-" + eventDefinition.getSource());
     }
-
 }

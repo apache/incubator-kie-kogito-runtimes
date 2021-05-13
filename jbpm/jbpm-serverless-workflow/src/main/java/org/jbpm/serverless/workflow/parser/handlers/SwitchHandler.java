@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
+import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
-import org.jbpm.serverless.workflow.parser.ConnectionInfo;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -64,43 +64,44 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
     }
 
     @Override
-    public void done(Map<String, ConnectionInfo> stateConnection) {
-        ConnectionInfo connInfo = stateConnection.get(state.getName());
+    public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {
+        super.handleTransitions(stateConnection);
+        StateHandler<?, ?, ?> connInfo = stateConnection.get(state.getName());
         if (connInfo == null) {
             throw new IllegalStateException("unable to get split node for switch state }" + state.getName());
         }
         if (!state.getDataConditions().isEmpty()) {
-            finalizeDataBasedSwitchState(connInfo, stateConnection);
+            finalizeDataBasedSwitchState(connInfo.getNode(), stateConnection);
         } else {
-            finalizeEventBasedSwitchState(connInfo, stateConnection);
+            finalizeEventBasedSwitchState(connInfo.getNode(), stateConnection);
         }
     }
 
-    private void finalizeEventBasedSwitchState(ConnectionInfo connInfo, Map<String, ConnectionInfo> stateConnection) {
+    private void finalizeEventBasedSwitchState(NodeFactory<?, ?> startNode, Map<String, StateHandler<?, ?, ?>> stateConnection) {
         List<EventCondition> conditions = state.getEventConditions();
         for (EventCondition eventCondition : conditions) {
             EventDefinition eventDefinition = ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
                     eventCondition.getEventRef());
-            long targetId = stateConnection.get(eventCondition.getTransition().getNextState()).start().getNode()
+            long targetId = stateConnection.get(eventCondition.getTransition().getNextState()).getNode().getNode()
                     .getId();
             long eventId = idGenerator.getId();
             ServerlessWorkflowParser.consumeEventNode(factory.eventNode(eventId), eventDefinition).done().connection(
-                    connInfo.start().getNode().getId(), eventId).connection(eventId, targetId);
+                    startNode.getNode().getId(), eventId).connection(eventId, targetId);
         }
     }
 
-    private void finalizeDataBasedSwitchState(ConnectionInfo connInfo, Map<String, ConnectionInfo> stateConnection) {
-        long splitId = connInfo.start().getNode().getId();
+    private void finalizeDataBasedSwitchState(NodeFactory<?, ?> startNode, Map<String, StateHandler<?, ?, ?>> stateConnection) {
+        long splitId = startNode.getNode().getId();
         // set default connection
         if (state.getDefault() != null) {
             Transition transition = state.getDefault().getTransition();
             if (transition != null && transition.getNextState() != null) {
-                connInfo.start().metaData(XORSPLITDEFAULT, concatId(splitId, stateConnection.get(transition
-                        .getNextState()).start().getNode().getId()));
+                startNode.metaData(XORSPLITDEFAULT, concatId(splitId, stateConnection.get(transition
+                        .getNextState()).getNode().getNode().getId()));
             } else if (state.getDefault().getEnd() != null) {
                 EndNodeFactory<P> endNodeFactory = endNodeFactory(state.getDefault().getEnd().getProduceEvents());
                 endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
-                connInfo.start().metaData(XORSPLITDEFAULT, concatId(splitId, endNodeFactory.getNode().getId()));
+                startNode.metaData(XORSPLITDEFAULT, concatId(splitId, endNodeFactory.getNode().getId()));
             }
         }
 
@@ -112,10 +113,13 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
                 endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
                 targetId = Optional.of(endNodeFactory.getNode().getId());
             }
-            ((SplitFactory<?>) connInfo.start()).constraint(targetId.orElseThrow(() -> new IllegalArgumentException(
-                    "Invalid condition, not transition not end")), concatId(splitId, targetId.get()),
-                    "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(condition.getCondition()), 0,
-                    isDefaultCondition(state, condition));
+            if (targetId.isPresent()) {
+                ((SplitFactory<?>) startNode).constraint(targetId.get(), concatId(splitId, targetId.get()),
+                        "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(condition.getCondition()), 0,
+                        isDefaultCondition(state, condition));
+            } else {
+                throw new IllegalArgumentException("Invalid condition, not transition not end");
+            }
         }
     }
 

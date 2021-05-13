@@ -16,7 +16,6 @@
 package org.jbpm.serverless.workflow;
 
 import java.util.HashMap;
-import java.util.List;
 
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
@@ -32,8 +31,6 @@ import io.serverlessworkflow.api.mapper.BaseObjectMapper;
 import io.serverlessworkflow.api.mapper.JsonObjectMapper;
 import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 import io.serverlessworkflow.api.states.DefaultState;
-import io.serverlessworkflow.api.states.InjectState;
-import io.serverlessworkflow.api.states.OperationState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -54,17 +51,6 @@ public class WorkflowUtilsTest extends BaseServerlessTest {
         assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper("unsupported"));
 
         assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper(null));
-    }
-
-    @Test
-    public void testGetStatesByType() {
-        List<InjectState> relayStates = ServerlessWorkflowUtils.getStatesByType(multiInjectStateWorkflow, InjectState.class);
-        assertThat(relayStates).isNotNull();
-        assertThat(relayStates).hasSize(2);
-
-        List<OperationState> noOperationStates = ServerlessWorkflowUtils.getStatesByType(multiInjectStateWorkflow, OperationState.class);
-        assertThat(noOperationStates).isNotNull();
-        assertThat(noOperationStates).hasSize(0);
     }
 
     @Test
