@@ -231,10 +231,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         link();
         ProcessValidationError[] errors = RuleFlowProcessValidator.getInstance().validateProcess(getRuleFlowProcess());
         if (errors.length > 0) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Validation errors: {}", Arrays.toString(errors));
-            }
-            throw new IllegalStateException("Process could not be validated !");
+            throw new IllegalStateException("Process could not be validated !" + Arrays.toString(errors));
         }
         return this;
     }

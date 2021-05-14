@@ -18,6 +18,7 @@ package org.jbpm.serverless.workflow.parser.handlers;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
+import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.SubflowState;
@@ -31,8 +32,8 @@ public class SubflowHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extend
 
     @Override
     public SubProcessNodeFactory<P> makeNode() {
-        return factory.subProcessNode(idGenerator.getId()).name(state.getName()).processId(state
-                .getWorkflowId()).waitForCompletion(state.isWaitForCompletion());
+        return ServerlessWorkflowParser.subprocessNode(factory.subProcessNode(idGenerator.getId()).name(state.getName()).processId(state
+                .getWorkflowId()).waitForCompletion(state.isWaitForCompletion()));
 
     }
 
