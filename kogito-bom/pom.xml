@@ -109,6 +109,31 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-cloudevents-quarkus-common-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-cloudevents-quarkus-common-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-cloudevents-quarkus-multi-addon</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-cloudevents-quarkus-multi-addon</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1360,6 +1385,24 @@
         <artifactId>kogito-event-driven-decisions-springboot-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+
+      <!-- Integration tests -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>integration-tests-processes-persistence-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>integration-tests-processes-persistence-common</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-test-utils</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
 
