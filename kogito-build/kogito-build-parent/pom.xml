@@ -65,6 +65,9 @@
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
     <version.jdk>11</version.jdk>
+    <!-- Properties also affecting test execution. -->
+    <invoker.skip>false</invoker.skip>
+    <archetype.test.skip>false</archetype.test.skip>
 
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
@@ -830,7 +833,7 @@
           <artifactId>maven-archetype-plugin</artifactId>
           <version>${version.archetype.plugin}</version>
           <configuration>
-            <skip>${skipTests}</skip>
+            <skip>${archetype.test.skip}</skip>
           </configuration>
         </plugin>
         <plugin>
@@ -939,7 +942,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${version.surefire.plugin}</version>
+          <version>${version.failsafe.plugin}</version>
           <executions>
             <execution>
               <id>integration-test</id>
@@ -947,23 +950,23 @@
                 <goal>integration-test</goal>
                 <goal>verify</goal>
               </goals>
-              <configuration>
-                <useModulePath>false</useModulePath>
-                <includes>
-                  <include>${tests.failsafe.include}</include>
-                </includes>
-                <excludes>
-                  <exclude>${tests.surefire.include}</exclude>
-                  <exclude>**/Native*</exclude>
-                </excludes>
-                <systemPropertyVariables>
-                  <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
-                  <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
-                </systemPropertyVariables>
-                <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
-              </configuration>
             </execution>
           </executions>
+          <configuration>
+            <useModulePath>false</useModulePath>
+            <includes>
+              <include>${tests.failsafe.include}</include>
+            </includes>
+            <excludes>
+              <exclude>${tests.surefire.include}</exclude>
+              <exclude>**/Native*</exclude>
+            </excludes>
+            <argLine>-Xmx2048m -Xmx4g</argLine>
+            <systemPropertyVariables>
+              <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
+              <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
+            </systemPropertyVariables>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1430,19 +1433,6 @@ limitations under the License.
                 </execution>
               </executions>
             </plugin>
-            <plugin>
-              <artifactId>maven-invoker-plugin</artifactId>
-              <configuration>
-                <skipInstallation>true</skipInstallation>
-                <skipInvocation>true</skipInvocation>
-              </configuration>
-            </plugin>
-            <plugin>
-              <artifactId>maven-archetype-plugin</artifactId>
-              <configuration>
-                <skip>true</skip>
-              </configuration>
-            </plugin>
           </plugins>
         </pluginManagement>
       </build>
@@ -1494,14 +1484,56 @@ limitations under the License.
                 <skipInvocation>true</skipInvocation>
               </configuration>
             </plugin>
-            <plugin>
-              <artifactId>maven-archetype-plugin</artifactId>
-              <configuration>
-                <skip>true</skip>
-              </configuration>
-            </plugin>
           </plugins>
         </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        Translates -DskipTests parameter passed to build into setting corresponding skip properties.
+        It does NOT reflect the change made to the property value inside the pom files, just from cmd line.
+        Inside pom file it needs to be in sync explicitly in each profile.
+      -->
+      <id>skip-tests</id>
+      <activation>
+        <property>
+          <name>skipTests</name>
+        </property>
+      </activation>
+      <properties>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+    </profile>
+
+    <profile>
+      <!-- Profile that prints out effective property values for the execution. -->
+      <id>development-echo-properties</id>
+      <activation>
+        <property>
+          <name>echo-properties</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property environment="env" />
+                    <echoproperties />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
       </build>
     </profile>
     <!--
