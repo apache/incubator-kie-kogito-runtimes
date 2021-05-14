@@ -118,14 +118,10 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String getJsonPathScript(String script) {
-        if (script.contains("$")) {
-            String replacement = "jsonNode = com.jayway.jsonpath.JsonPath.using(jsonPathConfig)" +
-                    ".parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\")))" +
-                    ".read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class); toPrint+= jsonNode.isTextual() ? jsonNode.asText() : jsonNode;";
-            script = script.replaceAll("\\$.([A-Za-z]+)", replacement);
-            script = script.replace("@@", Matcher.quoteReplacement("$"));
-        }
-        return script;
+        return script.contains("$") ? script.replaceAll("\\$.([A-Za-z]+)",
+                "jsonNode = com.jayway.jsonpath.JsonPath.using(jsonPathConfig).parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\"))).read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class); toPrint+= jsonNode.isTextual() ? jsonNode.asText() : jsonNode;")
+                .replaceAll("@@", Matcher.quoteReplacement("$")) : script;
+
     }
 
     public static String getInjectScript(JsonNode toInjectNode) {
@@ -135,7 +131,7 @@ public class ServerlessWorkflowUtils {
             String injectStr = objectMapper.writeValueAsString(toInjectNode);
 
             return "com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();\n" +
-                    "        com.fasterxml.jackson.databind.JsonNode updateNode2 = objectMapper.readTree(\"" + injectStr.replace("\"", "\\\\\"") + "\");\n" +
+                    "        com.fasterxml.jackson.databind.JsonNode updateNode2 = objectMapper.readTree(\"" + injectStr.replaceAll("\"", "\\\\\"") + "\");\n" +
                     "        com.fasterxml.jackson.databind.JsonNode mainNode2 = (com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\");\n" +
                     "        java.util.Iterator<String> fieldNames2 = updateNode2.fieldNames();\n" +
                     "        while(fieldNames2.hasNext()) {\n" +

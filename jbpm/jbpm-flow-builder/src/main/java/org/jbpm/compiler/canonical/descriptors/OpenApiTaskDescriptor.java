@@ -242,7 +242,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
                 factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType);
             }
             if (this.resultHandlerExpression != null) {
-                factory.metaData(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
+                factory.workParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
             }
             return factory;
         }

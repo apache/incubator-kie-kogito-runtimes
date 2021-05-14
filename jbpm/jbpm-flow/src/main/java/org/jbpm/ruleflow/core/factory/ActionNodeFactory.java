@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.node.ActionNode;
 
 public class ActionNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> extends NodeFactory<ActionNodeFactory<T>, T> {
 
-    public static final String METHOD_ACTION = "Action";
+    public static final String METHOD_ACTION = "action";
 
     public ActionNodeFactory(T nodeContainerFactory,
             NodeContainer nodeContainer,
@@ -52,7 +52,7 @@ public class ActionNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ext
             boolean isDroolsAction) {
         if (isDroolsAction) {
             DroolsAction droolsAction = new DroolsAction();
-            droolsAction.setMetaData(METHOD_ACTION, action);
+            droolsAction.setMetaData("Action", action);
             getActionNode().setAction(droolsAction);
         } else {
             getActionNode().setAction(new DroolsConsequenceAction(dialect, action));
@@ -62,7 +62,7 @@ public class ActionNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ext
 
     public ActionNodeFactory<T> action(Action action) {
         DroolsAction droolsAction = new DroolsAction();
-        droolsAction.setMetaData(METHOD_ACTION, action);
+        droolsAction.setMetaData("Action", action);
         getActionNode().setAction(droolsAction);
         return this;
     }
