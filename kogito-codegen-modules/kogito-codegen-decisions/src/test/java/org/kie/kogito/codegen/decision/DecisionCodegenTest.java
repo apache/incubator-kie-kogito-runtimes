@@ -206,7 +206,7 @@ public class DecisionCodegenTest {
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertThat(optionalApplicationSection).isNotEmpty();
         CompilationUnit compilationUnit = optionalApplicationSection.get().compilationUnit();
-        assertThat(compilationUnit).isNotNull();
+        assertThat(compilationUnit).isNull();
         return assertThat(compilationUnit.toString());
     }
 
