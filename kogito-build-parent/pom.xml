@@ -1090,7 +1090,6 @@
             </compilerArgs>
           </configuration>
         </plugin>
-
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>${version.antrun.plugin}</version>
