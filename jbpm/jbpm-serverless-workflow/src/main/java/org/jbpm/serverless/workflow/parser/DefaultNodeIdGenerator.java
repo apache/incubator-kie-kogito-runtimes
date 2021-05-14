@@ -23,11 +23,10 @@ public class DefaultNodeIdGenerator implements NodeIdGenerator {
     private DefaultNodeIdGenerator() {
     }
 
-    private static final DefaultNodeIdGenerator instance = new DefaultNodeIdGenerator();
     private AtomicLong idCounter = new AtomicLong(1);
 
     public static DefaultNodeIdGenerator get() {
-        return instance;
+        return new DefaultNodeIdGenerator();
     }
 
     @Override

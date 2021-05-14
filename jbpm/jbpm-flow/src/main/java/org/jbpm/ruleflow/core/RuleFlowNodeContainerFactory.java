@@ -48,6 +48,8 @@ import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.kie.api.definition.process.Node;
 
+import static org.jbpm.ruleflow.core.Metadata.ASSOCIATION;
+import static org.jbpm.ruleflow.core.Metadata.HIDDEN;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
 import static org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
 
@@ -149,13 +151,25 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     }
 
     public T connection(long fromId, long toId, String uniqueId) {
+        getConnection(fromId, toId, uniqueId);
+        return (T) this;
+    }
+
+    public T association(long fromId, long toId, String uniqueId) {
+        Connection connection = getConnection(fromId, toId, uniqueId);
+        connection.setMetaData(ASSOCIATION, Boolean.TRUE);
+        connection.setMetaData(HIDDEN, Boolean.TRUE);
+        return (T) this;
+    }
+
+    private Connection getConnection(long fromId, long toId, String uniqueId) {
         Node from = ((NodeContainer) node).getNode(fromId);
         Node to = ((NodeContainer) node).getNode(toId);
         Connection connection = new ConnectionImpl(from, CONNECTION_DEFAULT_TYPE, to, CONNECTION_DEFAULT_TYPE);
         if (uniqueId != null) {
             connection.setMetaData(UNIQUE_ID, uniqueId);
         }
-        return (T) this;
+        return connection;
     }
 
     public T exceptionHandler(String exception, ExceptionHandler exceptionHandler) {

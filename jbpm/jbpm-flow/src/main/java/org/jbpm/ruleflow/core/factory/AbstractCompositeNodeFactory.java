@@ -44,7 +44,7 @@ abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFacto
     public T variable(String name, DataType type, Object value) {
         return variable(name, type, value, null, null);
     }
-    
+
     public T variable(String name, DataType type, String metaDataName, Object metaDataValue) {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
@@ -66,7 +66,6 @@ abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFacto
         variableScope.getVariables().add(variable);
         return (T) this;
     }
-
 
     public T linkIncomingConnections(long nodeId) {
         this.linkedIncomingNodeId = nodeId;
