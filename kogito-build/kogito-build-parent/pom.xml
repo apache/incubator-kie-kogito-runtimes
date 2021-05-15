@@ -179,7 +179,7 @@
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
     <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
-    <version.org.springdoc>1.5.2</version.org.springdoc>
+    <version.org.springdoc>1.5.8</version.org.springdoc>
     <version.org.testcontainers>1.15.3</version.org.testcontainers>
     <version.io.vertx>3.9.6</version.io.vertx>
   </properties>
@@ -1393,7 +1393,7 @@ limitations under the License.
         <!--suppress UnresolvedMavenProperty -->
         <sonar.login>${env.SONARCLOUD_TOKEN}</sonar.login>
         <sonar.organization>kiegroup</sonar.organization>
-        <sonar.exclusions></sonar.exclusions> <!-- KOGITO-4895 keep it here, if removed exclusions are not scoped to a particular defining module -->
+        <sonar.exclusions/> <!-- KOGITO-4895 keep it here, if removed exclusions are not scoped to a particular defining module -->
         <enforcer.skip>true</enforcer.skip>
         <checkstyle.skip>true</checkstyle.skip>
       </properties>
