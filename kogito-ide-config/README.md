@@ -24,4 +24,4 @@ Make sure the _Optimize Imports_ box is ticked, and select the `eclipse.importor
 
 First download the [Checkstyle for Java](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle) plugin then right click on `kogito-ide-config/src/main/resources/eclipse-format.xml` and `Set the *Checkstyle Configuration File*`. 
 
-full instruction can be found [here](https://code.visualstudio.com/docs/java/java-linting)
+Full instruction can be found [here](https://code.visualstudio.com/docs/java/java-linting)
