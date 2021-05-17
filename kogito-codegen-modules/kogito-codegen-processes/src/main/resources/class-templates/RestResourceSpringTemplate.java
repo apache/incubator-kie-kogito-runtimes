@@ -77,8 +77,8 @@ public class $Type$Resource {
         ProcessInstance<$Type$> pi = processService.createProcessInstance(process,
                                                                           businessKey,
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
-                                                                          httpHeaders.getOrEmpty("X-KOGITO-StartFromNode").stream().findFirst().orElse(null));
-        addTransportHeaders(pi, httpHeaders);
+                                                                          httpHeaders.getOrEmpty("X-KOGITO-StartFromNode").stream().findFirst().orElse(null),
+                                                                          configBean.transportConfig().buildContext(httpHeaders));
         return ResponseEntity.created(uriComponentsBuilder.path("/$name$/{id}").buildAndExpand(pi.id()).toUri())
                 .body(pi.checkError().variables().toModel());
     }
@@ -113,10 +113,5 @@ public class $Type$Resource {
                 .stream()
                 .map($TaskModelFactory$::from)
                 .collect(Collectors.toList());
-    }
-
-    private void addTransportHeaders(ProcessInstance<$Type$> instance, HttpHeaders httpHeaders) {
-        Map<String, String> transportContext = configBean.transportConfig().buildContext(httpHeaders);
-        instance.setContextAttr(TransportConfig.TRANSPORT_CONTEXT, transportContext);
     }
 }

@@ -43,7 +43,6 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
-
 import org.jbpm.util.JsonSchemaUtil;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.process.Process;
@@ -79,8 +78,8 @@ public class $Type$Resource {
         ProcessInstance<$Type$> pi = processService.createProcessInstance(process,
                                                                           businessKey,
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
-                                                                          httpHeaders.getHeaderString("X-KOGITO-StartFromNode"));
-        addTransportHeaders(pi, httpHeaders);
+                                                                          httpHeaders.getHeaderString("X-KOGITO-StartFromNode"),
+                                                                          configBean.transportConfig().buildContext(httpHeaders.getRequestHeaders()));
         return Response.created(uriInfo.getAbsolutePathBuilder().path(pi.id()).build())
                 .entity(pi.checkError().variables().toModel())
                 .build();
@@ -125,11 +124,5 @@ public class $Type$Resource {
                 .stream()
                 .map($TaskModelFactory$::from)
                 .collect(Collectors.toList());
-    }
-
-    private void addTransportHeaders(ProcessInstance<$Type$> instance, HttpHeaders httpHeaders) {
-        Map<String, String> transportContext = configBean.transportConfig()
-                .buildContext(httpHeaders.getRequestHeaders());
-        instance.setContextAttr(TransportConfig.TRANSPORT_CONTEXT, transportContext);
     }
 }
