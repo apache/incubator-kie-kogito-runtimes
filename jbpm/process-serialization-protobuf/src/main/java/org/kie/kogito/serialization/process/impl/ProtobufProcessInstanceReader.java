@@ -189,9 +189,11 @@ public class ProtobufProcessInstanceReader {
             processInstance.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
         }
 
-        if (workflowContext.getTransportContextCount() > 0) {
+        if (processInstanceProtobuf.getTransportContextCount() > 0) {
             Map<String, Object> transportContext = new HashMap<>();
-            varReader.buildVariables(workflowContext.getTransportContextList()).forEach(v -> transportContext.put(v.getName(), v.getValue()));
+            varReader.buildVariables(processInstanceProtobuf.getTransportContextList())
+                    .stream()
+                    .forEach(v -> transportContext.put(v.getName(), v.getValue()));
             processInstance.setMetaData(TransportConfig.TRANSPORT_CONTEXT, transportContext);
         }
 
@@ -493,11 +495,6 @@ public class ProtobufProcessInstanceReader {
         }
         if (workflowContext.getIterationLevelsCount() > 0) {
             container.getIterationLevels().putAll(buildIterationLevels(workflowContext.getIterationLevelsList()));
-        }
-        if (workflowContext.getTransportContextCount() > 0) {
-            Map<String, Object> transportContext = new HashMap<>();
-            varReader.buildVariables(workflowContext.getTransportContextList()).forEach(v -> transportContext.put(v.getName(), v.getValue()));
-            container.setMetaData(TransportConfig.TRANSPORT_CONTEXT, transportContext);
         }
     }
 

@@ -144,8 +144,11 @@ public class ProtobufProcessInstanceWriter {
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance) workFlow.getContextInstance(VariableScope.VARIABLE_SCOPE);
         List<Map.Entry<String, Object>> variables = new ArrayList<>(variableScopeInstance.getVariables().entrySet());
         List<Map.Entry<String, Integer>> iterationlevels = new ArrayList<>(workFlow.getIterationLevels().entrySet());
-        List<Map.Entry<String, Object>> transportContext = (List<Entry<String, Object>>) workFlow.getMetaData().get(TransportConfig.TRANSPORT_CONTEXT);
-        instance.setContext(buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationlevels, transportContext));
+        instance.setContext(buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationlevels));
+        if (workFlow.getMetaData().containsKey(TransportConfig.TRANSPORT_CONTEXT)) {
+            Map<String, Object> transportContext = (Map<String, Object>) workFlow.getMetaData().get(TransportConfig.TRANSPORT_CONTEXT);
+            instance.addAllTransportContext(varWriter.buildVariables(new ArrayList<>(transportContext.entrySet())));
+        }
 
         KogitoProcessInstanceProtobuf.ProcessInstance piProtobuf = instance.build();
 
@@ -189,15 +192,13 @@ public class ProtobufProcessInstanceWriter {
     private KogitoTypesProtobuf.WorkflowContext buildWorkflowContext(List<NodeInstance> nodeInstances,
             List<ContextInstance> exclusiveGroupInstances,
             List<Entry<String, Object>> variables,
-            List<Entry<String, Integer>> iterationlevels,
-            List<Entry<String, Object>> transportContext) {
+            List<Entry<String, Integer>> iterationlevels) {
 
         KogitoTypesProtobuf.WorkflowContext.Builder workflowContextBuilder = KogitoTypesProtobuf.WorkflowContext.newBuilder();
         workflowContextBuilder.addAllNodeInstance(buildNodeInstances(nodeInstances));
         workflowContextBuilder.addAllExclusiveGroup(buildGroups(exclusiveGroupInstances));
         workflowContextBuilder.addAllVariable(varWriter.buildVariables(variables));
         workflowContextBuilder.addAllIterationLevels(buildIterationLevels(iterationlevels));
-        workflowContextBuilder.addAllTransportContext(varWriter.buildVariables(transportContext));
         return workflowContextBuilder.build();
 
     }
@@ -279,8 +280,7 @@ public class ProtobufProcessInstanceWriter {
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         List<Map.Entry<String, Object>> variables = new ArrayList<>(variableScopeInstance.getVariables().entrySet());
         List<Map.Entry<String, Integer>> iterationlevels = new ArrayList<>(nodeInstance.getIterationLevels().entrySet());
-        List<Map.Entry<String, Object>> transportContext = (List<Entry<String, Object>>) nodeInstance.getMetaData().get(TransportConfig.TRANSPORT_CONTEXT);
-        foreachBuilder.setContext(buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationlevels, transportContext));
+        foreachBuilder.setContext(buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationlevels));
 
         return Any.pack(foreachBuilder.build());
     }
@@ -396,8 +396,7 @@ public class ProtobufProcessInstanceWriter {
         VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance.getContextInstance(VariableScope.VARIABLE_SCOPE);
         List<Map.Entry<String, Object>> variables = new ArrayList<>(variableScopeInstance.getVariables().entrySet());
         List<Map.Entry<String, Integer>> iterationLevels = new ArrayList<>(nodeInstance.getIterationLevels().entrySet());
-        List<Map.Entry<String, Object>> transportContext = (List<Entry<String, Object>>) nodeInstance.getMetaData().get(TransportConfig.TRANSPORT_CONTEXT);
-        return buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationLevels, transportContext);
+        return buildWorkflowContext(nodeInstances, exclusiveGroupInstances, variables, iterationLevels);
     }
 
     private Any buildWorkItemNodeInstance(WorkItemNodeInstance nodeInstance) {
