@@ -65,6 +65,9 @@
     <formatter.goal>format</formatter.goal>
     <impsort.goal>sort</impsort.goal>
     <version.jdk>11</version.jdk>
+    <!-- Properties also affecting test execution. -->
+    <invoker.skip>false</invoker.skip>
+    <archetype.test.skip>false</archetype.test.skip>
 
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
@@ -122,7 +125,7 @@
     <version.io.quarkus>1.13.3.Final</version.io.quarkus>
 
     <!-- dependencies versions -->
-    <version.com.fasterxml.jackson>2.12.1</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson>2.12.3</version.com.fasterxml.jackson>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.13.10</version.com.github.javaparser>
     <version.com.github.java-json-tools>2.2.10</version.com.github.java-json-tools>
@@ -170,7 +173,7 @@
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
     <version.org.keycloak>12.0.4</version.org.keycloak>
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
-    <version.org.kie7>7.54.0.Beta1</version.org.kie7>
+    <version.org.kie7>7.54.0.Final</version.org.kie7>
     <version.org.mockito>3.6.0</version.org.mockito>
     <version.org.mongo>4.2.3</version.org.mongo>
     <version.org.mongo.springboot>4.1.0</version.org.mongo.springboot> <!-- https://issues.redhat.com/browse/KOGITO-5031 -->
@@ -830,7 +833,7 @@
           <artifactId>maven-archetype-plugin</artifactId>
           <version>${version.archetype.plugin}</version>
           <configuration>
-            <skip>${skipTests}</skip>
+            <skip>${archetype.test.skip}</skip>
           </configuration>
         </plugin>
         <plugin>
@@ -939,7 +942,16 @@
         </plugin>
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${version.surefire.plugin}</version>
+          <version>${version.failsafe.plugin}</version>
+          <executions>
+            <execution>
+              <id>integration-test</id>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
           <configuration>
             <useModulePath>false</useModulePath>
             <includes>
@@ -947,8 +959,9 @@
             </includes>
             <excludes>
               <exclude>${tests.surefire.include}</exclude>
+              <exclude>**/Native*</exclude>
             </excludes>
-            <argLine>-Xms1024m -Xmx4g</argLine>
+            <argLine>-Xmx2048m -Xmx4g</argLine>
             <systemPropertyVariables>
               <maven.repo.local>${session.request.localRepositoryPath.path}</maven.repo.local>
               <maven.settings>${session.request.userSettingsFile.path}</maven.settings>
@@ -966,7 +979,7 @@
             <excludes>
               <exclude>${tests.failsafe.include}</exclude>
             </excludes>
-            <argLine>-Xmx1024m -Dfile.encoding=UTF-8</argLine>
+            <argLine>-Xmx2048m -Dfile.encoding=UTF-8</argLine>
             <systemPropertyVariables>
               <apple.awt.UIElement>true</apple.awt.UIElement>
               <org.uberfire.nio.git.daemon.enabled>false</org.uberfire.nio.git.daemon.enabled>
@@ -1380,6 +1393,149 @@ limitations under the License.
         <impsort.goal>check</impsort.goal>
       </properties>
     </profile>
+
+    <profile>
+      <!-- Performs the quick build: all plugins deactivated -->
+      <id>quick-build</id>
+      <activation>
+        <property>
+          <name>quickly</name>
+        </property>
+      </activation>
+      <properties>
+        <formatter.skip>true</formatter.skip>
+        <skipITs>true</skipITs>
+        <skipTests>true</skipTests>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+      <build>
+        <defaultGoal>clean install</defaultGoal>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>set-system-properties</goal>
+                  </goals>
+                  <configuration>
+                    <properties>
+                      <property>
+                        <name>quarkus.container-image.build</name>
+                        <value>false</value>
+                      </property>
+                    </properties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <!-- Performs the quick test: only formatting validation and unit tests enabled -->
+      <id>quick-test</id>
+      <activation>
+        <property>
+          <name>quickTests</name>
+        </property>
+      </activation>
+      <properties>
+        <formatter.skip>false</formatter.skip>
+        <formatter.goal>validate</formatter.goal>
+        <impsort.goal>check</impsort.goal>
+        <skipITs>true</skipITs>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+      <build>
+        <defaultGoal>clean install</defaultGoal>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <executions>
+                <execution>
+                  <phase>initialize</phase>
+                  <goals>
+                    <goal>set-system-properties</goal>
+                  </goals>
+                  <configuration>
+                    <properties>
+                      <property>
+                        <name>quarkus.container-image.build</name>
+                        <value>false</value>
+                      </property>
+                    </properties>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+              <artifactId>maven-invoker-plugin</artifactId>
+              <configuration>
+                <skipInstallation>true</skipInstallation>
+                <skipInvocation>true</skipInvocation>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        Translates -DskipTests parameter passed to build into setting corresponding skip properties.
+        It does NOT reflect the change made to the property value inside the pom files, just from cmd line.
+        Inside pom file it needs to be in sync explicitly in each profile.
+      -->
+      <id>skip-tests</id>
+      <activation>
+        <property>
+          <name>skipTests</name>
+        </property>
+      </activation>
+      <properties>
+        <invoker.skip>true</invoker.skip>
+        <archetype.test.skip>true</archetype.test.skip>
+      </properties>
+    </profile>
+
+    <profile>
+      <!-- Profile that prints out effective property values for the execution. -->
+      <id>development-echo-properties</id>
+      <activation>
+        <property>
+          <name>echo-properties</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property environment="env" />
+                    <echoproperties />
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <!--
       Creates JaCoCo XML reports and invokes the Sonar scanner, which uploads code quality data into the SonarCloud.
     -->
@@ -1393,7 +1549,10 @@ limitations under the License.
         <!--suppress UnresolvedMavenProperty -->
         <sonar.login>${env.SONARCLOUD_TOKEN}</sonar.login>
         <sonar.organization>kiegroup</sonar.organization>
-        <sonar.exclusions/> <!-- KOGITO-4895 keep it here, if removed exclusions are not scoped to a particular defining module -->
+        <!-- KOGITO-4895 keep it here in exact form <sonar.exclusions></sonar.exclusions>,
+          if removed exclusions are not scoped to a particular defining module.
+        -->
+        <sonar.exclusions></sonar.exclusions>
         <enforcer.skip>true</enforcer.skip>
         <checkstyle.skip>true</checkstyle.skip>
       </properties>
