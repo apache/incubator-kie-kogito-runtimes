@@ -16,6 +16,7 @@
 package org.jbpm.serverless.workflow;
 
 import java.io.InputStreamReader;
+import java.util.Collections;
 
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
@@ -33,6 +34,7 @@ import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
@@ -41,9 +43,14 @@ import org.kie.api.definition.process.Process;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.end.End;
+import io.serverlessworkflow.api.start.Start;
+import io.serverlessworkflow.api.states.DefaultState.Type;
+import io.serverlessworkflow.api.states.DelayState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ServerlessWorkflowParsingTest {
@@ -692,6 +699,29 @@ public class ServerlessWorkflowParsingTest {
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation);
         assertNotNull(process);
         assertNotNull(process.getId());
+    }
+
+    @Test
+    public void testMinimunWorkflow() {
+        Workflow workflow = new Workflow();
+        workflow.setId("javierito");
+        Start start = new Start();
+        start.setStateName("javierito");
+        End end = new End();
+        end.setTerminate(true);
+        DelayState startState = new DelayState();
+        startState.setType(Type.DELAY);
+        startState.setTimeDelay("1s");
+        startState.setName("javierito");
+        startState.setEnd(end);
+        workflow.setStates(Collections.singletonList(startState));
+        workflow.setStart(start);
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow);
+        Process process = parser.getProcess();
+        assertSame(process, parser.getProcess());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_NAME, process.getName());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_VERSION, process.getVersion());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_PACKAGE, process.getPackageName());
     }
 
     private Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {

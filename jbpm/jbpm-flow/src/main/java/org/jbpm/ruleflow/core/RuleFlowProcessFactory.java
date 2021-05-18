@@ -49,8 +49,6 @@ import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
@@ -75,8 +73,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     public static final String METHOD_VARIABLE = "variable";
     public static final String METHOD_ADD_COMPENSATION_CONTEXT = "addCompensationContext";
     public static final String METHOD_ERROR_EXCEPTION_HANDLER = "errorExceptionHandler";
-
-    private static final Logger logger = LoggerFactory.getLogger(RuleFlowProcessFactory.class);
 
     public static RuleFlowProcessFactory createProcess(String id) {
         return new RuleFlowProcessFactory(id);

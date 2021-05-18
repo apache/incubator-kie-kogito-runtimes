@@ -32,14 +32,17 @@ public class NodeContainerImpl implements NodeContainer {
     private Map<Long, Node> nodes;
 
     public NodeContainerImpl() {
-        this.nodes = new LinkedHashMap<Long, Node>();
+        // keeping insertion order is useful for debugging and testing purposes.
+        // tests can assume certain order to verify the nodes generated are the right ones, otherwise they will have to traverse the whole list.
+        // if the list of nodes is printed on logs we can see the order in which the nodes were added by the parser.
+        this.nodes = new LinkedHashMap<>();
     }
 
     @Override
     public void addNode(final Node node) {
         validateAddNode(node);
         if (!this.nodes.containsValue(node)) {
-            this.nodes.put(new Long(node.getId()), node);
+            this.nodes.put(node.getId(), node);
         }
     }
 
@@ -77,7 +80,7 @@ public class NodeContainerImpl implements NodeContainer {
     @Override
     public void removeNode(final Node node) {
         validateRemoveNode(node);
-        this.nodes.remove(new Long(node.getId()));
+        this.nodes.remove(node.getId());
     }
 
     protected void validateRemoveNode(Node node) {

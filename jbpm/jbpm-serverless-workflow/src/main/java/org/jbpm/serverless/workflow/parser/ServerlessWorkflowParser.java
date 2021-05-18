@@ -48,7 +48,9 @@ public class ServerlessWorkflowParser {
 
     public static final String NODE_START_NAME = "Start";
     public static final String NODE_END_NAME = "End";
-    private static final String DEFAULT_PACKAGE = "org.kie.kogito.serverless";
+    public static final String DEFAULT_NAME = "workflow";
+    public static final String DEFAULT_PACKAGE = "org.kie.kogito.serverless";
+    public static final String DEFAULT_VERSION = "1.0";
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
@@ -83,8 +85,8 @@ public class ServerlessWorkflowParser {
         }
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess(workflow.getId())
-                .name(workflow.getName() == null ? "workflow" : workflow.getName())
-                .version(workflow.getVersion() == null ? "1.0" : workflow.getVersion())
+                .name(workflow.getName() == null ? DEFAULT_NAME : workflow.getName())
+                .version(workflow.getVersion() == null ? DEFAULT_VERSION : workflow.getVersion())
                 .packageName(workflow.getMetadata() != null ? workflow.getMetadata().getOrDefault("package",
                         DEFAULT_PACKAGE) : DEFAULT_PACKAGE)
                 .visibility("Public")
