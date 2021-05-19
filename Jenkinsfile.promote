@@ -82,7 +82,11 @@ pipeline {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush(getPipelinePrLink())
 
-                        runMavenDeploy()
+                        if (isNotTestingBuild() || env.MAVEN_DEPLOY_REPOSITORY) {
+                            runMavenDeploy()
+                        } else {
+                            echo 'Testing environment and no specific deploy repository given => no deployment'
+                        }
                     }
                 }
             }
@@ -186,6 +190,10 @@ void setPipelinePrLink(String value) {
 
 String getSnapshotBranch() {
     return "${getSnapshotVersion().toLowerCase()}-${env.BOT_BRANCH_HASH}"
+}
+
+boolean isNotTestingBuild() {
+    return getGitAuthor() == 'kiegroup'
 }
 
 //////////////////////////////////////////////////////////////////////////////

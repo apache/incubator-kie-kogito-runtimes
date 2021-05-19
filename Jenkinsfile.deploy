@@ -124,6 +124,9 @@ pipeline {
             }
         }
         stage('Deploy artifacts') {
+            when {
+                expression { return env.MAVEN_DEPLOY_REPOSITORY || (!isRelease() && isNotTestingBuild()) }
+            }
             steps {
                 script {
                     // Usually `env.MAVEN_DEPLOY_REPOSITORY` is used for testing purpose
@@ -131,14 +134,22 @@ pipeline {
                         // Deploy to specific repository with credentials
                         runMavenDeployLocally()
                         maven.uploadLocalArtifacts(env.MAVEN_REPO_CREDS_ID, getLocalDeploymentFolder(), getMavenRepoZipUrl())
-                    } else if (!isRelease() || env.MAVEN_DEPLOY_REPOSITORY) {
+                    } else
                         // Normal deploy
                         runMavenDeploy()
-                    } else {
-                        // Deploy locally and then to staging
-                        runMavenDeployLocally()
-                        runMavenStage()
                     }
+                }
+            }
+        }
+        stage('Stage artifacts for release') {
+            when {
+                expression { return  !env.MAVEN_DEPLOY_REPOSITORY && isRelease() }
+            }
+            steps {
+                script {
+                    // Deploy locally and then to staging
+                    runMavenDeployLocally()
+                    runMavenStage()
                 }
             }
         }
@@ -243,6 +254,10 @@ String getBotAuthor() {
 
 String getBotAuthorCredsID() {
     return env.BOT_CREDENTIALS_ID
+}
+
+boolean isNotTestingBuild() {
+    return getGitAuthor() == 'kiegroup'
 }
 
 void setDeployPropertyIfNeeded(String key, def value) {
