@@ -82,7 +82,7 @@ pipeline {
                         sh "git checkout ${getBuildBranch()}"
                         mergeAndPush(getPipelinePrLink())
 
-                        if (isNotTestingBuild() || env.MAVEN_DEPLOY_REPOSITORY) {
+                        if (shouldDeployToRepository()) {
                             runMavenDeploy()
                         } else {
                             echo 'Testing environment and no specific deploy repository given => no deployment'
@@ -140,6 +140,10 @@ String getParamOrDeployProperty(String paramKey, String deployPropertyKey) {
 // Getter / Setter
 //////////////////////////////////////////////////////////////////////////////
 
+boolean shouldDeployToRepository() {
+    return env.MAVEN_DEPLOY_REPOSITORY || getGitAuthor() == 'kiegroup'
+}
+
 boolean isRelease() {
     return env.RELEASE.toBoolean()
 }
@@ -190,10 +194,6 @@ void setPipelinePrLink(String value) {
 
 String getSnapshotBranch() {
     return "${getSnapshotVersion().toLowerCase()}-${env.BOT_BRANCH_HASH}"
-}
-
-boolean isNotTestingBuild() {
-    return getGitAuthor() == 'kiegroup'
 }
 
 //////////////////////////////////////////////////////////////////////////////
