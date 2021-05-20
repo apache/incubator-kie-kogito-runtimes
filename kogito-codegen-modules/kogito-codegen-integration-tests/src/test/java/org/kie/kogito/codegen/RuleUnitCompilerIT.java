@@ -16,12 +16,17 @@
 package org.kie.kogito.codegen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.time.SessionPseudoClock;
+import org.kie.internal.builder.conf.PropertySpecificOption;
 import org.kie.kogito.Application;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
@@ -295,5 +300,29 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         } catch (RuleCodegenError e) {
             // ignore
         }
+    }
+
+    @Test
+    public void testRuleUnitNoPropertyReactivity() throws Exception {
+        // KOGITO-5101
+        KogitoBuildContext context = newContext();
+        context.setApplicationProperty(PropertySpecificOption.PROPERTY_NAME, PropertySpecificOption.DISABLED.toString());
+
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.RULES, Arrays.asList("org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl"));
+
+        Application application = generateCode(resourcesTypeMap, context);
+
+        AdultUnit adults = new AdultUnit();
+
+        Person mario = new Person("Mario", 45);
+        adults.getPersons().add(mario);
+
+        RuleUnit<AdultUnit> unit = application.get(RuleUnits.class).create(AdultUnit.class);
+        RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
+
+        instance.fire();
+
+        assertEquals(50, mario.getAge());
     }
 }

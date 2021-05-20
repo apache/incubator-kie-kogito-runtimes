@@ -150,10 +150,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new MissingDecisionTableDependencyError();
         }
 
-        KnowledgeBuilderConfigurationImpl configuration =
-                new KogitoKnowledgeBuilderConfigurationImpl(context().getClassLoader());
-
-        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>(KogitoPackageSources::dumpSources, configuration, dummyReleaseId, hotReloadMode);
+        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>(KogitoPackageSources::dumpSources, createBuilderConfiguration(), dummyReleaseId, hotReloadMode);
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
         resources.forEach(f -> addResource(batch, f));
@@ -197,6 +194,17 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
+    }
+
+    private KogitoKnowledgeBuilderConfigurationImpl createBuilderConfiguration() {
+        KogitoBuildContext buildContext = context();
+        KogitoKnowledgeBuilderConfigurationImpl conf = new KogitoKnowledgeBuilderConfigurationImpl(buildContext.getClassLoader());
+        for (String prop : buildContext.getApplicationProperties()) {
+            if (prop.startsWith("drools")) {
+                conf.setProperty(prop, buildContext.getApplicationProperty(prop).get());
+            }
+        }
+        return conf;
     }
 
     private void addResource(CompositeKnowledgeBuilder batch, Resource resource) {
