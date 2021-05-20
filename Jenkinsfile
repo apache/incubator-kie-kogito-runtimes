@@ -29,14 +29,6 @@ pipeline {
 
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
-
-                    if(!isMultijobPRCheck()) {
-                        checkoutOptaplannerRepo()
-                        checkoutRepo('kogito-apps')
-                        checkoutRepo('kogito-examples')
-                        checkoutRepo('kogito-examples', 'kogito-examples-persistence')
-                        checkoutRepo('kogito-examples', 'kogito-examples-events')
-                    }
                 }
             }
         }
@@ -108,95 +100,6 @@ pipeline {
                 }
             }
         }
-        stage('Build OptaPlanner') {
-            when { expression { return !isMultijobPRCheck() } }
-            steps {
-                script {
-                    // Skip unnecessary plugins to save time.
-                    getMavenCommand('optaplanner', true, true)
-                        .withProperty('enforcer.skip')
-                        .withProperty('formatter.skip')
-                        .withProperty('impsort.skip')
-                        .withProperty('revapi.skip')
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Build Apps') {
-            when { expression { return !isMultijobPRCheck() } }
-            steps {
-                script {
-                    getMavenCommand('kogito-apps', true, true)
-                        .withProperty('skip.ui.build')
-                        .withProperty('skip.ui.deps')
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Build Examples') {
-            when { expression { return !isMultijobPRCheck() } }
-            steps {
-                script {
-                    getMavenCommand('kogito-examples', true, true)
-                        .run('clean install')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Check Examples with persistence') {
-            when { expression { return !isMultijobPRCheck() } }
-            steps {
-                script {
-                    getMavenCommand('kogito-examples-persistence', true, true)
-                        .withProfiles(['persistence'])
-                        .run('clean verify')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Check Examples with events') {
-            when { expression { return !isMultijobPRCheck() } }
-            steps {
-                script {
-                    getMavenCommand('kogito-examples-events', true, true)
-                        .withProfiles(['events'])
-                        .run('clean verify')
-                }
-            }
-            post {
-                cleanup {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
     }
     post {
         always {
@@ -240,22 +143,6 @@ void checkoutQuarkusRepo() {
     }
 }
 
-void checkoutOptaplannerRepo() {
-    String targetBranch = changeTarget
-    String [] versionSplit = targetBranch.split("\\.")
-    if (versionSplit.length == 3
-        && versionSplit[0].isNumber()
-        && versionSplit[1].isNumber()
-       && versionSplit[2] == 'x') {
-        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
-    } else {
-        echo "Cannot parse changeTarget as release branch so going further with current value: ${changeTarget}"
-       }
-    dir('optaplanner') {
-        githubscm.checkoutIfExists('optaplanner', changeAuthor, changeBranch, 'kiegroup', targetBranch, true)
-    }
-}
-
 MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true, boolean canNative = false) {
     mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
@@ -286,12 +173,16 @@ boolean isNative() {
     return env['NATIVE'] && env['NATIVE'].toBoolean()
 }
 
-boolean isNormalPRCheck() {
-    return !(getQuarkusBranch() || isNative())
+boolean isDownstreamJob() {
+    return env['DOWNSTREAM_BUILD'] && env['DOWNSTREAM_BUILD'].toBoolean()
 }
 
-boolean isMultijobPRCheck() {
-    return env['MULTIJOB_PR_CHECK'] && env['MULTIJOB_PR_CHECK'].toBoolean()
+String getUpstreamTriggerProject() {
+    return env['UPSTREAM_TRIGGER_PROJECT']
+}
+
+boolean isNormalPRCheck() {
+    return !(isDownstreamJob() || getQuarkusBranch() || isNative())
 }
 
 Integer getTimeoutValue() {
