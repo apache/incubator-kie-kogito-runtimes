@@ -162,7 +162,7 @@ public class AbstractCodegenIT {
     }
 
     protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap) throws Exception {
-        return generateCode( resourcesTypeMap, this.newContext() );
+        return generateCode(resourcesTypeMap, this.newContext());
     }
 
     protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap, KogitoBuildContext context) throws Exception {

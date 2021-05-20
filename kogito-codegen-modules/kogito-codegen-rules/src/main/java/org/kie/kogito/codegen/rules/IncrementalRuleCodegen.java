@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
