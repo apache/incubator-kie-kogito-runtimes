@@ -305,8 +305,20 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     @Test
     public void testRuleUnitNoPropertyReactivity() throws Exception {
         // KOGITO-5101
+        checckPropertyReactvity(false);
+    }
+
+    @Test
+    public void testRuleUnitWithPropertyReactivity() throws Exception {
+        // KOGITO-5101
+        checckPropertyReactvity(true);
+    }
+
+    private void checckPropertyReactvity(boolean usePropertyReactivity) throws Exception {
         KogitoBuildContext context = newContext();
-        context.setApplicationProperty(PropertySpecificOption.PROPERTY_NAME, PropertySpecificOption.DISABLED.toString());
+        if (!usePropertyReactivity) {
+            context.setApplicationProperty(PropertySpecificOption.PROPERTY_NAME, PropertySpecificOption.DISABLED.toString());
+        }
 
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.RULES, Arrays.asList("org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl"));
@@ -323,6 +335,6 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
         instance.fire();
 
-        assertEquals(50, mario.getAge());
+        assertEquals(usePropertyReactivity ? 46 : 50, mario.getAge());
     }
 }
