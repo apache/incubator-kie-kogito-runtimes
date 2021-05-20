@@ -37,21 +37,22 @@ def getJobParams(String jobName, String jobFolder, String jenkinsfileName, Strin
 
 Map getMultijobPRConfig() {
     return [
+        parallel: true,
         jobs : [
             [
-                id: 'Tests',
+                id: 'Runtimes',
                 primary: true,
             ], [
                 id: 'Optaplanner',
-                waitForId: 'Tests',
+                dependsOn: 'Runtimes',
                 repository: 'optaplanner'
             ], [
                 id: 'Apps',
-                waitForId: 'Optaplanner',
+                dependsOn: 'Optaplanner',
                 repository: 'kogito-apps'
             ], [
                 id: 'Examples',
-                waitForId: 'Optaplanner',
+                dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
             ]
         ]
