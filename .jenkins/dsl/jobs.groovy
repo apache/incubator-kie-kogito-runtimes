@@ -64,12 +64,7 @@ def nightlyBranchFolder = "${KogitoConstants.KOGITO_DSL_NIGHTLY_FOLDER}/${JOB_BR
 def releaseBranchFolder = "${KogitoConstants.KOGITO_DSL_RELEASE_FOLDER}/${JOB_BRANCH_FOLDER}"
 
 if (isMainBranch()) {
-    // Normal PR checks
-    setupPrJob()
-    setupQuarkusLTSPrJob()
-    setupNativePrJob()
-
-    // Multijob PR checks
+    // PR checks
     setupMultijobPrDefaultChecks()
     setupMultijobPrNativeChecks()
     setupMultijobPrLTSChecks()
@@ -107,24 +102,6 @@ if (!isMainBranch()) {
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////
-
-void setupPrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.ignore_for_labels = [ KogitoConstants.KOGITO_PR_MULTIJOB_LABEL ]
-    KogitoJobTemplate.createPRJob(this, jobParams)
-}
-
-void setupQuarkusLTSPrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.ignore_for_labels = [ KogitoConstants.KOGITO_PR_MULTIJOB_LABEL ]
-    KogitoJobTemplate.createQuarkusLTSPRJob(this, jobParams)
-}
-
-void setupNativePrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.ignore_for_labels = [ KogitoConstants.KOGITO_PR_MULTIJOB_LABEL ]
-    KogitoJobTemplate.createNativePRJob(this, jobParams)
-}
 
 void setupMultijobPrDefaultChecks() {
     KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) {
