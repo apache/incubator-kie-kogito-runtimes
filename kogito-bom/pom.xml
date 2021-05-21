@@ -975,6 +975,11 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-dmn-jpmml</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- PMML -->
       <dependency>
