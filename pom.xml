@@ -148,47 +148,4 @@
       </modules>
     </profile>
   </profiles>
-
-<!--  <build>-->
-<!--    <pluginManagement>-->
-<!--      <plugins>-->
-<!--        <plugin>-->
-<!--          <groupId>org.apache.maven.plugins</groupId>-->
-<!--          <artifactId>maven-resources-plugin</artifactId>-->
-<!--          <version>3.2.0</version>-->
-<!--        </plugin>-->
-<!--      </plugins>-->
-<!--    </pluginManagement>-->
-<!--    <plugins>-->
-<!--      <plugin>-->
-<!--        <artifactId>maven-resources-plugin</artifactId>-->
-<!--&lt;!&ndash;        <version>3.2.0</version>&ndash;&gt;-->
-<!--        <inherited>true</inherited>-->
-<!--        <configuration>-->
-<!--          <outputDirectory>${project.root.dir}/mod-assemble-all/target/sqls/${project.artifactId}</outputDirectory>-->
-<!--          <resources>-->
-<!--            <resource>-->
-<!--              <directory>${project.basedir}/src/main/resources</directory>-->
-<!--              <includes>-->
-<!--                <include>**/*.sql</include>-->
-<!--              </includes>-->
-<!--              <filtering>false</filtering>-->
-<!--            </resource>-->
-<!--          </resources>-->
-<!--        </configuration>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>copy-resources</id>-->
-<!--            &lt;!&ndash; copy DB resources in validate and then afterwards assemble in package phase&ndash;&gt;-->
-<!--            <phase>validate</phase>-->
-<!--            <goals>-->
-<!--              <goal>copy-resources</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
-
-<!--    </plugins>-->
-<!--  </build>-->
-
 </project>
