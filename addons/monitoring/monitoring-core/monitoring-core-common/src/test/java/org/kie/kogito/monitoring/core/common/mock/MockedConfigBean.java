@@ -23,8 +23,8 @@ import org.kie.kogito.conf.ConfigBean;
 public class MockedConfigBean implements ConfigBean {
 
     @Override
-    public Optional<Boolean> useCloudEvents() {
-        return Optional.empty();
+    public boolean useCloudEvents() {
+        return false;
     }
 
     @Override
