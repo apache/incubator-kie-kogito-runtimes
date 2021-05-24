@@ -17,20 +17,20 @@ package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.context.variable.Mappable;
 
-public interface MappableNodeFactory {
+public interface MappableNodeFactory<T extends NodeFactory<T, ?>> {
 
     String METHOD_IN_MAPPING = "inMapping";
     String METHOD_OUT_MAPPING = "outMapping";
 
     Mappable getMappableNode();
 
-    default MappableNodeFactory inMapping(String parameterName, String variableName) {
+    default T inMapping(String parameterName, String variableName) {
         getMappableNode().addInMapping(parameterName, variableName);
-        return this;
+        return (T) this;
     }
 
-    default MappableNodeFactory outMapping(String parameterName, String variableName) {
+    default T outMapping(String parameterName, String variableName) {
         getMappableNode().addOutMapping(parameterName, variableName);
-        return this;
+        return (T) this;
     }
 }
