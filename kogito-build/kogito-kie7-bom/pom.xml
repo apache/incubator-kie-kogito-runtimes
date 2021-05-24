@@ -18,7 +18,8 @@
         This is to prevent misleading situation where both org.drools:drools-core and org.kie.kogito:drools-core as managed dependency</description>
 
     <properties>
-        <version.org.kie7>7.54.0.Final</version.org.kie7>
+        <version.org.kie7>7.55.0.Beta1</version.org.kie7>
+        <version.org.kie7-dmn-jpmml>7.54.0.Final</version.org.kie7-dmn-jpmml>
     </properties>
 
     <dependencyManagement>
@@ -112,7 +113,7 @@
             <dependency>
                 <groupId>org.kie</groupId>
                 <artifactId>kie-dmn-jpmml</artifactId>
-                <version>${version.org.kie7}</version>
+                <version>${version.org.kie7-dmn-jpmml}</version>
             </dependency>
 
 
