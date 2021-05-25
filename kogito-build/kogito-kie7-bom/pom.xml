@@ -12,7 +12,6 @@
 
     <artifactId>kogito-kie7-bom</artifactId>
     <packaging>pom</packaging>
-
     <name>Kogito :: Kie7 BOM</name>
     <description>Internal utility BOM used in Kogito to group kie7 artifact without add them to Kogito dependencyManagement section or kogito-bom.
         This is to prevent misleading situation where both org.drools:drools-core and org.kie.kogito:drools-core as managed dependency</description>
@@ -23,6 +22,8 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- This bom can only import dependencies from the groupIds org.kie and org.drools. -->
+
             <!-- KIE -->
             <dependency>
                 <groupId>org.kie</groupId>
@@ -87,7 +88,6 @@
                 <version>${version.org.kie7}</version>
             </dependency>
 
-
             <!-- DMN -->
             <dependency>
                 <groupId>org.kie</groupId>
@@ -109,7 +109,6 @@
                 <artifactId>kie-dmn-openapi</artifactId>
                 <version>${version.org.kie7}</version>
             </dependency>
-
 
             <!-- PMML -->
             <dependency>
@@ -144,9 +143,6 @@
                 <artifactId>drools-scenario-simulation-backend</artifactId>
                 <version>${version.org.kie7}</version>
             </dependency>
-
-
         </dependencies>
     </dependencyManagement>
-
 </project>
