@@ -15,11 +15,7 @@
  */
 package org.kie.kogito.process.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,17 +26,9 @@ import org.kie.kogito.Application;
 import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
+import org.kie.kogito.process.*;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessConfig;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.ProcessInstanceReadMode;
-import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.workitem.Attachment;
-import org.kie.kogito.process.workitem.AttachmentInfo;
-import org.kie.kogito.process.workitem.Comment;
-import org.kie.kogito.process.workitem.HumanTaskWorkItem;
-import org.kie.kogito.process.workitem.Policies;
+import org.kie.kogito.process.workitem.*;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 public class ProcessServiceImpl implements ProcessService {
@@ -52,11 +40,11 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> ProcessInstance<T> createProcessInstance(Process<T> process, String businessKey,
-            T model,
+    public ProcessInstance createProcessInstance(Process process, String businessKey,
+            Model model,
             String startFromNodeId) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
-            ProcessInstance<T> pi = process.createInstance(businessKey, model);
+            ProcessInstance pi = process.createInstance(businessKey, model);
             if (startFromNodeId != null) {
                 pi.startFrom(startFromNodeId);
             } else {
@@ -67,23 +55,25 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process) {
+    public List<Model> getProcessInstanceOutput(Process process) {
         return process.instances().values().stream()
                 .map(ProcessInstance::variables)
+                .map(MappableToModel.class::cast)
                 .map(MappableToModel::toModel)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id) {
+    public Optional<Model> findById(Process process, String id) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(ProcessInstance::variables)
+                .map(MappableToModel.class::cast)
                 .map(MappableToModel::toModel);
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id) {
+    public Optional<Model> delete(Process process, String id) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
                 () -> process
@@ -95,29 +85,31 @@ public class ProcessServiceImpl implements ProcessService {
                         })
                         .map(ProcessInstance::checkError)
                         .map(ProcessInstance::variables)
+                        .map(MappableToModel.class::cast)
                         .map(MappableToModel::toModel));
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> update(Process<T> process, String id, T resource) {
+    public Optional<Model> update(Process process, String id, Model resource) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
                 () -> process
                         .instances()
                         .findById(id)
                         .map(pi -> pi.updateVariables(resource))
+                        .map(MappableToModel.class::cast)
                         .map(MappableToModel::toModel));
     }
 
     @Override
-    public <T extends Model> Optional<List<WorkItem>> getTasks(Process<T> process, String id, String user, List<String> groups) {
+    public Optional<List<WorkItem>> getTasks(Process process, String id, String user, List<String> groups) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(pi -> pi.workItems(Policies.of(user, groups)));
     }
 
     @Override
-    public <T extends Model> Optional<WorkItem> signalTask(Process<T> process, String id, String taskNodeName, String taskName) {
+    public Optional<WorkItem> signalTask(Process process, String id, String taskNodeName, String taskName) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
                 .findById(id)
@@ -129,7 +121,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<WorkItem> getTaskByName(ProcessInstance<T> pi, String taskName) {
+    public Optional<WorkItem> getTaskByName(ProcessInstance pi, String taskName) {
         return pi
                 .workItems()
                 .stream()
@@ -138,7 +130,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> completeTask(Process<T> process,
+    public Optional<Model> completeTask(Process process,
             String id,
             String taskId,
             String phase,
@@ -155,17 +147,18 @@ public class ProcessServiceImpl implements ProcessService {
                     return pi;
                 })
                 .map(ProcessInstance::variables)
+                .map(MappableToModel.class::cast)
                 .map(MappableToModel::toModel));
     }
 
     @Override
-    public <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
+    public Optional<MapOutput> saveTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
             MapOutput model,
-            Function<Map<String, Object>, R> mapper) {
+            Function<Map<String, Object>, MapOutput> mapper) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
                 .findById(id)
@@ -174,8 +167,8 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> taskTransition(
-            Process<T> process,
+    public Optional<Model> taskTransition(
+            Process process,
             String id,
             String taskId,
             String phase,
@@ -190,17 +183,18 @@ public class ProcessServiceImpl implements ProcessService {
                             pi.transitionWorkItem(
                                     taskId,
                                     HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
-                            return pi.variables().toModel();
+                            MappableToModel variables = (MappableToModel) pi.variables();
+                            return variables.toModel();
                         }));
     }
 
     @Override
-    public <T extends MappableToModel<?>, R> Optional<R> getTask(Process<T> process,
+    public Optional<Model> getTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
-            Function<WorkItem, R> mapper) {
+            Function<WorkItem, Model> mapper) {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(pi -> pi.workItem(taskId, Policies.of(user, groups)))
@@ -208,7 +202,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> abortTask(Process<T> process,
+    public Optional<Model> abortTask(Process process,
             String id,
             String taskId,
             String phase,
@@ -222,12 +216,13 @@ public class ProcessServiceImpl implements ProcessService {
                             pi.transitionWorkItem(taskId,
                                     HumanTaskTransition.withoutModel(phase,
                                             Policies.of(user, groups)));
-                            return pi.variables().toModel();
+                            MappableToModel variables = (MappableToModel) pi.variables();
+                            return variables.toModel();
                         }));
     }
 
     @Override
-    public <T extends Model> Optional<Comment> addComment(Process<T> process,
+    public Optional<Comment> addComment(Process process,
             String id,
             String taskId,
             String user,
@@ -244,7 +239,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Comment> updateComment(Process<T> process,
+    public Optional<Comment> updateComment(Process process,
             String id,
             String taskId,
             String commentId,
@@ -262,7 +257,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Boolean> deleteComment(Process<T> process,
+    public Optional<Boolean> deleteComment(Process process,
             String id,
             String taskId,
             String commentId,
@@ -279,7 +274,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Attachment> addAttachment(Process<T> process,
+    public Optional<Attachment> addAttachment(Process process,
             String id,
             String taskId,
             String user,
@@ -296,7 +291,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Attachment> updateAttachment(Process<T> process,
+    public Optional<Attachment> updateAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
@@ -314,7 +309,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Boolean> deleteAttachment(Process<T> process,
+    public Optional<Boolean> deleteAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
@@ -331,7 +326,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Attachment> getAttachment(Process<T> process,
+    public Optional<Attachment> getAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
@@ -344,7 +339,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Collection<Attachment>> getAttachments(Process<T> process,
+    public Optional<Collection<Attachment>> getAttachments(Process process,
             String id,
             String taskId,
             String user,
@@ -356,7 +351,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Comment> getComment(Process<T> process,
+    public Optional<Comment> getComment(Process process,
             String id,
             String taskId,
             String commentId,
@@ -369,7 +364,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends Model> Optional<Collection<Comment>> getComments(Process<T> process,
+    public Optional<Collection<Comment>> getComments(Process process,
             String id,
             String taskId,
             String user,
@@ -381,18 +376,19 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName) {
+    public Optional<Model> signalProcessInstance(Process process, String id, Object data, String signalName) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(),
                 () -> process.instances().findById(id)
                         .map(pi -> {
                             pi.send(Sig.of(signalName, data));
-                            return pi.checkError().variables().toModel();
+                            MappableToModel variables = (MappableToModel) pi.checkError().variables();
+                            return variables.toModel();
                         }));
     }
 
     //Schema
     @Override
-    public <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,
+    public Map<String, Object> getSchemaAndPhases(Process process,
             String id,
             String taskId,
             String user,

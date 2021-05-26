@@ -46,7 +46,7 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
     }
 
     @Override
-    public PostgreProcessInstances createProcessInstances(Process<?> process) {
+    public PostgreProcessInstances createProcessInstances(Process process) {
         return new PostgreProcessInstances(process, client(), autoDDL, queryTimeout);
     }
 }

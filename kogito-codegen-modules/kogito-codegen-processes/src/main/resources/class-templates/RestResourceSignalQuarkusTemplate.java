@@ -19,7 +19,7 @@ import org.kie.kogito.process.Process;
 
 public class $Type$Resource {
 
-    Process<$Type$> process;
+    Process process;
 
     @POST
     @Path("/{id}/$signalPath$")

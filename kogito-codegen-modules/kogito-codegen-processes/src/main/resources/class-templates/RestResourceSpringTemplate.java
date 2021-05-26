@@ -59,7 +59,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/$name$")
 public class $Type$Resource {
 
-    Process<$Type$> process;
+    Process process;
 
     @Autowired
     ProcessService processService;
@@ -69,7 +69,7 @@ public class $Type$Resource {
                                                               @RequestParam(value = "businessKey", required = false) String businessKey,
                                                               @RequestBody(required = false) $Type$Input resource,
                                                               UriComponentsBuilder uriComponentsBuilder) {
-        ProcessInstance<$Type$> pi = processService.createProcessInstance(process,
+        ProcessInstance pi = processService.createProcessInstance(process,
                                                                           businessKey,
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
                                                                           httpHeaders.getOrEmpty("X-KOGITO-StartFromNode").stream().findFirst().orElse(null));

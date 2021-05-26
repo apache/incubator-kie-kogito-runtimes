@@ -58,7 +58,7 @@ import org.kie.kogito.auth.IdentityProvider;
 @Path("/$name$")
 public class $Type$Resource {
 
-    Process<$Type$> process;
+    Process process;
 
     @Inject
     ProcessService processService;
@@ -70,7 +70,7 @@ public class $Type$Resource {
                                           @Context UriInfo uriInfo,
                                           @QueryParam("businessKey") String businessKey,
                                           $Type$Input resource) {
-        ProcessInstance<$Type$> pi = processService.createProcessInstance(process,
+        ProcessInstance pi = processService.createProcessInstance(process,
                                                                           businessKey,
                                                                           Optional.ofNullable(resource).orElse(new $Type$Input()).toModel(),
                                                                           httpHeaders.getHeaderString("X-KOGITO-StartFromNode"));

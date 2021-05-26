@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.kie.kogito.MapOutput;
-import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
@@ -30,25 +29,25 @@ import org.kie.kogito.process.workitem.Comment;
 
 public interface ProcessService {
 
-    <T extends Model> ProcessInstance<T> createProcessInstance(Process<T> process, String businessKey,
-            T model,
+    ProcessInstance createProcessInstance(Process process, String businessKey,
+            Model model,
             String startFromNodeId);
 
-    <T extends MappableToModel<R>, R> List<R> getProcessInstanceOutput(Process<T> process);
+    List<Model> getProcessInstanceOutput(Process process);
 
-    <T extends MappableToModel<R>, R> Optional<R> findById(Process<T> process, String id);
+    Optional<Model> findById(Process process, String id);
 
-    <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id);
+    Optional<Model> delete(Process process, String id);
 
-    <T extends MappableToModel<R>, R> Optional<R> update(Process<T> process, String id, T resource);
+    Optional<Model> update(Process process, String id, Model resource);
 
-    <T extends Model> Optional<List<WorkItem>> getTasks(Process<T> process, String id, String user, List<String> groups);
+    Optional<List<WorkItem>> getTasks(Process process, String id, String user, List<String> groups);
 
-    <T extends Model> Optional<WorkItem> signalTask(Process<T> process, String id, String taskNodeName, String taskName);
+    Optional<WorkItem> signalTask(Process process, String id, String taskNodeName, String taskName);
 
-    <T extends Model> Optional<WorkItem> getTaskByName(ProcessInstance<T> pi, String taskName);
+    Optional<WorkItem> getTaskByName(ProcessInstance pi, String taskName);
 
-    <T extends MappableToModel<R>, R> Optional<R> completeTask(Process<T> process,
+    Optional<Model> completeTask(Process process,
             String id,
             String taskId,
             String phase,
@@ -56,16 +55,16 @@ public interface ProcessService {
             List<String> groups,
             MapOutput taskModel);
 
-    <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
+    Optional<MapOutput> saveTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
             MapOutput model,
-            Function<Map<String, Object>, R> mapper);
+            Function<Map<String, Object>, MapOutput> mapper);
 
-    <T extends MappableToModel<R>, R> Optional<R> taskTransition(
-            Process<T> process,
+    Optional<Model> taskTransition(
+            Process process,
             String id,
             String taskId,
             String phase,
@@ -73,28 +72,28 @@ public interface ProcessService {
             List<String> groups,
             MapOutput model);
 
-    <T extends MappableToModel<?>, R> Optional<R> getTask(Process<T> process,
+    Optional<Model> getTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
-            Function<WorkItem, R> mapper);
+            Function<WorkItem, Model> mapper);
 
-    <T extends MappableToModel<R>, R> Optional<R> abortTask(Process<T> process,
+    Optional<Model> abortTask(Process process,
             String id,
             String taskId,
             String phase,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Comment> addComment(Process<T> process,
+    Optional<Comment> addComment(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
             String commentInfo);
 
-    <T extends Model> Optional<Comment> updateComment(Process<T> process,
+    Optional<Comment> updateComment(Process process,
             String id,
             String taskId,
             String commentId,
@@ -102,21 +101,21 @@ public interface ProcessService {
             List<String> groups,
             String commentInfo);
 
-    <T extends Model> Optional<Boolean> deleteComment(Process<T> process,
+    Optional<Boolean> deleteComment(Process process,
             String id,
             String taskId,
             String commentId,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Attachment> addAttachment(Process<T> process,
+    Optional<Attachment> addAttachment(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
             AttachmentInfo attachmentInfo);
 
-    <T extends Model> Optional<Attachment> updateAttachment(Process<T> process,
+    Optional<Attachment> updateAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
@@ -124,43 +123,43 @@ public interface ProcessService {
             List<String> groups,
             AttachmentInfo attachment);
 
-    <T extends Model> Optional<Boolean> deleteAttachment(Process<T> process,
+    Optional<Boolean> deleteAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Attachment> getAttachment(Process<T> process,
+    Optional<Attachment> getAttachment(Process process,
             String id,
             String taskId,
             String attachmentId,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Collection<Attachment>> getAttachments(Process<T> process,
+    Optional<Collection<Attachment>> getAttachments(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Comment> getComment(Process<T> process,
+    Optional<Comment> getComment(Process process,
             String id,
             String taskId,
             String commentId,
             String user,
             List<String> groups);
 
-    <T extends Model> Optional<Collection<Comment>> getComments(Process<T> process,
+    Optional<Collection<Comment>> getComments(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups);
 
-    <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName);
+    Optional<Model> signalProcessInstance(Process process, String id, Object data, String signalName);
 
     //Schema
-    <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,
+    Map<String, Object> getSchemaAndPhases(Process process,
             String id,
             String taskId,
             String user,
