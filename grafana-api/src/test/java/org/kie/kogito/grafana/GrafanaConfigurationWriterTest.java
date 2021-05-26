@@ -20,6 +20,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
 public class GrafanaConfigurationWriterTest {
 
