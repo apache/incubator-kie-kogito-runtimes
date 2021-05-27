@@ -14,8 +14,8 @@
   <artifactId>kogito-build-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Kogito Runtimes Build BOM</name>
-  <description>Kogito Runtimes Dependency Management Project BOM</description>
+  <name>Kogito :: Runtimes Build Parent</name>
+  <description>Kogito Runtimes Build Parent</description>
 
   <!--
       CONVENTIONS:
@@ -195,28 +195,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <!-- DMN -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-dmn-openapi</artifactId>
-        <version>${version.org.kie7}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-dmn-jpmml</artifactId>
-        <version>${version.org.kie7}</version>
-      </dependency>
-      <!-- PMML -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-pmml-api</artifactId>
-        <version>${version.org.kie7}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-pmml-commons</artifactId>
-        <version>${version.org.kie7}</version>
       </dependency>
 
       <dependency>
