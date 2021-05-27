@@ -26,7 +26,7 @@ public class $Type$Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public $Type$Output signal(@PathParam("id") final String id, final $signalType$ data) {
-        return processService.signalProcessInstance(process, id, data, "$signalName$")
+        return processService.signalProcessInstance(process, id, data, "$signalName$", $Type$Output.class)
                 .orElseThrow(() -> new NotFoundException());
     }
 }

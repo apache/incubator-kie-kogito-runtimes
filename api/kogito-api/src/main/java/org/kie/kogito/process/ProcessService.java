@@ -26,6 +26,7 @@ import org.kie.kogito.Model;
 import org.kie.kogito.process.workitem.Attachment;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.process.workitem.Comment;
+import org.kie.kogito.process.workitem.TaskModel;
 
 public interface ProcessService {
 
@@ -33,13 +34,13 @@ public interface ProcessService {
             Model model,
             String startFromNodeId);
 
-    List<Model> getProcessInstanceOutput(Process process);
+    <T extends Model> List<T> getProcessInstanceOutput(Process process, Class<T> modelType);
 
-    Optional<Model> findById(Process process, String id);
+    <T extends Model> Optional<T> findById(Process process, String id, Class<T> modelType);
 
-    Optional<Model> delete(Process process, String id);
+    <T extends Model> Optional<T> delete(Process process, String id, Class<T> modelType);
 
-    Optional<Model> update(Process process, String id, Model resource);
+    <T extends Model> Optional<T> update(Process process, String id, Model resource, Class<T> modelType);
 
     Optional<List<WorkItem>> getTasks(Process process, String id, String user, List<String> groups);
 
@@ -47,44 +48,47 @@ public interface ProcessService {
 
     Optional<WorkItem> getTaskByName(ProcessInstance pi, String taskName);
 
-    Optional<Model> completeTask(Process process,
+    <T extends Model> Optional<T> completeTask(Process process,
             String id,
             String taskId,
             String phase,
             String user,
             List<String> groups,
-            MapOutput taskModel);
+            MapOutput taskModel,
+            Class<T> modelType);
 
-    Optional<MapOutput> saveTask(Process process,
+    <T extends MapOutput> Optional<T> saveTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
-            MapOutput model,
-            Function<Map<String, Object>, MapOutput> mapper);
+            T model,
+            Function<Map<String, Object>, T> mapper);
 
-    Optional<Model> taskTransition(
+    <T extends Model> Optional<T> taskTransition(
             Process process,
             String id,
             String taskId,
             String phase,
             String user,
             List<String> groups,
-            MapOutput model);
+            MapOutput model,
+            Class<T> modelType);
 
-    Optional<Model> getTask(Process process,
+    <T extends TaskModel<?, ?>> Optional<T> getTask(Process process,
             String id,
             String taskId,
             String user,
             List<String> groups,
-            Function<WorkItem, Model> mapper);
+            Function<WorkItem, T> mapper);
 
-    Optional<Model> abortTask(Process process,
+    <T extends Model> Optional<T> abortTask(Process process,
             String id,
             String taskId,
             String phase,
             String user,
-            List<String> groups);
+            List<String> groups,
+            Class<T> modelType);
 
     Optional<Comment> addComment(Process process,
             String id,
@@ -156,7 +160,7 @@ public interface ProcessService {
             String user,
             List<String> groups);
 
-    Optional<Model> signalProcessInstance(Process process, String id, Object data, String signalName);
+    <T extends Model> Optional<T> signalProcessInstance(Process process, String id, Object data, String signalName, Class<T> modelType);
 
     //Schema
     Map<String, Object> getSchemaAndPhases(Process process,
