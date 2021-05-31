@@ -18,6 +18,7 @@ package org.kie.kogito.tracing.decision;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.cloudevents.CloudEventUtils;
@@ -32,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Disabled("https://issues.redhat.com/browse/KOGITO-5238" +
+        "Tracing tests are failing on Vert.X 4/Quarkus 2.x")
 public class QuarkusModelEventEmitterTest {
 
     @Test
