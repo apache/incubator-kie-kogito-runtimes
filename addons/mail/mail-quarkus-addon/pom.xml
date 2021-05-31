@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>mail</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.7.0.Final</version>
   </parent>
   <artifactId>mail-quarkus-addon</artifactId>
   <name>Kogito :: Add-Ons :: E-Mail :: Quarkus Addon</name>
