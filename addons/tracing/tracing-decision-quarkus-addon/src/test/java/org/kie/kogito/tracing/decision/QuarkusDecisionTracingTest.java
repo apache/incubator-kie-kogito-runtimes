@@ -50,7 +50,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @Disabled("https://issues.redhat.com/browse/KOGITO-5238" +
-          "Tracing tests are failing on Vert.X 4/Quarkus 2.x")
+        "Tracing tests are failing on Vert.X 4/Quarkus 2.x")
 public class QuarkusDecisionTracingTest {
 
     public static final String TEST_MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
