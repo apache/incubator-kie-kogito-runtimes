@@ -55,6 +55,9 @@ public class Metadata {
     public static final String COMPLETION_CONDITION = "completionCondition";
     public static final String DATA_OUTPUTS = "DataOutputs";
     public static final String VARIABLE = "Variable";
+    public static final String HAS_ERROR_EVENT = "HasErrorEvent";
+    public static final String ERROR_EVENT = "ErrorEvent";
+    public static final String ERROR_STRUCTURE_REF = "ErrorStructureRef";
 
     private Metadata() {
     }

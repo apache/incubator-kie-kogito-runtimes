@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.kogito.Application;
@@ -35,11 +34,28 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.process.impl.ProcessTestUtils.assertState;
 
 public class ErrorIT extends AbstractCodegenIT {
+
+    @Test
+    void testBoundaryErrorSubProcess() throws Exception {
+        Application app = generateCodeProcessesOnly("error/BoundaryErrorSubProcess.bpmn2");
+        assertThat(app).isNotNull();
+
+        List<String> completedNodesNames = completedNodesListener(app);
+
+        Process<? extends Model> p = app.get(Processes.class).processById("BoundaryErrorSubProcess");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+
+        assertState(processInstance, ProcessInstance.STATE_PENDING);
+        processInstance.start();
+
+        assertState(processInstance, ProcessInstance.STATE_COMPLETED);
+        assertThat(completedNodesNames).contains("Error2Task");
+    }
 
     @Test
     void testBoundaryErrorWithCode1() throws Exception {
@@ -72,7 +88,7 @@ public class ErrorIT extends AbstractCodegenIT {
         assertState(processInstance, ProcessInstance.STATE_PENDING);
         processInstance.start();
 
-        if(Objects.nonNull(errorType)) {
+        if (Objects.nonNull(errorType)) {
             assertState(processInstance, ProcessInstance.STATE_COMPLETED);
             assertThat(completedNodesNames).contains(taskToAssert);
         } else {

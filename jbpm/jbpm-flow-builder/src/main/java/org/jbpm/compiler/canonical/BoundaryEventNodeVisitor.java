@@ -28,7 +28,6 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_COMPENSATION;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_ERROR;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
@@ -72,14 +71,6 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventN
                     String.valueOf(node.getId())).validate());
         } else if (EVENT_TYPE_COMPENSATION.equalsIgnoreCase(eventType) && node.getAttachedToNodeId() != null) {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ADD_COMPENSATION_HANDLER, new StringLiteralExpr(node.getAttachedToNodeId())));
-        } else if (EVENT_TYPE_ERROR.equalsIgnoreCase(eventType)) {
-            //todo: need this?
-            Map<String, Object> nodeMetaData = node.getMetaData();
-            //            metadata.addTrigger(new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
-            //                                                    (String) nodeMetaData.get(TRIGGER_TYPE),
-            //                                                    (String) nodeMetaData.get(MESSAGE_TYPE),
-            //                                                    node.getVariableName(),
-            //                                                    String.valueOf(node.getId())).validate());
         }
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));
