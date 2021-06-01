@@ -64,6 +64,11 @@ def nightlyBranchFolder = "${KogitoConstants.KOGITO_DSL_NIGHTLY_FOLDER}/${JOB_BR
 def releaseBranchFolder = "${KogitoConstants.KOGITO_DSL_RELEASE_FOLDER}/${JOB_BRANCH_FOLDER}"
 
 if (isMainBranch()) {
+    // Old PR checks. To be removed once supported release branches (<= 1.7.x) are no more there.
+    setupPrJob()
+    setupQuarkusLTSPrJob()
+    setupNativePrJob()
+
     // PR checks
     setupMultijobPrDefaultChecks()
     setupMultijobPrNativeChecks()
@@ -103,21 +108,48 @@ if (!isMainBranch()) {
 // Methods
 /////////////////////////////////////////////////////////////////
 
+void setupPrJob() {
+    def jobParams = getDefaultJobParams()
+    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.env = [ TIMEOUT_VALUE : 240 ]
+    KogitoJobTemplate.createPRJob(this, jobParams)
+}
+
+void setupQuarkusLTSPrJob() {
+    def jobParams = getDefaultJobParams()
+    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.env = [ TIMEOUT_VALUE : 240 ]
+    KogitoJobTemplate.createQuarkusLTSPRJob(this, jobParams)
+}
+
+void setupNativePrJob() {
+    def jobParams = getDefaultJobParams()
+    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.env = [ TIMEOUT_VALUE : 600 ]
+    KogitoJobTemplate.createNativePRJob(this, jobParams)
+}
+
 void setupMultijobPrDefaultChecks() {
     KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) {
-        return getDefaultJobParams()
+        def jobParams = getDefaultJobParams()
+        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
+        return jobParams
     }
 }
 
 void setupMultijobPrNativeChecks() {
     KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig()) {
-        return getDefaultJobParams()
+        def jobParams = getDefaultJobParams()
+        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
+        return jobParams
     }
 }
 
 void setupMultijobPrLTSChecks() {
     KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) {
-        return getDefaultJobParams()
+        def jobParams = getDefaultJobParams()
+        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
+        return jobParams
     }
 }
 
