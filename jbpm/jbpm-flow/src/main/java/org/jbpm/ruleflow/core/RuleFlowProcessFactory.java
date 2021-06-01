@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.exception.ExceptionHandler;
@@ -41,6 +42,7 @@ import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.CompositeNode;
+import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
 import org.jbpm.workflow.core.node.EventTrigger;
@@ -327,15 +329,41 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     }
 
     protected void linkBoundaryErrorEvent(Node node, String attachedTo, Node attachedNode) {
-     //TODO: implement the logic in the ProcessHandler.linkBoundaryErrorEvent
+        //TODO: implement the logic in the ProcessHandler.linkBoundaryErrorEvent
+        ContextContainer compositeNode = (ContextContainer) attachedNode;
+        ExceptionScope exceptionScope = (ExceptionScope) compositeNode.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
+        if (exceptionScope == null) {
+            exceptionScope = new ExceptionScope();
+            compositeNode.addContext(exceptionScope);
+            compositeNode.setDefaultContext(exceptionScope);
+        }
 
-        String hasErrorCode = (String) node.getMetaData().get("HasErrorEvent");
+        Boolean hasErrorCode = (Boolean) node.getMetaData().get("HasErrorEvent");
         String errorCode = (String) node.getMetaData().get("ErrorEvent");
+        String errorStructureRef = (String) node.getMetaData().get("ErrorStructureRef");
+        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+
+        String variable = ((EventNode) node).getVariableName();
 
         //Creating the action
         DroolsConsequenceAction action = new DroolsConsequenceAction("java", null);
-        action.setMetaData(ACTION, new CancelNodeInstanceAction(attachedTo));
+        action.setMetaData(ACTION, new SignalProcessInstanceAction("Error-" + attachedTo + "-" + errorCode, variable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+        exceptionHandler.setAction(action);
+        exceptionHandler.setFaultVariable(variable);
 
+        exceptionScope.setExceptionHandler(hasErrorCode ? errorCode : null, exceptionHandler);
+        if (errorStructureRef != null) {
+            exceptionScope.setExceptionHandler(errorStructureRef, exceptionHandler);
+        }
+
+        List<DroolsAction> actions = ((EventNode) node).getActions(EndNode.EVENT_NODE_EXIT);
+        if (actions == null) {
+            actions = new ArrayList<DroolsAction>();
+        }
+        DroolsConsequenceAction cancelAction = new DroolsConsequenceAction("java", null);
+        cancelAction.setMetaData("Action", new CancelNodeInstanceAction(attachedTo));
+        actions.add(cancelAction);
+        ((EventNode) node).setActions(EndNode.EVENT_NODE_EXIT, actions);
 
     }
 
