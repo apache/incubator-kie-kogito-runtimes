@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.rest.jsonpath.suppliers;
+package org.jbpm.serverless.workflow.suppliers;
 
 import java.util.function.Supplier;
 
-import org.kogito.workitem.rest.jsonpath.functions.JsonPathResolver;
+import org.jbpm.serverless.workflow.functions.JsonPathResolver;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;

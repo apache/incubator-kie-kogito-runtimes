@@ -46,10 +46,6 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.serverlessworkflow</groupId>
       <artifactId>serverlessworkflow-api</artifactId>
     </dependency>

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.rest.jsonpath.functions;
+package org.jbpm.serverless.workflow.functions;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.kogito.workitem.rest.RestWorkItemHandlerParamResolver;
+import org.jbpm.workflow.instance.impl.WorkItemHandlerParamResolver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,7 +28,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
-public class JsonPathResolver implements RestWorkItemHandlerParamResolver {
+public class JsonPathResolver implements WorkItemHandlerParamResolver {
 
     private static final Configuration jsonPathConfig = Configuration
             .builder()

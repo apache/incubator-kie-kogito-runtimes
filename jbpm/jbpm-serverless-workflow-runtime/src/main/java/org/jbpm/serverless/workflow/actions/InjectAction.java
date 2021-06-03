@@ -16,36 +16,30 @@
 package org.jbpm.serverless.workflow.actions;
 
 import java.util.Iterator;
-import java.util.function.Supplier;
 
 import org.jbpm.process.instance.impl.Action;
+import org.jbpm.serverless.workflow.ObjectMapperSupplier;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public class InjectAction implements Action, Supplier<Expression> {
+public class InjectAction implements Action {
 
-    private JsonNode node;
-
-    private static ObjectMapper mapper = new ObjectMapper();
-
-    public InjectAction(JsonNode node) {
-        this.node = node;
-    }
+    protected JsonNode node;
 
     public InjectAction(String json) {
         this(readObject(json));
     }
 
+    public InjectAction(JsonNode node) {
+        this.node = node;
+    }
+
     private static JsonNode readObject(String json) {
         try {
-            return mapper.readTree(json);
+            return ObjectMapperSupplier.get().readTree(json);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
@@ -60,16 +54,5 @@ public class InjectAction implements Action, Supplier<Expression> {
             mainNode.set(fieldName, node.get(fieldName));
         }
         context.setVariable("workflowdata", mainNode);
-    }
-
-    @Override
-    public Expression get() {
-        try {
-            return new ObjectCreationExpr()
-                    .setType(InjectAction.class.getCanonicalName())
-                    .addArgument(new StringLiteralExpr(mapper.writeValueAsString(node).replace("\"", "\\\"")));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-        }
     }
 }

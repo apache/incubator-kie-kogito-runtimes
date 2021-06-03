@@ -17,8 +17,8 @@ package org.jbpm.serverless.workflow.parser.handlers;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
-import org.jbpm.serverless.workflow.actions.InjectAction;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
+import org.jbpm.serverless.workflow.suppliers.InjectActionSupplier;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -38,7 +38,7 @@ public class InjectHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
                 state.getName());
         JsonNode node = state.getData();
         if (node != null) {
-            actionNodeFactory.action(new InjectAction(node));
+            actionNodeFactory.action(new InjectActionSupplier(node));
         }
         return actionNodeFactory;
     }

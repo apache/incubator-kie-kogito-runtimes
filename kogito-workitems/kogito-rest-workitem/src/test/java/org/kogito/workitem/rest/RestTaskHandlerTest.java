@@ -19,11 +19,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jbpm.serverless.workflow.functions.JsonPathResolver;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kogito.workitem.rest.jsonpath.functions.JSonPathResultHandler;
-import org.kogito.workitem.rest.jsonpath.functions.JsonPathResolver;
+import org.kogito.workitem.rest.resulthandlers.JSonPathResultHandler;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

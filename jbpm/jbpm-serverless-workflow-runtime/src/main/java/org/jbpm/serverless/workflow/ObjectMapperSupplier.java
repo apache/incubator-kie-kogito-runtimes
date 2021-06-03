@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.rest;
+package org.jbpm.serverless.workflow;
 
-import java.util.function.BiFunction;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.vertx.core.json.JsonObject;
+public class ObjectMapperSupplier {
 
-/* Added to make it easier to search for ResultHandler bifunction implementations, 
- * see https://github.com/kiegroup/kogito-runtimes/pull/778#pullrequestreview-493382982 */
-public interface RestWorkItemHandlerResult extends BiFunction<Object, JsonObject, Object> {
+    private ObjectMapperSupplier() {
+    }
+
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    public static ObjectMapper get() {
+        return mapper;
+    }
+
 }

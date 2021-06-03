@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.rest.jsonpath.functions;
+package org.kogito.workitem.rest.resulthandlers;
 
-import org.kogito.workitem.rest.RestWorkItemHandlerResult;
+import org.jbpm.workflow.instance.impl.WorkItemHandlerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-public class JSonPathResultHandler implements RestWorkItemHandlerResult {
+public class JSonPathResultHandler implements WorkItemHandlerResult {
 
     private static final Logger logger = LoggerFactory.getLogger(JSonPathResultHandler.class);
 
     @Override
-    public Object apply(Object inputParameter, JsonObject node) {
-        return transform(node, (ObjectNode) inputParameter);
+    public Object apply(Object inputParameter, Object node) {
+        return transform((JsonObject) node, (ObjectNode) inputParameter);
     }
 
     private ObjectNode transform(JsonObject src, ObjectNode target) {

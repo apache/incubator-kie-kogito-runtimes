@@ -30,13 +30,13 @@ import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
 import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
+import org.jbpm.serverless.workflow.suppliers.JsonPathExprSupplier;
+import org.jbpm.serverless.workflow.suppliers.JsonPathResultExprSupplier;
 import org.kogito.workitem.openapi.JsonNodeParameterResolver;
 import org.kogito.workitem.openapi.JsonNodeResultHandler;
 import org.kogito.workitem.openapi.suppliers.JsonNodeParameterExprSupplier;
 import org.kogito.workitem.openapi.suppliers.JsonNodeResultHandlerExprSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
-import org.kogito.workitem.rest.jsonpath.suppliers.JsonPathExprSupplier;
-import org.kogito.workitem.rest.jsonpath.suppliers.JsonPathResultExprSupplier;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
