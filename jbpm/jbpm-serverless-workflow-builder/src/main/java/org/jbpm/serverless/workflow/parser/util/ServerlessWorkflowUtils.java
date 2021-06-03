@@ -23,10 +23,6 @@ import org.drools.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -122,33 +118,6 @@ public class ServerlessWorkflowUtils {
                 "jsonNode = com.jayway.jsonpath.JsonPath.using(jsonPathConfig).parse(((com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\"))).read(\"@@.$1\", com.fasterxml.jackson.databind.JsonNode.class); toPrint+= jsonNode.isTextual() ? jsonNode.asText() : jsonNode;")
                 .replaceAll("@@", Matcher.quoteReplacement("$")) : script;
 
-    }
-
-    public static String getInjectScript(JsonNode toInjectNode) {
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String injectStr = objectMapper.writeValueAsString(toInjectNode);
-
-            return "com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();\n" +
-                    "        com.fasterxml.jackson.databind.JsonNode updateNode2 = objectMapper.readTree(\"" + injectStr.replaceAll("\"", "\\\\\"") + "\");\n" +
-                    "        com.fasterxml.jackson.databind.JsonNode mainNode2 = (com.fasterxml.jackson.databind.JsonNode)kcontext.getVariable(\"workflowdata\");\n" +
-                    "        java.util.Iterator<String> fieldNames2 = updateNode2.fieldNames();\n" +
-                    "        while(fieldNames2.hasNext()) {\n" +
-                    "            String updatedFieldName = fieldNames2.next();\n" +
-                    "            com.fasterxml.jackson.databind.JsonNode updatedValue = updateNode2.get(updatedFieldName);\n" +
-                    "            if(mainNode2.get(updatedFieldName) != null) {\n" +
-                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).replace(updatedFieldName, updatedValue);\n" +
-                    "            } else {\n" +
-                    "                ((com.fasterxml.jackson.databind.node.ObjectNode) mainNode2).put(updatedFieldName, updatedValue);\n" +
-                    "            }\n" +
-                    "        }\n" +
-                    "        kcontext.setVariable(\"workflowdata\", mainNode2);\n";
-
-        } catch (JsonProcessingException e) {
-            LOGGER.warn("unable to set inject script: {}", e.getMessage());
-            return "";
-        }
     }
 
     public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey, WorkflowAppContext workflowAppContext) {

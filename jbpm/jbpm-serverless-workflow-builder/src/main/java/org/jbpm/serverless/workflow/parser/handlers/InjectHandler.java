@@ -15,11 +15,10 @@
  */
 package org.jbpm.serverless.workflow.parser.handlers;
 
-import org.drools.mvel.java.JavaDialect;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
+import org.jbpm.serverless.workflow.actions.InjectAction;
 import org.jbpm.serverless.workflow.parser.NodeIdGenerator;
-import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -37,9 +36,9 @@ public class InjectHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
     public ActionNodeFactory<P> makeNode() {
         ActionNodeFactory<P> actionNodeFactory = factory.actionNode(idGenerator.getId()).name(
                 state.getName());
-        JsonNode toInjectNode = state.getData();
-        if (toInjectNode != null) {
-            actionNodeFactory.action(JavaDialect.ID, ServerlessWorkflowUtils.getInjectScript(toInjectNode));
+        JsonNode node = state.getData();
+        if (node != null) {
+            actionNodeFactory.action(new InjectAction(node));
         }
         return actionNodeFactory;
     }

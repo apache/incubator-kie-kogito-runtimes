@@ -21,9 +21,6 @@ import org.jbpm.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.jbpm.serverless.workflow.parser.util.WorkflowAppContext;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -73,18 +70,6 @@ public class WorkflowUtilsTest {
     public void testGetJsonPathScript() {
         String script = "$.a $.b";
         assertThat(ServerlessWorkflowUtils.getJsonPathScript(script)).isNotNull();
-    }
-
-    @Test
-    public void testGetInjectScript() throws Exception {
-        String toInject = "{\n" +
-                "  \"name\": \"john\"\n" +
-                "}";
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode toInjectObj = mapper.readTree(toInject);
-
-        assertThat(ServerlessWorkflowUtils.getInjectScript(toInjectObj)).isNotNull();
     }
 
     @Test
