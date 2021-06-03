@@ -118,7 +118,7 @@
     <!-- Versions plugin should stay on version 2.5
       until https://github.com/mojohaus/versions-maven-plugin/issues/312 is fixed -->
     <version.versions.plugin>2.5</version.versions.plugin>
-    <version.jayway.jsonpath>2.4.0</version.jayway.jsonpath>
+    <version.jayway.jsonpath>2.6.0</version.jayway.jsonpath>
     <version.org.jsonschema2pojo-maven-plugin>1.0.1</version.org.jsonschema2pojo-maven-plugin>
 
     <!-- this version property is used in plugins but also in dependencies too -->
@@ -1501,8 +1501,8 @@ limitations under the License.
                 </goals>
                 <configuration>
                   <target>
-                    <property environment="env" />
-                    <echoproperties />
+                    <property environment="env"/>
+                    <echoproperties/>
                   </target>
                 </configuration>
               </execution>
@@ -1527,7 +1527,7 @@ limitations under the License.
         <!-- KOGITO-4895 keep it here in exact form <sonar.exclusions></sonar.exclusions>,
           if removed exclusions are not scoped to a particular defining module.
         -->
-        <sonar.exclusions></sonar.exclusions>
+        <sonar.exclusions/>
         <enforcer.skip>true</enforcer.skip>
         <checkstyle.skip>true</checkstyle.skip>
       </properties>
