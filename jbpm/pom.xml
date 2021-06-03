@@ -21,7 +21,7 @@
     <module>jbpm-flow</module>
     <module>jbpm-flow-builder</module>
     <module>jbpm-bpmn2</module>
-    <module>jbpm-serverless-workflow</module>
+    <module>jbpm-serverless-workflow-builder</module>
     <module>process-serialization-protobuf</module>
     <module>process-workitems</module>
   </modules>

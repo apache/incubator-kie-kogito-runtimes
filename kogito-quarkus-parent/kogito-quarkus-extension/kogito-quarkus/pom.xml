@@ -44,10 +44,6 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-serverless-workflow</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
       <artifactId>process-serialization-protobuf</artifactId>
     </dependency>
   </dependencies>

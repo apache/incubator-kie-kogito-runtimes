@@ -9,30 +9,14 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>jbpm-serverless-workflow</artifactId>
-  <name>Kogito :: jBPM :: Serverless Workflow</name>
-  <description>jBPM Serverless Workflow</description>
-
-  <properties>
-    <java.module.name>org.kie.kogito.jbpm.serverless.workflow</java.module.name>
-  </properties>
+  <artifactId>jbpm-serverless-workflow-builder</artifactId>
+  <name>Kogito :: jBPM :: Serverless Workflow Builder</name>
+  <description>jBPM Serverless Workflow Builder</description>
 
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-flow-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-flow</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -57,48 +41,18 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>io.serverlessworkflow</groupId>
       <artifactId>serverlessworkflow-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.serverlessworkflow</groupId>
-      <artifactId>serverlessworkflow-spi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.serverlessworkflow</groupId>
-      <artifactId>serverlessworkflow-validation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.serverlessworkflow</groupId>
-      <artifactId>serverlessworkflow-diagram</artifactId>
-    </dependency>
-
     <!-- test -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core-dynamic</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -119,11 +73,6 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.thoughtworks.xstream</groupId>
-      <artifactId>xstream</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

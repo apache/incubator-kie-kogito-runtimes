@@ -1124,12 +1124,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serverless-workflow</artifactId>
+        <artifactId>jbpm-serverless-workflow-builder</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serverless-workflow</artifactId>
+        <artifactId>jbpm-serverless-workflow-builder</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
