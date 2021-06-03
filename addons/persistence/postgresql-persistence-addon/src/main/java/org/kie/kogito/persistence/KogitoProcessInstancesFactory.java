@@ -31,6 +31,7 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
     private final PgPool client;
     private final boolean autoDDL;
 
+    // Constructor for DI 
     protected KogitoProcessInstancesFactory() {
         this(null, true, 10000L);
     }
@@ -45,8 +46,10 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
         return this.client;
     }
 
+    public abstract boolean lock();
+
     @Override
     public PostgreProcessInstances createProcessInstances(Process<?> process) {
-        return new PostgreProcessInstances(process, client(), autoDDL, queryTimeout);
+        return new PostgreProcessInstances(process, client(), autoDDL, queryTimeout, lock());
     }
 }
