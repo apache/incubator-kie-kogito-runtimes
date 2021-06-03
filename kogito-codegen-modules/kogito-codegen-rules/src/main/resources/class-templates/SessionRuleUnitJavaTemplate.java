@@ -15,7 +15,7 @@
  */
 package org.drools.project.model;
 
-import org.kie.kogito.rules.KieRuntimeBuilder;
+import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 import org.kie.kogito.rules.units.SessionData;
 import org.kie.kogito.rules.units.SessionRuleUnitInstance;
 import org.kie.kogito.rules.units.SessionUnit;
@@ -31,6 +31,6 @@ public class SessionRuleUnit extends SessionUnit {
 
     @Override
     public SessionRuleUnitInstance createInstance( SessionData memory, String name ) {
-        return new SessionRuleUnitInstance(this, memory, runtimeBuilder.newKieSession("$SessionName$"));
+        return new SessionRuleUnitInstance(this, memory, ((org.kie.kogito.legacy.rules.impl.KieSessionImpl) runtimeBuilder.newKieSession("$SessionName$")).getDelegate());
     }
 }

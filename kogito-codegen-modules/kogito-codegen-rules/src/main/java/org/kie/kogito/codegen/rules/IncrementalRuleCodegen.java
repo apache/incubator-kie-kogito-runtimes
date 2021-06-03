@@ -182,7 +182,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         if (hasRuleUnits) {
             generateRuleUnits(errors, generatedFiles);
-        } else {
+        } else if (context().hasLegacyApi()) {
             if (context().hasDI() && !hotReloadMode) {
                 generateSessionUnits(generatedFiles);
             }
@@ -388,6 +388,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withPackageName("org.drools.project.model")
                 .build(context(), "SessionRuleUnit");
+
         for (KieBaseModel kBaseModel : kieModuleModel.getKieBaseModels().values()) {
             for (String sessionName : kBaseModel.getKieSessionModels().keySet()) {
                 CompilationUnit cu = generator.compilationUnitOrThrow();

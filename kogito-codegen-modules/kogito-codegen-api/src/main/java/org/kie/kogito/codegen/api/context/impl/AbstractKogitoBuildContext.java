@@ -181,6 +181,11 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.contextAttributes.put(key, value);
     }
 
+    @Override
+    public boolean hasLegacyApi() {
+        return hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder");
+    }
+
     protected abstract static class AbstractBuilder implements Builder {
 
         protected String packageName = DEFAULT_PACKAGE_NAME;
