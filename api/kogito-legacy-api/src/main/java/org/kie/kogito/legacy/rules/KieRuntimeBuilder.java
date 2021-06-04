@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.legacy.rules;
 
+import org.kie.api.KieBase;
+import org.kie.api.runtime.KieSession;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleUnitData;
 

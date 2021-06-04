@@ -16,11 +16,10 @@
 package org.drools.project.model;
 
 import org.drools.modelcompiler.builder.KieBaseBuilder;
-import org.kie.kogito.legacy.rules.KieBase;
+import org.kie.api.KieBase;
+import org.kie.api.runtime.KieSession;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
-import org.kie.kogito.legacy.rules.KieSession;
 import org.kie.kogito.legacy.rules.impl.KieBaseImpl;
-import org.kie.kogito.legacy.rules.impl.KieSessionImpl;
 
 public class ProjectRuntime implements KieRuntimeBuilder {
 
@@ -70,6 +69,7 @@ public class ProjectRuntime implements KieRuntimeBuilder {
 
     private KieBase getKieBaseForSession(String sessionName) {
         switch(sessionName) {
+            // populated via codegen
         }
         return null;
     }
@@ -77,6 +77,7 @@ public class ProjectRuntime implements KieRuntimeBuilder {
     private org.kie.api.runtime.KieSessionConfiguration getConfForSession(String sessionName) {
         org.drools.core.SessionConfigurationImpl conf = new org.drools.core.SessionConfigurationImpl();
         switch(sessionName) {
+            // populated via codegen
         }
         return conf;
     }

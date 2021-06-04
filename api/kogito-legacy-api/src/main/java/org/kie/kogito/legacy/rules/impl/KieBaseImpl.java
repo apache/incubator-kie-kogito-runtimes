@@ -32,7 +32,7 @@ import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.KieSessionsPool;
 import org.kie.api.runtime.StatelessKieSession;
 
-public class KieBaseImpl implements org.kie.kogito.legacy.rules.KieBase {
+public class KieBaseImpl implements org.kie.api.KieBase {
 
     private final KieBase delegate;
 
@@ -77,22 +77,22 @@ public class KieBaseImpl implements org.kie.kogito.legacy.rules.KieBase {
     }
 
     public Process getProcess(String s) {
-        return delegate.getProcess(s);
+        throw new UnsupportedOperationException();
     }
 
     public void removeProcess(String s) {
-        delegate.removeProcess(s);
+        throw new UnsupportedOperationException();
     }
 
     public Collection<Process> getProcesses() {
-        return delegate.getProcesses();
+        throw new UnsupportedOperationException();
     }
 
-    public org.kie.kogito.legacy.rules.KieSession newKieSession(KieSessionConfiguration kieSessionConfiguration, Environment environment) {
+    public KieSession newKieSession(KieSessionConfiguration kieSessionConfiguration, Environment environment) {
         return new KieSessionImpl(delegate.newKieSession(kieSessionConfiguration, environment));
     }
 
-    public org.kie.kogito.legacy.rules.KieSession newKieSession() {
+    public KieSession newKieSession() {
         return new KieSessionImpl(delegate.newKieSession());
     }
 

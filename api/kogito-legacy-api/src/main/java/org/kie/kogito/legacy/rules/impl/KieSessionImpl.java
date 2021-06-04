@@ -43,7 +43,7 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
 
-public class KieSessionImpl implements org.kie.kogito.legacy.rules.KieSession {
+public class KieSessionImpl implements KieSession {
 
     private final KieSession delegate;
 
@@ -158,17 +158,17 @@ public class KieSessionImpl implements org.kie.kogito.legacy.rules.KieSession {
 
     @Override
     public void registerChannel(String s, Channel channel) {
-        delegate.registerChannel(s, channel);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void unregisterChannel(String s) {
-        delegate.unregisterChannel(s);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Map<String, Channel> getChannels() {
-        return delegate.getChannels();
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -203,7 +203,7 @@ public class KieSessionImpl implements org.kie.kogito.legacy.rules.KieSession {
 
     @Override
     public LiveQuery openLiveQuery(String s, Object[] objects, ViewChangedEventListener viewChangedEventListener) {
-        return delegate.openLiveQuery(s, objects, viewChangedEventListener);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -278,67 +278,67 @@ public class KieSessionImpl implements org.kie.kogito.legacy.rules.KieSession {
 
     @Override
     public ProcessInstance startProcess(String s) {
-        return delegate.startProcess(s);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance startProcess(String s, Map<String, Object> map) {
-        return delegate.startProcess(s, map);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance startProcess(String s, AgendaFilter agendaFilter) {
-        return delegate.startProcess(s, agendaFilter);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance startProcess(String s, Map<String, Object> map, AgendaFilter agendaFilter) {
-        return delegate.startProcess(s, map, agendaFilter);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance startProcessFromNodeIds(String s, Map<String, Object> map, String... strings) {
-        return delegate.startProcessFromNodeIds(s, map, strings);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance createProcessInstance(String s, Map<String, Object> map) {
-        return delegate.createProcessInstance(s, map);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance startProcessInstance(long l) {
-        return delegate.startProcessInstance(l);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void signalEvent(String s, Object o) {
-        delegate.signalEvent(s, o);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void signalEvent(String s, Object o, long l) {
-        delegate.signalEvent(s, o, l);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Collection<ProcessInstance> getProcessInstances() {
-        return delegate.getProcessInstances();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance getProcessInstance(long l) {
-        return delegate.getProcessInstance(l);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ProcessInstance getProcessInstance(long l, boolean b) {
-        return delegate.getProcessInstance(l, b);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void abortProcessInstance(long l) {
-        delegate.abortProcessInstance(l);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -383,16 +383,16 @@ public class KieSessionImpl implements org.kie.kogito.legacy.rules.KieSession {
 
     @Override
     public void addEventListener(ProcessEventListener processEventListener) {
-        delegate.addEventListener(processEventListener);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void removeEventListener(ProcessEventListener processEventListener) {
-        delegate.removeEventListener(processEventListener);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Collection<ProcessEventListener> getProcessEventListeners() {
-        return delegate.getProcessEventListeners();
+        throw new UnsupportedOperationException();
     }
 }

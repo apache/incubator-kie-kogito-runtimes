@@ -18,8 +18,8 @@ package org.kie.kogito.quarkus.drools;
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
+import org.kie.api.runtime.KieSession;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
-import org.kie.kogito.legacy.rules.KieSession;
 
 import io.quarkus.test.junit.QuarkusTest;
 

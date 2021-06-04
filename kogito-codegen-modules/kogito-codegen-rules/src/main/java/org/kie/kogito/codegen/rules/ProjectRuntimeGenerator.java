@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -37,7 +36,6 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 
-import static com.github.javaparser.StaticJavaParser.parse;
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
 
@@ -145,9 +143,5 @@ public class ProjectRuntimeGenerator {
 
     public String getName() {
         return generator.generatedFilePath();
-    }
-
-    private List<MethodDeclaration> toMethods(String s) {
-        return parse("public class MyClass { " + s + " }").findAll(MethodDeclaration.class);
     }
 }

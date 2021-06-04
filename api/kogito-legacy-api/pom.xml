@@ -13,23 +13,11 @@
   <packaging>jar</packaging>
 
   <name>Kogito :: API :: Legacy API</name>
-  <description>The Kogito public API which is backwards compatible between releases.</description>
+  <description>The Kogito public API which is backwards compatible between major releases.</description>
 
   <properties>
     <java.module.name>org.kie.kogito.legacy.api</java.module.name>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie7-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
