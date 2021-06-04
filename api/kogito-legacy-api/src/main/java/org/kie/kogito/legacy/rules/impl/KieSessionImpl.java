@@ -114,7 +114,7 @@ public class KieSessionImpl implements KieSession {
 
     @Override
     public <T> T execute(Command<T> command) {
-        return delegate.execute(command);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -344,7 +344,7 @@ public class KieSessionImpl implements KieSession {
 
     @Override
     public KieRuntimeLogger getLogger() {
-        return delegate.getLogger();
+        throw new UnsupportedOperationException();
     }
 
     @Override
