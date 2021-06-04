@@ -31,7 +31,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
@@ -150,10 +149,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new MissingDecisionTableDependencyError();
         }
 
-        KnowledgeBuilderConfigurationImpl configuration =
-                new KogitoKnowledgeBuilderConfigurationImpl(context().getClassLoader());
-
-        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>(KogitoPackageSources::dumpSources, configuration, dummyReleaseId, hotReloadMode);
+        ModelBuilderImpl<KogitoPackageSources> modelBuilder = new ModelBuilderImpl<>(KogitoPackageSources::dumpSources, createBuilderConfiguration(), dummyReleaseId, hotReloadMode);
 
         CompositeKnowledgeBuilder batch = modelBuilder.batch();
         resources.forEach(f -> addResource(batch, f));
@@ -197,6 +193,17 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
+    }
+
+    private KogitoKnowledgeBuilderConfigurationImpl createBuilderConfiguration() {
+        KogitoBuildContext buildContext = context();
+        KogitoKnowledgeBuilderConfigurationImpl conf = new KogitoKnowledgeBuilderConfigurationImpl(buildContext.getClassLoader());
+        for (String prop : buildContext.getApplicationProperties()) {
+            if (prop.startsWith("drools")) {
+                conf.setProperty(prop, buildContext.getApplicationProperty(prop).get());
+            }
+        }
+        return conf;
     }
 
     private void addResource(CompositeKnowledgeBuilder batch, Resource resource) {
@@ -325,11 +332,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
         }
         if (context().getAddonsConfig().useMonitoring()) {
+            String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), ruleUnit.typeName());
             String dashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
                     domainDashboardDrlTemplate,
+                    dashboardName,
                     ruleUnit.typeName(),
                     context().getAddonsConfig().useTracing());
-            generatedFiles.addAll(DashboardGeneratedFileUtils.domain(dashboard, ruleUnit.typeName() + ".json"));
+            generatedFiles.addAll(DashboardGeneratedFileUtils.domain(dashboard, dashboardName + ".json"));
         }
 
         return queries.stream().map(q -> generateQueryEndpoint(errors, generatedFiles, q))
@@ -354,11 +363,13 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         if (context().hasREST()) {
             if (context().getAddonsConfig().usePrometheusMonitoring()) {
+                String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), query.getEndpointName());
                 String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
                         operationalDashboardDrlTemplate,
+                        dashboardName,
                         query.getEndpointName(),
                         context().getAddonsConfig().useTracing());
-                generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, query.getEndpointName() + ".json"));
+                generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, dashboardName + ".json"));
             }
 
             generatedFiles.add(query.generate());

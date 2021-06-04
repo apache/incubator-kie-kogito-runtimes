@@ -40,7 +40,7 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements Te
     }
 
     private Consumer<OutputFrame> getLogger() {
-        return f -> System.out.println(f.getUtf8String());
+        return f -> System.out.print(f.getUtf8String());
     }
 
     @Override
@@ -59,7 +59,7 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements Te
         return "postgresql";
     }
 
-    public String getConnectionUri() {
+    public String getReactiveUrl() {
         final String connectionTemplate = "postgresql://{0}:{1}@{2}:{3}/{4}?search_path={5}";
         final String user = getUsername();
         final String server = getHost();

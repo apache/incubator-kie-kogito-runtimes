@@ -120,6 +120,12 @@ public class AbstractProcessInstanceTest {
         return nodeInstance;
     }
 
+    @Test
+    public void testVersion() {
+        processInstance.setVersion(10L);
+        assertThat(processInstance.version()).isEqualTo(10l);
+    }
+
     static class TestProcessInstance extends AbstractProcessInstance<TestModel> {
 
         public TestProcessInstance(AbstractProcess<TestModel> process, TestModel variables, InternalProcessRuntime rt) {
@@ -140,8 +146,8 @@ public class AbstractProcessInstanceTest {
         }
 
         @Override
-        public void fromMap(Map<String, Object> params) {
-
+        public TestModel fromMap(Map<String, Object> params) {
+            return this;
         }
     }
 }

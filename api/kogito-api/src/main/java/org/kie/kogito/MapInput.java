@@ -28,6 +28,5 @@ public interface MapInput {
      * @param params Map containing keys which matches names of fields
      *        in the class
      */
-    void fromMap(Map<String, Object> params);
-
+    MapInput fromMap(Map<String, Object> params);
 }

@@ -2,26 +2,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>@version.org.springframework.boot@</version>
-    </parent>
-    
     <groupId>org.kie.kogito</groupId>
     <artifactId>integration-tests-springboot-it</artifactId>
     <version>@project.version@</version>
 
     <properties>
         <java.version>@maven.compiler.release@</java.version>
-        <version.infinispan.starter>@version.org.infinispan.starter@</version.infinispan.starter>
-        <infinispan.version>@version.org.infinispan@</infinispan.version>
-        <rest-assured.version>@version.io.rest-assured@</rest-assured.version>
+        <version.org.infinispan>@version.org.infinispan@</version.org.infinispan>
         <version.com.github.tomakehurst.wiremock>@version.com.github.tomakehurst.wiremock@</version.com.github.tomakehurst.wiremock>
     </properties>
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.infinispan</groupId>
+                <artifactId>infinispan-bom</artifactId>
+                <version>${version.org.infinispan}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>kogito-bom</artifactId>
@@ -55,7 +54,6 @@
             <artifactId>process-management-springboot-addon</artifactId>
         </dependency>
 
-
         <dependency>
           <groupId>org.kie.kogito</groupId>
           <artifactId>task-management-springboot-addon</artifactId>
@@ -70,8 +68,13 @@
         <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-spring-boot-starter-remote</artifactId>
-            <version>${version.infinispan.starter}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.infinispan</groupId>
+                    <artifactId>infinispan-server-testdriver-junit5</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -91,20 +94,16 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>json-schema-validator</artifactId>
-            <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common internally -->
-            <version>@version.io.rest-assured.springboot@</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <!-- Manually override to 3.3.0 because Spring boot uses rest-assured-common internally -->
-            <version>@version.io.rest-assured.springboot@</version>
             <scope>test</scope>
         </dependency>
 
@@ -120,7 +119,7 @@
             <version>@version.com.github.tomakehurst.wiremock@</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
           <groupId>org.springdoc</groupId>
           <artifactId>springdoc-openapi-ui</artifactId>
@@ -145,10 +144,16 @@
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>@version.compiler.plugin@</version>
+                <configuration>
+                    <release>@maven.compiler.release@</release>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.kie.kogito</groupId>
                 <artifactId>kogito-maven-plugin</artifactId>
-                <version>${project.version}
-                </version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
+                <version>${project.version}</version> <!-- Needed, otherwise it would use the latest release found on Maven central -->
                 <extensions>true</extensions>
             </plugin>
             <plugin>
@@ -171,6 +176,10 @@
                     <includes>
                         <include>org/kie/kogito/integrationtests/springboot/*</include>
                     </includes>
+                    <systemPropertyVariables combine.children="append">
+                        <container.image.infinispan>@container.image.infinispan@</container.image.infinispan>
+                        <container.image.kafka>@container.image.kafka@</container.image.kafka>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
@@ -187,7 +196,6 @@
                 <dependency>
                     <groupId>org.infinispan</groupId>
                     <artifactId>infinispan-spring-boot-starter-remote</artifactId>
-                    <version>${version.infinispan.starter}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.kie.kogito</groupId>
