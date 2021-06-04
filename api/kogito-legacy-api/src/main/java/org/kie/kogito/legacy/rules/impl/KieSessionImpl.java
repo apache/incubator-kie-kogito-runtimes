@@ -51,10 +51,6 @@ public class KieSessionImpl implements KieSession {
         this.delegate = delegate;
     }
 
-    public KieSession getDelegate() {
-        return delegate;
-    }
-
     @Override
     @Deprecated
     public int getId() {
