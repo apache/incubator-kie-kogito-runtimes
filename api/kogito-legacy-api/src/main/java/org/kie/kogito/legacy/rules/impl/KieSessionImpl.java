@@ -52,12 +52,6 @@ public class KieSessionImpl implements KieSession {
     }
 
     @Override
-    @Deprecated
-    public int getId() {
-        return delegate.getId();
-    }
-
-    @Override
     public long getIdentifier() {
         return delegate.getIdentifier();
     }
@@ -198,11 +192,6 @@ public class KieSessionImpl implements KieSession {
     }
 
     @Override
-    public LiveQuery openLiveQuery(String s, Object[] objects, ViewChangedEventListener viewChangedEventListener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getEntryPointId() {
         return delegate.getEntryPointId();
     }
@@ -273,6 +262,67 @@ public class KieSessionImpl implements KieSession {
     }
 
     @Override
+    public WorkItemManager getWorkItemManager() {
+        return delegate.getWorkItemManager();
+    }
+
+    @Override
+    public void addEventListener(RuleRuntimeEventListener ruleRuntimeEventListener) {
+        delegate.addEventListener(ruleRuntimeEventListener);
+    }
+
+    @Override
+    public void removeEventListener(RuleRuntimeEventListener ruleRuntimeEventListener) {
+        delegate.removeEventListener(ruleRuntimeEventListener);
+    }
+
+    @Override
+    public Collection<RuleRuntimeEventListener> getRuleRuntimeEventListeners() {
+        return delegate.getRuleRuntimeEventListeners();
+    }
+
+    @Override
+    public void addEventListener(AgendaEventListener agendaEventListener) {
+        delegate.addEventListener(agendaEventListener);
+    }
+
+    @Override
+    public void removeEventListener(AgendaEventListener agendaEventListener) {
+        delegate.removeEventListener(agendaEventListener);
+    }
+
+    @Override
+    public Collection<AgendaEventListener> getAgendaEventListeners() {
+        return delegate.getAgendaEventListeners();
+    }
+
+    @Override
+    @Deprecated
+    public int getId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addEventListener(ProcessEventListener processEventListener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeEventListener(ProcessEventListener processEventListener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<ProcessEventListener> getProcessEventListeners() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public KieRuntimeLogger getLogger() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public ProcessInstance startProcess(String s) {
         throw new UnsupportedOperationException();
     }
@@ -338,57 +388,7 @@ public class KieSessionImpl implements KieSession {
     }
 
     @Override
-    public WorkItemManager getWorkItemManager() {
-        return delegate.getWorkItemManager();
-    }
-
-    @Override
-    public KieRuntimeLogger getLogger() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addEventListener(RuleRuntimeEventListener ruleRuntimeEventListener) {
-        delegate.addEventListener(ruleRuntimeEventListener);
-    }
-
-    @Override
-    public void removeEventListener(RuleRuntimeEventListener ruleRuntimeEventListener) {
-        delegate.removeEventListener(ruleRuntimeEventListener);
-    }
-
-    @Override
-    public Collection<RuleRuntimeEventListener> getRuleRuntimeEventListeners() {
-        return delegate.getRuleRuntimeEventListeners();
-    }
-
-    @Override
-    public void addEventListener(AgendaEventListener agendaEventListener) {
-        delegate.addEventListener(agendaEventListener);
-    }
-
-    @Override
-    public void removeEventListener(AgendaEventListener agendaEventListener) {
-        delegate.removeEventListener(agendaEventListener);
-    }
-
-    @Override
-    public Collection<AgendaEventListener> getAgendaEventListeners() {
-        return delegate.getAgendaEventListeners();
-    }
-
-    @Override
-    public void addEventListener(ProcessEventListener processEventListener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeEventListener(ProcessEventListener processEventListener) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<ProcessEventListener> getProcessEventListeners() {
+    public LiveQuery openLiveQuery(String s, Object[] objects, ViewChangedEventListener viewChangedEventListener) {
         throw new UnsupportedOperationException();
     }
 }

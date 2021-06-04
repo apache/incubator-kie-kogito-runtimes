@@ -76,18 +76,6 @@ public class KieBaseImpl implements org.kie.api.KieBase {
         return delegate.getFactType(s, s1);
     }
 
-    public Process getProcess(String s) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void removeProcess(String s) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Process> getProcesses() {
-        throw new UnsupportedOperationException();
-    }
-
     public KieSession newKieSession(KieSessionConfiguration kieSessionConfiguration, Environment environment) {
         return new KieSessionImpl(delegate.newKieSession(kieSessionConfiguration, environment));
     }
@@ -126,5 +114,17 @@ public class KieBaseImpl implements org.kie.api.KieBase {
 
     public Collection<KieBaseEventListener> getKieBaseEventListeners() {
         return delegate.getKieBaseEventListeners();
+    }
+
+    public Process getProcess(String s) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeProcess(String s) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Process> getProcesses() {
+        throw new UnsupportedOperationException();
     }
 }

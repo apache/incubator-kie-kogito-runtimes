@@ -39,8 +39,6 @@ public interface KogitoBuildContext {
 
     boolean hasClassAvailable(String fqcn);
 
-    boolean hasLegacyApi();
-
     /**
      * Return DependencyInjectionAnnotator if available or null
      */

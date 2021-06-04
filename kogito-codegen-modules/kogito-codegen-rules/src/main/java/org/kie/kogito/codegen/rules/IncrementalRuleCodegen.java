@@ -176,7 +176,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         if (hasRuleUnits) {
             generateRuleUnits(errors, generatedFiles);
-        } else if (context().hasLegacyApi()) {
+        } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             generateProject(dummyReleaseId, modelsByUnit, generatedFiles);
         }
 
