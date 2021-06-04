@@ -24,8 +24,6 @@
       <artifactId>svm</artifactId>
       <scope>provided</scope>
     </dependency>
-    
-    
 
     <!-- OpenApi Client -->
     <dependency>
