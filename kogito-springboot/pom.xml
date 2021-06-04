@@ -99,7 +99,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-serverless-workflow-runtime</artifactId>
+      <artifactId>kogito-serverless-workflow-runtime</artifactId>
     </dependency>
   </dependencies>
 </project>
