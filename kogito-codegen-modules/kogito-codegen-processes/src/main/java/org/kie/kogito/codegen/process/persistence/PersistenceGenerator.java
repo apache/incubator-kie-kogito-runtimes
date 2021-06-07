@@ -52,6 +52,8 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -70,31 +72,36 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class PersistenceGenerator extends AbstractGenerator {
 
+    private static final String CLIENT = "client";
+    private static final String QUERY_TIMEOUT = "queryTimeout";
+    private static final String AUTO_DDL = "autoDDL";
+    private static final String KOGITO = "kogito";
+    private static final String CLASS_TEMPLATES_PERSISTENCE = "/class-templates/persistence/";
     public static final String FILESYSTEM_PERSISTENCE_TYPE = "filesystem";
     public static final String INFINISPAN_PERSISTENCE_TYPE = "infinispan";
     public static final String DEFAULT_PERSISTENCE_TYPE = INFINISPAN_PERSISTENCE_TYPE;
     public static final String MONGODB_PERSISTENCE_TYPE = "mongodb";
     public static final String POSTGRESQL_PERSISTENCE_TYPE = "postgresql";
     public static final String KAFKA_PERSISTENCE_TYPE = "kafka";
+    public static final String JDBC_PERSISTENCE_TYPE = "jdbc";
     public static final String GENERATOR_NAME = "persistence";
-
+    public static final String QUARKUS_KAFKA_STREAMS_TOPICS_PROP = "quarkus.kafka-streams.topics";
+    public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
+    public static final String KOGITO_POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
     protected static final String TEMPLATE_NAME = "templateName";
     protected static final String PATH_NAME = "path";
-
     private static final String KOGITO_PERSISTENCE_FS_PATH_PROP = "kogito.persistence.filesystem.path";
-
     private static final String KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE = "org.kie.kogito.persistence.KogitoProcessInstancesFactory";
     private static final String KOGITO_PROCESS_INSTANCE_FACTORY_IMPL = "KogitoProcessInstancesFactoryImpl";
     private static final String KOGITO_PROCESS_INSTANCE_PACKAGE = "org.kie.kogito.persistence";
     private static final String MONGODB_DB_NAME = "dbName";
-    public static final String QUARKUS_KAFKA_STREAMS_TOPICS_PROP = "quarkus.kafka-streams.topics";
     private static final String QUARKUS_PERSISTENCE_MONGODB_NAME_PROP = "quarkus.mongodb.database";
     private static final String SPRINGBOOT_PERSISTENCE_MONGODB_NAME_PROP = "spring.data.mongodb.database";
     private static final String OR_ELSE = "orElse";
     private static final String JAVA = ".java";
-    public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
-    public static final String KOGITO_POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
     private static final String KOGITO_PERSISTENCE_QUERY_TIMEOUT = "kogito.persistence.query.timeout.millis";
+    private static final String OPTIMISTIC_LOCK = "lock";
+    private static final String OPTIMISTIC_LOCK_PROP = "kogito.persistence.optimistic.lock";
 
     private final ProtoGenerator protoGenerator;
 
@@ -131,6 +138,9 @@ public class PersistenceGenerator extends AbstractGenerator {
                 break;
             case POSTGRESQL_PERSISTENCE_TYPE:
                 generatedFiles.addAll(postgresqlBasedPersistence());
+                break;
+            case JDBC_PERSISTENCE_TYPE:
+                generatedFiles.addAll(jdbcBasedPersistence());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown persistenceType " + persistenceType());
@@ -174,7 +184,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             persistenceProviderClazz.addMember(templateNameMethod);
         }
 
-        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence(persistenceProviderClazz);
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
         generatePersistenceProviderClazz(persistenceProviderClazz, compilationUnit).ifPresent(generatedFiles::add);
@@ -191,9 +201,8 @@ public class PersistenceGenerator extends AbstractGenerator {
             context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
         }
 
-        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence(persistenceProviderClazz);
-
-        TemplatedGenerator generator = TemplatedGenerator.builder().withTemplateBasePath("/class-templates/persistence/")
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
+        TemplatedGenerator generator = TemplatedGenerator.builder().withTemplateBasePath(CLASS_TEMPLATES_PERSISTENCE)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                 .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
                 .build(context(), "KafkaStreamsTopologyProducer");
@@ -220,7 +229,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         return generatedFiles;
     }
 
-    private Collection<GeneratedFile> protobufBasedPersistence(ClassOrInterfaceDeclaration persistenceProviderClazz) {
+    private Collection<GeneratedFile> protobufBasedPersistence() {
         Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
 
         List<String> variableMarshallers = new ArrayList<>();
@@ -261,7 +270,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             List<CompilationUnit> files = new ArrayList<>(marshallers);
 
             // we build the marshaller for protostream
-            TemplatedGenerator generatorPrimitivesProtobuf = TemplatedGenerator.builder().withTemplateBasePath("/class-templates/persistence/")
+            TemplatedGenerator generatorPrimitivesProtobuf = TemplatedGenerator.builder().withTemplateBasePath(CLASS_TEMPLATES_PERSISTENCE)
                     .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                     .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
                     .build(context(), "ProtostreamBaseMarshaller");
@@ -287,7 +296,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             }
 
             // we build the marshaller for protostream
-            TemplatedGenerator generatorProtostreamSerialization = TemplatedGenerator.builder().withTemplateBasePath("/class-templates/persistence/")
+            TemplatedGenerator generatorProtostreamSerialization = TemplatedGenerator.builder().withTemplateBasePath(CLASS_TEMPLATES_PERSISTENCE)
                     .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
                     .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
                     .build(context(), "ProtostreamObjectMarshaller");
@@ -402,7 +411,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             generatedClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
                     new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
         }
-        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence(persistenceProviderClazz);
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         generatedClientFile.ifPresent(generatedFiles::add);
 
         return generatedFiles;
@@ -435,7 +444,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             }
 
             BlockStmt dbNameMethodBody = new BlockStmt();
-            dbNameMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(MONGODB_DB_NAME), OR_ELSE).addArgument(new StringLiteralExpr("kogito"))));
+            dbNameMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(MONGODB_DB_NAME), OR_ELSE).addArgument(new StringLiteralExpr(KOGITO))));
             MethodDeclaration dbNameMethod = new MethodDeclaration()
                     .addModifier(Keyword.PUBLIC)
                     .setName(MONGODB_DB_NAME)
@@ -448,7 +457,7 @@ public class PersistenceGenerator extends AbstractGenerator {
                     new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
         }
 
-        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence(persistenceProviderClazz);
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         generatedClientFile.ifPresent(generatedFiles::add);
         return generatedFiles;
     }
@@ -459,7 +468,7 @@ public class PersistenceGenerator extends AbstractGenerator {
                 .setModifiers(Modifier.Keyword.PUBLIC)
                 .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
-        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence(persistenceProviderClazz);
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         if (context().hasDI()) {
             context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
 
@@ -467,21 +476,21 @@ public class PersistenceGenerator extends AbstractGenerator {
             final String pgPoolClass = "io.vertx.pgclient.PgPool";
             ConstructorDeclaration constructor = persistenceProviderClazz
                     .addConstructor(Keyword.PUBLIC)
-                    .addParameter(pgPoolClass, "client")
-                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), "autoDDL")
-                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Long.class.getName()), "queryTimeout")
+                    .addParameter(pgPoolClass, CLIENT)
+                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), AUTO_DDL)
+                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Long.class.getName()), QUERY_TIMEOUT)
                     .setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt()
                             .setThis(false)
-                            .addArgument(new NameExpr("client"))
-                            .addArgument("autoDDL")
-                            .addArgument("queryTimeout")));
+                            .addArgument(new NameExpr(CLIENT))
+                            .addArgument(AUTO_DDL)
+                            .addArgument(QUERY_TIMEOUT)));
             context().getDependencyInjectionAnnotator().withConfigInjection(
-                    constructor.getParameterByName("autoDDL").get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
+                    constructor.getParameterByName(AUTO_DDL).get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
             context().getDependencyInjectionAnnotator().withConfigInjection(
-                    constructor.getParameterByName("queryTimeout").get(), KOGITO_PERSISTENCE_QUERY_TIMEOUT,
+                    constructor.getParameterByName(QUERY_TIMEOUT).get(), KOGITO_PERSISTENCE_QUERY_TIMEOUT,
                     String.valueOf(10000));
             context().getDependencyInjectionAnnotator().withNamed(
-                    constructor.getParameterByName("client").get(), "kogito");
+                    constructor.getParameterByName(CLIENT).get(), KOGITO);
             context().getDependencyInjectionAnnotator().withInjection(constructor);
 
             //empty constructor for DI
@@ -493,25 +502,66 @@ public class PersistenceGenerator extends AbstractGenerator {
                     .setModifiers(Modifier.Keyword.PUBLIC);
 
             //creating PgClient producer
-            Parameter uriConfigParam =
-                    new Parameter(StaticJavaParser.parseClassOrInterfaceType(String.class.getName()),
-                            "uri");
-            MethodDeclaration clientProviderMethod = pgClientProducerClazz.addMethod("client", Keyword.PUBLIC)
+            Parameter uriConfigParam = new Parameter()
+                    .setType(StaticJavaParser.parseClassOrInterfaceType(Optional.class.getName())
+                            .setTypeArguments(StaticJavaParser.parseClassOrInterfaceType(String.class.getName())))
+                    .setName("uri");
+
+            MethodDeclaration clientProviderMethod = pgClientProducerClazz.addMethod(CLIENT, Keyword.PUBLIC)
                     .setType(pgPoolClass)//PgPool
                     .addParameter(uriConfigParam)
-                    .setBody(new BlockStmt() // PgPool.pool(connectionUri);
+                    .setBody(new BlockStmt()// return uri.isPresent() ?  PgPool.pool(connectionUri) : PgPool.pool()
                             .addStatement(new ReturnStmt(
-                                    new MethodCallExpr(new NameExpr(pgPoolClass), "pool")
-                                            .addArgument(new NameExpr("uri")))));
+                                    new ConditionalExpr(
+                                            new MethodCallExpr(new NameExpr(uriConfigParam.getName()), "isPresent"),
+                                            new MethodCallExpr(new NameExpr(pgPoolClass), "pool").addArgument(new MethodCallExpr(new NameExpr("uri"), "get")),
+                                            new MethodCallExpr(new NameExpr(pgPoolClass), "pool")))));
+
             //inserting DI annotations
             context().getDependencyInjectionAnnotator().withConfigInjection(uriConfigParam, KOGITO_POSTGRESQL_CONNECTION_URI);
             context().getDependencyInjectionAnnotator().withProduces(clientProviderMethod, true);
-            context().getDependencyInjectionAnnotator().withNamed(clientProviderMethod, "kogito");
+            context().getDependencyInjectionAnnotator().withNamed(clientProviderMethod, KOGITO);
             context().getDependencyInjectionAnnotator().withApplicationComponent(pgClientProducerClazz);
 
             Optional<GeneratedFile> generatedPgClientFile = generatePersistenceProviderClazz(pgClientProducerClazz,
                     new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(pgClientProducerClazz));
             generatedPgClientFile.ifPresent(generatedFiles::add);
+        }
+        addOptimisticLockFlag(persistenceProviderClazz);
+        Optional<GeneratedFile> generatedPgClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
+                new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
+        generatedPgClientFile.ifPresent(generatedFiles::add);
+
+        return generatedFiles;
+    }
+
+    private Collection<GeneratedFile> jdbcBasedPersistence() {
+        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
+                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
+                .setModifiers(Modifier.Keyword.PUBLIC)
+                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
+
+        Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
+        if (context().hasDI()) {
+            context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
+
+            final String datasourceClass = "javax.sql.DataSource";
+            ConstructorDeclaration constructor = persistenceProviderClazz
+                    .addConstructor(Keyword.PUBLIC)
+                    .addParameter(datasourceClass, "dataSource")
+                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), AUTO_DDL)
+                    .setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt()
+                            .setThis(false)
+                            .addArgument(new NameExpr("dataSource"))
+                            .addArgument(AUTO_DDL)));
+            Optional<Parameter> autoDDL = constructor.getParameterByName(AUTO_DDL);
+            if (autoDDL.isPresent()) {
+                context().getDependencyInjectionAnnotator().withConfigInjection(
+                        autoDDL.get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
+            }
+            context().getDependencyInjectionAnnotator().withInjection(constructor);
+            //empty constructor for DI
+            persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
         }
 
         Optional<GeneratedFile> generatedPgClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
@@ -519,6 +569,24 @@ public class PersistenceGenerator extends AbstractGenerator {
         generatedPgClientFile.ifPresent(generatedFiles::add);
 
         return generatedFiles;
+    }
+
+    private void addOptimisticLockFlag(ClassOrInterfaceDeclaration persistenceProviderClazz) {
+        FieldDeclaration lockField = new FieldDeclaration().addVariable(new VariableDeclarator()
+                .setType(new ClassOrInterfaceType(null, new SimpleName(Optional.class.getCanonicalName()), NodeList.nodeList(new ClassOrInterfaceType(null, Boolean.class.getCanonicalName()))))
+                .setName(OPTIMISTIC_LOCK));
+        context().getDependencyInjectionAnnotator().withConfigInjection(lockField, OPTIMISTIC_LOCK_PROP);
+
+        BlockStmt lockMethodBody = new BlockStmt();
+        lockMethodBody.addStatement(new ReturnStmt(new MethodCallExpr(new NameExpr(OPTIMISTIC_LOCK), OR_ELSE).addArgument(new BooleanLiteralExpr(false))));
+        MethodDeclaration enabledMethod = new MethodDeclaration()
+                .addModifier(Keyword.PUBLIC)
+                .setName(OPTIMISTIC_LOCK)
+                .setType("boolean")
+                .setBody(lockMethodBody);
+
+        persistenceProviderClazz.addMember(lockField);
+        persistenceProviderClazz.addMember(enabledMethod);
     }
 
     private ConstructorDeclaration createConstructorForClazz(ClassOrInterfaceDeclaration persistenceProviderClazz) {
