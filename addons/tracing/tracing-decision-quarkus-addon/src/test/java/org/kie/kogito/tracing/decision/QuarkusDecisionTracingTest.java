@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNRuntime;
@@ -47,10 +46,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@Disabled("https://issues.redhat.com/browse/KOGITO-5238" +
-        "Tracing tests are failing on Vert.X 4/Quarkus 2.x")
 public class QuarkusDecisionTracingTest {
 
     public static final String TEST_MODEL_NAMESPACE = "https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF";
@@ -85,6 +86,7 @@ public class QuarkusDecisionTracingTest {
         final DMNRuntime runtime = buildDMNRuntime();
         final DecisionModel model = buildDecisionModel(runtime);
         final List<EvaluateEvent> events = testListener(true, runtime, model);
+        assertEquals(14, events.size());
         testCollector(events, model);
     }
 
@@ -93,6 +95,7 @@ public class QuarkusDecisionTracingTest {
         final DMNRuntime runtime = buildDMNRuntime();
         final DecisionModel model = buildDecisionModel(runtime);
         final List<EvaluateEvent> events = testListener(false, runtime, model);
+        assertEquals(14, events.size());
         testCollector(events, model);
     }
 
@@ -130,7 +133,7 @@ public class QuarkusDecisionTracingTest {
     }
 
     private void testCollector(List<EvaluateEvent> events, DecisionModel model) throws IOException {
-        AssertSubscriber<String> subscriber = new AssertSubscriber<>();
+        AssertSubscriber<String> subscriber = AssertSubscriber.create(1);
 
         final DecisionModels mockedDecisionModels = mock(DecisionModels.class);
         when(mockedDecisionModels.getDecisionModel(TEST_MODEL_NAMESPACE, TEST_MODEL_NAME)).thenReturn(model);
@@ -142,6 +145,8 @@ public class QuarkusDecisionTracingTest {
         QuarkusDecisionTracingCollector collector = new QuarkusDecisionTracingCollector(eventEmitter, configBean, mockedApplication);
         eventEmitter.getEventPublisher().subscribe(subscriber);
         events.forEach(collector::onEvent);
+
+        subscriber.assertNotTerminated();
 
         List<String> items = subscriber.getItems();
         assertEquals(1, items.size());
