@@ -4,7 +4,7 @@
   <parent>
     <artifactId>integration-tests-springboot-persistence-it</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>@project.version@</version>
+    <version>2.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -14,33 +14,52 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-mongodb-client</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>mongodb-persistence-addon</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>process-management-addon</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-mongodb</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>integration-tests-processes-persistence-common</artifactId>
+      <artifactId>kogito-springboot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-management-springboot-addon</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>integration-tests-springboot-processes-persistence-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>integration-tests-processes-persistence-common</artifactId>
+      <artifactId>integration-tests-springboot-processes-persistence-common</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -51,29 +70,32 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-test-utils</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${version.org.springframework.boot}</version>
         <executions>
           <execution>
             <goals>
-              <goal>build</goal>
+              <goal>repackage</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-maven-plugin</artifactId>
+        <version>${project.version}</version>
+        <extensions>true</extensions>
+      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -86,7 +108,7 @@
               <outputDirectory>${project.basedir}/src/main/</outputDirectory>
               <resources>
                 <resource>
-                  <directory>${project.parent.basedir}/integration-tests-processes-persistence-common/src/main/</directory>
+                  <directory>${project.parent.basedir}/integration-tests-springboot-processes-persistence-common/src/main/</directory>
                   <includes>
                     <include>**/*.bpmn</include>
                   </includes>
