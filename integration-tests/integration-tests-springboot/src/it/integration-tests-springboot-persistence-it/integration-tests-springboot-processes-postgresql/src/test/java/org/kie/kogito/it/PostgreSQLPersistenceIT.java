@@ -15,12 +15,12 @@
  */
 package org.kie.kogito.it;
 
-import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
+import org.kie.kogito.testcontainers.springboot.PostgreSqlSpringBootTestResource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
+@ContextConfiguration(initializers = PostgreSqlSpringBootTestResource.class)
+public class PostgreSQLPersistenceIT extends PersistenceTest {
 
-@QuarkusTest
-@QuarkusTestResource(PostgreSqlQuarkusTestResource.class)
-class PostgreSQLPersistenceIT extends PersistenceTest {
 }

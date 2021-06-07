@@ -20,7 +20,7 @@
     <modules>
         <module>integration-tests-springboot-processes-persistence-common</module>
         <module>integration-tests-springboot-processes-infinispan</module>
-<!--        <module>integration-tests-springboot-processes-postgresql</module>-->
+        <module>integration-tests-springboot-processes-postgresql</module>
 <!--        <module>integration-tests-springboot-processes-mongodb</module>-->
     </modules>
 

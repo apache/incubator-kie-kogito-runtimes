@@ -15,9 +15,13 @@
  */
 package org.kie.kogito.it;
 
-import io.quarkus.test.junit.NativeImageTest;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@NativeImageTest
-class NativePostgreSQLPersistenceIT extends PostgreSQLPersistenceIT {
+@SpringBootApplication(scanBasePackages = { "org.kie.kogito.**" })
+public class KogitoSpringbootApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(KogitoSpringbootApplication.class, args);
+    }
 }
