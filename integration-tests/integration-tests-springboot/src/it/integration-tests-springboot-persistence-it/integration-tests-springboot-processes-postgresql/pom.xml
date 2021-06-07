@@ -16,15 +16,8 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>postgresql-persistence-addon</artifactId>
-    </dependency>    
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-springboot-starter</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>process-management-springboot-addon</artifactId>
