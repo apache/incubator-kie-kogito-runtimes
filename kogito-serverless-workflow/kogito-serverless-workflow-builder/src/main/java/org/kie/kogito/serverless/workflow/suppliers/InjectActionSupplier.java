@@ -17,7 +17,6 @@ package org.kie.kogito.serverless.workflow.suppliers;
 
 import java.util.function.Supplier;
 
-import org.kie.kogito.serverless.workflow.ObjectMapperSupplier;
 import org.kie.kogito.serverless.workflow.actions.InjectAction;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,7 +36,7 @@ public class InjectActionSupplier extends InjectAction implements Supplier<Expre
         try {
             return new ObjectCreationExpr()
                     .setType(InjectAction.class.getCanonicalName())
-                    .addArgument(new StringLiteralExpr(ObjectMapperSupplier.get().writeValueAsString(node).replace("\"",
+                    .addArgument(new StringLiteralExpr(mapper.writeValueAsString(node).replace("\"",
                             "\\\"")));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
