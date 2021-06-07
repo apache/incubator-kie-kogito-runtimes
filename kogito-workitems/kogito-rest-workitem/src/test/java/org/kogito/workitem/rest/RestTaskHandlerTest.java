@@ -22,7 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kogito.serverless.workflow.functions.JsonPathResolver;
+import org.kie.kogito.serverless.workflow.functions.JsonPathResolver;
 import org.kogito.workitem.rest.resulthandlers.JSonPathResultHandler;
 import org.mockito.ArgumentCaptor;
 
