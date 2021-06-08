@@ -131,7 +131,6 @@
     <module>grafana-api</module>
     <module>addons</module>
     <module>kogito-workitems</module>
-    <module>kogito-ddl</module>
   </modules>
 
   <profiles>
