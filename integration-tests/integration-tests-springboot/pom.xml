@@ -59,6 +59,21 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>task-management-springboot-addon</artifactId>
     </dependency>
+
+    <!-- Persistence -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>infinispan-persistence-addon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>postgresql-persistence-addon</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>mongodb-persistence-addon</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
