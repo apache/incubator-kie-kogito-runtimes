@@ -15,14 +15,6 @@
   <description>Add business automation capabilities - processes and rules with Kogito (a toolkit that originates from projects Drools and jBPM)</description>
 
   <dependencies>
-    <!-- temporarily force-pin version -->
-    <!-- see https://github.com/quarkusio/quarkus/pull/17043 -->
-    <dependency>
-      <groupId>io.smallrye</groupId>
-      <artifactId>smallrye-open-api-core</artifactId>
-      <version>${version.io.smallrye-open-api-core}</version>
-    </dependency>
-
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-common</artifactId>
