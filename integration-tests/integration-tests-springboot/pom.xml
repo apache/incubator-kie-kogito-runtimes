@@ -77,17 +77,6 @@
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-invoker-plugin</artifactId>
-          <configuration>
-            <streamLogs>true</streamLogs>
-            <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
