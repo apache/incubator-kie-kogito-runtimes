@@ -77,6 +77,17 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-invoker-plugin</artifactId>
+          <configuration>
+            <streamLogs>true</streamLogs>
+            <postBuildHookScript>verify</postBuildHookScript> <!-- no extension required -->
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
@@ -84,8 +95,8 @@
           <execution>
             <id>integration-test</id>
             <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
+              <goal>install</goal>
+              <goal>run</goal>
             </goals>
           </execution>
         </executions>
