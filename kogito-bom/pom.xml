@@ -1311,6 +1311,11 @@
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-processes-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- Tracing -->
       <dependency>

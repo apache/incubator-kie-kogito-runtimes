@@ -14,7 +14,6 @@
   <modules>
     <module>kogito-quarkus-processes</module>
     <module>kogito-quarkus-processes-deployment</module>
-    <module>kogito-quarkus-processes-integration-test</module>
     <module>kogito-quarkus-processes-integration-test-hot-reload</module>
   </modules>
 
