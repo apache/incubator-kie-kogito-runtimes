@@ -206,7 +206,7 @@ public class LightWorkItemManager implements InternalKogitoWorkItemManager {
                 workItem.setResults((Map<String, Object>) transition.data());
                 workItem.setPhaseId(Complete.ID);
                 workItem.setPhaseStatus(Complete.STATUS);
-                if(handler instanceof HumanTaskWorkItemHandler) {
+                if (handler instanceof HumanTaskWorkItemHandler) {
                     completePhase.apply(workItem, transition);
                 }
                 internalCompleteWorkItem(workItem);

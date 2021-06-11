@@ -35,14 +35,14 @@ public interface ProcessInstances<T> {
     }
 
     default Optional<ProcessInstance<T>> findByBusinessKey(String businessKey, ProcessInstanceReadMode mode) {
-        for(ProcessInstance<T> instance : values(mode)) {
-            if(businessKey.equals(instance.businessKey())) {
+        for (ProcessInstance<T> instance : values(mode)) {
+            if (businessKey.equals(instance.businessKey())) {
                 return Optional.of(instance);
             }
         }
         return Optional.empty();
     }
-    
+
     Collection<ProcessInstance<T>> values(ProcessInstanceReadMode mode);
 
     Integer size();
