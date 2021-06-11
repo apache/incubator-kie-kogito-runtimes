@@ -53,7 +53,7 @@ pipeline {
                         runUnitTests({ mvnCmd -> mvnCmd.withProperty('validate-formatting').withProfiles(['run-code-coverage']) })
                         runSonarcloudAnalysis()
                     } else {
-                        runUnitTests(saveReports)
+                        runUnitTests()
                     }
                 }
             }
@@ -102,8 +102,10 @@ pipeline {
     }
 }
 
-void checkoutRepo(String repo) {
-    checkoutRepo(repo, changeAuthor, changeBranch, changeTarget)
+void checkoutRepo(String repo, String dirName=repo) {
+    dir(dirName) {
+        githubscm.checkoutIfExists(repo, changeAuthor, changeBranch, 'kiegroup', changeTarget, true)
+    }
 }
 
 void checkoutQuarkusRepo() {
