@@ -363,6 +363,13 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>monitoring-core-common</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>monitoring-core-quarkus-addon</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
@@ -1124,12 +1131,24 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serverless-workflow</artifactId>
+        <artifactId>kogito-serverless-workflow-builder</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>jbpm-serverless-workflow</artifactId>
+        <artifactId>kogito-serverless-workflow-builder</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-serverless-workflow-runtime</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -1167,6 +1186,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-decisions</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1181,6 +1205,11 @@
         <artifactId>kogito-quarkus-decisions</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-decisions-deployment</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -1201,6 +1230,11 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-rules-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-predictions</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1215,6 +1249,11 @@
         <artifactId>kogito-quarkus-predictions</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-predictions-deployment</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
@@ -1249,6 +1288,11 @@
         <artifactId>kogito-quarkus-serverless-workflow</artifactId>
         <version>${project.version}</version>
         <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-serverless-workflow-deployment</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
       <!-- Tracing -->
