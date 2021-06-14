@@ -15,12 +15,14 @@
  */
 package org.kie.kogito;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +30,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Models {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Models.class);
+
+    private static final String CLASS_PROP = "class";
+    private static final String ID_PROP = "id";
+    /**
+     * this prefix is only used when a variable name
+     * clashes with a predefined Java keyword (e.g. `static`)
+     */
+    private static final String VAR_PREFIX = "v$";
+
     private Models() {
     }
 
@@ -39,18 +51,22 @@ public class Models {
 
             for (Map.Entry<String, PropertyDescriptor> e : descriptors.entrySet()) {
                 String k = e.getKey();
-                if (k.equals("class") || k.equals("id")) {
+                if (isIdentifier(k)) {
+                    LOGGER.trace("Models#toMap: Skipping `id` property for class `{}`", m.getClass().getCanonicalName());
                     continue;
                 }
-                if (e.getKey().startsWith("v$")) {
-                    k = k.substring(2);
-                }
+                k = unprefixVar(k);
                 map.put(k, e.getValue().getReadMethod().invoke(m));
             }
             return map;
-        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
+        } catch (IntrospectionException | ReflectiveOperationException e) {
+            throw new ReflectiveModelAccessException(e);
         }
+    }
+
+    public static <T> T fromMap(T m, String id, Map<String, Object> map) {
+        setId(m, id);
+        return fromMap(m, map);
     }
 
     public static <T> T fromMap(T m, Map<String, Object> map) {
@@ -60,16 +76,14 @@ public class Models {
 
             for (Map.Entry<String, PropertyDescriptor> e : descriptors.entrySet()) {
                 String k = e.getKey();
-                if (e.getKey().startsWith("v$")) {
-                    k = k.substring(2);
-                }
+                k = unprefixVar(k);
                 if (map.containsKey(k)) {
                     e.getValue().getWriteMethod().invoke(m, map.get(k));
                 }
             }
             return m;
-        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
+        } catch (IntrospectionException | ReflectiveOperationException e) {
+            throw new ReflectiveModelAccessException(e);
         }
     }
 
@@ -79,8 +93,11 @@ public class Models {
             T t = constructor.newInstance();
             fromMap(t, map);
             return t;
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
-            throw new IllegalArgumentException(e);
+        } catch (NoSuchMethodException e) {
+            throw new ReflectiveModelAccessException(
+                    String.format("Class `%s` must declare an empty constructor.", cls.getCanonicalName()), e);
+        } catch (ReflectiveOperationException e) {
+            throw new ReflectiveModelAccessException(e);
         }
     }
 
@@ -88,12 +105,18 @@ public class Models {
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(m.getClass());
             for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
-                if (pd.getName().equals("id")) {
+                if (isIdentifier(pd.getName())) {
                     pd.getWriteMethod().invoke(m, id);
+                    return;
                 }
             }
-        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalArgumentException(e);
+            // no Id found, throw error
+            throw new ReflectiveModelAccessException(
+                    String.format(
+                            "No `id` property found for class `%s`. Have you defined getters and setters?",
+                            m.getClass().getCanonicalName()));
+        } catch (IntrospectionException | ReflectiveOperationException e) {
+            throw new ReflectiveModelAccessException(e);
         }
 
     }
@@ -103,11 +126,30 @@ public class Models {
         return out;
     }
 
+    /**
+     * When a process variable name clashes with a predefined
+     * Java keyword (e.g. `static`), we are prefixing the field
+     * with `v$` (e.g. `v$static`).
+     *
+     * @return the unprefixed variable name
+     */
+    private static String unprefixVar(String k) {
+        if (k.startsWith(VAR_PREFIX)) {
+            k = k.substring(VAR_PREFIX.length());
+        }
+        return k;
+    }
+
+    private static boolean isIdentifier(String k) {
+        return k.equals(ID_PROP);
+    }
+
     private static Map<String, PropertyDescriptor> descriptorMap(BeanInfo beanInfo) {
         return Arrays.stream(beanInfo.getPropertyDescriptors())
-                .filter(pd -> !pd.getName().equals("class"))
+                .filter(pd -> !pd.getName().equals(CLASS_PROP))
                 .collect(Collectors.toMap(
                         PropertyDescriptor::getName,
                         Function.identity()));
     }
+
 }
