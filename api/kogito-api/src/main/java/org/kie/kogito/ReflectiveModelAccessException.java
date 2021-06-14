@@ -17,7 +17,6 @@ package org.kie.kogito;
 
 public class ReflectiveModelAccessException extends IllegalArgumentException {
 
-
     public ReflectiveModelAccessException(Exception e) {
         super(e);
     }
