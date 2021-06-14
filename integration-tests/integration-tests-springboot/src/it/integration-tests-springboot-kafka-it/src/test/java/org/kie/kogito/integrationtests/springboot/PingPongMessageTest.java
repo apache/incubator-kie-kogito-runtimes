@@ -49,7 +49,6 @@ public class PingPongMessageTest extends BaseRestTest {
 
     @Test
     void testPingPongBetweenProcessInstances() throws InterruptedException {
-        Thread.sleep(5_000); // arbitrary wait to avoid timeouts
         CountDownLatch latch = new CountDownLatch(1);
         Flux.from(publisher)
                 .map(x -> {
