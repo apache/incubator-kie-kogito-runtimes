@@ -67,12 +67,15 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Runtime counterpart of a ruleset node.
@@ -134,7 +137,10 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                         model))
                                 .get();
 
-                DMNContext context = modelInstance.newContext(inputs);
+                ObjectMapper objectMapper = new ObjectMapper();
+                DMNContext context = DMNJSONUtils.ctx(modelInstance, objectMapper.readValue(objectMapper.writeValueAsString(inputs), Map.class));
+                logger.info("DMN with context {}", context);
+
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
 
                 if (dmnResult.hasErrors()) {
