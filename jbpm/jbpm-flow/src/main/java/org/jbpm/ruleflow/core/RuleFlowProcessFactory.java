@@ -43,7 +43,6 @@ import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.CompositeNode;
-import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.core.node.EventSubProcessNode;
 import org.jbpm.workflow.core.node.EventTrigger;
@@ -53,6 +52,7 @@ import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 
+import static org.jbpm.process.core.context.exception.ExceptionScope.EXCEPTION_SCOPE;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.ruleflow.core.Metadata.ATTACHED_TO;
 import static org.jbpm.ruleflow.core.Metadata.CANCEL_ACTIVITY;
@@ -337,38 +337,44 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
     protected void linkBoundaryErrorEvent(Node node, String attachedTo, Node attachedNode) {
         //same logic from ProcessHandler.linkBoundaryErrorEvent
-        ContextContainer compositeNode = (ContextContainer) attachedNode;
-        ExceptionScope exceptionScope = (ExceptionScope) compositeNode.getDefaultContext(ExceptionScope.EXCEPTION_SCOPE);
-        if (exceptionScope == null) {
-            exceptionScope = new ExceptionScope();
-            compositeNode.addContext(exceptionScope);
-            compositeNode.setDefaultContext(exceptionScope);
-        }
+        final ContextContainer compositeNode = (ContextContainer) attachedNode;
+        final ExceptionScope exceptionScope =
+                Optional.ofNullable(compositeNode.getDefaultContext(EXCEPTION_SCOPE))
+                        .map(ExceptionScope.class::cast)
+                        .orElseGet(() -> {
+                            ExceptionScope scope = new ExceptionScope();
+                            compositeNode.addContext(scope);
+                            compositeNode.setDefaultContext(scope);
+                            return scope;
+                        });
+        final Boolean hasErrorCode = (Boolean) node.getMetaData().get(HAS_ERROR_EVENT);
+        final String errorCode = (String) node.getMetaData().get(ERROR_EVENT);
+        final String errorStructureRef = (String) node.getMetaData().get(ERROR_STRUCTURE_REF);
+        final ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+        final EventNode eventNode = (EventNode) node;
+        final String variable = eventNode.getVariableName();
 
-        Boolean hasErrorCode = (Boolean) node.getMetaData().get(HAS_ERROR_EVENT);
-        String errorCode = (String) node.getMetaData().get(ERROR_EVENT);
-        String errorStructureRef = (String) node.getMetaData().get(ERROR_STRUCTURE_REF);
-        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
-        EventNode eventNode = (EventNode) node;
-        String variable = eventNode.getVariableName();
-
-        DroolsConsequenceAction signalAction = new DroolsConsequenceAction("java", null);
+        final DroolsConsequenceAction signalAction = new DroolsConsequenceAction("java", null);
         signalAction.setMetaData(ACTION, new SignalProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(signalAction);
         exceptionHandler.setFaultVariable(variable);
+        final String code = Optional.ofNullable(hasErrorCode)
+                .filter(Boolean.TRUE::equals)
+                .map(v -> errorCode)
+                .orElse(null);
+        exceptionScope.setExceptionHandler(code, exceptionHandler);
 
-        exceptionScope.setExceptionHandler(hasErrorCode ? errorCode : null, exceptionHandler);
         if (errorStructureRef != null) {
             exceptionScope.setExceptionHandler(errorStructureRef, exceptionHandler);
         }
 
-        DroolsConsequenceAction cancelAction = new DroolsConsequenceAction("java", null);
+        final DroolsConsequenceAction cancelAction = new DroolsConsequenceAction("java", null);
         cancelAction.setMetaData("Action", new CancelNodeInstanceAction(attachedTo));
-        List<DroolsAction> actions = Optional
-                .ofNullable(eventNode.getActions(EndNode.EVENT_NODE_EXIT))
-                .orElseGet(() -> new ArrayList<>());
+        final List<DroolsAction> actions = Optional
+                .ofNullable(eventNode.getActions(EVENT_NODE_EXIT))
+                .orElseGet(ArrayList::new);
         actions.add(cancelAction);
-        eventNode.setActions(EndNode.EVENT_NODE_EXIT, actions);
+        eventNode.setActions(EVENT_NODE_EXIT, actions);
     }
 
     protected DroolsAction timerAction(String type) {
