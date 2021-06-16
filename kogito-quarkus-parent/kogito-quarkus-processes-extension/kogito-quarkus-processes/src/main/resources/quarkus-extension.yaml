@@ -5,6 +5,8 @@ metadata:
   - "kogito"
   - "jbpm"
   - "processes"
+  - "bpm"
+  - "bpmn"
   guide: "https://quarkus.io/guides/kogito"
   categories:
   - "business-automation"

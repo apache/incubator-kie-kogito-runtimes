@@ -22,7 +22,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 /**
  * Main class of the Kogito Serverless Workflow extension
  */
-public class ServerlessWorkflowAssestsProcessor {
+public class ServerlessWorkflowAssetsProcessor {
 
     @BuildStep
     CapabilityBuildItem capability() {
