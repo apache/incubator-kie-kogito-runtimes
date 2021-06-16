@@ -138,9 +138,10 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                 .get();
 
                 ObjectMapper objectMapper = new ObjectMapper();
+
+                //Input Binding
                 DMNContext context = DMNJSONUtils.ctx(modelInstance, objectMapper.readValue(objectMapper.writeValueAsString(inputs), Map.class));
                 logger.info("DMN with context {}", context);
-
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
 
                 if (dmnResult.hasErrors()) {
@@ -150,6 +151,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
                     throw new RuntimeException("DMN result errors:: " + errors);
                 }
+                //Output Binding
                 processOutputs(dmnResult.getContext().getAll());
                 triggerCompleted();
             } else if (ruleType.isRuleFlowGroup()) {
