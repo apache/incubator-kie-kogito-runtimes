@@ -6,23 +6,20 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-
     <fileSets>
         <fileSet>
-            <directory>${project.root.dir}</directory>
+            <directory>${project.root.dir}/addons/persistence/postgresql-persistence-addon/src/main/resources/sql</directory>
             <outputDirectory>postgresql</outputDirectory>
             <includes>
-                <include>**/*postgresql*/src/main/resources/**/*.sql</include>
+                <include>*.sql</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.root.dir}</directory>
+            <directory>${project.root.dir}/addons/persistence/jdbc-persistence-addon/src/main/resources/sql</directory>
             <outputDirectory>jdbc</outputDirectory>
             <includes>
-                <include>**/*jdbc*/src/main/resources/**/*.sql</include>
+                <include>*.sql</include>
             </includes>
         </fileSet>
-        <!-- more per db script collections - any new fileSet or change on existing fileSet want to
-                    probably also do in Kogito-apps project -->
     </fileSets>
 </assembly>

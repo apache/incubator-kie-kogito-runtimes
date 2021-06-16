@@ -11,8 +11,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kie.kogito.persistence.ddl</groupId>
-    <artifactId>kogito-runtimes</artifactId>
-    <name>Kogito :: db scripts collection</name>
+    <artifactId>kogito-runtimes-ddl</artifactId>
+    <name>Kogito :: DB Scripts Collection</name>
     <packaging>pom</packaging>
 
     <build>
@@ -37,6 +37,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 </project>
