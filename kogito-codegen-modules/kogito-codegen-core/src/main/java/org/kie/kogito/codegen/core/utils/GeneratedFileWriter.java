@@ -138,6 +138,7 @@ public class GeneratedFileWriter {
         }
         // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
         String generatedClassFile = f.relativePath().replace("src/main/java", "");
+        Files.createDirectories(location);
         Files.write(
                 pathOf(location, generatedClassFile),
                 f.contents());
