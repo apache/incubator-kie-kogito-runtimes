@@ -19,9 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.KogitoKeycloakContainer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.testcontainers.Constants.CONTAINER_NAME_PREFIX;
 import static org.mockito.Mockito.spy;
 
 public class KeycloakSpringBootTestResourceTest {
@@ -32,13 +33,13 @@ public class KeycloakSpringBootTestResourceTest {
 
     @BeforeEach
     public void setup() {
-        System.setProperty(KogitoKeycloakContainer.KEYCLOAK_PROPERTY, IMAGE);
+        System.setProperty(CONTAINER_NAME_PREFIX + KogitoKeycloakContainer.NAME, IMAGE);
     }
 
     @Test
     public void shouldGetProperty() {
         givenResource();
-        assertEquals(KeycloakSpringBootTestResource.KOGITO_KEYCLOAK_PROPERTY, resource.getKogitoProperty());
+        assertThrows(IllegalStateException.class, () -> resource.getProperties().get(KeycloakSpringBootTestResource.KOGITO_KEYCLOAK_PROPERTY));
     }
 
     @Test

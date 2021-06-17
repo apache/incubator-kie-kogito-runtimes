@@ -19,9 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.KogitoInfinispanContainer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.testcontainers.Constants.CONTAINER_NAME_PREFIX;
 import static org.mockito.Mockito.spy;
 
 public class InfinispanSpringBootTestResourceTest {
@@ -32,13 +33,13 @@ public class InfinispanSpringBootTestResourceTest {
 
     @BeforeEach
     public void setup() {
-        System.setProperty(KogitoInfinispanContainer.INFINISPAN_PROPERTY, IMAGE);
+        System.setProperty(CONTAINER_NAME_PREFIX + KogitoInfinispanContainer.NAME, IMAGE);
         givenResource();
     }
 
     @Test
     public void shouldGetProperty() {
-        assertEquals(InfinispanSpringBootTestResource.KOGITO_INFINISPAN_PROPERTY, resource.getKogitoProperty());
+        assertThrows(IllegalStateException.class, () -> resource.getProperties().get(InfinispanSpringBootTestResource.KOGITO_INFINISPAN_PROPERTY));
     }
 
     @Test

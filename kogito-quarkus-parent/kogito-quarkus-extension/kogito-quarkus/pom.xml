@@ -15,7 +15,6 @@
   <description>Add business automation capabilities - processes and rules with Kogito (a toolkit that originates from projects Drools and jBPM)</description>
 
   <dependencies>
-
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-common</artifactId>
@@ -36,20 +35,11 @@
       <artifactId>kogito-quarkus-predictions</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-processes</artifactId>
+    </dependency>
 
-    <!-- kogito -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-bpmn2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-serverless-workflow</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>process-serialization-protobuf</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

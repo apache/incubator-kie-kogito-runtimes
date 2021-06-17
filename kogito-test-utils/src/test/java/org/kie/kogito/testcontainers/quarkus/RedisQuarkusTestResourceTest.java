@@ -19,9 +19,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.KogitoRedisSearchContainer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.kogito.testcontainers.Constants.CONTAINER_NAME_PREFIX;
 import static org.mockito.Mockito.spy;
 
 public class RedisQuarkusTestResourceTest {
@@ -32,13 +33,13 @@ public class RedisQuarkusTestResourceTest {
 
     @BeforeEach
     public void setup() {
-        System.setProperty(KogitoRedisSearchContainer.REDIS_PROPERTY, IMAGE);
+        System.setProperty(CONTAINER_NAME_PREFIX + KogitoRedisSearchContainer.NAME, IMAGE);
     }
 
     @Test
     public void shouldGetProperty() {
         givenResource();
-        assertEquals(RedisQuarkusTestResource.KOGITO_REDIS_URL, resource.getKogitoProperty());
+        assertThrows(IllegalStateException.class, () -> resource.getProperties().get(RedisQuarkusTestResource.KOGITO_REDIS_URL));
     }
 
     @Test

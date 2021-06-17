@@ -7,7 +7,7 @@
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-    <relativePath>../kogito-build-parent/pom.xml</relativePath>
+    <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>jbpm</artifactId>
@@ -21,7 +21,6 @@
     <module>jbpm-flow</module>
     <module>jbpm-flow-builder</module>
     <module>jbpm-bpmn2</module>
-    <module>jbpm-serverless-workflow</module>
     <module>process-serialization-protobuf</module>
     <module>process-workitems</module>
   </modules>

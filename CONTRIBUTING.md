@@ -54,7 +54,7 @@ Copyright headers format is enforced during build time. In order to automaticall
 mvn com.mycila:license-maven-plugin:format
 ```
 
-Make sure you have configured your IDE according to the [project codestyle](https://github.com/kiegroup/kogito-runtimes/tree/master/kogito-ide-config).
+Make sure you have configured your IDE according to the [project codestyle](https://github.com/kiegroup/kogito-runtimes/tree/master/kogito-build/kogito-ide-config).
 
 ### Requirements for Dependencies
 
@@ -95,7 +95,7 @@ Any dependency used in any KIE project must fulfill these hard requirements:
       Maven or Gradle are acceptable as build systems.
 
 Any dependency used in any KOGITO projects should fulfill these soft requirements:
-- **Edit dependencies** in **[kogito-build-parent](https://github.com/kiegroup/kogito-runtimes/blob/master/kogito-build-parent/pom.xml)**.
+- **Edit dependencies** in **[kogito-build-parent](https://github.com/kiegroup/kogito-runtimes/blob/master/kogito-build/kogito-build-parent/pom.xml)**.
     - Dependencies in subprojects should avoid overwriting the dependency versions of kogito-build-parent if there is no special case or need for that.
 
 - Only use dependencies with **an active community**.
@@ -147,21 +147,23 @@ On Linux, check [the post-installation guide](https://docs.docker.com/install/li
 
 ## Build
 
-* Clone the repository, navigate to the directory, invoke `./mvnw clean install -DskipTests -DskipITs` from the root directory.
+* Clone the repository, navigate to the directory, invoke `./mvnw clean install -Dquickly` from the root directory.
 
 ```bash
 git clone https://github.com/kiegroup/kogito-runtimes.git
 cd kogito-runtimes
-./mvnw clean install -DskipTests -DskipITs 
+./mvnw clean install -Dquickly
 # Wait... success!
 ```
 
-This build skipped all the tests:
-- `-DskipTests` skips unit tests
-- `-DskipITs` skips integration tests
+This build skipped all the plugins and just go straight to build and install phases.
 
-By removing the flags, you will run the corresponding tests. 
-It will take much longer to build but will give you more guarantees on your code. 
+By removing the flags, you will run the unit and integration tests. 
+It will take much longer to build but will give you more guarantees on your code.
+
+Alternatively, you can invoke `./mvnw clean install -DquickTests` from the root directory.
+It will perform the basic formatting validation and will run all the unit tests.
+Use this command for quick checks.
 
 ### Known Issues
 

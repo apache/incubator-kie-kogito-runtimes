@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.drools.core.util.StringUtils;
+import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
@@ -48,9 +48,12 @@ import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 
+import static com.github.javaparser.StaticJavaParser.parse;
+import static org.drools.core.util.StringUtils.ucFirst;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
 /**
@@ -79,6 +82,8 @@ public class ProcessResourceGenerator {
     private boolean dynamic;
     private List<UserTaskModelMetaData> userTasks;
     private Map<String, String> signals;
+    private CompilationUnit taskModelFactoryUnit;
+    private String taskModelFactoryClassName;
 
     public ProcessResourceGenerator(
             KogitoBuildContext context,
@@ -115,6 +120,14 @@ public class ProcessResourceGenerator {
         return this;
     }
 
+    public String getTaskModelFactory() {
+        return taskModelFactoryUnit.toString();
+    }
+
+    public String getTaskModelFactoryClassName() {
+        return taskModelFactoryClassName;
+    }
+
     public String className() {
         return resourceClazzName;
     }
@@ -125,12 +138,6 @@ public class ProcessResourceGenerator {
         boolean isQuarkus = context.name().equals(QuarkusKogitoBuildContext.CONTEXT_NAME);
 
         return isQuarkus && isReactiveGenerator ? REACTIVE_REST_TEMPLATE_NAME : REST_TEMPLATE_NAME;
-    }
-
-    protected String getSignalResponseType(String outputType) {
-        boolean isSpring = context.name().equals(SpringBootKogitoBuildContext.CONTEXT_NAME);
-
-        return isSpring ? "ResponseEntity<" + outputType + ">" : outputType;
     }
 
     public String generate() {
@@ -175,7 +182,7 @@ public class ProcessResourceGenerator {
                                                 body.findAll(NameExpr.class, nameExpr -> "data".equals(nameExpr.getNameAsString())).forEach(name -> name.replace(new NullLiteralExpr()));
                                             }
                                             template.addMethod(methodName, Keyword.PUBLIC)
-                                                    .setType(getSignalResponseType(outputType))
+                                                    .setType(outputType)
                                                     // Remove data parameter ( payload ) if signalType is null 
                                                     .setParameters(signalType == null ? NodeList.nodeList(cloned.getParameter(0)) : cloned.getParameters())
                                                     .setBody(body)
@@ -202,18 +209,31 @@ public class ProcessResourceGenerator {
         // endpoints are not security annotated as they should restrict access based on user assignments
         securityAnnotated(template);
 
-        if (userTasks != null) {
+        Map<String, String> typeInterpolations = new HashMap<>();
+        taskModelFactoryUnit = parse(this.getClass().getResourceAsStream("/class-templates/TaskModelFactoryTemplate.java"));
+        String taskModelFactorySimpleClassName = ucFirst(ProcessToExecModelGenerator.extractProcessId(processId) + "_" + "TaskModelFactory");
+        taskModelFactoryUnit.setPackageDeclaration(process.getPackageName());
+        taskModelFactoryClassName = process.getPackageName() + "." + taskModelFactorySimpleClassName;
+        ClassOrInterfaceDeclaration taskModelFactoryClass = taskModelFactoryUnit.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(IllegalStateException::new);
+        taskModelFactoryClass.setName(taskModelFactorySimpleClassName);
+        typeInterpolations.put("$TaskModelFactory$", taskModelFactoryClassName);
 
-            CompilationUnit userTaskClazz = templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME)
-                    .compilationUnitOrThrow();
+        if (userTasks != null && !userTasks.isEmpty()) {
+
+            CompilationUnit userTaskClazz = templateBuilder.build(context, REST_USER_TASK_TEMPLATE_NAME).compilationUnitOrThrow();
 
             ClassOrInterfaceDeclaration userTaskTemplate = userTaskClazz
                     .findFirst(ClassOrInterfaceDeclaration.class)
                     .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+
+            MethodDeclaration taskModelFactoryMethod = taskModelFactoryClass
+                    .findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("from"))
+                    .orElseThrow(IllegalStateException::new);
+            SwitchStmt switchExpr = taskModelFactoryMethod.getBody().map(b -> b.findFirst(SwitchStmt.class).orElseThrow(IllegalStateException::new)).orElseThrow(IllegalStateException::new);
+
             for (UserTaskModelMetaData userTask : userTasks) {
                 String methodSuffix = sanitizeName(userTask.getName()) + "_" + index.getAndIncrement();
                 userTaskTemplate.findAll(MethodDeclaration.class).forEach(md -> {
-
                     MethodDeclaration cloned = md.clone();
                     template.addMethod(cloned.getName() + "_" + methodSuffix, Keyword.PUBLIC)
                             .setType(cloned.getType())
@@ -223,7 +243,7 @@ public class ProcessResourceGenerator {
                 });
 
                 template.findAll(StringLiteralExpr.class).forEach(s -> interpolateUserTaskStrings(s, userTask));
-                template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c, userTask.getInputModelClassSimpleName(), userTask.getOutputModelClassSimpleName()));
+                template.findAll(ClassOrInterfaceType.class).forEach(c -> interpolateUserTaskTypes(c, userTask));
                 template.findAll(NameExpr.class).forEach(c -> interpolateUserTaskNameExp(c, userTask));
                 if (!userTask.isAdHoc()) {
                     template.findAll(MethodDeclaration.class)
@@ -231,28 +251,23 @@ public class ProcessResourceGenerator {
                             .filter(md -> md.getNameAsString().equals("signal_" + methodSuffix))
                             .collect(Collectors.toList()).forEach(template::remove);
                 }
+                switchExpr.getEntries().add(0, userTask.getModelSwitchEntry());
             }
+
         }
 
-        template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
-        Map<String, String> typeInterpolations = new HashMap<>();
         typeInterpolations.put("$Clazz$", resourceClazzName);
         typeInterpolations.put("$Type$", dataClazzName);
+        template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
         template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
 
         if (context.hasDI()) {
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isProcessField).forEach(fd -> context.getDependencyInjectionAnnotator().withNamedInjection(fd, processId));
-
-            template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isApplicationField).forEach(fd -> context.getDependencyInjectionAnnotator().withInjection(fd));
         } else {
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isProcessField).forEach(this::initializeProcessField);
-
-            template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
         }
 
         // if triggers are not empty remove createResource method as there is another trigger to start process instances
@@ -297,10 +312,6 @@ public class ProcessResourceGenerator {
         fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(processClazzName));
     }
 
-    private void initializeApplicationField(FieldDeclaration fd) {
-        fd.getVariable(0).setInitializer(new ObjectCreationExpr().setType(appCanonicalName));
-    }
-
     private void interpolateStrings(StringLiteralExpr vv) {
         String s = vv.getValue();
         String documentation =
@@ -321,12 +332,7 @@ public class ProcessResourceGenerator {
     }
 
     private void interpolateUserTaskNameExp(NameExpr name, UserTaskModelMetaData userTask) {
-        String identifier = name.getNameAsString();
-
-        name.setName(identifier.replace("$TaskInput$", userTask.getInputModelClassSimpleName()));
-
-        identifier = name.getNameAsString();
-        name.setName(identifier.replace("$TaskOutput$", userTask.getOutputModelClassSimpleName()));
+        name.setName(userTask.templateReplacement(name.getNameAsString()));
     }
 
     private void interpolateMethods(MethodDeclaration m) {
@@ -336,30 +342,23 @@ public class ProcessResourceGenerator {
         m.setName(interpolated);
     }
 
-    private void interpolateUserTaskTypes(Type t, String inputClazzName, String outputClazzName) {
+    private void interpolateUserTaskTypes(Type t, UserTaskModelMetaData userTask) {
         if (t.isArrayType()) {
             t = t.asArrayType().getElementType();
         }
         if (t.isClassOrInterfaceType()) {
             SimpleName returnType = t.asClassOrInterfaceType().getName();
-            interpolateUserTaskTypes(returnType, inputClazzName, outputClazzName);
-            t.asClassOrInterfaceType().getTypeArguments().ifPresent(o -> interpolateUserTaskTypeArguments(o,
-                    inputClazzName,
-                    outputClazzName));
+            interpolateUserTaskTypes(returnType, userTask);
+            t.asClassOrInterfaceType().getTypeArguments().ifPresent(o -> interpolateUserTaskTypeArguments(o, userTask));
         }
     }
 
-    private void interpolateUserTaskTypes(SimpleName returnType, String inputClazzName, String outputClazzName) {
-        String identifier = returnType.getIdentifier();
-
-        returnType.setIdentifier(identifier.replace("$TaskInput$", inputClazzName));
-
-        identifier = returnType.getIdentifier();
-        returnType.setIdentifier(identifier.replace("$TaskOutput$", outputClazzName));
+    private void interpolateUserTaskTypes(SimpleName returnType, UserTaskModelMetaData userTask) {
+        returnType.setIdentifier(userTask.templateReplacement(returnType.getIdentifier()));
     }
 
-    private void interpolateUserTaskTypeArguments(NodeList<Type> ta, String inputClazzName, String outputClazzName) {
-        ta.stream().forEach(t -> interpolateUserTaskTypes(t, inputClazzName, outputClazzName));
+    private void interpolateUserTaskTypeArguments(NodeList<Type> ta, UserTaskModelMetaData userTask) {
+        ta.stream().forEach(t -> interpolateUserTaskTypes(t, userTask));
     }
 
     private String sanitizeName(String name) {

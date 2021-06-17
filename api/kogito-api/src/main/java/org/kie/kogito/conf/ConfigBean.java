@@ -22,7 +22,11 @@ import org.kie.kogito.KogitoGAV;
 
 public interface ConfigBean extends KogitoConfig {
 
-    Optional<Boolean> useCloudEvents();
+    boolean useCloudEvents();
+
+    default boolean failOnEmptyBean() {
+        return false;
+    }
 
     String getServiceUrl();
 

@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -82,9 +81,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected ProcessError processError;
 
-    protected Supplier<WorkflowProcessInstance> reloadSupplier;
+    protected Consumer<AbstractProcessInstance<?>> reloadSupplier;
 
     protected CompletionEventListener completionEventListener;
+
+    protected Long version;
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
@@ -129,6 +130,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (processInstance.getKnowledgeRuntime() == null) {
             processInstance.setKnowledgeRuntime(getProcessRuntime().getInternalKieRuntime());
         }
+        getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
         processInstance.reconnect();
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
         addCompletionEventListener();
@@ -183,7 +185,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         return processInstance;
     }
 
-    public void internalRemoveProcessInstance(Supplier<WorkflowProcessInstance> reloadSupplier) {
+    public void internalSetProcessInstance(WorkflowProcessInstance processInstance) {
+        this.processInstance = processInstance;
+    }
+
+    public void internalRemoveProcessInstance(Consumer<AbstractProcessInstance<?>> reloadSupplier) {
         this.reloadSupplier = reloadSupplier;
         this.status = processInstance.getState();
         if (this.status == STATE_ERROR) {
@@ -212,6 +218,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             processInstance.setReferenceId(referenceId);
         }
 
+        getProcessRuntime().getProcessInstanceManager().setLock(((MutableProcessInstances<T>) process.instances()).lock());
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
         this.id = processInstance.getStringId();
         addCompletionEventListener();
@@ -287,6 +294,15 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public Date startDate() {
         return this.processInstance != null ? this.processInstance.getStartDate() : null;
+    }
+
+    @Override
+    public Long version() {
+        return this.version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override
@@ -378,7 +394,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected WorkflowProcessInstance processInstance() {
         if (this.processInstance == null) {
-            this.processInstance = reloadSupplier.get();
+            reloadSupplier.accept(this);
             if (this.processInstance == null) {
                 throw new ProcessInstanceNotFoundException(id);
             } else if (getProcessRuntime() != null) {
@@ -403,6 +419,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 .orElseThrow(() -> new WorkItemNotFoundException("Work item with id " + workItemId + " was not found in process instance " + id(), workItemId));
         return new BaseWorkItem(workItemInstance.getStringId(),
                 workItemInstance.getWorkItem().getStringId(),
+                Long.toString(workItemInstance.getNode().getId()),
                 (String) workItemInstance.getWorkItem().getParameters().getOrDefault("TaskName", workItemInstance.getNodeName()),
                 workItemInstance.getWorkItem().getState(),
                 workItemInstance.getWorkItem().getPhaseId(),
@@ -418,6 +435,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
                 .filter(ni -> ni instanceof WorkItemNodeInstance && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
                 .map(ni -> new BaseWorkItem(ni.getStringId(),
                         ((WorkItemNodeInstance) ni).getWorkItemId(),
+                        Long.toString(((WorkItemNodeInstance) ni).getNode().getId()),
                         (String) ((WorkItemNodeInstance) ni).getWorkItem().getParameters().getOrDefault("TaskName", ni.getNodeName()),
                         ((WorkItemNodeInstance) ni).getWorkItem().getState(),
                         ((WorkItemNodeInstance) ni).getWorkItem().getPhaseId(),
@@ -596,7 +614,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         @Override
         public String[] getEventTypes() {
-            return new String[] { "processInstanceCompleted:" + processInstance.getId() };
+            return new String[] { "processInstanceCompleted:" + processInstance.getStringId() };
         }
     }
 

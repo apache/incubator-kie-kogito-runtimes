@@ -18,6 +18,7 @@ package org.kie.kogito.cloud.workitems;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.fabric8.kubernetes.api.model.IntOrString;
@@ -34,7 +35,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseKubernetesDiscoveredServiceTest {
+@Disabled("Disabled in favor of the refactoring: https://issues.redhat.com/browse/KOGITO-5284")
+public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseTestKubernetesDiscoveredService {
 
     @Test
     public void testGivenServiceExists() {
@@ -49,7 +51,7 @@ public class KubernetesDiscoveredServiceWorkItemHandlerTest extends BaseKubernet
         metadata.setNamespace(MOCK_NAMESPACE);
         metadata.setLabels(Collections.singletonMap("test-kieserver", "service"));
 
-        final Service service = new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
+        final Service service = new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(Collections.emptyList(), new LoadBalancerStatus()));
         getClient().services().create(service);
 
         final DiscoveredServiceWorkItemHandler handler = new TestDiscoveredServiceWorkItemHandler(this);

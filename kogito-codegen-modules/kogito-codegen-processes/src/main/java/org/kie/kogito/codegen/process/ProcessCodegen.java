@@ -18,6 +18,8 @@ package org.kie.kogito.codegen.process;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,13 +43,13 @@ import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
-import org.jbpm.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -57,7 +59,7 @@ import org.kie.kogito.codegen.process.events.CloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
+import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -79,10 +81,12 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final GeneratedFileType PROCESS_INSTANCE_TYPE = GeneratedFileType.of("PROCESS_INSTANCE", GeneratedFileType.Category.SOURCE);
     private static final GeneratedFileType MESSAGE_PRODUCER_TYPE = GeneratedFileType.of("MESSAGE_PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final GeneratedFileType MESSAGE_CONSUMER_TYPE = GeneratedFileType.of("MESSAGE_CONSUMER", GeneratedFileType.Category.SOURCE);
+    private static final GeneratedFileType PRODUCER_TYPE = GeneratedFileType.of("PRODUCER", GeneratedFileType.Category.SOURCE);
     private static final SemanticModules BPMN_SEMANTIC_MODULES = new SemanticModules();
     public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
     private static final String YAML_PARSER = "yml";
     private static final String JSON_PARSER = "json";
+    public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
 
     static {
@@ -100,11 +104,17 @@ public class ProcessCodegen extends AbstractGenerator {
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
 
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
+        Map<String, String> processSVGMap = new HashMap<>();
+        boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
         List<Process> processes = resources.stream()
                 .map(CollectedResource::resource)
                 .flatMap(resource -> {
                     if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
-                        return parseProcessFile(resource).stream();
+                        Collection<Process> p = parseProcessFile(resource);
+                        if (useSvgAddon && resource instanceof FileSystemResource) {
+                            processSVG((FileSystemResource) resource, resources, p, processSVGMap);
+                        }
+                        return p.stream();
                     } else {
                         return SUPPORTED_SW_EXTENSIONS.entrySet()
                                 .stream()
@@ -113,8 +123,43 @@ public class ProcessCodegen extends AbstractGenerator {
                     }
                 })
                 .collect(toList());
+        if (useSvgAddon) {
+            context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
+        }
 
         return ofProcesses(context, processes);
+    }
+
+    private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,
+            Collection<Process> processes, Map<String, String> processSVGMap) {
+        File f = resource.getFile();
+        String processFileCompleteName = f.getName();
+        String fileName = processFileCompleteName.substring(0, processFileCompleteName.lastIndexOf("."));
+        processes.stream().forEach(process -> {
+            if (isFilenameValid(process.getId() + ".svg")) {
+                resources.stream()
+                        .filter(r -> r.resource().getSourcePath().endsWith(String.format(SVG_EXPORT_NAME_EXPRESION, fileName)))
+                        .forEach(svg -> {
+                            try {
+                                processSVGMap.put(process.getId(),
+                                        new String(Files.readAllBytes(Paths.get(svg.resource().getSourcePath()))));
+                            } catch (IOException e) {
+                                LOGGER.error("\n IOException trying to add " + svg.resource().getSourcePath() +
+                                        " with processId:" + process.getId() + "\n" + e.getMessage(), e);
+                            }
+                        });
+            }
+        });
+    }
+
+    public static boolean isFilenameValid(String file) {
+        File f = new File(file);
+        try {
+            f.getCanonicalPath();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private static ProcessCodegen ofProcesses(KogitoBuildContext context, List<Process> processes) {
@@ -147,8 +192,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
     private static Process parseWorkflowFile(Resource r, String parser) {
         try (Reader reader = r.getReader()) {
-            ServerlessWorkflowParser workflowParser = new ServerlessWorkflowParser(parser);
-            return workflowParser.parseWorkFlow(reader);
+            ServerlessWorkflowParser workflowParser = ServerlessWorkflowParser.of(reader, parser);
+            return workflowParser.getProcess();
         } catch (IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
         } catch (RuntimeException e) {
@@ -248,11 +293,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 ProcessMetaData generate = execModelGen.generate();
                 processIdToMetadata.put(id, generate);
                 processExecutableModelGenerators.add(execModelGen);
-            } catch (UndefinedGeneratedRuleUnitVariable e) {
-                LOGGER.error(e.getMessage() + "\nRemember: in this case rule unit variables are usually named after process variables.");
-                throw new ProcessCodegenException(id, packageName, e);
             } catch (RuntimeException e) {
-                LOGGER.error(e.getMessage());
                 throw new ProcessCodegenException(id, packageName, e);
             }
         }
@@ -359,6 +400,8 @@ public class ProcessCodegen extends AbstractGenerator {
                 storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getInputModelClassName()), ut.generateInput());
 
                 storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getOutputModelClassName()), ut.generateOutput());
+
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(ut.getTaskModelClassName()), ut.generateModel());
             }
         }
 
@@ -366,7 +409,13 @@ public class ProcessCodegen extends AbstractGenerator {
             for (ProcessResourceGenerator resourceGenerator : rgs) {
                 storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
                         resourceGenerator.generate());
+                storeFile(MODEL_TYPE, UserTasksModelClassGenerator.generatedFilePath(resourceGenerator.getTaskModelFactoryClassName()), resourceGenerator.getTaskModelFactory());
             }
+            //Generating the Producer classes for Dependency Injection
+            StaticDependencyInjectionProducerGenerator.of(context())
+                    .generate()
+                    .entrySet()
+                    .forEach(entry -> storeFile(PRODUCER_TYPE, entry.getKey(), entry.getValue()));
         }
 
         for (MessageDataEventGenerator messageDataEventGenerator : mdegs) {
@@ -396,10 +445,14 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        if (context().getAddonsConfig().useCloudEvents() && context().hasREST() && context().name() == QuarkusKogitoBuildContext.CONTEXT_NAME) {
+        if (context().getAddonsConfig().useCloudEvents() && context().hasREST() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
             final CloudEventsResourceGenerator ceGenerator =
                     new CloudEventsResourceGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
+        }
+        if ((context().getAddonsConfig().useProcessSVG())) {
+            Map<String, String> svgs = context().getContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, Map.class);
+            svgs.keySet().stream().forEach(key -> storeFile(GeneratedFileType.RESOURCE, "META-INF/processSVG/" + key + ".svg", svgs.get(key)));
         }
 
         if (context().hasREST()) {

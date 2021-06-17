@@ -117,14 +117,12 @@
   </pluginRepositories>
 
   <modules>
-    <module>kogito-ide-config</module>
-    <module>kogito-build-parent</module>
+    <module>kogito-build</module>
     <module>kogito-bom</module>
     <module>kogito-test-utils</module>
     <module>api</module>
     <module>drools</module>
     <module>jbpm</module>
-    <module>kogito-cloud-services</module>
     <module>kogito-codegen-modules</module>
     <module>kogito-springboot</module>
     <module>kogito-maven-plugin</module>
@@ -132,8 +130,24 @@
     <module>archetypes</module>
     <module>grafana-api</module>
     <module>addons</module>
-    <module>integration-tests</module>
     <module>kogito-workitems</module>
+    <module>kogito-serverless-workflow</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+            <name>!productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>kogito-cloud-services</module>
+        <module>integration-tests</module>
+      </modules>
+    </profile>
+  </profiles>
+
 
 </project>

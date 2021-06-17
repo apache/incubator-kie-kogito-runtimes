@@ -20,9 +20,7 @@ import java.util.List;
 
 import org.drools.core.io.impl.ClassPathResource;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
-import org.infinispan.protostream.BaseMarshaller;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.WorkflowProcess;
@@ -65,15 +63,7 @@ class CacheProcessInstancesIT {
         builder
                 .addServer()
                 .host("127.0.0.1")
-                .port(container.getMappedPort())
-                .security()
-                .authentication()
-                .username("admin")
-                .password("admin")
-                .realm("default")
-                .serverName("infinispan")
-                .saslMechanism("DIGEST-MD5")
-                .clientIntelligence(ClientIntelligence.BASIC);
+                .port(container.getMappedPort());
 
         cacheManager = new RemoteCacheManager(builder.build());
     }
@@ -106,7 +96,7 @@ class CacheProcessInstancesIT {
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
         assertThat(mutablePi.error()).hasValueSatisfying(error -> {
-            assertThat(error.errorMessage()).endsWith("java.lang.NullPointerException - null");
+            assertThat(error.errorMessage()).contains("java.lang.NullPointerException");
             assertThat(error.failedNodeId()).isEqualTo("ScriptTask_1");
         });
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
@@ -119,7 +109,7 @@ class CacheProcessInstancesIT {
         ProcessInstance<BpmnVariables> readOnlyPi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThat(readOnlyPi.status()).isEqualTo(STATE_ERROR);
         assertThat(readOnlyPi.error()).hasValueSatisfying(error -> {
-            assertThat(error.errorMessage()).endsWith("java.lang.NullPointerException - null");
+            assertThat(error.errorMessage()).contains("java.lang.NullPointerException");
             assertThat(error.failedNodeId()).isEqualTo("ScriptTask_1");
         });
         assertThat(readOnlyPi.variables().toMap()).containsExactly(entry("var", "value"));
@@ -179,14 +169,5 @@ class CacheProcessInstancesIT {
             super(cacheManager);
         }
 
-        @Override
-        public String proto() {
-            return null;
-        }
-
-        @Override
-        public List<BaseMarshaller<?>> marshallers() {
-            return Collections.emptyList();
-        }
     }
 }

@@ -22,7 +22,8 @@ import org.kie.kogito.KogitoGAV;
 public class StaticConfigBean implements ConfigBean {
 
     private String serviceUrl;
-    private Optional<Boolean> useCloudEvents = Optional.empty();
+    private boolean useCloudEvents = true;
+    private boolean failOnEmptyBean = false;
     private KogitoGAV gav;
 
     public StaticConfigBean() {
@@ -30,7 +31,7 @@ public class StaticConfigBean implements ConfigBean {
 
     public StaticConfigBean(String serviceUrl, boolean useCloudEvents, KogitoGAV gav) {
         this.serviceUrl = serviceUrl;
-        this.useCloudEvents = Optional.of(useCloudEvents);
+        this.useCloudEvents = useCloudEvents;
         this.gav = gav;
     }
 
@@ -38,8 +39,12 @@ public class StaticConfigBean implements ConfigBean {
         this.serviceUrl = serviceUrl;
     }
 
-    protected void setCloudEvents(Optional<Boolean> useCloudEvents) {
+    protected void setCloudEvents(boolean useCloudEvents) {
         this.useCloudEvents = useCloudEvents;
+    }
+
+    protected void setFailOnEmptyBean(boolean failOnEmptyBean) {
+        this.failOnEmptyBean = failOnEmptyBean;
     }
 
     public void setGav(KogitoGAV gav) {
@@ -47,7 +52,7 @@ public class StaticConfigBean implements ConfigBean {
     }
 
     @Override
-    public Optional<Boolean> useCloudEvents() {
+    public boolean useCloudEvents() {
         return useCloudEvents;
     }
 
@@ -59,5 +64,10 @@ public class StaticConfigBean implements ConfigBean {
     @Override
     public Optional<KogitoGAV> getGav() {
         return Optional.ofNullable(gav);
+    }
+
+    @Override
+    public boolean failOnEmptyBean() {
+        return failOnEmptyBean;
     }
 }

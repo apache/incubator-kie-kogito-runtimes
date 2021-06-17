@@ -16,11 +16,13 @@
 package org.kie.kogito.testcontainers;
 
 import java.text.MessageFormat;
+import java.util.function.Consumer;
 
 import org.kie.kogito.resources.TestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 
 /**
@@ -32,7 +34,13 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements Te
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoPostgreSqlContainer.class);
 
     public KogitoPostgreSqlContainer() {
+        withLogConsumer(getLogger());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
+        withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
+    }
+
+    private Consumer<OutputFrame> getLogger() {
+        return f -> System.out.print(f.getUtf8String());
     }
 
     @Override
@@ -51,7 +59,7 @@ public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements Te
         return "postgresql";
     }
 
-    public String getConnectionUri() {
+    public String getReactiveUrl() {
         final String connectionTemplate = "postgresql://{0}:{1}@{2}:{3}/{4}?search_path={5}";
         final String user = getUsername();
         final String server = getHost();

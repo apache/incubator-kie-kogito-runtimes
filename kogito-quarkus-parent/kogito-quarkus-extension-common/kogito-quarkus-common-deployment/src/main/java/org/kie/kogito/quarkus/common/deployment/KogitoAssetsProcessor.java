@@ -155,6 +155,8 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskInstanceDataEvent"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskInstanceEventBody"));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskDeadlineDataEvent"));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskDeadlineEventBody"));
 
         if (context.getAddonsConfig().useMonitoring()) {
             registerMonitoringAddonClasses(reflectiveClass);
@@ -230,7 +232,7 @@ public class KogitoAssetsProcessor {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent"));
         reflectiveClass.produce(
-                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.model.ModelEvent$GAV"));
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.KogitoGAV"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.decision.DecisionModelType"));
         reflectiveClass.produce(

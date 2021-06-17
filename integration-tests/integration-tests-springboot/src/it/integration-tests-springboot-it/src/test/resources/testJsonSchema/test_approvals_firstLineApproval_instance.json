@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "approved": {
+      "type": "boolean",
+      "output": true
+    },
+    "traveller": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string"
+            },
+            "street": {
+              "type": "string"
+            },
+            "zipCode": {
+              "type": "string"
+            }
+          }
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "nationality": {
+          "type": "string"
+        },
+        "processed": {
+          "type": "boolean"
+        }
+      },
+      "input": true
+    }
+  },
+  "phases": [
+    "abort",
+    "claim",
+    "skip",
+    "complete"
+  ]
+}
