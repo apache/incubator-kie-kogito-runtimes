@@ -52,6 +52,8 @@ jobs:
         uses: kiegroup/github-action-build-chain@v2.6.2
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH}/.ci/pull-request-config.yaml
+        env:
+          BUILD_MVN_OPTS: "-Dlineending=KEEP"
       - name: Publish Test Report
         if: ${{ always() }}
         uses: ginxo/action-surefire-report@BXMSPROD-1311
