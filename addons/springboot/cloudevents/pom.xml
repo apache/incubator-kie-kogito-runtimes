@@ -15,9 +15,21 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>integration-tests</module>
     <module>implementation</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>integration-tests</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>

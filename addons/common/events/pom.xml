@@ -14,15 +14,4 @@
   <modules>
     <module>decisions</module>
   </modules>
-
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <property>
-          <name>!productized</name>
-        </property>
-      </activation>
-    </profile>
-  </profiles>
 </project>

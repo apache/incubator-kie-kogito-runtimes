@@ -11,7 +11,7 @@
 
   <artifactId>kogito-addons-springboot-monitoring-parent</artifactId>
   <name>Kogito :: Add-Ons :: SpringBoot :: Monitoring :: Parent</name>
-  <description>Kogito Monitoring Addons for Quarkus Runtime</description>
+  <description>Kogito Monitoring Addons for SpringBoot</description>
   <packaging>pom</packaging>
 
   <modules>

@@ -18,18 +18,32 @@
   <modules>
     <module>cloudevents</module>
     <module>events</module>
-    <module>explainability</module>
-    <module>jobs</module>
-    <module>mail</module>
     <module>monitoring</module>
-    <module>persistence</module>
-    <module>predictions</module>
-    <module>process-management</module>
-    <module>process-svg</module>
-    <module>rest-exception-handler</module>
-    <module>task-management</module>
-    <module>tracing</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>cloudevents</module>
+        <module>explainability</module>
+        <module>jobs</module>
+        <module>mail</module>
+        <module>persistence</module>
+        <module>predictions</module>
+        <module>process-management</module>
+        <module>process-svg</module>
+        <module>rest-exception-handler</module>
+        <module>task-management</module>
+        <module>tracing</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <dependencyManagement>
     <dependencies>
