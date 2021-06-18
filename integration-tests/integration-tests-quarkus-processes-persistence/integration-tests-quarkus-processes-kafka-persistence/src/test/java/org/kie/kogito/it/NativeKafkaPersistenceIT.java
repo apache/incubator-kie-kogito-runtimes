@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Disabled;
 import io.quarkus.test.junit.NativeImageTest;
 
 @NativeImageTest
-@Disabled("Inject not supported in native test")
+@Disabled("KOGITO-5362 Native Image tests are broken in Kafka persistence")
 public class NativeKafkaPersistenceIT extends KafkaPersistenceIT {
 
 }

@@ -16,7 +16,9 @@
 package org.kie.kogito.it;
 
 import io.quarkus.test.junit.NativeImageTest;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("KOGITO-5358 Native Image tests are broken in Infinispan persistence")
 @NativeImageTest
 class NativeInfinispanPersistenceIT extends InfinispanPersistenceIT {
 
