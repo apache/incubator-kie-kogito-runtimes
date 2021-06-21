@@ -1546,7 +1546,7 @@ limitations under the License.
         <!-- KOGITO-4895 keep it here in exact form <sonar.exclusions></sonar.exclusions>,
           if removed exclusions are not scoped to a particular defining module.
         -->
-        <sonar.exclusions/>
+        <sonar.exclusions></sonar.exclusions>
         <enforcer.skip>true</enforcer.skip>
         <checkstyle.skip>true</checkstyle.skip>
       </properties>
