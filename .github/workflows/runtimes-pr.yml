@@ -16,6 +16,10 @@ jobs:
       - name: Support longpaths in Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
+      - name: Enable code formatting validation in Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        env:
+          BUILD_MVN_OPTS: "-Dvalidate-formatting"
       - name: Disk space report before modification
         if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
@@ -52,8 +56,6 @@ jobs:
         uses: kiegroup/github-action-build-chain@v2.6.2
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH}/.ci/pull-request-config.yaml
-        env:
-          BUILD_MVN_OPTS: "-Dlineending=KEEP"
       - name: Publish Test Report
         if: ${{ always() }}
         uses: ginxo/action-surefire-report@BXMSPROD-1311
