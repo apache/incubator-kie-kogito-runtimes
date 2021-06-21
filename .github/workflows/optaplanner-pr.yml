@@ -4,6 +4,9 @@ on: [pull_request]
 
 jobs:
   optaplanner-build:
+    concurrency:
+      group: ci-${{ github.ref }}-${{ github.job }}
+      cancel-in-progress: true
     timeout-minutes: 120
     strategy:
       matrix:
