@@ -106,7 +106,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
                     .map(Path::toString)
                     .toArray(String[]::new);
 
-            LOGGER.info("Found PMML resources: " + String.join(",", pmmlFiles));
+            System.out.println("-------> Found PMML resources: " + String.join(",", pmmlFiles));
 
             Map<KieBase, KieRuntimeFactory> kieRuntimeFactories =
                     PMMLKogito.createKieRuntimeFactoriesWithInMemoryCompilation(pmmlFiles);
@@ -131,7 +131,7 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
                     .map(FileSystemResource::new)
                     .collect(toList());
 
-            LOGGER.info("Found DMN resources: " + resources.stream().map(Resource::getSourcePath).collect(Collectors.joining(", ")));
+            System.out.println("-------> Found DMN resources: " + resources.stream().map(Resource::getSourcePath).collect(Collectors.joining(", ")));
 
             return DMNRuntimeBuilder.fromDefaults()
                     .setKieRuntimeFactoryFunction(kieRuntimeFactoryFunction)
