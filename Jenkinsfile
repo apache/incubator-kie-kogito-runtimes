@@ -65,13 +65,6 @@ pipeline {
                 }
             }
         }
-        stage('Runtimes integration-tests with persistence') {
-            steps {
-                script {
-                    runIntegrationTests(['persistence'])
-                }
-            }
-        }
     }
     post {
         always {
