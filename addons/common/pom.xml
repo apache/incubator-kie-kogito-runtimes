@@ -32,10 +32,10 @@
       <modules>
         <module>cloudevents</module>
         <module>explainability</module>
+        <module>human-task-prediction</module>
         <module>jobs</module>
         <module>mail</module>
         <module>persistence</module>
-        <module>predictions</module>
         <module>process-management</module>
         <module>process-svg</module>
         <module>rest-exception-handler</module>

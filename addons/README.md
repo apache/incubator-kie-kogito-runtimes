@@ -100,44 +100,15 @@ new add-on names to update your project `pom.xml` dependencies section.
 
 Classes and namespaces remains the same, you won't need to make any change in your code base.
 
-### Common Add-ons
-
-| Add-On Description  | Old GAV | New GAV |
-|---------------------|---------|---------|
-| Cloud Events Utils  | cloudevents-utils | kogito-addons-cloudevents-utils |
-| Cloud Events        | kogito-cloudevents-common-addon | kogito-addons-cloudevents |
-| Events Decisions    | kogito-event-driven-decisions-common | kogito-addons-events-decisions |
-| Explainability      | explainability-addon-common | kogito-addons-explainability |
-| Jobs Api            | jobs-api | kogito-addons-jobs-api |
-| Jobs Management     | jobs-management-common | kogito-addons-jobs-management-common |
-| Mail                | mail-common-addon      | kogito-addons-mail |
-| Monitoring          | monitoring-core-common | kogito-addons-monitoring-core |
-| Monitoring Elastic  | monitoring-elastic-common | kogito-addons-monitoring-elastic |
-| Monitoring Prometheus  | monitoring-prometheus-common | kogito-addons-monitoring-core |
-| Persistence Filesystem | filesystem-persistence-addon | kogito-addons-persistence-filesystem | 
-| Persistence Infinispan | infinispan-persistence-addon | kogito-addons-persistence-infinispan |
-| Persistence JDBC       | jdbc-persistence-addon | kogito-addons-persistence-jdbc |
-| Persistence MongoDB    | mongodb-persistence-addon | kogito-addons-persistence-mongodb | 
-| Persistence PostgreSQL | postgresql-persistence-addon | kogito-addons-persistence-postgresql |
-| Predictions API        | kogito-predictions-api       | kogito-addons-predictions-api |
-| Predictions Smile      | kogito-predictions-smile-addon | kogito-addons-predictions-smile |
-| Process Management     | process-management-common      | kogito-addons-process-management | 
-| Process SVG            | process-svg-common             | kogito-addons-process-svg | 
-| REST Exception Handler | kogito-rest-exception-handler-common | kogito-addons-rest-exception-handler | 
-| Task Management        | task-management-common | kogito-addons-task-management | 
-| Tracing Decision API   | tracing-decision-api   | kogito-addons-tracing-decision-api | 
-| Tracing Decision Common | tracing-decision-common | kogito-addons-tracing-decision-common | 
-| Tracing TypedValue API  | typedvalue-api | kogito-addons-tracing-typedvalue-api |
-
 ### Quarkus Add-ons
 
-| Add-On Description  | Old GAV | New GAV |
-|---------------------|---------|---------|
+| Add-On Description  | Old Artifact ID | New Artifact ID |
+|---------------------|-----------------|-----------------|
 | Cloud Events         | kogito-cloudevents-quarkus-addon | kogito-addons-quarkus-cloudevents | 
 | Cloud Events Common  | kogito-cloudevents-quarkus-common-addon | kogito-addons-quarkus-cloudevents-common |
 | Cloud Events Multi   | kogito-cloudevents-quarkus-multi-addon | kogito-addons-quarkus-cloudevents-multi | 
 | Events Decisions     | kogito-event-driven-decisions-quarkus-addon | kogito-addons-quarkus-events-decisions | 
-| Events Reactive      | kogito-events-reactive-messaging-addon | kogito-addons-quarkus-events-reactive | 
+| Events Smallrye      | kogito-events-reactive-messaging-addon | kogito-addons-quarkus-events-smallrye | 
 | Explainability       | explainability-quarkus-addon | kogito-addons-quarkus-explainability | 
 | Jobs Management      | jobs-management-quarkus-addon | kogito-addons-quarkus-jobs-management | 
 | Mail                 | mail-quarkus-addon | kogito-addons-quarkus-mail |
@@ -155,8 +126,8 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 
 ### SpringBoot Add-ons
 
-| Add-On Description  | Old GAV | New GAV |
-|---------------------|---------|---------|
+| Add-On Description  | Old Artifact ID | New Artifact ID |
+|---------------------|-----------------|-----------------|
 | Cloud Events         | kogito-cloudevents-spring-boot-addon | kogito-addons-springboot-cloudevents | 
 | Events Decisions     | kogito-event-driven-decisions-springboot-addon | kogito-addons-springboot-events-decisions |  
 | Events Kafka         | kogito-events-spring-boot-addon | kogito-addons-springboot-events-kafka | 
@@ -172,3 +143,34 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 | Task Management         | task-management-springboot-addon | kogito-addons-springboot-task-management | 
 | Task Notification       | task-notification-springboot-addon | kogito-addons-springboot-task-notification | 
 | Tracing Decision        | tracing-decision-springboot-addon | kogito-addons-springboot-tracing-decision | 
+
+### Common Add-ons
+
+> [1] Commons Addon-ons that are not supposed to be used by end user's projects.
+
+| Add-On Description  | Old Artifact ID | New Artifact ID |
+|---------------------|-----------------|-----------------|
+| Cloud Events Utils [1]  | cloudevents-utils | kogito-addons-cloudevents-utils |
+| Cloud Events [1]       | kogito-cloudevents-common-addon | kogito-addons-cloudevents |
+| Events Decisions [1]    | kogito-event-driven-decisions-common | kogito-addons-events-decisions |
+| Explainability [1]      | explainability-addon-common | kogito-addons-explainability |
+| Human Task Prediction API        | kogito-task-prediction-api       | kogito-addons-human-task-prediction-api |
+| Human Task Prediction Smile      | kogito-task-prediction-smile-addon | kogito-addons-human-task-prediction-smile |
+| Jobs Api [1]            | jobs-api | kogito-addons-jobs-api |
+| Jobs Management [1]     | jobs-management-common | kogito-addons-jobs-management-common |
+| Mail [1]                | mail-common-addon      | kogito-addons-mail |
+| Monitoring [1]          | monitoring-core-common | kogito-addons-monitoring-core |
+| Monitoring Elastic [1]  | monitoring-elastic-common | kogito-addons-monitoring-elastic |
+| Monitoring Prometheus [1]  | monitoring-prometheus-common | kogito-addons-monitoring-core |
+| Persistence Filesystem | filesystem-persistence-addon | kogito-addons-persistence-filesystem | 
+| Persistence Infinispan | infinispan-persistence-addon | kogito-addons-persistence-infinispan |
+| Persistence JDBC       | jdbc-persistence-addon | kogito-addons-persistence-jdbc |
+| Persistence MongoDB    | mongodb-persistence-addon | kogito-addons-persistence-mongodb | 
+| Persistence PostgreSQL | postgresql-persistence-addon | kogito-addons-persistence-postgresql |
+| Process Management [1]    | process-management-common      | kogito-addons-process-management | 
+| Process SVG [1]            | process-svg-common             | kogito-addons-process-svg | 
+| REST Exception Handler [1] | kogito-rest-exception-handler-common | kogito-addons-rest-exception-handler | 
+| Task Management [1]        | task-management-common | kogito-addons-task-management | 
+| Tracing Decision API [1]   | tracing-decision-api   | kogito-addons-tracing-decision-api | 
+| Tracing Decision Common [1] | tracing-decision-common | kogito-addons-tracing-decision-common | 
+| Tracing TypedValue API [1] | typedvalue-api | kogito-addons-tracing-typedvalue-api |

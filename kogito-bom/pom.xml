@@ -539,12 +539,12 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-events-reactive</artifactId>
+        <artifactId>kogito-addons-quarkus-events-smallrye</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-events-reactive</artifactId>
+        <artifactId>kogito-addons-quarkus-events-smallrye</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
@@ -803,24 +803,24 @@
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-predictions-api</artifactId>
+        <artifactId>kogito-addons-human-task-prediction-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-predictions-api</artifactId>
+        <artifactId>kogito-addons-human-task-prediction-api</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>
 
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-predictions-smile</artifactId>
+        <artifactId>kogito-addons-human-task-prediction-smile</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-predictions-smile</artifactId>
+        <artifactId>kogito-addons-human-task-prediction-smile</artifactId>
         <version>${project.version}</version>
         <classifier>sources</classifier>
       </dependency>

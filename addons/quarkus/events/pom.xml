@@ -27,7 +27,7 @@
         </property>
       </activation>
       <modules>
-        <module>reactive</module>
+        <module>smallrye</module>
       </modules>
     </profile>
   </profiles>
