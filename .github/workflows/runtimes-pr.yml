@@ -18,9 +18,7 @@ jobs:
         run: git config --system core.longpaths true
       - name: Enable code formatting validation if necessary
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: echo "Enabling code formatting validation"
-        env:
-          BUILD_MVN_OPTS: "-Dvalidate-formatting"
+        run: export BUILD_MVN_OPTS="-Dvalidate-formatting"
       - name: Disk space report before modification
         if: ${{ matrix.os == 'ubuntu-latest' }}
         shell: bash
