@@ -20,7 +20,6 @@
     <module>kogito-build-parent</module>
     <module>kogito-ide-config</module>
     <module>kogito-kie7-bom</module>
-    <module>kogito-runtimes-ddl</module>
   </modules>
 
 </project>

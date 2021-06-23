@@ -8,14 +8,14 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.root.dir}/addons/persistence/postgresql-persistence-addon/src/main/resources/sql</directory>
+            <directory>${path.to.persistence.modules}/postgresql/src/main/resources/sql</directory>
             <outputDirectory>postgresql</outputDirectory>
             <includes>
                 <include>*.sql</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.root.dir}/addons/persistence/jdbc-persistence-addon/src/main/resources/sql</directory>
+            <directory>${path.to.persistence.modules}/jdbc/src/main/resources/sql</directory>
             <outputDirectory>jdbc</outputDirectory>
             <includes>
                 <include>*.sql</include>
