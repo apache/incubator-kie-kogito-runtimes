@@ -15,13 +15,9 @@
  */
 package org.kie.kogito.it;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.common.annotation.Identifier;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +25,10 @@ import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @QuarkusTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
@@ -40,7 +38,7 @@ public class KafkaPersistenceIT extends PersistenceTest {
     private Logger LOGGER = LoggerFactory.getLogger(KafkaPersistenceIT.class);
 
     @Inject
-    @Named("default-kafka-broker")
+    @Identifier("default-kafka-broker")
     Map<String, Object> kafkaConfig;
 
     @BeforeEach
