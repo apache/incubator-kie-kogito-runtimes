@@ -15,12 +15,7 @@
  */
 package org.kie.kogito.persistence;
 
-import java.util.Map;
-
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import io.smallrye.common.annotation.Identifier;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -30,6 +25,10 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.persistence.KogitoProcessInstancesFactory</code>
@@ -47,8 +46,7 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
     }
 
     @Inject
-    @Named("default-kafka-broker")
-    public void setKafkaConfig(Map<String, Object> kafkaConfig) {
+    public void setKafkaConfig(@Identifier("default-kafka-broker") Map<String, Object> kafkaConfig) {
         producer = new KafkaProducer<>(kafkaConfig, new StringSerializer(), new ByteArraySerializer());
     }
 
