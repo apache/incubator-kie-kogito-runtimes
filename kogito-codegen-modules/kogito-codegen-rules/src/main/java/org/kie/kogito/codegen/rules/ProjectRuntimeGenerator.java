@@ -97,7 +97,9 @@ public class ProjectRuntimeGenerator {
                 .findFirst()
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find getKieBase method"));
 
-        getDefaultKieBaseMethod.findFirst(StringLiteralExpr.class).get().setString(modelMethod.getDefaultKieBaseName());
+        if (modelMethod.getDefaultKieBaseName() != null) {
+            getDefaultKieBaseMethod.findFirst(StringLiteralExpr.class).get().setString(modelMethod.getDefaultKieBaseName());
+        }
     }
 
     private void writeNewDefaultKieSessionMethod(ClassOrInterfaceDeclaration clazz) {
@@ -107,7 +109,9 @@ public class ProjectRuntimeGenerator {
                 .findFirst()
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find newKieSession method"));
 
-        newDefaultKieSessionMethod.findFirst(StringLiteralExpr.class).get().setString(modelMethod.getDefaultKieSessionName());
+        if (modelMethod.getDefaultKieSessionName() != null) {
+            newDefaultKieSessionMethod.findFirst(StringLiteralExpr.class).get().setString(modelMethod.getDefaultKieSessionName());
+        }
     }
 
     private void writeGetKieBaseForSessionMethod(ClassOrInterfaceDeclaration clazz) {
