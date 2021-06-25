@@ -49,7 +49,7 @@
                 <fileSet>
                   <directory>${basedir}/../../integration-tests</directory>
                   <includes>
-                    <include>*/pom.xml</include>
+                    <include>*quarkus*/pom.xml</include>
                     <include>integration-tests-quarkus-processes-persistence/*/pom.xml</include>
                   </includes>
                   <excludes>
@@ -58,7 +58,6 @@
                     <exclude>integration-tests-quarkus-norest/pom.xml</exclude>
                     <exclude>integration-tests-quarkus-processes/pom.xml</exclude>
                     <exclude>integration-tests-quarkus-processes-persistence/pom.xml</exclude>
-                    <exclude>integration-tests-springboot/pom.xml</exclude>
                   </excludes>
                 </fileSet>
                 <fileSet>
