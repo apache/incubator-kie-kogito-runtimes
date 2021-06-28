@@ -46,6 +46,7 @@ import static java.util.stream.Collectors.toSet;
 
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JandexProtoGenerator.class);
     private static final DotName ENUM_VALUE_ANNOTATION = DotName.createSimple(ProtoEnumValue.class.getName());
     private final IndexView index;
     private final DotName generatedAnnotation;
@@ -131,6 +132,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
             name = altName;
         }
+        LOGGER.trace("Generating ProtoMessage for {}, altName {}", name, altName);
         ProtoMessage message = new ProtoMessage(name, packageName == null ? clazz.name().prefix().toString() : packageName);
         for (FieldInfo pd : clazz.fields()) {
             String completeFieldComment = fieldComment;
