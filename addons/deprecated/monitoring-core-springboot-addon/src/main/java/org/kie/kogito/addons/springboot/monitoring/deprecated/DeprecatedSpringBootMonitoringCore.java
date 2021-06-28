@@ -23,7 +23,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * @deprecated The library monitoring-core-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-core instead
+ * @deprecated The library monitoring-core-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-core instead
  */
 @Deprecated
 @Component
@@ -33,11 +33,11 @@ public class DeprecatedSpringBootMonitoringCore implements ApplicationListener<A
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedSpringBootMonitoringCore.class);
 
     public DeprecatedSpringBootMonitoringCore() {
-        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-core instead");
+        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-core instead");
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-core instead");
+        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-core instead");
     }
 }

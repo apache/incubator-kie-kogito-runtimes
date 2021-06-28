@@ -25,9 +25,6 @@
     <module>monitoring-core-common</module>
     <module>monitoring-core-quarkus-addon</module>
     <module>monitoring-core-springboot-addon</module>
-    <module>monitoring-elastic-common</module>
-    <module>monitoring-elastic-quarkus-addon</module>
-    <module>monitoring-elastic-springboot-addon</module>
     <module>monitoring-prometheus-common</module>
     <module>monitoring-prometheus-quarkus-addon</module>
     <module>monitoring-prometheus-springboot-addon</module>

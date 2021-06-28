@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.runtime.Startup;
 
 /**
- * @deprecated The library kogito-event-driven-decisions-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-events-decisions instead
+ * @deprecated The library kogito-event-driven-decisions-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-events-decisions instead
  */
 @Startup
 @ApplicationScoped
@@ -33,7 +33,7 @@ public class DeprecatedQuarkusEventDrivenDecisions {
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedQuarkusEventDrivenDecisions.class);
 
     public DeprecatedQuarkusEventDrivenDecisions() {
-        LOGGER.warn("The library kogito-event-driven-decisions-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-events-decisions instead");
+        LOGGER.warn("The library kogito-event-driven-decisions-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-events-decisions instead");
     }
 
 }

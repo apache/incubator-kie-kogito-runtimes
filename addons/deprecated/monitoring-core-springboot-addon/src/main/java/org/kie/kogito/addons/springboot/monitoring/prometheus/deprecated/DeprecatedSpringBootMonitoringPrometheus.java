@@ -23,7 +23,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * @deprecated The library monitoring-prometheus-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-prometheus instead
+ * @deprecated The library monitoring-prometheus-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-prometheus instead
  */
 @Deprecated
 @Component
@@ -33,11 +33,11 @@ public class DeprecatedSpringBootMonitoringPrometheus implements ApplicationList
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedSpringBootMonitoringPrometheus.class);
 
     public DeprecatedSpringBootMonitoringPrometheus() {
-        LOGGER.warn("The library monitoring-prometheus-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-prometheus instead");
+        LOGGER.warn("The library monitoring-prometheus-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-prometheus instead");
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        LOGGER.warn("The library monitoring-prometheus-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-monitoring-prometheus instead");
+        LOGGER.warn("The library monitoring-prometheus-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-prometheus instead");
     }
 }

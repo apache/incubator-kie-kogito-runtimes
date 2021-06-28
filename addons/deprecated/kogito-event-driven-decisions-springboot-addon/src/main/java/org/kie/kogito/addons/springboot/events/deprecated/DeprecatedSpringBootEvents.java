@@ -23,7 +23,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * @deprecated The library kogito-event-driven-decisions-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-events-decisions instead
+ * @deprecated The library kogito-event-driven-decisions-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-events-decisions instead
  */
 @Deprecated
 @Component
@@ -33,11 +33,11 @@ public class DeprecatedSpringBootEvents implements ApplicationListener<Applicati
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedSpringBootEvents.class);
 
     public DeprecatedSpringBootEvents() {
-        LOGGER.warn("The library kogito-event-driven-decisions-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-events-decisions instead");
+        LOGGER.warn("The library kogito-event-driven-decisions-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-events-decisions instead");
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        LOGGER.warn("The library kogito-event-driven-decisions-springboot-addon is deprecated!!!!! Please use kogito-addons-springboot-events-decisions instead");
+        LOGGER.warn("The library kogito-event-driven-decisions-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-events-decisions instead");
     }
 }

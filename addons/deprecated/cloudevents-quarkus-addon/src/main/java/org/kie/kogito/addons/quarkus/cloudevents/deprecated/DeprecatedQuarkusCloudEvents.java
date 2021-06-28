@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.runtime.Startup;
 
 /**
- * @deprecated The library cloudevents-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-cloudevents instead
+ * @deprecated The library cloudevents-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-cloudevents instead
  */
 @Startup
 @ApplicationScoped
@@ -33,7 +33,7 @@ public class DeprecatedQuarkusCloudEvents {
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedQuarkusCloudEvents.class);
 
     public DeprecatedQuarkusCloudEvents() {
-        LOGGER.warn("The library cloudevents-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-cloudevents instead");
+        LOGGER.warn("The library cloudevents-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-cloudevents instead");
     }
 
 }

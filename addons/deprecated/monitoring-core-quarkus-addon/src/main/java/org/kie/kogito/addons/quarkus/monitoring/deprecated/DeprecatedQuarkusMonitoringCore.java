@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.runtime.Startup;
 
 /**
- * @deprecated The library monitoring-core-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-monitoring-core instead
+ * @deprecated The library monitoring-core-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-monitoring-core instead
  */
 @Startup
 @ApplicationScoped
@@ -33,7 +33,7 @@ public class DeprecatedQuarkusMonitoringCore {
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedQuarkusMonitoringCore.class);
 
     public DeprecatedQuarkusMonitoringCore() {
-        LOGGER.warn("The library monitoring-core-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-monitoring-core instead");
+        LOGGER.warn("The library monitoring-core-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-monitoring-core instead");
     }
 
 }

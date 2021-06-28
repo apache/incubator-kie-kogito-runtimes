@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.runtime.Startup;
 
 /**
- * @deprecated The library monitoring-prometheus-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-monitoring-prometheus instead
+ * @deprecated The library monitoring-prometheus-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-monitoring-prometheus instead
  */
 @Startup
 @ApplicationScoped
@@ -33,7 +33,7 @@ public class DeprecatedQuarkusMonitoringPrometheus {
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedQuarkusMonitoringPrometheus.class);
 
     public DeprecatedQuarkusMonitoringPrometheus() {
-        LOGGER.warn("The library monitoring-prometheus-quarkus-addon is deprecated!!!!! Please use kogito-addons-quarkus-monitoring-prometheus instead");
+        LOGGER.warn("The library monitoring-prometheus-quarkus-addon is deprecated and will be removed in a future release! Please use kogito-addons-quarkus-monitoring-prometheus instead");
     }
 
 }
