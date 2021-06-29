@@ -28,6 +28,7 @@ import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.core.events.AbstractEventResourceGenerator;
 import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.services.event.DataEventAttrBuilder;

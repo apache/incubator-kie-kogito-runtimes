@@ -45,7 +45,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.printer.YamlPrinter;
 
 public class DecisionCloudEventMetaFactoryGenerator {
 
@@ -96,9 +95,6 @@ public class DecisionCloudEventMetaFactoryGenerator {
             expressions.put("$type$", new StringLiteralExpr(methodData.type));
             expressions.put("$source$", new StringLiteralExpr(methodData.source));
             expressions.put("$kind$", new FieldAccessExpr(new NameExpr(new SimpleName(EventKind.class.getName())), methodData.kind.name()));
-
-            YamlPrinter printer = new YamlPrinter(true);
-            System.out.println(printer.output(builderMethod));
 
             builderMethod.findFirst(MethodCallExpr.class)
                     .ifPresent(callExpr -> CodegenUtils.interpolateArguments(callExpr, expressions));
