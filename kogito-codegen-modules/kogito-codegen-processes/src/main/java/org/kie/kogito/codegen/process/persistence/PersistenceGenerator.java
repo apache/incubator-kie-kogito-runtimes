@@ -193,6 +193,7 @@ public class PersistenceGenerator extends AbstractGenerator {
         Collection<GeneratedFile> generatedFiles = protobufBasedPersistence();
         CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
         compilationUnit.getTypes().add(persistenceProviderClazz);
+        addOptimisticLockFlag(persistenceProviderClazz);
         generatePersistenceProviderClazz(persistenceProviderClazz, compilationUnit).ifPresent(generatedFiles::add);
         return generatedFiles;
     }
@@ -461,6 +462,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             persistenceProviderClazz.addMember(dbNameField);
             persistenceProviderClazz.addMember(dbNameMethod);
             generatedTMFile = mongodbBasedTransaction(persistenceProviderClazz);
+            addOptimisticLockFlag(persistenceProviderClazz);
             generatedClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
                     new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
         }

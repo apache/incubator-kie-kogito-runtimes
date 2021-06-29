@@ -28,6 +28,7 @@
     <module>integration-tests-quarkus-processes-infinispan</module>
     <module>integration-tests-quarkus-processes-mongodb</module>
     <module>integration-tests-quarkus-processes-kafka-persistence</module>
+    <module>integration-tests-quarkus-processes-jdbc</module>
   </modules>
 
   <build>
@@ -88,6 +89,7 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration combine.self="override">
+                  <useModulePath>false</useModulePath>
                   <includes>
                     <include>**/Native*IT.java</include>
                   </includes>
