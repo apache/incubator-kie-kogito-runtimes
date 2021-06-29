@@ -42,8 +42,10 @@ import org.kie.api.runtime.rule.LiveQuery;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.ViewChangedEventListener;
 import org.kie.api.time.SessionClock;
+import org.kie.internal.event.rule.RuleEventListener;
+import org.kie.internal.event.rule.RuleEventManager;
 
-public class KieSessionImpl implements KieSession {
+public class KieSessionImpl implements KieSession, RuleEventManager {
 
     private final KieSession delegate;
 
@@ -390,5 +392,15 @@ public class KieSessionImpl implements KieSession {
     @Override
     public LiveQuery openLiveQuery(String s, Object[] objects, ViewChangedEventListener viewChangedEventListener) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addEventListener(RuleEventListener ruleEventListener) {
+        ((RuleEventManager) delegate).addEventListener(ruleEventListener);
+    }
+
+    @Override
+    public void removeEventListener(RuleEventListener ruleEventListener) {
+        ((RuleEventManager) delegate).removeEventListener(ruleEventListener);
     }
 }
