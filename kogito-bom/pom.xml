@@ -851,17 +851,17 @@
       <!-- Deprecated Addons -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>cloudevents-common-addon</artifactId>
+        <artifactId>kogito-cloudevents-common-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>cloudevents-quarkus-addon</artifactId>
+        <artifactId>kogito-cloudevents-quarkus-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>cloudevents-spring-boot-addon</artifactId>
+        <artifactId>kogito-cloudevents-spring-boot-addon</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

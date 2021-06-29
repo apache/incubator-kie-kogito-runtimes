@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>cloudevents-common-addon</artifactId>
+  <artifactId>kogito-cloudevents-common-addon</artifactId>
   <packaging>jar</packaging>
   <name>Kogito :: Add-Ons :: Deprecated :: CloudEvents Common</name>
   <description>This library is deprecated, please use kogito-addons-cloudevents instead</description>
