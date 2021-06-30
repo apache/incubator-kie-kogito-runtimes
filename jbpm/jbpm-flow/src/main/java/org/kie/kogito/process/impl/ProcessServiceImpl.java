@@ -138,7 +138,7 @@ public class ProcessServiceImpl implements ProcessService {
         WorkItemId workItemId = new WorkItemId(process.id(), id, taskId);
         HumanTaskTransition transition = HumanTaskTransition.withModel(phase, taskModel, Policies.of(user, groups));
         return workItemService.complete(workItemId, transition)
-                .map(m -> ((T) m).toModel());
+                .map(m -> ((T) m).toModel()); // cast to be removed https://issues.redhat.com/browse/KOGITO-5448
     }
 
     @Override
@@ -167,7 +167,7 @@ public class ProcessServiceImpl implements ProcessService {
         WorkItemId workItemId = new WorkItemId(process.id(), id, taskId);
         HumanTaskTransition transition = HumanTaskTransition.withModel(phase, model, Policies.of(user, groups));
         return workItemService.transition(workItemId, transition)
-                .map(m -> ((T) m).toModel());
+                .map(m -> ((T) m).toModel()); // cast to be removed https://issues.redhat.com/browse/KOGITO-5448
     }
 
     @Override
@@ -192,7 +192,7 @@ public class ProcessServiceImpl implements ProcessService {
         WorkItemId workItemId = new WorkItemId(process.id(), instanceId, taskId);
         HumanTaskTransition transition = HumanTaskTransition.withoutModel(phase, Policies.of(user, groups));
         return workItemService.abort(workItemId, transition)
-                .map(m -> ((T) m).toModel());
+                .map(m -> ((T) m).toModel()); // cast to be removed https://issues.redhat.com/browse/KOGITO-5448
     }
 
     @Override
