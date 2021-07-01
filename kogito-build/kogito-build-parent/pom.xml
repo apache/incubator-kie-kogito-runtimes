@@ -108,6 +108,7 @@
     <version.plexus.classworld>2.5.2</version.plexus.classworld>
     <version.plugin.plugin>3.6.0</version.plugin.plugin>
     <version.project.sources.plugin>0.3</version.project.sources.plugin>
+    <version.rpkgtests.maven.plugin>0.10.0</version.rpkgtests.maven.plugin>
     <version.resources.plugin>3.1.0</version.resources.plugin>
     <version.site.plugin>3.7.1</version.site.plugin>
     <version.shade.plugin>3.0.0</version.shade.plugin>
@@ -171,7 +172,7 @@
     <version.org.junit.vintage>${version.org.junit}</version.org.junit.vintage>
     <version.org.junit.platform>1.${version.org.junit.minor}</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.0.0</version.org.junit.pioneer>
-    <version.org.keycloak>12.0.4</version.org.keycloak>
+    <version.org.keycloak>14.0.0</version.org.keycloak>
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
     <version.org.mockito>3.10.0</version.org.mockito>
     <version.org.mongo>4.2.3</version.org.mongo>
@@ -180,8 +181,8 @@
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
-    <version.org.springframework.boot>2.3.4.RELEASE</version.org.springframework.boot>
-    <version.org.springdoc>1.5.8</version.org.springdoc>
+    <version.org.springframework.boot>2.4.3</version.org.springframework.boot>
+    <version.org.springdoc>1.5.9</version.org.springdoc>
     <version.org.testcontainers>1.15.3</version.org.testcontainers>
     <version.io.vertx>4.1.0</version.io.vertx>
   </properties>
@@ -1595,7 +1596,7 @@ limitations under the License.
                               <exclude name="**/integration-tests/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test/**/target/classes/**/*.class"/>
                               <exclude name="**/integration-test-legacy/**/target/classes/**/*.class"/>
-                              <exclude name="**/cloudevents-quarkus-addon-it/target/classes/**/*.class"/>
+                              <exclude name="**/quarkus/cloudevents/integration-tests/target/classes/**/*.class"/>
                               <exclude name="**/it/cloudevents-spring-boot-addon-it-invoked/target/classes/**/*.class"/>
                             </fileset>
                           </classfiles>
