@@ -82,8 +82,7 @@ public class DecisionModelResourcesProviderGeneratorTest {
                 .filter(gf -> gf.type().equals(AbstractGenerator.REST_TYPE))
                 .collect(toList());
         assertFalse(generatedRESTFiles.isEmpty());
-        // adding 1 to number of models to include DecisionCloudEventMetaFactory REST resource
-        assertEquals(numberOfModels + 1, generatedRESTFiles.size());
+        assertEquals(numberOfModels, generatedRESTFiles.size());
 
         List<GeneratedFile> generatedCLASSFile = generatedFiles.stream()
                 .filter(gf -> gf.type().equals(GeneratedFileType.SOURCE))

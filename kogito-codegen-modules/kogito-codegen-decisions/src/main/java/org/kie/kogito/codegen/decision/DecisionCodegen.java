@@ -181,8 +181,10 @@ public class DecisionCodegen extends AbstractGenerator {
             storeFile(GeneratedFileType.RESOURCE, relativePath, marshaller.marshal(definitions));
         }
 
-        final DecisionCloudEventMetaFactoryGenerator ceMetaFactoryGenerator = new DecisionCloudEventMetaFactoryGenerator(context(), models);
-        storeFile(REST_TYPE, ceMetaFactoryGenerator.generatedFilePath(), ceMetaFactoryGenerator.generate());
+        if (context().getAddonsConfig().useCloudEvents()) {
+            final DecisionCloudEventMetaFactoryGenerator ceMetaFactoryGenerator = new DecisionCloudEventMetaFactoryGenerator(context(), models);
+            storeFile(REST_TYPE, ceMetaFactoryGenerator.generatedFilePath(), ceMetaFactoryGenerator.generate());
+        }
     }
 
     private void generateAndStoreDecisionModelResourcesProvider() {
