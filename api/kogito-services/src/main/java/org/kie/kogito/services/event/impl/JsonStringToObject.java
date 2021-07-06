@@ -13,35 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.cloudevents;
+package org.kie.kogito.services.event.impl;
 
-import java.util.function.Consumer;
-
+import org.kie.kogito.event.EventConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JsonStringToObjectConsumer<T> implements Consumer<String> {
+public class JsonStringToObject<T> implements EventConverter<String, T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(JsonStringToObjectConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonStringToObject.class);
     private final Class<T> clazz;
-    private final Consumer<T> realConsumer;
     private final ObjectMapper objectMapper;
 
-    public JsonStringToObjectConsumer(ObjectMapper objectMapper, Consumer<T> realConsumer, Class<T> clazz) {
+    public JsonStringToObject(Class<T> clazz) {
+        this(new ObjectMapper(), clazz);
+    }
+
+    public JsonStringToObject(ObjectMapper objectMapper, Class<T> clazz) {
         this.objectMapper = objectMapper;
-        this.realConsumer = realConsumer;
         this.clazz = clazz;
     }
 
     @Override
-    public void accept(String value) {
-        try {
-            realConsumer.accept(objectMapper.readValue(value, clazz));
-        } catch (JsonProcessingException e) {
-            logger.info("Invalid payload {}", value, e);
-        }
+    public T apply(String value) throws JsonProcessingException {
+        logger.debug("Converting event with payload {} to class {} ", value, clazz);
+        return objectMapper.readValue(value, clazz);
+    }
+
+    @Override
+    public String toString() {
+        return "JsonStringToObject [clazz=" + clazz + "]";
+    }
+
+    @Override
+    public Class<String> getInputClass() {
+        return String.class;
+    }
+
+    @Override
+    public Class<T> getOutputClass() {
+        return clazz;
     }
 }

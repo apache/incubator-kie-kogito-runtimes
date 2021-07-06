@@ -21,17 +21,17 @@ import java.util.Optional;
  * Currently we are not discriminating on type, 
  * but an implementation not based on smallrye might want to do that
  */
-public class SubscriptionInfo<T> {
+public class SubscriptionInfo<S, T> {
 
-    private Class<T> clazz;
+    private EventConverter<S, T> converter;
     private Optional<String> type;
 
-    public SubscriptionInfo(Class<T> clazz) {
-        this(clazz, Optional.empty());
+    public SubscriptionInfo(EventConverter<S, T> converter) {
+        this(converter, Optional.empty());
     }
 
-    public SubscriptionInfo(Class<T> clazz, Optional<String> type) {
-        this.clazz = clazz;
+    public SubscriptionInfo(EventConverter<S, T> converter, Optional<String> type) {
+        this.converter = converter;
         this.type = type;
     }
 
@@ -39,12 +39,12 @@ public class SubscriptionInfo<T> {
         return type;
     }
 
-    public Class<T> getEventType() {
-        return clazz;
+    public EventConverter<S, T> getConverter() {
+        return converter;
     }
 
     @Override
     public String toString() {
-        return "SubscriptionInfo [type=" + type + ", clazz=" + clazz + "]";
+        return "SubscriptionInfo [type=" + type + ", converter=" + converter + "]";
     }
 }
