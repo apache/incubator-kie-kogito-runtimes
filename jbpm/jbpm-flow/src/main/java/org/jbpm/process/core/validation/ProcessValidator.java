@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 package org.jbpm.process.core.validation;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
@@ -30,4 +33,10 @@ public interface ProcessValidator {
 
     boolean compilationSupported();
 
+    default void validate(Process process) throws ProcessValidationException {
+        final ProcessValidationError[] errors = validateProcess(process);
+        Optional.ofNullable(errors)
+                .filter(e -> e.length == 0)
+                .orElseThrow(() -> new ProcessValidationException(Arrays.asList(errors)));
+    }
 }

@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workflow.instance.impl;
+package org.jbpm.process.core.validation;
 
-import java.util.function.UnaryOperator;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-/* Added to make it easier to search for ParamResolver function implementations, 
- * see https://github.com/kiegroup/kogito-runtimes/pull/778#pullrequestreview-493382982 */
-public interface WorkItemHandlerParamResolver extends UnaryOperator<Object> {
+public class ProcessValidationException extends RuntimeException {
+
+    private final Collection<ProcessValidationError> errors;
+
+    public ProcessValidationException(Collection<ProcessValidationError> errors) {
+        this.errors = errors;
+    }
+
+    @Override
+    public String getMessage() {
+        return errors.stream()
+                .map(ProcessValidationError::getMessage)
+                .collect(Collectors.joining(","));
+    }
 }
