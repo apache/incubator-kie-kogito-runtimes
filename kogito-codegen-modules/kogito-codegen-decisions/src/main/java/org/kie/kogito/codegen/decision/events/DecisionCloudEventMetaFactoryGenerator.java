@@ -29,10 +29,9 @@ import java.util.stream.Stream;
 
 import org.kie.dmn.api.core.DMNModel;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator;
 import org.kie.kogito.event.EventKind;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -46,27 +45,19 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public class DecisionCloudEventMetaFactoryGenerator {
+public class DecisionCloudEventMetaFactoryGenerator extends AbstractCloudEventMetaFactoryGenerator {
 
     public static final String RESPONSE_EVENT_TYPE = "DecisionResponse";
     public static final String RESPONSE_FULL_EVENT_TYPE = "DecisionResponseFull";
     public static final String RESPONSE_ERROR_EVENT_TYPE = "DecisionResponseError";
 
-    public static final String TEMPLATE_EVENT_FOLDER = "/class-templates/events/";
     private static final String CLASS_NAME = "DecisionCloudEventMetaFactory";
 
-    private final KogitoBuildContext context;
-    private final TemplatedGenerator generator;
     private final List<DMNModel> models;
 
-    public DecisionCloudEventMetaFactoryGenerator(final KogitoBuildContext context, List<DMNModel> models) {
-        this.context = context;
-        this.generator = buildTemplatedGenerator(context);
+    public DecisionCloudEventMetaFactoryGenerator(KogitoBuildContext context, List<DMNModel> models) {
+        super(buildTemplatedGenerator(context, CLASS_NAME), context);
         this.models = models;
-    }
-
-    public final String generatedFilePath() {
-        return generator.generatedFilePath();
     }
 
     public String generate() {
@@ -161,43 +152,6 @@ public class DecisionCloudEventMetaFactoryGenerator {
                 .filter(s -> s != null && !s.isEmpty())
                 .map(DecisionCloudEventMetaFactoryGenerator::toValidJavaIdentifier)
                 .collect(Collectors.joining("_"));
-    }
-
-    static TemplatedGenerator buildTemplatedGenerator(KogitoBuildContext context) {
-        return TemplatedGenerator.builder()
-                .withTemplateBasePath(TEMPLATE_EVENT_FOLDER)
-                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, CLASS_NAME);
-    }
-
-    static String getBuilderMethodName(ClassOrInterfaceDeclaration classDefinition, String templatedBuildMethodName, String methodNameValue) {
-        String baseMethodName = templatedBuildMethodName.replace("$methodName$", methodNameValue);
-        List<MethodDeclaration> methods = classDefinition.findAll(MethodDeclaration.class);
-        int counter = 0;
-        while (true) {
-            String expectedMethodName = counter == 0
-                    ? baseMethodName
-                    : String.format("%s_%d", baseMethodName, counter);
-            if (methods.stream().anyMatch(m -> m.getNameAsString().equals(expectedMethodName))) {
-                counter++;
-            } else {
-                return expectedMethodName;
-            }
-        }
-    }
-
-    static String toValidJavaIdentifier(String input) {
-        StringBuilder sb = new StringBuilder(input.length());
-        for (char c : input.toCharArray()) {
-            if (c == '_') {
-                sb.append("__");
-            } else if (!Character.isJavaIdentifierPart(c)) {
-                sb.append("_").append(Integer.valueOf(c));
-            } else {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 
     static Optional<String> urlEncodedStringFrom(String input) {

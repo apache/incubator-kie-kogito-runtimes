@@ -22,7 +22,7 @@ public abstract class AbstractEventResourceGenerator {
     public static final String TEMPLATE_EVENT_FOLDER = "/class-templates/events/";
     protected TemplatedGenerator generator;
 
-    public AbstractEventResourceGenerator(TemplatedGenerator generator) {
+    protected AbstractEventResourceGenerator(TemplatedGenerator generator) {
         this.generator = generator;
     }
 
