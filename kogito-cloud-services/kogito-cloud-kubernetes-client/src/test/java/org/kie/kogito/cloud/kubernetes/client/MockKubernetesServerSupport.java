@@ -16,6 +16,7 @@
 package org.kie.kogito.cloud.kubernetes.client;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public abstract class MockKubernetesServerSupport {
 
     /**
      * Same as {@link #createMockService()}, but let you choose the namespace.
-     * 
+     *
      * @param namespace null to not specify where.
      */
     protected void createMockService(final String namespace) {
@@ -95,28 +96,32 @@ public abstract class MockKubernetesServerSupport {
 
     /**
      * Creates a service based on an {@link InputStream} of a json service response.
-     * 
+     *
      * @param mockJsonResponse
      */
     protected void createMockService(final InputStream mockJsonResponse, final String namespace) {
-        final ServiceResource<Service> serviceResource = this.server.getClient().inNamespace(namespace).services().load(mockJsonResponse);
+        final ServiceResource<Service> serviceResource =
+                this.server.getClient().inNamespace(namespace).services().load(mockJsonResponse);
         this.server.getClient().inNamespace(namespace).services().create(serviceResource.get());
     }
 
     /**
      * Creates a list of services based on a {@link InputStream} of a json servicelist response
-     * 
+     *
      * @param mockJsonResponse
      * @param namespace
      */
     protected void createMockServices(final InputStream mockJsonResponse, final String namespace) {
-        final RecreateFromServerGettable<KubernetesList> serviceResource = this.server.getClient().inNamespace(namespace).lists().load(mockJsonResponse);
+        final RecreateFromServerGettable<KubernetesList> serviceResource =
+                this.server.getClient().inNamespace(namespace).lists().load(mockJsonResponse);
         this.server.getClient().inNamespace(namespace).lists().create(serviceResource.get());
     }
 
-    protected void createMockService(final String serviceName, final String ip, final Map<String, String> labels, final String namespace) {
+    protected void createMockService(final String serviceName, final String ip, final Map<String, String> labels,
+            final String namespace) {
         final ServiceSpec serviceSpec = new ServiceSpec();
-        serviceSpec.setPorts(Collections.singletonList(new ServicePort("http", serviceName, 0, 8080, "http", new IntOrString(8080))));
+        serviceSpec.setPorts(
+                Collections.singletonList(new ServicePort("http", serviceName, 0, 8080, "http", new IntOrString(8080))));
         serviceSpec.setClusterIP(ip);
         serviceSpec.setType("ClusterIP");
         serviceSpec.setSessionAffinity("ClientIP");
@@ -126,7 +131,8 @@ public abstract class MockKubernetesServerSupport {
         metadata.setNamespace(MOCK_NAMESPACE);
         metadata.setLabels(labels);
 
-        final Service service = new Service("v1", "Service", metadata, serviceSpec, new ServiceStatus(new LoadBalancerStatus()));
+        final Service service = new Service("v1", "Service", metadata, serviceSpec,
+                new ServiceStatus(new ArrayList<>(), new LoadBalancerStatus()));
         if (namespace != null) {
             this.server.getClient().inNamespace(namespace).services().create(service);
         } else {

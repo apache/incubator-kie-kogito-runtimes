@@ -11,7 +11,7 @@ pipeline {
         label 'kie-rhel7 && kie-mem16g'
     }
     tools {
-        maven 'kie-maven-3.6.2'
+        maven 'kie-maven-3.6.3'
         jdk 'kie-jdk11'
     }
     options {
@@ -34,6 +34,10 @@ pipeline {
                     checkoutRepo('kogito-examples')
                     checkoutRepo('kogito-examples', 'kogito-examples-persistence')
                     checkoutRepo('kogito-examples', 'kogito-examples-events')
+
+                    // remove pom.xml from parent overlapping workspace (it is not really used.)
+                    // Work-around an issue with Quarkus' resolver with our project layout
+                    sh 'rm ./pom.xml'
                 }
             }
         }
