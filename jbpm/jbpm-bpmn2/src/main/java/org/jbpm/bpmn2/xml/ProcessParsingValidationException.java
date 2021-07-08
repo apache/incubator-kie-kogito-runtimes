@@ -15,15 +15,13 @@
  */
 package org.jbpm.bpmn2.xml;
 
+import java.util.Arrays;
+
 import org.kie.kogito.process.validation.ValidationException;
 
 public class ProcessParsingValidationException extends ValidationException {
 
     public ProcessParsingValidationException(String message) {
-        super(message);
-    }
-
-    public ProcessParsingValidationException(String message, Throwable cause) {
-        super(message, cause);
+        super(null, Arrays.asList(()-> message));
     }
 }

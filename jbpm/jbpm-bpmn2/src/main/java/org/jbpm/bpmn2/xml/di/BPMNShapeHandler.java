@@ -93,7 +93,7 @@ public class BPMNShapeHandler extends BaseAbstractHandler implements Handler {
                     nodeInfo.setWidth(widthValue);
                     nodeInfo.setHeight(heightValue);
                 } catch (NumberFormatException e) {
-                    throw new ProcessParsingValidationException("Invalid bounds for node " + nodeInfo.getNodeRef(), e);
+                    throw new ProcessParsingValidationException("Invalid bounds for node " + nodeInfo.getNodeRef());
                 }
             }
             xmlNode = xmlNode.getNextSibling();

@@ -43,6 +43,7 @@ import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
+import org.jbpm.process.core.validation.ProcessValidatorRegistry;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
@@ -59,6 +60,8 @@ import org.kie.kogito.codegen.process.events.CloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.process.validation.ValidationException;
+import org.kie.kogito.process.validation.ValidationLogDecorator;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,28 +109,43 @@ public class ProcessCodegen extends AbstractGenerator {
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         Map<String, String> processSVGMap = new HashMap<>();
         boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
-        List<Process> processes = resources.stream()
-                .map(CollectedResource::resource)
-                .flatMap(resource -> {
-                    if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
-                        Collection<Process> p = parseProcessFile(resource);
-                        if (useSvgAddon && resource instanceof FileSystemResource) {
-                            processSVG((FileSystemResource) resource, resources, p, processSVGMap);
+        List<Process> processes = null;
+        try {
+            processes = resources.stream()
+                    .map(CollectedResource::resource)
+                    .flatMap(resource -> {
+                        if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
+                            Collection<Process> p = parseProcessFile(resource);
+                            if (useSvgAddon && resource instanceof FileSystemResource) {
+                                processSVG((FileSystemResource) resource, resources, p, processSVGMap);
+                            }
+                            return p.stream();
+                        } else {
+                            return SUPPORTED_SW_EXTENSIONS.entrySet()
+                                    .stream()
+                                    .filter(e -> resource.getSourcePath().endsWith(e.getKey()))
+                                    .map(e -> parseWorkflowFile(resource, e.getValue()));
                         }
-                        return p.stream();
-                    } else {
-                        return SUPPORTED_SW_EXTENSIONS.entrySet()
-                                .stream()
-                                .filter(e -> resource.getSourcePath().endsWith(e.getKey()))
-                                .map(e -> parseWorkflowFile(resource, e.getValue()));
-                    }
-                })
-                .collect(toList());
+                    })
+                    //Validate parsed processes
+                    .peek(ProcessCodegen::validate)
+                    .collect(toList());
+        } catch (ValidationException validationException) {
+            //we may provide different validation decorators, for now just in logging in the console
+            ValidationLogDecorator
+                    .of(validationException)
+                    .decorate();
+            //rethrow exception to break the flow after decoration
+            throw new ProcessCodegenException(validationException.getProcessId(), "", validationException);
+        }
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
-
         return ofProcesses(context, processes);
+    }
+
+    private static void validate(Process p) {
+        ProcessValidatorRegistry.getInstance().getValidator(p, p.getResource()).validate(p);
     }
 
     private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,
@@ -209,8 +227,6 @@ public class ProcessCodegen extends AbstractGenerator {
             return xmlReader.read(reader);
         } catch (SAXException | IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
-        } catch (RuntimeException e) {
-            throw new ProcessCodegenException(r.getSourcePath(), e);
         }
     }
 

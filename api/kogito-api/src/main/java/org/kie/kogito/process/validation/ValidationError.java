@@ -1,2 +1,6 @@
-package org.kie.kogito.process.validation;public class ValidationError {
+package org.kie.kogito.process.validation;
+
+public interface ValidationError {
+
+    String getMessage();
 }

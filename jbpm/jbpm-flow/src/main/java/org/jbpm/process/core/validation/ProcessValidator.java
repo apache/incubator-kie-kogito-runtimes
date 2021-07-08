@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
+import org.kie.kogito.process.validation.ValidationException;
 
 /**
  * A validator for validating a RuleFlow process.
@@ -33,10 +34,10 @@ public interface ProcessValidator {
 
     boolean compilationSupported();
 
-    default void validate(Process process) throws ProcessValidationException {
+    default void validate(Process process) throws ValidationException {
         final ProcessValidationError[] errors = validateProcess(process);
         Optional.ofNullable(errors)
                 .filter(e -> e.length == 0)
-                .orElseThrow(() -> new ProcessValidationException(Arrays.asList(errors)));
+                .orElseThrow(() -> new ValidationException(process.getId(), Arrays.asList(errors)));
     }
 }

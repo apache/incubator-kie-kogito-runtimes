@@ -81,7 +81,7 @@ public class BPMNEdgeHandler extends BaseAbstractHandler implements Handler {
                         bendpoints += ";";
                     }
                 } catch (NumberFormatException e) {
-                    throw new ProcessParsingValidationException("Invalid bendpoint value", e);
+                    throw new ProcessParsingValidationException("Invalid bendpoint value");
                 }
             }
             xmlNode = xmlNode.getNextSibling();

@@ -16,8 +16,13 @@
 package org.kie.kogito.codegen.tests;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
+import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.Processes;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -35,5 +40,44 @@ public class InvalidProcessIT extends AbstractCodegenIT {
         assertThrows(ProcessCodegenException.class,
                 () -> generateCodeProcessesOnly("invalid/duplicated-process-id-1.bpmn2", "invalid/duplicated-process-id-2.bpmn2"),
                 "Duplicated process with id duplicated found in the project, please review .bpmn files");
+    }
+
+    //Process Validations Tests
+
+
+    @Test
+    public void testInvalidProcessParsingMorethanOneStart() throws Exception {
+        Application app = generateCodeProcessesOnly("invalid/parsing-more-than-one-start.bpmn2");
+
+        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+    }
+
+    @Test
+    public void testInvalidProcessValidatorNoStart() throws Exception {
+        Application app = generateCodeProcessesOnly("invalid/validator-no-start.bpmn2");
+
+        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+    }
+
+    @Test
+    public void testInvalidProcessParsingValidatorMultiEnd() throws Exception {
+        Application app = generateCodeProcessesOnly("invalid/parsing-multi-connection-end.bpmn2");
+
+        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+    }
+
+    @Test
+    public void testInvalidProcessValidatorNoEnd() throws Exception {
+        Application app = generateCodeProcessesOnly("invalid/validator-no-end.bpmn2");
+
+        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
+
+        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
     }
 }
