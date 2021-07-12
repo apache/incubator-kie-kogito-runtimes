@@ -79,7 +79,7 @@ public class ConnectionImpl implements Connection, Serializable {
         try {
             ((Node) this.from).addOutgoingConnection(fromType, this);
             ((Node) this.to).addIncomingConnection(toType, this);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             throw new ValidationException(null, exception.getMessage());
         }
     }

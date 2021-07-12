@@ -26,7 +26,6 @@ import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.swimlane.SwimlaneContext;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.event.EventFilter;
-import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.core.validation.impl.ProcessValidationErrorImpl;
 import org.jbpm.workflow.core.impl.NodeContainerImpl;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;

@@ -16,13 +16,8 @@
 package org.kie.kogito.codegen.tests;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.Application;
-import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.codegen.process.ProcessCodegenException;
-import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
-import org.kie.kogito.process.Processes;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,30 +42,30 @@ public class InvalidProcessIT extends AbstractCodegenIT {
     @Test
     public void testInvalidProcessParsingMorethanOneStart() throws Exception {
         assertThrows(ProcessCodegenException.class,
-                     ()-> generateCodeProcessesOnly("invalid/parsing-more-than-one-start.bpmn2"));
+                () -> generateCodeProcessesOnly("invalid/parsing-more-than-one-start.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessValidatorNoStart() throws Exception {
         assertThrows(ProcessCodegenException.class,
-                     ()-> generateCodeProcessesOnly("invalid/validator-no-start.bpmn2"));
+                () -> generateCodeProcessesOnly("invalid/validator-no-start.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessParsingValidatorMultiEnd() throws Exception {
         assertThrows(ProcessCodegenException.class,
-                     ()->generateCodeProcessesOnly("invalid/parsing-multi-connection-end.bpmn2"));
+                () -> generateCodeProcessesOnly("invalid/parsing-multi-connection-end.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessValidatorNoEnd() throws Exception {
         assertThrows(ProcessCodegenException.class,
-                     ()-> generateCodeProcessesOnly("invalid/validator-no-end.bpmn2"));
+                () -> generateCodeProcessesOnly("invalid/validator-no-end.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessParsingServiceTaskNoImpl() throws Exception {
         assertThrows(ProcessCodegenException.class,
-                     ()-> generateCodeProcessesOnly("invalid/parsing-service-task-no-impl.bpmn2"));
+                () -> generateCodeProcessesOnly("invalid/parsing-service-task-no-impl.bpmn2"));
     }
 }

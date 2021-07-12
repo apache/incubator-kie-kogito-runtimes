@@ -215,8 +215,7 @@ public class ProcessCodegen extends AbstractGenerator {
             return workflowParser.getProcess();
         } catch (IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new ProcessCodegenException(r.getSourcePath(), e);
         }
     }
@@ -229,7 +228,7 @@ public class ProcessCodegen extends AbstractGenerator {
             return xmlReader.read(reader);
         } catch (SAXException | IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
-        } catch (ProcessParsingValidationException e){
+        } catch (ProcessParsingValidationException e) {
             //TODO: when the processId is injected in the exception this can be removed
             throw new ValidationException(r.getSourcePath(), e.getErrors());
         }
