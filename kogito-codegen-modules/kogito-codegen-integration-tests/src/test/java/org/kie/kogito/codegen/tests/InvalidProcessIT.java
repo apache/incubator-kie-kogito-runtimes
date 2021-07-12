@@ -44,40 +44,33 @@ public class InvalidProcessIT extends AbstractCodegenIT {
 
     //Process Validations Tests
 
-
     @Test
     public void testInvalidProcessParsingMorethanOneStart() throws Exception {
-        Application app = generateCodeProcessesOnly("invalid/parsing-more-than-one-start.bpmn2");
-
-        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
-
-        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+        assertThrows(ProcessCodegenException.class,
+                     ()-> generateCodeProcessesOnly("invalid/parsing-more-than-one-start.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessValidatorNoStart() throws Exception {
-        Application app = generateCodeProcessesOnly("invalid/validator-no-start.bpmn2");
-
-        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
-
-        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+        assertThrows(ProcessCodegenException.class,
+                     ()-> generateCodeProcessesOnly("invalid/validator-no-start.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessParsingValidatorMultiEnd() throws Exception {
-        Application app = generateCodeProcessesOnly("invalid/parsing-multi-connection-end.bpmn2");
-
-        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
-
-        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+        assertThrows(ProcessCodegenException.class,
+                     ()->generateCodeProcessesOnly("invalid/parsing-multi-connection-end.bpmn2"));
     }
 
     @Test
     public void testInvalidProcessValidatorNoEnd() throws Exception {
-        Application app = generateCodeProcessesOnly("invalid/validator-no-end.bpmn2");
+        assertThrows(ProcessCodegenException.class,
+                     ()-> generateCodeProcessesOnly("invalid/validator-no-end.bpmn2"));
+    }
 
-        Process<? extends Model> p = app.get(Processes.class).processById("approvals");
-
-        ProcessInstance<?> processInstance = p.createInstance(p.createModel());
+    @Test
+    public void testInvalidProcessParsingServiceTaskNoImpl() throws Exception {
+        assertThrows(ProcessCodegenException.class,
+                     ()-> generateCodeProcessesOnly("invalid/parsing-service-task-no-impl.bpmn2"));
     }
 }
