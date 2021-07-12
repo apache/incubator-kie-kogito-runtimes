@@ -47,16 +47,12 @@ import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.dmn.core.internal.utils.DMNRuntimeBuilder;
 import org.kie.kogito.pmml.PMMLKogito;
 import org.kie.pmml.evaluator.core.utils.KnowledgeBaseUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_MODEL;
 import static org.drools.scenariosimulation.backend.fluent.DMNScenarioExecutableBuilder.DMN_RESULT;
 
 public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
-
-    private Logger LOGGER = LoggerFactory.getLogger(KogitoDMNScenarioRunnerHelper.class);
 
     private DMNRuntime dmnRuntime = initDmnRuntime();
 
@@ -101,15 +97,12 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
 
     private Function<String, KieRuntimeFactory> initPmmlKieRuntimeFactory() {
         try (Stream<Path> fileStream = Files.walk(Paths.get("."))) {
-            String[] pmmlFiles = fileStream
-                    .filter(path -> filterResource(path, ".pmml"))
-                    .map(Path::toString)
-                    .toArray(String[]::new);
-
-            System.out.println("-------> Found PMML resources: " + String.join(",", pmmlFiles));
-
             Map<KieBase, KieRuntimeFactory> kieRuntimeFactories =
-                    PMMLKogito.createKieRuntimeFactoriesWithInMemoryCompilation(pmmlFiles);
+                    PMMLKogito.createKieRuntimeFactoriesWithInMemoryCompilation(
+                            fileStream
+                                    .filter(path -> filterResource(path, ".pmml"))
+                                    .map(Path::toString)
+                                    .toArray(String[]::new));
 
             return s -> kieRuntimeFactories.keySet().stream()
                     .filter(kieBase -> KnowledgeBaseUtils.getModel(kieBase, s).isPresent())
@@ -130,8 +123,6 @@ public class KogitoDMNScenarioRunnerHelper extends DMNScenarioRunnerHelper {
                     .map(Path::toFile)
                     .map(FileSystemResource::new)
                     .collect(toList());
-
-            System.out.println("-------> Found DMN resources: " + resources.stream().map(Resource::getSourcePath).collect(Collectors.joining(", ")));
 
             return DMNRuntimeBuilder.fromDefaults()
                     .setKieRuntimeFactoryFunction(kieRuntimeFactoryFunction)
