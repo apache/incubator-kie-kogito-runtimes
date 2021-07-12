@@ -3,6 +3,8 @@ import org.kie.jenkins.jobdsl.KogitoConstants
 import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
 
+JENKINSFILE_PATH = '.ci/jenkins'
+
 def getDefaultJobParams() {
     def jobParams = KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
     jobParams.pr.excluded_regions.add('docsimg/.*')
@@ -31,9 +33,6 @@ Map getMultijobPRConfig() {
                 id: 'Optaplanner',
                 dependsOn: 'Runtimes',
                 repository: 'optaplanner',
-                // TODO remove once https://issues.redhat.com/browse/KOGITO-4113 is done 
-                // as it will become the default path
-                jenkinsfile: '.ci/jenkins/Jenkinsfile',
             ], [
                 id: 'Apps',
                 dependsOn: 'Optaplanner',
@@ -132,7 +131,7 @@ void setupMultijobPrLTSChecks() {
 }
 
 void setupDroolsJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-drools-snapshot', jobFolder, 'Jenkinsfile.drools', 'Kogito Runtimes Drools Snapshot')
+    def jobParams = getJobParams('kogito-drools-snapshot', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.drools", 'Kogito Runtimes Drools Snapshot')
     jobParams.triggers = [ cron : 'H 2 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -149,7 +148,7 @@ void setupDroolsJob(String jobFolder) {
 }
 
 void setupQuarkusJob(String jobFolder, String quarkusBranch) {
-    def jobParams = getJobParams("kogito-quarkus-${quarkusBranch}", jobFolder, 'Jenkinsfile.quarkus', 'Kogito Runtimes Quarkus Snapshot')
+    def jobParams = getJobParams("kogito-quarkus-${quarkusBranch}", jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.quarkus", 'Kogito Runtimes Quarkus Snapshot')
     jobParams.triggers = [ cron : 'H 4 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -164,7 +163,7 @@ void setupQuarkusJob(String jobFolder, String quarkusBranch) {
 }
 
 void setupSonarCloudJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-runtimes-sonarcloud', jobFolder, 'Jenkinsfile.sonarcloud', 'Kogito Runtimes Daily Sonar')
+    def jobParams = getJobParams('kogito-runtimes-sonarcloud', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.sonarcloud", 'Kogito Runtimes Daily Sonar')
     jobParams.triggers = [ cron : 'H 20 * * 1-5' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -178,7 +177,7 @@ void setupSonarCloudJob(String jobFolder) {
 }
 
 void setupNativeJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-runtimes-native', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native Testing')
+    def jobParams = getJobParams('kogito-runtimes-native', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.native", 'Kogito Runtimes Native Testing')
     jobParams.triggers = [ cron : 'H 6 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -193,7 +192,7 @@ void setupNativeJob(String jobFolder) {
 }
 
 void setupNativeLTSJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-runtimes-native-lts', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native LTS Testing')
+    def jobParams = getJobParams('kogito-runtimes-native-lts', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.native", 'Kogito Runtimes Native LTS Testing')
     jobParams.triggers = [ cron : 'H 8 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -210,7 +209,7 @@ void setupNativeLTSJob(String jobFolder) {
 }
 
 void setupDeployJob(String jobFolder, KogitoJobType jobType) {
-    def jobParams = getJobParams('kogito-runtimes-deploy', jobFolder, 'Jenkinsfile.deploy', 'Kogito Runtimes Deploy')
+    def jobParams = getJobParams('kogito-runtimes-deploy', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.deploy", 'Kogito Runtimes Deploy')
     if (jobType == KogitoJobType.PR) {
         jobParams.git.branch = '${BUILD_BRANCH_NAME}'
         jobParams.git.author = '${GIT_AUTHOR}'
@@ -269,7 +268,7 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
 }
 
 void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
-    KogitoJobTemplate.createPipelineJob(this, getJobParams('kogito-runtimes-promote', jobFolder, 'Jenkinsfile.promote', 'Kogito Runtimes Promote')).with {
+    KogitoJobTemplate.createPipelineJob(this, getJobParams('kogito-runtimes-promote', jobFolder, "${JENKINSFILE_PATH}/Jenkinsfile.promote", 'Kogito Runtimes Promote')).with {
         parameters {
             stringParam('DISPLAY_NAME', '', 'Setup a specific build display name')
 
