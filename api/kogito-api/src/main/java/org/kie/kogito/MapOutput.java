@@ -27,5 +27,7 @@ public interface MapOutput {
      * 
      * @return non null map of data extracted from the class
      */
-    Map<String, Object> toMap();
+    default Map<String, Object> toMap() {
+        return Models.toMap(this);
+    }
 }
