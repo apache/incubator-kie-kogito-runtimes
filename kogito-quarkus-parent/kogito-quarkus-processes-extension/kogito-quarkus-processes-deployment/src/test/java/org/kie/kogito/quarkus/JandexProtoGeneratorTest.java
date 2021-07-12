@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
@@ -33,6 +34,7 @@ import org.kie.kogito.quarkus.processes.deployment.JandexProtoGenerator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -75,11 +77,11 @@ class JandexProtoGeneratorTest {
         JandexProtoGenerator generator = JandexProtoGenerator.builder(null, null, null)
                 .withDataClasses(dataModel)
                 .build(null);
-        Proto enumProto = generator.generate("message comment", "field comment", "com.acme", enumClassInfo);
+        Proto enumProto = generator.protoOfDataClasses("com.acme");
         assertEquals(1, enumProto.getEnums().size());
         assertEquals(enumName.local(), enumProto.getEnums().get(0).getName());
 
-        Proto objectProto = generator.generate("message comment", "field comment", "com.acme", objectClassName);
+        Proto objectProto = generator.protoOfDataClasses("com.acme");
         assertEquals(1, objectProto.getMessages().size());
         assertEquals(objectName.local(), objectProto.getMessages().get(0).getName());
     }
@@ -88,12 +90,12 @@ class JandexProtoGeneratorTest {
     void builderTest() throws IOException {
         Indexer indexer = new Indexer();
 
-        ClassInfo generatedPojo = indexer.index(this.getClass().getClassLoader()
-                .getResourceAsStream(toPath(GeneratedPOJO.class)));
-        ClassInfo person = indexer.index(this.getClass().getClassLoader()
-                .getResourceAsStream(toPath(Person.class)));
-        ClassInfo address = indexer.index(this.getClass().getClassLoader()
-                .getResourceAsStream(toPath(Address.class)));
+        ClassInfo generatedPojo = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(GeneratedPOJO.class))));
+        ClassInfo person = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(Person.class))));
+        ClassInfo address = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(Address.class))));
         Index index = indexer.complete();
 
         // empty
@@ -136,6 +138,22 @@ class JandexProtoGeneratorTest {
     }
 
     @Test
+    void recursiveProto() throws IOException {
+        Indexer indexer = new Indexer();
+
+        ClassInfo person = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(Person.class))));
+        Index index = indexer.complete();
+
+        JandexProtoGenerator generator = JandexProtoGenerator.builder(index, null, null)
+                .withDataClasses(Collections.singleton(person))
+                .build(null);
+
+        Proto proto = generator.protoOfDataClasses("defaultPkg");
+        assertNotNull(proto);
+    }
+
+    @Test
     void persistenceClassParams() throws IOException {
         Indexer indexer = new Indexer();
         JandexProtoGenerator noPersistenceClassGenerator = JandexProtoGenerator.builder(null, null, null)
@@ -143,16 +161,16 @@ class JandexProtoGeneratorTest {
                 .build(null);
         assertTrue(noPersistenceClassGenerator.getPersistenceClassParams().isEmpty());
 
-        ClassInfo emptyConstructor = indexer.index(this.getClass().getClassLoader()
-                .getResourceAsStream(toPath(EmptyConstructor.class)));
+        ClassInfo emptyConstructor = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(EmptyConstructor.class))));
         JandexProtoGenerator emptyGenerator = JandexProtoGenerator.builder(null, null, null)
                 .withPersistenceClass(emptyConstructor)
                 .build(null);
 
         assertTrue(emptyGenerator.getPersistenceClassParams().isEmpty());
 
-        ClassInfo notEmptyConstructor = indexer.index(this.getClass().getClassLoader()
-                .getResourceAsStream(toPath(NotEmptyConstructor.class)));
+        ClassInfo notEmptyConstructor = indexer.index(Objects.requireNonNull(this.getClass().getClassLoader()
+                .getResourceAsStream(toPath(NotEmptyConstructor.class))));
         JandexProtoGenerator notEmptyGenerator = JandexProtoGenerator.builder(null, null, null)
                 .withPersistenceClass(notEmptyConstructor)
                 .build(null);

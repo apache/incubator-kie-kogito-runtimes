@@ -24,6 +24,7 @@ public class Person {
     private String name;
     private int age;
     private boolean adult;
+    private Person parent;
 
     private transient String ignoreMe;
 
@@ -91,31 +92,36 @@ public class Person {
         this.addresses = addresses;
     }
 
+    public Person getParent() {
+        return parent;
+    }
+
+    public void setParent(Person parent) {
+        this.parent = parent;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
                 ", adult=" + adult +
+                ", parent=" + parent +
+                ", ignoreMe='" + ignoreMe + '\'' +
+                ", addresses=" + addresses +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return age == person.age &&
-                adult == person.adult &&
-                Objects.equals(name, person.name);
+        return age == person.age && adult == person.adult && Objects.equals(name, person.name) && Objects.equals(parent, person.parent) && Objects.equals(ignoreMe, person.ignoreMe) && Objects.equals(addresses, person.addresses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, age, adult);
+        return Objects.hash(name, age, adult, parent, ignoreMe, addresses);
     }
 }

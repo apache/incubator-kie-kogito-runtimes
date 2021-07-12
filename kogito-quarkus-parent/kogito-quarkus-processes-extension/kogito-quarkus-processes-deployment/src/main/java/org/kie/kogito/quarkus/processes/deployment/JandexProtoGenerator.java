@@ -60,40 +60,6 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    public Proto protoOfDataClasses(String packageName, String... headers) {
-        try {
-            Proto proto = new Proto(packageName, headers);
-
-            for (ClassInfo clazz : dataClasses) {
-                if (clazz.superName() != null && Enum.class.getName().equals(clazz.superName().toString())) {
-                    enumFromClass(proto, clazz, null);
-                } else {
-                    messageFromClass(proto, clazz, index, null, null, null);
-                }
-            }
-            return proto;
-        } catch (Exception e) {
-            throw new IllegalStateException("Error while generating proto for data model", e);
-        }
-    }
-
-    @Override
-    public Proto generate(String messageComment, String fieldComment, String packageName, ClassInfo dataModel,
-            String... headers) {
-        try {
-            Proto proto = new Proto(packageName, headers);
-            if (dataModel.superName() != null && Enum.class.getName().equals(dataModel.superName().toString())) {
-                enumFromClass(proto, dataModel, null);
-            } else {
-                messageFromClass(proto, dataModel, index, packageName, messageComment, fieldComment);
-            }
-            return proto;
-        } catch (Exception e) {
-            throw new IllegalStateException("Error while generating proto for data model", e);
-        }
-    }
-
-    @Override
     public Collection<String> getPersistenceClassParams() {
         List<String> parameters = new ArrayList<>();
         Optional.ofNullable(persistenceClass)
@@ -117,12 +83,16 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         }).filter(Objects::nonNull).collect(toSet());
     }
 
-    protected ProtoMessage messageFromClass(Proto proto, ClassInfo clazz, IndexView index, String packageName,
-            String messageComment, String fieldComment) {
+    @Override
+    protected boolean isEnum(ClassInfo dataModel) {
+        return dataModel.superName() != null && Enum.class.getName().equals(dataModel.superName().toString());
+    }
 
+    @Override
+    protected Optional<String> extractName(ClassInfo clazz) throws Exception {
         if (isHidden(clazz)) {
             // since class is marked as hidden skip processing of that class
-            return null;
+            return Optional.empty();
         }
 
         String name = clazz.simpleName();
@@ -131,6 +101,19 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
             name = altName;
         }
+        return Optional.of(name);
+    }
+
+    @Override
+    protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, ClassInfo clazz, String packageName, String messageComment, String fieldComment) throws Exception {
+        Optional<String> optionalName = extractName(clazz);
+        if(!optionalName.isPresent()) {
+            // if name cannot be extracted let skip the object
+            return null;
+        }
+
+        String name = optionalName.get();
+
         ProtoMessage message = new ProtoMessage(name, packageName == null ? clazz.name().prefix().toString() : packageName);
         for (FieldInfo pd : clazz.fields()) {
             String completeFieldComment = fieldComment;
@@ -169,16 +152,14 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 if (classInfo == null) {
                     throw new IllegalStateException("Cannot find class info in jandex index for " + fieldType);
                 }
-                if (!isHidden(classInfo)) {
-                    if (classInfo.superName() != null && Enum.class.getName().equals(classInfo.superName().toString())) {
-                        ProtoEnum another = enumFromClass(proto, classInfo, packageName);
-                        protoType = another.getName();
-                    } else {
-                        ProtoMessage another = messageFromClass(proto, classInfo, index, packageName,
-                                messageComment, fieldComment);
-                        protoType = another.getName();
-                    }
+
+                // recursive call to visit the type
+                Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, packageName, classInfo);
+                if(!optionalProtoType.isPresent()) {
+                    return message;
                 }
+
+                protoType = optionalProtoType.get();
             }
 
             message.addField(applicabilityByType(fieldTypeString), protoType, pd.name()).setComment(completeFieldComment);
@@ -188,6 +169,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         return message;
     }
 
+    @Override
     protected ProtoEnum enumFromClass(Proto proto, ClassInfo clazz, String packageName) {
         String name = clazz.simpleName();
         String altName = getReferenceOfModel(clazz, "name");
