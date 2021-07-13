@@ -15,6 +15,10 @@ jobs:
         include:
           - os: ubuntu-latest
             BUILD_MVN_OPTS: "-Dvalidate-formatting"
+          - os: windows-latest
+            # let's skip integration test because docker is not configured on windows runners
+            # see https://github.com/actions/virtual-environments/issues/1143
+            BUILD_MVN_OPTS: "-DquickTests"
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
