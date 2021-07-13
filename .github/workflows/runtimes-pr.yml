@@ -18,7 +18,7 @@ jobs:
           - os: windows-latest
             # let's skip integration test because docker is not configured on windows runners
             # see https://github.com/actions/virtual-environments/issues/1143
-            BUILD_MVN_OPTS: "-DquickTests"
+            BUILD_MVN_OPTS: "-DquickTests -Dformatter.skip=true"
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
