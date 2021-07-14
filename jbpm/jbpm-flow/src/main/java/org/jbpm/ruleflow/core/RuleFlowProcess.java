@@ -168,7 +168,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
             if ((node instanceof StartNode) && (startNode != null && startNode.getTriggers() == null && startNode.getTimer() == null)) {
                 // ignore start nodes that are event based
                 if ((((StartNode) node).getTriggers() == null || ((StartNode) node).getTriggers().isEmpty()) && ((StartNode) node).getTimer() == null) {
-                    throw new ValidationException(getId(), new ProcessValidationErrorImpl(RuleFlowProcess.this, "A RuleFlowProcess cannot have more than one start node!"));
+                    throw new ValidationException(getId(), new ProcessValidationErrorImpl(RuleFlowProcess.this, "A process cannot have more than one start node!"));
                 }
             }
         }

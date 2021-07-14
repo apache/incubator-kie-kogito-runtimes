@@ -15,21 +15,22 @@
  */
 package org.kie.kogito.process.validation;
 
+import java.util.Optional;
+
 public abstract class ValidationDecorator {
 
-    protected final ValidationException exception;
+    protected final ValidationContext context;
 
-    public ValidationDecorator(ValidationException exception) {
-        this.exception = exception;
+    public ValidationDecorator(ValidationContext context) {
+        this.context = context;
     }
 
     public abstract ValidationDecorator decorate();
 
-    public ValidationException exception() {
-        throw exception;
-    }
-
     public String simpleMessage() {
-        return "Error during validation for process: " + exception.getProcessId();
+        return Optional.ofNullable(context)
+                .map(ValidationContext::resourcesWithError)
+                .map(ids -> String.format("Errors during validation for processes %s", context.resourcesWithError()))
+                .orElse("Error during processes validation");
     }
 }

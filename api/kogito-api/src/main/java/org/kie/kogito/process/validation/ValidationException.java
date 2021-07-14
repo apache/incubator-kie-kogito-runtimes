@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ValidationException extends RuntimeException {
 
     private final String processId;
-    private final Collection<? extends ValidationError> errors;
+    private final Collection<ValidationError> errors;
 
     public ValidationException(String processId, Collection<? extends ValidationError> errors) {
         this.processId = processId;
@@ -37,7 +37,7 @@ public class ValidationException extends RuntimeException {
         this(processId, Collections.singleton(() -> errorMessage));
     }
 
-    public Collection<? extends ValidationError> getErrors() {
+    public Collection<ValidationError> getErrors() {
         return errors;
     }
 
@@ -47,6 +47,6 @@ public class ValidationException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return errors.stream().map(ValidationError::getMessage).collect(Collectors.joining());
+        return errors.stream().map(ValidationError::getMessage).collect(Collectors.joining(" "));
     }
 }

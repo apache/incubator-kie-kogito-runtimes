@@ -24,21 +24,22 @@ public class ValidationLogDecorator extends ValidationDecorator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationLogDecorator.class);
 
-    public ValidationLogDecorator(ValidationException exception) {
-        super(exception);
+    public ValidationLogDecorator(ValidationContext context) {
+        super(context);
     }
 
-    public static ValidationLogDecorator of(ValidationException exception) {
-        return new ValidationLogDecorator(exception);
+    public static ValidationLogDecorator of(ValidationContext context) {
+        return new ValidationLogDecorator(context);
     }
 
     @Override
     public ValidationLogDecorator decorate() {
-        String message = exception.getErrors()
-                .stream()
-                .map(ValidationError::getMessage)
-                .collect(Collectors.joining("\n - ", " - ", ""));
-        LOGGER.error("Invalid process: '{}'. Found errors:\n{}\n", exception.getProcessId(), message);
+        context.resourcesWithError().forEach(id -> {
+            String message = context.errors(id).stream()
+                    .map(ValidationError::getMessage)
+                    .collect(Collectors.joining("\n - ", " - ", ""));
+            LOGGER.error("Invalid process: '{}'. Found errors:\n{}\n", id, message);
+        });
         return this;
     }
 }
