@@ -137,9 +137,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                         model))
                                 .get();
 
-                ObjectMapper objectMapper = new ObjectMapper();
-
                 //Input Binding
+                ObjectMapper objectMapper = new ObjectMapper();
                 DMNContext context = DMNJSONUtils.ctx(modelInstance, objectMapper.readValue(objectMapper.writeValueAsString(inputs), Map.class));
                 logger.info("DMN with context {}", context);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
