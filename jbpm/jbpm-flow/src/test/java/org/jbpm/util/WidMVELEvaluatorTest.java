@@ -70,7 +70,6 @@ public class WidMVELEvaluatorTest extends AbstractBaseTest {
     }
 
     protected String getResourceContent(String path) throws Exception {
-        //
         return new String(Files.readAllBytes(Paths.get(this.getClass().getResource(path).toURI())), "UTF-8");
     }
 
