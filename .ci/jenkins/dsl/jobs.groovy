@@ -202,7 +202,8 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
 
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
-            stringParam('PROJECT_VERSION', '', 'Set the project version')
+            booleanParam('MERGE_PR_AUTOMATICALLY', false, 'Should the created PR merged automatically ?')
+            stringParam('KOGITO_VERSION', '', 'Set the kogito version')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
@@ -250,9 +251,9 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
             stringParam('DEPLOY_BUILD_URL', '', 'URL to jenkins deploy build to retrieve the `deployment.properties` file.')
 
             // Release information which can override `deployment.properties`
-            stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
+            stringParam('KOGITO_VERSION', '', 'Override `deployment.properties`. Give the project version.')
 
-            stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
+            stringParam('GIT_TAG', '', 'Git tag to set, if different from KOGITO_VERSION')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
