@@ -15,11 +15,13 @@
  */
 package org.kogito.workitem.rest;
 
-import java.net.URI;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 
@@ -113,16 +115,29 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         // create request
         UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel);
         endPoint = resolvePathParams(endPoint, parameters, resolver);
-        URI uri = URI.create(endPoint);
-        String host = uri.getHost() != null ? uri.getHost() : hostProp;
-        int port = uri.getPort() > 0 ? uri.getPort() : portProp;
-        HttpRequest<Buffer> request = client.request(method, port, host, uri.getPath());
+        Optional<URL> url = getUrl(endPoint);
+        String host = url.map(java.net.URL::getHost).orElse(hostProp);
+        int port = url.map(java.net.URL::getPort).orElse(portProp);
+        String path = url.map(java.net.URL::getPath).orElse(endPoint).replace(" ", "%20");//fix issue with spaces in the path
+
+        HttpRequest<Buffer> request = client.request(method, port, host, path);
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
         HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters, resolver)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), targetInfo != null ? Collections.singletonMap(RESULT,
                 resultHandler.apply(targetInfo, response)) : Collections.emptyMap());
+    }
+
+    private Optional<URL> getUrl(String endPoint) {
+        return Optional.ofNullable(endPoint)
+                .map(spec -> {
+                    try {
+                        return new URL(spec);
+                    } catch (MalformedURLException e) {
+                        return null;
+                    }
+                });
     }
 
     private RestWorkItemTargetInfo getTargetInfo(KogitoWorkItem workItem) {
@@ -146,7 +161,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         Variable variable = variableScope.findVariable(varName);
         if (variable != null) {
             try {
-                return Class.forName(variable.getType().getStringType());
+                return Thread.currentThread().getContextClassLoader().loadClass(variable.getType().getStringType());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("Problem loading type " + variable.getType().getStringType(), e);
             }

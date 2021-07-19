@@ -16,7 +16,9 @@
 package org.jbpm.workflow.instance.node;
 
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -75,6 +77,8 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -138,8 +142,11 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                 .get();
 
                 //Input Binding
-                ObjectMapper objectMapper = new ObjectMapper();
-                DMNContext context = DMNJSONUtils.ctx(modelInstance, objectMapper.readValue(objectMapper.writeValueAsString(inputs), Map.class));
+                ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                inputs.entrySet().stream().filter(v -> hasJacksonAnnotations(v)).map(v -> new AbstractMap.SimpleEntry(v.getKey(), objectMapper.convertValue(v.getValue(), Map.class)))
+                        .forEach(v -> inputs.put((String) v.getKey(), v.getValue()));
+                DMNContext context = DMNJSONUtils.ctx(modelInstance, inputs);
+
                 logger.info("DMN with context {}", context);
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
 
@@ -208,6 +215,17 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
         } catch (Exception e) {
             handleException(e);
         }
+    }
+
+    public boolean hasJacksonAnnotations(Entry<String, Object> v) {
+        //TODO refactor
+        Class<?> clazz = v.getValue().getClass();
+        if (Arrays.stream(clazz.getDeclaredAnnotations()).filter(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0).findAny().isPresent()) {
+            return true;
+        }
+
+        return Arrays.stream(clazz.getDeclaredFields()).flatMap(f -> Arrays.stream(f.getDeclaredAnnotations())).filter(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0)
+                .findAny().isPresent();
     }
 
     private void handleException(Throwable e) {
