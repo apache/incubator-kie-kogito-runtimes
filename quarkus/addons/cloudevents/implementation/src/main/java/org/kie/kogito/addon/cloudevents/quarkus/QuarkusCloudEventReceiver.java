@@ -80,7 +80,8 @@ public class QuarkusCloudEventReceiver implements EventReceiver {
                 object = subscription.getInfo().getConverter().apply(message);
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException e) {
-                LOGGER.info("Cannot convert to {} from {}, ignoring type {}", subscription.getInfo().getConverter().getInputClass(), message, subscription.getInfo().getType());
+                LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getConverter().getOutputClass(), message,
+                        subscription.getInfo().getType(), e.getMessage());
             }
         }
         if (callback != null) {

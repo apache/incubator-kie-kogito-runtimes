@@ -28,10 +28,6 @@ public class JsonStringToObject<T> implements EventConverter<String, T> {
     private final Class<T> clazz;
     private final ObjectMapper objectMapper;
 
-    public JsonStringToObject(Class<T> clazz) {
-        this(new ObjectMapper(), clazz);
-    }
-
     public JsonStringToObject(ObjectMapper objectMapper, Class<T> clazz) {
         this.objectMapper = objectMapper;
         this.clazz = clazz;
@@ -46,11 +42,6 @@ public class JsonStringToObject<T> implements EventConverter<String, T> {
     @Override
     public String toString() {
         return "JsonStringToObject [clazz=" + clazz + "]";
-    }
-
-    @Override
-    public Class<String> getInputClass() {
-        return String.class;
     }
 
     @Override

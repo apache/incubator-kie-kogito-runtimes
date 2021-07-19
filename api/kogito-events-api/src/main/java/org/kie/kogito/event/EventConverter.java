@@ -18,7 +18,6 @@ package org.kie.kogito.event;
 import java.io.IOException;
 
 public interface EventConverter<S, T> {
-    Class<S> getInputClass();
 
     Class<T> getOutputClass();
 
