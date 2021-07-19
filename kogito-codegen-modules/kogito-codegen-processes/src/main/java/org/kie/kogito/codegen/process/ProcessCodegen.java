@@ -137,7 +137,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     }
                 })
                 //Validate parsed processes
-                .peek(ProcessCodegen::validate)
+                .map(ProcessCodegen::validate)
                 .collect(toList());
 
         if (useSvgAddon) {
@@ -163,10 +163,11 @@ public class ProcessCodegen extends AbstractGenerator {
         }
     }
 
-    private static void validate(Process p) {
-        ProcessValidationError[] errors = ProcessValidatorRegistry.getInstance().getValidator(p, p.getResource()).validateProcess(p);
+    private static Process validate(Process process) {
+        ProcessValidationError[] errors = ProcessValidatorRegistry.getInstance().getValidator(process, process.getResource()).validateProcess(process);
         //TODO: use the validation context in the ProcessValidator itself
-        Arrays.stream(errors).forEach(e -> ValidationContext.get().add(p.getId(), e));
+        Arrays.stream(errors).forEach(e -> ValidationContext.get().add(process.getId(), e));
+        return process;
     }
 
     private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,

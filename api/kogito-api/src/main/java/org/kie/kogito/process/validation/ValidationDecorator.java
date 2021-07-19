@@ -21,7 +21,7 @@ public abstract class ValidationDecorator {
 
     protected final ValidationContext context;
 
-    public ValidationDecorator(ValidationContext context) {
+    protected ValidationDecorator(ValidationContext context) {
         this.context = context;
     }
 

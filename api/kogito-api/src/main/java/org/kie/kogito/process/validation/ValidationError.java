@@ -15,7 +15,10 @@
  */
 package org.kie.kogito.process.validation;
 
-public interface ValidationError {
+import java.io.Serializable;
+
+public interface ValidationError extends Serializable {
 
     String getMessage();
+
 }
