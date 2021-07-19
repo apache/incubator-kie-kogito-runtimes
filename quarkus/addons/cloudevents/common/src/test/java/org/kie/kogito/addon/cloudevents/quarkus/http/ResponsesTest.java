@@ -30,12 +30,4 @@ class ResponsesTest {
         assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
         assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
     }
-
-    @Test
-    void channelNotBound() {
-        final Response response = Responses.channelNotBound("MyChannel", null);
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
-        assertThat(response.getEntity()).isInstanceOf(ResponseError.class);
-    }
 }
