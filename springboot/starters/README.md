@@ -1,0 +1,122 @@
+# Kogito SpringBoot Starters
+
+In this module you will find all
+the [SpringBoot Starters](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters)
+provided by the Kogito community.
+
+Before jumping into the starters, consider adding the Kogito SpringBoot BOM to your project:
+
+```xml
+
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-springboot-bom</artifactId>
+      <version>${version.kogito}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
+
+Replace `${version.kogito}` with the [current version of Kogito](https://github.com/kiegroup/kogito-runtimes/releases).
+
+## Kogito SpringBoot Starter
+
+The `kogito-spring-boot-starter` is an all-in-one descriptor for projects that needs every Business Automation engine
+provided by Kogito. It includes Decisions, Rules, Process, Predictions and the Serverless Workflow implementation.
+
+If your project has all these assets, or you're just trying Kogito and want a quick way of getting started, this is the
+starter you need. For a more granular approach, consider the specific starters (or a combination of them). See below in
+the following sections how to use them.
+
+To add this starter to your project:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+> If you are planning to use Serverless Workflow with events, consider adding the `kogito-serverless-workflow-spring-boot-starter` as well to the project. This starter will include CloudEvents support required by Serverless Workflows.
+
+## Kogito Decisions SpringBoot Starter
+
+Starter only for Decisions (DMN) support. To add it to your project, use:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-decisions-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+## Kogito Predictions SpringBoot Starter
+
+Adds Predictions (PMML) to your Kogito SpringBoot project:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-predictions-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+## Kogito Processes SpringBoot Starter
+
+To add Kogito Process engine support (BPMN) to your project, use:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-processes-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+## Kogito Rules SpringBoot Starter
+
+Adds the Kogito Rules engine support (DRLs) to your project:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-rules-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+## Kogito Serverless Workflow SpringBoot Starter
+
+If you're planning to try the Serverless Workflow implementation, add the following dependency to your project:
+
+```xml
+
+<dependencies>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-serverless-workflows-spring-boot-starter</artifactId>
+  </dependency>
+</dependencies>
+```
+
+Please note that this starter will auto-include the [CloudEvents](../addons/cloudevents)
+and [Kafka](../addons/events/kafka) addons to the project as well
+for [eventing processing](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md#Event-Definition)
+.
