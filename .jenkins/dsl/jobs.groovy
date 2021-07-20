@@ -60,6 +60,10 @@ if (Utils.isMainBranch(this)) {
     // End of old PR checks
 
     setupDeployJob(bddRuntimesPrFolder, KogitoJobType.PR)
+
+    // Sonarcloud analysis only on main branch
+    // As we have only Community edition
+    setupSonarCloudJob(nightlyBranchFolder)
 }
 
 // PR checks
@@ -78,7 +82,6 @@ if (Utils.isMainBranch(this)) {
     // Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
     // setupQuarkusJob(nightlyBranchFolder, "${QUARKUS_LTS_VERSION}")
 }
-setupSonarCloudJob(nightlyBranchFolder)
 setupNativeJob(nightlyBranchFolder)
 setupDeployJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
 setupPromoteJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
