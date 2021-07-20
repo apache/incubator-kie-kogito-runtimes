@@ -1,13 +1,13 @@
-<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:included1="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF" id="_64634CBF-002C-40D3-87A7-83618F6F6A79" name="Using Imported" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D">
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:included1="https://kiegroup.org/dmn/_FEC88B30-B771-42FE-B45B-B11077C44822" id="_64634CBF-002C-40D3-87A7-83618F6F6A79" name="Using Imported" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://kiegroup.org/dmn/_7120AA2F-BEB6-4CB1-BCC7-427A17AEF71D">
   <dmn:extensionElements/>
-  <dmn:import id="_4491DB0C-7823-4CF4-9B31-03B032C13285" name="tv" namespace="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF" locationURI="Traffic Violation.dmn" importType="http://www.omg.org/spec/DMN/20180521/MODEL/"/>
+  <dmn:import id="_BAC1E68F-93F5-477B-B002-A587ABDB5050" name="tv" namespace="https://kiegroup.org/dmn/_FEC88B30-B771-42FE-B45B-B11077C44822" locationURI="Traffic Violation.dmn" importType="http://www.omg.org/spec/DMN/20180521/MODEL/"/>
   <dmn:decision id="_2785F8A6-CD48-4EBD-8398-B63F264BDFF2" name="Should the driver's license be held?">
     <dmn:extensionElements/>
     <dmn:question>Should the driver's license be held?</dmn:question>
     <dmn:allowedAnswers>"yes", "no"</dmn:allowedAnswers>
     <dmn:variable id="_B98D1B5B-6B76-4254-B3E7-F65FAFBF0D6A" name="Should the driver's license be held?" typeRef="string"/>
-    <dmn:informationRequirement id="_4C70DB11-12B4-48D3-9914-793C93DC14FF">
-      <dmn:requiredDecision href="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF#_8A408366-D8E9-4626-ABF3-5F69AA01F880"/>
+    <dmn:informationRequirement id="_11863492-D332-44EE-8334-AB23B1F84C31">
+      <dmn:requiredDecision href="https://kiegroup.org/dmn/_FEC88B30-B771-42FE-B45B-B11077C44822#_BA382D81-04BA-4EEE-AD42-608400FA37E4"/>
     </dmn:informationRequirement>
     <dmn:decisionTable id="_4342733F-4AC2-46A6-9D0C-D434C5DCB890" hitPolicy="UNIQUE" preferredOrientation="Rule-as-Row">
       <dmn:input id="_7F67D63C-59A1-4190-BDD2-7B659141275A">
@@ -46,8 +46,8 @@
     <dmn:question>Should the driver's be arrested?</dmn:question>
     <dmn:allowedAnswers>"yes", "no"</dmn:allowedAnswers>
     <dmn:variable id="_537247C6-5693-413C-9E62-44E06AE6166E" name="Should the driver's be arrested?" typeRef="string"/>
-    <dmn:informationRequirement id="_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB">
-      <dmn:requiredInput href="https://github.com/kiegroup/drools/kie-dmn/_A4BCA8B8-CF08-433F-93B2-A2598F19ECFF#_1F9350D7-146D-46F1-85D8-15B5B68AF22A"/>
+    <dmn:informationRequirement id="_F53FA056-FF96-475A-919F-6D496A6B8FE1">
+      <dmn:requiredInput href="https://kiegroup.org/dmn/_FEC88B30-B771-42FE-B45B-B11077C44822#_FE120C87-9068-4B1B-99B1-F08D6C392CC8"/>
     </dmn:informationRequirement>
     <dmn:context id="_F09D3012-FD8A-4D6F-BD78-9933FCDA7A88">
       <dmn:contextEntry>
@@ -104,30 +104,30 @@
         <dc:Bounds x="479" y="52" width="147" height="54"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_1F9350D7-146D-46F1-85D8-15B5B68AF22A" dmnElementRef="included1:_1F9350D7-146D-46F1-85D8-15B5B68AF22A" isCollapsed="false">
+      <dmndi:DMNShape id="dmnshape-drg-_FE120C87-9068-4B1B-99B1-F08D6C392CC8" dmnElementRef="included1:_FE120C87-9068-4B1B-99B1-F08D6C392CC8" isCollapsed="false">
         <dmndi:DMNStyle>
           <dmndi:FillColor red="255" green="255" blue="255"/>
           <dmndi:StrokeColor red="0" green="0" blue="0"/>
           <dmndi:FontColor red="0" green="0" blue="0"/>
         </dmndi:DMNStyle>
-        <dc:Bounds x="480.99999999999994" y="218" width="143" height="63"/>
+        <dc:Bounds x="479" y="215" width="147" height="65"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
-      <dmndi:DMNShape id="dmnshape-drg-_8A408366-D8E9-4626-ABF3-5F69AA01F880" dmnElementRef="included1:_8A408366-D8E9-4626-ABF3-5F69AA01F880" isCollapsed="false">
+      <dmndi:DMNShape id="dmnshape-drg-_BA382D81-04BA-4EEE-AD42-608400FA37E4" dmnElementRef="included1:_BA382D81-04BA-4EEE-AD42-608400FA37E4" isCollapsed="false">
         <dmndi:DMNStyle>
           <dmndi:FillColor red="255" green="255" blue="255"/>
           <dmndi:StrokeColor red="0" green="0" blue="0"/>
           <dmndi:FontColor red="0" green="0" blue="0"/>
         </dmndi:DMNStyle>
-        <dc:Bounds x="181" y="218" width="116" height="68"/>
+        <dc:Bounds x="163" y="218" width="151" height="65"/>
         <dmndi:DMNLabel/>
       </dmndi:DMNShape>
-      <dmndi:DMNEdge id="dmnedge-drg-_4C70DB11-12B4-48D3-9914-793C93DC14FF" dmnElementRef="_4C70DB11-12B4-48D3-9914-793C93DC14FF">
-        <di:waypoint x="239" y="252"/>
+      <dmndi:DMNEdge id="dmnedge-drg-_11863492-D332-44EE-8334-AB23B1F84C31-AUTO-TARGET" dmnElementRef="_11863492-D332-44EE-8334-AB23B1F84C31">
+        <di:waypoint x="238.5" y="250.5"/>
         <di:waypoint x="239" y="105"/>
       </dmndi:DMNEdge>
-      <dmndi:DMNEdge id="dmnedge-drg-_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB" dmnElementRef="_CB59EE7F-DEE6-4A97-BBE5-26F2CC0FB2AB">
-        <di:waypoint x="552.5" y="249.5"/>
+      <dmndi:DMNEdge id="dmnedge-drg-_F53FA056-FF96-475A-919F-6D496A6B8FE1" dmnElementRef="_F53FA056-FF96-475A-919F-6D496A6B8FE1">
+        <di:waypoint x="552.5" y="247.5"/>
         <di:waypoint x="552.5" y="106"/>
       </dmndi:DMNEdge>
     </dmndi:DMNDiagram>
