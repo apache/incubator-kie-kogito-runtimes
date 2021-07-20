@@ -51,12 +51,12 @@ class ValidationContextTest {
         assertThat(tested.errors(RESOURCE_ID)).contains(error, error2);
         assertThat(tested.resourcesWithError()).containsOnly(RESOURCE_ID);
         assertThat(tested.resourcesWithError()).containsOnly(RESOURCE_ID);
-        assertThat(tested.exception().isPresent()).isTrue();
-        assertThat(tested.exception().get()).isEqualTo(exception);
+        assertThat(tested.exception()).isPresent();
+        assertThat(tested.exception()).contains(exception);
         tested.clear();
         assertThat(tested.hasErrors(RESOURCE_ID)).isFalse();
         assertThat(tested.resourcesWithError()).isEmpty();
-        assertThat(tested.exception().isPresent()).isFalse();
+        assertThat(tested.exception()).isNotPresent();
     }
 
     @Test
@@ -93,12 +93,11 @@ class ValidationContextTest {
             assertThat(tested.hasErrors(RESOURCE_ID)).isFalse();
             assertThat(tested.errors(id)).containsOnly(localError);
             assertThat(tested.errors(id)).doesNotContain(error);
-            assertThat(tested.exception().isPresent()).isTrue();
-            assertThat(tested.exception().get()).isEqualTo(localException);
-            assertThat(tested.exception().get()).isNotEqualTo(exception);
+            assertThat(tested.exception()).isPresent();
+            assertThat(tested.exception()).contains(localException);
             tested.clear();
             assertThat(tested.hasErrors()).isFalse();
-            assertThat(tested.exception().isPresent()).isFalse();
+            assertThat(tested.exception()).isNotPresent();
         });
     }
 }
