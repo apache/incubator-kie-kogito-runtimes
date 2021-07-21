@@ -82,7 +82,7 @@ public interface KogitoBuildContext {
      * kogito.generate.rest.decisions = false
      */
     default boolean hasREST(Generator generator) {
-        return getRestAnnotator() != null &&
+        hasREST() &&
                 "true".equalsIgnoreCase(getApplicationProperty(generateRESTConfigurationKeyForResource(generator.name())).orElse("true"));
     }
 
