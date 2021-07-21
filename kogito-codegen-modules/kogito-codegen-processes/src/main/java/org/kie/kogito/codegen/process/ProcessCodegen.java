@@ -445,8 +445,7 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        // TODO LUCA
-        if (context().getAddonsConfig().useCloudEvents() && context().hasREST(null) && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
+        if (context().getAddonsConfig().useCloudEvents() && context().hasREST() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
             final CloudEventsResourceGenerator ceGenerator =
                     new CloudEventsResourceGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
