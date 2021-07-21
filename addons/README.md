@@ -64,7 +64,8 @@ your `pom.xml` file:
 
 > Replace `${kogito.version}` with the desired version
 
-For specific usage, please check the documentation in each [add-on module](common).
+For specific usage, please check the documentation in each add-on module: [Quarkus](../quarkus/addons)
+and [SpringBoot](../springboot/addons).
 
 Notice that **every** Kogito Add-on starts with `kogito-addons-` prefix. This facilitates your search using IDE:
 
