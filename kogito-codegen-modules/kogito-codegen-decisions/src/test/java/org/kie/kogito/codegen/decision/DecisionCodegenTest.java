@@ -93,9 +93,13 @@ public class DecisionCodegenTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void givenADMNModelWhenMonitoringIsActiveThenGrafanaDashboardsAreGenerated(KogitoBuildContext.Builder contextBuilder) throws Exception {
-        List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(), contextBuilder);
+        DecisionCodegen decisionCodeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays",
+                AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(),
+                contextBuilder);
 
-        if (contextBuilder.build().hasRESTGloballyAvailable()) {
+        List<GeneratedFile> dashboards = generateTestDashboards(contextBuilder, decisionCodeGenerator);
+
+        if (contextBuilder.build().hasRESTForGenerator(decisionCodeGenerator)) {
             JGrafana vacationOperationalDashboard =
                     JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
 
@@ -112,9 +116,13 @@ public class DecisionCodegenTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void givenADMNModelWhenMonitoringAndTracingAreActiveThenTheGrafanaDashboardsContainsTheAuditUILink(KogitoBuildContext.Builder contextBuilder) throws Exception {
-        List<GeneratedFile> dashboards = generateTestDashboards(AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).withTracing(true).build(), contextBuilder);
+        DecisionCodegen decisionCodeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays",
+                AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).withTracing(true).build(),
+                contextBuilder);
 
-        if (contextBuilder.build().hasRESTGloballyAvailable()) {
+        List<GeneratedFile> dashboards = generateTestDashboards(contextBuilder, decisionCodeGenerator);
+
+        if (contextBuilder.build().hasRESTForGenerator(decisionCodeGenerator)) {
             JGrafana vacationOperationalDashboard =
                     JGrafana.parse(new String(dashboards.stream().filter(x -> x.relativePath().contains("operational-dashboard-Vacations.json")).findFirst().get().contents()));
 
@@ -226,8 +234,7 @@ public class DecisionCodegenTest {
         return generatedFiles.stream().map(GeneratedFile::relativePath).collect(Collectors.toList());
     }
 
-    private List<GeneratedFile> generateTestDashboards(AddonsConfig addonsConfig, KogitoBuildContext.Builder contextBuilder) {
-        DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays", addonsConfig, contextBuilder);
+    private List<GeneratedFile> generateTestDashboards(KogitoBuildContext.Builder contextBuilder, DecisionCodegen codeGenerator) {
 
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
