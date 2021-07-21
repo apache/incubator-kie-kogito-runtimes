@@ -61,7 +61,7 @@ public class DecisionCodegenTest {
                 "decision/TPayroll.java",
                 "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
 
-        if (contextBuilder.build().hasRESTGloballyAvailable(codeGenerator)) {
+        if (contextBuilder.build().hasRESTForGenerator(codeGenerator)) {
             expectedResources.add("decision/VacationsResource.java");
         }
 
@@ -81,7 +81,7 @@ public class DecisionCodegenTest {
         Collection<String> expectedResources = new ArrayList<>(Arrays.asList("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/InputSet.java",
                 "http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OutputSet.java",
                 "org/kie/kogito/app/DecisionModelResourcesProvider.java"));
-        if (contextBuilder.build().hasRESTGloballyAvailable(codeGenerator)) {
+        if (contextBuilder.build().hasRESTForGenerator(codeGenerator)) {
             expectedResources.add("http_58_47_47www_46trisotech_46com_47definitions_47__4f5608e9_454d74_454c22_45a47e_45ab657257fc9c/OneOfEachTypeResource.java");
         }
 
@@ -235,7 +235,7 @@ public class DecisionCodegenTest {
                 .filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE))
                 .collect(Collectors.toList());
 
-        int expectedDashboards = contextBuilder.build().hasRESTGloballyAvailable(codeGenerator) ? 2 : 0;
+        int expectedDashboards = contextBuilder.build().hasRESTForGenerator(codeGenerator) ? 2 : 0;
         assertEquals(expectedDashboards, dashboards.size());
 
         return dashboards;

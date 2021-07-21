@@ -81,7 +81,7 @@ public interface KogitoBuildContext {
      *
      * kogito.generate.rest.decisions = false
      */
-    default boolean hasRESTGloballyAvailable(Generator generator) {
+    default boolean hasRESTForGenerator(Generator generator) {
         return hasRESTGloballyAvailable() &&
                 "true".equalsIgnoreCase(getApplicationProperty(generateRESTConfigurationKeyForResource(generator.name())).orElse("true"));
     }

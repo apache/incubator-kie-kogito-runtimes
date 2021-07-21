@@ -405,7 +405,7 @@ public class ProcessCodegen extends AbstractGenerator {
             }
         }
 
-        if (context().hasRESTGloballyAvailable(this)) {
+        if (context().hasRESTForGenerator(this)) {
             for (ProcessResourceGenerator resourceGenerator : rgs) {
                 storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
                         resourceGenerator.generate());
@@ -455,7 +455,7 @@ public class ProcessCodegen extends AbstractGenerator {
             svgs.keySet().stream().forEach(key -> storeFile(GeneratedFileType.RESOURCE, "META-INF/processSVG/" + key + ".svg", svgs.get(key)));
         }
 
-        if (context().hasRESTGloballyAvailable(this)) {
+        if (context().hasRESTForGenerator(this)) {
             final CloudEventMetaFactoryGenerator topicsGenerator =
                     new CloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());

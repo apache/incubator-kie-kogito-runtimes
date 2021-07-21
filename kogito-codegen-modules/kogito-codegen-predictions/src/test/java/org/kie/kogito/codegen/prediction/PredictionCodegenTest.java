@@ -103,7 +103,7 @@ class PredictionCodegenTest {
             boolean assertReflect) {
         List<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        int expectedGeneratedFilesSize = expectedTotalFiles - (context.hasRESTGloballyAvailable(codeGenerator) ? 0 : expectedRestEndpoints * 2);
+        int expectedGeneratedFilesSize = expectedTotalFiles - (context.hasRESTForGenerator(codeGenerator) ? 0 : expectedRestEndpoints * 2);
         assertEquals(expectedGeneratedFilesSize, generatedFiles.size());
 
         assertEquals(expectedJavaSources, generatedFiles.stream()
@@ -129,7 +129,7 @@ class PredictionCodegenTest {
     }
 
     private static void assertEndpoints(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles, int expectedRestEndpoints, PredictionCodegen codeGenerator) {
-        if (context.hasRESTGloballyAvailable(codeGenerator)) {
+        if (context.hasRESTForGenerator(codeGenerator)) {
             // REST resource
             assertEquals(expectedRestEndpoints, generatedFiles.stream()
                     .filter(generatedFile -> generatedFile.type().equals(REST_TYPE))
