@@ -43,7 +43,8 @@ your `pom.xml` file:
 
 > Replace `${kogito.version}` with the desired version
 
-For specific usage, please check the documentation in each add-on module.
+For specific usage, please check the documentation in each add-on module: [Quarkus](../quarkus/addons)
+and [SpringBoot](../springboot/addons).
 
 Notice that **every** Kogito Add-on starts with `kogito-addons-` prefix. This facilitates your search using IDE:
 
@@ -59,8 +60,8 @@ In general, the add-on name is composed like `kogito-addons-{runtime}-{capabilit
   the capability. It's more a way to differentiate the implementations.
 
 The core add-ons don't have a `runtime` prefix either because they are the bases for the implementation by a runtime, or
-it is a generic implementation that can work either on Quarkus or Spring Boot. Please, check the documentation of the
-add-on to find out.
+it is a generic implementation that can work either on [Quarkus](../quarkus/addons) or [Spring Boot](../quarkus/addons).
+Please, check the documentation of the add-on to find out.
 
 ## Creating a new Kogito Add-on
 
