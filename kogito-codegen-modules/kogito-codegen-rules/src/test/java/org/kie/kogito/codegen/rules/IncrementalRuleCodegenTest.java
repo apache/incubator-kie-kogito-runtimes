@@ -175,11 +175,13 @@ public class IncrementalRuleCodegenTest {
                 .withMonitoring(true)
                 .build());
 
-        int expectedDashboards = contextBuilder.build().hasRESTGloballyAvailable() ? 3 : 1; // The domain dashboard to monitor the RuleUnit is always generated.
 
         IncrementalRuleCodegen incrementalRuleCodegen = getIncrementalRuleCodegenFromFiles(
                 contextBuilder,
                 new File(RESOURCE_PATH + "/org/kie/kogito/codegen/unit/RuleUnitQuery.drl"));
+
+        int expectedDashboards = contextBuilder.build().hasRESTForGenerator(incrementalRuleCodegen) ? 3 : 1; // The domain dashboard to monitor the RuleUnit is always generated.
+
         List<GeneratedFile> generatedFiles = incrementalRuleCodegen.withHotReloadMode().generate();
         assertEquals(expectedDashboards, generatedFiles.stream().filter(x -> x.type().equals(DashboardGeneratedFileUtils.DASHBOARD_TYPE)).count());
     }
