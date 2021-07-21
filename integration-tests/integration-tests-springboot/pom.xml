@@ -17,6 +17,13 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    <!-- why we need Quarkus BOM here? Well, kogito-test-utils depends on it and Maven needs to make it available in localRepo -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-bom</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-springboot-bom</artifactId>
