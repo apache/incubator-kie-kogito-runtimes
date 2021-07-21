@@ -75,8 +75,10 @@ public interface KogitoBuildContext {
     void setRestAnnotator(RestAnnotator restAnnotator);
 
     /**
-     * Method to check if REST available and enabled.
-     * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled i.e. for decisions
+     * Method to check if REST available and enabled for a specific resource
+     * This is platform/classpath specific (e.g. Quarkus)
+     * It can also be explicitly disabled i.e. for "decisions"
+     *
      * kogito.generate.rest.decisions = false
      */
     default boolean hasREST(Generator generator) {

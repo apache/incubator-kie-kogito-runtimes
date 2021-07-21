@@ -354,8 +354,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             return Optional.empty();
         }
 
-        // TODO LUCA Grafana is not a generator
-        if (true) {
+        if (context().hasREST()) {
             if (context().getAddonsConfig().usePrometheusMonitoring()) {
                 String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), query.getEndpointName());
                 String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
