@@ -122,7 +122,7 @@ public class ApplicationGeneratorTest {
                 .isNotEmpty();
         assertThat(appGenerator.getGenerators()).hasSize(1);
 
-        if (context.hasREST(restGenerator)) {
+        if (context.hasRESTGloballyAvailable(restGenerator)) {
             // disable REST
             context.setApplicationProperty(KogitoBuildContext.generateRESTConfigurationKeyForResource(restGenerator.name()), "false");
             assertThat(appGenerator.generateComponents()).isEmpty();
@@ -149,12 +149,12 @@ public class ApplicationGeneratorTest {
                 .isNotEmpty();
         assertThat(appGenerator.getGenerators()).hasSize(1);
 
-        if (context.hasREST(restGenerator)) {
-            // disable REST
+        if (context.hasRESTGloballyAvailable(restGenerator)) {
+            // globally disable REST
             context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
             assertThat(appGenerator.generateComponents()).isEmpty();
 
-            // enable REST
+            // globally enable REST
             context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "true");
             assertThat(appGenerator.generateComponents())
                     .isNotEmpty()
@@ -229,7 +229,7 @@ public class ApplicationGeneratorTest {
 
         @Override
         public Collection<GeneratedFile> generate() {
-            if (context.hasREST(this)) {
+            if (context.hasRESTGloballyAvailable(this)) {
                 return Collections.singleton(new GeneratedFile(REST_TYPE, "my/path", ""));
             } else {
                 return Collections.emptyList();

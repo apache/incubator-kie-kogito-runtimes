@@ -59,7 +59,7 @@ class SampleCodegenTest {
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        if (contextBuilder.build().hasREST(codeGenerator)) {
+        if (contextBuilder.build().hasRESTGloballyAvailable(codeGenerator)) {
             assertThat(generatedFiles).hasSize(1);
             List<GeneratedFile> generatedRests = generatedFiles.stream().filter(gf -> gf.type() == REST_TYPE).collect(Collectors.toList());
             assertThat(generatedRests).hasSize(1);

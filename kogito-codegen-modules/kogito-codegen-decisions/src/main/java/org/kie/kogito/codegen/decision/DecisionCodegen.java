@@ -154,7 +154,7 @@ public class DecisionCodegen extends AbstractGenerator {
             rgs.add(resourceGenerator);
         }
 
-        if (context().hasREST()) {
+        if (context().hasRESTGloballyAvailable()) {
             for (DecisionRestResourceGenerator resourceGenerator : rgs) {
                 if (context().getAddonsConfig().usePrometheusMonitoring()) {
                     generateAndStoreGrafanaDashboards(resourceGenerator);

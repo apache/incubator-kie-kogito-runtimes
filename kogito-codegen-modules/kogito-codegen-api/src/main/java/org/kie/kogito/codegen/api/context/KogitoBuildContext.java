@@ -81,8 +81,8 @@ public interface KogitoBuildContext {
      *
      * kogito.generate.rest.decisions = false
      */
-    default boolean hasREST(Generator generator) {
-        return hasREST() &&
+    default boolean hasRESTGloballyAvailable(Generator generator) {
+        return hasRESTGloballyAvailable() &&
                 "true".equalsIgnoreCase(getApplicationProperty(generateRESTConfigurationKeyForResource(generator.name())).orElse("true"));
     }
 
@@ -91,7 +91,7 @@ public interface KogitoBuildContext {
      * This is platform/classpath specific (e.g. Quarkus) but it can also be explicitly disabled using
      * kogito.generate.rest property
      */
-    default boolean hasREST() {
+    default boolean hasRESTGloballyAvailable() {
         return getRestAnnotator() != null &&
                 "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_REST).orElse("true"));
     }
