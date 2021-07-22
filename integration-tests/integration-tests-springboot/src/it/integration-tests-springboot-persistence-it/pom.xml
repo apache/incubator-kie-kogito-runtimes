@@ -5,7 +5,7 @@
   <groupId>org.kie.kogito</groupId>
   <artifactId>integration-tests-springboot-persistence-it</artifactId>
   <version>@project.version@</version>
-  <name>Kogito :: Integration Tests :: SpringBoot :: Processes :: Persistence :: Parent</name>
+  <name>Kogito :: Integration Tests :: Spring Boot :: Processes :: Persistence :: Parent</name>
   <packaging>pom</packaging>
 
   <properties>

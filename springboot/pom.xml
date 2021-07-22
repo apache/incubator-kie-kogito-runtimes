@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>springboot</artifactId>
-  <name>Kogito :: SpringBoot</name>
+  <name>Kogito :: Spring Boot</name>
   <packaging>pom</packaging>
   <modules>
     <module>kogito-springboot-starter</module>
