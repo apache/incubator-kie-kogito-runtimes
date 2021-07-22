@@ -28,7 +28,10 @@ Map getMultijobPRConfig() {
             ], [
                 id: 'Optaplanner',
                 dependsOn: 'Runtimes',
-                repository: 'optaplanner'
+                repository: 'optaplanner',
+                // TODO remove once https://issues.redhat.com/browse/KOGITO-4113 is done 
+                // as it will become the default path
+                jenkinsfile: '.ci/jenkins/Jenkinsfile',
             ], [
                 id: 'Apps',
                 dependsOn: 'Optaplanner',
@@ -38,6 +41,9 @@ Map getMultijobPRConfig() {
                 dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
             ]
+        ],
+        extraEnv : [
+            ENABLE_SONARCLOUD: Utils.isMainBranch(this)
         ]
     ]
 }
@@ -50,26 +56,35 @@ if (Utils.isMainBranch(this)) {
     // Old PR checks.
     // To be removed once supported release branches (<= 1.7.x) are no more there.
     setupPrJob()
-    setupQuarkusLTSPrJob()
+    // Disabled until Quarkus 2.2 is out
+    // Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
+    // setupQuarkusLTSPrJob()
     setupNativePrJob()
     // End of old PR checks
 
     setupDeployJob(bddRuntimesPrFolder, KogitoJobType.PR)
+
+    // Sonarcloud analysis only on main branch
+    // As we have only Community edition
+    setupSonarCloudJob(nightlyBranchFolder)
 }
 
 // PR checks
 setupMultijobPrDefaultChecks()
 setupMultijobPrNativeChecks()
-setupMultijobPrLTSChecks()
+// Disabled until Quarkus 2.2 is out
+// Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
+// setupMultijobPrLTSChecks()
 
 // Nightly jobs
 if (Utils.isMainBranch(this)) {
     setupDroolsJob(nightlyBranchFolder)
 
     setupQuarkusJob(nightlyBranchFolder, 'main')
-    setupQuarkusJob(nightlyBranchFolder, "${QUARKUS_LTS_VERSION}")
+    // Disabled until Quarkus 2.2 is out
+    // Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
+    // setupQuarkusJob(nightlyBranchFolder, "${QUARKUS_LTS_VERSION}")
 }
-setupSonarCloudJob(nightlyBranchFolder)
 setupNativeJob(nightlyBranchFolder)
 setupDeployJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
 setupPromoteJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
