@@ -1,5 +1,5 @@
 /*
-yes * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -36,34 +39,33 @@ import org.kie.kogito.services.event.impl.JsonStringToObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 @io.quarkus.runtime.Startup
 @RegisterForReflection
+@Named("$ClassName$")
 public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $DataType$, $DataEventType$> {
 
-    @javax.inject.Inject
+    @Inject
     Application application;
 
-    @javax.inject.Inject
+    @Inject
     EventConverter<String> eventConverter;
 
-    @javax.inject.Inject
+    @Inject
     @javax.inject.Named("$ProcessName$")
     Process<$Type$> process;
 
-    @javax.inject.Inject
+    @Inject
     ConfigBean configBean;
 
-    @javax.inject.Inject
+    @Inject
     EventReceiver eventReceiver;
-    
-    @javax.inject.Inject
+
+    @Inject
     @javax.inject.Named(KogitoEventExecutor.BEAN_NAME)
     ExecutorService executorService;
-    
-    @javax.inject.Inject
+
+    @Inject
     ProcessService processService;
-    
 
     @javax.annotation.PostConstruct
     void init() {
@@ -82,15 +84,15 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     }
 
     public CompletionStage<?> processMessage(Message<String> message) {
-         CompletionStage<?> result = CompletableFuture.completedFuture(null);
-         result.thenCompose(x -> consumePayload(message.getPayload())).whenComplete((v,e) -> {
-                    logger.debug("Acking message {}", message.getPayload());
-                    message.ack();
-                    if (e != null) {
-                        logger.error("Error processing message {}", message.getPayload(), e);
-                    }
-                });
-         return result;
+        CompletionStage<?> result = CompletableFuture.completedFuture(null);
+        result.thenCompose(x -> consumePayload(message.getPayload())).whenComplete((v, e) -> {
+            logger.debug("Acking message {}", message.getPayload());
+            message.ack();
+            if (e != null) {
+                logger.error("Error processing message {}", message.getPayload(), e);
+            }
+        });
+        return result;
     }
 
     protected $Type$ eventToModel($DataType$ event) {

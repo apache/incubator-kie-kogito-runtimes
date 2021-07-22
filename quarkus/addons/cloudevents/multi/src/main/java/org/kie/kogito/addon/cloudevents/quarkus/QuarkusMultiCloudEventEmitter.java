@@ -29,9 +29,10 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecorator;
 import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecoratorFactory;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.ChannelInfo;
+import org.kie.kogito.event.ChannelResolver;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
-import org.kie.kogito.event.OutputTriggerAware;
 import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
     private ConfigBean configBean;
 
     @Inject
-    private Instance<OutputTriggerAware> outputChannelsProvider;
+    private ChannelResolver channelResolver;
 
     @Inject
     private Instance<EventMarshaller> marshallerInstance;
@@ -70,8 +71,8 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
         messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
     }
 
-    private EmitterConfiguration emitterConf(String name) {
-        return new EmitterConfiguration(name, false, null, null);
+    private EmitterConfiguration emitterConf(ChannelInfo channelInfo) {
+        return new EmitterConfiguration(channelInfo.getChannelName(), false, null, null);
     }
 
     @Override
@@ -89,6 +90,6 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
 
     @Override
     public void initialize() {
-        outputChannelsProvider.stream().map(OutputTriggerAware::getOutputTrigger).distinct().map(this::emitterConf).forEach(mediatorManager::addEmitter);
+        channelResolver.getOutputChannels().stream().map(this::emitterConf).forEach(mediatorManager::addEmitter);
     }
 }

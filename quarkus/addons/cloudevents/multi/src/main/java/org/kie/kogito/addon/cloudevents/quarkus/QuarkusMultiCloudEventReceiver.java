@@ -17,15 +17,14 @@ package org.kie.kogito.addon.cloudevents.quarkus;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
@@ -33,8 +32,9 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment.Strategy;
 import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.event.ChannelInfo;
+import org.kie.kogito.event.ChannelResolver;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.InputTriggerAware;
 import org.kie.kogito.event.SubscriptionInfo;
 
 import io.smallrye.reactive.messaging.ChannelRegistar;
@@ -49,31 +49,21 @@ import io.smallrye.reactive.messaging.extension.MediatorManager;
 public class QuarkusMultiCloudEventReceiver implements ChannelRegistar, EventReceiver {
 
     @Inject
-    private Instance<InputTriggerAware> channels;
-    @Inject
     private MediatorManager mediatorManager;
     @Inject
     private BeanManager beanManager;
+    @Inject
+    private ChannelResolver channelResolver;
 
-    private Bean<?> getBean(InputTriggerAware channel) {
-        Set<Bean<?>> beans = beanManager.getBeans(InputTriggerAware.class);
-        for (Bean<?> bean : beans) {
-            if (bean.getBeanClass().isAssignableFrom(channel.getClass())) {
-                return bean;
-            }
-        }
-        throw new IllegalStateException("No bean found for " + channel.getClass());
-    }
-
-    MediatorConfiguration mediatorConf(InputTriggerAware channel) {
-
+    MediatorConfiguration mediatorConf(ChannelInfo channelInfo) {
+        Bean<?> bean = beanManager.getBeans(channelInfo.getBeanName()).iterator().next();
         return new DefaultMediatorConfiguration(
-                getMethod(channel),
-                getBean(channel)) {
+                getMethod(bean),
+                bean) {
 
             @Override
             public List<String> getIncoming() {
-                return Collections.singletonList(channel.getInputTrigger());
+                return Collections.singletonList(channelInfo.getChannelName());
             }
 
             @Override
@@ -103,20 +93,20 @@ public class QuarkusMultiCloudEventReceiver implements ChannelRegistar, EventRec
         };
     }
 
-    private Method getMethod(InputTriggerAware channel) {
-        Method[] methods = channel.getClass().getMethods();
+    private Method getMethod(Bean<?> bean) {
+        Method[] methods = bean.getBeanClass().getMethods();
         for (Method m : methods) {
             if (m.getParameterCount() == 1 && Message.class.isAssignableFrom(m.getParameterTypes()[0])) {
                 return m;
             }
         }
-        throw new IllegalStateException("Cannot find method that accept Message as input parameter in " + methods);
+        throw new IllegalStateException("Cannot find method that accept Message as input parameter in " + Arrays.toString(methods));
     }
 
     @Override
     public void initialize() {
         Collection<MediatorConfiguration> mediators = new ArrayList<>();
-        channels.forEach(channel -> mediators.add(mediatorConf(channel)));
+        channelResolver.getInputChannels().forEach(bean -> mediators.add(mediatorConf(bean)));
         if (!mediators.isEmpty()) {
             mediatorManager.addAnalyzed(mediators);
         }

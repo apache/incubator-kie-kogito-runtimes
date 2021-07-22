@@ -25,7 +25,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.event.EventConverter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.InputTriggerAware;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
@@ -35,7 +34,7 @@ import org.kie.kogito.services.event.EventConsumerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMessageConsumer<M extends Model, D, T extends AbstractProcessDataEvent<D>> implements InputTriggerAware {
+public abstract class AbstractMessageConsumer<M extends Model, D, T extends AbstractProcessDataEvent<D>> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
@@ -116,11 +115,6 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
         } catch (IOException io) {
             return CompletableFuture.failedFuture(io);
         }
-    }
-
-    @Override
-    public String getInputTrigger() {
-        return trigger;
     }
 
     protected abstract M eventToModel(D event);

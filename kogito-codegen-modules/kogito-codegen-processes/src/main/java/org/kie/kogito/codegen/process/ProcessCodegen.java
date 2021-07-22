@@ -337,6 +337,8 @@ public class ProcessCodegen extends AbstractGenerator {
 
             if (metaData.getTriggers() != null) {
 
+                ChannelResolverGenerator channelGenerator = new ChannelResolverGenerator(context());
+
                 for (TriggerMetaData trigger : metaData.getTriggers()) {
 
                     // generate message consumers for processes with message start events
@@ -345,29 +347,33 @@ public class ProcessCodegen extends AbstractGenerator {
                         MessageDataEventGenerator msgDataEventGenerator =
                                 new MessageDataEventGenerator(context(), workFlowProcess, trigger);
                         mdegs.add(msgDataEventGenerator);
-
-                        megs.add(new MessageConsumerGenerator(
+                        MessageConsumerGenerator msgGen = new MessageConsumerGenerator(
                                 context(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
                                 applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
-                                trigger));
+                                trigger);
+                        megs.add(msgGen);
+                        channelGenerator.addInputChannel(msgGen.className(), trigger.getName());
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
 
                         MessageDataEventGenerator msgDataEventGenerator =
                                 new MessageDataEventGenerator(context(), workFlowProcess, trigger);
                         mdegs.add(msgDataEventGenerator);
-                        mpgs.add(new MessageProducerGenerator(
+                        MessageProducerGenerator msgGen = new MessageProducerGenerator(
                                 context(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
                                 msgDataEventGenerator.className(),
-                                trigger));
+                                trigger);
+                        mpgs.add(msgGen);
+                        channelGenerator.addOutputChannel(msgGen.className(), trigger.getName());
                     }
                 }
+                storeFile(GeneratedFileType.SOURCE, channelGenerator.generateFilePath(), channelGenerator.generate());
             }
 
             processGenerators.add(p);
