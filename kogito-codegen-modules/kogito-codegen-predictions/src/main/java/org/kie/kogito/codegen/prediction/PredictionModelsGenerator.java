@@ -74,9 +74,9 @@ public class PredictionModelsGenerator extends AbstractApplicationSection {
 
     private StringLiteralExpr getReadResourceMethod(PMMLResource resource) {
         String source = resource.getModelPath();
-        LOGGER.debug("Original source path: {}", source);
+        LOGGER.trace("Original source path: {}", source);
         source = StringEscapeUtils.escapeJava(source);
-        LOGGER.debug("Escaped source path: {}", source);
+        LOGGER.trace("Escaped source path: {}", source);
         return new StringLiteralExpr(source);
     }
 }

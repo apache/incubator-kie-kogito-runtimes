@@ -76,11 +76,11 @@ public class InMemoryCompiler {
         for (GeneratedFile entry : generatedFiles) {
             // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
             String relativePath = entry.relativePath();
-            logger.debug("Relative path {}", relativePath);
+            logger.trace("Relative path {}", relativePath);
             String generatedClassFile = relativePath.replace("src/main/java/", "");
-            logger.debug("generatedClassFile {}", generatedClassFile);
+            logger.trace("generatedClassFile {}", generatedClassFile);
             String fileName = toRuntimeSource(toClassName(generatedClassFile));
-            logger.debug("fileName {}", fileName);
+            logger.trace("fileName {}", fileName);
             sources[index++] = fileName;
 
             srcMfs.write(fileName, entry.contents());
