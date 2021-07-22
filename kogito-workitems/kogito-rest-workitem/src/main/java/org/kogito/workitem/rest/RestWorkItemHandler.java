@@ -29,6 +29,9 @@ import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.jbpm.workflow.instance.NodeInstance;
+import org.jbpm.workflow.instance.impl.MVELProcessHelper;
+import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkItemHandlerParamResolver;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -39,6 +42,7 @@ import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
+import org.mvel2.PropertyAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,16 +74,27 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     static class RestUnaryOperator implements UnaryOperator<Object> {
 
         private Object inputModel;
+        private KogitoWorkItem workItem;
 
-        public RestUnaryOperator(Object inputModel) {
+        public RestUnaryOperator(Object inputModel, KogitoWorkItem workItem) {
             this.inputModel = inputModel;
+            this.workItem = workItem;
         }
 
         @Override
         public Object apply(Object value) {
-            return value instanceof WorkItemHandlerParamResolver
-                    ? ((WorkItemHandlerParamResolver) value).apply(inputModel)
-                    : value;
+            if (value instanceof WorkItemHandlerParamResolver) {
+                return ((WorkItemHandlerParamResolver) value).apply(inputModel);
+            }
+            if (value instanceof String && MVELProcessHelper.validateExpression((String) value).isEmpty()) {
+                //evaluate the expression with Variables resolution
+                try {
+                    return MVELProcessHelper.evaluator().eval((String) value, new NodeInstanceResolverFactory((NodeInstance) workItem.getNodeInstance()));
+                } catch (PropertyAccessException e) {
+
+                }
+            }
+            return value;
         }
     }
 
@@ -95,6 +110,9 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         logger.debug("Using target {}", targetInfo);
         //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
+        //removing unnecessary parameter
+        parameters.remove("TaskName");
+
         String endPoint = getParam(parameters, URL, String.class, null);
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
@@ -113,7 +131,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
         logger.debug("Filtered parameters are {}", parameters);
         // create request
-        UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel);
+        UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel, workItem);
         endPoint = resolvePathParams(endPoint, parameters, resolver);
         Optional<URL> url = getUrl(endPoint);
         String host = url.map(java.net.URL::getHost).orElse(hostProp);
@@ -127,6 +145,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters, resolver)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), targetInfo != null ? Collections.singletonMap(RESULT,
                 resultHandler.apply(targetInfo, response)) : Collections.emptyMap());
+
     }
 
     private Optional<URL> getUrl(String endPoint) {
@@ -207,17 +226,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (value == null) {
             value = defaultValue;
         } else if (!type.isAssignableFrom(value.getClass())) {
-            if (type.isAssignableFrom(Integer.class) && CharSequence.class.isAssignableFrom(value.getClass())) {
-                try {
-                    value = Integer.parseInt(value.toString());
-                } catch (NumberFormatException ex) {
-                    value = defaultValue;
-                }
-            } else {
-                throw new IllegalArgumentException("Parameter paramName should be of type " + type +
-                        " but it is of type " +
-                        value.getClass());
-            }
+            value = MVELProcessHelper.evaluator().eval((String) value, type);
         }
         return type.cast(value);
     }

@@ -317,6 +317,77 @@ public class RestWorkItemHandlerTest {
         assertEquals(1, ((ObjectNode) result).get("num").asInt());
     }
 
+    @Test
+    public void testParametersPostWithExpressionRestTaskHandler() {
+        WebClient webClient = mock(WebClient.class);
+        ObjectMapper mapper = new ObjectMapper();
+        HttpRequest<Buffer> request = mock(HttpRequest.class);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", "123");
+        parameters.put("name", "tiago");
+        parameters.put(RestWorkItemHandler.HOST, "localhost");
+        parameters.put(RestWorkItemHandler.PORT, 8080);
+        parameters.put(RestWorkItemHandler.URL, "/results/sum");
+        parameters.put(RestWorkItemHandler.METHOD, "POST");
+        parameters.put(RestWorkItemHandler.BODY_BUILDER, "new org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder()");
+
+        when(webClient.request(HttpMethod.POST, 8080, "localhost", "/results/sum"))
+                .thenReturn(request);
+        HttpResponse<Buffer> response = mock(HttpResponse.class);
+        when(request.sendJsonAndAwait(Mockito.any())).thenReturn(response);
+        when(response.bodyAsJsonObject()).thenReturn(JsonObject.mapFrom(Collections.singletonMap("num", 1)));
+
+        ObjectNode workflowData = mapper.createObjectNode().put("id", 26).put("name", "pepe");
+        parameters.put("custom parameter", workflowData);
+
+        KogitoWorkItem workItem = mock(KogitoWorkItem.class);
+        when(workItem.getStringId()).thenReturn("2");
+        when(workItem.getParameters()).thenReturn(parameters);
+
+        WorkItemNodeInstance nodeInstance = mock(WorkItemNodeInstance.class);
+        WorkItemNode node = mock(WorkItemNode.class);
+
+        Process process = mock(Process.class);
+        ProcessInstance processInstance = mock(ProcessInstance.class);
+
+        when(workItem.getProcessInstance()).thenReturn(processInstance);
+        when(processInstance.getProcess()).thenReturn(process);
+        when(processInstance.getVariables()).thenReturn(Collections.singletonMap(DEFAULT_WORKFLOW_VAR, workflowData));
+
+        VariableScope variableScope = mock(VariableScope.class);
+        Variable variable = new Variable();
+        variable.setName(DEFAULT_WORKFLOW_VAR);
+        variable.setType(new ObjectDataType(ObjectNode.class.getName()));
+        variable.setValue(workflowData);
+
+        when(process.getDefaultContext(VariableScope.VARIABLE_SCOPE)).thenReturn(variableScope);
+        when(variableScope.findVariable(DEFAULT_WORKFLOW_VAR)).thenReturn(variable);
+
+        when(workItem.getNodeInstance()).thenReturn(nodeInstance);
+        when(nodeInstance.getNode()).thenReturn(node);
+        when(node.getOutMapping(RestWorkItemHandler.RESULT)).thenReturn(DEFAULT_WORKFLOW_VAR);
+
+        KogitoWorkItemManager manager = mock(KogitoWorkItemManager.class);
+
+        ArgumentCaptor<Map<String, Object>> argCaptor = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, Object>> bodyCaptor = ArgumentCaptor.forClass(Map.class);
+        RestWorkItemHandler handler = new RestWorkItemHandler(
+                webClient);
+        handler.executeWorkItem(workItem, manager);
+
+        verify(request).sendJsonAndAwait(bodyCaptor.capture());
+        Map<String, Object> bodyMap = bodyCaptor.getValue();
+
+        verify(manager).completeWorkItem(anyString(), argCaptor.capture());
+        Map<String, Object> results = argCaptor.getValue();
+        assertEquals(1, results.size());
+        assertTrue(results.containsKey(RestWorkItemHandler.RESULT));
+        Object result = results.get(RestWorkItemHandler.RESULT);
+        assertTrue(result instanceof ObjectNode);
+        assertEquals(1, ((ObjectNode) result).get("num").asInt());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testContentPostRestTaskHandler() {
