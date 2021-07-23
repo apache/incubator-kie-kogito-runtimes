@@ -1,6 +1,6 @@
 # Generate Kogito Project based on Spring Boot runtimes
 
-To generate new project based on Spring Boot use following command:
+To generate a new project based on Spring Boot use the following command:
 
 ```shell
 mvn archetype:generate \
@@ -11,9 +11,11 @@ mvn archetype:generate \
     -DartifactId=sample-kogito
 ```
 
+Optionally, you can customize the generation of your Spring Boot project. See the next sections how to do it.
+
 ## Adding Kogito Spring Boot Starters
 
-Optionally, you can generate the project with additional Spring Boot Starters provided by Kogito.
+You can generate the project with additional Spring Boot Starters provided by Kogito.
 
 <!-- Include Starters Table or link to the README -->
 
@@ -27,7 +29,37 @@ mvn archetype:generate \
     -DarchetypeVersion=2.0.0-SNAPSHOT \
     -DgroupId=com.company \
     -DartifactId=sample-kogito
-    -Dstarters=monitoring-prometheus,persistence-postgres
+    -Dstarters=decisions,rules,processes
 ```
 
-You can find a list with the provided starters here. <!-- Include Starters Table or link to the README -->
+The list of valid Kogito Spring Boot Starters are:
+
+1. [`decisions`](../../springboot/starters/kogito-decisions-spring-boot-starter)
+2. [`processes`](../../springboot/starters/kogito-processes-spring-boot-starter)
+3. [`rules`](../../springboot/starters/kogito-rules-spring-boot-starter)
+4. [`serverless-workflows`](../../springboot/starters/kogito-serverless-workflow-spring-boot-starter)
+5. [`predictions`](../../springboot/starters/kogito-predictions-spring-boot-starter)
+
+## Adding Kogito Addons
+
+You can add any Kogito Addons available for Spring Boot during the project creation.
+
+Run the following command with the property `addons` with every addon you want to be added to the project as a comma
+separated list:
+
+```shell
+mvn archetype:generate \
+    -DarchetypeGroupId=org.kie.kogito \
+    -DarchetypeArtifactId=kogito-springboot-archetype \
+    -DarchetypeVersion=2.0.0-SNAPSHOT \
+    -DgroupId=com.company \
+    -DartifactId=sample-kogito
+    -Daddons=monitoring-prometheus,persistence-infinispan
+```
+
+For a list of valid Kogito Spring Boot addons, please check [this table](../../springboot/addons).
+
+Please note that you don't need to add the suffix `kogito-addons-springboot` to the name of the addon. For example, to
+include `kogito-addons-springboot-monitoring-prometheus` just use `monitoring-prometheus`.
+
+> `starters` and `addons` can be used together to create a Kogito project that meets your requirements.
