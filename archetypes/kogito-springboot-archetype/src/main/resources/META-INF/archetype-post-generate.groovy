@@ -19,20 +19,40 @@
 import groovy.xml.XmlParser
 import groovy.xml.XmlUtil
 
-Properties properties = request.getProperties()
-starters = properties.get("starters")
+/**
+ * Verify if the starters in the parameters are valid and transform them into actual artifact ids
+ */
+def validateAndConvertToArtifactId(String starters) {
+    def validStarters = ['processes', 'rules', 'decisions', 'serverless-workflows', 'predictions']
+    def startersList = starters.split(",")
+    return startersList.findAll { starter -> validStarters.find { it == starter } != null }
+            .collect {
+                starter -> "kogito-" + starter + "-spring-boot-starter"
+            }
+}
 
-if (starters != null && starters != "") {
+/**
+ * Add the given comma separated list of starters to the generated POM
+ */
+def addStartersToPOM(String starters) {
+    def artifacts = validateAndConvertToArtifactId(starters)
+    if (artifacts.isEmpty()) {
+        artifacts << "kogito-spring-boot-starter"
+    }
+
     def pomFile = new File(request.getOutputDirectory() + "/" + request.getArtifactId() + "/pom.xml")
     def pomXml = new XmlParser().parse(pomFile)
-    for (String starter : starters.split(",")) {
+    artifacts.each { artifact ->
         def depNode = new Node(null, "dependency")
         depNode.appendNode("groupId", null, "org.kie.kogito")
-        depNode.appendNode("artifactId", null, "kogito-addons-springboot-" + starter)
+        depNode.appendNode("artifactId", null, artifact)
         depNode.appendNode("version", null, '${kogito.version}')
         pomXml.dependencies[0].children().add(0, depNode)
     }
-
     def writer = new FileWriter(request.getOutputDirectory() + "/" + request.getArtifactId() + "/pom.xml")
+    // removing unnecessary white spaces
     XmlUtil.serialize(XmlUtil.serialize(pomXml).trim().replace("\n", "").replaceAll("( *)<", "<"), writer)
 }
+
+Properties properties = request.getProperties()
+addStartersToPOM(properties.get("starters"))
