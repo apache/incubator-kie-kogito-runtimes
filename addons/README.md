@@ -1,6 +1,6 @@
 # Kogito Add-Ons
 
-In this package you will find the base Addons modules that extend the Kogito Core capabilities. They are responsible to
+In this package you will find the Addons modules that extend the Kogito Core capabilities. They are responsible to
 give persistence, monitoring, messaging, and many other features on top of a plain Kogito service.
 
 ## Addons Catalog
