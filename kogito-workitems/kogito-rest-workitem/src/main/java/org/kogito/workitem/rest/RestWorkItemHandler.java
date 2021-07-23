@@ -42,7 +42,6 @@ import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
-import org.mvel2.PropertyAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +89,8 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
                 //evaluate the expression with Variables resolution
                 try {
                     return MVELProcessHelper.evaluator().eval((String) value, new NodeInstanceResolverFactory((NodeInstance) workItem.getNodeInstance()));
-                } catch (PropertyAccessException e) {
-
+                } catch (RuntimeException e) {
+                    return value;
                 }
             }
             return value;
