@@ -1,28 +1,7 @@
 # Kogito Add-Ons
 
-In this package you will find the Add-Ons modules that extend the Kogito Core capabilities. They add 
-persistence, monitoring, messaging, and many other features to the Kogito service.
-
-## Add-Ons Catalog
-
-The following table lists all the add-onss, independent of runtime implementation, supported by the Kogito Community:
-
-| Add-On Description     | Artifact ID                          | Since               |
-|------------------------|--------------------------------------|---------------------|
-| Persistence FileSystem | kogito-addons-persistence-filesystem | 0.10.0              |
-| Persistence Infinispan | kogito-addons-persistence-infinispan | 0.3.0               |
-| Persistence JDBC       | kogito-addons-persistence-jdbc       | 1.8.0               |
-| Persistence MongoDB    | kogito-addons-persistence-mongodb    | 0.15.0              |
-| Persistence Postgresql | kogito-addons-persistence-postgresql | 1.6.0               |
-| Human Task Predictions | kogito-addons-human-task-prediction-api | 0.7.0            |
-
-### Quarkus Implementation
-
-See the [Quarkus Add-Ons](../quarkus/addons) documentation.
-
-### Spring Boot Implementation
-
-See the [Spring Boot Add-Ons](../springboot/addons) documentation.
+In this package you will find the Addons modules that extend the Kogito Core capabilities. They are responsible to
+give persistence, monitoring, messaging, and many other features on top of a plain Kogito service.
 
 ## Addons Catalog
 
