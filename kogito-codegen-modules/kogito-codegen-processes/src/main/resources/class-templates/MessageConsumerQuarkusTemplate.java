@@ -20,7 +20,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -37,11 +36,13 @@ import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 import org.kie.kogito.services.event.impl.JsonStringToObject;
 
+
+
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @io.quarkus.runtime.Startup
 @RegisterForReflection
-@Named("$ClassName$")
 public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $DataType$, $DataEventType$> {
 
     @Inject
@@ -81,18 +82,6 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
                 executorService,
                 eventConverter);
 
-    }
-
-    public CompletionStage<?> processMessage(Message<String> message) {
-        CompletionStage<?> result = CompletableFuture.completedFuture(null);
-        result.thenCompose(x -> consumePayload(message.getPayload())).whenComplete((v, e) -> {
-            logger.debug("Acking message {}", message.getPayload());
-            message.ack();
-            if (e != null) {
-                logger.error("Error processing message {}", message.getPayload(), e);
-            }
-        });
-        return result;
     }
 
     protected $Type$ eventToModel($DataType$ event) {

@@ -18,34 +18,25 @@ package org.kie.kogito.services.event.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.kie.kogito.event.ChannelInfo;
 import org.kie.kogito.event.ChannelResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultChannelResolver implements ChannelResolver {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultChannelResolver.class);
-
-    protected Set<ChannelInfo> inputChannels = new HashSet<>();
-    protected Set<ChannelInfo> outputChannels = new HashSet<>();
-
-    protected static final void addChannel(Set<ChannelInfo> channels, String beanName, String channelName) {
-        ChannelInfo channelInfo = new ChannelInfo(beanName, channelName);
-        if (!channels.contains(channelInfo)) {
-            channels.add(channelInfo);
-        } else {
-            logger.warn("Channel {} already added. Consider using a different trigger name", channelInfo);
-        }
-    }
+    protected Set<String> inputChannels = new HashSet<>();
+    protected Set<String> outputChannels = new HashSet<>();
 
     @Override
-    public Set<ChannelInfo> getOutputChannels() {
+    public Set<String> getOutputChannels() {
         return outputChannels;
     }
 
     @Override
-    public Set<ChannelInfo> getInputChannels() {
+    public Set<String> getInputChannels() {
         return inputChannels;
     }
+
+    protected static final void addChannel(Set<String> channels, String channelName) {
+        channels.add(channelName);
+    }
+
 }

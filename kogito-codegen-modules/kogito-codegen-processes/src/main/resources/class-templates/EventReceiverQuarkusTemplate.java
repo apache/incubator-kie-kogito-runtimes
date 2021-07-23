@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package $Package$;
 
-import java.util.Set;
+import javax.inject.Named;
+import javax.enterprise.context.ApplicationScoped;
 
-public interface ChannelResolver {
+import org.kie.kogito.addon.cloudevents.quarkus.AbstractQuarkusCloudEventReceiver;
 
-    Set<String> getOutputChannels();
+@ApplicationScoped
+@Named("$Trigger$Trigger")
+public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver {
 
-    Set<String> getInputChannels();
 }

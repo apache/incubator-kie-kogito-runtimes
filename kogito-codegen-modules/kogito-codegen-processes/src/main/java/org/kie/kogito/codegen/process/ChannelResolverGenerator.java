@@ -35,21 +35,21 @@ public class ChannelResolverGenerator {
 
     public ChannelResolverGenerator(KogitoBuildContext context) {
         template = TemplatedGenerator.builder().build(context, "ChannelResolver");
-        generator = TemplatedGenerator.builder().build(context, "ChannelResolver").compilationUnitOrThrow("Cannot generate channel event");
+        generator = template.compilationUnitOrThrow("Cannot generate channel event");
         body = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"))
                 .findAll(MethodDeclaration.class, fd -> fd.getNameAsString().equals("populateChannels")).get(0).getBody().orElseThrow(() -> new IllegalStateException(""));
     }
 
-    public void addOutputChannel(String className, String channelName) {
-        addChannel("outputChannels", className, channelName);
+    public void addOutputChannel(String channelName) {
+        addChannel("outputChannels", channelName);
     }
 
-    public void addInputChannel(String className, String channelName) {
-        addChannel("inputChannels", className, channelName);
+    public void addInputChannel(String channelName) {
+        addChannel("inputChannels", channelName);
     }
 
-    private void addChannel(String channelsVar, String className, String channelName) {
-        body.addStatement(new MethodCallExpr("addChannel", new NameExpr(channelsVar), new StringLiteralExpr(className), new StringLiteralExpr(channelName)));
+    private void addChannel(String channelsVar, String channelName) {
+        body.addStatement(new MethodCallExpr("addChannel", new NameExpr(channelsVar), new StringLiteralExpr(channelName)));
     }
 
     public String generate() {

@@ -249,6 +249,7 @@ public class ProcessCodegen extends AbstractGenerator {
         List<MessageDataEventGenerator> mdegs = new ArrayList<>(); // message data events
         List<MessageConsumerGenerator> megs = new ArrayList<>(); // message endpoints/consumers
         List<MessageProducerGenerator> mpgs = new ArrayList<>(); // message producers
+        Map<String, EventReceiverGenerator> eventReceiverGenerators = new HashMap<>();
 
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
         Map<String, InputModelClassGenerator> processIdToInputModelGenerator = new HashMap<>();
@@ -281,6 +282,8 @@ public class ProcessCodegen extends AbstractGenerator {
         // with the data classes that we have already resolved
         ProcessToExecModelGenerator execModelGenerator =
                 new ProcessToExecModelGenerator(context().getClassLoader());
+
+        ChannelResolverGenerator channelGenerator = new ChannelResolverGenerator(context());
 
         // collect all process descriptors (exec model)
         for (KogitoWorkflowProcess workFlowProcess : processes.values()) {
@@ -337,8 +340,6 @@ public class ProcessCodegen extends AbstractGenerator {
 
             if (metaData.getTriggers() != null) {
 
-                ChannelResolverGenerator channelGenerator = new ChannelResolverGenerator(context());
-
                 for (TriggerMetaData trigger : metaData.getTriggers()) {
 
                     // generate message consumers for processes with message start events
@@ -347,39 +348,51 @@ public class ProcessCodegen extends AbstractGenerator {
                         MessageDataEventGenerator msgDataEventGenerator =
                                 new MessageDataEventGenerator(context(), workFlowProcess, trigger);
                         mdegs.add(msgDataEventGenerator);
-                        MessageConsumerGenerator msgGen = new MessageConsumerGenerator(
+                        megs.add(new MessageConsumerGenerator(
                                 context(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
                                 applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
-                                trigger);
-                        megs.add(msgGen);
-                        channelGenerator.addInputChannel(msgGen.className(), trigger.getName());
+                                trigger));
+                        channelGenerator.addInputChannel(trigger.getName());
+                        if (context().getAddonsConfig().useMultiChannel()) {
+                            eventReceiverGenerators.computeIfAbsent(trigger.getName(), t -> new EventReceiverGenerator(context(), trigger));
+                        }
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
 
                         MessageDataEventGenerator msgDataEventGenerator =
                                 new MessageDataEventGenerator(context(), workFlowProcess, trigger);
                         mdegs.add(msgDataEventGenerator);
-                        MessageProducerGenerator msgGen = new MessageProducerGenerator(
+                        mpgs.add(new MessageProducerGenerator(
                                 context(),
                                 workFlowProcess,
                                 modelClassGenerator.className(),
                                 execModelGen.className(),
                                 msgDataEventGenerator.className(),
-                                trigger);
-                        mpgs.add(msgGen);
-                        channelGenerator.addOutputChannel(msgGen.className(), trigger.getName());
+                                trigger));
+                        channelGenerator.addOutputChannel(trigger.getName());
                     }
                 }
-                storeFile(GeneratedFileType.SOURCE, channelGenerator.generateFilePath(), channelGenerator.generate());
             }
 
             processGenerators.add(p);
 
             ps.add(p);
             pis.add(pi);
+        }
+
+        storeFile(MODEL_TYPE, channelGenerator.generateFilePath(), channelGenerator.generate());
+
+        for (EventReceiverGenerator eventRecGenerator : eventReceiverGenerators.values()) {
+            storeFile(MODEL_TYPE, eventRecGenerator.generateFilePath(), eventRecGenerator.generate());
+        }
+
+        for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
+            ModelMetaData mmd = modelClassGenerator.generate();
+            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
+                    mmd.generate());
         }
 
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {

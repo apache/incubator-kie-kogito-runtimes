@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.spi.Bean;
@@ -32,10 +30,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment.Strategy;
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.event.ChannelInfo;
 import org.kie.kogito.event.ChannelResolver;
-import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.SubscriptionInfo;
 
 import io.smallrye.reactive.messaging.ChannelRegistar;
 import io.smallrye.reactive.messaging.DefaultMediatorConfiguration;
@@ -46,7 +41,7 @@ import io.smallrye.reactive.messaging.annotations.Merge.Mode;
 import io.smallrye.reactive.messaging.extension.MediatorManager;
 
 @ApplicationScoped
-public class QuarkusMultiCloudEventReceiver implements ChannelRegistar, EventReceiver {
+public class QuarkusMultiCloudEventReceiver implements ChannelRegistar {
 
     @Inject
     private MediatorManager mediatorManager;
@@ -55,15 +50,15 @@ public class QuarkusMultiCloudEventReceiver implements ChannelRegistar, EventRec
     @Inject
     private ChannelResolver channelResolver;
 
-    MediatorConfiguration mediatorConf(ChannelInfo channelInfo) {
-        Bean<?> bean = beanManager.getBeans(channelInfo.getBeanName()).iterator().next();
+    MediatorConfiguration mediatorConf(String channel) {
+        Bean<?> bean = beanManager.getBeans(channel + "Trigger").iterator().next();
         return new DefaultMediatorConfiguration(
                 getMethod(bean),
                 bean) {
 
             @Override
             public List<String> getIncoming() {
-                return Collections.singletonList(channelInfo.getChannelName());
+                return Collections.singletonList(channel);
             }
 
             @Override
@@ -106,15 +101,9 @@ public class QuarkusMultiCloudEventReceiver implements ChannelRegistar, EventRec
     @Override
     public void initialize() {
         Collection<MediatorConfiguration> mediators = new ArrayList<>();
-        channelResolver.getInputChannels().forEach(bean -> mediators.add(mediatorConf(bean)));
+        channelResolver.getInputChannels().forEach(channel -> mediators.add(mediatorConf(channel)));
         if (!mediators.isEmpty()) {
             mediatorManager.addAnalyzed(mediators);
         }
     }
-
-    @Override
-    public <T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<String, T> converter) {
-        // Automatic subscription
-    }
-
 }

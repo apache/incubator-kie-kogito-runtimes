@@ -53,8 +53,7 @@ public class MessageConsumerGenerator {
     private final String processName;
     private final String appCanonicalName;
     private final String messageDataEventClassName;
-
-    private TriggerMetaData trigger;
+    private final TriggerMetaData trigger;
 
     public MessageConsumerGenerator(
             KogitoBuildContext context,
@@ -103,7 +102,6 @@ public class MessageConsumerGenerator {
 
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, dataClazzName));
         template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$ProcessName$", processName)));
-        template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$ClassName$", resourceClazzName)));
         template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$Trigger$", trigger.getName())));
         template.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataEventType$", messageDataEventClassName)));
         template.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataType$", trigger.getDataType())));
@@ -117,6 +115,10 @@ public class MessageConsumerGenerator {
                     fd -> isApplicationField(fd)).forEach(fd -> initializeApplicationField(fd));
             template.findAll(FieldDeclaration.class,
                     fd -> isObjectMapperField(fd)).forEach(fd -> initializeObjectMapperField(fd));
+        }
+        if (context.getAddonsConfig().useMultiChannel()) {
+            template.findAll(FieldDeclaration.class, fd -> fd.getVariable(0).getNameAsString().equals("eventReceiver"))
+                    .forEach(fd -> fd.addAndGetAnnotation("javax.inject.Named").addPair("value", new StringLiteralExpr(trigger.getName() + "Trigger")));
         }
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
