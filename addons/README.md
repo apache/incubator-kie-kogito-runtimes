@@ -3,6 +3,27 @@
 In this package you will find the base Addons modules that extend the Kogito Core capabilities. They are responsible to
 give persistence, monitoring, messaging, and many other features on top of a plain Kogito service.
 
+## Addons Catalog
+
+Please find below all the addons independent of runtime implementation supported by the Kogito Community:
+
+| Add-On Description     | Artifact ID                          | Since               |
+|------------------------|--------------------------------------|---------------------|
+| Persistence FileSystem | kogito-addons-persistence-filesystem | 0.10.0              |
+| Persistence Infinispan | kogito-addons-persistence-infinispan | 0.3.0               |
+| Persistence JDBC       | kogito-addons-persistence-jdbc       | 1.8.0               |
+| Persistence MongoDB    | kogito-addons-persistence-mongodb    | 0.15.0              |
+| Persistence Postgresql | kogito-addons-persistence-postgresql | 1.6.0               |
+| Human Task Predictions | kogito-addons-human-task-prediction-api | 0.7.0            |
+
+### Quarkus Implementation
+
+Please check the [Quarkus Addons](../quarkus/addons) documentation.
+
+### Spring Boot Implementation
+
+Please check the [Spring Boot Addons](../springboot/addons) documentation.
+
 ## Modules organization
 
 At the root of this project you will find:
@@ -43,8 +64,7 @@ your `pom.xml` file:
 
 > Replace `${kogito.version}` with the desired version
 
-For specific usage, please check the documentation in each add-on module: [Quarkus](../quarkus/addons)
-and [SpringBoot](../springboot/addons).
+For specific usage, please check the documentation in each [add-on module](common).
 
 Notice that **every** Kogito Add-on starts with `kogito-addons-` prefix. This facilitates your search using IDE:
 
@@ -61,7 +81,7 @@ In general, the add-on name is composed like `kogito-addons-{runtime}-{capabilit
 
 The core add-ons don't have a `runtime` prefix either because they are the bases for the implementation by a runtime, or
 it is a generic implementation that can work either on [Quarkus](../quarkus/addons) or [Spring Boot](../quarkus/addons).
-Please, check the documentation of the add-on to find out.
+Please, check the [listing above](#addons-catalog) of the add-on to find out.
 
 ## Creating a new Kogito Add-on
 
@@ -77,9 +97,8 @@ knowledge of the Kogito engine internals. Then follow these steps:
 2. Do not use any dependencies from Quarkus or Spring Boot in `common` module. Your add-on must only have code to support
    your capability. New dependencies must be added to the [kogito-build](../kogito-build/kogito-build-parent) BOM.
 3. Create the same capability under the `addons` module in the runtime module you wish to add support (
-   either [`quarkus`](../quarkus/addons) or [`springboot`](../springboot/addons)). Make sure that your capability
-   imports either `quarkus-bom` or `springboot-dependencies` BOMs. You can choose to give support to only one of them,
-   just make it clear why and discuss this decision with the community.
+   either [`quarkus`](../quarkus/addons) or [`springboot`](../springboot/addons)). You can choose to give support to
+   only one of them, just make it clear why and discuss this decision with the community.
 4. If your capability can have multiple implementations, add at least one flavor under `{runtime}/addons/{capability}`
    module. See [`monitoring`](../quarkus/addons/monitoring) as an example
 5. Document each top-level module with a `README.md` and make it clear what your add-on is capable to do
@@ -88,8 +107,8 @@ knowledge of the Kogito engine internals. Then follow these steps:
 ### Add a new Capability Implementation to Kogito
 
 Sometimes, a capability requires a specific implementation. For example, `persistence`. It can be implemented by many
-persistence technologies that can their specific details. Each implementation can be handled differently based on the
-runtimes supported by Kogito:
+persistence technologies that can have their specific details. Each implementation can be handled differently based on
+the runtimes supported by Kogito:
 
 1. Start with the runtime you wish to add the implementation. Create a new sub-module
    under `{runtime}/addons/{capability}`

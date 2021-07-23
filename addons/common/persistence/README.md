@@ -15,3 +15,5 @@ Please check the following examples to explore more about this capability:
 - [process-mongodb-persistence-springboot](https://github.com/kiegroup/kogito-examples/tree/stable/process-mongodb-persistence-springboot)
 - [process-postgresql-persistence-quarkus](https://github.com/kiegroup/kogito-examples/tree/stable/process-postgresql-persistence-quarkus)
 - [process-postgresql-persistence-springboot](https://github.com/kiegroup/kogito-examples/tree/stable/process-postgresql-persistence-springboot)
+
+<!-- TODO: add filesystem/JDBC docs https://issues.redhat.com/browse/KOGITO-5563 -->

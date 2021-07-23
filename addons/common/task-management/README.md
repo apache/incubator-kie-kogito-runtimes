@@ -1,9 +1,9 @@
-# Kogito Mail Addon
+# Kogito Task Management Addon
 
-This addon enables the capability of sending emails in a Kogito Process project. An example of usage is the Kogito Task
-Deadline use case. <!-- TODO: reference needed -->
-
-<!-- TODO: this addon is lacking documentation in the official docs. Please see: https://issues.redhat.com/browse/KOGITO-5562 -->
+Enables the integration with the Kogito supporting
+service [Task Console](https://github.com/kiegroup/kogito-apps/tree/master/task-console). Please check
+the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-task-console_kogito-developing-process-services)
+to find out more!
 
 ## Examples
 
