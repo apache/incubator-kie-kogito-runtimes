@@ -74,9 +74,9 @@ public class InMemoryCompiler {
         String[] sources = new String[generatedFiles.size()];
         int index = 0;
         for (GeneratedFile entry : generatedFiles) {
-            // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
             String relativePath = entry.relativePath();
             logger.trace("Relative path {}", relativePath);
+            // verify if this is still needed https://issues.redhat.com/browse/KOGITO-3085
             String generatedClassFile = relativePath.replace("src/main/java/", "");
             logger.trace("generatedClassFile {}", generatedClassFile);
             String fileName = toRuntimeSource(toClassName(generatedClassFile));
