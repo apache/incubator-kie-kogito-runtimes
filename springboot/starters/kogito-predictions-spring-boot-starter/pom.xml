@@ -10,8 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-predictions-spring-boot-starter</artifactId>
-  <name>Kogito :: SpringBoot :: Starter :: Predictions</name>
-  <description>SpringBoot Starter for Kogito Predictions (PMML). Contains everything you need to get started with Kogito Predictions!</description>
+  <name>Kogito :: Spring Boot :: Starter :: Predictions</name>
+  <description>Spring Boot Starter for Kogito Predictions (PMML). Contains everything you need to get started with Kogito Predictions!</description>
 
   <dependencies>
     <dependency>

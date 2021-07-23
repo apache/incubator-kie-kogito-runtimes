@@ -1,10 +1,10 @@
-# Kogito SpringBoot Starters
+# Kogito Spring Boot Starters
 
 In this module you will find all
-the [SpringBoot Starters](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters)
+the [Spring Boot Starters](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-project/spring-boot-starters)
 provided by the Kogito community.
 
-Before jumping into the starters, consider adding the Kogito SpringBoot BOM to your project:
+Before jumping into the starters, consider adding the Kogito Spring Boot BOM to your project:
 
 ```xml
 
@@ -23,7 +23,7 @@ Before jumping into the starters, consider adding the Kogito SpringBoot BOM to y
 
 Replace `${version.kogito}` with the [current version of Kogito](https://github.com/kiegroup/kogito-runtimes/releases).
 
-## Kogito SpringBoot Starter
+## Kogito Spring Boot Starter
 
 The `kogito-spring-boot-starter` is an all-in-one descriptor for projects that needs every Business Automation engine
 provided by Kogito. It includes Decisions, Rules, Process, Predictions and the Serverless Workflow implementation.
@@ -46,7 +46,7 @@ To add this starter to your project:
 
 > If you are planning to use Serverless Workflow with events, consider adding the `kogito-serverless-workflow-spring-boot-starter` as well to the project. This starter will include CloudEvents support required by Serverless Workflows.
 
-## Kogito Decisions SpringBoot Starter
+## Kogito Decisions Spring Boot Starter
 
 Starter only for Decisions (DMN) support. To add it to your project, use:
 
@@ -60,9 +60,9 @@ Starter only for Decisions (DMN) support. To add it to your project, use:
 </dependencies>
 ```
 
-## Kogito Predictions SpringBoot Starter
+## Kogito Predictions Spring Boot Starter
 
-Adds Predictions (PMML) to your Kogito SpringBoot project:
+Adds Predictions (PMML) to your Kogito Spring Boot project:
 
 ```xml
 
@@ -74,7 +74,7 @@ Adds Predictions (PMML) to your Kogito SpringBoot project:
 </dependencies>
 ```
 
-## Kogito Processes SpringBoot Starter
+## Kogito Processes Spring Boot Starter
 
 To add Kogito Process engine support (BPMN) to your project, use:
 
@@ -88,7 +88,7 @@ To add Kogito Process engine support (BPMN) to your project, use:
 </dependencies>
 ```
 
-## Kogito Rules SpringBoot Starter
+## Kogito Rules Spring Boot Starter
 
 Adds the Kogito Rules engine support (DRLs) to your project:
 
@@ -102,7 +102,7 @@ Adds the Kogito Rules engine support (DRLs) to your project:
 </dependencies>
 ```
 
-## Kogito Serverless Workflow SpringBoot Starter
+## Kogito Serverless Workflow Spring Boot Starter
 
 If you're planning to try the Serverless Workflow implementation, add the following dependency to your project:
 

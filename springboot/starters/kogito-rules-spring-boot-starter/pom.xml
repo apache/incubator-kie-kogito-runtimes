@@ -10,8 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-rules-spring-boot-starter</artifactId>
-  <name>Kogito :: SpringBoot :: Starter :: Rules</name>
-  <description>SpringBoot Starter for Kogito Rules (DRLs). Contains everything you need to get started with Kogito Rules!</description>
+  <name>Kogito :: Spring Boot :: Starter :: Rules</name>
+  <description>Spring Boot Starter for Kogito Rules (DRLs). Contains everything you need to get started with Kogito Rules!</description>
 
   <dependencies>
     <dependency>

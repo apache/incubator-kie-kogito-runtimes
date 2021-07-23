@@ -26,19 +26,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-springboot-starter</artifactId>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-springboot-bom</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <name>Kogito :: Spring Boot :: Starter (DEPRECATED!)</name>
   <description>This library has been deprecated and will be removed in future versions. Please use kogito-spring-boot-starter (note the dash) instead.</description>
 

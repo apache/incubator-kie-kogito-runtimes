@@ -10,8 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>spring-boot-starters</artifactId>
-  <name>Kogito :: SpringBoot :: Starters Parent</name>
-  <description>Home for every Kogito SpringBoot Starter</description>
+  <name>Kogito :: Spring Boot :: Starters Parent</name>
+  <description>Home for every Kogito Spring Boot Starter</description>
   <packaging>pom</packaging>
 
   <modules>
@@ -25,6 +25,18 @@
     <module>kogito-rules-spring-boot-starter</module>
     <module>kogito-serverless-workflow-spring-boot-starter</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-springboot-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>

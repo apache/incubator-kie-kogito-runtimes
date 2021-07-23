@@ -10,8 +10,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-processes-spring-boot-starter</artifactId>
-  <name>Kogito :: SpringBoot :: Starter :: Processes</name>
-  <description>SpringBoot Starter for Kogito Processes (BPMN). Contains everything you need to get started with Kogito Processes!</description>
+  <name>Kogito :: Spring Boot :: Starter :: Processes</name>
+  <description>Spring Boot Starter for Kogito Processes (BPMN). Contains everything you need to get started with Kogito Processes!</description>
 
   <dependencies>
     <dependency>
