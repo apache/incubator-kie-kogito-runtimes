@@ -24,6 +24,27 @@ See the [Quarkus Add-Ons](../quarkus/addons) documentation.
 
 See the [Spring Boot Add-Ons](../springboot/addons) documentation.
 
+## Addons Catalog
+
+Please find below all the addons independent of runtime implementation supported by the Kogito Community:
+
+| Add-On Description     | Artifact ID                          | Since               |
+|------------------------|--------------------------------------|---------------------|
+| Persistence FileSystem | kogito-addons-persistence-filesystem | 0.10.0              |
+| Persistence Infinispan | kogito-addons-persistence-infinispan | 0.3.0               |
+| Persistence JDBC       | kogito-addons-persistence-jdbc       | 1.8.0               |
+| Persistence MongoDB    | kogito-addons-persistence-mongodb    | 0.15.0              |
+| Persistence Postgresql | kogito-addons-persistence-postgresql | 1.6.0               |
+| Human Task Predictions | kogito-addons-human-task-prediction-api | 0.7.0            |
+
+### Quarkus Implementation
+
+Please check the [Quarkus Addons](../quarkus/addons) documentation.
+
+### Spring Boot Implementation
+
+Please check the [Spring Boot Addons](../springboot/addons) documentation.
+
 ## Modules organization
 
 At the root of this project you will find:
@@ -64,8 +85,7 @@ your `pom.xml` file:
 
 > Replace `${kogito.version}` with the desired version
 
-For specific usage, please check the documentation in each add-on module: [Quarkus](../quarkus/addons)
-and [SpringBoot](../springboot/addons).
+For specific usage, please check the documentation in each [add-on module](common).
 
 Notice that **every** Kogito Add-on starts with `kogito-addons-` prefix. This facilitates your search using IDE:
 
