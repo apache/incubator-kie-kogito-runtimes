@@ -15,12 +15,16 @@
  */
 package org.jbpm.process.core.transformation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -57,7 +61,9 @@ public class JsonResolver {
     }
 
     private boolean hasJacksonAnnotations(AnnotatedElement element) {
-        if (!Arrays.stream(element.getDeclaredAnnotations())
+        Annotation[] declaredAnnotations = element.getDeclaredAnnotations();
+        Annotation[] declaringClassAnnotations = Optional.of(element).filter(Field.class::isInstance).map(Field.class::cast).map(Field::getType).map(Class::getDeclaredAnnotations).orElse(new Annotation[0]);
+        if (!Stream.of(declaredAnnotations, declaringClassAnnotations).flatMap(Stream::of)
                 .noneMatch(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0)) {
             return true;
         }
