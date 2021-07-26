@@ -102,6 +102,7 @@ if (!Utils.isMainBranch(this)) {
 void setupPrJob() {
     def jobParams = getDefaultJobParams()
     jobParams.pr.run_only_for_branches = ['1.5.x']
+    jobParams.pr.excluded_regions = ['LICENSE', '\\.gitignore', '.*\\.md', '.*\\.adoc', '.*\\.txt', 'docsimg/.*', '\\.github/.*', 'Jenkinsfile.*', '\\.jenkins/.*']
     jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createPRJob(this, jobParams)
 }
