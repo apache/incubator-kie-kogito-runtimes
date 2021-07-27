@@ -62,7 +62,8 @@ public class JsonResolver {
 
     private boolean hasJacksonAnnotations(AnnotatedElement element) {
         Annotation[] declaredAnnotations = element.getDeclaredAnnotations();
-        Annotation[] declaringClassAnnotations = Optional.of(element).filter(Field.class::isInstance).map(Field.class::cast).map(Field::getType).map(Class::getDeclaredAnnotations).orElse(new Annotation[0]);
+        Annotation[] declaringClassAnnotations =
+                Optional.of(element).filter(Field.class::isInstance).map(Field.class::cast).map(Field::getType).map(Class::getDeclaredAnnotations).orElse(new Annotation[0]);
         if (!Stream.of(declaredAnnotations, declaringClassAnnotations).flatMap(Stream::of)
                 .noneMatch(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0)) {
             return true;
