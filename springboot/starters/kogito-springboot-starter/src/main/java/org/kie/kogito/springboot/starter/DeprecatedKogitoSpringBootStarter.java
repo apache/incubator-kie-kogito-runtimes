@@ -32,11 +32,11 @@ public class DeprecatedKogitoSpringBootStarter implements ApplicationListener<Ap
     public static final Logger LOGGER = LoggerFactory.getLogger(DeprecatedKogitoSpringBootStarter.class);
 
     public DeprecatedKogitoSpringBootStarter() {
-        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-core instead");
+        LOGGER.warn("The library kogito-springboot-starter is deprecated and will be removed in a future release! Please use kogito-spring-boot-starter (note the dash) instead");
     }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        LOGGER.warn("The library monitoring-core-springboot-addon is deprecated and will be removed in a future release! Please use kogito-addons-springboot-monitoring-core instead");
+        LOGGER.warn("The library kogito-springboot-starter is deprecated and will be removed in a future release! Please use kogito-spring-boot-starter (note the dash) instead");
     }
 }
