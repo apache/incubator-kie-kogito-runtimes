@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.knative.eventing;
+package org.kie.kogito.addons.knative.eventing;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 /**
- * Representation of @{@link KnativeEventingEventMarshaller#K_CE_OVERRIDES} value
+ * Representation of @{@link KnativeEventingMessagePayloadDecorator#K_CE_OVERRIDES} value
  * 
  * @see <a href="https://knative.dev/docs/developer/eventing/sources/sinkbinding/reference/#cloudevent-overrides">Knative Eventing SinkBinding - CloudEvent Overrides</a>
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CeOverrides {
     private Map<String, Object> extensions;
 

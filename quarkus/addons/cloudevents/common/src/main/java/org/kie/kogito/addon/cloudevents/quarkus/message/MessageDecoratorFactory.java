@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.decorators;
+package org.kie.kogito.addon.cloudevents.quarkus.message;
 
 /**
- * Provides a {@link MessageDecorator} instance
+ * Provides a {@link MessageDecorator} instance. Ideally should not be used outside the {@link MessageFactory}.
  */
 public final class MessageDecoratorFactory {
 
