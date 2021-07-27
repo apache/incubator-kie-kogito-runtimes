@@ -17,7 +17,7 @@
       <dependency>
         <groupId>org.spockframework</groupId>
         <artifactId>spock-bom</artifactId>
-        <version>2.0-groovy-3.0</version>
+        <version>${version.org.spockframework}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -42,10 +42,29 @@
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-springboot-starter</artifactId>
+      <artifactId>kogito-spring-boot-starter</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- TODO: add versions to BOM -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-processes-spring-boot-starter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-decisions-spring-boot-starter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-rules-spring-boot-starter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-predictions-spring-boot-starter</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.spockframework</groupId>
       <artifactId>spock-core</artifactId>
@@ -59,13 +78,13 @@
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy</artifactId>
-      <version>3.0.8</version>
+      <version>${version.org.codehaus.groovy}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-xml</artifactId>
-      <version>3.0.8</version>
+      <version>${version.org.codehaus.groovy}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -77,7 +96,7 @@
         visit https://github.com/groovy/GMavenPlus/wiki -->
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.12.0</version>
+        <version>${version.org.codehaus.gmavenplus}</version>
         <executions>
           <execution>
             <goals>
@@ -110,7 +129,7 @@
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-packaging</artifactId>
-        <version>3.0.1</version>
+        <version>${version.archetype.plugin}</version>
       </extension>
     </extensions>
     <pluginManagement>
@@ -121,7 +140,7 @@
             <dependency>
               <groupId>org.codehaus.groovy</groupId>
               <artifactId>groovy-xml</artifactId>
-              <version>3.0.8</version>
+              <version>${version.org.codehaus.groovy}</version>
             </dependency>
           </dependencies>
         </plugin>
