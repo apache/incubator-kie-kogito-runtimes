@@ -5,7 +5,7 @@ import org.kie.jenkins.jobdsl.KogitoJobType
 
 def getDefaultJobParams() {
     def jobParams = KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
-    jobParams.pr.excluded_regions = ['LICENSE', '\\.gitignore', '.*\\.md', '.*\\.adoc', '.*\\.txt', 'docsimg/.*', '\\.github/.*', 'Jenkinsfile.*', '\\.jenkins/.*']
+    jobParams.pr.excluded_regions.add('docsimg/.*')
     return jobParams
 }
 
