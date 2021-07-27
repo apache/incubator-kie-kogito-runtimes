@@ -247,7 +247,7 @@ void commitAndCreatePR() {
 
     githubscm.commitChanges(commitMsg, { githubscm.findAndStageNotIgnoredFiles('pom.xml') })
     githubscm.pushObject('origin', getSnapshotBranch(), getBotAuthorCredsID())
-    setPipelinePrLink(githubscm.createPR(commitMsg, prBody, getBuildBranch(), getBotAuthorCredsID()))
+    setPipelinePrLink(githubscm.createPRWithLabels(commitMsg, prBody, getBuildBranch(), [ 'skip-ci' ] as String[], getBotAuthorCredsID()))
 }
 
 MavenCommand getMavenCommand() {
