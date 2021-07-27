@@ -4,7 +4,9 @@ import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
 
 def getDefaultJobParams() {
-    return KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
+    def jobParams = KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
+    jobParams.pr.excluded_regions = ['LICENSE', '\\.gitignore', '.*\\.md', '.*\\.adoc', '.*\\.txt', 'docsimg/.*', '\\.github/.*', 'Jenkinsfile.*', '\\.jenkins/.*']
+    return jobParams
 }
 
 def getJobParams(String jobName, String jobFolder, String jenkinsfileName, String jobDescription = '') {
@@ -102,7 +104,6 @@ if (!Utils.isMainBranch(this)) {
 void setupPrJob() {
     def jobParams = getDefaultJobParams()
     jobParams.pr.run_only_for_branches = ['1.5.x']
-    jobParams.pr.excluded_regions = ['LICENSE', '\\.gitignore', '.*\\.md', '.*\\.adoc', '.*\\.txt', 'docsimg/.*', '\\.github/.*', 'Jenkinsfile.*', '\\.jenkins/.*']
     jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createPRJob(this, jobParams)
 }
