@@ -34,6 +34,9 @@ public class JsonResolver {
 
     private ObjectMapper objectMapper;
 
+    /**
+     * @param objectMapper object mapper to be used when converting input items
+     */
     public JsonResolver(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -58,6 +61,12 @@ public class JsonResolver {
         HashMap<String, Object> result = new HashMap<>(items);
         result.putAll(resolved);
         return result;
+    }
+
+    public Map<String, Object> resolveAll(Map<String, Object> items) {
+        return items.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, v -> objectMapper.convertValue(v.getValue(), Map.class)));
     }
 
     private boolean hasJacksonAnnotations(AnnotatedElement element) {

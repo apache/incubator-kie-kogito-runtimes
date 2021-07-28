@@ -179,7 +179,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         Variable variable = variableScope.findVariable(varName);
         if (variable != null) {
             try {
-                return Thread.currentThread().getContextClassLoader().loadClass(variable.getType().getStringType());
+                return pi.getProcess().getClass().getClassLoader().loadClass(variable.getType().getStringType());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("Problem loading type " + variable.getType().getStringType(), e);
             }

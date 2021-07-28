@@ -138,11 +138,8 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                                 .get();
 
                 //Input Binding
-                DMNContext context = DMNJSONUtils.ctx(modelInstance, jsonResolver.resolveItems(inputs));
-
-                logger.info("DMN with context {}", context);
+                DMNContext context = DMNJSONUtils.ctx(modelInstance, jsonResolver.resolveAll(inputs));
                 DMNResult dmnResult = modelInstance.evaluateAll(context);
-
                 if (dmnResult.hasErrors()) {
                     String errors = dmnResult.getMessages(Severity.ERROR).stream()
                             .map(Object::toString)
