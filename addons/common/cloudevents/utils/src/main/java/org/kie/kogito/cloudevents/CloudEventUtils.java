@@ -43,15 +43,13 @@ import io.cloudevents.rw.CloudEventRWException;
 
 import static io.cloudevents.core.CloudEventUtils.mapData;
 
-public class CloudEventUtils {
+public final class CloudEventUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
-
     public static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
             .orElseThrow(IllegalStateException::new);
 
     private CloudEventUtils() {
-        throw new IllegalStateException("Instantiation of utility class CloudEventUtils is forbidden");
     }
 
     public static <E> Optional<CloudEvent> build(String id, URI source, E data, Class<E> dataType) {
@@ -121,7 +119,7 @@ public class CloudEventUtils {
 
     public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass) {
         try {
-            PojoCloudEventData<T> cloudEventData = mapData(event, PojoCloudEventDataMapper.from(Mapper.mapper(), dataClass));
+            final PojoCloudEventData<T> cloudEventData = mapData(event, PojoCloudEventDataMapper.from(Mapper.mapper(), dataClass));
             if (cloudEventData == null) {
                 return Optional.empty();
             }
@@ -133,7 +131,7 @@ public class CloudEventUtils {
     }
 
     public static <K, V> Optional<Map<K, V>> decodeMapData(CloudEvent event, Class<K> keyClass, Class<V> valueClass) {
-        if (event.getData() == null) {
+        if (event == null || event.getData() == null) {
             return Optional.empty();
         }
         try {
@@ -198,12 +196,12 @@ public class CloudEventUtils {
     }
 
     // This trick allows to inject a mocked ObjectMapper in the unit tests via Mockito#mockStatic
-    public static class Mapper {
+    public static final class Mapper {
 
         private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
 
         private Mapper() {
-            throw new IllegalStateException("Instantiation of utility class CloudEventUtils.Mapper is forbidden");
+
         }
 
         public static ObjectMapper mapper() {

@@ -24,7 +24,6 @@ class MessageMessageDecoratorFactoryTest {
     @Test
     void verifyCloudEventHttpIsOnClasspath() {
         final MessageDecorator decorator = MessageDecoratorFactory.newInstance();
-        assertThat(decorator).isNotNull();
-        assertThat(decorator).isInstanceOf(CloudEventHttpOutgoingDecorator.class);
+        assertThat(decorator).isNotNull().isInstanceOf(CloudEventHttpOutgoingDecorator.class);
     }
 }

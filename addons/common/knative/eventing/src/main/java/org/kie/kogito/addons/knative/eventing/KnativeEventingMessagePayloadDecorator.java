@@ -43,9 +43,8 @@ public class KnativeEventingMessagePayloadDecorator implements MessagePayloadDec
         mapper = CloudEventUtils.Mapper.mapper();
     }
 
-    // visible for testing, don't make it public
-    JsonNode readEnvCeOverrides() {
-        final String ceOverridesValue = System.getenv(K_CE_OVERRIDES);
+    private JsonNode serializeEnvCeOverrides() {
+        final String ceOverridesValue = readEnvCeOverrides();
         if (ceOverridesValue == null || "".equals(ceOverridesValue)) {
             return null;
         }
@@ -58,9 +57,14 @@ public class KnativeEventingMessagePayloadDecorator implements MessagePayloadDec
         }
     }
 
+    // visible for testing, don't make it public
+    String readEnvCeOverrides() {
+        return System.getenv(K_CE_OVERRIDES);
+    }
+
     @Override
     public String decorate(final String jsonPayload) {
-        final JsonNode ceOverrides = this.readEnvCeOverrides();
+        final JsonNode ceOverrides = this.serializeEnvCeOverrides();
         if (ceOverrides == null) {
             LOGGER.debug("{} variable not present in the environment or it's empty", K_CE_OVERRIDES);
             return jsonPayload;
