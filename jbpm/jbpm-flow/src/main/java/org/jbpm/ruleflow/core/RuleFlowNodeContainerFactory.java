@@ -173,9 +173,14 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     }
 
     public T exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
-        getScope(ExceptionScope.EXCEPTION_SCOPE, ExceptionScope.class).setExceptionHandler(exception, exceptionHandler);
+        return exceptionHandler (exception, exceptionHandler, ExceptionScope.class);
+    }
+    
+    public T exceptionHandler(String exception, ExceptionHandler exceptionHandler, Class<? extends ExceptionScope> scopeClass) {
+        getScope(ExceptionScope.EXCEPTION_SCOPE, scopeClass).setExceptionHandler(exception, exceptionHandler);
         return (T) this;
     }
+
 
     public T exceptionHandler(String exception, String dialect, String action) {
         ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();

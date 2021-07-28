@@ -42,6 +42,11 @@ public class ContextInstanceFactoryRegistry {
 
     public ContextInstanceFactoryRegistry() {
         this.registry = new HashMap<>();
+        // hard wired contexts:
+        registry.put(VariableScope.class, factoryOf(VariableScopeInstance::new));
+        registry.put(ExceptionScope.class, factoryOf(DefaultExceptionScopeInstance::new));
+        registry.put(CompensationScope.class, factoryOf(CompensationScopeInstance::new));
+        registry.put(SwimlaneContext.class, factoryOf(SwimlaneContextInstance::new));
     }
 
     public void register(Class<? extends Context> cls,
@@ -50,18 +55,7 @@ public class ContextInstanceFactoryRegistry {
     }
 
     public ContextInstanceFactory getContextInstanceFactory(Context context) {
-        Class<? extends Context> cls = context.getClass();
-        // hard wired contexts:
-        if (cls == VariableScope.class)
-            return factoryOf(VariableScopeInstance::new);
-        if (cls == ExceptionScope.class)
-            return factoryOf(DefaultExceptionScopeInstance::new);
-        if (cls == CompensationScope.class)
-            return factoryOf(CompensationScopeInstance::new);
-        if (cls == SwimlaneContext.class)
-            return factoryOf(SwimlaneContextInstance::new);
-
-        return this.registry.get(cls);
+        return this.registry.get(context.getClass());
     }
 
     private static ContextInstanceFactory factoryOf(Supplier<? extends ContextInstance> supplier) {

@@ -20,6 +20,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
@@ -31,6 +32,7 @@ import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.error.Error;
 import io.serverlessworkflow.api.interfaces.State;
 import io.serverlessworkflow.api.produce.ProduceEvent;
 import io.serverlessworkflow.api.transitions.Transition;
@@ -80,6 +82,10 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
         node.done();
         connectStart();
         connectEnd();
+        for (Error error : state.getOnErrors()) {
+            ExceptionHandler handler;
+            factory.exceptionHandler(error.getCode(), handler);
+        }
     }
 
     public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {

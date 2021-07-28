@@ -23,6 +23,7 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
 
     private static final long serialVersionUID = 510l;
 
+    @Override
     public String getContextType() {
         return ExceptionScope.EXCEPTION_SCOPE;
     }
@@ -31,7 +32,10 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
         return (ExceptionScope) getContext();
     }
 
-    public void handleException(String exception, Object params) {
+    public void handleException(Object exception, Object params) {
+        if (exception instanceof Throwable) {
+            exception = exception.getClass().getName();
+        }
         ExceptionHandler handler = getExceptionScope().getExceptionHandler(exception);
         if (handler == null) {
             throw new IllegalArgumentException(
@@ -40,6 +44,6 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
         handleException(handler, exception, params);
     }
 
-    public abstract void handleException(ExceptionHandler handler, String exception, Object params);
+    public abstract void handleException(ExceptionHandler handler, Object exception, Object params);
 
 }

@@ -172,10 +172,10 @@ public class XmlWorkflowProcessDumper {
         }
     }
 
-    public static void visitExceptionHandlers(Map<String, ExceptionHandler> exceptionHandlers, StringBuilder xmlDump) {
+    public static void visitExceptionHandlers(Map<Object, ExceptionHandler> exceptionHandlers, StringBuilder xmlDump) {
         if (exceptionHandlers != null && exceptionHandlers.size() > 0) {
             xmlDump.append("    <exceptionHandlers>" + EOL);
-            for (Map.Entry<String, ExceptionHandler> entry : exceptionHandlers.entrySet()) {
+            for (Map.Entry<Object, ExceptionHandler> entry : exceptionHandlers.entrySet()) {
                 ExceptionHandler exceptionHandler = entry.getValue();
                 if (exceptionHandler instanceof ActionExceptionHandler) {
                     ActionExceptionHandler actionExceptionHandler = (ActionExceptionHandler) exceptionHandler;

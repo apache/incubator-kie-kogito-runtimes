@@ -28,11 +28,13 @@ public class DefaultExceptionScopeInstance extends ExceptionScopeInstance {
 
     private static final long serialVersionUID = 510l;
 
+    @Override
     public String getContextType() {
         return ExceptionScope.EXCEPTION_SCOPE;
     }
 
-    public void handleException(ExceptionHandler handler, String exception, Object params) {
+    @Override
+    public void handleException(ExceptionHandler handler, Object exception, Object params) {
 
         if (handler instanceof ActionExceptionHandler) {
             ActionExceptionHandler exceptionHandler = (ActionExceptionHandler) handler;

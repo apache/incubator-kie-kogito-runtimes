@@ -21,23 +21,24 @@ import java.util.Map;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
 
-public class ExceptionScope extends AbstractContext {
+public class ExceptionScope<T> extends AbstractContext {
 
     private static final long serialVersionUID = 510l;
 
     public static final String EXCEPTION_SCOPE = "ExceptionScope";
 
-    protected Map<String, ExceptionHandler> exceptionHandlers = new HashMap<String, ExceptionHandler>();
+    protected Map<T, ExceptionHandler> exceptionHandlers = new HashMap<>();
 
+    @Override
     public String getType() {
         return EXCEPTION_SCOPE;
     }
 
-    public void setExceptionHandler(String exception, ExceptionHandler exceptionHandler) {
+    public void setExceptionHandler(T exception, ExceptionHandler exceptionHandler) {
         this.exceptionHandlers.put(exception, exceptionHandler);
     }
 
-    public ExceptionHandler getExceptionHandler(String exception) {
+    public ExceptionHandler getExceptionHandler(Object exception) {
         ExceptionHandler result = exceptionHandlers.get(exception);
         if (result == null) {
             result = exceptionHandlers.get(null);
@@ -49,20 +50,24 @@ public class ExceptionScope extends AbstractContext {
         this.exceptionHandlers.remove(exception);
     }
 
-    public Map<String, ExceptionHandler> getExceptionHandlers() {
+    public Map<T, ExceptionHandler> getExceptionHandlers() {
         return exceptionHandlers;
     }
 
-    public void setExceptionHandlers(Map<String, ExceptionHandler> exceptionHandlers) {
+    public void setExceptionHandlers(Map<T, ExceptionHandler> exceptionHandlers) {
         if (exceptionHandlers == null) {
             throw new IllegalArgumentException("Exception handlers are null");
         }
         this.exceptionHandlers = exceptionHandlers;
     }
 
+    @Override
     public Context resolveContext(Object param) {
+        if (param instanceof Throwable) {
+            param = ((Throwable)param).getClass().getName();
+        }
         if (param instanceof String) {
-            return getExceptionHandler((String) param) == null ? null : this;
+            return getExceptionHandler(param.toString()) == null ? null : this;
         }
         throw new IllegalArgumentException(
                 "ExceptionScopes can only resolve exception names: " + param);

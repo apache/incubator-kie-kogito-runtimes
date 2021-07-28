@@ -16,10 +16,11 @@
 package org.jbpm.process.instance.context.exception;
 
 import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Stack;
 
 import org.jbpm.process.core.context.exception.CompensationHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
@@ -44,8 +45,9 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
 
     private static final long serialVersionUID = 510l;
 
-    private Stack<NodeInstance> compensationInstances = new Stack<NodeInstance>();
+    private Deque<NodeInstance> compensationInstances = new LinkedList<>();
 
+    @Override
     public String getContextType() {
         return CompensationScope.COMPENSATION_SCOPE;
     }
@@ -54,9 +56,10 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
         this.compensationInstances.addAll(generatedInstances);
     }
 
-    public void handleException(String activityRef, Object dunno) {
-        assert activityRef != null : "It should not be possible for the compensation activity reference to be null here.";
-
+    @Override
+    public void handleException(Object exception, Object dunno) {
+        assert exception != null : "It should not be possible for the compensation activity reference to be null here.";
+        String activityRef = exception.toString();
         CompensationScope compensationScope = (CompensationScope) getExceptionScope();
         // broadcast/general compensation in reverse order
         if (activityRef.startsWith(IMPLICIT_COMPENSATION_PREFIX)) {
@@ -91,7 +94,8 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
         }
     }
 
-    public void handleException(ExceptionHandler handler, String compensationActivityRef, Object dunno) {
+    @Override
+    public void handleException(ExceptionHandler handler, Object compensationActivityRef, Object dunno) {
         WorkflowProcessInstanceImpl processInstance = (WorkflowProcessInstanceImpl) getProcessInstance();
         NodeInstanceContainer nodeInstanceContainer = (NodeInstanceContainer) getContextInstanceContainer();
         if (handler instanceof CompensationHandler) {
@@ -110,7 +114,7 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
                     List<String> completedIds = processInstance.getCompletedNodeIds();
                     if (completedIds.contains(((NodeImpl) ((Node) handlerNode).getParentContainer()).getMetaData("UniqueId"))) {
                         NodeInstance subProcessNodeInstance =
-                                ((NodeInstanceContainer) nodeInstanceContainer).getNodeInstance((org.kie.api.definition.process.Node) ((Node) handlerNode).getParentContainer());
+                                nodeInstanceContainer.getNodeInstance((org.kie.api.definition.process.Node) ((Node) handlerNode).getParentContainer());
                         compensationInstances.add(subProcessNodeInstance);
                         NodeInstance compensationHandlerNodeInstance = ((NodeInstanceContainer) subProcessNodeInstance).getNodeInstance(handlerNode);
                         compensationInstances.add(compensationHandlerNodeInstance);
