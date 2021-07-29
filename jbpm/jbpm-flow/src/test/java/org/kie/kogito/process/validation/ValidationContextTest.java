@@ -85,6 +85,7 @@ class ValidationContextTest {
 
             @Override
             public boolean equals(Object obj) {
+                // TODO to revisit hashCode and equals methods
                 return getMessage().equals(((ValidationError) obj).getMessage());
             }
         };
