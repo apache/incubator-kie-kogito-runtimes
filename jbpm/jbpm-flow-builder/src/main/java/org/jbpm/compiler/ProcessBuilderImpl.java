@@ -105,6 +105,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         }
     }
 
+    @Override
     public List<BaseKnowledgeBuilderResultImpl> getErrors() {
         return errors;
     }
@@ -116,10 +117,10 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         boolean hasErrors = false;
         ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, resource);
         if (validator == null) {
-            logger.warn("Could not find validator for process {}.", ((Process) process).getType());
+            logger.warn("Could not find validator for process {}.", process.getType());
             logger.warn("Continuing without validation of the process {} [{}]", process.getName(), process.getId());
         } else {
-            ProcessValidationError[] errors = validator.validateProcess((WorkflowProcess) process);
+            ProcessValidationError[] errors = validator.validateProcess(process);
             if (errors.length != 0) {
                 hasErrors = true;
                 for (int i = 0; i < errors.length; i++) {
@@ -212,7 +213,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         if (exceptionScopes != null) {
             for (Context context : exceptionScopes) {
                 // TODO: OCRAM: add compensation scope to process builder????
-                ExceptionScope exceptionScope = (ExceptionScope) context;
+                ExceptionScope<?> exceptionScope = (ExceptionScope) context;
                 for (ExceptionHandler exceptionHandler : exceptionScope.getExceptionHandlers().values()) {
                     if (exceptionHandler instanceof ActionExceptionHandler) {
                         DroolsConsequenceAction action = (DroolsConsequenceAction) ((ActionExceptionHandler) exceptionHandler).getAction();
@@ -268,6 +269,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         }
     }
 
+    @Override
     public List<Process> addProcessFromXml(final Resource resource) throws IOException {
         Reader reader = resource.getReader();
         KnowledgeBuilderConfigurationImpl configuration = knowledgeBuilder.getBuilderConfiguration();

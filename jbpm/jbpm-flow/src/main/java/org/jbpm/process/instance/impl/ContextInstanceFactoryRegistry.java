@@ -54,6 +54,11 @@ public class ContextInstanceFactoryRegistry {
         this.registry.put(cls, factory);
     }
 
+    public void register(Class<? extends Context> cls,
+            Supplier<? extends ContextInstance> supplier) {
+        register(cls, factoryOf(supplier));
+    }
+
     public ContextInstanceFactory getContextInstanceFactory(Context context) {
         return this.registry.get(context.getClass());
     }

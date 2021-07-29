@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
@@ -36,7 +38,9 @@ import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.core.validation.ProcessValidationError;
+import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.impl.Action;
+import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.actions.CancelNodeInstanceAction;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.validation.RuleFlowProcessValidator;
@@ -138,6 +142,11 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
     public RuleFlowProcessFactory imports(String... imports) {
         getRuleFlowProcess().addImports(Arrays.asList(imports));
+        return this;
+    }
+
+    public RuleFlowProcessFactory scope(Class<? extends Context> contextClass, Supplier<? extends ContextInstance> supplier) {
+        ContextInstanceFactoryRegistry.INSTANCE.register(contextClass, supplier);
         return this;
     }
 

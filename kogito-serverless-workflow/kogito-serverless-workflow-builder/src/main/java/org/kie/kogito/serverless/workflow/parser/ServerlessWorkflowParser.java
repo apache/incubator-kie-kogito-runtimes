@@ -29,6 +29,8 @@ import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.serverless.workflow.ServerlessWorkflowErrorScope;
+import org.kie.kogito.serverless.workflow.ServerlessWorkflowErrorScopeInstance;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -85,6 +87,7 @@ public class ServerlessWorkflowParser {
         }
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess(workflow.getId())
+                .scope(ServerlessWorkflowErrorScope.class, ServerlessWorkflowErrorScopeInstance::new)
                 .name(workflow.getName() == null ? DEFAULT_NAME : workflow.getName())
                 .version(workflow.getVersion() == null ? DEFAULT_VERSION : workflow.getVersion())
                 .packageName(workflow.getMetadata() != null ? workflow.getMetadata().getOrDefault("package",

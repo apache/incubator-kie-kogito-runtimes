@@ -309,7 +309,7 @@ public class ProcessVisitor extends AbstractVisitor {
 
     private void visitContextExceptionScope(Context context, BlockStmt body) {
         if (context instanceof ExceptionScope) {
-            ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
+            ((ExceptionScope<?>) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
                 String faultCode = e.getKey().toString();
                 ActionExceptionHandler handler = (ActionExceptionHandler) e.getValue();
                 Optional<String> faultVariable = Optional.ofNullable(handler.getFaultVariable());

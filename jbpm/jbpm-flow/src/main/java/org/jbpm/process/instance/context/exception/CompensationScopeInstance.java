@@ -102,6 +102,7 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
             CompensationHandler compensationHandler = (CompensationHandler) handler;
             try {
                 org.kie.api.definition.process.Node handlerNode = compensationHandler.getnode();
+                assert handlerNode instanceof BoundaryEventNode || handlerNode instanceof EventSubProcessNode : "Unexpected compensation handler node type : " + handlerNode.getClass().getSimpleName();
                 if (handlerNode instanceof BoundaryEventNode) {
                     NodeInstance compensationHandlerNodeInstance = nodeInstanceContainer.getNodeInstance(handlerNode);
                     compensationInstances.add(compensationHandlerNodeInstance);
@@ -119,11 +120,9 @@ public class CompensationScopeInstance extends ExceptionScopeInstance {
                         NodeInstance compensationHandlerNodeInstance = ((NodeInstanceContainer) subProcessNodeInstance).getNodeInstance(handlerNode);
                         compensationInstances.add(compensationHandlerNodeInstance);
                         EventSubProcessNodeInstance eventNodeInstance = (EventSubProcessNodeInstance) compensationHandlerNodeInstance;
-                        eventNodeInstance.signalEvent("Compensation", compensationActivityRef);
+                        eventNodeInstance.signalEvent(Metadata.EVENT_TYPE_COMPENSATION, compensationActivityRef);
                     }
                 }
-                assert handlerNode instanceof BoundaryEventNode || handlerNode instanceof EventSubProcessNode
-                        : "Unexpected compensation handler node type : " + handlerNode.getClass().getSimpleName();
             } catch (Exception e) {
                 throwWorkflowRuntimeException(nodeInstanceContainer, processInstance, "Unable to execute compensation.", e);
             }

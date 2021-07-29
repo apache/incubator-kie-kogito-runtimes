@@ -64,7 +64,7 @@ public class ExceptionScope<T> extends AbstractContext {
     @Override
     public Context resolveContext(Object param) {
         if (param instanceof Throwable) {
-            param = ((Throwable)param).getClass().getName();
+            param = ((Throwable) param).getClass().getName();
         }
         if (param instanceof String) {
             return getExceptionHandler(param.toString()) == null ? null : this;

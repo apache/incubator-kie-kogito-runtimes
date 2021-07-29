@@ -20,13 +20,15 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 
-import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.instance.impl.actions.HandleMessageAction;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
+import org.kie.kogito.serverless.workflow.ServerlessWorkflowErrorPredicate;
+import org.kie.kogito.serverless.workflow.ServerlessWorkflowErrorScope;
+import org.kie.kogito.serverless.workflow.ServerlessWorkflowExceptionHandler;
 import org.kie.kogito.serverless.workflow.parser.NodeIdGenerator;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -83,8 +85,8 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
         connectStart();
         connectEnd();
         for (Error error : state.getOnErrors()) {
-            ExceptionHandler handler;
-            factory.exceptionHandler(error.getCode(), handler);
+            factory.exceptionHandler(new ServerlessWorkflowErrorPredicate(error.getError(), error.getCode()), new ServerlessWorkflowExceptionHandler(error.getTransition().getNextState()),
+                    ServerlessWorkflowErrorScope.class);
         }
     }
 
