@@ -80,6 +80,7 @@ class ValidationContextTest {
 
             @Override
             public int hashCode() {
+                // TODO to revisit hashCode and equals methods
                 return getMessage().hashCode();
             }
 
