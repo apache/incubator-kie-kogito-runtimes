@@ -1,11 +1,11 @@
 # Kogito Add-Ons
 
-In this package you will find the Addons modules that extend the Kogito Core capabilities. They are responsible to
-give persistence, monitoring, messaging, and many other features on top of a plain Kogito service.
+In this package you will find the Addons modules that extend the Kogito Core capabilities. They add 
+persistence, monitoring, messaging, and many other features to the Kogito service.
 
 ## Addons Catalog
 
-Please find below all the addons independent of runtime implementation supported by the Kogito Community:
+The following table lists all the addons, independent of runtime implementation, supported by the Kogito Community:
 
 | Add-On Description     | Artifact ID                          | Since               |
 |------------------------|--------------------------------------|---------------------|
@@ -18,11 +18,11 @@ Please find below all the addons independent of runtime implementation supported
 
 ### Quarkus Implementation
 
-Please check the [Quarkus Addons](../quarkus/addons) documentation.
+See the [Quarkus Addons](../quarkus/addons) documentation.
 
 ### Spring Boot Implementation
 
-Please check the [Spring Boot Addons](../springboot/addons) documentation.
+See the [Spring Boot Addons](../springboot/addons) documentation.
 
 ## Modules organization
 
