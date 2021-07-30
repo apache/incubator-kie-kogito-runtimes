@@ -193,7 +193,7 @@ public class JsonResolverTest {
         items.put("child", new Child());
         items.put("child2", new ChildJson());
         items.put("string", "value");
-        Map<String, Object> output = resolver.resolveOnlyAnnotatedItems(items);
+        Map<String, Object> output = resolver.resolveAll(items);
         assertThat(output.get("parent")).isInstanceOf(Map.class);
         assertThat(output.get("parent2")).isInstanceOf(Map.class);
         assertThat(output.get("child")).isInstanceOf(Map.class);
