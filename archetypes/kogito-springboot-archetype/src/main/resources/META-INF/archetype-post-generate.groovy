@@ -58,8 +58,8 @@ def addDependenciesToPOM(String starters, String addons) {
     }
     artifacts = artifacts.plus(addonsToArtifactsIds(addons))
 
-    def pomFile = new File(request.getOutputDirectory() + "/" + request.getArtifactId() + "/pom.xml")
-    def pomXml = new XmlParser().parse(pomFile)
+    def pomPath = Paths.get(request.getOutputDirectory(), request.getArtifactId(), "pom.xml")
+    def pomXml = new XmlParser().parse(pomPath.toFile())
     artifacts.each { artifact ->
         def depNode = new Node(null, "dependency")
         depNode.appendNode("groupId", null, "org.kie.kogito")
@@ -67,7 +67,7 @@ def addDependenciesToPOM(String starters, String addons) {
         depNode.appendNode("version", null, '${kogito.version}')
         pomXml.dependencies[0].children().add(0, depNode)
     }
-    def writer = new FileWriter(request.getOutputDirectory() + "/" + request.getArtifactId() + "/pom.xml")
+    def writer = new FileWriter(pomPath.toString())
     // removing unnecessary white spaces
     XmlUtil.serialize(XmlUtil.serialize(pomXml).trim().replace("\n", "").replaceAll("( *)<", "<"), writer)
 }
@@ -81,7 +81,7 @@ def removeUnneededResources(String starters, String appPackage) {
         return
     }
     Path projectPath = Paths.get(request.outputDirectory, request.artifactId)
-    String packagePath = appPackage.replace(".", "/")
+    String packagePath = appPackage.replace(".", File.separator)
     if (!starters.contains("processes")) {
         // no need to keep BPMN files
         Files.deleteIfExists(projectPath.resolve("src/main/resources/test-process.bpmn2"))

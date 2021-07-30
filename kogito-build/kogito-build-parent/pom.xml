@@ -1266,6 +1266,21 @@ limitations under the License.
           <artifactId>jsonschema2pojo-maven-plugin</artifactId>
           <version>${version.org.jsonschema2pojo-maven-plugin}</version>
         </plugin>
+        <plugin>
+          <!-- The gmavenplus plugin is used to compile Groovy code. To learn more about this plugin,
+          visit https://github.com/groovy/GMavenPlus/wiki -->
+          <groupId>org.codehaus.gmavenplus</groupId>
+          <artifactId>gmavenplus-plugin</artifactId>
+          <version>${version.org.codehaus.gmavenplus}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+                <goal>compileTests</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 

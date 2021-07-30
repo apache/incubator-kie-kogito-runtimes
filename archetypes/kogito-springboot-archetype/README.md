@@ -40,9 +40,9 @@ The list of valid Kogito Spring Boot Starters are:
 4. [`serverless-workflows`](../../springboot/starters/kogito-serverless-workflow-spring-boot-starter)
 5. [`predictions`](../../springboot/starters/kogito-predictions-spring-boot-starter)
 
-## Adding Kogito Addons
+## Adding Kogito Add-Ons
 
-You can add any Kogito Addons available for Spring Boot during the project creation.
+You can add any Kogito Add-Ons available for Spring Boot during the project creation.
 
 Run the following command with the property `addons` with every addon you want to be added to the project as a comma
 separated list:
@@ -57,7 +57,10 @@ mvn archetype:generate \
     -Daddons=monitoring-prometheus,persistence-infinispan
 ```
 
-For a list of valid Kogito Spring Boot addons, please check [this table](../../springboot/addons).
+For a list of valid add-ons, see these listings:
+
+- [Spring Boot Add-Ons](../../springboot/addons)
+- [Runtime Independent Add-Ons](../../addons)
 
 Please note that you don't need to add the suffix `kogito-addons-springboot` to the name of the addon. For example, to
 include `kogito-addons-springboot-monitoring-prometheus` just use `monitoring-prometheus`.
