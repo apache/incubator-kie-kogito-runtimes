@@ -1,6 +1,6 @@
-# Kogito Explainability Addon
+# Kogito Explainability Add-on
 
-The Kogito Explainability Addon enables the integration with Explainability and Trusty Services. See 
+The Kogito Explainability Add-on enables the integration with Explainability and Trusty Services. See 
 our [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-trusty-service_kogito-configuring)
 to find out more.
 

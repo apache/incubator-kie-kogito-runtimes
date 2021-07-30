@@ -1,4 +1,4 @@
-# Kogito Events Addon
+# Kogito Events Add-on
 
 The Kogito Events add-on adds the capability to handle use cases with events on Kogito projects. See the following documentation sections to find out more.
 

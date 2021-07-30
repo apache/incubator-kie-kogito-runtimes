@@ -1,6 +1,6 @@
-# Kogito Monitoring Addons
+# Kogito Monitoring Add-ons
 
-The Kogito Monitoring Addons add monitoring capabilities to Kogito projects. See 
+The Kogito Monitoring Add-ons add monitoring capabilities to Kogito projects. See 
 the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#_metrics_monitoring_in_kogito_services)
 for more information about how to use them in your project.
 

@@ -1,8 +1,8 @@
-# Kogito Spring Boot Addons
+# Kogito Spring Boot Add-ons
 
-In this module you will find all the addons supported by the community for Spring Boot Kogito projects:
+In this module you will find all the add-ons supported by the community for Spring Boot Kogito projects:
 
-<!-- Please update this table in alphabetical order when creating a new addon -->
+<!-- Please update this table in alphabetical order when creating a new add-on -->
 
 | Add-On Description  | Artifact ID                           | Since             |
 |---------------------|---------------------------------------|-------------------|
@@ -22,4 +22,4 @@ In this module you will find all the addons supported by the community for Sprin
 
 ## Contributing
 
-To know more about creating a new addon, please check the main `addons` module [README](../../addons/README.md).
+To know more about creating a new add-on, please check the main `addons` module [README](../../addons/README.md).

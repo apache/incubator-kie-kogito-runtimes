@@ -1,6 +1,6 @@
-# Kogito Process SVG Addon
+# Kogito Process SVG Add-on
 
-The Kogito Process SVG Addon adds the capability to enable SVG visualization to process diagrams. See
+The Kogito Process SVG Add-on adds the capability to enable SVG visualization to process diagrams. See
 the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-bpmn-process-svg-addon_kogito-developing-process-services)
 to find out more.
 

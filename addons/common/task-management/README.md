@@ -1,6 +1,6 @@
-# Kogito Task Management Addon
+# Kogito Task Management Add-on
 
-The Kogito Task Management Addon enables integration with the Kogito supporting 
+The Kogito Task Management Add-on enables integration with the Kogito supporting 
 service [Task Console](https://github.com/kiegroup/kogito-apps/tree/master/task-console). See 
 the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-task-console_kogito-developing-process-services)
 to find out more.

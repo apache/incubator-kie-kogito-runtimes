@@ -1,6 +1,6 @@
-# Kogito Process Management Addon
+# Kogito Process Management Add-on
 
-The Kogito Process Management Addons add process management capability to Kogito projects and are also part of the integration with the
+The Kogito Process Management Add-ons add process management capability to Kogito projects and are also part of the integration with the
 [Kogito Management Console](https://github.com/kiegroup/kogito-apps/tree/master/management-console). See
 the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-bpmn-process-management-addon_kogito-developing-process-services)
 to find out more.
