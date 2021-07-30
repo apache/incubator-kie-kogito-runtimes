@@ -1,14 +1,13 @@
 # Kogito Events Addon
 
-Adds the capability to handle with events use cases on Kogito projects. Please find out more in the following sections
-of our official documentation:
+The Kogito Events add-on adds the capability to handle use cases with events on Kogito projects. See the following documentation sections to find out more.
 
 - [Kogito runtime events](https://docs.jboss.org/kogito/release/latest/html_single/#con-kogito-runtime-events_kogito-configuring)
 - [Travel agency tutorial for Kogito services on OpenShift](https://docs.jboss.org/kogito/release/latest/html_single/#con-kogito-travel-agency_kogito-deploying-on-openshift)
 
 ## Examples
 
-Please check the following examples to explore more about this capability.
+See the following examples to explore more about this capability.
 
 ### DMN Event Driven
 

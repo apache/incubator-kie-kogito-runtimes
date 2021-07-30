@@ -1,8 +1,8 @@
 # Kogito CloudEvents Add-on
 
 Use this add-on to make the events produced and consumed by a Kogito project accept
-the [CloudEvents](https://cloudevents.io) format. There are many use cases where you will need to use this addon. Please
-check the following sections in our documentation to find out more:
+the [CloudEvents](https://cloudevents.io) format. There are many use cases where you can use this add-on.
+See the following sections in our documentation to find out more:
 
 - [Knative Eventing in Kogito services](https://docs.jboss.org/kogito/release/latest/html_single/#con-knative-eventing_kogito-developing-process-services)
 - [Serverless Workflow definitions](https://docs.jboss.org/kogito/release/latest/html_single/#con-serverless-workflow-definitions_kogito-orchestrating-serverless)

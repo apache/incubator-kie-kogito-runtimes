@@ -1,13 +1,13 @@
 # Kogito Mail Addon
 
-This addon enables the capability of sending emails in a Kogito Process project. An example of usage is the Kogito Task
+The Kogito Mail Addon adds the capability of sending emails in a Kogito Process project. An example of this is the Kogito Task
 Deadline use case. <!-- TODO: reference needed -->
 
 <!-- TODO: this addon is lacking documentation in the official docs. Please see: https://issues.redhat.com/browse/KOGITO-5562 -->
 
 ## Examples
 
-Please check the following examples to explore more about this capability:
+See the following examples to explore more about this addon:
 
 - [process-usertasks-custom-lifecycle-quarkus](https://github.com/kiegroup/kogito-examples/tree/stable/process-usertasks-custom-lifecycle-quarkus)
 - [process-usertasks-custom-lifecycle-springboot](https://github.com/kiegroup/kogito-examples/tree/stable/process-usertasks-custom-lifecycle-springboot)

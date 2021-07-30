@@ -1,6 +1,6 @@
 # Kogito Persistence Addons
 
-These addons add the persistence capability to Kogito projects. Please check
+The Kogito Persistence Addons add persistence capability to Kogito projects.See 
 the [official documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-persistence_kogito-developing-process-services)
 to find out more.
 
