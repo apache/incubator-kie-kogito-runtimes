@@ -154,7 +154,7 @@ public class JsonResolverTest {
         items.put("parent2", new Parent());
         items.put("child", new Child());
         items.put("string", "value");
-        Map<String, Object> output = resolver.resolveItems(items);
+        Map<String, Object> output = resolver.resolveOnlyAnnotatedItems(items);
         assertThat(output.get("parent")).isExactlyInstanceOf(Parent.class);
         assertThat(output.get("parent2")).isExactlyInstanceOf(Parent.class);
         assertThat(output.get("child")).isExactlyInstanceOf(Child.class);
@@ -167,7 +167,7 @@ public class JsonResolverTest {
         items.put("parent", new Parent());
         items.put("parent2", new ParentJson());
         items.put("string", "value");
-        Map<String, Object> output = resolver.resolveItems(items);
+        Map<String, Object> output = resolver.resolveOnlyAnnotatedItems(items);
         assertThat(output.get("parent")).isExactlyInstanceOf(Parent.class);
         assertThat(output.get("parent2")).isInstanceOf(Map.class);
         assertThat(output.get("string")).isEqualTo("value");
@@ -179,9 +179,25 @@ public class JsonResolverTest {
         items.put("parent", new Parent());
         items.put("parent2", new ParentChildJson());
         items.put("string", "value");
-        Map<String, Object> output = resolver.resolveItems(items);
+        Map<String, Object> output = resolver.resolveOnlyAnnotatedItems(items);
         assertThat(output.get("parent")).isExactlyInstanceOf(Parent.class);
         assertThat(output.get("parent2")).isInstanceOf(Map.class);
+        assertThat(output.get("string")).isEqualTo("value");
+    }
+
+    @Test
+    void testResolveAll() {
+        Map<String, Object> items = new HashMap<>();
+        items.put("parent", new Parent());
+        items.put("parent2", new ParentChildJson());
+        items.put("child", new Child());
+        items.put("child2", new ChildJson());
+        items.put("string", "value");
+        Map<String, Object> output = resolver.resolveOnlyAnnotatedItems(items);
+        assertThat(output.get("parent")).isInstanceOf(Map.class);
+        assertThat(output.get("parent2")).isInstanceOf(Map.class);
+        assertThat(output.get("child")).isInstanceOf(Map.class);
+        assertThat(output.get("child2")).isInstanceOf(Map.class);
         assertThat(output.get("string")).isEqualTo("value");
     }
 }

@@ -28,7 +28,9 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotation;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 public class JsonResolver {
 
@@ -39,6 +41,10 @@ public class JsonResolver {
      */
     public JsonResolver(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+
     }
 
     public JsonResolver() {
@@ -53,7 +59,10 @@ public class JsonResolver {
      * @param items Input items map
      * @return a new Map containing all items from input but with the resolved values to Json if applied
      */
-    public Map<String, Object> resolveItems(Map<String, Object> items) {
+    public Map<String, Object> resolveOnlyAnnotatedItems(Map<String, Object> items) {
+        if (Objects.isNull(items)) {
+            return null;
+        }
         Map<String, Map> resolved = items.entrySet().stream()
                 .filter(v -> Objects.nonNull(v.getValue()))
                 .filter(v -> hasJacksonAnnotations(v.getValue().getClass()))
@@ -64,9 +73,9 @@ public class JsonResolver {
     }
 
     public Map<String, Object> resolveAll(Map<String, Object> items) {
-        return items.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, v -> objectMapper.convertValue(v.getValue(), Map.class)));
+        return Optional.ofNullable(items)
+                .map(input -> objectMapper.convertValue(items, Map.class))
+                .orElse(null);
     }
 
     private boolean hasJacksonAnnotations(AnnotatedElement element) {
