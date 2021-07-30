@@ -18,8 +18,10 @@ package org.kie.kogito.addons.quarkus.knative.eventing;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.slf4j.Logger;
@@ -57,14 +59,14 @@ public class KnativeEventingConfigSource implements ConfigSource {
     }
 
     @Override
-    public String getValue(String s) {
-        if (URL_CONFIG.equals(s)) {
-            final String sinkUrl = System.getenv(K_SINK);
-            if (sinkUrl == null || "".equals(sinkUrl)) {
-                LOGGER.warn("{} environment variable is empty or don't exist. Please make sure that this service is a Knative Source or has a SinkBinding bound to it.", K_SINK);
+    public String getValue(String propertyName) {
+        if (URL_CONFIG.equals(propertyName)) {
+            final Optional<String> sinkUrl = ConfigProvider.getConfig().getOptionalValue(K_SINK, String.class);
+            if (!sinkUrl.isPresent() || "".equals(sinkUrl.get())) {
+                LOGGER.warn("{} variable is empty or don't exist. Please make sure that this service is a Knative Source or has a SinkBinding bound to it.", K_SINK);
             }
         }
-        return configuration.get(s);
+        return configuration.get(propertyName);
     }
 
     @Override

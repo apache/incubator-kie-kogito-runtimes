@@ -31,26 +31,16 @@ public final class MessagePayloadDecoratorProvider implements MessagePayloadDeco
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagePayloadDecoratorProvider.class);
 
     private final Set<MessagePayloadDecorator> payloadDecorators;
-    private final ServiceLoader<MessagePayloadDecorator> loader;
 
     private MessagePayloadDecoratorProvider() {
         this.payloadDecorators = new LinkedHashSet<>();
-        this.loader = ServiceLoader.load(MessagePayloadDecorator.class);
-        this.refreshPayloadDecorators();
+        final ServiceLoader<MessagePayloadDecorator> loader = ServiceLoader.load(MessagePayloadDecorator.class);
+        loader.iterator().forEachRemaining(this.payloadDecorators::add);
+        LOGGER.debug("Payload decorators loaded {}", this.payloadDecorators);
     }
 
     public static MessagePayloadDecoratorProvider getInstance() {
-        LazyHolder.INSTANCE.refreshPayloadDecorators();
         return LazyHolder.INSTANCE;
-    }
-
-    /**
-     * Can be called to refresh the list of {@link MessagePayloadDecorator} in the classpath
-     */
-    public void refreshPayloadDecorators() {
-        loader.reload();
-        loader.iterator().forEachRemaining(this.payloadDecorators::add);
-        LOGGER.debug("Payload decorators loaded {}", this.payloadDecorators);
     }
 
     public Set<MessagePayloadDecorator> getPayloadDecorators() {
@@ -64,7 +54,7 @@ public final class MessagePayloadDecoratorProvider implements MessagePayloadDeco
      * @return the CloudEvent JSON decorated
      */
     @Override
-    public String decorate(String jsonPayload) {
+    public String decorate(final String jsonPayload) {
         String decoratedPayload = jsonPayload;
         for (final MessagePayloadDecorator d : this.payloadDecorators) {
             decoratedPayload = d.decorate(decoratedPayload);

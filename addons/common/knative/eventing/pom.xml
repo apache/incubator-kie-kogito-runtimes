@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-addons-knative-eventing</artifactId>
-  <name>Kogito :: Addons :: Knative :: Eventing</name>
+  <name>Kogito :: Add-Ons :: Knative :: Eventing</name>
   <description>Common library for Kogito Knative Eventing Addons implementations</description>
 
   <dependencies>
