@@ -48,7 +48,7 @@ def startersToArtifactIds(String starters) {
                 log.warn("Can't find supported Kogito Spring Boot Starter with id '{}'. Make sure that the starter id is correct. Skipping.", starterId)
                 return null
             }
-            return found.addon
+            return found.starter
         }
     }.findAll { it -> it != null }
 }
