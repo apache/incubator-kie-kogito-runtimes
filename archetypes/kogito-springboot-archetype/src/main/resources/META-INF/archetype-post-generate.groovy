@@ -18,34 +18,82 @@
 
 import groovy.xml.XmlParser
 import groovy.xml.XmlUtil
+import org.slf4j.LoggerFactory
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
+log = LoggerFactory.getLogger("org.apache.maven")
+
 /**
  * Verify if the starters in the parameters are valid and convert them into actual artifact ids
  */
-static def startersToArtifactIds(String starters) {
+def startersToArtifactIds(String starters) {
     if (starters == "" || starters == null) {
         return []
     }
-    def validStarters = ['processes', 'rules', 'decisions', 'serverless-workflows', 'predictions']
+    def validStarters = [
+            [id: "processes", starter: "kogito-processes-spring-boot-starter"],
+            [id: "rules", starter: "kogito-rules-spring-boot-starter"],
+            [id: "decisions", starter: "kogito-decisions-spring-boot-starter"],
+            [id: "serverless-workflows", starter: "kogito-serverless-workflows-spring-boot-starter"],
+            [id: "predictions", starter: "kogito-predictions-spring-boot-starter"]
+    ]
     def startersList = starters.split(",")
-    return startersList.findAll { starter -> validStarters.find { it == starter } != null }
-            .collect {
-                starter -> "kogito-" + starter + "-spring-boot-starter"
+    return startersList.collect { starterId ->
+        {
+            def found = validStarters.find { it -> it.id == starterId }
+            if (found == null) {
+                log.warn("Can't find supported Kogito Spring Boot Starter with id '{}'. Make sure that the starter id is correct. Skipping.", starterId)
+                return null
             }
+            return found.addon
+        }
+    }.findAll { it -> it != null }
 }
 
 /**
  * Convert the addons list to actual Kogito Addons artifacts Ids
  */
-static def addonsToArtifactsIds(String addons) {
+def addonsToArtifactsIds(String addons) {
     if (addons == "" || addons == null) {
         return []
     }
-    return addons.split(",").collect { addon -> "kogito-addons-springboot-" + addon }
+    // this list should be maintained manually for now for each generic/spring boot add-on we create
+    // see: https://issues.redhat.com/browse/KOGITO-5619
+    def validAddons = [
+            [id: "persistence-filesystem", addon: "kogito-addons-persistence-filesystem"],
+            [id: "persistence-infinispan", addon: "kogito-addons-persistence-infinispan"],
+            [id: "persistence-jdbc", addon: "kogito-addons-persistence-jdbc"],
+            [id: "persistence-mongodb", addon: "kogito-addons-persistence-mongodb"],
+            [id: "persistence-postgresql", addon: "kogito-addons-persistence-postgresql"],
+            [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
+            [id: "cloudevents", addon: "kogito-addons-springboot-cloudevents"],
+            [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],
+            [id: "events-kafka", addon: "kogito-addons-springboot-events-kafka"],
+            [id: "explainability", addon: "kogito-addons-springboot-explainability"],
+            [id: "jobs-management", addon: "kogito-addons-springboot-jobs-management"],
+            [id: "mail", addon: "kogito-addons-springboot-mail"],
+            [id: "monitoring-elastic", addon: "kogito-addons-springboot-monitoring-elastic"],
+            [id: "monitoring-prometheus", addon: "kogito-addons-springboot-monitoring-prometheus"],
+            [id: "process-management", addon: "kogito-addons-springboot-process-management"],
+            [id: "process-svg", addon: "kogito-addons-springboot-process-svg"],
+            [id: "task-management", addon: "kogito-addons-springboot-task-management"],
+            [id: "task-notification", addon: "kogito-addons-springboot-task-notification"],
+            [id: "tracing-decision", addon: "kogito-addons-springboot-tracing-decision"]
+    ]
+    def addonsList = addons.split(",")
+    return addonsList.collect { addonId ->
+        {
+            def found = validAddons.find { it -> it.id == addonId }
+            if (found == null) {
+                log.warn("Can't find supported Kogito Add-On with id '{}'. Make sure that the add-on id is correct. Skipping.", addonId)
+                return null
+            }
+            return found.addon
+        }
+    }.findAll { it -> it != null }
 }
 
 /**
