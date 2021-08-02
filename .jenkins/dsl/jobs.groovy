@@ -4,7 +4,9 @@ import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
 
 def getDefaultJobParams() {
-    return KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
+    def jobParams = KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
+    jobParams.pr.excluded_regions.add('docsimg/.*')
+    return jobParams
 }
 
 def getJobParams(String jobName, String jobFolder, String jenkinsfileName, String jobDescription = '') {
@@ -28,7 +30,10 @@ Map getMultijobPRConfig() {
             ], [
                 id: 'Optaplanner',
                 dependsOn: 'Runtimes',
-                repository: 'optaplanner'
+                repository: 'optaplanner',
+                // TODO remove once https://issues.redhat.com/browse/KOGITO-4113 is done 
+                // as it will become the default path
+                jenkinsfile: '.ci/jenkins/Jenkinsfile',
             ], [
                 id: 'Apps',
                 dependsOn: 'Optaplanner',
@@ -38,6 +43,9 @@ Map getMultijobPRConfig() {
                 dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
             ]
+        ],
+        extraEnv : [
+            ENABLE_SONARCLOUD: Utils.isMainBranch(this)
         ]
     ]
 }
@@ -50,32 +58,28 @@ if (Utils.isMainBranch(this)) {
     // Old PR checks.
     // To be removed once supported release branches (<= 1.7.x) are no more there.
     setupPrJob()
-    // Disabled until Quarkus 2.2 is out
-    // Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
-    // setupQuarkusLTSPrJob()
+    setupQuarkusLTSPrJob()
     setupNativePrJob()
     // End of old PR checks
 
     setupDeployJob(bddRuntimesPrFolder, KogitoJobType.PR)
+
+    // Sonarcloud analysis only on main branch
+    // As we have only Community edition
+    setupSonarCloudJob(nightlyBranchFolder)
 }
 
 // PR checks
 setupMultijobPrDefaultChecks()
 setupMultijobPrNativeChecks()
-// Disabled until Quarkus 2.2 is out
-// Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
-// setupMultijobPrLTSChecks()
+setupMultijobPrLTSChecks()
 
 // Nightly jobs
 if (Utils.isMainBranch(this)) {
     setupDroolsJob(nightlyBranchFolder)
 
     setupQuarkusJob(nightlyBranchFolder, 'main')
-    // Disabled until Quarkus 2.2 is out
-    // Follow-up issue: https://issues.redhat.com/browse/KOGITO-5487
-    // setupQuarkusJob(nightlyBranchFolder, "${QUARKUS_LTS_VERSION}")
 }
-setupSonarCloudJob(nightlyBranchFolder)
 setupNativeJob(nightlyBranchFolder)
 setupDeployJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
 setupPromoteJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
@@ -86,6 +90,9 @@ if (!Utils.isMainBranch(this)) {
     setupPromoteJob(releaseBranchFolder, KogitoJobType.RELEASE)
 }
 
+if (Utils.isLTSBranch(this)) {
+    setupQuarkusJob(nightlyBranchFolder, Utils.getQuarkusLTSVersion(this))
+}
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////
@@ -170,7 +177,7 @@ void setupSonarCloudJob(String jobFolder) {
 }
 
 void setupNativeJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-native', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native Testing')
+    def jobParams = getJobParams('kogito-runtimes-native', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native Testing')
     jobParams.triggers = [ cron : 'H 6 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -206,6 +213,8 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
             stringParam('PROJECT_VERSION', '', 'Set the project version')
+
+            booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
 
         environmentVariables {
@@ -254,6 +263,8 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
             stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
 
             stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
+
+            booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
 
         environmentVariables {

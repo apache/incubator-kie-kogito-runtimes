@@ -69,8 +69,8 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
         messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
     }
 
-    private EmitterConfiguration emitterConf(String name) {
-        return new EmitterConfiguration(name, false, null, null);
+    private EmitterConfiguration emitterConf(String channel) {
+        return new EmitterConfiguration(channel, false, null, null);
     }
 
     @Override
@@ -88,6 +88,6 @@ public class QuarkusMultiCloudEventEmitter implements EventEmitter, ChannelRegis
 
     @Override
     public void initialize() {
-        channelResolver.getOuputChannels().stream().map(this::emitterConf).forEach(mediatorManager::addEmitter);
+        channelResolver.getOutputChannels().stream().map(this::emitterConf).forEach(mediatorManager::addEmitter);
     }
 }

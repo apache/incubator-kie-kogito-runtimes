@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.drools.core.io.impl.FileSystemResource;
 import org.drools.core.util.StringUtils;
@@ -43,6 +44,8 @@ import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
+import org.jbpm.process.core.validation.ProcessValidationError;
+import org.jbpm.process.core.validation.ProcessValidatorRegistry;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.api.io.Resource;
@@ -59,6 +62,9 @@ import org.kie.kogito.codegen.process.events.CloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.process.validation.ValidationContext;
+import org.kie.kogito.process.validation.ValidationException;
+import org.kie.kogito.process.validation.ValidationLogDecorator;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,15 +112,23 @@ public class ProcessCodegen extends AbstractGenerator {
     public static ProcessCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         Map<String, String> processSVGMap = new HashMap<>();
         boolean useSvgAddon = context.getAddonsConfig().useProcessSVG();
-        List<Process> processes = resources.stream()
+        final List<Process> processes = resources.stream()
                 .map(CollectedResource::resource)
                 .flatMap(resource -> {
                     if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
-                        Collection<Process> p = parseProcessFile(resource);
-                        if (useSvgAddon && resource instanceof FileSystemResource) {
-                            processSVG((FileSystemResource) resource, resources, p, processSVGMap);
+                        try {
+                            Collection<Process> p = parseProcessFile(resource);
+                            if (useSvgAddon && resource instanceof FileSystemResource) {
+                                processSVG((FileSystemResource) resource, resources, p, processSVGMap);
+                            }
+                            return p.stream();
+                        } catch (ValidationException e) {
+                            //TODO: add all errors during parsing phase in the ValidationContext itself
+                            ValidationContext.get()
+                                    .add(resource.getSourcePath(), e.getErrors())
+                                    .putException(e);
+                            return Stream.empty();
                         }
-                        return p.stream();
                     } else {
                         return SUPPORTED_SW_EXTENSIONS.entrySet()
                                 .stream()
@@ -122,12 +136,38 @@ public class ProcessCodegen extends AbstractGenerator {
                                 .map(e -> parseWorkflowFile(resource, e.getValue()));
                     }
                 })
+                //Validate parsed processes
+                .map(ProcessCodegen::validate)
                 .collect(toList());
+
         if (useSvgAddon) {
             context.addContextAttribute(ContextAttributesConstants.PROCESS_AUTO_SVG_MAPPING, processSVGMap);
         }
 
+        handleValidation();
+
         return ofProcesses(context, processes);
+    }
+
+    private static void handleValidation() {
+        ValidationContext validationContext = ValidationContext.get();
+        if (validationContext.hasErrors()) {
+            //we may provide different validation decorators, for now just in logging in the console
+            ValidationLogDecorator decorator = ValidationLogDecorator
+                    .of(validationContext)
+                    .decorate();
+            Optional<Exception> cause = validationContext.exception();
+            validationContext.clear();
+            //rethrow exception to break the flow after decoration
+            throw new ProcessCodegenException(decorator.simpleMessage(), cause);
+        }
+    }
+
+    private static Process validate(Process process) {
+        ProcessValidationError[] errors = ProcessValidatorRegistry.getInstance().getValidator(process, process.getResource()).validateProcess(process);
+        //TODO: use the validation context in the ProcessValidator itself
+        Arrays.stream(errors).forEach(e -> ValidationContext.get().add(process.getId(), e));
+        return process;
     }
 
     private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,
@@ -209,8 +249,6 @@ public class ProcessCodegen extends AbstractGenerator {
             return xmlReader.read(reader);
         } catch (SAXException | IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
-        } catch (RuntimeException e) {
-            throw new ProcessCodegenException(r.getSourcePath(), e);
         }
     }
 
@@ -249,6 +287,7 @@ public class ProcessCodegen extends AbstractGenerator {
         List<MessageDataEventGenerator> mdegs = new ArrayList<>(); // message data events
         List<MessageConsumerGenerator> megs = new ArrayList<>(); // message endpoints/consumers
         List<MessageProducerGenerator> mpgs = new ArrayList<>(); // message producers
+        Map<String, EventReceiverGenerator> eventReceiverGenerators = new HashMap<>();
 
         Map<String, ModelClassGenerator> processIdToModelGenerator = new HashMap<>();
         Map<String, InputModelClassGenerator> processIdToInputModelGenerator = new HashMap<>();
@@ -281,6 +320,11 @@ public class ProcessCodegen extends AbstractGenerator {
         // with the data classes that we have already resolved
         ProcessToExecModelGenerator execModelGenerator =
                 new ProcessToExecModelGenerator(context().getClassLoader());
+
+        ChannelResolverGenerator channelGenerator = null;
+        if (context().getAddonsConfig().useMultiChannel()) {
+            channelGenerator = new ChannelResolverGenerator(context());
+        }
 
         // collect all process descriptors (exec model)
         for (KogitoWorkflowProcess workFlowProcess : processes.values()) {
@@ -341,11 +385,10 @@ public class ProcessCodegen extends AbstractGenerator {
 
                     // generate message consumers for processes with message start events
                     if (trigger.getType().equals(TriggerMetaData.TriggerType.ConsumeMessage)) {
-
+                        String eventListenerName = '_' + trigger.getName() + "_trigger";
                         MessageDataEventGenerator msgDataEventGenerator =
                                 new MessageDataEventGenerator(context(), workFlowProcess, trigger);
                         mdegs.add(msgDataEventGenerator);
-
                         megs.add(new MessageConsumerGenerator(
                                 context(),
                                 workFlowProcess,
@@ -353,7 +396,11 @@ public class ProcessCodegen extends AbstractGenerator {
                                 execModelGen.className(),
                                 applicationCanonicalName(),
                                 msgDataEventGenerator.className(),
-                                trigger));
+                                trigger,
+                                eventListenerName));
+                        if (context().getAddonsConfig().useMultiChannel()) {
+                            eventReceiverGenerators.computeIfAbsent(trigger.getName(), t -> new EventReceiverGenerator(context(), eventListenerName, trigger));
+                        }
                     } else if (trigger.getType().equals(TriggerMetaData.TriggerType.ProduceMessage)) {
 
                         MessageDataEventGenerator msgDataEventGenerator =
@@ -366,6 +413,9 @@ public class ProcessCodegen extends AbstractGenerator {
                                 execModelGen.className(),
                                 msgDataEventGenerator.className(),
                                 trigger));
+                        if (channelGenerator != null) {
+                            channelGenerator.addOutputChannel(trigger.getName());
+                        }
                     }
                 }
             }
@@ -374,6 +424,19 @@ public class ProcessCodegen extends AbstractGenerator {
 
             ps.add(p);
             pis.add(pi);
+        }
+
+        if (channelGenerator != null) {
+            storeFile(MODEL_TYPE, channelGenerator.generateFilePath(), channelGenerator.generate());
+            for (EventReceiverGenerator eventRecGenerator : eventReceiverGenerators.values()) {
+                storeFile(MODEL_TYPE, eventRecGenerator.generateFilePath(), eventRecGenerator.generate());
+            }
+        }
+
+        for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
+            ModelMetaData mmd = modelClassGenerator.generate();
+            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
+                    mmd.generate());
         }
 
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
@@ -405,7 +468,7 @@ public class ProcessCodegen extends AbstractGenerator {
             }
         }
 
-        if (context().hasREST()) {
+        if (context().hasRESTForGenerator(this)) {
             for (ProcessResourceGenerator resourceGenerator : rgs) {
                 storeFile(REST_TYPE, resourceGenerator.generatedFilePath(),
                         resourceGenerator.generate());
@@ -445,7 +508,7 @@ public class ProcessCodegen extends AbstractGenerator {
         }
 
         // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        if (context().getAddonsConfig().useCloudEvents() && context().hasREST() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
+        if (context().getAddonsConfig().useCloudEvents() && context().hasRESTGloballyAvailable() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
             final CloudEventsResourceGenerator ceGenerator =
                     new CloudEventsResourceGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
@@ -455,7 +518,7 @@ public class ProcessCodegen extends AbstractGenerator {
             svgs.keySet().stream().forEach(key -> storeFile(GeneratedFileType.RESOURCE, "META-INF/processSVG/" + key + ".svg", svgs.get(key)));
         }
 
-        if (context().hasREST()) {
+        if (context().hasRESTForGenerator(this)) {
             final CloudEventMetaFactoryGenerator topicsGenerator =
                     new CloudEventMetaFactoryGenerator(context(), processExecutableModelGenerators);
             storeFile(REST_TYPE, topicsGenerator.generatedFilePath(), topicsGenerator.generate());
@@ -464,7 +527,6 @@ public class ProcessCodegen extends AbstractGenerator {
         for (ProcessInstanceGenerator pi : pis) {
             storeFile(PROCESS_INSTANCE_TYPE, pi.generatedFilePath(), pi.generate());
         }
-
         return generatedFiles;
     }
 

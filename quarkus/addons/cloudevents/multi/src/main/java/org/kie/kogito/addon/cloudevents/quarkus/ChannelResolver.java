@@ -15,11 +15,9 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus;
 
-import java.util.Collection;
+import java.util.Set;
 
 public interface ChannelResolver {
 
-    Collection<String> getOuputChannels();
-
-    Collection<String> getInputChannels();
+    Set<String> getOutputChannels();
 }
