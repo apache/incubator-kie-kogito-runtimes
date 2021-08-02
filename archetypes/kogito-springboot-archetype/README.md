@@ -63,6 +63,8 @@ For a list of valid add-ons, see these listings:
 - [Runtime Independent Add-Ons](../../addons)
 
 Please note that you don't need to add the suffix `kogito-addons-springboot` to the name of the addon. For example, to
-include `kogito-addons-springboot-monitoring-prometheus` just use `monitoring-prometheus`.
+include `kogito-addons-springboot-monitoring-prometheus` just use `monitoring-prometheus`. For runtime independent
+add-ons, just suppress the `kogito-addons` suffix. So for `kogito-addons-persistence-infinispan`
+use `persistence-infinispan`.
 
 > `starters` and `addons` can be used together to create a Kogito project that meets your requirements.
