@@ -1,6 +1,6 @@
 # Generate Kogito Project based on Spring Boot runtimes
 
-To generate a new project based on Spring Boot use the following command:
+To generate a new project based on Spring Boot, perform the following command:
 
 ```shell
 mvn archetype:generate \
@@ -11,7 +11,7 @@ mvn archetype:generate \
     -DartifactId=sample-kogito
 ```
 
-Optionally, you can customize the generation of your Spring Boot project. See the next sections how to do it.
+To customize the generation of your Spring Boot project, see the following sections.
 
 ## Adding Kogito Spring Boot Starters
 
@@ -67,4 +67,4 @@ include `kogito-addons-springboot-monitoring-prometheus` just use `monitoring-pr
 add-ons, just suppress the `kogito-addons` suffix. So for `kogito-addons-persistence-infinispan`
 use `persistence-infinispan`.
 
-> `starters` and `addons` can be used together to create a Kogito project that meets your requirements.
+> You can use `starters` and `addons` together to create a Kogito project that meets your requirements.
