@@ -23,8 +23,4 @@ public class KogitoEventStreams {
 
     private KogitoEventStreams() {
     }
-
-    public static String getReceiverBeanName(String trigger) {
-        return '_' + trigger + "_EventReceiver";
-    }
 }
