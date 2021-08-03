@@ -19,12 +19,7 @@ package org.kie.kogito.serialization.process.protobuf;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.infinispan.protostream.FileDescriptorSource;
@@ -62,16 +57,23 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         return Arrays.asList("META-INF/kogito-types.proto", "META-INF/application-types.proto");
     }
 
+    private boolean isKogitoPackage(FileDescriptor fd){
+        return fd != null && "kogito".equals(fd.getPackage());
+    }
+
+    // we transform protostream to protobuf descriptors
     private List<com.google.protobuf.Descriptors.FileDescriptor> build() throws IOException, DescriptorValidationException {
         SerializationContextImpl context = buildSerializationContext();
 
-        // we transform protostream to protobuf descriptors
         List<com.google.protobuf.Descriptors.FileDescriptor> protos = new ArrayList<>();
         Map<String, FileDescriptor> descriptors = context.getFileDescriptors();
-        for (Map.Entry<String, FileDescriptor> entry : descriptors.entrySet()) {
-            com.google.protobuf.Descriptors.FileDescriptor[] deps = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
-            protos.add(Descriptors.FileDescriptor.buildFrom(buildMessageTypes(entry.getValue()),deps));
-            protos.add(Descriptors.FileDescriptor.buildFrom(buildEnumTypes(entry.getValue()),deps));
+        // make sure kogito-types is processed first or else will be missing as dependency for the application types
+        Comparator<FileDescriptor> fdComparator = (fd1, fd2) -> isKogitoPackage(fd1) ? -1 : (isKogitoPackage(fd2) ? 1 : 0);
+        List<FileDescriptor> descriptorsSorted = descriptors.values().stream().sorted(fdComparator).collect(Collectors.toList());
+        for (FileDescriptor entry : descriptorsSorted) {
+            com.google.protobuf.Descriptors.FileDescriptor[] dependencies = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
+            protos.add(Descriptors.FileDescriptor.buildFrom(buildMessageTypes(entry), dependencies));
+            protos.add(Descriptors.FileDescriptor.buildFrom(buildEnumTypes(entry), dependencies));
         }
         return protos;
     }
@@ -152,7 +154,12 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         fieldBuilder.setType(buildFieldTypeDescriptor(descriptor.getType()));
         EnumSet<FieldDescriptorProto.Type> set = EnumSet.of(FieldDescriptorProto.Type.TYPE_ENUM, FieldDescriptorProto.Type.TYPE_MESSAGE);
         if(set.contains(fieldBuilder.getType())) {
-            fieldBuilder.setTypeName(descriptor.getTypeName());
+            if(isKogitoPackage(descriptor.getMessageType().getFileDescriptor())) {
+                fieldBuilder.setTypeName("." + descriptor.getTypeName());
+            }
+            else {
+                fieldBuilder.setTypeName(descriptor.getTypeName());
+            }
         }
         fieldBuilder.setProto3Optional(!descriptor.isRequired());
         return fieldBuilder.build();
