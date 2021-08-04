@@ -18,7 +18,10 @@ package org.kie.kogito.maven.plugin;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +32,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.kie.kogito.KogitoDrools;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.Generator;
@@ -44,9 +48,26 @@ import org.kie.kogito.codegen.prediction.PredictionCodegen;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
+import org.kie.kogito.dmn.KogitoDecisions;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
+import org.kie.kogito.pmml.KogitoPredictions;
+import org.kie.kogito.process.KogitoProcesses;
+import org.kie.kogito.serverless.workflow.KogitoServerlessWorkflow;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
+
+    protected static final Map<String, Collection<String>> engineToRuntimeClass = new HashMap<>();
+
+    static {
+        engineToRuntimeClass.put(IncrementalRuleCodegen.GENERATOR_NAME,
+                Collections.singletonList(KogitoDrools.class.getCanonicalName()));
+        engineToRuntimeClass.put(ProcessCodegen.GENERATOR_NAME,
+                Arrays.asList(KogitoProcesses.class.getCanonicalName(), KogitoServerlessWorkflow.class.getCanonicalName()));
+        engineToRuntimeClass.put(PredictionCodegen.GENERATOR_NAME,
+                Collections.singletonList(KogitoPredictions.class.getCanonicalName()));
+        engineToRuntimeClass.put(DecisionCodegen.GENERATOR_NAME,
+                Collections.singletonList(KogitoDecisions.class.getCanonicalName()));
+    }
 
     @Parameter(required = true, defaultValue = "${project.basedir}")
     protected File projectDir;
@@ -67,7 +88,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     protected File generatedResources;
 
     @Parameter(property = "kogito.codegen.persistence", defaultValue = "true")
-    protected boolean persistence;
+    protected String persistence;
 
     @Parameter(property = "kogito.codegen.rules", defaultValue = "true")
     protected String generateRules;
@@ -134,11 +155,32 @@ public abstract class AbstractKieMojo extends AbstractMojo {
             }
         });
 
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + IncrementalRuleCodegen.GENERATOR_NAME, generateRules);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + ProcessCodegen.GENERATOR_NAME, generateProcesses);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + PredictionCodegen.GENERATOR_NAME, generatePredictions);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + DecisionCodegen.GENERATOR_NAME, generateDecisions);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + PersistenceGenerator.GENERATOR_NAME, persistence);
+        disableGeneratorIfNecessary(context, IncrementalRuleCodegen.GENERATOR_NAME, generateRules);
+        disableGeneratorIfNecessary(context, ProcessCodegen.GENERATOR_NAME, generateProcesses);
+        disableGeneratorIfNecessary(context, PredictionCodegen.GENERATOR_NAME, generateProcesses);
+        disableGeneratorIfNecessary(context, DecisionCodegen.GENERATOR_NAME, generateProcesses);
+        disableGeneratorIfNecessary(context, PersistenceGenerator.GENERATOR_NAME, generateProcesses);
+    }
+
+    /**
+     * A generator can be disabled explicitly with a property or if the corresponding runtime marker class is not available
+     */
+    private void disableGeneratorIfNecessary(KogitoBuildContext context, String generatorName, String enableProperty) {
+        if ("false".equalsIgnoreCase(enableProperty) || !engineToRuntimeClass.containsKey(generatorName)) {
+            context.setApplicationProperty(Generator.CONFIG_PREFIX + generatorName, enableProperty);
+            return;
+        }
+
+        Collection<String> runtimeMarkerClasses = engineToRuntimeClass.get(generatorName);
+        for (String runtimeMarkerClass : runtimeMarkerClasses) {
+            if (context.hasClassAvailable(runtimeMarkerClass)) {
+                context.setApplicationProperty(Generator.CONFIG_PREFIX + generatorName, "true");
+                return;
+            }
+        }
+
+        getLog().info(String.format("Disabling '%s' generator because runtime classes not available (%s)", generatorName, String.join(",", runtimeMarkerClasses)));
+        context.setApplicationProperty(Generator.CONFIG_PREFIX + generatorName, "false");
     }
 
     private KogitoBuildContext.Builder contextBuilder() {
