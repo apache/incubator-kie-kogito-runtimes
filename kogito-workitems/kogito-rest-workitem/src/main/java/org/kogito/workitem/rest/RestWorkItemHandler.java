@@ -21,17 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.jbpm.workflow.instance.NodeInstance;
-import org.jbpm.workflow.instance.impl.MVELProcessHelper;
-import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.jbpm.workflow.instance.impl.WorkItemHandlerParamResolver;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
@@ -39,6 +39,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
+import org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
@@ -68,32 +69,24 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
     private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
+    private static final Map<String, RestWorkItemHandlerBodyBuilder> BODY_BUILDERS = Stream
+            .of(DEFAULT_BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder())
+            .collect(Collectors.toMap(b -> b.getClass().getSimpleName(), b -> b));
 
     // package scoped to allow unit test
     static class RestUnaryOperator implements UnaryOperator<Object> {
 
         private Object inputModel;
-        private KogitoWorkItem workItem;
 
-        public RestUnaryOperator(Object inputModel, KogitoWorkItem workItem) {
+        public RestUnaryOperator(Object inputModel) {
             this.inputModel = inputModel;
-            this.workItem = workItem;
         }
 
         @Override
         public Object apply(Object value) {
-            if (value instanceof WorkItemHandlerParamResolver) {
-                return ((WorkItemHandlerParamResolver) value).apply(inputModel);
-            }
-            if (value instanceof String && MVELProcessHelper.validateExpression((String) value).isEmpty()) {
-                //evaluate the expression with Variables resolution
-                try {
-                    return MVELProcessHelper.evaluator().eval((String) value, new NodeInstanceResolverFactory((NodeInstance) workItem.getNodeInstance()));
-                } catch (RuntimeException e) {
-                    return value;
-                }
-            }
-            return value;
+            return value instanceof WorkItemHandlerParamResolver
+                    ? ((WorkItemHandlerParamResolver) value).apply(inputModel)
+                    : value;
         }
     }
 
@@ -125,12 +118,11 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
         RestWorkItemHandlerResult resultHandler = getParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class,
                 DEFAULT_RESULT_HANDLER);
-        RestWorkItemHandlerBodyBuilder bodyBuilder = getParam(parameters, BODY_BUILDER, RestWorkItemHandlerBodyBuilder.class,
-                DEFAULT_BODY_BUILDER);
+        RestWorkItemHandlerBodyBuilder bodyBuilder = getBodyBuilder(parameters);
 
         logger.debug("Filtered parameters are {}", parameters);
         // create request
-        UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel, workItem);
+        UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel);
         endPoint = resolvePathParams(endPoint, parameters, resolver);
         Optional<URL> url = getUrl(endPoint);
         String host = url.map(java.net.URL::getHost).orElse(hostProp);
@@ -145,6 +137,20 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         manager.completeWorkItem(workItem.getStringId(), targetInfo != null ? Collections.singletonMap(RESULT,
                 resultHandler.apply(targetInfo, response)) : Collections.emptyMap());
 
+    }
+
+    public RestWorkItemHandlerBodyBuilder getBodyBuilder(Map<String, Object> parameters) {
+        Object param = parameters.get(BODY_BUILDER);
+        if (Objects.isNull(param)) {
+            return DEFAULT_BODY_BUILDER;
+        }
+        if (param instanceof RestWorkItemHandlerBodyBuilder) {
+            return (RestWorkItemHandlerBodyBuilder) param;
+        }
+        if (param instanceof String) {
+            return BODY_BUILDERS.get(param);
+        }
+        throw new IllegalArgumentException("Invalid body builder instance " + param);
     }
 
     private Optional<URL> getUrl(String endPoint) {
@@ -179,7 +185,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         Variable variable = variableScope.findVariable(varName);
         if (variable != null) {
             try {
-                return pi.getProcess().getClass().getClassLoader().loadClass(variable.getType().getStringType());
+                return Thread.currentThread().getContextClassLoader().loadClass(variable.getType().getStringType());
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException("Problem loading type " + variable.getType().getStringType(), e);
             }
@@ -225,7 +231,17 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (value == null) {
             value = defaultValue;
         } else if (!type.isAssignableFrom(value.getClass())) {
-            value = MVELProcessHelper.evaluator().eval((String) value, type);
+            if (type.isAssignableFrom(Integer.class) && CharSequence.class.isAssignableFrom(value.getClass())) {
+                try {
+                    value = Integer.parseInt(value.toString());
+                } catch (NumberFormatException ex) {
+                    value = defaultValue;
+                }
+            } else {
+                throw new IllegalArgumentException("Parameter paramName should be of type " + type +
+                        " but it is of type " +
+                        value.getClass());
+            }
         }
         return type.cast(value);
     }
