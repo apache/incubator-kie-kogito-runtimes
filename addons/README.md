@@ -5,7 +5,7 @@ persistence, monitoring, messaging, and many other features to the Kogito servic
 
 ## Add-Ons Catalog
 
-The following table lists all the add-onss, independent of runtime implementation, supported by the Kogito Community:
+The following table lists all the add-ons, independent of runtime implementation, supported by the Kogito Community:
 
 | Add-On Description     | Artifact ID                          | Since               |
 |------------------------|--------------------------------------|---------------------|
@@ -80,7 +80,7 @@ In general, the add-on name is composed like `kogito-addons-{runtime}-{capabilit
   the capability. It's more a way to differentiate the implementations.
 
 The core add-ons don't have a `runtime` prefix either because they are the bases for the implementation by a runtime, or
-it is a generic implementation that can work either on [Quarkus](../quarkus/addons) or [Spring Boot](../quarkus/addons).
+they are a generic implementation that can work either on [Quarkus](../quarkus/addons) or [Spring Boot](../quarkus/addons).
 Check the [listing above](#addons-catalog) of the add-ons to find out more.
 
 ## Creating a new Kogito Add-on
