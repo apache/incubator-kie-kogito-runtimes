@@ -26,12 +26,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -65,6 +63,7 @@ import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
+import org.kie.kogito.event.KogitoEventStreams;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.process.validation.ValidationContext;
 import org.kie.kogito.process.validation.ValidationException;
@@ -272,22 +271,34 @@ public class ProcessCodegen extends AbstractGenerator {
         mappingStrategy = context().getAddonsConfig().useCloudEvents() ? Optional.of(getChannelMappingStrategy()) : Optional.empty();
     }
 
-    private static Optional<String> getBeanName(Map<TriggerMetaData, String> channelMapping, Map<String, EventGenerator> eventGenerators, TriggerMetaData trigger) {
+    public static String defaultWorkItemHandlerConfigClass(String packageName) {
+        return packageName + ".WorkItemHandlerConfig";
+    }
+
+    public static String defaultProcessListenerConfigClass(String packageName) {
+        return packageName + ".ProcessEventListenerConfig";
+    }
+
+    private Optional<String> getBeanName(Map<TriggerMetaData, String> channelMapping, Map<String, EventGenerator> eventGenerators, TriggerMetaData trigger) {
         String beanName = null;
-        String channel = channelMapping.get(trigger);
-        if (channel != null) {
-            EventGenerator eventGenerator = eventGenerators.get(channel);
-            if (eventGenerator != null) {
-                beanName = eventGenerator.getBeanName();
+        if (context().getAddonsConfig().useCloudEvents()) {
+            String channel = channelMapping.get(trigger);
+            if (channel != null) {
+                EventGenerator eventGenerator = eventGenerators.get(channel);
+                if (eventGenerator != null) {
+                    beanName = eventGenerator.getBeanName();
+                }
+            }
+            if (beanName == null) {
+                beanName = trigger.getType() == TriggerType.ConsumeMessage ? KogitoEventStreams.DEFAULT_INCOMING_BEAN_NAME : KogitoEventStreams.DEFAULT_OUTGOING_BEAN_NAME;
             }
         }
         return Optional.ofNullable(beanName);
     }
 
     private static ChannelMappingStrategy getChannelMappingStrategy() {
-        //TODO service loader mechanism is not the ideal approach to allow advance user to override default mapping strategy, need to reevaluate it
-        Iterator<ChannelMappingStrategy> iterator = ServiceLoader.load(ChannelMappingStrategy.class).iterator();
-        return iterator.hasNext() ? iterator.next() : new DefaultChannelMappingStrategy();
+        // If in future we want to create more strategies, we should implement then and change this method to select them based on system property 
+        return new DefaultChannelMappingStrategy();
     }
 
     @Override

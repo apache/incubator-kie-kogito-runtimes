@@ -26,6 +26,9 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 
 import org.kie.kogito.addon.cloudevents.quarkus.AbstractQuarkusCloudEventEmitter;
 
+import io.quarkus.runtime.Startup;
+
+@Startup
 @ApplicationScoped
 @Named("$BeanName$")
 public class $Trigger$EventEmitter extends AbstractQuarkusCloudEventEmitter {

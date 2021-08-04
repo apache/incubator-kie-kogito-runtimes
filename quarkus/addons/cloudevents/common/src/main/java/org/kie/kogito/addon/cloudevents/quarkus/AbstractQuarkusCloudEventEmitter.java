@@ -59,7 +59,7 @@ public abstract class AbstractQuarkusCloudEventEmitter implements EventEmitter {
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
         logger.debug("publishing event {} for type {}", e, type);
-        final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(
+        final Message<String> message = this.messageFactory.getMessageDecorator().decorate(marshaller.marshall(
                 configBean.useCloudEvents() ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
         emit(message);
         return message.getAck().get();
