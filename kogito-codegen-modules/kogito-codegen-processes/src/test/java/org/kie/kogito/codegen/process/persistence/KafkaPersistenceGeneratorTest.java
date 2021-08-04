@@ -64,7 +64,7 @@ class KafkaPersistenceGeneratorTest {
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
 
-        if (context.hasRESTForGenerator(persistenceGenerator)) {
+        if (context.hasDI()) {
             Optional<GeneratedFile> persistenceFactoryImpl = generatedFiles.stream()
                     .filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java"))
                     .findFirst();

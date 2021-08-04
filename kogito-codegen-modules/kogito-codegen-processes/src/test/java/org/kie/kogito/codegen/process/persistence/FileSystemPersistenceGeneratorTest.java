@@ -67,7 +67,7 @@ class FileSystemPersistenceGeneratorTest {
         int expectedNumberOfFiles = context.hasRESTForGenerator(persistenceGenerator) ? 15 : 14;
         assertThat(generatedFiles).hasSize(expectedNumberOfFiles);
 
-        if (context.hasRESTForGenerator(persistenceGenerator)) {
+        if (context.hasDI()) {
             Optional<GeneratedFile> persistenceFactoryImpl = generatedFiles.stream()
                     .filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java"))
                     .findFirst();

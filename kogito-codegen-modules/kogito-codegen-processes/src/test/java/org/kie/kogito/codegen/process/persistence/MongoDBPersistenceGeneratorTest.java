@@ -79,7 +79,7 @@ class MongoDBPersistenceGeneratorTest {
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
 
-        if (context.hasRESTForGenerator(persistenceGenerator)) {
+        if (context.hasDI()) {
             Optional<GeneratedFile> generatedCLASSFile = generatedFiles.stream().filter(gf -> gf.category() == GeneratedFileType.SOURCE.category())
                     .filter(f -> PERSISTENCE_FILE_PATH.equals(f.relativePath())).findAny();
             assertTrue(generatedCLASSFile.isPresent());
