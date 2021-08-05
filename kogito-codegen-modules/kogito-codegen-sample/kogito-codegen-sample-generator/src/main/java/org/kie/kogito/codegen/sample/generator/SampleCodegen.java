@@ -68,8 +68,13 @@ public class SampleCodegen implements Generator {
     }
 
     @Override
+    public boolean isEmpty() {
+        return sampleResources.isEmpty();
+    }
+
+    @Override
     public Collection<GeneratedFile> generate() {
-        if (sampleResources.isEmpty()) {
+        if (isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -87,7 +92,7 @@ public class SampleCodegen implements Generator {
                     SampleCodegen::isSampleRuntimeField).forEach(SampleCodegen::initializeSampleRuntimeField);
         }
 
-        return context.hasREST() ? Collections.singleton(new GeneratedFile(REST_TYPE, generator.generatedFilePath(), compilationUnit.toString())) : Collections.emptyList();
+        return context.hasRESTForGenerator(this) ? Collections.singleton(new GeneratedFile(REST_TYPE, generator.generatedFilePath(), compilationUnit.toString())) : Collections.emptyList();
     }
 
     @Override

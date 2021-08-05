@@ -58,7 +58,7 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 | Task Notification       | task-notification-quarkus-addon | kogito-addons-quarkus-task-notification | 
 | Tracing Decision        | tracing-decision-quarkus-addon | kogito-addons-quarkus-tracing-decision | 
 
-#### SpringBoot Add-ons
+#### Spring Boot Add-ons
 
 | Add-On Description  | Old Artifact ID | New Artifact ID |
 |---------------------|-----------------|-----------------|
@@ -80,7 +80,7 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 
 #### Common Add-ons
 
-> [1] Commons Addon-ons that are not supposed to be used by end user's projects.
+> [1] Commons Add-ons that are not supposed to be used by end user's projects.
 
 | Add-On Description  | Old Artifact ID | New Artifact ID |
 |---------------------|-----------------|-----------------|
