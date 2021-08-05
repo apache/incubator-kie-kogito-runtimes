@@ -129,7 +129,7 @@ public class ApplicationGenerator {
 
     private Optional<GeneratedFile> generateCloudEventsResource() {
         // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        if (context.getAddonsConfig().useCloudEvents() && context.hasREST() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context.name())) {
+        if (context.getAddonsConfig().useCloudEvents() && context.hasRESTGloballyAvailable() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context.name())) {
             final CloudEventsResourceGenerator ceGenerator = new CloudEventsResourceGenerator(context);
             return Optional.of(new GeneratedFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate()));
         }

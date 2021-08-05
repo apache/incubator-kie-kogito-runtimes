@@ -39,7 +39,7 @@ public class AddonsConfig {
     private final boolean useEventDrivenDecisions;
 
     private AddonsConfig(boolean usePersistence, boolean useTracing, boolean useMonitoring, boolean usePrometheusMonitoring, boolean useCloudEvents,
-                         boolean useExplainability, boolean useProcessSVG, boolean useMultiChannel, boolean useEventDrivenDecisions) {
+            boolean useExplainability, boolean useProcessSVG, boolean useMultiChannel, boolean useEventDrivenDecisions) {
         this.usePersistence = usePersistence;
         this.useTracing = useTracing;
         this.useMonitoring = useMonitoring;

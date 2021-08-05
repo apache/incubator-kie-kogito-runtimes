@@ -54,10 +54,8 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.core.events.CloudEventsResourceGenerator;
 import org.kie.kogito.codegen.process.config.ProcessConfigGenerator;
 import org.kie.kogito.codegen.process.events.ProcessCloudEventMetaFactoryGenerator;
 import org.kie.kogito.codegen.process.openapi.OpenApiClientWorkItemIntrospector;
@@ -172,7 +170,7 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     private static void processSVG(FileSystemResource resource, Collection<CollectedResource> resources,
-                                   Collection<Process> processes, Map<String, String> processSVGMap) {
+            Collection<Process> processes, Map<String, String> processSVGMap) {
         File f = resource.getFile();
         String processFileCompleteName = f.getName();
         String fileName = processFileCompleteName.substring(0, processFileCompleteName.lastIndexOf("."));
@@ -495,12 +493,6 @@ public class ProcessCodegen extends AbstractGenerator {
                 String path = (packageName + "." + clazzName).replace('.', '/') + ".java";
                 storeFile(GeneratedFileType.SOURCE, path, cp.toString());
             });
-        }
-
-        // Generic CloudEvents HTTP Endpoint will be handled by https://issues.redhat.com/browse/KOGITO-2956
-        if (context().getAddonsConfig().useCloudEvents() && context().hasRESTGloballyAvailable() && QuarkusKogitoBuildContext.CONTEXT_NAME.equals(context().name())) {
-            final CloudEventsResourceGenerator ceGenerator = new CloudEventsResourceGenerator(context());
-            storeFile(REST_TYPE, ceGenerator.generatedFilePath(), ceGenerator.generate());
         }
 
         if ((context().getAddonsConfig().useProcessSVG())) {

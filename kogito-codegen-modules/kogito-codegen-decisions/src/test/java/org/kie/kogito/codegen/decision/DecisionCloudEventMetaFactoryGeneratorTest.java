@@ -18,7 +18,6 @@ package org.kie.kogito.codegen.decision;
 
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -42,7 +41,7 @@ class DecisionCloudEventMetaFactoryGeneratorTest {
     @Test
     void testGenerateWithCloudEventsEnabled() {
         DecisionCodegen codeGenerator = buildCodegen(true);
-        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+        Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
 
         assertEquals(EXPECTED_FILES_WITH_CLOUDEVENTS, generatedFiles.size());
         assertTrue(generatedFiles.stream().anyMatch(gf -> EXPECTED_FILE_PATH.equals(gf.relativePath())));
@@ -51,7 +50,7 @@ class DecisionCloudEventMetaFactoryGeneratorTest {
     @Test
     void testGenerateWithCloudEventsDisabled() {
         DecisionCodegen codeGenerator = buildCodegen(false);
-        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+        Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
 
         assertEquals(EXPECTED_FILES_WITHOUT_CLOUDEVENTS, generatedFiles.size());
         assertFalse(generatedFiles.stream().anyMatch(gf -> EXPECTED_FILE_PATH.equals(gf.relativePath())));
