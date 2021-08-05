@@ -88,7 +88,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     protected File generatedResources;
 
     @Parameter(property = "kogito.codegen.persistence", defaultValue = "true")
-    protected String persistence;
+    protected String generatePersistence;
 
     @Parameter(property = "kogito.codegen.rules", defaultValue = "true")
     protected String generateRules;
@@ -157,9 +157,9 @@ public abstract class AbstractKieMojo extends AbstractMojo {
 
         disableGeneratorIfNecessary(context, IncrementalRuleCodegen.GENERATOR_NAME, generateRules);
         disableGeneratorIfNecessary(context, ProcessCodegen.GENERATOR_NAME, generateProcesses);
-        disableGeneratorIfNecessary(context, PredictionCodegen.GENERATOR_NAME, generateProcesses);
-        disableGeneratorIfNecessary(context, DecisionCodegen.GENERATOR_NAME, generateProcesses);
-        disableGeneratorIfNecessary(context, PersistenceGenerator.GENERATOR_NAME, generateProcesses);
+        disableGeneratorIfNecessary(context, PredictionCodegen.GENERATOR_NAME, generatePredictions);
+        disableGeneratorIfNecessary(context, DecisionCodegen.GENERATOR_NAME, generateDecisions);
+        disableGeneratorIfNecessary(context, PersistenceGenerator.GENERATOR_NAME, generatePersistence);
     }
 
     /**
