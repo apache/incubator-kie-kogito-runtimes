@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import groovy.xml.XmlParser
 import spock.lang.Specification
 
 /*
 Use this file to test the changes in the archetype-post-generate.groovy
  */
 
-class AddDependencyToPomTest extends Specification {
+class AddDependencyToPomWithXmlTest extends Specification {
     def "Original pom.xml has 5 dependencies"() {
         given:
         Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream("examplePom.xml"))

@@ -41,6 +41,8 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- kogito dependencies -->
   </dependencies>
 
   <build>
