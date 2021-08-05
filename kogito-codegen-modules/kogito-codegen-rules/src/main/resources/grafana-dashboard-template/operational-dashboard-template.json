@@ -201,7 +201,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(increase(api_execution_elapsed_seconds_sum{endpoint=\"$handlerName$\", artifactId=\"$gavArtifactId$\", version=\"$gavVersion$\"}[1m]))/sum(increase(api_execution_elapsed_seconds_count{endpoint=\"$handlerName$\", artifactId=\"$gavArtifactId$\", version=\"$gavVersion\"}[1m]))",
+          "expr": "sum(increase(api_execution_elapsed_seconds_sum{endpoint=\"$handlerName$\", artifactId=\"$gavArtifactId$\", version=\"$gavVersion$\"}[1m]))/sum(increase(api_execution_elapsed_seconds_count{endpoint=\"$handlerName$\", artifactId=\"$gavArtifactId$\", version=\"$gavVersion$\"}[1m]))",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
