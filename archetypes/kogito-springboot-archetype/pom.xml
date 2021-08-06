@@ -76,13 +76,19 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <useModulePath>false</useModulePath>
-          <useFile>false</useFile>
           <includes>
             <include>**/*Test</include>
             <include>**/*Spec</include>
           </includes>
         </configuration>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     <resources>

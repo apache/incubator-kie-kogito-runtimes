@@ -1,3 +1,4 @@
+package org.kie.kogito.springboot.archetypes
 /*
  * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
@@ -21,17 +22,19 @@ Use this file to test the changes in the archetype-post-generate.groovy
  */
 
 class AddDependencyToPomWithXmlTest extends Specification {
-    def "Original pom.xml has 5 dependencies"() {
+    def pomFile = "/archetype-resources/pom.xml";
+
+    def "Original pom.xml has 4 dependencies"() {
         given:
-        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream("examplePom.xml"))
+        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream(pomFile))
 
         expect:
-        pomXml.depthFirst().dependencies.dependency.size() == 5
+        pomXml.depthFirst().dependencies.dependency.size() == 4
     }
 
     def "Add a new dependency to original pom.xml"() {
         given:
-        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream("examplePom.xml"))
+        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream(pomFile))
 
         when:
         Node newDep = new Node(null, "dependency",
@@ -39,13 +42,13 @@ class AddDependencyToPomWithXmlTest extends Specification {
         pomXml.dependencies[0].children().add(0, newDep)
 
         then:
-        pomXml.depthFirst().dependencies.dependency.size() == 6
+        pomXml.depthFirst().dependencies.dependency.size() == 5
     }
 
     def "Add a list of new dependencies to original pom.xml"() {
         given:
         String[] artifacts = "cloudevents,persistence,monitoring".split(",")
-        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream("examplePom.xml"))
+        Node pomXml = new XmlParser().parse(this.getClass().getResourceAsStream(pomFile))
 
         when:
         for (String artifact : artifacts) {
@@ -57,7 +60,7 @@ class AddDependencyToPomWithXmlTest extends Specification {
         }
 
         then:
-        pomXml.depthFirst().dependencies.dependency.size() == 8
+        pomXml.depthFirst().dependencies.dependency.size() == 7
 
     }
 }
