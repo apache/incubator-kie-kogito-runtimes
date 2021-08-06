@@ -266,7 +266,7 @@ public class RestWorkItemHandlerTest {
     }
 
     @Test
-    public void testParametersPostWithExpressionRestTaskHandler() {
+    public void testParametersPostWithBodyBuilderStringParamRestTaskHandler() {
         final VariableScopeInstance contextInstance = mock(VariableScopeInstance.class);
         when(nodeInstance.resolveContextInstance(VariableScope.VARIABLE_SCOPE, DEFAULT_WORKFLOW_VAR)).thenReturn(contextInstance);
         when(contextInstance.getVariable(DEFAULT_WORKFLOW_VAR)).thenReturn(workflowData);
@@ -275,9 +275,9 @@ public class RestWorkItemHandlerTest {
         parameters.put("name", "tiago");
         parameters.put("id", 123);
         //test expression evaluation in the work item parameter
-        parameters.put(RestWorkItemHandler.BODY_BUILDER, "new org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder()");
+        parameters.put(RestWorkItemHandler.BODY_BUILDER, "ParamsRestWorkItemHandlerBodyBuilder");
         final String customParameter = "custom parameter";
-        parameters.put(customParameter, String.format("java.util.Collections.singletonList(%s)", DEFAULT_WORKFLOW_VAR));
+        parameters.put(customParameter, workflowData);
 
         handler.executeWorkItem(workItem, manager);
 
@@ -287,7 +287,7 @@ public class RestWorkItemHandlerTest {
         assertThat(bodyMap.get("id")).isEqualTo(123);
         assertThat(bodyMap.get("name")).isEqualTo("tiago");
         //assert the evaluated expression with a process variable
-        assertThat(bodyMap.get(customParameter)).isEqualTo(Collections.singletonList(workflowData));
+        assertThat(bodyMap.get(customParameter)).isEqualTo(workflowData);
 
         assertResult(manager, argCaptor);
     }
