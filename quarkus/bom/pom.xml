@@ -13,7 +13,11 @@
   <artifactId>kogito-quarkus-bom</artifactId>
   <packaging>pom</packaging>
 
-  <name>Kogito :: Quarkus Extension :: BOM</name>
+  <name>Kogito :: Quarkus :: BOM</name>
+
+  <properties>
+    <version.io.smallrye.reactive>3.7.1</version.io.smallrye.reactive>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
@@ -23,6 +27,11 @@
         <version>${version.io.quarkus}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.smallrye.reactive</groupId>
+        <artifactId>smallrye-reactive-messaging-provider</artifactId>
+        <version>${version.io.smallrye.reactive}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
