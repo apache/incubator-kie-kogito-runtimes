@@ -58,13 +58,11 @@
     <dependency>
       <groupId>org.spockframework</groupId>
       <artifactId>spock-core</artifactId>
-      <version>${version.org.spockframework}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
-      <version>${version.org.codehaus.groovy}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

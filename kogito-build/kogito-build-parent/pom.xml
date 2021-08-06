@@ -121,7 +121,7 @@
       until https://github.com/mojohaus/versions-maven-plugin/issues/312 is fixed -->
     <version.versions.plugin>2.5</version.versions.plugin>
     <version.org.jsonschema2pojo-maven-plugin>1.0.1</version.org.jsonschema2pojo-maven-plugin>
-    <version.org.codehaus.gmavenplus.plugin>1.5.0</version.org.codehaus.gmavenplus.plugin>
+    <version.org.codehaus.gmavenplus.plugin>1.5</version.org.codehaus.gmavenplus.plugin>
   </properties>
 
   <dependencyManagement>
