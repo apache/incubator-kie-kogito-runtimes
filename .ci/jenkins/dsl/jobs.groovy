@@ -82,6 +82,11 @@ if (Utils.isLTSBranch(this)) {
     setupQuarkusJob(Utils.getQuarkusLTSVersion(this))
     setupNativeLTSJob()
 }
+
+// Tools job
+KogitoJobTemplate.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito-build-parent', 'Kogito Runtimes')
+KogitoJobTemplate.createKie7UpdateJob(this, 'kogito-runtimes', 'kogito-kie7-bom', 'Kogito Runtimes')
+
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////
