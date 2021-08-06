@@ -1,4 +1,4 @@
-name: Workflows for opened and reopened github issues
+name: Workflows to notify the team about github issues
 
 on:
   issues:
