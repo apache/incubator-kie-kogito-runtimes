@@ -573,7 +573,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         private final Collection<String> mockedClass = new ArrayList<>();
 
-        private MockClassLoader(String ... mockedClass) {
+        private MockClassLoader(String... mockedClass) {
             this.mockedClass.addAll(Arrays.asList(mockedClass));
         }
 
