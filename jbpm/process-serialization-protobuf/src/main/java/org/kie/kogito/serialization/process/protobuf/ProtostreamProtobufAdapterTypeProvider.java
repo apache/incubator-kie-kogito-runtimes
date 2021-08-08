@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.infinispan.protostream.FileDescriptorSource;
@@ -67,15 +66,18 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         return fd != null && "kogito".equals(fd.getPackage());
     }
 
+    protected List<FileDescriptor> sortFds(Collection<FileDescriptor> descriptors){
+        Comparator<FileDescriptor> fdComparator = (fd1, fd2) -> isKogitoPackage(fd1) ? (isKogitoPackage(fd2) ? 0 : -1) : (isKogitoPackage(fd2) ? 1 : 0);
+        return descriptors.stream().sorted(fdComparator).collect(Collectors.toList());
+    }
+
     // we transform protostream to protobuf descriptors
     private List<com.google.protobuf.Descriptors.FileDescriptor> build() throws IOException, DescriptorValidationException {
         SerializationContextImpl context = buildSerializationContext();
 
         List<com.google.protobuf.Descriptors.FileDescriptor> protos = new ArrayList<>();
-        Map<String, FileDescriptor> descriptors = context.getFileDescriptors();
         // make sure kogito-types is processed first or else will be missing as dependency for the application types
-        Comparator<FileDescriptor> fdComparator = (fd1, fd2) -> isKogitoPackage(fd1) ? -1 : (isKogitoPackage(fd2) ? 1 : 0);
-        List<FileDescriptor> descriptorsSorted = descriptors.values().stream().sorted(fdComparator).collect(Collectors.toList());
+        List<FileDescriptor> descriptorsSorted = sortFds(context.getFileDescriptors().values());
         for (FileDescriptor entry : descriptorsSorted) {
             com.google.protobuf.Descriptors.FileDescriptor[] dependencies = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
             protos.add(Descriptors.FileDescriptor.buildFrom(buildMessageTypes(entry), dependencies));
