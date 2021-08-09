@@ -9,9 +9,9 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-springboot-cloudevents-parent</artifactId>
+  <artifactId>kogito-addons-springboot-messaging-parent</artifactId>
   <name>Kogito :: Add-Ons :: CloudEvents :: Spring Boot</name>
-  <description>Kogito Events handling for CloudEvents AddOn (Spring Boot)</description>
+  <description>Kogito Events handling for Messaging Add-On (Spring Boot)</description>
   <packaging>pom</packaging>
 
   <modules>

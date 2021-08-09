@@ -1,15 +1,11 @@
-# Kogito CloudEvents Add-on
+# Kogito Messaging Add-on
 
-Use this add-on to make the events produced and consumed by a Kogito project accept
-the [CloudEvents](https://cloudevents.io) format. There are many use cases where you can use this add-on.
+These add-ons main purpose is to provide a handler to messages defined in BPMN processes. 
 See the following sections in our documentation to find out more:
 
 - [Knative Eventing in Kogito services](https://docs.jboss.org/kogito/release/latest/html_single/#con-knative-eventing_kogito-developing-process-services)
 - [Serverless Workflow definitions](https://docs.jboss.org/kogito/release/latest/html_single/#con-serverless-workflow-definitions_kogito-orchestrating-serverless)
-- [Kogito runtime events](https://docs.jboss.org/kogito/release/latest/html_single/#con-knative-eventing_kogito-developing-process-services)
 - [Enabling Kafka messaging for Kogito services](https://docs.jboss.org/kogito/release/latest/html_single/#proc-messaging-enabling_kogito-configuring)
-- [Kogito Data Index Service](https://docs.jboss.org/kogito/release/latest/html_single/#con-data-index-service_kogito-configuring)
-- [Kogito Trusty Service and Explainability Service](https://docs.jboss.org/kogito/release/latest/html_single/#con-trusty-service_kogito-configuring)
 
 ## Examples
 
