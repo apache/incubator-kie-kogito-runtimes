@@ -12,20 +12,20 @@ directly in their projects.
 
 Any new module should be added here.
 
-## Kogito Dependencies BOM
+## [Kogito Dependencies BOM](kogito-dependencies-bom)
 
 The `org.kie.kogito:kogito-dependencies-bom` contains every third-party library used by Kogito in a whole. **It's not
 tied to a specific runtime**. Can communicate to external ecosystems the required third-party dependencies used by
 Kogito.
 
-## Kogito Build Parent BOM
+## [Kogito Build Parent BOM](kogito-build-parent)
 
 Main entry point for build specific configuration. Every plugin, profile, and any other build configuration should be
 added here. Imports `org.kie.kogito:kogito-bom` and inherit the dependency configuration
 from `org.kie.kogito:kogito-dependencies-bom`. This means that every internal module inherits from it. End users should
 not use it directly in their projects.
 
-## Kogito Quarkus BOM
+## [Kogito Quarkus BOM](../quarkus/bom)
 
 Inherits from `org.kie.kogito:kogito-build-parent` and imports the Quarkus BOM. Contains specifics configuration and
 dependency for internal modules targeting the Quarkus Runtime. **It's the end user BOM descriptor for Kogito Quarkus
@@ -50,7 +50,7 @@ Add this section to your `pom.xml` file:
 </dependencyManagement>
 ```
 
-## Kogito Spring Boot BOM
+## [Kogito Spring Boot BOM](../springboot/bom)
 
 Similarly to Kogito Quarkus BOM, this descriptor inherits from `org.kie.kogito:kogito-build-parent` and imports the
 [Spring Boot dependencies BOM](https://docs.spring.io/spring-boot/docs/2.5.3/maven-plugin/reference/htmlsingle/#using.import)
