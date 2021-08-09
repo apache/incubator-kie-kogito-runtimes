@@ -15,8 +15,7 @@
 
   <modules>
     <module>common</module>
-    <module>springboot</module>
-    <module>quarkus</module>
+    <module>deprecated</module>
   </modules>
 
   <dependencyManagement>

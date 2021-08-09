@@ -3,25 +3,10 @@ import org.kie.jenkins.jobdsl.KogitoConstants
 import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
 
-boolean isMainBranch() {
-    return "${GIT_BRANCH}" == "${GIT_MAIN_BRANCH}"
-}
-
 def getDefaultJobParams() {
-    return [
-        job: [
-            name: 'kogito-runtimes'
-        ],
-        git: [
-            author: "${GIT_AUTHOR_NAME}",
-            branch: "${GIT_BRANCH}",
-            repository: 'kogito-runtimes',
-            credentials: "${GIT_AUTHOR_CREDENTIALS_ID}",
-            token_credentials: "${GIT_AUTHOR_TOKEN_CREDENTIALS_ID}"
-        ],
-        env: [:],
-        pr: [:]
-    ]
+    def jobParams = KogitoJobTemplate.getDefaultJobParams(this, 'kogito-runtimes')
+    jobParams.pr.excluded_regions.add('docsimg/.*')
+    return jobParams
 }
 
 def getJobParams(String jobName, String jobFolder, String jenkinsfileName, String jobDescription = '') {
@@ -45,7 +30,10 @@ Map getMultijobPRConfig() {
             ], [
                 id: 'Optaplanner',
                 dependsOn: 'Runtimes',
-                repository: 'optaplanner'
+                repository: 'optaplanner',
+                // TODO remove once https://issues.redhat.com/browse/KOGITO-4113 is done 
+                // as it will become the default path
+                jenkinsfile: '.ci/jenkins/Jenkinsfile',
             ], [
                 id: 'Apps',
                 dependsOn: 'Optaplanner',
@@ -55,6 +43,9 @@ Map getMultijobPRConfig() {
                 dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
             ]
+        ],
+        extraEnv : [
+            ENABLE_SONARCLOUD: Utils.isMainBranch(this)
         ]
     ]
 }
@@ -63,94 +54,81 @@ def bddRuntimesPrFolder = "${KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER}/${Ko
 def nightlyBranchFolder = "${KogitoConstants.KOGITO_DSL_NIGHTLY_FOLDER}/${JOB_BRANCH_FOLDER}"
 def releaseBranchFolder = "${KogitoConstants.KOGITO_DSL_RELEASE_FOLDER}/${JOB_BRANCH_FOLDER}"
 
-if (isMainBranch()) {
-    // Old PR checks. To be removed once supported release branches (<= 1.7.x) are no more there.
+if (Utils.isMainBranch(this)) {
+    // Old PR checks.
+    // To be removed once supported release branches (<= 1.7.x) are no more there.
     setupPrJob()
     setupQuarkusLTSPrJob()
     setupNativePrJob()
-
-    // PR checks
-    setupMultijobPrDefaultChecks()
-    setupMultijobPrNativeChecks()
-    setupMultijobPrLTSChecks()
-
-    // For BDD runtimes PR job
-    folder(KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER)
-    folder(bddRuntimesPrFolder)
+    // End of old PR checks
 
     setupDeployJob(bddRuntimesPrFolder, KogitoJobType.PR)
+
+    // Sonarcloud analysis only on main branch
+    // As we have only Community edition
+    setupSonarCloudJob(nightlyBranchFolder)
 }
 
+// PR checks
+setupMultijobPrDefaultChecks()
+setupMultijobPrNativeChecks()
+setupMultijobPrLTSChecks()
+
 // Nightly jobs
-folder(KogitoConstants.KOGITO_DSL_NIGHTLY_FOLDER)
-folder(nightlyBranchFolder)
-if (isMainBranch()) {
+if (Utils.isMainBranch(this)) {
     setupDroolsJob(nightlyBranchFolder)
 
     setupQuarkusJob(nightlyBranchFolder, 'main')
-    setupQuarkusJob(nightlyBranchFolder, "${QUARKUS_LTS_VERSION}")
 }
-setupSonarCloudJob(nightlyBranchFolder)
 setupNativeJob(nightlyBranchFolder)
 setupDeployJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
 setupPromoteJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
 
 // No release directly on main branch
-if (!isMainBranch()) {
-    folder(KogitoConstants.KOGITO_DSL_RELEASE_FOLDER)
-    folder(releaseBranchFolder)
-
+if (!Utils.isMainBranch(this)) {
     setupDeployJob(releaseBranchFolder, KogitoJobType.RELEASE)
     setupPromoteJob(releaseBranchFolder, KogitoJobType.RELEASE)
 }
 
+if (Utils.isLTSBranch(this)) {
+    setupQuarkusJob(nightlyBranchFolder, Utils.getQuarkusLTSVersion(this))
+    setupNativeLTSJob(nightlyBranchFolder)
+}
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////
 
 void setupPrJob() {
     def jobParams = getDefaultJobParams()
-    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.pr.run_only_for_branches = ['1.5.x']
     jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createPRJob(this, jobParams)
 }
 
 void setupQuarkusLTSPrJob() {
     def jobParams = getDefaultJobParams()
-    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.pr.run_only_for_branches = ['1.5.x']
     jobParams.env = [ TIMEOUT_VALUE : 240 ]
     KogitoJobTemplate.createQuarkusLTSPRJob(this, jobParams)
 }
 
 void setupNativePrJob() {
     def jobParams = getDefaultJobParams()
-    jobParams.pr.whiteListTargetBranches = ['1.5.x', '1.7.x']
+    jobParams.pr.run_only_for_branches = ['1.5.x']
     jobParams.env = [ TIMEOUT_VALUE : 600 ]
     KogitoJobTemplate.createNativePRJob(this, jobParams)
 }
 
 void setupMultijobPrDefaultChecks() {
-    KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) {
-        def jobParams = getDefaultJobParams()
-        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
-        return jobParams
-    }
+    KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
 }
 
 void setupMultijobPrNativeChecks() {
-    KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig()) {
-        def jobParams = getDefaultJobParams()
-        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
-        return jobParams
-    }
+    KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
 }
 
 void setupMultijobPrLTSChecks() {
-    KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) {
-        def jobParams = getDefaultJobParams()
-        jobParams.pr.blackListTargetBranches = ['1.5.x', '1.7.x']
-        return jobParams
-    }
+    KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
 }
 
 void setupDroolsJob(String jobFolder) {
@@ -200,7 +178,7 @@ void setupSonarCloudJob(String jobFolder) {
 }
 
 void setupNativeJob(String jobFolder) {
-    def jobParams = getJobParams('kogito-native', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native Testing')
+    def jobParams = getJobParams('kogito-runtimes-native', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native Testing')
     jobParams.triggers = [ cron : 'H 6 * * *' ]
     KogitoJobTemplate.createPipelineJob(this, jobParams).with {
         parameters {
@@ -209,6 +187,24 @@ void setupNativeJob(String jobFolder) {
         }
         environmentVariables {
             env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
+            env('NOTIFICATION_JOB_NAME', 'Native check')
+        }
+    }
+}
+
+void setupNativeLTSJob(String jobFolder) {
+    def jobParams = getJobParams('kogito-runtimes-native-lts', jobFolder, 'Jenkinsfile.native', 'Kogito Runtimes Native LTS Testing')
+    jobParams.triggers = [ cron : 'H 8 * * *' ]
+    KogitoJobTemplate.createPipelineJob(this, jobParams).with {
+        parameters {
+            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
+            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+
+            stringParam('NATIVE_BUILDER_IMAGE', Utils.getLTSNativeBuilderImage(this), 'Which native builder image to use ?')
+        }
+        environmentVariables {
+            env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
+            env('NOTIFICATION_JOB_NAME', 'Native LTS check')
         }
     }
 }
@@ -236,6 +232,8 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
             stringParam('PROJECT_VERSION', '', 'Set the project version')
+
+            booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
 
         environmentVariables {
@@ -284,6 +282,8 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
             stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
 
             stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
+
+            booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
 
         environmentVariables {

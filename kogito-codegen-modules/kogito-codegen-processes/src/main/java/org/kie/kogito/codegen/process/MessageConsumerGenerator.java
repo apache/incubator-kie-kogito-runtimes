@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.codegen.process;
 
+import java.util.Optional;
+
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -53,8 +55,8 @@ public class MessageConsumerGenerator {
     private final String processName;
     private final String appCanonicalName;
     private final String messageDataEventClassName;
-
-    private TriggerMetaData trigger;
+    private final TriggerMetaData trigger;
+    private final Optional<String> eventListenerName;
 
     public MessageConsumerGenerator(
             KogitoBuildContext context,
@@ -63,7 +65,8 @@ public class MessageConsumerGenerator {
             String processfqcn,
             String appCanonicalName,
             String messageDataEventClassName,
-            TriggerMetaData trigger) {
+            TriggerMetaData trigger,
+            Optional<String> eventListenerName) {
         this.context = context;
         this.process = process;
         this.trigger = trigger;
@@ -76,6 +79,7 @@ public class MessageConsumerGenerator {
         this.processClazzName = processfqcn;
         this.appCanonicalName = appCanonicalName;
         this.messageDataEventClassName = messageDataEventClassName;
+        this.eventListenerName = eventListenerName;
 
         this.generator = TemplatedGenerator.builder()
                 .withTargetTypeName(resourceClazzName)
@@ -104,6 +108,9 @@ public class MessageConsumerGenerator {
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, dataClazzName));
         template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$ProcessName$", processName)));
         template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$Trigger$", trigger.getName())));
+        if (eventListenerName.isPresent()) {
+            template.findAll(StringLiteralExpr.class).forEach(str -> str.setString(str.asString().replace("$BeanName$", eventListenerName.get())));
+        }
         template.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataEventType$", messageDataEventClassName)));
         template.findAll(ClassOrInterfaceType.class).forEach(t -> t.setName(t.getNameAsString().replace("$DataType$", trigger.getDataType())));
         template.findAll(MethodCallExpr.class).forEach(this::interpolateStrings);

@@ -36,6 +36,7 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 
 import com.github.javaparser.ast.CompilationUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,6 +66,28 @@ class PredictionCodegenTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    public void isEmpty(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext context = contextBuilder.build();
+        PredictionCodegen emptyCodeGenerator = PredictionCodegen.ofCollectedResources(context, Collections.emptyList());
+
+        assertThat(emptyCodeGenerator.isEmpty()).isTrue();
+        assertThat(emptyCodeGenerator.isEnabled()).isFalse();
+
+        Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
+        assertThat(emptyGeneratedFiles.size()).isEqualTo(0);
+
+        PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
+                context, CollectedResourceProducer.fromFiles(BASE_PATH, REGRESSION_FULL_SOURCE.toFile()));
+
+        assertThat(codeGenerator.isEmpty()).isFalse();
+        assertThat(codeGenerator.isEnabled()).isTrue();
+
+        Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
+        assertThat(generatedFiles.size()).isGreaterThanOrEqualTo(1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void generateAllFilesRegression(KogitoBuildContext.Builder contextBuilder) {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
@@ -87,7 +110,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MINING_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 67, 18, 1, true);
+        generateAllFiles(context, codeGenerator, 62, 13, 1, true);
     }
 
     @ParameterizedTest
@@ -101,9 +124,9 @@ class PredictionCodegenTest {
 
     private static void generateAllFiles(KogitoBuildContext context, PredictionCodegen codeGenerator, int expectedTotalFiles, int expectedJavaSources, int expectedRestEndpoints,
             boolean assertReflect) {
-        List<GeneratedFile> generatedFiles = codeGenerator.generate();
+        Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
 
-        int expectedGeneratedFilesSize = expectedTotalFiles - (context.hasREST() ? 0 : expectedRestEndpoints * 2);
+        int expectedGeneratedFilesSize = expectedTotalFiles - (context.hasRESTForGenerator(codeGenerator) ? 0 : expectedRestEndpoints * 2);
         assertEquals(expectedGeneratedFilesSize, generatedFiles.size());
 
         assertEquals(expectedJavaSources, generatedFiles.stream()
@@ -119,7 +142,7 @@ class PredictionCodegenTest {
                         generatedFile.relativePath().endsWith(REFLECT_JSON))
                 .count());
 
-        assertEndpoints(context, generatedFiles, expectedRestEndpoints);
+        assertEndpoints(context, generatedFiles, expectedRestEndpoints, codeGenerator);
 
         Optional<ApplicationSection> optionalApplicationSection = codeGenerator.section();
         assertTrue(optionalApplicationSection.isPresent());
@@ -128,8 +151,8 @@ class PredictionCodegenTest {
         assertNotNull(compilationUnit);
     }
 
-    private static void assertEndpoints(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles, int expectedRestEndpoints) {
-        if (context.hasREST()) {
+    private static void assertEndpoints(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles, int expectedRestEndpoints, PredictionCodegen codeGenerator) {
+        if (context.hasRESTForGenerator(codeGenerator)) {
             // REST resource
             assertEquals(expectedRestEndpoints, generatedFiles.stream()
                     .filter(generatedFile -> generatedFile.type().equals(REST_TYPE))

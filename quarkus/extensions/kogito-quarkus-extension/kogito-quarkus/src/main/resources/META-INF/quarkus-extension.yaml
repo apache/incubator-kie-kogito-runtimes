@@ -1,0 +1,14 @@
+---
+name: "Kogito"
+metadata:
+  keywords:
+  - "kogito"
+  - "drools"
+  - "jbpm"
+  - "processes"
+  - "rules"
+  - "decisions"
+  - "DMN"
+  guide: "https://quarkus.io/guides/kogito"
+  categories:
+  - "business-automation"

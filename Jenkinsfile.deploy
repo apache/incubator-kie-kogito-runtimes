@@ -18,7 +18,7 @@ pipeline {
 
     options {
         timestamps()
-        timeout(time: 360, unit: 'MINUTES')
+        timeout(time: 180, unit: 'MINUTES')
     }
 
     // parameters {
@@ -27,6 +27,8 @@ pipeline {
 
     environment {
         // Static env is defined into .jenkins/dsl/jobs.groovy file
+
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
 
         // Keep here for visitibility
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
@@ -123,22 +125,45 @@ pipeline {
                 }
             }
         }
-        stage('Deploy artifacts') {
+        stage('Deploy to repository') {
+            when {
+                expression { return !shouldStageArtifacts() && !isSpecificArtifactsUpload() && shouldDeployToRepository() }
+            }
             steps {
                 script {
-                    // Usually `env.MAVEN_DEPLOY_REPOSITORY` is used for testing purpose
-                    if (env.MAVEN_DEPLOY_REPOSITORY && env.MAVEN_REPO_CREDS_ID) {
-                        // Deploy to specific repository with credentials
-                        runMavenDeployLocally()
-                        maven.uploadLocalArtifacts(env.MAVEN_REPO_CREDS_ID, getLocalDeploymentFolder(), getMavenRepoZipUrl())
-                    } else if (!isRelease() || env.MAVEN_DEPLOY_REPOSITORY) {
-                        // Normal deploy
-                        runMavenDeploy()
-                    } else {
-                        // Deploy locally and then to staging
-                        runMavenDeployLocally()
-                        runMavenStage()
-                    }
+                    runMavenDeploy()
+                }
+            }
+        }
+        stage('Deploy locally') {
+            when {
+                expression { return shouldStageArtifacts() || isSpecificArtifactsUpload() }
+            }
+            steps {
+                script {
+                    runMavenDeploy(true)
+                }
+            }
+        }
+        stage('Upload artifacts to given repository') {
+            when {
+                expression { return isSpecificArtifactsUpload() }
+            }
+            steps {
+                script {
+                    // Deploy to specific repository with credentials
+                    maven.uploadLocalArtifacts(env.MAVEN_REPO_CREDS_ID, getLocalDeploymentFolder(), getMavenRepoZipUrl())
+                }
+            }
+        }
+        stage('Stage artifacts') {
+            when {
+                expression { return shouldStageArtifacts() }
+            }
+            steps {
+                script {
+                    // Stage release artifacts
+                    runMavenStage()
                 }
             }
         }
@@ -177,6 +202,9 @@ pipeline {
                 archiveArtifacts(artifacts: 'deployment.properties')
             }
         }
+        unsuccessful {
+            sendNotification()
+        }
         cleanup {
             script {
                 util.cleanNode('docker')
@@ -206,6 +234,28 @@ void commitAndCreatePR() {
     githubscm.commitChanges(commitMsg, { githubscm.findAndStageNotIgnoredFiles('pom.xml') })
     githubscm.pushObject('origin', getBotBranch(), getBotAuthorCredsID())
     deployProperties["${getRepoName()}.pr.link"] = githubscm.createPR(commitMsg, prBody, getBuildBranch(), getBotAuthorCredsID())
+}
+
+void sendNotification() {
+    if (params.SEND_NOTIFICATION) {
+        emailext body: "**Deploy job** #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
+             subject: "[${getBuildBranch()}] Kogito Runtimes",
+             to: env.KOGITO_CI_EMAIL_TO
+    } else {
+        echo 'No notification sent per configuration'
+    }
+}
+
+boolean isSpecificArtifactsUpload() {
+    return env.MAVEN_DEPLOY_REPOSITORY && env.MAVEN_REPO_CREDS_ID
+}
+
+boolean shouldStageArtifacts() {
+    return !isSpecificArtifactsUpload() && isRelease() && !env.MAVEN_DEPLOY_REPOSITORY
+}
+
+boolean shouldDeployToRepository() {
+    return env.MAVEN_DEPLOY_REPOSITORY || getGitAuthor() == 'kiegroup'
 }
 
 boolean isRelease() {
@@ -259,10 +309,12 @@ MavenCommand getMavenCommand(String directory = '') {
                 .withProperty('full')
 }
 
-void runMavenDeploy() {
+void runMavenDeploy(boolean localDeployment = false) {
     mvnCmd = getMavenCommand()
 
-    if (env.MAVEN_DEPLOY_REPOSITORY) {
+    if(localDeployment) {
+        mvnCmd.withLocalDeployFolder(getLocalDeploymentFolder())
+    } else if (env.MAVEN_DEPLOY_REPOSITORY) {
         mvnCmd.withDeployRepository(env.MAVEN_DEPLOY_REPOSITORY)
     }
 
@@ -271,13 +323,6 @@ void runMavenDeploy() {
 
 String getMavenRepoZipUrl() {
     return "${env.MAVEN_DEPLOY_REPOSITORY.replaceAll('/content/', '/service/local/').replaceFirst('/*$', '')}/content-compressed"
-}
-
-void runMavenDeployLocally() {
-    getMavenCommand()
-        .skipTests(true)
-        .withLocalDeployFolder(getLocalDeploymentFolder())
-        .run('clean deploy')
 }
 
 void runMavenStage() {
