@@ -138,7 +138,7 @@ public class ProcessVisitor extends AbstractVisitor {
         Set<String> visitedVariables = new HashSet<>();
         VariableScope variableScope = (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
 
-        visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables);
+        visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables, metadata.getProcessClassName());
         visitSubVariableScopes(process.getNodes(), body, visitedVariables);
 
         //exception scope
@@ -178,7 +178,7 @@ public class ProcessVisitor extends AbstractVisitor {
             if (node instanceof ContextContainer) {
                 VariableScope variableScope = (VariableScope) ((ContextContainer) node).getDefaultContext(VariableScope.VARIABLE_SCOPE);
                 if (variableScope != null) {
-                    visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables);
+                    visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables, node.getClass().getName());
                 }
             }
             if (node instanceof NodeContainer) {

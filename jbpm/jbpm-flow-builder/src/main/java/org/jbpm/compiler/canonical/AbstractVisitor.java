@@ -24,6 +24,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
@@ -85,7 +86,7 @@ public abstract class AbstractVisitor {
         });
     }
 
-    protected void visitVariableScope(String field, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables) {
+    protected void visitVariableScope(String field, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables, String contextClass) {
         if (variableScope != null && !variableScope.getVariables().isEmpty()) {
             for (Variable variable : variableScope.getVariables()) {
                 if (!visitedVariables.add(variable.getName())) {
@@ -94,7 +95,7 @@ public abstract class AbstractVisitor {
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
                 MethodCallExpr classLoaderMethodCallExpr = new MethodCallExpr()
-                        .setScope(new MethodCallExpr().setScope(new NameExpr("this")).setName("getClass"))
+                        .setScope(new ClassExpr(new ClassOrInterfaceType(null, contextClass)))
                         .setName("getClassLoader");
                 ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType()), classLoaderMethodCallExpr));
                 body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS),
