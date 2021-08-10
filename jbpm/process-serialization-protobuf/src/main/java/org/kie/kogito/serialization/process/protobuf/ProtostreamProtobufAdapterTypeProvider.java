@@ -59,7 +59,7 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
     }
 
     private Collection<String> protostreamDescriptors() {
-        return Arrays.asList("META-INF/kogito-types.proto", "META-INF/application-types.proto");
+        return Arrays.asList("kogito-types.proto", "application-types.proto");
     }
 
     private List<com.google.protobuf.Descriptors.FileDescriptor> build() throws IOException, DescriptorValidationException {
@@ -76,7 +76,7 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         return protos;
     }
 
-    private SerializationContextImpl buildSerializationContext() throws IOException, DescriptorValidationException {
+    private SerializationContextImpl buildSerializationContext() throws IOException {
         SerializationContextImpl context = new SerializationContextImpl(Configuration.builder().build());
         for (String protoFile : protostreamDescriptors()) {
             try (InputStream is = getInputStream(protoFile)) {

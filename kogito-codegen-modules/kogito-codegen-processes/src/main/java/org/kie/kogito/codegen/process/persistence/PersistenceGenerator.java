@@ -258,7 +258,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
         Collection<GeneratedFile> protoFiles = new ArrayList<>();
         try {
-            String typesURI = "META-INF/kogito-types.proto";
+            String typesURI = "kogito-types.proto";
             protoFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
                     typesURI,
                     IOUtils.toString(context().getClassLoader().getResourceAsStream(typesURI))));
@@ -266,7 +266,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             throw new RuntimeException("Cannot find kogito types protobuf!", e);
         }
         // generate proto files leads to problems as it has a reverse dependency of kogito-index
-        String typesURI = "META-INF/application-types.proto";
+        String typesURI = "application-types.proto";
         protoFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
                 typesURI,
                 protoContent));
