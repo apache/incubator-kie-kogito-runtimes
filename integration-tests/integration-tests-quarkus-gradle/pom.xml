@@ -83,7 +83,7 @@
             <id>integration-test</id>
             <phase>integration-test</phase>
             <configuration>
-              <workingDirectory>integration-tests-quarkus-gradle-project</workingDirectory>
+              <workingDirectory>${gradle.project.dir}</workingDirectory>
               <executable>./gradlew</executable>
               <arguments>
                 <argument>--no-daemon</argument>
