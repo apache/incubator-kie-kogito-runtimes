@@ -62,7 +62,26 @@ Similarly to Kogito Quarkus BOM, this descriptor inherits from `org.kie.kogito:k
 [Spring Boot dependencies BOM](https://docs.spring.io/spring-boot/docs/2.5.3/maven-plugin/reference/htmlsingle/#using.import)
 . Contains specific configuration and dependencies for internal modules targeting the Spring Boot Runtime.
 
-> **Note**: End users should not use it directly in their projects.
+> **Note:** Users can use import this descriptor to have all Kogito libraries and Spring Boot dependencies aligned.
+
+### Usage
+
+Add this section to your `pom.xml` file:
+
+```xml
+
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-springboot-bom</artifactId>
+      <version>${kogito.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
 
 ## FAQ
 
