@@ -324,7 +324,7 @@ public class PersistenceGenerator extends AbstractGenerator {
             Expression chainExpression = newFileDescriptorSource;
             for (GeneratedFile generatedFile : protoFiles) {
                 String path = generatedFile.relativePath();
-                int idx = path.lastIndexOf(File.separator);
+                int idx = path.lastIndexOf('/');
                 String name = idx >= 0 && path.length() > idx + 1 ? path.substring(idx + 1) : path;
                 if (!name.endsWith(".proto")) {
                     continue;
