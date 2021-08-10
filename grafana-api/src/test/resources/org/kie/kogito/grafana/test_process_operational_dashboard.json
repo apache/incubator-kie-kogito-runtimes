@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": $id$,
+  "id": 5,
   "links": [],
   "panels": [
     {
@@ -56,14 +56,14 @@
       "pluginVersion": "6.6.1",
       "targets": [
         {
-          "expr": "sum(kie_process_instance_started_total{process_id='$handlerName$'})",
+          "expr": "sum(kie_process_instance_started_total{process_id='demo.orders'})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "title": "$handlerName$ instances started",
+      "title": "demo.orders instances started",
       "type": "stat"
     },
     {
@@ -104,14 +104,14 @@
       "pluginVersion": "6.6.1",
       "targets": [
         {
-          "expr": "sum(kie_process_instance_running_total{process_id='$handlerName$'})",
+          "expr": "sum(kie_process_instance_running_total{process_id='demo.orders'})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "title": "$handlerName$ running instances",
+      "title": "demo.orders running instances",
       "type": "stat"
     },
     {
@@ -152,14 +152,14 @@
       "pluginVersion": "6.6.1",
       "targets": [
         {
-          "expr": "sum(kie_process_instance_completed_total{process_id='$handlerName$'})",
+          "expr": "sum(kie_process_instance_completed_total{process_id='demo.orders'})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "title": "$handlerName$ completed instances",
+      "title": "demo.orders completed instances",
       "type": "stat"
     },
     {
@@ -199,14 +199,14 @@
       "pluginVersion": "6.6.1",
       "targets": [
         {
-          "expr": "sum(kie_process_instance_sla_violated_total{process_id='$handlerName$'})",
+          "expr": "sum(kie_process_instance_sla_violated_total{process_id='demo.orders'})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "title": "$handlerName$ SLA violated instances",
+      "title": "demo.orders SLA violated instances",
       "type": "stat"
     },
     {
@@ -256,7 +256,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(kie_process_instance_duration_seconds_sum{process_id='$handlerName$'}[1m])/avg_over_time(kie_process_instance_duration_seconds_count{process_id='$handlerName$'}[1m])",
+          "expr": "avg_over_time(kie_process_instance_duration_seconds_sum{process_id='demo.orders'}[1m])/avg_over_time(kie_process_instance_duration_seconds_count{process_id='demo.orders'}[1m])",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -268,7 +268,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "$handlerName$ process execution time",
+      "title": "demo.orders process execution time",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -306,7 +306,7 @@
       }
     }
   ],
-  "refresh": "10s",
+  "refresh": "5s",
   "schemaVersion": 22,
   "style": "dark",
   "tags": [],
@@ -347,7 +347,7 @@
     ]
   },
   "timezone": "",
-  "title": "",
-  "uid": "$uid$",
-  "version": 1
+  "title": "dmn-drools-process-quarkus-metrics_2.0.0-SNAPSHOT - demo.orders - Operational Dashboard",
+  "uid": "89cfe27e-c988-4a84-bddc-ccfc45cd9162",
+  "version": 2
 }
