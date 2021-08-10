@@ -128,7 +128,7 @@
     <!-- this version property is used in plugins but also in dependencies too -->
     <version.io.quarkus>2.1.1.Final</version.io.quarkus>
     <!-- non-productized non-bom managed dependency keep in sync with version.io.quarkus -->
-    <version.io.quarkus.test-maven>2.1.1.Final</version.io.quarkus.test-maven>
+    <version.io.quarkus.quarkus-test-maven>2.1.1.Final</version.io.quarkus.test-maven>
 
     <!-- dependencies versions -->
     <version.com.fasterxml.jackson>2.12.4</version.com.fasterxml.jackson>
