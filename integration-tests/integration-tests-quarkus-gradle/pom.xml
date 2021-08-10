@@ -10,6 +10,10 @@
   <artifactId>integration-tests-quarkus-gradle</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Gradle</name>
 
+  <properties>
+    <gradle.project.dir>${basedir}/integration-tests-quarkus-gradle-project</gradle.project.dir>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -48,6 +52,29 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${gradle.project.dir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
