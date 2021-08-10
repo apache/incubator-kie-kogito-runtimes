@@ -101,7 +101,7 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String JSON_PARSER = "json";
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
-    private static final String OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/operational-dashboard-template.json";
+    private static final String OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/operational-dashboard-template.json";
 
     static {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
