@@ -30,3 +30,9 @@ message Date {
   option java_package = "java.util";    
   optional int64 data = 1;
 }
+
+enum BasicStates {
+    RESOLVED = 0;
+    ABORTED = 1;
+    COMPLETED = 2;
+}

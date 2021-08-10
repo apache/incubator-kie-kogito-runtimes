@@ -76,12 +76,14 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         SerializationContextImpl context = buildSerializationContext();
 
         List<com.google.protobuf.Descriptors.FileDescriptor> protos = new ArrayList<>();
+        com.google.protobuf.Descriptors.FileDescriptor[] dependencies;
         // make sure kogito-types is processed first or else will be missing as dependency for the application types
         List<FileDescriptor> descriptorsSorted = sortFds(context.getFileDescriptors().values());
         for (FileDescriptor entry : descriptorsSorted) {
-            com.google.protobuf.Descriptors.FileDescriptor[] dependencies = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
-            protos.add(Descriptors.FileDescriptor.buildFrom(buildMessageTypes(entry), dependencies));
+            dependencies = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
             protos.add(Descriptors.FileDescriptor.buildFrom(buildEnumTypes(entry), dependencies));
+            dependencies = protos.toArray(new com.google.protobuf.Descriptors.FileDescriptor[protos.size()]);
+            protos.add(Descriptors.FileDescriptor.buildFrom(buildMessageTypes(entry), dependencies));
         }
         return protos;
     }
@@ -162,11 +164,13 @@ public class ProtostreamProtobufAdapterTypeProvider implements ProtobufTypeProvi
         fieldBuilder.setType(buildFieldTypeDescriptor(descriptor.getType()));
         EnumSet<FieldDescriptorProto.Type> set = EnumSet.of(FieldDescriptorProto.Type.TYPE_ENUM, FieldDescriptorProto.Type.TYPE_MESSAGE);
         if(set.contains(fieldBuilder.getType())) {
-            if(isKogitoPackage(descriptor.getMessageType().getFileDescriptor())) {
-                fieldBuilder.setTypeName("." + descriptor.getTypeName());
-            }
-            else {
+            String fullName = FieldDescriptorProto.Type.TYPE_MESSAGE.equals(fieldBuilder.getType())
+                    ? descriptor.getMessageType().getFullName()
+                    : descriptor.getEnumType().getFullName();
+            if(descriptor.getFileDescriptor().getTypes().containsKey(fullName)) {
                 fieldBuilder.setTypeName(descriptor.getTypeName());
+            } else {
+                fieldBuilder.setTypeName("." + descriptor.getTypeName());
             }
         }
         fieldBuilder.setProto3Optional(!descriptor.isRequired());
