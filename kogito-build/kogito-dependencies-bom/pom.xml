@@ -138,7 +138,6 @@
         <artifactId>logback-classic</artifactId>
         <version>${version.ch.qos.logback}</version>
       </dependency>
-
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
@@ -203,6 +202,7 @@
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${version.com.fasterxml.jackson}</version>
       </dependency>
+
       <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
@@ -213,6 +213,7 @@
         <artifactId>json-path-assert</artifactId>
         <version>${version.com.jayway.jsonpath}</version>
       </dependency>
+
       <dependency>
         <groupId>io.smallrye</groupId>
         <artifactId>smallrye-open-api-core</artifactId>
@@ -233,6 +234,12 @@
         <groupId>io.fabric8</groupId>
         <artifactId>openshift-client</artifactId>
         <version>${version.io.fabric8.kubernetes-client}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-server-mock</artifactId>
+        <version>${version.io.fabric8.kubernetes-client}</version>
+        <scope>test</scope>
       </dependency>
       <!-- metrics - monitoring -->
       <dependency>
@@ -263,42 +270,36 @@
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency> <!-- TODO move this dep into surefire-plugin when all modules are migrated to JUnit 5 -->
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-params</artifactId>
         <version>${version.org.junit.jupiter}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-engine</artifactId>
         <version>${version.org.junit.platform}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-commons</artifactId>
         <version>${version.org.junit.platform}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
@@ -319,14 +320,12 @@
         <version>${version.org.mockito}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-inline</artifactId>
         <version>${version.org.mockito}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
@@ -340,7 +339,6 @@
         <version>${version.org.hamcrest}</version>
         <scope>test</scope>
       </dependency>
-
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-core</artifactId>
@@ -424,6 +422,16 @@
         <artifactId>validation-api</artifactId>
         <version>${version.javax.validation}</version>
       </dependency>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${version.javax.inject}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${version.javax.annotation}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.graalvm.nativeimage</groupId>
@@ -441,17 +449,6 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.io.swagger.parser.v3}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>${version.javax.inject}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>${version.javax.annotation}</version>
       </dependency>
 
       <!-- infinispan -->
@@ -504,13 +501,6 @@
         <groupId>org.reflections</groupId>
         <artifactId>reflections</artifactId>
         <version>${version.org.reflections}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-server-mock</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-        <scope>test</scope>
       </dependency>
 
       <!-- CloudEvents -->
@@ -588,6 +578,7 @@
         <artifactId>serverlessworkflow-diagram</artifactId>
         <version>${version.io.serverlessworkflow}</version>
       </dependency>
+
       <dependency>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator</artifactId>
@@ -610,6 +601,7 @@
         <artifactId>jackson-databind-nullable</artifactId>
         <version>${version.org.openapitools.jackson.databind.nullable}</version>
       </dependency>
+
       <dependency>
         <groupId>org.jboss.resteasy</groupId>
         <artifactId>resteasy-client</artifactId>
