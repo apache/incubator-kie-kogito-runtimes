@@ -21,6 +21,6 @@ import java.util.function.UnaryOperator;
 public class DefaultWorkItemHandlerBodyBuilder implements RestWorkItemHandlerBodyBuilder {
     @Override
     public Object apply(Object contentData, Map<String, Object> parameters, UnaryOperator<Object> resolver) {
-        return contentData;
+        return contentData != null ? contentData : buildMap(parameters, resolver);
     }
 }
