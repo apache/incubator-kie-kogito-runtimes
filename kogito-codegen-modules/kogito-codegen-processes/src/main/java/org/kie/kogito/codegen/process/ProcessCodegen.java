@@ -101,7 +101,9 @@ public class ProcessCodegen extends AbstractGenerator {
     private static final String JSON_PARSER = "json";
     public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
-    private static final String OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/operational-dashboard-template.json";
+
+    private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
+    private static final String PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/process-operational-dashboard-template.json";
 
     static {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNSemanticModule());
@@ -550,9 +552,13 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // generate Grafana dashboards
         if (context().getAddonsConfig().usePrometheusMonitoring()) {
+            String globalDbName = buildDashboardName(context().getGAV(), "Global");
+            String globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE, globalDbName, "Global", context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
+            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(globalDbJson, globalDbName + ".json"));
+
             for (KogitoWorkflowProcess process : processes.values()) {
                 String dbName = buildDashboardName(context().getGAV(), process.getId());
-                String dbJson = generateOperationalDashboard(OPERATIONAL_DASHBOARD_TEMPLATE, dbName, process.getId(), context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
+                String dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE, dbName, process.getId(), context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
                 generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dbJson, dbName + ".json"));
             }
         }
