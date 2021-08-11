@@ -29,86 +29,86 @@ import com.mongodb.client.MongoClient;
 public class QuarkusMongoDBEventPublisher extends MongoDBEventPublisher {
 
     @Inject
-    MongoClient mongoClient;
+    MongoClient quarkusMongoClient;
 
     @Inject
-    MongoDBTransactionManager transactionManager;
+    MongoDBTransactionManager quarkusTransactionManager;
 
     @Inject
     @ConfigProperty(name = "kogito.events.processinstances.enabled", defaultValue = "true")
-    boolean processInstancesEvents;
+    boolean quarkusEnableProcessInstancesEvents;
 
     @Inject
     @ConfigProperty(name = "kogito.events.usertasks.enabled", defaultValue = "true")
-    boolean userTasksEvents;
+    boolean quarkusEnableUserTasksEvents;
 
     @Inject
     @ConfigProperty(name = "kogito.events.variables.enabled", defaultValue = "true")
-    boolean variablesEvents;
+    boolean quarkusEnableVariablesEvents;
 
     @Inject
     @ConfigProperty(name = "kogito.events.database", defaultValue = "kogito-events")
-    String eventsDatabaseName;
+    String quarkusEventsDatabaseName;
 
     @Inject
     @ConfigProperty(name = "kogito.events.processinstances.collection", defaultValue = "kogitoprocessinstancesevents")
-    String processInstancesEventsCollection;
+    String quarkusProcessInstancesEventsCollectionName;
 
     @Inject
     @ConfigProperty(name = "kogito.events.usertasks.collection", defaultValue = "kogitousertaskinstancesevents")
-    String userTasksEventsCollection;
+    String quarkusUserTasksEventsCollectionName;
 
     @Inject
     @ConfigProperty(name = "kogito.events.variables.collection", defaultValue = "kogitovariablesevents")
-    String variablesEventsCollection;
+    String quarkusVariablesEventsCollectionName;
 
     @PostConstruct
-    public void setup() {
+    public void setupQuarkusMongoDBEventPublisher() {
         super.configure();
     }
 
     @Override
     protected MongoClient mongoClient() {
-        return this.mongoClient;
+        return this.quarkusMongoClient;
     }
 
     @Override
     protected MongoDBTransactionManager transactionManager() {
-        return this.transactionManager;
+        return this.quarkusTransactionManager;
     }
 
     @Override
     protected boolean processInstancesEvents() {
-        return this.processInstancesEvents;
+        return this.quarkusEnableProcessInstancesEvents;
     }
 
     @Override
     protected boolean userTasksEvents() {
-        return this.userTasksEvents;
+        return this.quarkusEnableUserTasksEvents;
     }
 
     @Override
     protected boolean variablesEvents() {
-        return this.variablesEvents;
+        return this.quarkusEnableVariablesEvents;
     }
 
     @Override
     protected String eventsDatabaseName() {
-        return this.eventsDatabaseName;
+        return this.quarkusEventsDatabaseName;
     }
 
     @Override
     protected String processInstancesEventsCollection() {
-        return this.processInstancesEventsCollection;
+        return this.quarkusProcessInstancesEventsCollectionName;
     }
 
     @Override
     protected String userTasksEventsCollection() {
-        return this.userTasksEventsCollection;
+        return this.quarkusUserTasksEventsCollectionName;
     }
 
     @Override
     protected String variablesEventsCollection() {
-        return this.variablesEventsCollection;
+        return this.quarkusVariablesEventsCollectionName;
     }
 }

@@ -37,7 +37,11 @@ import com.mongodb.client.model.Filters;
 
 import static org.kie.kogito.events.mongodb.MongoDBEventPublisher.ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MongoDBEventPublisherTest {
 

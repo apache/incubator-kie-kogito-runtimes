@@ -74,7 +74,7 @@ class SpringbootMongoDBEventPublisherTest {
 
     @Test
     void setup() {
-        publisher.setup();
+        publisher.setupSpringbootMongoDBEventPublisher();
         verify(mongoClient, atLeastOnce()).getDatabase(eq("testDB"));
     }
 

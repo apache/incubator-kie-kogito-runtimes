@@ -29,6 +29,9 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 
 public class CodecUtils {
 
+    private CodecUtils() {
+    }
+
     static final String ID = "_id";
 
     private static final Codec<Document> CODEC = new DocumentCodec(CodecRegistries.fromRegistries(

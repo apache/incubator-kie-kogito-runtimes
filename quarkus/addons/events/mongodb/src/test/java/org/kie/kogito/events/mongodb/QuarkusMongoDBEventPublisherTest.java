@@ -46,7 +46,7 @@ class QuarkusMongoDBEventPublisherTest {
 
     @Test
     void setup() {
-        publisher.setup();
+        publisher.setupQuarkusMongoDBEventPublisher();
         verify(mongoClient, atLeastOnce()).getDatabase(eq("testDB"));
     }
 
