@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.api.utils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class AppPaths {
     private final Collection<Path> classesPaths = new ArrayList<>();
 
     private final boolean isJar;
-    private final String resourcesPath;
+    private final Path resourcesPath;
 
     public static AppPaths fromProjectDir(Path projectDir) {
         return new AppPaths(Collections.singleton(projectDir), Collections.emptyList(), false, BuildTool.MAVEN);
@@ -99,9 +100,9 @@ public class AppPaths {
         this.projectPaths.addAll(projectPaths);
         this.classesPaths.addAll(classesPaths);
         if (bt == BuildTool.GRADLE) {
-            resourcesPath = ""; // no prefix required
+            resourcesPath = Paths.get(""); // no prefix required
         } else {
-            resourcesPath = "src/main/resources";
+            resourcesPath = Paths.get("src", "main", "resources");
         }
     }
 
