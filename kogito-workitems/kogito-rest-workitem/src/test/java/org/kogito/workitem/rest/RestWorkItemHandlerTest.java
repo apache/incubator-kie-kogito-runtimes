@@ -18,6 +18,7 @@ package org.kogito.workitem.rest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
@@ -58,6 +59,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kogito.workitem.rest.RestWorkItemHandler.BODY_BUILDER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -252,7 +254,7 @@ public class RestWorkItemHandlerTest {
         parameters.put("id", new JsonPathResolver("$.id"));
         parameters.put("name", new JsonPathResolver("$.name"));
         parameters.put(RestWorkItemHandler.METHOD, "POST");
-        parameters.put(RestWorkItemHandler.BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder());
+        parameters.put(BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder());
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
         handler.executeWorkItem(workItem, manager);
@@ -266,7 +268,16 @@ public class RestWorkItemHandlerTest {
     }
 
     @Test
-    public void testParametersPostWithBodyBuilderStringParamRestTaskHandler() {
+    public void testParametersPostWithCustomParamWithDefaultBuilder() {
+        testParametersPostWithCustomParam(null);
+    }
+
+    @Test
+    public void testParametersPostWithCustomParamWithClassBuilder() {
+        testParametersPostWithCustomParam(ParamsRestWorkItemHandlerBodyBuilder.class.getName());
+    }
+
+    private void testParametersPostWithCustomParam(String bodyBuilderClass) {
         final VariableScopeInstance contextInstance = mock(VariableScopeInstance.class);
         when(nodeInstance.resolveContextInstance(VariableScope.VARIABLE_SCOPE, DEFAULT_WORKFLOW_VAR)).thenReturn(contextInstance);
         when(contextInstance.getVariable(DEFAULT_WORKFLOW_VAR)).thenReturn(workflowData);
@@ -275,9 +286,9 @@ public class RestWorkItemHandlerTest {
         parameters.put("name", "tiago");
         parameters.put("id", 123);
         //test expression evaluation in the work item parameter
-        parameters.put(RestWorkItemHandler.BODY_BUILDER, "ParamsRestWorkItemHandlerBodyBuilder");
         final String customParameter = "custom parameter";
         parameters.put(customParameter, workflowData);
+        Optional.ofNullable(bodyBuilderClass).ifPresent(builder -> parameters.put(BODY_BUILDER, builder));
 
         handler.executeWorkItem(workItem, manager);
 
