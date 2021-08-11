@@ -141,7 +141,7 @@ public class ProjectRuntimeGenerator {
                 .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find getConfForSession method"));
 
         SwitchStmt switchStmt = getConfForSessionMethod.findFirst(SwitchStmt.class)
-                .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot switch inside getConfForSession method"));
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find switch inside getConfForSession method"));
         ;
 
         for (Map.Entry<String, BlockStmt> entry : modelMethod.getkSessionConfs().entrySet()) {

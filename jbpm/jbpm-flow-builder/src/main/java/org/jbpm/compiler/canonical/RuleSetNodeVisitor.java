@@ -220,7 +220,7 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         try {
             loadUnitClass(className, null);
             return true;
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }
