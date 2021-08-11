@@ -129,5 +129,5 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 | Add-On Description  | Old Artifact ID | New Artifact ID |
 |---------------------|-----------------|-----------------|
 | Cloud Events         | kogito-addons-springboot-cloudevents | kogito-addons-springboot-messaging
-| Events Kafka         | kogito-addons-springboot-events-kafka | kogito-addons-springboot-events-process
+| Events Kafka         | kogito-addons-springboot-events-kafka | kogito-addons-springboot-events-process-kafka
 

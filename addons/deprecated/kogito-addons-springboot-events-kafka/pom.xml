@@ -9,12 +9,12 @@
   </parent>
   <artifactId>kogito-addons-springboot-events-kafka</artifactId>
   <name>Kogito :: Add-Ons :: Events :: SprintBoot :: Kafka</name>
-  <description>Kogito Events based on Spring Boot Add-On</description>
+  <description>The library kogito-addons-springboot-events-kafka is deprecated and will be removed in a future release!. The new name for this addon is kogito-addons-springboot-events-process-kafka</description>
 
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>The library kogito-addons-springboot-events-kafka is deprecated and will be removed in a future release!. The new name for this addon is kogito-addons-springboot-events-process-kafka</artifactId>
+      <artifactId>kogito-addons-springboot-events-process-kafka</artifactId>
     </dependency>
   </dependencies>
 </project>

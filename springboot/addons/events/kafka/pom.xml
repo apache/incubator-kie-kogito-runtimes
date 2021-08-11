@@ -8,7 +8,7 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-springboot-events-process-kafka</artifactId>
-  <name>Kogito :: Add-Ons :: Events :: SprintBoot :: Process :: kafka</name>
+  <name>Kogito :: Add-Ons :: Events :: SprintBoot :: Process :: Kafka</name>
   <description>Kogito Kafka Events for process based on Spring Boot Add-On</description>
 
   <dependencies>
