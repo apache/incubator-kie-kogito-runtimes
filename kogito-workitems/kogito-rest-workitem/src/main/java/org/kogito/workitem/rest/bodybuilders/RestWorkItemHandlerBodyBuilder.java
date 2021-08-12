@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public interface RestWorkItemHandlerBodyBuilder {
     Object apply(Object contentData, Map<String, Object> parameters, UnaryOperator<Object> resolver);
 
-    default Map<String, Object> buildMap(Map<String, Object> parameters, UnaryOperator<Object> resolver) {
+    static Map<String, Object> buildMap(Map<String, Object> parameters, UnaryOperator<Object> resolver) {
         return parameters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> resolver.apply(e.getValue())));
     }
 }

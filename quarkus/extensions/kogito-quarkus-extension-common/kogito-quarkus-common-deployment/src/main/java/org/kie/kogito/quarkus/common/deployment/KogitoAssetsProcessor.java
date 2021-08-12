@@ -134,11 +134,6 @@ public class KogitoAssetsProcessor {
         return new ReflectiveClassBuildItem(true, true, "org.kie.kogito.jobs.api.Job");
     }
 
-    @BuildStep
-    public ReflectiveClassBuildItem reflectionRestWorkItemHandler() {
-        return new ReflectiveClassBuildItem(true, true, "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder");
-    }
-
     private void registerDataEventsForReflection(Optional<IndexView> optionalIndex, KogitoBuildContext context, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.event.AbstractDataEvent"));

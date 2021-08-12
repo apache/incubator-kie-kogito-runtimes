@@ -34,21 +34,21 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 
 public class JsonResolver {
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     /**
      * @param objectMapper object mapper to be used when converting input items
      */
     public JsonResolver(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
-                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);
-
     }
 
     public JsonResolver() {
-        this(new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL));
+        this(new ObjectMapper()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE));
     }
 
     /**

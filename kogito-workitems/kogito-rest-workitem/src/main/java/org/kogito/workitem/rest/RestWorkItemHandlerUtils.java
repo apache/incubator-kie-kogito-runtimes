@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class RestWorkItemHandlerUtils {
     }
 
     private static Object convert(Object value, Class<?> targetClass) {
-        if (!targetClass.isAssignableFrom(value.getClass())) {
+        if (Objects.nonNull(value) && !targetClass.isAssignableFrom(value.getClass())) {
             if (Date.class.isAssignableFrom(targetClass)) {
                 if (value instanceof String) {
                     return Date.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(value.toString())));

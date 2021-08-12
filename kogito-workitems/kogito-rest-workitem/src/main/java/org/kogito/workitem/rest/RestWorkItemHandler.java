@@ -137,12 +137,15 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     public RestWorkItemHandlerBodyBuilder getBodyBuilder(Map<String, Object> parameters) {
         Object param = parameters.get(BODY_BUILDER);
+        //in case the body builder is not set as an input, just use the default
         if (Objects.isNull(param)) {
             return DEFAULT_BODY_BUILDER;
         }
+        //check if an instance of RestWorkItemHandlerBodyBuilder was set and just return it
         if (param instanceof RestWorkItemHandlerBodyBuilder) {
             return (RestWorkItemHandlerBodyBuilder) param;
         }
+        //in case of String, try to load an instance by the FQN of a RestWorkItemHandlerBodyBuilder
         if (param instanceof String) {
             return BODY_BUILDERS.computeIfAbsent(param.toString(), this::loadBodyBuilder);
         }
@@ -152,7 +155,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private RestWorkItemHandlerBodyBuilder loadBodyBuilder(String className) {
         try {
             return getClassLoader().loadClass(className).asSubclass(RestWorkItemHandlerBodyBuilder.class).getConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException | ClassCastException e) {
             throw new IllegalArgumentException("Invalid RestWorkItemHandlerBodyBuilder Class " + className, e);
         }
     }

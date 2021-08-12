@@ -18,6 +18,8 @@ package org.kogito.workitem.rest.bodybuilders;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
+import static org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder.buildMap;
+
 public class ParamsRestWorkItemHandlerBodyBuilder implements RestWorkItemHandlerBodyBuilder {
 
     @Override
