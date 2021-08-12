@@ -1,6 +1,7 @@
 # Kogito Messaging Add-on
 
-These add-ons main external purpose is to provide a handler to messages defined in BPMN processes. 
+These add-ons provide a default implementation in our supported target platforms for EventEmitter and EventReceiver interfaces.
+EventEmitter and EventReceiver interfaces are used for enabling messaging by process, for serverless workflow events and for event decision handling.
 See the following sections in our documentation to find out more:
 
 - [Knative Eventing in Kogito services](https://docs.jboss.org/kogito/release/latest/html_single/#con-knative-eventing_kogito-developing-process-services)

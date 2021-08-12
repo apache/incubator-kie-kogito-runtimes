@@ -17,7 +17,9 @@ package org.kie.kogito.events.rm;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -30,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 @Singleton
 public class ReactiveMessagingEventPublisher implements EventPublisher {
@@ -38,9 +41,7 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     private static final String VI_TOPIC_NAME = "kogito-variables-events";
 
     private static final Logger logger = LoggerFactory.getLogger(ReactiveMessagingEventPublisher.class);
-
-    @Inject
-    ObjectMapper json;
+    private ObjectMapper json = new ObjectMapper();
 
     @Inject
     @Channel(PI_TOPIC_NAME)
@@ -65,6 +66,11 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     @Inject
     @ConfigProperty(name = "kogito.events.variables.enabled")
     Optional<Boolean> variablesEvents;
+
+    @PostConstruct
+    public void configure() {
+        json.setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
+    }
 
     @Override
     public void publish(DataEvent<?> event) {
