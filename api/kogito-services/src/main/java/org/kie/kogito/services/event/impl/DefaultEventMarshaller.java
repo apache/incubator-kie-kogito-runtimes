@@ -15,15 +15,12 @@
  */
 package org.kie.kogito.services.event.impl;
 
-import java.util.TimeZone;
-
 import org.kie.kogito.event.EventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 public class DefaultEventMarshaller implements EventMarshaller {
 
@@ -31,16 +28,8 @@ public class DefaultEventMarshaller implements EventMarshaller {
 
     private final ObjectMapper mapper;
 
-    public DefaultEventMarshaller() {
-        this(null);
-    }
-
     public DefaultEventMarshaller(ObjectMapper mapper) {
-        if (mapper == null) {
-            this.mapper = new ObjectMapper().setDateFormat(new StdDateFormat().withColonInTimeZone(true).withTimeZone(TimeZone.getDefault()));
-        } else {
-            this.mapper = mapper;
-        }
+        this.mapper = mapper;
     }
 
     @Override
@@ -54,4 +43,7 @@ public class DefaultEventMarshaller implements EventMarshaller {
         }
     }
 
+    public ObjectMapper getMapper() {
+        return mapper;
+    }
 }

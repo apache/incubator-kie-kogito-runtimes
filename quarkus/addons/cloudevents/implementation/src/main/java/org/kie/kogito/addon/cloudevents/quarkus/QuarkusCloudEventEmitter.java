@@ -15,63 +15,55 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus;
 
-import java.util.Optional;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
-
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecorator;
-import org.kie.kogito.addon.cloudevents.quarkus.decorators.MessageDecoratorFactory;
-import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.EventEmitter;
-import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.services.event.impl.DefaultEventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * the quarkus implementation just delegates to a real emitter,
- * since smallrye reactive messaging handles different transports
- *
- */
-@ApplicationScoped
-public class QuarkusCloudEventEmitter implements EventEmitter {
+import io.smallrye.reactive.messaging.ChannelRegistar;
+import io.smallrye.reactive.messaging.ChannelRegistry;
+import io.smallrye.reactive.messaging.extension.EmitterConfiguration;
+import io.smallrye.reactive.messaging.extension.MediatorManager;
 
-    private MessageDecorator messageDecorator;
+@ApplicationScoped
+@Named(KogitoEventStreams.DEFAULT_OUTGOING_BEAN_NAME)
+public class QuarkusCloudEventEmitter extends AbstractQuarkusCloudEventEmitter implements ChannelRegistar {
+
+    private static final String PROPERTY = "mp.messaging.outgoing." + KogitoEventStreams.OUTGOING + ".connector";
 
     private static final Logger logger = LoggerFactory.getLogger(QuarkusCloudEventEmitter.class);
 
     @Inject
-    @Channel(KogitoEventStreams.OUTGOING)
-    Emitter<String> emitter;
+    private ChannelRegistry channelRegistry;
 
     @Inject
-    ConfigBean configBean;
+    private MediatorManager mediatorManager;
 
-    @Inject
-    Instance<EventMarshaller> marshallerInstance;
-    EventMarshaller marshaller;
+    private Emitter<String> emitter;
 
-    @PostConstruct
-    private void init() {
-        marshaller = marshallerInstance.isResolvable() ? marshallerInstance.get() : new DefaultEventMarshaller();
-        messageDecorator = MessageDecoratorFactory.newInstance(configBean.useCloudEvents());
+    @Override
+    public void initialize() {
+        if (ConfigProvider.getConfig().getOptionalValue(PROPERTY, String.class).isPresent()) {
+            logger.info("Registering emitter {}", KogitoEventStreams.OUTGOING);
+            mediatorManager.addEmitter(new EmitterConfiguration(KogitoEventStreams.OUTGOING, false, null, null));
+        }
     }
 
     @Override
-    public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
-        logger.debug("publishing event {} for type {}", e, type);
-        final Message<String> message = this.messageDecorator.decorate(marshaller.marshall(
-                configBean.useCloudEvents() ? processDecorator.map(d -> d.apply(e)).orElse(e) : e));
-        emitter.send(message);
-        return message.getAck().get();
+    protected void emit(Message<String> message) {
+        if (emitter == null) {
+            emitter = (Emitter<String>) channelRegistry.getEmitter(KogitoEventStreams.OUTGOING);
+        }
+        if (emitter != null) {
+            emitter.send(message);
+        } else {
+            logger.warn("Cannot find emitter {}", KogitoEventStreams.OUTGOING);
+        }
     }
 }

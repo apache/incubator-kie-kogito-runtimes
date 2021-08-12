@@ -10,7 +10,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.kie.kogito</groupId>
-                <artifactId>kogito-springboot-bom</artifactId>
+                <artifactId>kogito-spring-boot-bom</artifactId>
                 <version>${project.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -26,7 +26,7 @@
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-springboot-starter</artifactId>
+            <artifactId>kogito-spring-boot-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -62,12 +62,10 @@
         <dependency>
           <groupId>org.springdoc</groupId>
           <artifactId>springdoc-openapi-ui</artifactId>
-          <version>@version.org.springdoc@</version>
         </dependency>
         <dependency>
           <groupId>io.swagger.parser.v3</groupId>
           <artifactId>swagger-parser</artifactId>
-          <version>@version.io.swagger.parser.v3@</version>
           <scope>test</scope>
           <exclusions>
             <exclusion>

@@ -1,12 +1,12 @@
 # Kogito Spring Boot BOM
 
-In this module you will find the `kogito-springboot-bom`
+In this module you will find the `kogito-spring-boot-bom`
 BOM ([Bill of Materials](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#bill-of-materials-bom-poms))
 .
 
 This BOM goal is to include all Kogito Core and Spring Boot dependencies in one single file.
 
-Users are encouraged to use this BOM with the [Kogito Spring Boot Starter](../kogito-springboot-starter).
+Users are encouraged to use this BOM with the [Kogito Spring Boot Starter](../starters/kogito-spring-boot-starter).
 
 ## How to use it
 
@@ -18,7 +18,7 @@ Simply add the BOM in your module's `pom.xml` file:
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-springboot-bom</artifactId>
+      <artifactId>kogito-spring-boot-bom</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>import</scope>
@@ -27,9 +27,9 @@ Simply add the BOM in your module's `pom.xml` file:
 </dependencyManagement>
 ```
 
-If your project has a parent module, add there instead of adding in every child module.
+If your project has a parent module, add the BOM in the parent module instead of adding in every child module.
 
-> **Maintainers**: relevant parent modules within the project already have it like [`addons`](../addons) and [`starters`](../kogito-springboot-starter).
+> **Maintainers**: The relevant parent modules within the project already have it like [`addons`](../addons) and [`starters`](../starters).
 
 ## Adding new dependencies
 
