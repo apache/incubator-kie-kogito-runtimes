@@ -78,7 +78,7 @@ public class RestWorkItemHandlerUtils {
 
     private static Object convert(Object value, Class<?> targetClass) {
         if (Objects.nonNull(value) && !targetClass.isAssignableFrom(value.getClass())) {
-            if (Date.class.isAssignableFrom(targetClass)) {
+            if (targetClass.isAssignableFrom(Date.class)) {
                 if (value instanceof String) {
                     return Date.from(Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(value.toString())));
                 } else if (value instanceof Number) {

@@ -82,14 +82,14 @@ public class JsonResolver {
         Annotation[] declaredAnnotations = element.getDeclaredAnnotations();
         Annotation[] declaringClassAnnotations =
                 Optional.of(element).filter(Field.class::isInstance).map(Field.class::cast).map(Field::getType).map(Class::getDeclaredAnnotations).orElse(new Annotation[0]);
-        if (!Stream.of(declaredAnnotations, declaringClassAnnotations).flatMap(Stream::of)
-                .noneMatch(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0)) {
+        if (Stream.of(declaredAnnotations, declaringClassAnnotations).flatMap(Stream::of)
+                .anyMatch(a -> a.annotationType().getAnnotationsByType(JacksonAnnotation.class).length > 0)) {
             return true;
         }
         if (!(element instanceof Class) || ((Class<?>) element).isPrimitive()) {
             return false;
         }
         Class<?> clazz = (Class<?>) element;
-        return !Arrays.stream(clazz.getDeclaredFields()).noneMatch(f -> hasJacksonAnnotations(f));
+        return Arrays.stream(clazz.getDeclaredFields()).anyMatch(f -> hasJacksonAnnotations(f));
     }
 }
