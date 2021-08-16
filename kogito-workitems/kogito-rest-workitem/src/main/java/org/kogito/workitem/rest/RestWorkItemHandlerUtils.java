@@ -84,15 +84,15 @@ public class RestWorkItemHandlerUtils {
                 } else if (value instanceof Number) {
                     return new Date(((Number) value).longValue());
                 }
-            } else if (Integer.class.isAssignableFrom(targetClass) && value instanceof String) {
+            } else if (targetClass.isAssignableFrom(Integer.class) && value instanceof String) {
                 return Integer.parseInt(value.toString());
-            } else if (Long.class.isAssignableFrom(targetClass) && value instanceof String) {
+            } else if (targetClass.isAssignableFrom(Long.class) && value instanceof String) {
                 return Long.parseLong(value.toString());
-            } else if (Boolean.class.isAssignableFrom(targetClass) && value instanceof String) {
+            } else if (targetClass.isAssignableFrom(Boolean.class) && value instanceof String) {
                 return Boolean.parseBoolean(value.toString());
-            } else if (Float.class.isAssignableFrom(targetClass) && value instanceof String) {
+            } else if (targetClass.isAssignableFrom(Float.class) && value instanceof String) {
                 return Float.parseFloat(value.toString());
-            } else if (Double.class.isAssignableFrom(targetClass) && value instanceof String) {
+            } else if (targetClass.isAssignableFrom(Double.class) && value instanceof String) {
                 return Double.parseDouble(value.toString());
             }
         }
