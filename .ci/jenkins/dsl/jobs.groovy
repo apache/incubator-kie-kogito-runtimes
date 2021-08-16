@@ -84,7 +84,7 @@ if (Utils.isLTSBranch(this)) {
 }
 
 // Tools job
-KogitoJobTemplate.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito-build-parent', 'Kogito Runtimes')
+KogitoJobTemplate.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito', 'Kogito Runtimes')
 KogitoJobTemplate.createKie7UpdateJob(this, 'kogito-runtimes', 'kogito-kie7-bom', 'Kogito Runtimes')
 
 /////////////////////////////////////////////////////////////////
