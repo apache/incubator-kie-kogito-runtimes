@@ -1,0 +1,72 @@
+{
+  "id": "error",
+  "version": "1.0",
+  "name": "Greeting workflow",
+  "description": "JSON based error example workflow",
+  "start": "ChooseOnLanguage",
+  "functions": [
+    {
+      "name": "greetFunction",
+      "metadata": {
+        "type": "sysout"
+      }
+    }
+  ],
+  "states": [
+    {
+      "name": "ChooseOnLanguage",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "condition": "{{ $.[?(@.language  == 'English')] }}",
+          "transition": "GreetInEnglish"
+        },
+        {
+          "condition": "{{ $.[?(@.language  == 'Spanish')] }}",
+          "transition": "GreetInSpanish"
+        }
+      ],
+      "onErrors": [
+        {
+          "error": "wrong language",
+          "code": "java.lang.IllegalArgumentException",
+          "transition": "GreetInEnglish"
+        }
+      ]
+    },
+    {
+      "name": "GreetInEnglish",
+      "type": "inject",
+      "data": {
+        "greeting": "Hello from JSON Workflow, "
+      },
+      "transition": "GreetPerson"
+    },
+    {
+      "name": "GreetInSpanish",
+      "type": "inject",
+      "data": {
+        "greeting": "Saludos desde JSON Workflow, "
+      },
+      "transition": "GreetPerson"
+    },
+    {
+      "name": "GreetPerson",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "greetAction",
+          "functionRef": {
+            "refName": "greetFunction",
+            "arguments": {
+              "message": "$.greeting $.name"
+            }
+          }
+        }
+      ],
+      "end": {
+        "terminate": "true"
+      }
+    }
+  ]
+}

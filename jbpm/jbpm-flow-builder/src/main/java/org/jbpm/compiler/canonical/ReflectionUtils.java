@@ -58,7 +58,6 @@ public class ReflectionUtils {
                     String methodName,
                     Collection<String> parameterTypes) throws ReflectiveOperationException {
 
-        boolean hasPrimitive = false;
         Class<?>[] methodParameters = new Class<?>[parameterTypes.size()];
         Class<?>[] primitiveParameters = new Class<?>[parameterTypes.size()];
 
@@ -74,23 +73,27 @@ public class ReflectionUtils {
             Class<?> primitive = wrappers2Primitive.get(parameterClass);
             if (primitive != null) {
                 primitiveParameters[i] = primitive;
-                hasPrimitive = true;
             } else {
                 primitiveParameters[i] = parameterClass;
             }
             i++;
         }
-        try {
-            return clazz.getMethod(methodName, methodParameters);
-        } catch (NoSuchMethodException ex) {
-            if (hasPrimitive) {
-                try {
-                    return clazz.getMethod(methodName, primitiveParameters);
-                } catch (NoSuchMethodException ex2) {
-                    logger.warn("Unable to find method {} with primitive arguments {}", methodName, primitiveParameters);
+        for (Method m : clazz.getMethods()) {
+            if (m.getName().equals(methodName) && m.getParameterCount() == methodParameters.length) {
+                Class<?>[] thisMethodParams = m.getParameterTypes();
+                boolean valid = true;
+                for (i = 0; valid && i < methodParameters.length; i++) {
+                    valid = thisMethodParams[i].isAssignableFrom(methodParameters[i]) ||
+                            thisMethodParams[i].isAssignableFrom(primitiveParameters[i]) ||
+                            methodParameters[i].equals(java.lang.Object.class);
+                }
+                if (valid) {
+                    return m;
                 }
             }
-            throw ex;
         }
+        throw new IllegalArgumentException("Cannot find a suitable method named " + methodName + " for parameters " + parameterTypes + " in class " + clazz);
+
     }
+
 }

@@ -224,13 +224,13 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
             if (end == -1) {
                 throw new IllegalArgumentException("malformed endpoint should contain enclosing '}' " + endPoint);
             }
-            String key = sb.substring(start + 1, end);
-            Object value = resolver.apply(parameters.get(key));
+            final String key = sb.substring(start + 1, end);
+            final Object value = resolver.apply(parameters.get(key));
             if (value == null) {
                 throw new IllegalArgumentException("missing parameter " + key);
             }
             toRemove.add(key);
-            sb.replace(start, end + 1, resolver.apply(parameters.get(key)).toString());
+            sb.replace(start, end + 1, value.toString());
             start = sb.indexOf("{", end);
         }
         parameters.keySet().removeAll(toRemove);
