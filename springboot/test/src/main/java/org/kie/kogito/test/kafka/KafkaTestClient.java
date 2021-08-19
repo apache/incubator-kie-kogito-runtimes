@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -48,7 +49,7 @@ public class KafkaTestClient {
     private final KafkaProducer<String, String> producer;
     private final KafkaConsumer<String, String> consumer;
     private final Object shutdownLock = new Object();
-    private boolean shutdown = false;
+    private AtomicBoolean shutdown = new AtomicBoolean(false);
 
     public KafkaTestClient(String hosts) {
         this(createDefaultProducer(hosts), createDefaultConsumer(hosts));
@@ -63,17 +64,14 @@ public class KafkaTestClient {
         consumer.subscribe(topics);
 
         CompletableFuture.runAsync(() -> {
-            while (!shutdown) {
+            do {
                 synchronized (shutdownLock) {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
-
                     StreamSupport.stream(records.spliterator(), true)
                             .map(ConsumerRecord::value)
                             .forEach(callback::accept);
-
-                    consumer.commitSync();
                 }
-            }
+            } while (!shutdown.get());
         });
     }
 
@@ -86,8 +84,9 @@ public class KafkaTestClient {
     }
 
     public void shutdown() {
-        shutdown = true;
+        shutdown.set(true);
         synchronized (shutdownLock) {
+            consumer.wakeup();
             consumer.close();
         }
 
