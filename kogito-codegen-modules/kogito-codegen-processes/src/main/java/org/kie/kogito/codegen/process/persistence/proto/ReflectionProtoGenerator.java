@@ -80,14 +80,14 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     }
 
     @Override
-    protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated,  Class<?> clazz, String packageName, String messageComment, String fieldComment) throws Exception {
+    protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, Class<?> clazz, String messageComment, String fieldComment) throws Exception {
         String name = extractName(clazz).orElse(null);
-        if(name == null) {
+        if (name == null) {
             // since class is marked as hidden skip processing of that class
             return null;
         }
 
-        ProtoMessage message = new ProtoMessage(name, packageName == null ? clazz.getPackage().getName() : packageName);
+        ProtoMessage message = new ProtoMessage(name, clazz.getPackage().getName());
 
         for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
             if (pd.getName().equals("class")) {
@@ -128,8 +128,8 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             if (protoType == null) {
 
                 // recursive call to visit the type
-                Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, packageName, fieldType);
-                if(!optionalProtoType.isPresent()) {
+                Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, fieldType);
+                if (!optionalProtoType.isPresent()) {
                     return message;
                 }
 
@@ -144,10 +144,10 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     }
 
     @Override
-    protected ProtoEnum enumFromClass(Proto proto, Class<?> clazz, String packageName) throws Exception {
+    protected ProtoEnum enumFromClass(Proto proto, Class<?> clazz) throws Exception {
         return extractName(clazz)
                 .map(name -> {
-                    ProtoEnum modelEnum = new ProtoEnum(name, packageName == null ? clazz.getPackage().getName() : packageName);
+                    ProtoEnum modelEnum = new ProtoEnum(name, clazz.getPackage().getName());
                     Stream.of(clazz.getDeclaredFields())
                             .filter(f -> !f.getName().startsWith("$"))
                             .forEach(f -> addEnumField(f, modelEnum));
@@ -230,7 +230,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         @Override
         protected Collection<Class<?>> extractDataClasses(Collection<Class<?>> modelClasses) {
             if (dataClasses != null || modelClasses == null) {
-                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses");
+                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses. This should happen only during tests.");
                 return dataClasses;
             }
             Set<Class<?>> dataModelClasses = new HashSet<>();

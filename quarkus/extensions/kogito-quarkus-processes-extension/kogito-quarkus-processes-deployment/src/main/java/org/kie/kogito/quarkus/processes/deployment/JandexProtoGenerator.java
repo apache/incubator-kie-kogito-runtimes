@@ -105,7 +105,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, ClassInfo clazz, String packageName, String messageComment, String fieldComment) throws Exception {
+    protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, ClassInfo clazz, String messageComment, String fieldComment) throws Exception {
         Optional<String> optionalName = extractName(clazz);
         if(!optionalName.isPresent()) {
             // if name cannot be extracted let skip the object
@@ -114,7 +114,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
         String name = optionalName.get();
 
-        ProtoMessage message = new ProtoMessage(name, packageName == null ? clazz.name().prefix().toString() : packageName);
+        ProtoMessage message = new ProtoMessage(name, clazz.name().prefix().toString());
         for (FieldInfo pd : clazz.fields()) {
             String completeFieldComment = fieldComment;
             // ignore static and/or transient fields
@@ -154,7 +154,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                 }
 
                 // recursive call to visit the type
-                Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, packageName, classInfo);
+                Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, classInfo);
                 if(!optionalProtoType.isPresent()) {
                     return message;
                 }
@@ -170,14 +170,14 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    protected ProtoEnum enumFromClass(Proto proto, ClassInfo clazz, String packageName) {
+    protected ProtoEnum enumFromClass(Proto proto, ClassInfo clazz) {
         String name = clazz.simpleName();
         String altName = getReferenceOfModel(clazz, "name");
         if (altName != null) {
             name = altName;
         }
 
-        ProtoEnum modelEnum = new ProtoEnum(name, packageName == null ? clazz.name().prefix().toString() : packageName);
+        ProtoEnum modelEnum = new ProtoEnum(name, clazz.name().prefix().toString());
         clazz.fields().stream()
                 .filter(f -> !f.name().startsWith("$"))
                 .forEach(f -> addEnumField(f, modelEnum));
@@ -279,7 +279,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         @Override
         protected Collection<ClassInfo> extractDataClasses(Collection<ClassInfo> modelClasses) {
             if (dataClasses != null || modelClasses == null) {
-                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses");
+                LOGGER.info("Using provided dataClasses instead of extracting from modelClasses. This should happen only during tests.");
                 return dataClasses;
             }
             Set<ClassInfo> dataModelClasses = new HashSet<>();

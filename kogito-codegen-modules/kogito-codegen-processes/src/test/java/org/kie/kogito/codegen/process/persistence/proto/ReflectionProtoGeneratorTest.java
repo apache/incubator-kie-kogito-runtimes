@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.codegen.process.persistence.proto;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.kie.kogito.codegen.data.QuestionWithAnnotatedEnum;
 import org.kie.kogito.codegen.data.Travels;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ReflectionProtoGeneratorTest {
 
@@ -52,8 +54,8 @@ class ReflectionProtoGeneratorTest {
         ProtoMessage person = proto.getMessages().get(0);
         assertThat(person).isNotNull();
         assertThat(person.getName()).isEqualTo("Person");
-        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.test");
-        assertThat(person.getFields()).hasSize(4);
+        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(person.getFields()).hasSize(5);
 
         ProtoField field = person.getFields().get(0);
         assertThat(field).isNotNull();
@@ -83,10 +85,17 @@ class ReflectionProtoGeneratorTest {
         assertThat(field.getApplicability()).isEqualTo("optional");
         assertThat(field.getComment()).isEqualTo("@Field(index = Index.NO, store = Store.YES) @SortableField");
 
+        field = person.getFields().get(4);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("parent");
+        assertThat(field.getType()).isEqualTo("Person");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+        assertThat(field.getComment()).isEqualTo("@Field(index = Index.NO, store = Store.YES) @SortableField");
+
         ProtoMessage travel = proto.getMessages().get(1);
         assertThat(travel).isNotNull();
         assertThat(travel.getName()).isEqualTo("Travels");
-        assertThat(travel.getJavaPackageOption()).isEqualTo("org.kie.kogito.test");
+        assertThat(travel.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
         assertThat(travel.getFields()).hasSize(2);
 
         field = travel.getFields().get(0);
@@ -114,7 +123,7 @@ class ReflectionProtoGeneratorTest {
         assertThat(person).isNotNull();
         assertThat(person.getName()).isEqualTo("Person");
         assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
-        assertThat(person.getFields()).hasSize(4);
+        assertThat(person.getFields()).hasSize(5);
 
         ProtoField field = person.getFields().get(0);
         assertThat(field).isNotNull();
@@ -138,6 +147,12 @@ class ReflectionProtoGeneratorTest {
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("name");
         assertThat(field.getType()).isEqualTo("string");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+
+        field = person.getFields().get(4);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("parent");
+        assertThat(field.getType()).isEqualTo("Person");
         assertThat(field.getApplicability()).isEqualTo("optional");
     }
 
@@ -367,8 +382,8 @@ class ReflectionProtoGeneratorTest {
         assertThat(person).isNotNull();
         assertThat(person.getName()).isEqualTo("Person");
         assertThat(person.getComment()).isEqualTo("@Indexed");
-        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.test.persons");
-        assertThat(person.getFields()).hasSize(4);
+        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
+        assertThat(person.getFields()).hasSize(5);
 
         ProtoField field = person.getFields().get(0);
         assertThat(field).isNotNull();
@@ -397,6 +412,13 @@ class ReflectionProtoGeneratorTest {
         assertThat(field.getType()).isEqualTo("string");
         assertThat(field.getApplicability()).isEqualTo("optional");
         assertThat(field.getComment()).isEqualTo("@Field(index = Index.NO, store = Store.YES) @SortableField");
+
+        field = person.getFields().get(4);
+        assertThat(field).isNotNull();
+        assertThat(field.getName()).isEqualTo("parent");
+        assertThat(field.getType()).isEqualTo("Person");
+        assertThat(field.getApplicability()).isEqualTo("optional");
+        assertThat(field.getComment()).isEqualTo("@Field(index = Index.NO, store = Store.YES) @SortableField");
     }
 
     @Test
@@ -415,7 +437,7 @@ class ReflectionProtoGeneratorTest {
         assertThat(person).isNotNull();
         assertThat(person.getName()).isEqualTo("PersonVarInfo");
         assertThat(person.getComment()).isEqualTo("@Indexed");
-        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.test.persons");
+        assertThat(person.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
         assertThat(person.getFields()).hasSize(3);
 
         ProtoField field = person.getFields().get(0);
@@ -641,6 +663,16 @@ class ReflectionProtoGeneratorTest {
         assertThat(dataClassAndModelClassGenerator.getModelClasses())
                 .isNotNull()
                 .hasSize(1);
+    }
+
+    @Test
+    void recursiveProto() throws IOException {
+        ReflectionProtoGenerator generator = ReflectionProtoGenerator.builder()
+                .withDataClasses(Collections.singleton(Person.class))
+                .build(null);
+
+        Proto proto = generator.protoOfDataClasses("defaultPkg");
+        assertNotNull(proto);
     }
 
     @Test

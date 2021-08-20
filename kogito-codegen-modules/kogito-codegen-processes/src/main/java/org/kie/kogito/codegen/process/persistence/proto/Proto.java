@@ -29,7 +29,6 @@ public class Proto {
     private List<ProtoEnum> enums = new ArrayList<>();
 
     public Proto(String packageName, String... headers) {
-        super();
         this.packageName = packageName;
         this.headers = headers;
     }

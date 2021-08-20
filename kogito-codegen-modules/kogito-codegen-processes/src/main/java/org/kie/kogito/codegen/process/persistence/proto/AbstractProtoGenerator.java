@@ -75,9 +75,9 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
 
     protected abstract Optional<String> extractName(T dataModel) throws Exception;
 
-    protected abstract ProtoEnum enumFromClass(Proto proto, T clazz, String packageName) throws Exception;
+    protected abstract ProtoEnum enumFromClass(Proto proto, T clazz) throws Exception;
 
-    protected abstract ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, T clazz, String packageName, String messageComment, String fieldComment) throws Exception;
+    protected abstract ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, T clazz, String messageComment, String fieldComment) throws Exception;
 
     protected abstract Optional<GeneratedFile> generateModelClassProto(T modelClazz);
 
@@ -138,7 +138,6 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
                         alreadyGenerated,
                         messageComment,
                         fieldComment,
-                        packageName,
                         dataModel);
             } catch (Exception e) {
                 throw new RuntimeException("Error while generating proto for model class " + dataModel, e);
@@ -147,25 +146,25 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
         return proto;
     }
 
-    protected Optional<String> internalGenerate(Proto proto, Set<String> alreadyGenerated, String messageComment, String fieldComment, String packageName, T dataModel) throws Exception {
+    protected Optional<String> internalGenerate(Proto proto, Set<String> alreadyGenerated, String messageComment, String fieldComment, T dataModel) throws Exception {
         String protoType;
         if (isEnum(dataModel)) {
-            protoType = enumFromClass(proto, dataModel, null).getName();
+            protoType = enumFromClass(proto, dataModel).getName();
         } else {
 
             Optional<String> optionalName = extractName(dataModel);
-            if(!optionalName.isPresent()) {
+            if (!optionalName.isPresent()) {
                 // skip if name is hidden
                 return Optional.empty();
             }
 
-            if(alreadyGenerated.contains(optionalName.get())) {
+            if (alreadyGenerated.contains(optionalName.get())) {
                 // if already visited avoid infinite recursion
                 return optionalName;
             }
 
             alreadyGenerated.add(optionalName.get());
-            protoType = messageFromClass(proto, alreadyGenerated, dataModel, packageName, messageComment, fieldComment).getName();
+            protoType = messageFromClass(proto, alreadyGenerated, dataModel, messageComment, fieldComment).getName();
         }
         return Optional.ofNullable(protoType);
     }
