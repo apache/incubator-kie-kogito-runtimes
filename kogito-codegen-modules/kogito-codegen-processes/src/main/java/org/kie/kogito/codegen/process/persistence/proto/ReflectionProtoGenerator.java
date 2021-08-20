@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.infinispan.protostream.annotations.ProtoEnumValue;
+import org.kie.kogito.Model;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.api.GeneratedFile;
@@ -89,7 +90,6 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
         ProtoMessage message = new ProtoMessage(name, packageName == null ? clazz.getPackage().getName() : packageName);
 
         for (PropertyDescriptor pd : Introspector.getBeanInfo(clazz).getPropertyDescriptors()) {
-            String completeFieldComment = fieldComment;
             if (pd.getName().equals("class")) {
                 continue;
             }
@@ -98,6 +98,9 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
                 continue;
             }
+
+            // By default, only index id field from Model generated class
+            String completeFieldComment = "id".equals(pd.getName()) && Model.class.isAssignableFrom(clazz) ? fieldComment.replace("Index.NO", "Index.YES") : fieldComment;
 
             VariableInfo varInfo = clazz.getDeclaredField(pd.getName()).getAnnotation(VariableInfo.class);
             if (varInfo != null) {

@@ -16,14 +16,16 @@
 package org.kie.kogito.test;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.services.event.impl.AbstractMessageProducer;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-@javax.enterprise.context.ApplicationScoped()
+@io.quarkus.runtime.Startup
 public class MessageProducer extends AbstractMessageProducer<$DataType$, $DataEventType$> {
 
-    @javax.inject.Inject()
+    @Inject
+    @Named("$BeanName$")
     EventEmitter emitter;
 
     @javax.annotation.PostConstruct

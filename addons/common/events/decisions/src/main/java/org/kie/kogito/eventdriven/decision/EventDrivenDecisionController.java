@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
@@ -34,12 +36,17 @@ import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
+import org.kie.kogito.services.event.impl.JsonStringToObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 
+/**
+ * This class must always have exact FQCN as <code>org.kie.kogito.eventdriven.decision.EventDrivenDecisionController</code>
+ * for code generation plugins to correctly detect if this addon is enabled.
+ */
 public class EventDrivenDecisionController {
 
     public static final String REQUEST_EVENT_TYPE = "DecisionRequest";
@@ -73,7 +80,8 @@ public class EventDrivenDecisionController {
     }
 
     protected void setup() {
-        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo(CloudEvent.class));
+        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo<>(new JsonStringToObject(CloudEventUtils.Mapper.mapper()),
+                CloudEvent.class));
     }
 
     void handleEvent(String event) {
@@ -82,12 +90,13 @@ public class EventDrivenDecisionController {
                 .ifPresent(this::handleRequest);
     }
 
-    private void handleRequest(CloudEvent event) {
+    private CompletionStage<Void> handleRequest(CloudEvent event) {
         buildEvaluationContext(event)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
                 .flatMap(CloudEventUtils::toDataEvent)
                 .ifPresent(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()));
+        return CompletableFuture.completedFuture(null);
     }
 
     private Optional<EvaluationContext> buildEvaluationContext(CloudEvent event) {

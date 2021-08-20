@@ -158,10 +158,11 @@ public class ProtobufProcessInstanceReader {
         WorkflowContext workflowContext = processInstanceProtobuf.getContext();
         for (KogitoTypesProtobuf.NodeInstance nodeInstanceProtobuf : workflowContext.getNodeInstanceList()) {
             NodeInstanceImpl nodeInstanceImpl = buildNodeInstance(nodeInstanceProtobuf.getContent());
-            nodeInstanceImpl.setProcessInstance(processInstance);
+
             nodeInstanceImpl.setId(nodeInstanceProtobuf.getId());
             nodeInstanceImpl.setNodeId(nodeInstanceProtobuf.getNodeId());
             nodeInstanceImpl.setNodeInstanceContainer(processInstance);
+            nodeInstanceImpl.setProcessInstance(processInstance);
             nodeInstanceImpl.setLevel(nodeInstanceProtobuf.getLevel() == 0 ? 1 : nodeInstanceProtobuf.getLevel());
 
             SLAContext slaNodeInstanceContext = nodeInstanceProtobuf.getSla();
@@ -385,19 +386,19 @@ public class ProtobufProcessInstanceReader {
                     humanTaskNodeInstance.getNotStartedDeadlineTimers().putAll(buildDeadlines(workItemData.getStartDeadlinesMap()));
                     humanTaskNodeInstance.getNotStartedReassignments().putAll(buildReassignments(workItemData.getStartReassigmentsMap()));
 
-                    if (workItemData.getTaskName() != null) {
+                    if (workItemData.hasTaskName()) {
                         workItem.setTaskName(workItemData.getTaskName());
                     }
-                    if (workItemData.getTaskDescription() != null) {
+                    if (workItemData.hasTaskDescription()) {
                         workItem.setTaskDescription(workItemData.getTaskDescription());
                     }
-                    if (workItemData.getTaskPriority() != null) {
+                    if (workItemData.hasTaskPriority()) {
                         workItem.setTaskPriority(workItemData.getTaskPriority());
                     }
-                    if (workItemData.getTaskReferenceName() != null) {
+                    if (workItemData.hasTaskReferenceName()) {
                         workItem.setReferenceName(workItemData.getTaskReferenceName());
                     }
-                    if (workItemData.getActualOwner() != null) {
+                    if (workItemData.hasActualOwner()) {
                         workItem.setActualOwner(workItemData.getActualOwner());
                     }
                     workItem.getAdminUsers().addAll(workItemData.getAdminUsersList());
@@ -444,6 +445,7 @@ public class ProtobufProcessInstanceReader {
             if (workItemDataMessage.is(HumanTaskWorkItemData.class)) {
                 HumanTaskNodeInstance nodeInstance = new HumanTaskNodeInstance();
                 HumanTaskWorkItemImpl workItem = new HumanTaskWorkItemImpl();
+                nodeInstance.setProcessInstance(ruleFlowProcessInstance);
                 nodeInstance.internalSetWorkItem(workItem);
                 return nodeInstance;
             } else {
@@ -452,6 +454,7 @@ public class ProtobufProcessInstanceReader {
         } else {
             WorkItemNodeInstance nodeInstance = new WorkItemNodeInstance();
             KogitoWorkItemImpl workItem = new KogitoWorkItemImpl();
+            nodeInstance.setProcessInstance(ruleFlowProcessInstance);
             nodeInstance.internalSetWorkItem(workItem);
             return nodeInstance;
         }
@@ -461,7 +464,7 @@ public class ProtobufProcessInstanceReader {
         if (workflowContext.getNodeInstanceCount() > 0) {
             for (KogitoTypesProtobuf.NodeInstance nodeInstanceProtobuf : workflowContext.getNodeInstanceList()) {
                 NodeInstanceImpl nodeInstanceImpl = buildNodeInstance(nodeInstanceProtobuf.getContent());
-                nodeInstanceImpl.setProcessInstance(container.getProcessInstance());
+                nodeInstanceImpl.setProcessInstance(ruleFlowProcessInstance);
                 nodeInstanceImpl.setId(nodeInstanceProtobuf.getId());
                 nodeInstanceImpl.setNodeId(nodeInstanceProtobuf.getNodeId());
                 nodeInstanceImpl.setNodeInstanceContainer((KogitoNodeInstanceContainer) container);
@@ -481,8 +484,8 @@ public class ProtobufProcessInstanceReader {
             container.addContextInstance(ExclusiveGroup.EXCLUSIVE_GROUP, buildExclusiveGroupInstance(group, finder));
         }
 
-        container.addContextInstance(VariableScope.VARIABLE_SCOPE, new VariableScopeInstance());
         if (workflowContext.getVariableCount() > 0) {
+            container.addContextInstance(VariableScope.VARIABLE_SCOPE, new VariableScopeInstance());
             VariableScopeInstance variableScopeInstance = (VariableScopeInstance) container.getContextInstance(VariableScope.VARIABLE_SCOPE);
             varReader.buildVariables(workflowContext.getVariableList()).forEach(v -> variableScopeInstance.internalSetVariable(v.getName(), v.getValue()));
         }

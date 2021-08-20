@@ -35,9 +35,7 @@ import org.jbpm.util.JsonSchemaUtil;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.task.management.service.TaskInfo;
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
 
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -47,10 +45,9 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.Conditional.class)
 class TaskIT {
 
     static {
@@ -116,7 +113,7 @@ class TaskIT {
 
     @Test
     void testJsonSchemaFiles() {
-        long expectedJsonSchemas = 8;
+        long expectedJsonSchemas = 9;
         Path jsonDir = Paths.get("target", "classes").resolve(JsonSchemaUtil.getJsonDir());
         try (Stream<Path> paths = Files.walk(jsonDir)) {
             long generatedJsonSchemas = paths

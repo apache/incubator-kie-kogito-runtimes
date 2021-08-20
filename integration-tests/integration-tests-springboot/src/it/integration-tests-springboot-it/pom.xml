@@ -9,29 +9,14 @@
     <properties>
         <java.version>@maven.compiler.release@</java.version>
         <version.org.infinispan>@version.org.infinispan@</version.org.infinispan>
-        <version.com.github.tomakehurst.wiremock>@version.com.github.tomakehurst.wiremock@</version.com.github.tomakehurst.wiremock>
     </properties>
     
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.infinispan</groupId>
-                <artifactId>infinispan-bom</artifactId>
-                <version>${version.org.infinispan}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.kie.kogito</groupId>
-                <artifactId>kogito-bom</artifactId>
+                <artifactId>kogito-spring-boot-bom</artifactId>
                 <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>@version.org.springframework.boot@</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -46,7 +31,7 @@
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-springboot-starter</artifactId>
+            <artifactId>kogito-spring-boot-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -66,15 +51,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-spring-boot-starter-remote</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.infinispan</groupId>
-                    <artifactId>infinispan-server-testdriver-junit5</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-addons-springboot-monitoring-prometheus</artifactId>
         </dependency>
 
         <dependency>
@@ -109,26 +87,23 @@
 
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-test-utils</artifactId>
+            <artifactId>kogito-spring-boot-test-utils</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
-            <version>@version.com.github.tomakehurst.wiremock@</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
           <groupId>org.springdoc</groupId>
           <artifactId>springdoc-openapi-ui</artifactId>
-          <version>@version.org.springdoc@</version>
         </dependency>
         <dependency>
           <groupId>io.swagger.parser.v3</groupId>
           <artifactId>swagger-parser</artifactId>
-          <version>@version.io.swagger.parser.v3@</version>
           <scope>test</scope>
           <exclusions>
             <exclusion>

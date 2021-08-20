@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.acme.travels.Traveller;
 import org.acme.travels.Address;
@@ -37,27 +36,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.task.management.service.TaskInfo;
-import org.kie.kogito.testcontainers.springboot.InfinispanSpringBootTestResource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.ContextConfiguration;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
-@ContextConfiguration(initializers = InfinispanSpringBootTestResource.Conditional.class)
 public class TaskTest extends BaseRestTest {
-
-    static {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    }
 
     @Test
     void testJsonSchema() {
@@ -106,7 +98,7 @@ public class TaskTest extends BaseRestTest {
 
     @Test
     void testJsonSchemaFiles() {
-        long expectedJsonSchemas = 8;
+        long expectedJsonSchemas = 9;
         Path jsonDir = Paths.get("target", "classes").resolve(JsonSchemaUtil.getJsonDir());
         try (Stream<Path> paths = Files.walk(jsonDir)) {
             long generatedJsonSchemas = paths

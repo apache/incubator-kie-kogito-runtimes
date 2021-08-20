@@ -103,12 +103,17 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     @Override
-    public List<GeneratedFile> generate() {
+    protected Collection<GeneratedFile> internalGenerate() {
         List<GeneratedFile> files = new ArrayList<>();
         for (PMMLResource resource : resources) {
             generateModelsFromResource(files, resource);
         }
         return files;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return resources.isEmpty();
     }
 
     @Override
@@ -171,7 +176,7 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private void generateModelRESTFiles(List<GeneratedFile> files, KiePMMLModel model) {
-        if (!context().hasREST() || (model instanceof KiePMMLFactoryModel)) {
+        if (!context().hasRESTForGenerator(this) || (model instanceof KiePMMLFactoryModel)) {
             return;
         }
 

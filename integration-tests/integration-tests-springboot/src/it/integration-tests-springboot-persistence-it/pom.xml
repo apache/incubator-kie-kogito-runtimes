@@ -1,18 +1,16 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.kie.kogito</groupId>
   <artifactId>integration-tests-springboot-persistence-it</artifactId>
   <version>@project.version@</version>
-  <name>Kogito :: Integration Tests :: SpringBoot :: Processes :: Persistence :: Parent</name>
+  <name>Kogito :: Integration Tests :: Spring Boot :: Processes :: Persistence :: Parent</name>
   <packaging>pom</packaging>
 
   <properties>
-    <version.org.springframework.boot>@version.org.springframework.boot@</version.org.springframework.boot>
     <project.version>@project.version@</project.version>
     <version.org.infinispan>@version.org.infinispan@</version.org.infinispan>
-    <version.org.springframework.boot>@version.org.springframework.boot@</version.org.springframework.boot>
     <maven.compiler.release>@maven.compiler.release@</maven.compiler.release>
     <maven.compiler.source>@maven.compiler.release@</maven.compiler.source>
     <maven.compiler.target>@maven.compiler.release@</maven.compiler.target>
@@ -31,15 +29,8 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-bom</artifactId>
+        <artifactId>kogito-spring-boot-bom</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.org.springframework.boot}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -49,7 +40,7 @@
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-springboot-starter</artifactId>
+      <artifactId>kogito-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -58,10 +49,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-springboot-starter</artifactId>
     </dependency>
 
     <!-- Tests -->
@@ -97,11 +84,68 @@
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-test-utils</artifactId>
+      <artifactId>kogito-spring-boot-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>@version.org.springframework.boot@</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>kogito-maven-plugin</artifactId>
+          <version>${project.version}</version>
+          <extensions>true</extensions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <executions>
+            <execution>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.basedir}/src/main/</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>${project.parent.basedir}/integration-tests-springboot-processes-persistence-common/src/main/</directory>
+                    <includes>
+                      <include>**/*.bpmn</include>
+                    </includes>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <configuration>
+            <filesets>
+              <fileset>
+                <directory>${project.basedir}/src/main/</directory>
+                <includes>
+                  <include>**/*.bpmn</include>
+                </includes>
+              </fileset>
+            </filesets>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -26,15 +26,16 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class PersistenceTest {
+
+    public static final String PROCESS_ID = "hello";
+    public static String PROCESS_EMBEDDED_ID = "embedded";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
-
-    public static final String PROCESS_ID = "hello";
 
     @Test
     void testPersistence() {
@@ -76,4 +77,52 @@ public abstract class PersistenceTest {
                 .then()
                 .statusCode(404);
     }
+
+    @Test
+    void testHealthCheck() {
+        given().contentType(ContentType.JSON)
+                .when()
+                .get("/q/health")
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("UP"));
+    }
+
+    @Test
+    void testEmbeddedProcess() {
+        final String pId = given().contentType(ContentType.JSON)
+                .pathParam("processId", PROCESS_EMBEDDED_ID)
+                .when()
+                .post("/{processId}")
+                .then()
+                .statusCode(201)
+                .body("id", not(emptyOrNullString()))
+                .extract()
+                .path("id");
+
+        String taskId = given()
+                .contentType(ContentType.JSON)
+                .queryParam("user", "admin")
+                .queryParam("group", "managers")
+                .pathParam("pId", pId)
+                .pathParam("processId", PROCESS_EMBEDDED_ID)
+                .when()
+                .get("/{processId}/{pId}/tasks")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("[0].id");
+
+        given().contentType(ContentType.JSON)
+                .pathParam("pId", pId)
+                .pathParam("taskId", taskId)
+                .pathParam("processId", PROCESS_EMBEDDED_ID)
+                .body("{}")
+                .when()
+                .post("/{processId}/{pId}/Task/{taskId}/phases/complete")
+                .then()
+                .statusCode(200);
+
+    }
+
 }

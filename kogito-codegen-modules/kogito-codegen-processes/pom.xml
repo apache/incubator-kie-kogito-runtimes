@@ -41,6 +41,10 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-serverless-workflow-builder</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>grafana-api</artifactId>
+        </dependency>
         <!-- Json schema generator -->
         <dependency>
             <groupId>com.github.victools</groupId>
@@ -57,6 +61,11 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-api</artifactId>
             <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>process-serialization-protobuf</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
