@@ -18,7 +18,6 @@ package org.kie.kogito.test.quarkus.kafka;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -31,6 +30,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -59,6 +59,26 @@ public class KafkaTestClient {
         this.consumer = consumer;
     }
 
+    private static KafkaConsumer<String, String> createDefaultConsumer(String hosts) {
+        Properties consumerConfig = new Properties();
+        consumerConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
+        consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
+        consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
+        consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaTestClient.class.getName() + "Consumer");
+        return new KafkaConsumer<>(consumerConfig);
+    }
+
+    private static KafkaProducer<String, String> createDefaultProducer(String hosts) {
+        Properties producerConfig = new Properties();
+        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
+        producerConfig.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaTestClient.class.getName() + "Producer");
+        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
+        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        return new KafkaProducer<>(producerConfig);
+    }
+
     public void consume(Collection<String> topics, Consumer<String> callback) {
         consumer.subscribe(topics);
 
@@ -82,35 +102,24 @@ public class KafkaTestClient {
     }
 
     public void produce(String data, String topic) {
-        producer.send(new ProducerRecord<>(topic, data), (m, ex) -> Optional.ofNullable(ex).ifPresent(e -> LOGGER.error("Error publishing message {}", m, ex)));
+        producer.send(new ProducerRecord<>(topic, data), this::produceCallback);
+    }
+
+    public void produceCallback(RecordMetadata metadata, Exception exception) {
+        if (exception != null) {
+            LOGGER.error("Event publishing failed", exception);
+        } else {
+            LOGGER.info("Event published {}", metadata);
+        }
     }
 
     public void shutdown() {
         shutdown = true;
         synchronized (shutdownLock) {
+            consumer.unsubscribe();
             consumer.close();
         }
 
         producer.close();
-    }
-
-    private static KafkaConsumer<String, String> createDefaultConsumer(String hosts) {
-        Properties consumerConfig = new Properties();
-        consumerConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-        consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
-        consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class.getName());
-        consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaTestClient.class.getName() + "Consumer");
-        return new KafkaConsumer<>(consumerConfig);
-    }
-
-    private static KafkaProducer<String, String> createDefaultProducer(String hosts) {
-        Properties producerConfig = new Properties();
-        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
-        producerConfig.put(ProducerConfig.CLIENT_ID_CONFIG, KafkaTestClient.class.getName() + "Producer");
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, IntegerSerializer.class.getName());
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        return new KafkaProducer<>(producerConfig);
     }
 }
