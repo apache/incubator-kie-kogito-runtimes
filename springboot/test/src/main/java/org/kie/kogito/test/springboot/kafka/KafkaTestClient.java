@@ -80,9 +80,8 @@ public class KafkaTestClient {
     }
 
     public void consume(Collection<String> topics, Consumer<String> callback) {
-        consumer.subscribe(topics);
-
         CompletableFuture.runAsync(() -> {
+            consumer.subscribe(topics);
             while (!shutdown) {
                 synchronized (shutdownLock) {
                     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));

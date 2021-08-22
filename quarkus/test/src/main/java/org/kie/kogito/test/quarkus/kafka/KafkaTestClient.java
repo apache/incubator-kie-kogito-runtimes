@@ -82,22 +82,18 @@ public class KafkaTestClient {
     }
 
     public void consume(Collection<String> topics, Consumer<String> callback) {
-        consumer.subscribe(topics);
-
         CompletableFuture.runAsync(() -> {
-            try {
-                latch.await();
-                while (!shutdown) {
-                    synchronized (shutdownLock) {
-                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+            consumer.subscribe(topics);
+            while (!shutdown) {
+                synchronized (shutdownLock) {
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 
-                        StreamSupport.stream(records.spliterator(), true)
-                                .map(ConsumerRecord::value)
-                                .forEach(callback::accept);
-                    }
+                    StreamSupport.stream(records.spliterator(), true)
+                            .map(ConsumerRecord::value)
+                            .forEach(callback::accept);
+
+                    consumer.commitSync();
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
             }
         });
     }
@@ -115,7 +111,6 @@ public class KafkaTestClient {
         if (exception != null) {
             LOGGER.error("Event publishing failed", exception);
         } else {
-            latch.countDown();
             LOGGER.info("Event published {}", metadata);
         }
     }
