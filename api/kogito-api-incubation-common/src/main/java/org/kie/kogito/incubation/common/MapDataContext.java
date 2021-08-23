@@ -82,7 +82,7 @@ public class MapDataContext implements MapLikeDataContext, MetaDataContext {
 
     // required to unwrap the map to the root of the mapped object
     @JsonAnyGetter
-    Map<String, Object> getMap() {
+    public Map<String, Object> toMap() {
         return map;
     }
 

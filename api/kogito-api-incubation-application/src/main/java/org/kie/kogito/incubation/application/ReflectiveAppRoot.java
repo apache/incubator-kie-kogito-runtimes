@@ -16,6 +16,8 @@
 
 package org.kie.kogito.incubation.application;
 
+import org.kie.kogito.incubation.common.ComponentRoot;
+
 /**
  * Useful for testing. Creates Components reflectively.
  */

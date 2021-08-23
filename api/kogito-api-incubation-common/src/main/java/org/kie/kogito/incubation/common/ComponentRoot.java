@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.application;
+package org.kie.kogito.incubation.common;
 
 /**
  * Root path of a component

@@ -17,6 +17,7 @@ package org.kie.kogito.incubation.application;
 
 import java.nio.file.Paths;
 
+import org.kie.kogito.incubation.common.ComponentRoot;
 import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.PathLocalId;
 
