@@ -23,7 +23,6 @@
     <module>kogito-codegen-rules</module>
     <module>kogito-codegen-decisions</module>
     <module>kogito-codegen-predictions</module>
-    <module>kogito-codegen-integration-tests</module>
   </modules>
 
   <profiles>
@@ -36,6 +35,7 @@
       </activation>
       <modules>
         <module>kogito-codegen-sample</module>
+        <module>kogito-codegen-integration-tests</module>
       </modules>
     </profile>
   </profiles>
