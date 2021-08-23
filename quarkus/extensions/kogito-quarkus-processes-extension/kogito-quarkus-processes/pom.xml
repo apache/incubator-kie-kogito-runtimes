@@ -20,6 +20,11 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-api-incubation-processes-services</artifactId>
+      <optional>true</optional> <!-- users should opt-in -->
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-bpmn2</artifactId>
     </dependency>
     <dependency>

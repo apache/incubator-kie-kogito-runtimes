@@ -47,11 +47,12 @@ public class QuarkusStraightThroughProcessService implements StraightThroughProc
         if (processPath.getName(0).toString().equals(ProcessId.PREFIX)) {
             Process<? extends Model> process = processes.processById(processPath.getName(1).toString());
             Model model = process.createModel();
-            model.fromMap(inputContext.as(Map.class));
+            MapDataContext mdc = inputContext.as(MapDataContext.class);
+            model.fromMap(mdc.toMap());
             ProcessInstance<? extends Model> instance = process.createInstance(model);
             instance.start();
             Map<String, Object> map = instance.variables().toMap();
-            return new MapDataContext(map);
+            return MapDataContext.of(map);
         } else {
             throw new IllegalArgumentException("Not a valid processId " + processPath);
         }
