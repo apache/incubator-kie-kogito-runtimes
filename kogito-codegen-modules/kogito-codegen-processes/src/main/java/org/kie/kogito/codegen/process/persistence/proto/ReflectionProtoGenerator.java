@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -150,6 +151,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                     ProtoEnum modelEnum = new ProtoEnum(name, clazz.getPackage().getName());
                     Stream.of(clazz.getDeclaredFields())
                             .filter(f -> !f.getName().startsWith("$"))
+                            .sorted(Comparator.comparing(Field::getName))
                             .forEach(f -> addEnumField(f, modelEnum));
                     proto.addEnum(modelEnum);
                     return modelEnum;

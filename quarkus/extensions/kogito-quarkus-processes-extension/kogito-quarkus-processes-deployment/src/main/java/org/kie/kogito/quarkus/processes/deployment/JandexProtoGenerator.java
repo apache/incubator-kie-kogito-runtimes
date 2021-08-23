@@ -18,6 +18,7 @@ package org.kie.kogito.quarkus.processes.deployment;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,9 @@ import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 import org.jboss.jandex.Type.Kind;
+import org.kie.kogito.Model;
+import org.kie.kogito.codegen.Generated;
+import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.Proto;
@@ -47,16 +51,14 @@ import static java.util.stream.Collectors.toSet;
 public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     private static final DotName ENUM_VALUE_ANNOTATION = DotName.createSimple(ProtoEnumValue.class.getName());
+    private static final DotName generatedAnnotation = DotName.createSimple(Generated.class.getCanonicalName());
+    private static final DotName variableInfoAnnotation = DotName.createSimple(VariableInfo.class.getCanonicalName());
+    private static final DotName modelClazz = DotName.createSimple(Model.class.getCanonicalName());
     private final IndexView index;
-    private final DotName generatedAnnotation;
-    private final DotName variableInfoAnnotation;
 
-    private JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> modelClasses, Collection<ClassInfo> dataClasses, IndexView index, DotName generatedAnnotation,
-            DotName variableInfoAnnotation) {
+    JandexProtoGenerator(ClassInfo persistenceClass, Collection<ClassInfo> modelClasses, Collection<ClassInfo> dataClasses, IndexView index) {
         super(persistenceClass, modelClasses, dataClasses);
         this.index = index;
-        this.generatedAnnotation = generatedAnnotation;
-        this.variableInfoAnnotation = variableInfoAnnotation;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     }
 
     @Override
-    protected Optional<String> extractName(ClassInfo clazz) throws Exception {
+    protected Optional<String> extractName(ClassInfo clazz) {
         if (isHidden(clazz)) {
             // since class is marked as hidden skip processing of that class
             return Optional.empty();
@@ -107,7 +109,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
     @Override
     protected ProtoMessage messageFromClass(Proto proto, Set<String> alreadyGenerated, ClassInfo clazz, String messageComment, String fieldComment) throws Exception {
         Optional<String> optionalName = extractName(clazz);
-        if(!optionalName.isPresent()) {
+        if (!optionalName.isPresent()) {
             // if name cannot be extracted let skip the object
             return null;
         }
@@ -116,11 +118,14 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
         ProtoMessage message = new ProtoMessage(name, clazz.name().prefix().toString());
         for (FieldInfo pd : clazz.fields()) {
-            String completeFieldComment = fieldComment;
             // ignore static and/or transient fields
             if (Modifier.isStatic(pd.flags()) || Modifier.isTransient(pd.flags())) {
                 continue;
             }
+
+            // By default, only index id field from Model generated class
+            String completeFieldComment =
+                    "id".equals(pd.name()) && clazz.interfaceTypes().stream().anyMatch(t -> t.name().equals(modelClazz)) ? fieldComment.replace("Index.NO", "Index.YES") : fieldComment;
 
             AnnotationInstance variableInfo = pd.annotation(variableInfoAnnotation);
 
@@ -155,7 +160,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
                 // recursive call to visit the type
                 Optional<String> optionalProtoType = internalGenerate(proto, alreadyGenerated, messageComment, fieldComment, classInfo);
-                if(!optionalProtoType.isPresent()) {
+                if (!optionalProtoType.isPresent()) {
                     return message;
                 }
 
@@ -171,18 +176,16 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     @Override
     protected ProtoEnum enumFromClass(Proto proto, ClassInfo clazz) {
-        String name = clazz.simpleName();
-        String altName = getReferenceOfModel(clazz, "name");
-        if (altName != null) {
-            name = altName;
-        }
-
-        ProtoEnum modelEnum = new ProtoEnum(name, clazz.name().prefix().toString());
-        clazz.fields().stream()
-                .filter(f -> !f.name().startsWith("$"))
-                .forEach(f -> addEnumField(f, modelEnum));
-        proto.addEnum(modelEnum);
-        return modelEnum;
+        return extractName(clazz)
+                .map(name -> {
+                    ProtoEnum modelEnum = new ProtoEnum(name, clazz.name().prefix().toString());
+                    clazz.fields().stream()
+                            .filter(f -> !f.name().startsWith("$"))
+                            .sorted(Comparator.comparing(FieldInfo::name))
+                            .forEach(f -> addEnumField(f, modelEnum));
+                    proto.addEnum(modelEnum);
+                    return modelEnum;
+                }).orElse(null);
     }
 
     private void addEnumField(FieldInfo field, ProtoEnum pEnum) {
@@ -259,21 +262,17 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
         return false;
     }
 
-    public static Builder<ClassInfo, JandexProtoGenerator> builder(IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
-        return new JandexProtoGeneratorBuilder(index, generatedAnnotation, variableInfoAnnotation);
+    public static Builder<ClassInfo, JandexProtoGenerator> builder(IndexView index) {
+        return new JandexProtoGeneratorBuilder(index);
     }
 
     private static class JandexProtoGeneratorBuilder extends AbstractProtoGeneratorBuilder<ClassInfo, JandexProtoGenerator> {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(JandexProtoGeneratorBuilder.class);
         private final IndexView index;
-        private final DotName generatedAnnotation;
-        private final DotName variableInfoAnnotation;
 
-        private JandexProtoGeneratorBuilder(IndexView index, DotName generatedAnnotation, DotName variableInfoAnnotation) {
+        private JandexProtoGeneratorBuilder(IndexView index) {
             this.index = index;
-            this.generatedAnnotation = generatedAnnotation;
-            this.variableInfoAnnotation = variableInfoAnnotation;
         }
 
         @Override
@@ -300,7 +299,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
         @Override
         public JandexProtoGenerator build(Collection<ClassInfo> modelClasses) {
-            return new JandexProtoGenerator(persistenceClass, modelClasses, extractDataClasses(modelClasses), index, generatedAnnotation, variableInfoAnnotation);
+            return new JandexProtoGenerator(persistenceClass, modelClasses, extractDataClasses(modelClasses), index);
         }
     }
 }
