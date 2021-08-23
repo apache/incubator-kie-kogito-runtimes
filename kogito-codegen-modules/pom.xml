@@ -35,6 +35,16 @@
       </activation>
       <modules>
         <module>kogito-codegen-sample</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>integration-test-modules</id>
+      <activation>
+        <property>
+          <name>!excludeITModules</name>
+        </property>
+      </activation>
+      <modules>
         <module>kogito-codegen-integration-tests</module>
       </modules>
     </profile>

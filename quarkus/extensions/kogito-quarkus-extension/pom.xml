@@ -21,10 +21,10 @@
 
   <profiles>
     <profile>
-      <id>default</id>
+      <id>integration-test-modules</id>
       <activation>
         <property>
-          <name>!productized</name>
+          <name>!excludeITModules</name>
         </property>
       </activation>
       <modules>

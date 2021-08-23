@@ -143,6 +143,16 @@
       <modules>
         <module>kogito-test-utils</module>
         <module>kogito-cloud-services</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>integration-test-modules</id>
+      <activation>
+        <property>
+          <name>!excludeITModules</name>
+        </property>
+      </activation>
+      <modules>
         <module>integration-tests</module>
       </modules>
     </profile>
