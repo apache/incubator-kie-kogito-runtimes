@@ -56,6 +56,9 @@ public class MapDataContext implements MapLikeDataContext, MetaDataContext {
 
     @Override
     public <T extends DataContext> T as(Class<T> type) {
+        if (type.isAssignableFrom(MapDataContext.class)) {
+            return (T) this;
+        }
         return InternalObjectMapper.convertValue(map, type);
     }
 

@@ -24,6 +24,7 @@
     <module>integration-tests-springboot</module>
     <module>integration-tests-kogito-plugin</module>
     <module>integration-tests-quarkus-gradle</module>
+    <module>integration-tests-incubation-quarkus-processes</module>
   </modules>
 
 </project>
