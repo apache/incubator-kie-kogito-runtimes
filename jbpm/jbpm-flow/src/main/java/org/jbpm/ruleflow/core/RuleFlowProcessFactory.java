@@ -314,6 +314,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         ExceptionScope exceptionScope = (ExceptionScope) compositeNode.resolveContext(EXCEPTION_SCOPE, errorCode);
         if (exceptionScope == null) {
             ContextContainer contextContainer = (ContextContainer) (node instanceof ContextContainer ? node : ((KogitoNode) node).getParentContainer());
+            exceptionScope = new ExceptionScope();
             contextContainer.addContext(exceptionScope);
             contextContainer.setDefaultContext(exceptionScope);
         }

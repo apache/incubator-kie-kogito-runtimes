@@ -16,8 +16,9 @@
 package org.jbpm.compiler.canonical;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,43 +58,38 @@ public class ReflectionUtils {
                     Class<?> clazz,
                     String methodName,
                     Collection<String> parameterTypes) throws ReflectiveOperationException {
-
-        Class<?>[] methodParameters = new Class<?>[parameterTypes.size()];
-        Class<?>[] primitiveParameters = new Class<?>[parameterTypes.size()];
-
-        Iterator<String> iter = parameterTypes.iterator();
+        Class<?>[] methodParameters = new Class[parameterTypes.size()];
         int i = 0;
-        while (iter.hasNext()) {
-            String parameter = iter.next();
-            if (!parameter.contains(".")) {
-                parameter = "java.lang." + parameter;
+        for (String parameterType : parameterTypes) {
+            if (!parameterType.contains(".")) {
+                parameterType = "java.lang." + parameterType;
             }
-            Class<?> parameterClass = cl.loadClass(parameter);
-            methodParameters[i] = parameterClass;
-            Class<?> primitive = wrappers2Primitive.get(parameterClass);
-            if (primitive != null) {
-                primitiveParameters[i] = primitive;
-            } else {
-                primitiveParameters[i] = parameterClass;
-            }
-            i++;
+            methodParameters[i++] = cl.loadClass(parameterType);
         }
+
+        List<Method> candidates = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
             if (m.getName().equals(methodName) && m.getParameterCount() == methodParameters.length) {
                 Class<?>[] thisMethodParams = m.getParameterTypes();
                 boolean valid = true;
-                for (i = 0; valid && i < methodParameters.length; i++) {
+                boolean potentiallyValid = true;
+                for (i = 0; potentiallyValid && i < methodParameters.length; i++) {
                     valid = thisMethodParams[i].isAssignableFrom(methodParameters[i]) ||
-                            thisMethodParams[i].isAssignableFrom(primitiveParameters[i]) ||
-                            methodParameters[i].equals(java.lang.Object.class);
+                            thisMethodParams[i].isAssignableFrom(wrappers2Primitive.getOrDefault(methodParameters[i], methodParameters[i]));
+                    potentiallyValid = valid || methodParameters[i].equals(java.lang.Object.class);
                 }
                 if (valid) {
                     return m;
+                } else if (potentiallyValid) {
+                    candidates.add(m);
                 }
             }
         }
-        throw new IllegalArgumentException("Cannot find a suitable method named " + methodName + " for parameters " + parameterTypes + " in class " + clazz);
-
+        if (candidates.size() != 1) {
+            throw new NoSuchMethodException(methodName);
+        } else {
+            return candidates.get(0);
+        }
     }
 
 }
