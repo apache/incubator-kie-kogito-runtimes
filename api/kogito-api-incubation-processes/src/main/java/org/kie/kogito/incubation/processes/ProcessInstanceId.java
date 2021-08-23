@@ -1,0 +1,69 @@
+/*
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kie.kogito.incubation.processes;
+
+import java.nio.file.Path;
+
+import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.common.PathLocalId;
+
+public class ProcessInstanceId extends PathLocalId implements LocalId {
+
+    public static class Factory {
+        private final ProcessId processId;
+
+        public Factory(ProcessId processId) {
+            this.processId = processId;
+        }
+
+        public ProcessInstanceId get(String processInstanceId) {
+            return new ProcessInstanceId(processId, processInstanceId);
+        }
+    }
+
+    public static final String PREFIX = "instances";
+
+    private final ProcessId processId;
+    private final String processInstanceId;
+
+    public ProcessInstanceId(ProcessId processId, String processInstanceId) {
+        super(makePath(processId, processInstanceId));
+        LocalId localDecisionId = processId.toLocalId();
+        if (!localDecisionId.asPath().getName(0).toString().equals(ProcessId.PREFIX)) {
+            throw new IllegalArgumentException("Not a valid process path"); // fixme use typed exception
+        }
+
+        this.processId = processId;
+        this.processInstanceId = processInstanceId;
+    }
+
+    @Override
+    public LocalId toLocalId() {
+        return this;
+    }
+
+    public ProcessId processId() {
+        return processId;
+    }
+
+    public String processInstanceId() {
+        return processInstanceId;
+    }
+
+    private static Path makePath(LocalId localDecisionid, String name) {
+        return localDecisionid.asPath().resolve(PREFIX).resolve(name);
+    }
+}
