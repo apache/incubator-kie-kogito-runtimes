@@ -27,7 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Answer;
-import org.kie.kogito.codegen.data.AnswerWitAnnotations;
+import org.kie.kogito.codegen.data.AnswerBroken;
+import org.kie.kogito.codegen.data.AnswerBrokenV2;
+import org.kie.kogito.codegen.data.AnswerWithAnnotations;
 import org.kie.kogito.codegen.data.EmptyConstructor;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
 import org.kie.kogito.codegen.data.NotEmptyConstructor;
@@ -43,6 +45,7 @@ import org.kie.kogito.codegen.data.Travels;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public abstract class AbstractProtoGeneratorTest<T> {
 
@@ -51,7 +54,9 @@ public abstract class AbstractProtoGeneratorTest<T> {
      */
     protected static Collection<Class<?>> testClasses = Arrays.asList(Address.class,
             Answer.class,
-            AnswerWitAnnotations.class,
+            AnswerWithAnnotations.class,
+            AnswerBroken.class,
+            AnswerBrokenV2.class,
             EmptyConstructor.class,
             GeneratedPOJO.class,
             NotEmptyConstructor.class,
@@ -518,9 +523,28 @@ public abstract class AbstractProtoGeneratorTest<T> {
     }
 
     @Test
+    void testWrongEnumStatus() {
+        AbstractProtoGenerator<T> generatorBroken = protoGeneratorBuilder()
+                .withDataClasses(Collections.singleton(convertToType(AnswerBroken.class)))
+                .build(null);
+
+        assertThatThrownBy(() -> generatorBroken.protoOfDataClasses("org.kie.kogito.test.persons"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Cannot mix annotation");
+
+        AbstractProtoGenerator<T> generatorBroken2 = protoGeneratorBuilder()
+                .withDataClasses(Collections.singleton(convertToType(AnswerBrokenV2.class)))
+                .build(null);
+
+        assertThatThrownBy(() -> generatorBroken2.protoOfDataClasses("org.kie.kogito.test.persons"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Cannot mix annotation");
+    }
+
+    @Test
     void testAnswerWithAnnotationsProtoFile() {
         AbstractProtoGenerator<T> generator = protoGeneratorBuilder()
-                .withDataClasses(Collections.singleton(convertToType(AnswerWitAnnotations.class)))
+                .withDataClasses(Collections.singleton(convertToType(AnswerWithAnnotations.class)))
                 .build(null);
 
         Proto proto = generator.protoOfDataClasses("org.kie.kogito.test.persons");
@@ -532,7 +556,7 @@ public abstract class AbstractProtoGeneratorTest<T> {
 
         ProtoEnum answer = proto.getEnums().get(0);
         assertThat(answer).isNotNull();
-        assertThat(answer.getName()).isEqualTo("AnswerWitAnnotations");
+        assertThat(answer.getName()).isEqualTo(AnswerWithAnnotations.class.getSimpleName());
         assertThat(answer.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
         assertThat(answer.getFields()).hasSize(3);
 
@@ -616,14 +640,14 @@ public abstract class AbstractProtoGeneratorTest<T> {
 
         ProtoMessage question = proto.getMessages().get(0);
         assertThat(question).isNotNull();
-        assertThat(question.getName()).isEqualTo("QuestionWithAnnotatedEnum");
+        assertThat(question.getName()).isEqualTo(QuestionWithAnnotatedEnum.class.getSimpleName());
         assertThat(question.getJavaPackageOption()).isEqualTo("org.kie.kogito.codegen.data");
         assertThat(question.getFields()).hasSize(2);
 
         ProtoField field = question.getFields().get(0);
         assertThat(field).isNotNull();
         assertThat(field.getName()).isEqualTo("answer");
-        assertThat(field.getType()).isEqualTo("AnswerWitAnnotations");
+        assertThat(field.getType()).isEqualTo(AnswerWithAnnotations.class.getSimpleName());
         assertThat(field.getApplicability()).isEqualTo("optional");
 
         field = question.getFields().get(1);
@@ -725,7 +749,7 @@ public abstract class AbstractProtoGeneratorTest<T> {
     }
 
     @Test
-    void testGenerate() {
+    void testProtoOfDataClasses() {
         List<T> dataClasses = new ArrayList<>();
 
         dataClasses.add(convertToType(Answer.class));
@@ -736,9 +760,9 @@ public abstract class AbstractProtoGeneratorTest<T> {
                 .build(null);
         Proto proto = generator.protoOfDataClasses("com.acme");
         assertThat(proto.getEnums()).hasSize(1);
-        assertThat(proto.getEnums().get(0).getName()).isEqualTo(Answer.class.getName());
+        assertThat(proto.getEnums().get(0).getName()).isEqualTo(Answer.class.getSimpleName());
         assertThat(proto.getMessages()).hasSize(1);
-        assertThat(proto.getMessages().get(0).getName()).isEqualTo(Address.class.getName());
+        assertThat(proto.getMessages().get(0).getName()).isEqualTo(Address.class.getSimpleName());
     }
 
     @Test

@@ -176,24 +176,30 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     @Override
     protected ProtoEnum enumFromClass(Proto proto, ClassInfo clazz) {
-        return extractName(clazz)
-                .map(name -> {
-                    ProtoEnum modelEnum = new ProtoEnum(name, clazz.name().prefix().toString());
-                    clazz.fields().stream()
-                            .filter(f -> !f.name().startsWith("$"))
-                            .sorted(Comparator.comparing(FieldInfo::name))
-                            .forEach(f -> addEnumField(f, modelEnum));
-                    proto.addEnum(modelEnum);
-                    return modelEnum;
-                }).orElse(null);
+        try {
+            return extractName(clazz)
+                    .map(name -> {
+                        ProtoEnum modelEnum = new ProtoEnum(name, clazz.name().prefix().toString());
+                        clazz.fields().stream()
+                                .filter(f -> !f.name().startsWith("$"))
+                                .sorted(Comparator.comparing(FieldInfo::name))
+                                .forEach(f -> addEnumField(f, modelEnum));
+                        proto.addEnum(modelEnum);
+                        return modelEnum;
+                    }).orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Malformed class " + clazz.name() + " " + e.getMessage(), e);
+        }
     }
 
     private void addEnumField(FieldInfo field, ProtoEnum pEnum) {
         AnnotationInstance annotation = field.annotation(ENUM_VALUE_ANNOTATION);
         Integer ordinal = null;
+        boolean sortedWithAnnotation = false;
         if (annotation != null) {
             AnnotationValue number = annotation.value("number");
             if (number != null) {
+                sortedWithAnnotation = true;
                 ordinal = number.asInt();
             }
         }
@@ -205,7 +211,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
                     .max()
                     .orElse(-1) + 1;
         }
-        pEnum.addField(field.name(), ordinal);
+        pEnum.addField(field.name(), ordinal, sortedWithAnnotation);
     }
 
     @Override

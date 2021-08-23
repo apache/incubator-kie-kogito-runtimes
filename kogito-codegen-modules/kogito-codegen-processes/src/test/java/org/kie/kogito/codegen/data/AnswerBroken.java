@@ -15,25 +15,12 @@
  */
 package org.kie.kogito.codegen.data;
 
-public class QuestionWithAnnotatedEnum {
+import org.infinispan.protostream.annotations.ProtoEnumValue;
 
-    private String question;
-    private AnswerWithAnnotations answer;
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public AnswerWithAnnotations getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(AnswerWithAnnotations answer) {
-        this.answer = answer;
-    }
-
+public enum AnswerBroken {
+    @ProtoEnumValue(number = 1)
+    YES,
+    @ProtoEnumValue(number = 2)
+    MAYBE,
+    NO
 }

@@ -146,16 +146,20 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
     @Override
     protected ProtoEnum enumFromClass(Proto proto, Class<?> clazz) throws Exception {
-        return extractName(clazz)
-                .map(name -> {
-                    ProtoEnum modelEnum = new ProtoEnum(name, clazz.getPackage().getName());
-                    Stream.of(clazz.getDeclaredFields())
-                            .filter(f -> !f.getName().startsWith("$"))
-                            .sorted(Comparator.comparing(Field::getName))
-                            .forEach(f -> addEnumField(f, modelEnum));
-                    proto.addEnum(modelEnum);
-                    return modelEnum;
-                }).orElse(null);
+        try {
+            return extractName(clazz)
+                    .map(name -> {
+                        ProtoEnum modelEnum = new ProtoEnum(name, clazz.getPackage().getName());
+                        Stream.of(clazz.getDeclaredFields())
+                                .filter(f -> !f.getName().startsWith("$"))
+                                .sorted(Comparator.comparing(Field::getName))
+                                .forEach(f -> addEnumField(f, modelEnum));
+                        proto.addEnum(modelEnum);
+                        return modelEnum;
+                    }).orElse(null);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Malformed class " + clazz.getName() + " " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -177,7 +181,9 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
     private void addEnumField(Field field, ProtoEnum pEnum) {
         ProtoEnumValue protoEnumValue = field.getAnnotation(ProtoEnumValue.class);
         Integer ordinal = null;
+        boolean sortedWithAnnotation = false;
         if (protoEnumValue != null) {
+            sortedWithAnnotation = true;
             ordinal = protoEnumValue.number();
         }
         if (ordinal == null) {
@@ -188,7 +194,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                     .max()
                     .orElse(-1) + 1;
         }
-        pEnum.addField(field.getName(), ordinal);
+        pEnum.addField(field.getName(), ordinal, sortedWithAnnotation);
     }
 
     @Override

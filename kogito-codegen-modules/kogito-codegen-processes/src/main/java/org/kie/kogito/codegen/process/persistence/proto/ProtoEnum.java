@@ -22,6 +22,7 @@ import java.util.Map;
 public class ProtoEnum extends ProtoComponent {
 
     protected Map<String, Integer> fields = new HashMap<>();
+    protected boolean sortedWithAnnotation = false;
 
     public ProtoEnum(String name, String javaPackageOption) {
         super(name, javaPackageOption);
@@ -31,7 +32,11 @@ public class ProtoEnum extends ProtoComponent {
         return Collections.unmodifiableMap(fields);
     }
 
-    public void addField(String field, Integer ordinal) {
+    public void addField(String field, Integer ordinal, boolean sortedWithAnnotation) {
+        if (fields.size() > 0 && this.sortedWithAnnotation && !sortedWithAnnotation) {
+            throw new IllegalArgumentException("Cannot mix annotation based sorting with not annotated. Field=" + field);
+        }
+        this.sortedWithAnnotation = sortedWithAnnotation;
         fields.put(field, ordinal);
     }
 

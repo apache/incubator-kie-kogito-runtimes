@@ -140,7 +140,7 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
                         fieldComment,
                         dataModel);
             } catch (Exception e) {
-                throw new RuntimeException("Error while generating proto for model class " + dataModel, e);
+                throw new RuntimeException("Error while generating proto for model class " + dataModel + " " + e.getMessage(), e);
             }
         }
         return proto;
