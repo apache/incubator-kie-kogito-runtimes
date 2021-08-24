@@ -1,0 +1,12 @@
+name: Kogito Add-On Explainability
+description: Kogito Add-On for Explainability support
+metadata:
+  keywords:
+    - kogito
+    - dmn
+    - decisions
+    - explainability
+  # TODO: add decisions guide
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"

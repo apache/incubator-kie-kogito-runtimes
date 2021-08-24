@@ -1,0 +1,11 @@
+name: Kogito Add-On Events Decisions
+description: Kogito Add-On for processing events on Decisions (DMN) based projects
+metadata:
+  keywords:
+    - kogito
+    - decisions
+    - DMN
+  # TODO: add DMN guide
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"

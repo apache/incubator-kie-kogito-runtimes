@@ -1,0 +1,11 @@
+name: Kogito Add-On Events MongoDB
+description: Kogito Add-On for storing Kogito events on MongoDB
+metadata:
+  keywords:
+    - kogito
+    - persistence
+    - mongodb
+    - events
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"

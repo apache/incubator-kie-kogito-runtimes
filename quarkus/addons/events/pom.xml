@@ -28,6 +28,7 @@
         </property>
       </activation>
       <modules>
+        <module>process</module>
         <module>mongodb</module>
       </modules>
     </profile>

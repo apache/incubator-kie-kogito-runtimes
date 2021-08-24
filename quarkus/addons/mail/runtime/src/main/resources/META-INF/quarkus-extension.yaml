@@ -1,0 +1,14 @@
+name: Kogito Add-On Mail
+description: Kogito Add-On for process e-mail send support.
+metadata:
+  keywords:
+    - kogito
+    - processes
+    - mail
+    - e-mail
+    - tasks
+    - notification
+  # TODO: add processes guide
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"
