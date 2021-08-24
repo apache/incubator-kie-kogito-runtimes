@@ -1,5 +1,5 @@
 ---
-name: Bug report in Red Hat JIRA
+name: Bug report in Red Hat JIRA https://issues.redhat.com/projects/KOGITO
 about: Create a report to help us improve in our JIRA tracking system
 title: ''
 labels: ''
