@@ -221,8 +221,8 @@ public class RestWorkItemHandlerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetRestTaskHandler() {
-        parameters.put("id", new JsonPathResolver("$.id"));
-        parameters.put("name", new JsonPathResolver("$.name"));
+        parameters.put("id", new JsonPathResolver("$.id", RestWorkItemHandler.CONTENT_DATA));
+        parameters.put("name", new JsonPathResolver("$.name", RestWorkItemHandler.CONTENT_DATA));
         parameters.put(RestWorkItemHandler.URL, "http://localhost:8080/results/{id}/names/{name}");
         parameters.put(RestWorkItemHandler.METHOD, "GET");
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
@@ -251,8 +251,8 @@ public class RestWorkItemHandlerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testParametersPostRestTaskHandler() {
-        parameters.put("id", new JsonPathResolver("$.id"));
-        parameters.put("name", new JsonPathResolver("$.name"));
+        parameters.put("id", new JsonPathResolver("$.id", RestWorkItemHandler.CONTENT_DATA));
+        parameters.put("name", new JsonPathResolver("$.name", RestWorkItemHandler.CONTENT_DATA));
         parameters.put(RestWorkItemHandler.METHOD, "POST");
         parameters.put(BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder());
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);

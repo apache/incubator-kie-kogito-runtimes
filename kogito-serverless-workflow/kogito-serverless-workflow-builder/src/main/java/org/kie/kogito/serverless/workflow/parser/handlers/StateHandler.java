@@ -105,7 +105,7 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
 
     public void handleErrors(Map<String, StateHandler<?, ?, ?>> stateConnection) {
         for (Error error : state.getOnErrors()) {
-            String eventType = "Error-" + node.getNode().getId();
+            String eventType = "Error-" + node.getNode().getMetaData().get("UniqueId");
             BoundaryEventNodeFactory<P> boundaryNode =
                     factory.boundaryEventNode(idGenerator.getId()).attachedTo(node.getNode().getId()).metaData(
                             "EventType", Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);

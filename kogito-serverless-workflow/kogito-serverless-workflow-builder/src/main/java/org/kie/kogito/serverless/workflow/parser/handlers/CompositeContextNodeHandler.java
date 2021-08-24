@@ -165,7 +165,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                     serviceFactory.workParameter(WORKITEM_PARAM_TYPE, ServerlessWorkflowParser.JSON_NODE)
                             .outMapping(WORKITEM_PARAM, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
                 } else {
-                    processArgs(serviceFactory, functionArgs);
+                    processArgs(serviceFactory, functionArgs, WORKITEM_PARAM);
                 }
                 return serviceFactory;
 
@@ -197,7 +197,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                         .outMapping(RestWorkItemHandler.RESULT,
                                 ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
                 if (functionArgs != null && !functionArgs.isEmpty()) {
-                    processArgs(workItemFactory, functionArgs);
+                    processArgs(workItemFactory, functionArgs, RestWorkItemHandler.CONTENT_DATA);
                 }
                 return workItemFactory;
             case OPENAPI:
@@ -230,11 +230,11 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
     }
 
     private void processArgs(WorkItemNodeFactory<CompositeContextNodeFactory<P>> workItemFactory,
-            JsonNode functionArgs) {
+            JsonNode functionArgs, String paramName) {
         Iterator<Entry<String, JsonNode>> iter = functionArgs.fields();
         while (iter.hasNext()) {
             Entry<String, JsonNode> entry = iter.next();
-            workItemFactory.workParameter(entry.getKey(), processWorkItemValue(entry.getValue())).workParameterDefinition(entry.getKey(), from(entry.getValue()));
+            workItemFactory.workParameter(entry.getKey(), processWorkItemValue(entry.getValue(), paramName)).workParameterDefinition(entry.getKey(), from(entry.getValue()));
         }
     }
 
@@ -253,10 +253,10 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
 
     }
 
-    private Object processWorkItemValue(JsonNode jsonNode) {
+    private Object processWorkItemValue(JsonNode jsonNode, String paramName) {
         if (jsonNode.isTextual()) {
             // assume a string will be a json path expresion
-            return new JsonPathExprSupplier(jsonNode.asText());
+            return new JsonPathExprSupplier(jsonNode.asText(), paramName);
         } else if (jsonNode.isBoolean()) {
             return jsonNode.asBoolean();
         } else if (jsonNode.isInt()) {
