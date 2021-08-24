@@ -35,7 +35,7 @@ public class TraceEvent {
     @JsonProperty("executionSteps")
     private List<TraceExecutionStep> executionSteps;
 
-    private TraceEvent() {
+    public TraceEvent() {
     }
 
     public TraceEvent(TraceHeader header, List<TraceInputValue> inputs, List<TraceOutputValue> outputs, List<TraceExecutionStep> executionSteps) {
