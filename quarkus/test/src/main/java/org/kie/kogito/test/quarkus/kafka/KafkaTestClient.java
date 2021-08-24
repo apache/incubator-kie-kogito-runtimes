@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
@@ -48,6 +49,7 @@ public class KafkaTestClient {
     private final KafkaProducer<String, String> producer;
     private final KafkaConsumer<String, String> consumer;
     private final Object shutdownLock = new Object();
+    private final CountDownLatch latch = new CountDownLatch(1);
     private boolean shutdown = false;
 
     public KafkaTestClient(String hosts) {
@@ -83,16 +85,19 @@ public class KafkaTestClient {
         consumer.subscribe(topics);
 
         CompletableFuture.runAsync(() -> {
-            while (!shutdown) {
-                synchronized (shutdownLock) {
-                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
+            try {
+                latch.await();
+                while (!shutdown) {
+                    synchronized (shutdownLock) {
+                        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 
-                    StreamSupport.stream(records.spliterator(), true)
-                            .map(ConsumerRecord::value)
-                            .forEach(callback::accept);
-
-                    consumer.commitSync();
+                        StreamSupport.stream(records.spliterator(), true)
+                                .map(ConsumerRecord::value)
+                                .forEach(callback::accept);
+                    }
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         });
     }
@@ -102,6 +107,7 @@ public class KafkaTestClient {
     }
 
     public void produce(String data, String topic) {
+        LOGGER.info("Publishing event with data {} for topic {}", data, topic);
         producer.send(new ProducerRecord<>(topic, data), this::produceCallback);
     }
 
@@ -109,12 +115,14 @@ public class KafkaTestClient {
         if (exception != null) {
             LOGGER.error("Event publishing failed", exception);
         } else {
+            latch.countDown();
             LOGGER.info("Event published {}", metadata);
         }
     }
 
     public void shutdown() {
         shutdown = true;
+        latch.countDown();
         synchronized (shutdownLock) {
             consumer.unsubscribe();
             consumer.close();
