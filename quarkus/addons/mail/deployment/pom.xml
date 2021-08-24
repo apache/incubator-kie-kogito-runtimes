@@ -17,6 +17,8 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mailer-deployment</artifactId>
+      <!-- ask for Quarkus team to add this to their BOM -->
+      <version>${version.io.quarkus}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

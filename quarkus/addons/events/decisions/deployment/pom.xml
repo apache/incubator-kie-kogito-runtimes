@@ -16,6 +16,11 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-messaging-deployment</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-events-decisions</artifactId>
     </dependency>
   </dependencies>
