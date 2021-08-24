@@ -37,7 +37,7 @@ public class TestTypes {
                 return ctx;
             }
         };
-        MapDataContext ctx = new MapDataContext(); // suppose there is a Map-like structure
+        MapDataContext ctx = MapDataContext.create(); // suppose there is a Map-like structure
                                                    // (it could be even just Map)
         ProcessId someProcessId = new ProcessId("some.process");
 
