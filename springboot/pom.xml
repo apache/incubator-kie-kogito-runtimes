@@ -29,9 +29,13 @@
   <artifactId>springboot</artifactId>
   <name>Kogito :: Spring Boot</name>
   <packaging>pom</packaging>
+
   <modules>
-    <module>addons</module>
     <module>bom</module>
+    <module>addons</module>
     <module>starters</module>
+    <module>archetype</module>
+    <module>test</module>
   </modules>
+
 </project>

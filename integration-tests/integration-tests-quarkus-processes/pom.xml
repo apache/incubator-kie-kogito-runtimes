@@ -42,7 +42,11 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-cloudevents</artifactId>
+      <artifactId>kogito-addons-quarkus-messaging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-monitoring-prometheus</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -84,7 +88,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-test-utils</artifactId>
+      <artifactId>kogito-quarkus-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

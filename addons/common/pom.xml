@@ -16,10 +16,9 @@
 
   <!-- Please keep in alphabetical order -->
   <modules>
-    <module>cloudevents</module>
     <module>events</module>
+    <module>messaging</module>
     <module>monitoring</module>
-    <module>knative</module>
   </modules>
 
   <profiles>
@@ -31,17 +30,28 @@
         </property>
       </activation>
       <modules>
-        <module>cloudevents</module>
         <module>explainability</module>
         <module>human-task-prediction</module>
         <module>jobs</module>
         <module>mail</module>
         <module>persistence</module>
-        <module>process-management</module>
+        <module>tracing</module>
+        <module>knative</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>integration-test-modules</id>
+      <activation>
+        <property>
+          <name>!excludeITModules</name>
+        </property>
+      </activation>
+      <modules>
+        <module>task-management</module>
         <module>process-svg</module>
         <module>rest-exception-handler</module>
-        <module>task-management</module>
-        <module>tracing</module>
+        <module>process-management</module>
       </modules>
     </profile>
   </profiles>

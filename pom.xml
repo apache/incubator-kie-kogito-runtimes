@@ -119,15 +119,14 @@
   <modules>
     <module>kogito-build</module>
     <module>kogito-bom</module>
-    <module>kogito-test-utils</module>
     <module>api</module>
     <module>drools</module>
     <module>jbpm</module>
     <module>kogito-codegen-modules</module>
+    <module>kogito-test-utils</module>
     <module>springboot</module>
     <module>kogito-maven-plugin</module>
     <module>quarkus</module>
-    <module>archetypes</module>
     <module>grafana-api</module>
     <module>addons</module>
     <module>kogito-workitems</module>
@@ -144,6 +143,16 @@
       </activation>
       <modules>
         <module>kogito-cloud-services</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>integration-test-modules</id>
+      <activation>
+        <property>
+          <name>!excludeITModules</name>
+        </property>
+      </activation>
+      <modules>
         <module>integration-tests</module>
       </modules>
     </profile>

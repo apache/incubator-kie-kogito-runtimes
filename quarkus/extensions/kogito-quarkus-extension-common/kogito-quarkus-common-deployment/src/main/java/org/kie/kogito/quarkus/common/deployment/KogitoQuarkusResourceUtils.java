@@ -76,7 +76,13 @@ public class KogitoQuarkusResourceUtils {
 
     public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, AppArtifact appArtifact) {
         // scan and parse paths
-        AppPaths appPaths = AppPaths.fromQuarkus(paths);
+        AppPaths.BuildTool buildTool;
+        if (System.getProperty("org.gradle.appname") == null) {
+            buildTool = AppPaths.BuildTool.MAVEN;
+        } else {
+            buildTool = AppPaths.BuildTool.GRADLE;
+        }
+        AppPaths appPaths = AppPaths.fromQuarkus(paths, buildTool);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder()
                 .withApplicationProperties(appPaths.getResourceFiles())
@@ -105,11 +111,13 @@ public class KogitoQuarkusResourceUtils {
      * @return
      */
     private static boolean classAvailabilityResolver(ClassLoader classLoader, IndexView index, String className) {
-        DotName classDotName = DotName.createSimple(className);
-        boolean classFound = !index.getAnnotations(classDotName).isEmpty() ||
-                index.getClassByName(classDotName) != null;
-        if (classFound) {
-            return true;
+        if (index != null) {
+            DotName classDotName = DotName.createSimple(className);
+            boolean classFound = !index.getAnnotations(classDotName).isEmpty() ||
+                    index.getClassByName(classDotName) != null;
+            if (classFound) {
+                return true;
+            }
         }
         try {
             classLoader.loadClass(className);

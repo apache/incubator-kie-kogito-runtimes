@@ -45,7 +45,7 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchema;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 class TaskIT {
@@ -113,7 +113,7 @@ class TaskIT {
 
     @Test
     void testJsonSchemaFiles() {
-        long expectedJsonSchemas = 8;
+        long expectedJsonSchemas = 9;
         Path jsonDir = Paths.get("target", "classes").resolve(JsonSchemaUtil.getJsonDir());
         try (Stream<Path> paths = Files.walk(jsonDir)) {
             long generatedJsonSchemas = paths
