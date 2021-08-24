@@ -165,17 +165,24 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
 
     protected abstract T makeNode();
 
-    protected Optional<Object> handleTransition(Transition transition,
+    protected final void handleTransition(Transition transition,
             long sourceId,
             Map<String, StateHandler<?, ?, ?>> stateConnection) {
+        handleTransition(transition, sourceId, stateConnection, Optional.empty());
+    }
+
+    protected final void handleTransition(Transition transition,
+            long sourceId,
+            Map<String, StateHandler<?, ?, ?>> stateConnection,
+            Optional<HandleTransitionCallBack> callback) {
         if (transition != null && transition.getNextState() != null) {
             StateHandler<?, ?, ?> targetState = stateConnection.get(transition.getNextState());
             List<ProduceEvent> produceEvents = transition.getProduceEvents();
             if (produceEvents.isEmpty()) {
                 targetState.connect(sourceId);
-                return Optional.of(targetState);
+                callback.ifPresent(c -> c.onStateTarget(targetState));
             } else {
-                ActionNodeFactory<P> actionNode = factory.actionNode(idGenerator.getId());
+                final ActionNodeFactory<P> actionNode = factory.actionNode(idGenerator.getId());
                 ActionNodeFactory<P> endNode = actionNode;
                 ServerlessWorkflowParser.sendEventNode(actionNode, ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
                         produceEvents.get(0).getEventRef()));
@@ -192,9 +199,18 @@ public abstract class StateHandler<S extends State, T extends NodeFactory<T, P>,
                 }
                 factory.connection(sourceId, actionNode.getNode().getId());
                 targetState.connect(endNode.getNode().getId());
-                return Optional.of(actionNode.getNode().getId());
+                callback.ifPresent(c -> c.onIdTarget(actionNode.getNode().getId()));
             }
+        } else {
+            callback.ifPresent(HandleTransitionCallBack::onEmptyTarget);
         }
-        return Optional.empty();
+    }
+
+    protected interface HandleTransitionCallBack {
+        void onStateTarget(StateHandler<?, ?, ?> targetState);
+
+        void onIdTarget(long targetId);
+
+        void onEmptyTarget();
     }
 }

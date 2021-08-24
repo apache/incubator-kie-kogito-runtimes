@@ -130,6 +130,8 @@ public class RestWorkItemHandlerTest {
 
         workflowData = mapper.createObjectNode().put("id", 26).put("name", "pepe");
 
+        when(workItem.getParameter(RestWorkItemHandler.CONTENT_DATA)).thenReturn(workflowData);
+
         when(workItem.getProcessInstance()).thenReturn(processInstance);
         when(processInstance.getProcess()).thenReturn(process);
         when(processInstance.getVariables()).thenReturn(Collections.singletonMap(DEFAULT_WORKFLOW_VAR, workflowData));

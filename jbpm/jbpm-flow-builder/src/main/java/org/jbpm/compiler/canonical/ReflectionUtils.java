@@ -31,7 +31,6 @@ public class ReflectionUtils {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(ReflectionUtils.class);
-
     private static Map<Class<?>, Class<?>> wrappers2Primitive = new ConcurrentHashMap<>();
 
     static {
@@ -53,11 +52,7 @@ public class ReflectionUtils {
         return wrappers2Primitive.get(clazz);
     }
 
-    public static Method
-            getMethod(ClassLoader cl,
-                    Class<?> clazz,
-                    String methodName,
-                    Collection<String> parameterTypes) throws ReflectiveOperationException {
+    public static Method getMethod(ClassLoader cl, Class<?> clazz, String methodName, Collection<String> parameterTypes) throws ReflectiveOperationException {
         Class<?>[] methodParameters = new Class[parameterTypes.size()];
         int i = 0;
         for (String parameterType : parameterTypes) {
@@ -66,16 +61,23 @@ public class ReflectionUtils {
             }
             methodParameters[i++] = cl.loadClass(parameterType);
         }
+        try {
+            return clazz.getMethod(methodName, methodParameters);
+        } catch (NoSuchMethodException ex) {
+            logger.info("Exact method {} match not found with parameters {}, searching for a suitable candidate", methodName, methodParameters);
+            return fallbackMethod(clazz, methodName, methodParameters);
+        }
+    }
 
+    private static Method fallbackMethod(Class<?> clazz, String methodName, Class<?>[] methodParameters) throws NoSuchMethodException {
         List<Method> candidates = new ArrayList<>();
         for (Method m : clazz.getMethods()) {
             if (m.getName().equals(methodName) && m.getParameterCount() == methodParameters.length) {
                 Class<?>[] thisMethodParams = m.getParameterTypes();
                 boolean valid = true;
                 boolean potentiallyValid = true;
-                for (i = 0; potentiallyValid && i < methodParameters.length; i++) {
-                    valid = thisMethodParams[i].isAssignableFrom(methodParameters[i]) ||
-                            thisMethodParams[i].isAssignableFrom(wrappers2Primitive.getOrDefault(methodParameters[i], methodParameters[i]));
+                for (int i = 0; potentiallyValid && i < methodParameters.length; i++) {
+                    valid = isValid(thisMethodParams[i], methodParameters[i]);
                     potentiallyValid = valid || methodParameters[i].equals(java.lang.Object.class);
                 }
                 if (valid) {
@@ -86,10 +88,20 @@ public class ReflectionUtils {
             }
         }
         if (candidates.size() != 1) {
-            throw new NoSuchMethodException(methodName);
+            throw new NoSuchMethodException(candidates.isEmpty() ? "No suitable method found with name " + methodName : "More than one suitable method found " + candidates);
         } else {
             return candidates.get(0);
         }
     }
 
+    private static boolean isValid(Class<?> thisMethodParam, Class<?> methodParam) {
+        boolean isValid = thisMethodParam.isAssignableFrom(methodParam);
+        if (!isValid) {
+            Class<?> primitive = wrappers2Primitive.get(methodParam);
+            if (primitive != null) {
+                isValid = thisMethodParam.isAssignableFrom(primitive);
+            }
+        }
+        return isValid;
+    }
 }

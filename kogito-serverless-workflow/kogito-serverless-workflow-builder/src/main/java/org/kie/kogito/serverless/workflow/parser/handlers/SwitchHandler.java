@@ -110,22 +110,28 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
 
         List<DataCondition> conditions = state.getDataConditions();
         for (DataCondition condition : conditions) {
-            Optional<Object> targetId = handleTransition(condition.getTransition(), splitId, stateConnection);
-            if (targetId.isPresent()) {
-                if (targetId.get() instanceof Long) {
-                    addConstraint(startNode, (Long) targetId.get(), condition);
-                } else {
-                    targetHandlers.add(() -> addConstraint(startNode, (StateHandler) targetId.get(), condition));
+            handleTransition(condition.getTransition(), splitId, stateConnection, Optional.of(new StateHandler.HandleTransitionCallBack() {
+                @Override
+                public void onStateTarget(StateHandler<?, ?, ?> targetState) {
+                    targetHandlers.add(() -> addConstraint(startNode, targetState, condition));
                 }
-            } else {
-                if (condition.getEnd() != null) {
-                    EndNodeFactory<P> endNodeFactory = endNodeFactory(condition.getEnd().getProduceEvents());
-                    endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
-                    addConstraint(startNode, endNodeFactory.getNode().getId(), condition);
-                } else {
-                    throw new IllegalArgumentException("Invalid condition, not transition not end");
+
+                @Override
+                public void onIdTarget(long targetId) {
+                    addConstraint(startNode, targetId, condition);
                 }
-            }
+
+                @Override
+                public void onEmptyTarget() {
+                    if (condition.getEnd() != null) {
+                        EndNodeFactory<P> endNodeFactory = endNodeFactory(condition.getEnd().getProduceEvents());
+                        endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
+                        addConstraint(startNode, endNodeFactory.getNode().getId(), condition);
+                    } else {
+                        throw new IllegalArgumentException("Invalid condition, not transition not end");
+                    }
+                }
+            }));
         }
     }
 

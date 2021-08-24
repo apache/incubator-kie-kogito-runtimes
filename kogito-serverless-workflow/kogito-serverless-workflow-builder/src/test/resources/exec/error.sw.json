@@ -1,12 +1,20 @@
 {
   "id": "error",
   "version": "1.0",
-  "name": "Greeting workflow",
-  "description": "JSON based error example workflow",
-  "start": "ChooseOnLanguage",
+  "name": "Workflow Error example",
+  "description": "An example of how to handle an exception thrown by a service",
+  "start": "checkEven",
   "functions": [
     {
-      "name": "greetFunction",
+      "name": "isEven",
+      "metadata": {
+        "interface": "org.kie.kogito.examples.EvenService",
+        "operation": "isEven",
+        "type": "service"
+      }
+    },
+    {
+      "name": "printMessage",
       "metadata": {
         "type": "sysout"
       }
@@ -14,52 +22,54 @@
   ],
   "states": [
     {
-      "name": "ChooseOnLanguage",
-      "type": "switch",
-      "dataConditions": [
+      "name": "checkEven",
+      "type": "operation",
+      "actions": [
         {
-          "condition": "{{ $.[?(@.language  == 'English')] }}",
-          "transition": "GreetInEnglish"
-        },
-        {
-          "condition": "{{ $.[?(@.language  == 'Spanish')] }}",
-          "transition": "GreetInSpanish"
+          "name": "checkEvenAction",
+          "functionRef": {
+            "refName": "isEven",
+            "arguments": {
+              "number": "$.number"
+            }
+          }
         }
       ],
+      "transition": "even",
       "onErrors": [
         {
-          "error": "wrong language",
+          "error": "odd number",
           "code": "java.lang.IllegalArgumentException",
-          "transition": "GreetInEnglish"
+          "transition": "odd"
         }
       ]
     },
     {
-      "name": "GreetInEnglish",
+      "name": "even",
       "type": "inject",
       "data": {
-        "greeting": "Hello from JSON Workflow, "
+        "numberType": "even"
       },
-      "transition": "GreetPerson"
+      "transition": "finish"
     },
     {
-      "name": "GreetInSpanish",
+      "name": "odd",
       "type": "inject",
       "data": {
-        "greeting": "Saludos desde JSON Workflow, "
+        "numberType": "odd"
       },
-      "transition": "GreetPerson"
+      "transition": "finish"
     },
     {
-      "name": "GreetPerson",
+      "name": "finish",
       "type": "operation",
       "actions": [
         {
-          "name": "greetAction",
+          "name": "printAction",
           "functionRef": {
-            "refName": "greetFunction",
+            "refName": "printMessage",
             "arguments": {
-              "message": "$.greeting $.name"
+              "message": "$.numberType"
             }
           }
         }

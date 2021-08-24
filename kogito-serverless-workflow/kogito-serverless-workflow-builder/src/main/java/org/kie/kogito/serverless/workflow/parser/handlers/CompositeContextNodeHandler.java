@@ -255,8 +255,8 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
 
     private Object processWorkItemValue(JsonNode jsonNode, String paramName) {
         if (jsonNode.isTextual()) {
-            // assume a string will be a json path expresion
-            return new JsonPathExprSupplier(jsonNode.asText(), paramName);
+            String str = jsonNode.asText();
+            return isJsonPathExpr(str) ? new JsonPathExprSupplier(str, paramName) : str;
         } else if (jsonNode.isBoolean()) {
             return jsonNode.asBoolean();
         } else if (jsonNode.isInt()) {
@@ -268,6 +268,10 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
             logger.warn("Suspicious node {}, trying to convert to string", jsonNode);
             return new ObjectMapper().convertValue(jsonNode, String.class);
         }
+    }
+
+    private boolean isJsonPathExpr(String str) {
+        return str.trim().startsWith("$");
     }
 
     private enum ActionType {
