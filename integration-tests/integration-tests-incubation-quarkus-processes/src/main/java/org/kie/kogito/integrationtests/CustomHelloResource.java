@@ -19,8 +19,6 @@ import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.processes.ProcessId;
@@ -32,8 +30,8 @@ public class CustomHelloResource {
     @Inject
     StraightThroughProcessService processService;
 
-    @Channel("hello-publisher")
-    Emitter<User> emitter;
+    //    @Channel("hello-publisher")
+    //    Emitter<User> emitter;
 
     @POST
     public DataContext post(User user) {
@@ -45,7 +43,7 @@ public class CustomHelloResource {
     @POST
     @Path("/message")
     public User publish(User user) {
-        emitter.send(user);
+        //        emitter.send(user);
         return user;
     }
 }

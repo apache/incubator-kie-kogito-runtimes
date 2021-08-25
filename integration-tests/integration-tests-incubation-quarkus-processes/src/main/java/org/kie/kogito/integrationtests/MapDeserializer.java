@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.integrationtests.quarkus;
+package org.kie.kogito.integrationtests;
 
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
-import io.quarkus.test.junit.QuarkusTest;
+import javax.enterprise.context.ApplicationScoped;
 
-@QuarkusTest
-public class HelloProcessIT {
+import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HelloProcessIT.class);
+@ApplicationScoped
+public class MapDeserializer extends ObjectMapperDeserializer<Map> {
 
-    @Test
-    void testHelloProcessRest() {
-
-    }
-
-    @Test
-    void testHelloProcessMessaging() {
-
+    public MapDeserializer() {
+        super(Map.class);
     }
 }

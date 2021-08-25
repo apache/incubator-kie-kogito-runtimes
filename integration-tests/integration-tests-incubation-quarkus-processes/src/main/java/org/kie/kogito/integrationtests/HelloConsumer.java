@@ -32,7 +32,7 @@ public class HelloConsumer {
     QuarkusStraightThroughProcessService processService;
 
     @Incoming("hello")
-    @Outgoing("hello-response")
+    @Outgoing("hello-response-publisher")
     public DataContext onMessage(User user) {
         MapDataContext context = MapDataContext.create();
         context.set("user", user);
