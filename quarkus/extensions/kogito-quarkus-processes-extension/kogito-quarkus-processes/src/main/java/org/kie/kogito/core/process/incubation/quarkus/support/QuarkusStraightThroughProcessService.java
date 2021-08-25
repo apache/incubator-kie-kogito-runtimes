@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.kie.kogito.Model;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.Id;
+import org.kie.kogito.incubation.common.InternalObjectMapper;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.processes.ProcessId;
 import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
@@ -46,9 +47,9 @@ public class QuarkusStraightThroughProcessService implements StraightThroughProc
         Path processPath = processId.toLocalId().asPath();
         if (processPath.getName(0).toString().equals(ProcessId.PREFIX)) {
             Process<? extends Model> process = processes.processById(processPath.getName(1).toString());
-            Model model = process.createModel();
             MapDataContext mdc = inputContext.as(MapDataContext.class);
-            model.fromMap(mdc.toMap());
+            Class<? extends Model> modelType = process.createModel().getClass();
+            Model model = InternalObjectMapper.convertValue(mdc, modelType);
             ProcessInstance<? extends Model> instance = process.createInstance(model);
             instance.start();
             Map<String, Object> map = instance.variables().toMap();
