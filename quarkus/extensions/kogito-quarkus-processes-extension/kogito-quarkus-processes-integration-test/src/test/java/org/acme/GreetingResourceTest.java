@@ -16,10 +16,11 @@
 
 package org.acme;
 
-import io.quarkus.test.junit.QuarkusTest;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import io.quarkus.test.junit.QuarkusTest;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;

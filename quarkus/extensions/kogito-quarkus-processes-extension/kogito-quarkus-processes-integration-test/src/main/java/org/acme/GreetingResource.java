@@ -34,15 +34,17 @@ import org.kie.kogito.incubation.processes.services.StraightThroughProcessServic
 @Path("/hello")
 public class GreetingResource {
 
-    @Inject AppRoot appRoot;
-    @Inject StraightThroughProcessService svc;
+    @Inject
+    AppRoot appRoot;
+    @Inject
+    StraightThroughProcessService svc;
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public DataContext hello(Map<String, Object> payload) {
         // path: /processes/scripts
-        
+
         var id = appRoot.get(ProcessIds.class).get("scripts");
         return svc.evaluate(id, MapDataContext.from(payload));
     }

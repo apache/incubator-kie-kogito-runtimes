@@ -38,7 +38,7 @@ public class TestTypes {
             }
         };
         MapDataContext ctx = MapDataContext.create(); // suppose there is a Map-like structure
-                                                   // (it could be even just Map)
+                                                      // (it could be even just Map)
         ProcessId someProcessId = new ProcessId("some.process");
 
         // set a context using a Map-like interface
