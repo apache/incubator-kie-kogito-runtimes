@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Provides a method to convert an object into a given type.
  * This is an implementation detail. We may move this to a separate module in the future.
  */
-class InternalObjectMapper {
+public class InternalObjectMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(InternalObjectMapper.class);
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -44,9 +44,9 @@ class InternalObjectMapper {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
-    static <T> T convertValue(Object self, Class<T> type) {
+    public static <T> T convertValue(Object self, Class<T> type) {
         if (MapLikeDataContext.class == type || MapDataContext.class == type) {
-            return (T) MapDataContext.of(convertToShallowMap(self));
+            return (T) MapDataContext.of(objectMapper.convertValue(self, Map.class));
         }
         return objectMapper.convertValue(self, type);
     }
