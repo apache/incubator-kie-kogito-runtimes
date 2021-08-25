@@ -56,9 +56,6 @@ public class MapDataContext implements MapLikeDataContext, MetaDataContext {
 
     @Override
     public <T extends DataContext> T as(Class<T> type) {
-        if (type.isAssignableFrom(MapDataContext.class)) {
-            return (T) this;
-        }
         return InternalObjectMapper.convertValue(map, type);
     }
 
@@ -76,7 +73,7 @@ public class MapDataContext implements MapLikeDataContext, MetaDataContext {
 
     @Override
     public <T> T get(String key, Class<T> expectedType) {
-        return null;
+        return InternalObjectMapper.convertValue(get(key), expectedType);
     }
 
     // required to unwrap the map to the root of the mapped object

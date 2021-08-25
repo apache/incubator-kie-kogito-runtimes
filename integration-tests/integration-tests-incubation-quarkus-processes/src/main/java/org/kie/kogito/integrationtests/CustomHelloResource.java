@@ -30,20 +30,10 @@ public class CustomHelloResource {
     @Inject
     StraightThroughProcessService processService;
 
-    //    @Channel("hello-publisher")
-    //    Emitter<User> emitter;
-
     @POST
     public DataContext post(User user) {
         MapDataContext context = MapDataContext.create();
         context.set("user", user);
         return processService.evaluate(new ProcessId("hello"), context);
-    }
-
-    @POST
-    @Path("/message")
-    public User publish(User user) {
-        //        emitter.send(user);
-        return user;
     }
 }
