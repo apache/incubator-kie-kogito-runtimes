@@ -16,20 +16,27 @@
 
 package org.kie.kogito.incubation.common;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * For internal use only (package-private).
  * Provides a method to convert an object into a given type.
  * This is an implementation detail. We may move this to a separate module in the future.
- *
  */
 class InternalObjectMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InternalObjectMapper.class);
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {
@@ -38,17 +45,29 @@ class InternalObjectMapper {
     }
 
     static <T> T convertValue(Object self, Class<T> type) {
-        // treat differently if it is a Map-like
-        if (MapLikeDataContext.class == type) {
-            // i.e. extract the Map<String, Object>
-            Map<String, Object> map =
-                    InternalObjectMapper.objectMapper.convertValue(
-                            self, new TypeReference<Map<String, Object>>() {
-                            });
-            // and wrap it into a MapDataContext
-            return (T) new MapDataContext(map);
+        if (MapLikeDataContext.class == type || MapDataContext.class == type) {
+            return (T) MapDataContext.of(convertToShallowMap(self));
         }
-        return InternalObjectMapper.objectMapper.convertValue(self, type);
+        return objectMapper.convertValue(self, type);
+    }
+
+    static Map<String, Object> convertToShallowMap(Object self) {
+        JsonNode jsonNode = objectMapper.valueToTree(self);
+        Map<String, Object> shallowMap = new HashMap<>();
+        Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
+        InternalFieldResolver fieldResolver = new InternalFieldResolver(self);
+        while (fields.hasNext()) {
+            Map.Entry<String, JsonNode> n = fields.next();
+            String name = n.getKey();
+            try {
+                Object result = fieldResolver.resolve(name);
+                shallowMap.put(name, result);
+            } catch (NoSuchElementException ex) {
+                LOGGER.trace("Could not resolve field descriptor for '" + name + "', continue");
+            }
+        }
+        return shallowMap;
+
     }
 
     private InternalObjectMapper() {

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class MapDataContext implements MapLikeDataContext, MetaDataContext {
 
     public static <T> MapDataContext from(T object) {
-        return new MapDataContext(InternalObjectMapper.convertValue(object, Map.class));
+        return InternalObjectMapper.convertValue(object, MapDataContext.class);
     }
 
     public static MapDataContext of(Map<String, Object> map) {
@@ -74,10 +74,6 @@ public class MapDataContext implements MapLikeDataContext, MetaDataContext {
     @Override
     public <T> T get(String key, Class<T> expectedType) {
         return null;
-    }
-
-    public void add(String key, String value) {
-        map.put(key, value);
     }
 
     // required to unwrap the map to the root of the mapped object
