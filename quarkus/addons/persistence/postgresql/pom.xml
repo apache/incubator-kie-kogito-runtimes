@@ -7,10 +7,10 @@
     <artifactId>kogito-addons-quarkus-persistence-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>kogito-addons-quarkus-persistence-kafka-parent</artifactId>
+  <artifactId>kogito-addons-quarkus-persistence-postgresql-parent</artifactId>
   <packaging>pom</packaging>
-  <name>Kogito Add-On Persistence Kafka Streams - Parent</name>
-  <description>Kogito Quarkus Persistence Kafka Parent</description>
+  <name>Kogito Add-On Persistence PostgreSQL - Parent</name>
+  <description>Kogito Quarkus Persistence PostgreSQL Parent</description>
 
   <modules>
     <module>runtime</module>

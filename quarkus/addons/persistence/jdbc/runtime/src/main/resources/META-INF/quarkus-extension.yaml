@@ -1,0 +1,10 @@
+name: Kogito Add-On Persistence JDBC
+description: Kogito Add-On support for persistence on JDBC
+metadata:
+  keywords:
+    - kogito
+    - persistence
+    - jdbc
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"
