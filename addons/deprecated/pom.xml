@@ -25,7 +25,6 @@
     <module>monitoring-prometheus-common</module>
     <module>monitoring-prometheus-quarkus-addon</module>
     <module>monitoring-prometheus-springboot-addon</module>
-    <module>kogito-addons-quarkus-persistence-infinispan-health</module>
   </modules>
 
   <profiles>

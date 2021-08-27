@@ -137,9 +137,9 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 #### Quarkus Add-ons
 
 | Add-On Description      | Old Artifact ID | New Artifact ID |
-|-------------------------|-----------------------------------------------------|----------------------------------------------|
-| Persistence Infinispan  | kogito-addons-quarkus-persistence-infinispan-health | kogito-addons-quarkus-persistence-infinispan |
-| Persistence FileSystem  | kogito-addons-persistence-filesystem                | kogito-addons-quarkus-persistence-filesystem |
-| Persistence JDBC        | kogito-addons-persistence-jdbc                      | kogito-addons-quarkus-persistence-jdbc       |
-| Persistence MongoDB     | kogito-addons-persistence-mongodb                   | kogito-addons-quarkus-persistence-mongodb    |
-| Persistence Postgresql  | kogito-addons-persistence-postgresql                | kogito-addons-quarkus-persistence-postgresql |
+|-------------------------|--------------------------------------|----------------------------------------------|
+| Persistence Infinispan  | kogito-addons-persistence-infinispan | kogito-addons-quarkus-persistence-infinispan |
+| Persistence FileSystem  | kogito-addons-persistence-filesystem | kogito-addons-quarkus-persistence-filesystem |
+| Persistence JDBC        | kogito-addons-persistence-jdbc       | kogito-addons-quarkus-persistence-jdbc       |
+| Persistence MongoDB     | kogito-addons-persistence-mongodb    | kogito-addons-quarkus-persistence-mongodb    |
+| Persistence Postgresql  | kogito-addons-persistence-postgresql | kogito-addons-quarkus-persistence-postgresql |

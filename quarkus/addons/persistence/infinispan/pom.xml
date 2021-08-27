@@ -15,5 +15,6 @@
   <modules>
     <module>runtime</module>
     <module>deployment</module>
+    <module>health</module>
   </modules>
 </project>
