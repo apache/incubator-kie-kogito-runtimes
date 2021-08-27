@@ -14,11 +14,7 @@ The add-on `knative-eventing-addon` has been deprecated, please remove it from y
 <dependencies>
   <dependency>
     <groupId>org.kie.kogito</groupId>
-    <artifactId>kogito-addons-quarkus-cloudevents</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-reactive-messaging-http</artifactId>
+    <artifactId>kogito-addons-quarkus-knative-eventing</artifactId>
   </dependency>
 </dependencies>
 ```
@@ -131,3 +127,19 @@ Classes and namespaces remains the same, you won't need to make any change in yo
 | Cloud Events         | kogito-addons-springboot-cloudevents | kogito-addons-springboot-messaging
 | Events Kafka         | kogito-addons-springboot-events-kafka | kogito-addons-springboot-events-process-kafka
 
+### Version 1.12.x
+
+The artifact IDs for these Kogito Add-ons have changed since version 1.11.x. Please refer to the table below for the new
+add-on names to update your project `pom.xml` dependencies section.
+
+Classes and namespaces remains the same, you won't need to make any change in your code base.
+
+#### Quarkus Add-ons
+
+| Add-On Description      | Old Artifact ID | New Artifact ID |
+|-------------------------|-----------------------------------------------------|----------------------------------------------|
+| Persistence Infinispan  | kogito-addons-quarkus-persistence-infinispan-health | kogito-addons-quarkus-persistence-infinispan |
+| Persistence FileSystem  | kogito-addons-persistence-filesystem                | kogito-addons-quarkus-persistence-filesystem |
+| Persistence JDBC        | kogito-addons-persistence-jdbc                      | kogito-addons-quarkus-persistence-jdbc       |
+| Persistence MongoDB     | kogito-addons-persistence-mongodb                   | kogito-addons-quarkus-persistence-mongodb    |
+| Persistence Postgresql  | kogito-addons-persistence-postgresql                | kogito-addons-quarkus-persistence-postgresql |
