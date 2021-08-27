@@ -1,0 +1,11 @@
+name: Kogito Add-On Task Notification
+description: Kogito Add-On to handle tasks notifications
+metadata:
+  keywords:
+    - kogito
+    - process
+    - task
+    - notification
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"

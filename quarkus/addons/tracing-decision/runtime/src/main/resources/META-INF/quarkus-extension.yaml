@@ -1,0 +1,12 @@
+name: Kogito Add-On Tracing Decision
+description: Kogito Add-On to enable tracing decisions projects
+metadata:
+  keywords:
+    - kogito
+    - decisions
+    - dmn
+    - tracing
+  # TODO: add DMN guide
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"

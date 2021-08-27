@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-addons-quarkus-persistence-parent</artifactId>
-  <name>Kogito Add-Ons Quarkus Persistence</name>
+  <name>Kogito Add-On Quarkus Persistence</name>
   <description>Kogito Persistence Addons for Quarkus Runtime</description>
   <packaging>pom</packaging>
 
