@@ -65,18 +65,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
             for (Entry<ConnectionRef, Constraint> entry : node.getConstraints().entrySet()) {
                 if (entry.getValue() != null) {
                     if ("FEEL".equals(entry.getValue().getDialect())) {
-                        FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
-                        FeelErrorEvaluatorListener feelErrorListener = new FeelErrorEvaluatorListener();
-                        feel.addListener(feelErrorListener);
-                        CompilerContext cc = feel.newCompilerContext();
-                        for (Variable v : variableScope.getVariables()) {
-                            cc.addInputVariable(v.getName(), null);
-                        }
-                        feel.compile(entry.getValue().getConstraint(), cc);
-                        if (!feelErrorListener.getErrorEvents().isEmpty()) {
-                            String exceptionMessage = feelErrorListener.getErrorEvents().stream().map(FeelReturnValueEvaluator::eventToMessage).collect(Collectors.joining(", "));
-                            throw new FeelCompilationException(exceptionMessage);
-                        }
+                        verifyFEELbyCompilingExpression(variableScope, entry);
                         StringLiteralExpr feelConstraintString = new StringLiteralExpr();
                         feelConstraintString.setString(entry.getValue().getConstraint());
                         ObjectCreationExpr feelExprEvaluator = new ObjectCreationExpr(null,
@@ -114,5 +103,24 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
             }
         }
         body.addStatement(getDoneMethod(getNodeId(node)));
+    }
+
+    /**
+     * Instead of throwing a generic JavaParser compilation error (atm happens for invalid expression of dialect=JAVA)
+     * use the FEEL compiler capabilities to verify if mere compilation of the FEEL expression may contain any error. 
+     */
+    private void verifyFEELbyCompilingExpression(VariableScope variableScope, Entry<ConnectionRef, Constraint> entry) {
+        FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
+        FeelErrorEvaluatorListener feelErrorListener = new FeelErrorEvaluatorListener();
+        feel.addListener(feelErrorListener);
+        CompilerContext cc = feel.newCompilerContext();
+        for (Variable v : variableScope.getVariables()) {
+            cc.addInputVariable(v.getName(), null);
+        }
+        feel.compile(entry.getValue().getConstraint(), cc);
+        if (!feelErrorListener.getErrorEvents().isEmpty()) {
+            String exceptionMessage = feelErrorListener.getErrorEvents().stream().map(FeelReturnValueEvaluator::eventToMessage).collect(Collectors.joining(", "));
+            throw new FeelCompilationException(exceptionMessage);
+        }
     }
 }
