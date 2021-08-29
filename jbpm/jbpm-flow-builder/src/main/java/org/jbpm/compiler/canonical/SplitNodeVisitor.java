@@ -107,7 +107,7 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
 
     /**
      * Instead of throwing a generic JavaParser compilation error (atm happens for invalid expression of dialect=JAVA)
-     * use the FEEL compiler capabilities to verify if mere compilation of the FEEL expression may contain any error. 
+     * use the FEEL compiler capabilities to verify if mere compilation of the FEEL expression may contain any error.
      */
     private void verifyFEELbyCompilingExpression(VariableScope variableScope, Entry<ConnectionRef, Constraint> entry) {
         FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
