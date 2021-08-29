@@ -1560,7 +1560,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(((WorkflowProcessInstanceImpl) processInstance).getErrorMessage()).contains("Fire rule limit reached 5");
     }
 
-    @Disabled
     @Test
     public void testScriptTaskFEEL() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-ScriptTaskFEEL.bpmn2");
