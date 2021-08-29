@@ -19,16 +19,19 @@ import java.util.Map.Entry;
 
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.impl.FeelReturnValueEvaluator;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.node.Split;
 
 import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.UnknownType;
@@ -54,25 +57,40 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
         if (node.getType() == Split.TYPE_OR || node.getType() == Split.TYPE_XOR) {
             for (Entry<ConnectionRef, Constraint> entry : node.getConstraints().entrySet()) {
                 if (entry.getValue() != null) {
-                    BlockStmt actionBody = new BlockStmt();
-                    LambdaExpr lambda = new LambdaExpr(
-                            new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
-                            actionBody);
+                    if ("FEEL".equals(entry.getValue().getDialect())) {
+                        StringLiteralExpr feelConstraintString = new StringLiteralExpr();
+                        feelConstraintString.setString(entry.getValue().getConstraint());
+                        ObjectCreationExpr feelExprEvaluator = new ObjectCreationExpr(null,
+                                StaticJavaParser.parseClassOrInterfaceType(FeelReturnValueEvaluator.class.getCanonicalName()),
+                                new NodeList<>(feelConstraintString));
+                        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
+                                new LongLiteralExpr(entry.getKey().getNodeId()),
+                                new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
+                                new StringLiteralExpr(entry.getKey().getToType()),
+                                new StringLiteralExpr(entry.getValue().getDialect()),
+                                feelExprEvaluator,
+                                new IntegerLiteralExpr(entry.getValue().getPriority())));
+                    } else {
+                        BlockStmt actionBody = new BlockStmt();
+                        LambdaExpr lambda = new LambdaExpr(
+                                new Parameter(new UnknownType(), KCONTEXT_VAR), // (kcontext) ->
+                                actionBody);
 
-                    for (Variable v : variableScope.getVariables()) {
-                        actionBody.addStatement(makeAssignment(v));
+                        for (Variable v : variableScope.getVariables()) {
+                            actionBody.addStatement(makeAssignment(v));
+                        }
+
+                        BlockStmt blockStmt = StaticJavaParser.parseBlock("{" + entry.getValue().getConstraint() + "}");
+                        blockStmt.getStatements().forEach(actionBody::addStatement);
+
+                        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
+                                new LongLiteralExpr(entry.getKey().getNodeId()),
+                                new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
+                                new StringLiteralExpr(entry.getKey().getToType()),
+                                new StringLiteralExpr(entry.getValue().getDialect()),
+                                lambda,
+                                new IntegerLiteralExpr(entry.getValue().getPriority())));
                     }
-
-                    BlockStmt blockStmt = StaticJavaParser.parseBlock("{" + entry.getValue().getConstraint() + "}");
-                    blockStmt.getStatements().forEach(actionBody::addStatement);
-
-                    body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
-                            new LongLiteralExpr(entry.getKey().getNodeId()),
-                            new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
-                            new StringLiteralExpr(entry.getKey().getToType()),
-                            new StringLiteralExpr(entry.getValue().getDialect()),
-                            lambda,
-                            new IntegerLiteralExpr(entry.getValue().getPriority())));
                 }
             }
         }
