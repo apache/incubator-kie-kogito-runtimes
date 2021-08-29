@@ -15,7 +15,10 @@
  */
 package org.jbpm.compiler.canonical;
 
+import org.assertj.core.api.Assertions;
+import org.jbpm.process.builder.dialect.feel.FeelCompilationException;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.datatype.impl.type.StringDataType;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.node.Split;
 import org.junit.jupiter.api.Test;
@@ -120,14 +123,14 @@ public class ProcessToExecModelGeneratorTest {
     public void testGatewayFEEL() {
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.orders");
         factory
-                .variable("approver", new ObjectDataType("String"))
+                .variable("approver", new StringDataType())
                 .name("orders")
                 .packageName("com.myspace.demo")
                 .dynamic(false)
                 .version("1.0")
                 .splitNode(1)
                 .type(Split.TYPE_XOR)
-                .constraint(2, "cA", "code", "FEEL", "if true return true else false")
+               .constraint(2, "cA", "code", "FEEL", "if true then true else false")
                 .constraint(3, "cB", "code", "java", "return false; ")
                 .done()
                 .endNode(2)
@@ -145,8 +148,6 @@ public class ProcessToExecModelGeneratorTest {
                 .connection(1, 2, "cA")
                 .connection(1, 3, "cB");
 
-        org.jbpm.process.instance.impl.ReturnValueEvaluator asd = new org.jbpm.process.instance.impl.FeelReturnValueEvaluator("");
-
         WorkflowProcess process = factory.validate().getProcess();
 
         ProcessMetaData processMetadata = ProcessToExecModelGenerator.INSTANCE.generate(process);
@@ -154,6 +155,80 @@ public class ProcessToExecModelGeneratorTest {
 
         logger.debug(processMetadata.getGeneratedClassModel().toString());
         assertNotNull(processMetadata.getGeneratedClassModel());
+    }
+
+    @Test
+    public void testGatewayFEELwrongIfMissingElse() {
+        RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.orders");
+        factory
+               .variable("approver", new StringDataType())
+               .name("orders")
+               .packageName("com.myspace.demo")
+               .dynamic(false)
+               .version("1.0")
+               .splitNode(1)
+               .type(Split.TYPE_XOR)
+               .constraint(2, "cA", "code", "FEEL", "if true then true") // missing else
+               .constraint(3, "cB", "code", "java", "return false; ")
+               .done()
+               .endNode(2)
+               .name("end A")
+               .terminate(false)
+               .done()
+               .endNode(3)
+               .name("end B")
+               .terminate(false)
+               .done()
+               .startNode(4)
+               .name("start")
+               .done()
+               .connection(4, 1)
+               .connection(1, 2, "cA")
+               .connection(1, 3, "cB");
+
+        Assertions.assertThatExceptionOfType(FeelCompilationException.class)
+                  .isThrownBy(() -> {
+                      WorkflowProcess process = factory.validate().getProcess();
+                      ProcessMetaData processMetadata = ProcessToExecModelGenerator.INSTANCE.generate(process);
+                  })
+                  .withStackTraceContaining("Detected 'if' expression without 'else' part");
+    }
+
+    @Test
+    public void testGatewayFEELwrongUnkVariable() {
+        RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.orders");
+        factory
+               .variable("approver", new StringDataType())
+               .name("orders")
+               .packageName("com.myspace.demo")
+               .dynamic(false)
+               .version("1.0")
+               .splitNode(1)
+               .type(Split.TYPE_XOR)
+               .constraint(2, "cA", "code", "FEEL", "approver=\"Matteo\"")
+               .constraint(3, "cB", "code", "FEEL", "unexisting=1") // unknown variable unexisting
+               .done()
+               .endNode(2)
+               .name("end A")
+               .terminate(false)
+               .done()
+               .endNode(3)
+               .name("end B")
+               .terminate(false)
+               .done()
+               .startNode(4)
+               .name("start")
+               .done()
+               .connection(4, 1)
+               .connection(1, 2, "cA")
+               .connection(1, 3, "cB");
+
+        Assertions.assertThatExceptionOfType(FeelCompilationException.class)
+                  .isThrownBy(() -> {
+                      WorkflowProcess process = factory.validate().getProcess();
+                      ProcessMetaData processMetadata = ProcessToExecModelGenerator.INSTANCE.generate(process);
+                  })
+                  .withStackTraceContaining("Unknown variable 'unexisting'");
     }
 
 }

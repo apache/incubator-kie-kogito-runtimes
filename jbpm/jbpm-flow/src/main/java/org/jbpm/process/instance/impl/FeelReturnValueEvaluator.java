@@ -102,7 +102,7 @@ public class FeelReturnValueEvaluator implements ReturnValueEvaluator, Externali
         throw new FeelReturnValueEvaluatorException(exceptionMessage);
     }
 
-    private static String eventToMessage(FEELEvent event) {
+    public static String eventToMessage(FEELEvent event) {
         StringBuilder messageBuilder = new StringBuilder(event.getSeverity().toString()).append(" ").append(event.getMessage());
         if (event.getOffendingSymbol() != null) {
             messageBuilder.append(" ( offending symbol: '").append(event.getOffendingSymbol()).append("' )");

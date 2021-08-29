@@ -15,15 +15,22 @@
  */
 package org.jbpm.compiler.canonical;
 
+import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import org.jbpm.process.builder.dialect.feel.FeelCompilationException;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.impl.FeelErrorEvaluatorListener;
 import org.jbpm.process.instance.impl.FeelReturnValueEvaluator;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.Constraint;
 import org.jbpm.workflow.core.impl.ConnectionRef;
 import org.jbpm.workflow.core.node.Split;
+import org.kie.dmn.feel.FEEL;
+import org.kie.dmn.feel.lang.CompilerContext;
+import org.kie.dmn.feel.parser.feel11.profiles.KieExtendedFEELProfile;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.NodeList;
@@ -58,6 +65,18 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
             for (Entry<ConnectionRef, Constraint> entry : node.getConstraints().entrySet()) {
                 if (entry.getValue() != null) {
                     if ("FEEL".equals(entry.getValue().getDialect())) {
+                        FEEL feel = FEEL.newInstance(Collections.singletonList(new KieExtendedFEELProfile()));
+                        FeelErrorEvaluatorListener feelErrorListener = new FeelErrorEvaluatorListener();
+                        feel.addListener(feelErrorListener);
+                        CompilerContext cc = feel.newCompilerContext();
+                        for (Variable v : variableScope.getVariables()) {
+                            cc.addInputVariable(v.getName(), null);
+                        }
+                        feel.compile(entry.getValue().getConstraint(), cc);
+                        if (!feelErrorListener.getErrorEvents().isEmpty()) {
+                            String exceptionMessage = feelErrorListener.getErrorEvents().stream().map(FeelReturnValueEvaluator::eventToMessage).collect(Collectors.joining(", "));
+                            throw new FeelCompilationException(exceptionMessage);
+                        }
                         StringLiteralExpr feelConstraintString = new StringLiteralExpr();
                         feelConstraintString.setString(entry.getValue().getConstraint());
                         ObjectCreationExpr feelExprEvaluator = new ObjectCreationExpr(null,
