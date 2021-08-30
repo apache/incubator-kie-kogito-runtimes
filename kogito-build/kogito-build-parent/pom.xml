@@ -120,6 +120,9 @@
     <version.xml.maven.plugin>1.0.2</version.xml.maven.plugin>
     <version.org.jsonschema2pojo-maven-plugin>1.0.1</version.org.jsonschema2pojo-maven-plugin>
     <version.org.codehaus.gmavenplus.plugin>1.5</version.org.codehaus.gmavenplus.plugin>
+
+    <!-- Versions for build dependencies -->
+    <version.saxon>8.7</version.saxon>
   </properties>
 
   <dependencyManagement>
