@@ -154,6 +154,7 @@
       </activation>
       <modules>
         <module>integration-tests</module>
+        <module>kogito-quarkus-test-list</module>
       </modules>
     </profile>
   </profiles>

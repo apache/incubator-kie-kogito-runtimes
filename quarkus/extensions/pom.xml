@@ -48,17 +48,6 @@
         <module>kogito-quarkus-serverless-workflow-extension</module>
       </modules>
     </profile>
-    <profile>
-      <id>integration-test-modules</id>
-      <activation>
-        <property>
-          <name>!excludeITModules</name>
-        </property>
-      </activation>
-      <modules>
-        <module>kogito-quarkus-test-list</module>
-      </modules>
-    </profile>
   </profiles>
 
   <build>
