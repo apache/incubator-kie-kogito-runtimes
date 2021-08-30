@@ -109,6 +109,10 @@
           </filesets>
         </configuration>
       </plugin>
+      <plugin> <!-- this way module defines itself as included in kogito-quarkus-test-list artifact -->
+        <groupId>org.l2x6.rpkgtests</groupId>
+        <artifactId>rpkgtests-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 </project>
