@@ -75,12 +75,12 @@ public class SplitNodeVisitor extends AbstractNodeVisitor<Split> {
                         returnValueEvaluator = lambda;
                     }
                     body.addStatement(getFactoryMethod(getNodeId(node), METHOD_CONSTRAINT,
-                                                       new LongLiteralExpr(entry.getKey().getNodeId()),
-                                                       new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
-                                                       new StringLiteralExpr(entry.getKey().getToType()),
-                                                       new StringLiteralExpr(entry.getValue().getDialect()),
-                                                       returnValueEvaluator,
-                                                       new IntegerLiteralExpr(entry.getValue().getPriority())));
+                            new LongLiteralExpr(entry.getKey().getNodeId()),
+                            new StringLiteralExpr(getOrDefault(entry.getKey().getConnectionId(), "")),
+                            new StringLiteralExpr(entry.getKey().getToType()),
+                            new StringLiteralExpr(entry.getValue().getDialect()),
+                            returnValueEvaluator,
+                            new IntegerLiteralExpr(entry.getValue().getPriority())));
                 }
             }
         }

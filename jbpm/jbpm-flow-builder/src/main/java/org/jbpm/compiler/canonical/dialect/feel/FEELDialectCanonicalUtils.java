@@ -43,8 +43,8 @@ public class FEELDialectCanonicalUtils {
         StringLiteralExpr feelConstraintString = new StringLiteralExpr();
         feelConstraintString.setString(entry.getValue().getConstraint());
         return new ObjectCreationExpr(null,
-                                      StaticJavaParser.parseClassOrInterfaceType(FeelReturnValueEvaluator.class.getCanonicalName()),
-                                      new NodeList<>(feelConstraintString));
+                StaticJavaParser.parseClassOrInterfaceType(FeelReturnValueEvaluator.class.getCanonicalName()),
+                new NodeList<>(feelConstraintString));
     }
 
     /**
