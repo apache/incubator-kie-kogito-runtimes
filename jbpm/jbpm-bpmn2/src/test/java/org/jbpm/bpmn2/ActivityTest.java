@@ -1561,6 +1561,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testScriptTaskFEEL() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-ScriptTaskFEEL.bpmn2");
 
