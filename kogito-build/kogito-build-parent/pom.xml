@@ -72,7 +72,7 @@
     <!-- Properties also affecting test execution. -->
     <invoker.skip>false</invoker.skip>
     <archetype.test.skip>false</archetype.test.skip>
-    <rpkg.plugin.working.dir>${java.io.tmpdir}/test-list-fragments/</rpkg.plugin.working.dir>
+    <rpkgtests.plugin.working.dir>${project.root.dir}/target/test-list-fragments/</rpkgtests.plugin.working.dir>
 
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
@@ -677,7 +677,7 @@ limitations under the License.
           <artifactId>rpkgtests-maven-plugin</artifactId>
           <version>${version.rpkgtests.maven.plugin}</version>
           <configuration>
-            <testJarsPath>${rpkg.plugin.working.dir}/${project.artifactId}.xml</testJarsPath>
+            <testJarsPath>${rpkgtests.plugin.working.dir}/${project.artifactId}.xml</testJarsPath>
             <fileSets>
               <fileSet>
                 <directory>${project.basedir}</directory>

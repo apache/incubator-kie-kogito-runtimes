@@ -18,8 +18,6 @@
   <packaging>pom</packaging>
 
   <properties>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
     <test.list.file.location>${project.build.directory}/kogito-quarkus-test-list.xml</test.list.file.location>
   </properties>
 
@@ -45,7 +43,7 @@
               <parameters>
                 <paremeter>
                   <name>input_path</name>
-                  <value>${rpkg.plugin.working.dir}</value>
+                  <value>${rpkgtests.plugin.working.dir}</value>
                 </paremeter>
               </parameters>
             </transformationSet>
