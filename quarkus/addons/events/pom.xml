@@ -16,6 +16,7 @@
 
   <modules>
     <module>decisions</module>
+    <module>rules</module>
     <module>smallrye</module>
   </modules>
 
