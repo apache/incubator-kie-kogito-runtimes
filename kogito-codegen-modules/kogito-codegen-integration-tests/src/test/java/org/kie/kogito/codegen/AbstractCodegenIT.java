@@ -52,6 +52,7 @@ import org.kie.memorycompiler.JavaConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCodegenIT {
@@ -79,7 +80,7 @@ public class AbstractCodegenIT {
     private static final String TEST_JAVA = "src/test/java/";
     private static final String TEST_RESOURCES = "src/test/resources";
 
-    private static final Map<TYPE, BiFunction<KogitoBuildContext, List<String>, Generator>> generatorTypeMap = new HashMap<>();
+    private static final Map<TYPE, BiFunction<KogitoBuildContext, List<Path>, Generator>> generatorTypeMap = new HashMap<>();
 
     private static final String DUMMY_PROCESS_RUNTIME =
             "package org.drools.project.model;\n" +
@@ -122,50 +123,53 @@ public class AbstractCodegenIT {
                     "}";
 
     static {
-        generatorTypeMap.put(TYPE.PROCESS, (context, strings) -> ProcessCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
-        generatorTypeMap.put(TYPE.RULES, (context, strings) -> IncrementalRuleCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
-        generatorTypeMap.put(TYPE.DECISION, (context, strings) -> DecisionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
+        generatorTypeMap.put(TYPE.PROCESS, (context, paths) -> ProcessCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, paths)));
+        generatorTypeMap.put(TYPE.RULES, (context, paths) -> IncrementalRuleCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, paths)));
+        generatorTypeMap.put(TYPE.DECISION, (context, paths) -> DecisionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, paths)));
 
-        generatorTypeMap.put(TYPE.JAVA, (context, strings) -> IncrementalRuleCodegen.ofJavaResources(context, toCollectedResources(TEST_JAVA, strings)));
-        generatorTypeMap.put(TYPE.PREDICTION, (context, strings) -> PredictionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
-        generatorTypeMap.put(TYPE.OPENAPI, (context, strings) -> OpenApiClientCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
+        generatorTypeMap.put(TYPE.JAVA, (context, paths) -> IncrementalRuleCodegen.ofJavaResources(context, toCollectedResources(TEST_JAVA, paths)));
+        generatorTypeMap.put(TYPE.PREDICTION, (context, paths) -> PredictionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, paths)));
+        generatorTypeMap.put(TYPE.OPENAPI, (context, paths) -> OpenApiClientCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, paths)));
     }
 
-    private static Collection<CollectedResource> toCollectedResources(String basePath, List<String> strings) {
-        File[] files = strings
-                .stream()
-                .map(resource -> new File(basePath, resource))
-                .toArray(File[]::new);
-        return CollectedResourceProducer.fromFiles(Paths.get(basePath), files);
-    }
-
-    public static Collection<CollectedResource> toCollectedResources(List<String> strings) {
-        return toCollectedResources(TEST_RESOURCES, strings);
+    protected static Collection<CollectedResource> toCollectedResources(String basePath, List<Path> paths) {
+        final Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromInputStream(paths.stream().filter(p -> p.isAbsolute()).toArray(Path[]::new));
+        collectedResources.addAll(
+                CollectedResourceProducer.fromFiles(Paths.get(basePath), paths.stream().filter(p -> !p.isAbsolute()).map(p -> new File(basePath, p.toString())).toArray(File[]::new)));
+        return collectedResources;
     }
 
     protected Application generateCodeProcessesOnly(String... processes) throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        return generateCodeProcessesOnlyPath(Arrays.stream(processes).map(f -> Paths.get(f)).toArray(Path[]::new));
+    }
+
+    protected Application generateCodeProcessesOnlyPath(Path... processes) throws Exception {
+        Map<TYPE, List<Path>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
-        return generateCode(resourcesTypeMap);
-    }
-
-    protected Application generateCodeRulesOnly(String... rules) throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.RULES, Arrays.asList(rules));
-        return generateCode(resourcesTypeMap);
-    }
-
-    protected Application generateRulesFromJava(String... javaSourceCode) throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.JAVA, Arrays.asList(javaSourceCode));
-        return generateCode(resourcesTypeMap);
-    }
-
-    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap) throws Exception {
         return generateCode(resourcesTypeMap, this.newContext());
     }
 
-    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap, KogitoBuildContext context) throws Exception {
+    protected Application generateCodeRulesOnly(String... rules) throws Exception {
+        Map<TYPE, List<Path>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.RULES, Arrays.stream(rules).map(f -> Path.of(f)).collect(toList()));
+        return generateCode(resourcesTypeMap, this.newContext());
+    }
+
+    protected Application generateRulesFromJava(String... javaSourceCode) throws Exception {
+        Map<TYPE, List<Path>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.JAVA, Arrays.stream(javaSourceCode).map(f -> Path.of(f)).collect(toList()));
+        return generateCode(resourcesTypeMap, this.newContext());
+    }
+
+    protected Application generateCode(Map<TYPE, List<String>> resourcesTypeMap) throws Exception {
+        Map<TYPE, List<Path>> newResourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.entrySet().forEach(e -> {
+            newResourcesTypeMap.put(e.getKey(), e.getValue().stream().map(f -> Path.of(f)).collect(toList()));
+        });
+        return generateCode(newResourcesTypeMap, this.newContext());
+    }
+
+    protected Application generateCode(Map<TYPE, List<Path>> resourcesTypeMap, KogitoBuildContext context) throws Exception {
         ApplicationGenerator appGen = new ApplicationGenerator(context);
 
         for (TYPE type : TYPE.values()) {

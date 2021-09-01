@@ -17,8 +17,10 @@ package org.kie.kogito.codegen.process;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.drools.core.io.impl.FileSystemResource;
+import org.drools.core.io.impl.InputStreamResource;
 import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
@@ -97,7 +100,7 @@ public class ProcessCodegen extends AbstractGenerator {
     public static final Set<String> SUPPORTED_BPMN_EXTENSIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".bpmn", ".bpmn2")));
     private static final String YAML_PARSER = "yml";
     private static final String JSON_PARSER = "json";
-    public static final String SVG_EXPORT_NAME_EXPRESION = "%s-svg.svg";
+    public static final String SVG_EXPORT_NAME_EXPRESSION = "%s-svg.svg";
     public static final Map<String, String> SUPPORTED_SW_EXTENSIONS;
 
     private static final String GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE = "/grafana-dashboard-template/processes/global-operational-dashboard-template.json";
@@ -189,7 +192,7 @@ public class ProcessCodegen extends AbstractGenerator {
         processes.stream().forEach(process -> {
             if (isFilenameValid(process.getId() + ".svg")) {
                 resources.stream()
-                        .filter(r -> r.resource().getSourcePath().endsWith(String.format(SVG_EXPORT_NAME_EXPRESION, fileName)))
+                        .filter(r -> r.resource().getSourcePath().endsWith(String.format(SVG_EXPORT_NAME_EXPRESSION, fileName)))
                         .forEach(svg -> {
                             try {
                                 processSVGMap.put(process.getId(),
@@ -218,24 +221,24 @@ public class ProcessCodegen extends AbstractGenerator {
     }
 
     // used on tests only, do not expose
-    static List<Process> parseProcesses(Collection<File> processFiles) {
+    static List<Process> parseProcesses(Collection<Path> processFiles) throws IOException {
         List<Process> processes = new ArrayList<>();
-        for (File processSourceFile : processFiles) {
-            try {
-                FileSystemResource r = new FileSystemResource(processSourceFile);
-                if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(processSourceFile.getPath()::endsWith)) {
+        for (Path processSourceFile : processFiles) {
+            try (InputStream is = Files.newInputStream(processSourceFile)) {
+                InputStreamResource r = new InputStreamResource(is);
+                if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(processSourceFile.toFile().getPath()::endsWith)) {
                     processes.addAll(parseProcessFile(r));
                 } else {
                     SUPPORTED_SW_EXTENSIONS.entrySet()
                             .stream()
-                            .filter(e -> processSourceFile.getPath().endsWith(e.getKey()))
+                            .filter(e -> processSourceFile.toFile().getPath().endsWith(e.getKey()))
                             .forEach(e -> processes.add(parseWorkflowFile(r, e.getValue())));
                 }
                 if (processes.isEmpty()) {
                     throw new IllegalArgumentException("Unable to process file with unsupported extension: " + processSourceFile);
                 }
             } catch (RuntimeException e) {
-                throw new ProcessCodegenException(processSourceFile.getAbsolutePath(), e);
+                throw new ProcessCodegenException(processSourceFile.toFile().getAbsolutePath(), e);
             }
         }
         return processes;

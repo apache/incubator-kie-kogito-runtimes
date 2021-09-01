@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.codegen.process;
 
+import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +32,16 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.openapi.client.OpenApiClientCodegen;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class OpenApiClientServerlessWorkflowIT extends AbstractCodegenIT {
 
     @ParameterizedTest
     @ValueSource(strings = { "openapi/petstore-classpath.sw.json" })
-    public void openApiSpecInClasspath(final String resource) {
+    public void openApiSpecInClasspath(final String resource) throws Exception {
         final KogitoBuildContext context = this.newContext();
-        final Collection<CollectedResource> resources = toCollectedResources(Collections.singletonList(resource));
+        final Collection<CollectedResource> resources = toCollectedResources("", singletonList(Path.of(Thread.currentThread().getContextClassLoader().getResource(resource).toURI())));
         // OpenApi Generation
         final OpenApiClientCodegen openApiClientCodegen = OpenApiClientCodegen.ofCollectedResources(context, resources);
         assertThat(openApiClientCodegen.getOpenAPISpecResources()).isNotEmpty();
@@ -56,7 +57,7 @@ public class OpenApiClientServerlessWorkflowIT extends AbstractCodegenIT {
     @Test
     public void testPetstoreOpenApiCodeGeneration() throws Exception {
         Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.OPENAPI, Collections.singletonList("openapi/petstore-classpath.sw.json"));
+        resourcesTypeMap.put(TYPE.OPENAPI, singletonList("openapi/petstore-classpath.sw.json"));
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
     }

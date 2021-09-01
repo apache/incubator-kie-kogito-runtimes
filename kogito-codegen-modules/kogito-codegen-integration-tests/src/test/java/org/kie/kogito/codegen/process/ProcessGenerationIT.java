@@ -15,11 +15,9 @@
  */
 package org.kie.kogito.codegen.process;
 
-import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -28,9 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
@@ -58,6 +54,7 @@ import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.jbpm.workflow.core.node.WorkItemNode;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -69,6 +66,7 @@ import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
 
+import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
@@ -105,30 +103,36 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ProcessGenerationIT extends AbstractCodegenIT {
 
     private static final Collection<String> IGNORED_PROCESS_META = Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions");
-    private static final Path BASE_PATH = Paths.get("src/test/resources");
 
-    static Stream<String> processesProvider() throws IOException {
-        Set<String> ignoredFiles = Files.lines(BASE_PATH.resolve("org/kie/kogito/codegen/process/process-generation-test.skip.txt"))
-                .collect(Collectors.toSet());
-        return Files.find(BASE_PATH, 10, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
+    static Stream<Path> processesProvider() throws Exception {
+        URL skipResource = Thread.currentThread().getContextClassLoader().getResource("org/kie/kogito/codegen/process/process-generation-test.skip.txt");
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(".");
+        Path basePath = Path.of(resource.toURI());
+        List<String> ignoredFiles = Files.readAllLines(Path.of(skipResource.toURI()));
+        return Files.find(basePath, 10, ((path, basicFileAttributes) -> basicFileAttributes.isRegularFile()
                 && (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext))
                         || ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet().stream().anyMatch(ext -> path.getFileName().toString().endsWith(ext)))))
-                .map(BASE_PATH::relativize)
-                .map(Path::toString)
-                .filter(p -> ignoredFiles.stream().noneMatch(ignored -> p.contains(ignored)));
+                .filter(p -> ignoredFiles.stream().noneMatch(ignored -> p.toString().contains(ignored)));
+    }
+
+    @AfterAll
+    public static void clear() {
+        System.clearProperty("jbpm.enable.multi.con");
+    }
+
+    public void testProcessGeneration(String processFile) throws Exception {
+        testProcessGeneration(Path.of(Thread.currentThread().getContextClassLoader().getResource(processFile).toURI()));
     }
 
     @ParameterizedTest
     @MethodSource("processesProvider")
-    public void testProcessGeneration(String processFile) throws Exception {
+    public void testProcessGeneration(Path processFile) throws Exception {
         // for some tests this needs to be set to true
         System.setProperty("jbpm.enable.multi.con", "true");
-        List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
-                .map(resource -> new File(BASE_PATH.toString(), resource))
-                .collect(Collectors.toList()));
+        List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(singleton(processFile));
         RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
 
-        Application app = generateCodeProcessesOnly(processFile);
+        Application app = generateCodeProcessesOnlyPath(processFile);
         AbstractProcess<? extends Model> process = (AbstractProcess<? extends Model>) app.get(Processes.class).processById(expected.getId());
         assertThat(process).isNotNull().isSameAs(app.get(Processes.class).processById(expected.getId()));
 
@@ -152,7 +156,6 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
         assertMetadata(expected.getMetaData(), current.getMetaData(), IGNORED_PROCESS_META);
 
         assertNodes(expected.getNodes(), current.getNodes());
-        System.clearProperty("jbpm.enable.multi.con");
     }
 
     @Test

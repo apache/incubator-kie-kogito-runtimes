@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.codegen;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -305,23 +306,23 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     @Test
     public void testRuleUnitNoPropertyReactivity() throws Exception {
         // KOGITO-5101
-        checckPropertyReactvity(false);
+        checkPropertyReactivity(false);
     }
 
     @Test
     public void testRuleUnitWithPropertyReactivity() throws Exception {
         // KOGITO-5101
-        checckPropertyReactvity(true);
+        checkPropertyReactivity(true);
     }
 
-    private void checckPropertyReactvity(boolean usePropertyReactivity) throws Exception {
+    private void checkPropertyReactivity(boolean usePropertyReactivity) throws Exception {
         KogitoBuildContext context = newContext();
         if (!usePropertyReactivity) {
             context.setApplicationProperty(PropertySpecificOption.PROPERTY_NAME, PropertySpecificOption.DISABLED.toString());
         }
 
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.RULES, Arrays.asList("org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl"));
+        Map<TYPE, List<Path>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.RULES, Arrays.asList(Path.of("org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl")));
 
         Application application = generateCode(resourcesTypeMap, context);
 

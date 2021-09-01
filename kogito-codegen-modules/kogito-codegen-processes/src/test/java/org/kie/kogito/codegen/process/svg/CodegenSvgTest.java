@@ -50,7 +50,7 @@ public class CodegenSvgTest {
         assertThat(collectedResources.stream().anyMatch(f -> f.resource().getSourcePath().endsWith(TEST_PROCESS_SOURCE))).isTrue();
         assertThat(collectedResources.stream().anyMatch(f -> f.resource().getSourcePath().endsWith(TEST_PROCESS_GENERATED_SVG_SOURCE))).isTrue();
 
-        assertThat(collectedResources.stream().anyMatch(f -> f.resource().getSourcePath().endsWith(String.format(ProcessCodegen.SVG_EXPORT_NAME_EXPRESION, "hiring")))).isTrue();
+        assertThat(collectedResources.stream().anyMatch(f -> f.resource().getSourcePath().endsWith(String.format(ProcessCodegen.SVG_EXPORT_NAME_EXPRESSION, "hiring")))).isTrue();
 
         ProcessCodegen codeGenerator = ProcessCodegen.ofCollectedResources(context, collectedResources);
 

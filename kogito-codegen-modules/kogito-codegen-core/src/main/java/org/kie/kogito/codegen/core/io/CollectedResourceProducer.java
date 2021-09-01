@@ -24,12 +24,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.FileSystemResource;
+import org.drools.core.io.impl.InputStreamResource;
 import org.drools.core.io.internal.InternalResource;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -88,6 +90,18 @@ public class CollectedResourceProducer {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public static Collection<CollectedResource> fromInputStream(Path... paths) {
+        return Arrays.stream(paths).map(path -> {
+            try {
+                InternalResource resource = new InputStreamResource(Files.newInputStream(path));
+                resource.setSourcePath(path.toString());
+                return toCollectedResource(path, path.toFile().getName(), resource);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
     }
 
     /**
