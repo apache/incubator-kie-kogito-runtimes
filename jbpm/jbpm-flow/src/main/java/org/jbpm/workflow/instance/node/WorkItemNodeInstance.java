@@ -71,6 +71,7 @@ import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.GroupedNamedDataType;
 import org.kie.kogito.process.IOEventDescription;
 import org.kie.kogito.process.NamedDataType;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -171,7 +172,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             try {
                 handler.run();
             } catch (WorkItemHandlerNotFoundException wihnfe) {
-                getProcessInstance().setState(ProcessInstance.STATE_ABORTED);
+                getProcessInstance().setState(STATE_ABORTED);
                 throw wihnfe;
             } catch (ProcessWorkItemHandlerException handlerException) {
                 if (triggerCount++ < handlerException.getRetries() + 1) {
@@ -180,15 +181,10 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 } else {
                     throw handlerException;
                 }
+            } catch (WorkItemExecutionException e) {
+                handleException(e.getErrorCode(), e);
             } catch (Exception e) {
-                String exceptionName = e.getClass().getName();
-                ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, exceptionName);
-                if (exceptionScopeInstance == null) {
-                    throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
-                }
-                // workItemId must be set otherwise cancel activity will not find the right work item
-                this.workItemId = workItem.getStringId();
-                exceptionScopeInstance.handleException(exceptionName, e);
+                handleException(e.getClass().getName(), e);
             }
         }
     }
