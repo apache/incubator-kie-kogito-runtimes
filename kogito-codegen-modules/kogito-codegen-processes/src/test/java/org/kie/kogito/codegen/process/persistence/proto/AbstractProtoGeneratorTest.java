@@ -812,7 +812,7 @@ public abstract class AbstractProtoGeneratorTest<T> {
             boolean found = false;
             for (ProtoField subClassField : subClass.getFields()) {
                 assertThat(subClassField).isNotNull();
-                if(field.getName().equals(subClassField.getName())) {
+                if (field.getName().equals(subClassField.getName())) {
                     assertThat(field.getType()).isEqualTo(subClassField.getType());
                     found = true;
                     break;

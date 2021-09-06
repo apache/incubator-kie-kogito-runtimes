@@ -177,6 +177,7 @@ public class JandexProtoGenerator extends AbstractProtoGenerator<ClassInfo> {
 
     /**
      * ClassInfo.fields() returns only fields of current class so this method fetch fields from all hierarchy
+     * 
      * @param clazz
      * @return
      */
