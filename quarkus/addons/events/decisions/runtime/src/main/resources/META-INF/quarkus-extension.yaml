@@ -5,7 +5,7 @@ metadata:
     - kogito
     - decisions
     - DMN
-  # TODO: add DMN guide
-  guide: https://quarkus.io/guides/kogito
+    - Kafka
+  guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"

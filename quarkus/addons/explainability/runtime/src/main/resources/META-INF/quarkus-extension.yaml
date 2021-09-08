@@ -6,7 +6,6 @@ metadata:
     - dmn
     - decisions
     - explainability
-  # TODO: add decisions guide
-  guide: https://quarkus.io/guides/kogito
+  guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"

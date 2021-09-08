@@ -5,6 +5,7 @@ metadata:
     - kogito
     - persistence
     - mongodb
+    - process
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"

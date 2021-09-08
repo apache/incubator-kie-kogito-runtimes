@@ -5,6 +5,7 @@ metadata:
     - kogito
     - persistence
     - kafka
+    - process
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"

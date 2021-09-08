@@ -5,6 +5,7 @@ metadata:
     - kogito
     - persistence
     - infinispan
+    - process
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"

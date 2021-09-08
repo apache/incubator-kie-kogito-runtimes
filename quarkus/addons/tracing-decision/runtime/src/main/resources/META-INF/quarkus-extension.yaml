@@ -6,7 +6,6 @@ metadata:
     - decisions
     - dmn
     - tracing
-  # TODO: add DMN guide
-  guide: https://quarkus.io/guides/kogito
+  guide: https://quarkus.io/guides/kogito-dmn
   categories:
     - "business-automation"

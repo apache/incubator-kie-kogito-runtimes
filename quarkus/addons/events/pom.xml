@@ -16,7 +16,6 @@
 
   <modules>
     <module>decisions</module>
-    <module>smallrye</module>
   </modules>
 
   <profiles>

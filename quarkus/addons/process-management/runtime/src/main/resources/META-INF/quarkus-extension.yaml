@@ -1,5 +1,5 @@
 name: Kogito Add-On Process Management
-description: Kogito Process Management console support
+description: Kogito Process Management REST API
 metadata:
   keywords:
     - kogito

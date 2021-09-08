@@ -1,9 +1,9 @@
-name: Kogito Add-On Jobs Management
+name: Kogito Add-On Jobs Service
 description: Kogito Add-On for to interact with Kogito Jobs Service
 metadata:
   keywords:
     - kogito
-    - processes
+    - process
     - bpmn
     - jobs
   # TODO: add processes guide
