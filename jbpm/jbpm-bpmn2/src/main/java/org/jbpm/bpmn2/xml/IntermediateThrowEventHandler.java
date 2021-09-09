@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.IntermediateLink;
@@ -46,6 +47,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import static java.lang.String.format;
 import static org.jbpm.bpmn2.xml.ProcessHandler.createJavaAction;
 
 public class IntermediateThrowEventHandler extends AbstractNodeHandler {
@@ -247,10 +249,12 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
                 if (messages == null) {
                     throw new ProcessParsingValidationException("No messages found");
                 }
+                if (StringUtils.isEmpty(messageRef)) {
+                    throw new ProcessParsingValidationException(format("Node '%s' message name is missing", node.getName() == null ? node.getId() : node.getName()));
+                }
                 Message message = messages.get(messageRef);
                 if (message == null) {
-                    throw new ProcessParsingValidationException(
-                            "Could not find message " + messageRef);
+                    throw new ProcessParsingValidationException(format("Node '%s' message %s is missing data assignment", node.getName() == null ? node.getId() : node.getName(), messageRef));
                 }
                 String variable = (String) actionNode.getMetaData(MAPPING_VARIABLE_KEY);
                 Variable v = (Variable) ((ProcessBuildData) parser.getData()).getMetaData("Variable");

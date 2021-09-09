@@ -68,7 +68,8 @@ public class BoundaryEventNodeVisitor extends AbstractNodeVisitor<BoundaryEventN
                     (String) nodeMetaData.get(TRIGGER_TYPE),
                     (String) nodeMetaData.get(MESSAGE_TYPE),
                     node.getVariableName(),
-                    String.valueOf(node.getId())).validate());
+                    node,
+                    metadata.getProcessId()).validate(variableScope));
         } else if (EVENT_TYPE_COMPENSATION.equalsIgnoreCase(eventType) && node.getAttachedToNodeId() != null) {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ADD_COMPENSATION_HANDLER, new StringLiteralExpr(node.getAttachedToNodeId())));
         }

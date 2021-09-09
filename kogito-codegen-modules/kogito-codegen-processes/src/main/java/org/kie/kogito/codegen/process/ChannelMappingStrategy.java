@@ -22,5 +22,7 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 public interface ChannelMappingStrategy {
+
     Map<TriggerMetaData, String> getChannelMapping(KogitoBuildContext kogitoBuildContext, Collection<TriggerMetaData> metadata);
+
 }

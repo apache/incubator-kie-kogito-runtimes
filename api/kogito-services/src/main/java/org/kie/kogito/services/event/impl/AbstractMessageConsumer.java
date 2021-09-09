@@ -43,9 +43,9 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
     private Class<?> outputClass;
     private EventConverter<String> eventConverter;
 
-    // in general we should favor the non-empty constructor
+    // in general, we should favor the non-empty constructor
     // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
-    // use this in conjuction with setParams()
+    // use this in conjunction with setParams()
     public AbstractMessageConsumer() {
     }
 

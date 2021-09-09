@@ -20,11 +20,16 @@ import java.util.Objects;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.util.StringUtils;
+import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.process.validation.ValidationException;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
@@ -45,6 +50,7 @@ import com.github.javaparser.ast.type.UnknownType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static com.github.javaparser.StaticJavaParser.parseType;
+import static java.lang.String.format;
 import static org.jbpm.compiler.canonical.AbstractVisitor.KCONTEXT_VAR;
 import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
 import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
@@ -67,16 +73,18 @@ public class TriggerMetaData {
     private String dataType;
     // reference in the model of the process the event should be mapped to
     private String modelRef;
-    // reference to owner of the trigger usually node
-    private String ownerId;
+    // reference to node owner of the trigger
+    private Node node;
 
-    public TriggerMetaData(String name, String type, String dataType, String modelRef, String ownerId) {
-        super();
+    private String processId;
+
+    public TriggerMetaData(String name, String type, String dataType, String modelRef, Node node, String processId) {
         this.name = name;
         this.type = TriggerType.valueOf(type);
         this.dataType = dataType;
         this.modelRef = modelRef;
-        this.ownerId = ownerId;
+        this.node = node;
+        this.processId = processId;
     }
 
     public String getName() {
@@ -91,10 +99,6 @@ public class TriggerMetaData {
         return type;
     }
 
-    public void setType(TriggerType type) {
-        this.type = type;
-    }
-
     public String getDataType() {
         return dataType;
     }
@@ -107,28 +111,62 @@ public class TriggerMetaData {
         return modelRef;
     }
 
-    public void setModelRef(String modelRef) {
-        this.modelRef = modelRef;
-    }
-
     public String getOwnerId() {
-        return ownerId;
+        return String.valueOf(node.getId());
     }
 
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
-    }
+    public TriggerMetaData validate(VariableScope variableScope) {
+        String nodeName = node.getName() == null ? String.valueOf(node.getId()) : node.getName();
+        if (TriggerType.ConsumeMessage.equals(type)) {
 
-    public TriggerMetaData validate() {
-        if (TriggerType.ConsumeMessage.equals(type) || TriggerType.ProduceMessage.equals(type)) {
-
-            if (StringUtils.isEmpty(name) ||
-                    StringUtils.isEmpty(dataType) ||
-                    StringUtils.isEmpty(modelRef)) {
-                throw new IllegalArgumentException("Message Trigger information is not complete " + this);
+            if (StringUtils.isEmpty(name)) {
+                throw new ValidationException(processId, format("Node '%s' is missing message name", nodeName));
             }
+
+            if (StringUtils.isEmpty(dataType)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' is missing data type", nodeName, name));
+            }
+
+            if (StringUtils.isEmpty(modelRef)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' is missing target variable", nodeName, name));
+            }
+
+            Variable variable = variableScope.findVariable(modelRef);
+            if (variable.getType() == null) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' trigger target variable '%s' has no data type assigned.", nodeName, name, modelRef));
+            }
+
+            DataType dataType = DataTypeResolver.fromType(this.dataType, Thread.currentThread().getContextClassLoader());
+            if (!variable.getType().equals(dataType)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' trigger target variable '%s' has different data type '%s', from expected '%s'.",
+                        nodeName, name, modelRef, variable.getType().getStringType(), this.dataType));
+            }
+        } else if (TriggerType.ProduceMessage.equals(type)) {
+            if (StringUtils.isEmpty(name)) {
+                throw new ValidationException(processId, format("Node '%s' is missing message name", nodeName));
+            }
+
+            if (StringUtils.isEmpty(dataType)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' is missing data type", nodeName, name));
+            }
+
+            if (StringUtils.isEmpty(modelRef)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' is missing source variable", nodeName, name));
+            }
+
+            Variable variable = variableScope.findVariable(modelRef);
+            if (variable.getType() == null) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' trigger source variable '%s' has no data type assigned.", nodeName, name, modelRef));
+            }
+
+            DataType dataType = DataTypeResolver.fromType(this.dataType, Thread.currentThread().getContextClassLoader());
+            if (!variable.getType().equals(dataType)) {
+                throw new ValidationException(processId, format("Node '%s' message '%s' trigger source variable '%s' has different data type '%s', from expected '%s'.",
+                        nodeName, name, modelRef, variable.getType().getStringType(), dataType));
+            }
+
         } else if (TriggerType.Signal.equals(type) && StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException("Signal Trigger information is not complete " + this);
+            throw new ValidationException(processId, format("Node '%s' is missing signal name", nodeName, this));
         }
 
         return this;
@@ -145,7 +183,7 @@ public class TriggerMetaData {
                                         parseClassOrInterfaceType(String.class.getCanonicalName()), new NullLiteralExpr())));
     }
 
-    public static LambdaExpr buildLambdaExpr(Node node, ProcessMetaData metadata) {
+    public static LambdaExpr buildLambdaExpr(Node node, ProcessMetaData metadata, VariableScope variableScope) {
         Map<String, Object> nodeMetaData = node.getMetaData();
         String messageName = (String) nodeMetaData.get(TRIGGER_REF);
         TriggerMetaData triggerMetaData = new TriggerMetaData(
@@ -153,8 +191,8 @@ public class TriggerMetaData {
                 (String) nodeMetaData.get(TRIGGER_TYPE),
                 (String) nodeMetaData.get(MESSAGE_TYPE),
                 (String) nodeMetaData.get(MAPPING_VARIABLE),
-                String.valueOf(node.getId()))
-                        .validate();
+                node,
+                metadata.getProcessId()).validate(variableScope);
         metadata.addTrigger(triggerMetaData);
         NameExpr kExpr = new NameExpr(KCONTEXT_VAR);
 
@@ -220,7 +258,7 @@ public class TriggerMetaData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataType, modelRef, name, ownerId, type);
+        return Objects.hash(dataType, modelRef, name, node, type);
     }
 
     @Override
@@ -231,12 +269,18 @@ public class TriggerMetaData {
             return false;
         TriggerMetaData other = (TriggerMetaData) obj;
         return Objects.equals(dataType, other.dataType) && Objects.equals(modelRef, other.modelRef) && Objects.equals(
-                name, other.name) && Objects.equals(ownerId, other.ownerId) && type == other.type;
+                name, other.name) && Objects.equals(node, other.node) && type == other.type;
     }
 
     @Override
     public String toString() {
-        return "TriggerMetaData [name=" + name + ", type=" + type + ", dataType=" + dataType + ", modelRef=" +
-                modelRef + ", ownerId=" + ownerId + "]";
+        return "TriggerMetaData [" +
+                "name='" + name + '\'' +
+                ", type=" + type +
+                ", dataType='" + dataType + '\'' +
+                ", modelRef='" + modelRef + '\'' +
+                ", node=" + node +
+                ", processId='" + processId + '\'' +
+                ']';
     }
 }

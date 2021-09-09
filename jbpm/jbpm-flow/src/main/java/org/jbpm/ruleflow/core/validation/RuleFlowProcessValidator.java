@@ -738,8 +738,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         List<CompositeNode> compositeNodes = new ArrayList<>();
         for (int i = 0; i < nodes.length; i++) {
             final org.kie.api.definition.process.Node node = nodes[i];
-            processNodes.put(node,
-                    Boolean.FALSE);
+            processNodes.put(node, Boolean.FALSE);
             if (node instanceof EventNode) {
                 eventNodes.add(node);
             }
@@ -750,22 +749,19 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         if (isDynamic) {
             for (org.kie.api.definition.process.Node node : nodes) {
                 if (node.getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE).isEmpty()) {
-                    processNode(node,
-                            processNodes);
+                    processNode(node, processNodes);
                 }
             }
         } else {
             final List<org.kie.api.definition.process.Node> start = RuleFlowProcess.getStartNodes(nodes);
             if (start != null) {
                 for (org.kie.api.definition.process.Node s : start) {
-                    processNode(s,
-                            processNodes);
+                    processNode(s, processNodes);
                 }
             }
             if (container instanceof CompositeNode) {
                 for (CompositeNode.NodeAndType nodeAndTypes : ((CompositeNode) container).getLinkedIncomingNodes().values()) {
-                    processNode(nodeAndTypes.getNode(),
-                            processNodes);
+                    processNode(nodeAndTypes.getNode(), processNodes);
                 }
             }
         }

@@ -67,7 +67,7 @@ public class EndNodeVisitor extends AbstractNodeVisitor<EndNode> {
             LambdaExpr lambda = TriggerMetaData.buildCompensationLambdaExpr(compensateNode);
             body.addStatement(getFactoryMethod(getNodeId(node), ActionNodeFactory.METHOD_ACTION, lambda));
         } else if (node.getMetaData(TRIGGER_REF) != null) {
-            LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata);
+            LambdaExpr lambda = TriggerMetaData.buildLambdaExpr(node, metadata, variableScope);
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, lambda));
         } else if (node.getMetaData(REF) != null && EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_ACTION, TriggerMetaData.buildAction((String) node.getMetaData(REF),

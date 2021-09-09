@@ -24,9 +24,7 @@ import org.jbpm.process.core.datatype.DataType;
 /**
  * Representation of a float datatype.
  */
-public final class FloatDataType
-        implements
-        DataType {
+public final class FloatDataType implements DataType {
 
     private static final long serialVersionUID = 510l;
 

@@ -15,7 +15,6 @@
  */
 package org.jbpm.compiler.canonical;
 
-import java.text.MessageFormat;
 import java.util.Map;
 
 import org.jbpm.process.core.context.variable.Variable;
@@ -58,21 +57,13 @@ public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
             metadata.addSignal(node.getType(), variable != null ? variable.getType().getStringType() : null);
         } else if (EVENT_TYPE_MESSAGE.equals(node.getMetaData(EVENT_TYPE))) {
             Map<String, Object> nodeMetaData = node.getMetaData();
-            try {
-                TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
-                        (String) nodeMetaData.get(TRIGGER_TYPE),
-                        (String) nodeMetaData.get(MESSAGE_TYPE),
-                        node.getVariableName(),
-                        String.valueOf(node.getId())).validate();
-                metadata.addTrigger(triggerMetaData);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException(
-                        MessageFormat.format(
-                                "Invalid parameters for event node \"{0}\": {1}",
-                                node.getName(),
-                                e.getMessage()),
-                        e);
-            }
+            TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
+                    (String) nodeMetaData.get(TRIGGER_TYPE),
+                    (String) nodeMetaData.get(MESSAGE_TYPE),
+                    node.getVariableName(),
+                    node,
+                    metadata.getProcessId()).validate(variableScope);
+            metadata.addTrigger(triggerMetaData);
         }
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));

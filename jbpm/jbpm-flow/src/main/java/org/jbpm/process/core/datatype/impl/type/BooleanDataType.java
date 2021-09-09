@@ -24,9 +24,7 @@ import org.jbpm.process.core.datatype.DataType;
 /**
  * Representation of a boolean datatype.
  */
-public final class BooleanDataType
-        implements
-        DataType {
+public final class BooleanDataType implements DataType {
 
     private static final long serialVersionUID = 510l;
 

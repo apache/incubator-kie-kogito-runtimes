@@ -62,7 +62,7 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
                     new IntegerLiteralExpr(node.getTimer().getTimeType())));
 
         } else if (node.getTriggers() != null && !node.getTriggers().isEmpty()) {
-            TriggerMetaData triggerMetaData = buildTriggerMetadata(node);
+            TriggerMetaData triggerMetaData = buildTriggerMetadata(node, variableScope, metadata.getProcessId());
             metadata.addTrigger(triggerMetaData);
             handleSignal(node, node.getMetaData(), body, variableScope, metadata);
         } else {
@@ -71,12 +71,12 @@ public class StartNodeVisitor extends AbstractNodeVisitor<StartNode> {
         }
     }
 
-    private TriggerMetaData buildTriggerMetadata(StartNode node) {
+    private TriggerMetaData buildTriggerMetadata(StartNode node, VariableScope variableScope, String processId) {
         return new TriggerMetaData((String) node.getMetaData(TRIGGER_REF),
                 (String) node.getMetaData(TRIGGER_TYPE),
                 (String) node.getMetaData(MESSAGE_TYPE),
                 (String) node.getMetaData(TRIGGER_MAPPING),
-                String.valueOf(node.getId())).validate();
+                node, processId).validate(variableScope);
     }
 
     protected void handleSignal(StartNode startNode, Map<String, Object> nodeMetaData, BlockStmt body, VariableScope variableScope, ProcessMetaData metadata) {
