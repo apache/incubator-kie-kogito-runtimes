@@ -16,7 +16,6 @@
 
 package org.kie.kogito.incubation.common;
 
-import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -25,15 +24,15 @@ import java.util.Objects;
  * Components should extend this class to get a default base implementation of their
  * LocalId.
  */
-public abstract class PathLocalId implements LocalId {
-    private final Path path;
+public abstract class LocalUriId implements LocalId {
+    private final LocalUri path;
 
-    public PathLocalId(Path path) {
+    public LocalUriId(LocalUri path) {
         this.path = path;
     }
 
     @Override
-    public Path asPath() {
+    public LocalUri asLocalUri() {
         return path;
     }
 
@@ -44,14 +43,14 @@ public abstract class PathLocalId implements LocalId {
 
     @Override
     public String toString() {
-        return String.format("PathLocalId(%s)", path);
+        return String.format("LocalUriId(%s)", path);
     }
 
     @Override
     public boolean equals(Object o) {
         return this == o ||
                 o instanceof LocalId &&
-                        Objects.equals(path, ((Id) o).toLocalId().asPath());
+                        Objects.equals(path, ((Id) o).toLocalId().asLocalUri());
     }
 
     @Override

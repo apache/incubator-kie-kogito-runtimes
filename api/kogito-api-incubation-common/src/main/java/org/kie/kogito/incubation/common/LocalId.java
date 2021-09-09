@@ -16,11 +16,9 @@
 
 package org.kie.kogito.incubation.common;
 
-import java.nio.file.Path;
-
 /**
  * An identifier for a local resource
  */
 public interface LocalId extends Id {
-    Path asPath();
+    LocalUri asLocalUri();
 }

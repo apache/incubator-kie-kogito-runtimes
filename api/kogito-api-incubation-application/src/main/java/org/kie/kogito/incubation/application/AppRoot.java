@@ -15,11 +15,10 @@
  */
 package org.kie.kogito.incubation.application;
 
-import java.nio.file.Paths;
-
 import org.kie.kogito.incubation.common.ComponentRoot;
 import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.PathLocalId;
+import org.kie.kogito.incubation.common.LocalUri;
+import org.kie.kogito.incubation.common.LocalUriId;
 
 /**
  * Root path of an application.
@@ -32,12 +31,12 @@ import org.kie.kogito.incubation.common.PathLocalId;
  * Each component provides a fluent builder for an {@link Id} that is specific
  * to that component.
  */
-public abstract class AppRoot extends PathLocalId implements Id {
+public abstract class AppRoot extends LocalUriId implements Id {
 
     private final String name;
 
     protected AppRoot(String name) {
-        super(Paths.get("/"));
+        super(LocalUri.Root);
         this.name = name;
     }
 
