@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.process.impl;
 
+import org.kie.kogito.async.AsyncExecutor;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessEventListenerConfig;
@@ -32,23 +33,27 @@ public class StaticProcessConfig implements ProcessConfig {
     private final SignalManagerHub signalManager;
     private final UnitOfWorkManager unitOfWorkManager;
     private final JobsService jobsService;
+    private final AsyncExecutor asyncExecutor;
 
     public StaticProcessConfig(
             WorkItemHandlerConfig workItemHandlerConfig,
             ProcessEventListenerConfig processEventListenerConfig,
             UnitOfWorkManager unitOfWorkManager,
-            JobsService jobsService) {
+            JobsService jobsService,
+            AsyncExecutor asyncExecutor) {
         this.unitOfWorkManager = unitOfWorkManager;
         this.workItemHandlerConfig = workItemHandlerConfig;
         this.processEventListenerConfig = processEventListenerConfig;
         this.signalManager = new DefaultSignalManagerHub();
         this.jobsService = jobsService;
+        this.asyncExecutor = asyncExecutor;
     }
 
     public StaticProcessConfig() {
         this(new DefaultWorkItemHandlerConfig(),
                 new DefaultProcessEventListenerConfig(),
                 new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()),
+                null,
                 null);
     }
 
@@ -75,5 +80,10 @@ public class StaticProcessConfig implements ProcessConfig {
     @Override
     public JobsService jobsService() {
         return jobsService;
+    }
+
+    @Override
+    public AsyncExecutor asyncExecutor() {
+        return asyncExecutor;
     }
 }

@@ -52,6 +52,7 @@ public class ForEachNode extends CompositeContextNode {
         split.setName("ForEachSplit");
         split.setMetaData("hidden", true);
         split.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:split");
+        //split.setMetaData(CUSTOM_ASYNC, getMetaData(CUSTOM_ASYNC));
         super.addNode(split);
         super.linkIncomingConnections(
                 Node.CONNECTION_DEFAULT_TYPE,
