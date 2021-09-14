@@ -46,7 +46,7 @@ public class CloudEventConsumer<D, M extends Model, T extends AbstractProcessDat
     }
 
     @Override
-    public CompletionStage<?> consume(Application application, Process<M> process, Object object, String trigger) {
+    public CompletionStage<Void> consume(Application application, Process<M> process, Object object, String trigger) {
         T cloudEvent = (T) object;
         M model = function.apply(cloudEvent.getData());
         String simpleName = cloudEvent.getClass().getSimpleName();
@@ -65,7 +65,8 @@ public class CloudEventConsumer<D, M extends Model, T extends AbstractProcessDat
                     trigger);
             Optional<ProcessInstance<M>> instance = process.instances().findById(cloudEvent.getKogitoReferenceId());
             if (instance.isPresent()) {
-                return CompletableFuture.completedFuture(processService.signalProcessInstance((Process) process, cloudEvent.getKogitoReferenceId(), cloudEvent.getData(), "Message-" + trigger));
+                return CompletableFuture.completedFuture(processService.signalProcessInstance((Process) process, cloudEvent.getKogitoReferenceId(), cloudEvent.getData(), "Message-" + trigger))
+                        .thenApply(o -> null);
             } else {
                 logger.warn("Process instance with id '{}' not found for triggering signal '{}', starting a new one",
                         cloudEvent.getKogitoReferenceId(),

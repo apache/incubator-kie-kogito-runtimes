@@ -22,6 +22,6 @@ import org.kie.kogito.process.Process;
 
 public interface EventConsumer<M> {
 
-    CompletionStage<?> consume(Application application, Process<M> process, Object payload, String trigger);
+    CompletionStage<Void> consume(Application application, Process<M> process, Object payload, String trigger);
 
 }

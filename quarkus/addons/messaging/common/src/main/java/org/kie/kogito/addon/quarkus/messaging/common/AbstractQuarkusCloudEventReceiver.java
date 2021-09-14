@@ -15,26 +15,17 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.addon.cloudevents.Subscription;
-import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.SubscriptionInfo;
+import org.kie.kogito.event.AbstractEventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver {
+public abstract class AbstractQuarkusCloudEventReceiver extends AbstractEventReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuarkusCloudEventReceiver.class);
-
-    private Collection<Subscription<Object>> consumers = new CopyOnWriteArrayList<>();
 
     public CompletionStage<?> produce(final String message) {
         return produce(message, null);
@@ -52,27 +43,7 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
     }
 
     private CompletionStage<?> produce(final String message, BiConsumer<Object, Throwable> callback) {
-        CompletionStage<?> result = CompletableFuture.completedFuture(null);
-        CompletionStage<?> future = result;
-        for (Subscription<Object> subscription : consumers) {
-            Object object;
-            try {
-                object = subscription.getInfo().getConverter().apply(message, subscription.getInfo().getOutputClass());
-                future = future.thenCompose(f -> subscription.getConsumer().apply(object));
-            } catch (IOException e) {
-                LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
-                        subscription.getInfo().getType(), e.getMessage());
-            }
-        }
-        if (callback != null) {
-            future.whenComplete(callback);
-        }
-        return result;
-    }
-
-    @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<String, T> info) {
-        consumers.add(new Subscription(consumer, info));
+        CompletionStage<?> forwardResult = forwardToSubscribers(message);
+        return callback == null ? forwardResult : forwardResult.whenComplete(callback);
     }
 }

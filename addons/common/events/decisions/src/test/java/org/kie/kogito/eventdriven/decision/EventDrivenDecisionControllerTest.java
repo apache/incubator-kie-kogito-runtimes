@@ -32,6 +32,7 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.event.AbstractEventReceiver;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.mockito.ArgumentCaptor;
@@ -146,6 +147,7 @@ class EventDrivenDecisionControllerTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private EventDrivenDecisionController controller;
+    private TestEventReceiver testEventReceiver;
     private EventEmitter eventEmitterMock;
     private DecisionModel decisionModelSpy;
     private DecisionModels decisionModelsMock;
@@ -158,13 +160,15 @@ class EventDrivenDecisionControllerTest {
 
     @BeforeEach
     void beforeEach() {
+        testEventReceiver = new TestEventReceiver();
         decisionModelsMock = mock(DecisionModels.class);
         eventEmitterMock = mock(EventEmitter.class);
 
         // by default there's no execution id supplier, if needed it will be overridden in the specific test
         mockDecisionModel();
 
-        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, mock(EventReceiver.class));
+        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, testEventReceiver);
+        controller.setup();
     }
 
     @Test
@@ -188,14 +192,8 @@ class EventDrivenDecisionControllerTest {
     }
 
     @Test
-    void testHandleEventWithMalformedInput() {
-        controller.handleEvent("this-is-not-a-cloudevent");
-        verify(eventEmitterMock, never()).emit(any(), any(), any());
-    }
-
-    @Test
     void testHandleEventWithIgnoredCloudEvent() {
-        controller.handleEvent(CLOUDEVENT_IGNORED);
+        testEventReceiver.accept(CLOUDEVENT_IGNORED);
         verify(eventEmitterMock, never()).emit(any(), any(), any());
     }
 
@@ -309,7 +307,7 @@ class EventDrivenDecisionControllerTest {
             ArgumentCaptor<Map> eventCaptor = ArgumentCaptor.forClass(Map.class);
 
             String inputEvent = cloudEventOkWith(requestData, fullResult, filteredCtx);
-            controller.handleEvent(inputEvent);
+            testEventReceiver.accept(inputEvent);
 
             verify(eventEmitterMock).emit(eventCaptor.capture(), any(), any());
 
@@ -438,6 +436,12 @@ class EventDrivenDecisionControllerTest {
 
         public String getData() {
             return data;
+        }
+    }
+
+    private static class TestEventReceiver extends AbstractEventReceiver {
+        public void accept(String message) {
+            forwardToSubscribers(message);
         }
     }
 }

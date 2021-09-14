@@ -30,7 +30,7 @@ public interface EventReceiver {
      * Helper method to subscribe to the events.
      * 
      * @param consumer the consumer that will receive the events.
-     * @param clazz the type of object the event contains
+     * @param info subscription info for message conversion
      */
-    <T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<String, T> converter);
+    <T> void subscribe(Function<T, CompletionStage<Void>> consumer, SubscriptionInfo<String, T> info);
 }
