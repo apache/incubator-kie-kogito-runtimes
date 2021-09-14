@@ -15,6 +15,10 @@
       <artifactId>quarkus-smallrye-reactive-messaging-kafka-deployment</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-mailer-deployment</artifactId>
       <!-- ask for Quarkus team to add this to their BOM -->

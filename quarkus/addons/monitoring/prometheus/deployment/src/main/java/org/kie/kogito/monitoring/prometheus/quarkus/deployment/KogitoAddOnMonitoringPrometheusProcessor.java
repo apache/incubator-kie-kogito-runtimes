@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.monitoring.prometheus.quarkus.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnMonitoringPrometheusProcessor {
+class KogitoAddOnMonitoringPrometheusProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-monitoring-prometheus-extension";
 

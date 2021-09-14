@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.addons.quarkus.persistence.filesystem.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnPersistenceFileSystemProcessor {
+class KogitoAddOnPersistenceFileSystemProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-persistence-filesystem-extension";
 

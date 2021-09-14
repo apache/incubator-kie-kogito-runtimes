@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.addons.quarkus.persistence.postgresql.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnPersistencePostgreSQLProcessor {
+class KogitoAddOnPersistencePostgreSQLProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-persistence-postgresql-extension";
 

@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.mail.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnMailProcessor {
+class KogitoAddOnMailProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-mail-extension";
+
+    public KogitoAddOnMailProcessor() {
+        super(KogitoCapability.PROCESSES);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

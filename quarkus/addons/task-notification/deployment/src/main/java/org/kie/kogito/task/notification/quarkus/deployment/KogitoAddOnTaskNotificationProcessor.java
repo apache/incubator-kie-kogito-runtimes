@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.task.notification.quarkus.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnTaskNotificationProcessor {
+class KogitoAddOnTaskNotificationProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-task-notification-extension";
+
+    public KogitoAddOnTaskNotificationProcessor() {
+        super(KogitoCapability.PROCESSES);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

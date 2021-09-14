@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.process.management.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnProcessManagementProcessor {
+class KogitoAddOnProcessManagementProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-process-management-extension";
+
+    public KogitoAddOnProcessManagementProcessor() {
+        super(KogitoCapability.PROCESSES);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

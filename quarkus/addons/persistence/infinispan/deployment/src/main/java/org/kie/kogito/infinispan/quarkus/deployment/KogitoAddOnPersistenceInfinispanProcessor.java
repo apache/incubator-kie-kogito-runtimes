@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.infinispan.quarkus.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnPersistenceInfinispanProcessor {
+class KogitoAddOnPersistenceInfinispanProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-persistence-infinispan-extension";
 

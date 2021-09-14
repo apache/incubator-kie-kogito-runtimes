@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.eventdriven.decision;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnEventDecisionProcessor {
+class KogitoAddOnEventDecisionProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-events-decisions-extension";
+
+    public KogitoAddOnEventDecisionProcessor() {
+        super(KogitoCapability.DECISIONS);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

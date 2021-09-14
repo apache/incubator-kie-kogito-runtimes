@@ -19,6 +19,7 @@
     <module>events</module>
     <module>messaging</module>
     <module>monitoring</module>
+    <module>common</module>
   </modules>
 
   <profiles>

@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.events.process.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnEventProcessProcessor {
+class KogitoAddOnEventProcessProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-events-process-extension";
+
+    public KogitoAddOnEventProcessProcessor() {
+        super(KogitoCapability.PROCESSES);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

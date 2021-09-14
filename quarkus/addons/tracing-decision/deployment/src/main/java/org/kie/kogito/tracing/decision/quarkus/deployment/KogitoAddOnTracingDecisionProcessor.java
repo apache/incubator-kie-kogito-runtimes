@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.tracing.decision.quarkus.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnTracingDecisionProcessor {
+class KogitoAddOnTracingDecisionProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-tracing-decision-extension";
+
+    public KogitoAddOnTracingDecisionProcessor() {
+        super(KogitoCapability.DECISIONS);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

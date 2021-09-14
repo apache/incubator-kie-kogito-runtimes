@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnMessagingProcessor {
+class KogitoAddOnMessagingProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-messaging-extension";
 

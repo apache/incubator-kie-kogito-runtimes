@@ -15,10 +15,12 @@
  */
 package org.kie.kogito.events.mongodb.deployment;
 
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnEventMongoDBProcessor {
+class KogitoAddOnEventMongoDBProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-events-mongodb-extension";
 
