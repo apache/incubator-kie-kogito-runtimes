@@ -1,5 +1,5 @@
 name: Kogito Add-On Events MongoDB
-description: Kogito Add-On for storing Kogito events on MongoDB
+description: Kogito Add-On for storing Kogito events log on MongoDB for later pushing via Debezium, allowing Outbox pattern implementation.
 metadata:
   keywords:
     - kogito

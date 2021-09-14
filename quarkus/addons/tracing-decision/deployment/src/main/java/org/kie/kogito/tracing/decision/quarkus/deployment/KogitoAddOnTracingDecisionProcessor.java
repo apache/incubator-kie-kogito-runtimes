@@ -25,7 +25,7 @@ class KogitoAddOnTracingDecisionProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-tracing-decision-extension";
 
-    public KogitoAddOnTracingDecisionProcessor() {
+    KogitoAddOnTracingDecisionProcessor() {
         super(KogitoCapability.DECISIONS);
     }
 

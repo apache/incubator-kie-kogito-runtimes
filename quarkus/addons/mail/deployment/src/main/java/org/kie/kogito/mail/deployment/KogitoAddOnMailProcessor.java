@@ -25,7 +25,7 @@ class KogitoAddOnMailProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-mail-extension";
 
-    public KogitoAddOnMailProcessor() {
+    KogitoAddOnMailProcessor() {
         super(KogitoCapability.PROCESSES);
     }
 

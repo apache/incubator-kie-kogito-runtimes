@@ -25,7 +25,7 @@ class KogitoAddOnProcessSVGProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-process-svg-extension";
 
-    public KogitoAddOnProcessSVGProcessor() {
+    KogitoAddOnProcessSVGProcessor() {
         super(KogitoCapability.PROCESSES);
     }
 

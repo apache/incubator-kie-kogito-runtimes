@@ -25,7 +25,7 @@ class KogitoAddOnTaskNotificationProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-task-notification-extension";
 
-    public KogitoAddOnTaskNotificationProcessor() {
+    KogitoAddOnTaskNotificationProcessor() {
         super(KogitoCapability.PROCESSES);
     }
 

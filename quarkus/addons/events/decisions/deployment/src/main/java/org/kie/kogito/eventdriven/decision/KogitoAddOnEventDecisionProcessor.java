@@ -25,7 +25,7 @@ class KogitoAddOnEventDecisionProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-events-decisions-extension";
 
-    public KogitoAddOnEventDecisionProcessor() {
+    KogitoAddOnEventDecisionProcessor() {
         super(KogitoCapability.DECISIONS);
     }
 

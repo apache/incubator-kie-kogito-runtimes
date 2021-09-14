@@ -25,7 +25,7 @@ class KogitoAddOnTaskManagementProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-task-management-extension";
 
-    public KogitoAddOnTaskManagementProcessor() {
+    KogitoAddOnTaskManagementProcessor() {
         super(KogitoCapability.PROCESSES);
     }
 

@@ -25,7 +25,7 @@ class KogitoAddOnEventProcessProcessor extends KogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-events-process-extension";
 
-    public KogitoAddOnEventProcessProcessor() {
+    KogitoAddOnEventProcessProcessor() {
         super(KogitoCapability.PROCESSES);
     }
 
