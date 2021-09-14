@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import org.kie.kogito.event.AbstractEventReceiver;
+import org.kie.kogito.addon.cloudevents.AbstractEventReceiver;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

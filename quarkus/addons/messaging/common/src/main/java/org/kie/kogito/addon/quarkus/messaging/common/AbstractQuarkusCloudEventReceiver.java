@@ -19,7 +19,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.event.AbstractEventReceiver;
+import org.kie.kogito.addon.cloudevents.AbstractEventReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
