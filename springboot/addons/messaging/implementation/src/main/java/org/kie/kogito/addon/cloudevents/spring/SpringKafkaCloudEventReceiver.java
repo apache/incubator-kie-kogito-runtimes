@@ -34,7 +34,7 @@ public class SpringKafkaCloudEventReceiver extends AbstractEventReceiver {
     private static final Logger log = LoggerFactory.getLogger(SpringKafkaCloudEventReceiver.class);
 
     @KafkaListener(topics = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.INCOMING + ":" + KogitoEventStreams.INCOMING + "}")
-    public void receive(@Payload Collection<String> messages) throws InterruptedException {
+    public void receive(@Payload Collection<String> messages) {
         log.debug("Received {} events", messages.size());
         CompletableFuture.allOf(
                 messages.stream()
