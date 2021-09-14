@@ -84,7 +84,7 @@ public class EventDrivenDecisionController {
                 CloudEvent.class));
     }
 
-    CompletionStage<Void> handleRequest(CloudEvent event) {
+    private CompletionStage<Void> handleRequest(CloudEvent event) {
         return validateRequest(event)
                 .flatMap(this::buildEvaluationContext)
                 .map(this::processRequest)
