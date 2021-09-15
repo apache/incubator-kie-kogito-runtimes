@@ -21,5 +21,5 @@ import javax.enterprise.context.ApplicationScoped;
 import org.kie.kogito.incubation.predictions.PredictionIds;
 
 @ApplicationScoped
-class QuarkusPredictionIdFactory extends PredictionIds {
+class QuarkusPredictionIds extends PredictionIds {
 }
