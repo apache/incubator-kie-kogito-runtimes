@@ -50,7 +50,28 @@ public class JDBCProcessInstances implements MutableProcessInstances {
 
     private static final String PAYLOAD = "payload";
 
-    private static final List<String> SUPPORTED_DBS = List.of("PostgreSQL", "Oracle");
+    enum DatabaseType {
+        POSTGRES("PostgreSQL", "process_instances"),
+        ORACLE("Oracle", "PROCESS_INSTANCES");
+
+        private final String dbIdentifier;
+        private final String tableNamePattern;
+
+        DatabaseType(final String dbIdentifier, final String tableNamePattern) {
+            this.dbIdentifier = dbIdentifier;
+            this.tableNamePattern = tableNamePattern;
+        }
+
+        public static DatabaseType create(final String dbIdentifier) {
+            if ("Oracle".equals(dbIdentifier)) {
+                return ORACLE;
+            } else if ("PostgreSQL".equals(dbIdentifier)) {
+                return POSTGRES;
+            }
+            return null;
+        }
+
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCProcessInstances.class);
 
@@ -85,12 +106,13 @@ public class JDBCProcessInstances implements MutableProcessInstances {
 
         try (Connection connection = dataSource.getConnection()) {
             final DatabaseMetaData metaData = connection.getMetaData();
-            final String dbType = metaData.getDatabaseProductName();
-            if (!SUPPORTED_DBS.contains(dbType)) {
-                throw new Exception("Database (" + dbType + ")" + "not suported");
+            final String dbProductName = metaData.getDatabaseProductName();
+            DatabaseType databaseType = DatabaseType.create(dbProductName);
+            if (databaseType == null) {
+                throw new Exception("Database (" + dbProductName + ") not suported");
             }
             final String[] types = { "TABLE" };
-            ResultSet tables = metaData.getTables(null, null, "%process_instances%", types);
+            ResultSet tables = metaData.getTables(null, null, databaseType.tableNamePattern, types);
             boolean exist = false;
             while (tables.next()) {
                 LOGGER.debug("Found process_instance table");
@@ -99,7 +121,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
 
             if (!exist) {
                 LOGGER.info("dynamically creating process_instances table");
-                createTable(connection, dbType);
+                createTable(connection, databaseType);
             }
 
         } catch (Exception e) {
@@ -109,19 +131,20 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         }
     }
 
-    private void createTable(final Connection connection, final String dbType) {
+    private void createTable(final Connection connection, final DatabaseType dbType) {
         try {
-            final String query = getQueryFromFile(dbType, "create_tables");
-            LOGGER.error(query);
-            PreparedStatement prepareStatement = connection.prepareStatement(query);
-            prepareStatement.execute();
+            final List<String> statements = getQueryFromFile(dbType.dbIdentifier, "create_tables");
+            for (String s : statements) {
+                PreparedStatement prepareStatement = connection.prepareStatement(s.trim());
+                prepareStatement.execute();
+            }
             LOGGER.info("DDL successfully done for ProcessInstance");
         } catch (SQLException e1) {
             LOGGER.error("Error creating process_instances table", e1);
         }
     }
 
-    private String getQueryFromFile(final String dbType, final String scriptName) {
+    private List<String> getQueryFromFile(final String dbType, final String scriptName) {
         final String fileName = String.format("sql/%s_%s.sql", scriptName, dbType);
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             if (stream == null) {
@@ -129,7 +152,8 @@ public class JDBCProcessInstances implements MutableProcessInstances {
             }
             byte[] buffer = new byte[stream.available()];
             stream.read(buffer);
-            return new String(buffer);
+            String[] statments = new String(buffer).split(";");
+            return List.of(statments);
         } catch (Exception e) {
             throw uncheckedException(e, "Error reading query script file %s", fileName);
         }

@@ -40,8 +40,7 @@ class JdbcProcessInstancesIT extends TestHelper {
     void testBasicTaskFlow() {
         BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2", false);
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections
-                .singletonMap("test",
-                        "test")));
+                .singletonMap("test", "test")));
         processInstance.start();
 
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
