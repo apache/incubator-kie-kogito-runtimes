@@ -17,6 +17,7 @@ package org.kie.kogito.persistence.jdbc;
 
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,6 +50,8 @@ public class JDBCProcessInstances implements MutableProcessInstances {
 
     private static final String PAYLOAD = "payload";
 
+    private static final List<String> SUPPORTED_DBS = List.of("PostgreSQL", "Oracle");
+
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCProcessInstances.class);
 
     private final Process<?> process;
@@ -80,10 +83,24 @@ public class JDBCProcessInstances implements MutableProcessInstances {
             return;
         }
 
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(getQueryFromFile("exists_tables"))) {
+        try (Connection connection = dataSource.getConnection()) {
+            final DatabaseMetaData metaData = connection.getMetaData();
+            final String dbType = metaData.getDatabaseProductName();
+            if (!SUPPORTED_DBS.contains(dbType)) {
+                throw new Exception("Database (" + dbType + ")" + "not suported");
+            }
+            final String[] types = { "TABLE" };
+            ResultSet tables = metaData.getTables(null, null, "%process_instances%", types);
+            boolean exist = false;
+            while (tables.next()) {
+                LOGGER.debug("Found process_instance table");
+                exist = true;
+            }
 
-            createTable(connection, statement);
+            if (!exist) {
+                LOGGER.info("dynamically creating process_instances table");
+                createTable(connection, dbType);
+            }
 
         } catch (Exception e) {
             //not break the execution flow in case of any missing permission for db application user, for instance.
@@ -92,46 +109,29 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         }
     }
 
-    private void createTable(Connection connection, PreparedStatement statement) {
-        boolean result = false;
-        try (ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
-                result = Optional.ofNullable(resultSet.getBoolean("exists"))
-                        .filter(Boolean.FALSE::equals)
-                        .map(e -> {
-                            try {
-                                PreparedStatement prepareStatement = connection.prepareStatement(getQueryFromFile("create_tables"));
-                                return prepareStatement.execute();
-                            } catch (SQLException e1) {
-                                LOGGER.error("Error creating process_instances table", e1);
-                            }
-                            return false;
-                        })
-                        .orElseGet(() -> {
-                            LOGGER.info("Table process_instances already exists.");
-                            return false;
-                        });
-            }
-
-        } catch (Exception e) {
-            throw uncheckedException(e, "Error creating process_instances table");
-        }
-
-        if (result) {
+    private void createTable(final Connection connection, final String dbType) {
+        try {
+            final String query = getQueryFromFile(dbType, "create_tables");
+            LOGGER.error(query);
+            PreparedStatement prepareStatement = connection.prepareStatement(query);
+            prepareStatement.execute();
             LOGGER.info("DDL successfully done for ProcessInstance");
-        } else {
-            LOGGER.info("DDL executed with no changes for ProcessInstance");
+        } catch (SQLException e1) {
+            LOGGER.error("Error creating process_instances table", e1);
         }
     }
 
-    private String getQueryFromFile(String scriptName) {
-
-        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format("sql/%s.sql", scriptName))) {
+    private String getQueryFromFile(final String dbType, final String scriptName) {
+        final String fileName = String.format("sql/%s_%s.sql", scriptName, dbType);
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
+            if (stream == null) {
+                throw new Exception();
+            }
             byte[] buffer = new byte[stream.available()];
             stream.read(buffer);
             return new String(buffer);
         } catch (Exception e) {
-            throw uncheckedException(e, "Error reading query script file %s", scriptName);
+            throw uncheckedException(e, "Error reading query script file %s", fileName);
         }
     }
 
