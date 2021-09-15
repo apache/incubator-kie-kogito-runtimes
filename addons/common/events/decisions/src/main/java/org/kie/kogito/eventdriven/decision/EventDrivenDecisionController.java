@@ -85,13 +85,13 @@ public class EventDrivenDecisionController {
     }
 
     private CompletionStage<Void> handleRequest(CloudEvent event) {
-        return validateRequest(event)
+        validateRequest(event)
                 .flatMap(this::buildEvaluationContext)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
                 .flatMap(CloudEventUtils::toDataEvent)
-                .map(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()))
-                .orElseGet(() -> CompletableFuture.completedFuture(null));
+                .ifPresent(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()));
+        return CompletableFuture.completedFuture(null);
     }
 
     private Optional<CloudEvent> validateRequest(CloudEvent event) {

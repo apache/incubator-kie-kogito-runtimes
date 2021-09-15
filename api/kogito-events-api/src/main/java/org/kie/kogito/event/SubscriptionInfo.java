@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.event;
 
-import java.io.IOException;
 import java.util.Optional;
 
 /*
@@ -24,9 +23,9 @@ import java.util.Optional;
  */
 public class SubscriptionInfo<S, T> {
 
-    private final EventConverter<S> converter;
-    private final Class<T> outputClass;
-    private final Optional<String> type;
+    private EventConverter<S> converter;
+    private Class<T> outputClass;
+    private Optional<String> type;
 
     public SubscriptionInfo(EventConverter<S> converter, Class<T> outputClass) {
         this(converter, outputClass, Optional.empty());
@@ -48,10 +47,6 @@ public class SubscriptionInfo<S, T> {
 
     public Class<T> getOutputClass() {
         return outputClass;
-    }
-
-    public T convert(S input) throws IOException {
-        return converter.apply(input, outputClass);
     }
 
     @Override

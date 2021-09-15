@@ -89,17 +89,17 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
         logger.info("Consumer for {} started", trigger);
     }
 
-    protected CompletionStage<Void> consumeCloud(T payload) {
+    protected CompletionStage<?> consumeCloud(T payload) {
         return consume(payload);
     }
 
-    protected CompletionStage<Void> consumeNotCloud(D payload) {
+    protected CompletionStage<?> consumeNotCloud(D payload) {
         return consume(payload);
     }
 
-    private CompletionStage<Void> consume(Object payload) {
+    private CompletionStage<?> consume(Object payload) {
         logger.trace("Received {} for trigger {}", payload, trigger);
-        CompletionStage<Void> result = eventConsumer.consume(application, process, payload, trigger);
+        CompletionStage<?> result = eventConsumer.consume(application, process, payload, trigger);
         if (logger.isTraceEnabled()) {
             result = result.thenAccept(v -> logger.trace("Completed {} for trigger {}", payload, trigger));
         }
