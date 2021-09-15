@@ -23,7 +23,7 @@
   <parent>
     <artifactId>springboot</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>1.11.1.Final</version>
+    <version>1.11.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-spring-boot-test-utils</artifactId>
