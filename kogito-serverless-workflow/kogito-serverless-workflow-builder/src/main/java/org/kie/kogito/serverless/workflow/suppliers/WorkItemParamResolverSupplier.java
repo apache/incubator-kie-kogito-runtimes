@@ -17,27 +17,27 @@ package org.kie.kogito.serverless.workflow.suppliers;
 
 import java.util.function.Supplier;
 
-import org.kie.kogito.serverless.workflow.functions.JsonPathResolver;
+import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 
-public class JsonPathExprSupplier implements Supplier<Expression> {
+public class WorkItemParamResolverSupplier implements Supplier<Expression> {
 
-    private String jsonPathExpr;
-    private String paramName;
+    private Class<? extends WorkItemHandlerParamResolver> clazz;
+    private Supplier<Expression>[] args;
 
-    public JsonPathExprSupplier(String jsonPathExpr, String paramName) {
-        this.jsonPathExpr = jsonPathExpr;
-        this.paramName = paramName;
+    public WorkItemParamResolverSupplier(Class<? extends WorkItemHandlerParamResolver> clazz, Supplier<Expression>... args) {
+        this.clazz = clazz;
+        this.args = args;
     }
 
     @Override
     public Expression get() {
-        return new ObjectCreationExpr()
-                .setType(JsonPathResolver.class.getCanonicalName())
-                .addArgument(new StringLiteralExpr(jsonPathExpr)).addArgument(new StringLiteralExpr(paramName));
+        ObjectCreationExpr result = new ObjectCreationExpr().setType(clazz.getCanonicalName());
+        for (Supplier<Expression> arg : args) {
+            result.addArgument(arg.get());
+        }
+        return result;
     }
-
 }

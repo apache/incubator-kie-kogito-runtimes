@@ -19,42 +19,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
-public class JsonPathResolver implements WorkItemHandlerParamResolver {
+public class ObjectJsonPathResolver extends AbstractJsonPathResolver {
 
-    private static final Configuration jsonPathConfig = Configuration
-            .builder()
-            .mappingProvider(new JacksonMappingProvider())
-            .jsonProvider(new JacksonJsonNodeJsonProvider())
-            .build();
-
-    private String jsonPathExpr;
-    private String paramName;
-
-    public JsonPathResolver(String jsonPathExpr, String paramName) {
-        this.jsonPathExpr = jsonPathExpr;
-        this.paramName = paramName;
+    protected ObjectJsonPathResolver(String jsonPathExpr, String paramName) {
+        super(jsonPathExpr, paramName);
     }
 
     @Override
-    public Object apply(KogitoWorkItem workItem) {
-        JsonNode node = JsonPath
-                .using(jsonPathConfig)
-                .parse(workItem.getParameter(paramName))
-                .read(jsonPathExpr, JsonNode.class);
-        return readValue(node);
-    }
-
-    private Object readValue(JsonNode node) {
+    protected Object readValue(JsonNode node) {
         switch (node.getNodeType()) {
             case NUMBER:
                 if (node.isInt()) {
@@ -70,9 +45,10 @@ public class JsonPathResolver implements WorkItemHandlerParamResolver {
                 return null;
             case ARRAY:
                 return readArray((ArrayNode) node);
-            default:
             case STRING:
                 return node.asText();
+            default:
+                return node;
         }
     }
 

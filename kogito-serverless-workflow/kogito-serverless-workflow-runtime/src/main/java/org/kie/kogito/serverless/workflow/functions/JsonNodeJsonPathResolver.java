@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.openapi;
-
-import java.util.function.Function;
+package org.kie.kogito.serverless.workflow.functions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-/**
- * Marker interface for @{@link JsonNodeParameterResolver}
- */
-public interface OpenApiParameterResolver extends Function<Object, JsonNode> {
+public class JsonNodeJsonPathResolver extends AbstractJsonPathResolver {
+
+    protected JsonNodeJsonPathResolver(String jsonPathExpr, String paramName) {
+        super(jsonPathExpr, paramName);
+    }
+
+    @Override
+    protected Object readValue(JsonNode node) {
+        return node;
+    }
 
 }

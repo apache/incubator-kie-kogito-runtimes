@@ -17,29 +17,23 @@ package org.jbpm.compiler.canonical.descriptors;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.jbpm.process.core.Work;
-import org.jbpm.process.core.impl.WorkImpl;
-import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -49,29 +43,20 @@ import static java.util.Objects.requireNonNull;
 
 public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
-    static final String TYPE = "OpenApi Task";
-    static final String PARAM_PREFIX = "ServiceParam_";
-    static final String PARAM_META_PARAM_RESOLVER_TYPE = "ParamResolverType";
-    static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
-    static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
-    static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
+    public static final String TYPE = "OpenApi Task";
+    private static final String PARAM_PREFIX = "ServiceParam_";
+    public static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
+    public static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
+    private static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
 
     private static final String VAR_INPUT_MODEL = "inputModel";
     private static final String METHOD_GET_PARAM = "getParameter";
+    private static final NameExpr workItemNameExpr = new NameExpr("workItem");
+
+    private static final ClassOrInterfaceType JSON_NODE_CLASS = new ClassOrInterfaceType(null, JsonNode.class.getCanonicalName());
 
     protected OpenApiTaskDescriptor(WorkItemNode workItemNode) {
         super(workItemNode);
-    }
-
-    /**
-     * Creates a new {@link WorkItemBuilder} based on this descriptor
-     *
-     * @param interfaceResource the OpenApi Specification Resource (normally a URI)
-     * @param operation the OpenApi operation identification
-     * @return a new {@link WorkItemBuilder}
-     */
-    public static WorkItemBuilder builderFor(final String interfaceResource, final String operation) {
-        return new WorkItemBuilder(interfaceResource, operation);
     }
 
     /**
@@ -113,44 +98,27 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         return Collections.emptyList();
     }
 
+    private static Collection<String> getParameters(WorkItemNode workItemNode) {
+        return workItemNode.getWork().getParameterDefinitions().stream().map(ParameterDefinition::getName).collect(Collectors.toList());
+    }
+
     @Override
     protected void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callServiceMethod) {
         // declare the input model
-        final MethodCallExpr getInputModel = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr("Parameter"));
-        final VariableDeclarationExpr inputModel =
-                new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
-        executeWorkItemBody.addStatement(inputModel);
-        final ClassOrInterfaceType resolverType = new ClassOrInterfaceType(null, workItemNode.getMetaData(PARAM_META_PARAM_RESOLVER_TYPE).toString());
-
-        workItemNode.getWork().getParameters().entrySet()
-                .stream()
-                .filter(p -> p.getKey().startsWith(PARAM_PREFIX))
-                .forEach(p -> {
-                    if (p.getValue() != null) {
-                        // method to get the param resolver instance
-                        final MethodCallExpr getParamMethod = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p.getKey()));
-                        // cast to the given param resolver type
-                        final CastExpr castToResolver = new CastExpr(resolverType, getParamMethod);
-                        // temp to hold the param resolver with the correct cast
-                        final VariableDeclarationExpr paramResolver =
-                                new VariableDeclarationExpr(new VariableDeclarator(castToResolver.getType(), "resolver" + p.getKey(), castToResolver));
-                        executeWorkItemBody.addStatement(paramResolver);
-                        // param resolver apply method
-                        final MethodCallExpr paramResolverApplyMethod =
-                                new MethodCallExpr(paramResolver.getVariable(0).getNameAsExpression(), "apply").addArgument(inputModel.getVariable(0).getNameAsExpression());
-                        callServiceMethod.addArgument(paramResolverApplyMethod);
-                    } else {
-                        callServiceMethod.addArgument(new NullLiteralExpr());
-                    }
-                });
+        getParameters(workItemNode)
+                .forEach(p -> callServiceMethod.addArgument(new CastExpr(JSON_NODE_CLASS, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
     }
 
     @Override
     protected Expression handleServiceCallResult(final BlockStmt executeWorkItemBody, final MethodCallExpr callService) {
+        final MethodCallExpr getInputModel = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr("Parameter"));
+        final VariableDeclarationExpr inputModel =
+                new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
+        executeWorkItemBody.addStatement(inputModel);
         // fetch the handler type
-        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE).toString());
+        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, ((Class<?>) workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE)).getCanonicalName());
         // get the handler
-        final MethodCallExpr getResultHandler = new MethodCallExpr(new NameExpr("workItem"), METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
+        final MethodCallExpr getResultHandler = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
         // convert the result into the given type
         final CastExpr castToHandler = new CastExpr(resultHandlerType, getResultHandler);
         // temp to hold the result handler with the correct cast
@@ -160,118 +128,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         return new MethodCallExpr(resultHandler.getVariable(0).getNameAsExpression(), "apply")
                 .addArgument(new NameExpr(VAR_INPUT_MODEL))
                 .addArgument(callService);
-    }
-
-    /**
-     * Builder for {@link WorkItemNode}s for OpenApi Service Tasks
-     * The result WorkItem has the same attributes as one created by a BPMN Editor.
-     */
-    public static final class WorkItemBuilder {
-
-        private final String operation;
-        private final String interfaceResource;
-        private final Map<String, Supplier<Expression>> paramResolvers;
-        private String paramResolverType;
-        private String resultHandlerType;
-        private Supplier<Expression> resultHandlerExpression;
-
-        private WorkItemBuilder(final String interfaceResource, final String operation) {
-            this.operation = operation;
-            this.interfaceResource = interfaceResource;
-            this.paramResolvers = new HashMap<>();
-        }
-
-        /**
-         * Class type responsible for resolving parameters in the service call in runtime.
-         *
-         * @param paramResolverType The class canonical name
-         * @return the {@link WorkItemBuilder}
-         */
-        public WorkItemBuilder withParamResolverType(final String paramResolverType) {
-            this.paramResolverType = paramResolverType;
-            return this;
-        }
-
-        /**
-         * Class type responsible for handling the service call result in runtime.
-         *
-         * @param resultHandlerType The class canonical name
-         * @return the {@link WorkItemBuilder}
-         */
-        public WorkItemBuilder withResultHandlerType(final String resultHandlerType) {
-            this.resultHandlerType = resultHandlerType;
-            return this;
-        }
-
-        /**
-         * The JavaParser @{@link Expression} to get a reference for the result handler in runtime.
-         * The Expression is used by the {@link OpenApiTaskDescriptor} to generate the runtime code.
-         * 
-         * @param resultHandler the @{@link Expression}
-         * @return the {@link WorkItemBuilder}
-         */
-        public WorkItemBuilder withResultHandler(final Supplier<Expression> resultHandler) {
-            this.resultHandlerExpression = resultHandler;
-            return this;
-        }
-
-        /**
-         * Adds a new parameter resolver to this builder.
-         *
-         * @param name the parameter name
-         * @param paramResolver the JavaParser @{@link Expression} responsible for creating the resolver in runtime.
-         *        This expression is used by the {@link OpenApiTaskDescriptor} to generate the runtime code.
-         * @return the {@link WorkItemBuilder} so you can keep adding parameters to the same reference.
-         */
-        public WorkItemBuilder addParamResolver(final String name, final Supplier<Expression> paramResolver) {
-            this.paramResolvers.put(PARAM_PREFIX + name, paramResolver);
-            return this;
-        }
-
-        public <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> build(WorkItemNodeFactory<T> factory) {
-            factory.metaData(KEY_WORKITEM_TYPE, TYPE);
-            factory.workName(TYPE);
-            factory.workParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
-            factory.workParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
-            factory.workParameter(KEY_WORKITEM_OPERATION, this.operation);
-            this.paramResolvers.forEach(factory::workParameter);
-            if (this.paramResolverType != null && !this.paramResolverType.isEmpty()) {
-                factory.metaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverType);
-            }
-            if (this.resultHandlerType != null && !this.resultHandlerType.isEmpty()) {
-                factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType);
-            }
-            if (this.resultHandlerExpression != null) {
-                factory.workParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-            }
-            return factory;
-        }
-
-        protected WorkItemNode build() {
-            WorkItemNode workItemNode = new WorkItemNode();
-            workItemNode.setMetaData(KEY_WORKITEM_TYPE, TYPE);
-
-            Work work = new WorkImpl();
-            work.setName(TYPE);
-            work.setParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
-            work.setParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
-            work.setParameter(KEY_WORKITEM_OPERATION, this.operation);
-
-            this.paramResolvers.forEach(work::setParameter);
-
-            if (this.paramResolverType != null && !this.paramResolverType.isEmpty()) {
-                workItemNode.setMetaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverType);
-            }
-            if (this.resultHandlerType != null && !this.resultHandlerType.isEmpty()) {
-                workItemNode.setMetaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType);
-            }
-            if (this.resultHandlerExpression != null) {
-                work.setParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-            }
-
-            workItemNode.setWork(work);
-            return workItemNode;
-        }
     }
 
     /**
@@ -334,8 +190,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
          * Adds all non-required parameters
          */
         private void validateAndAddMissingParameters() {
-            final List<String> paramResolvers =
-                    this.workItemNode.getWork().getParameters().keySet().stream().filter(o -> o.startsWith(PARAM_PREFIX)).collect(Collectors.toList());
+            final Collection<String> paramResolvers = getParameters(workItemNode);
             if (this.specParameters.size() != paramResolvers.size() || this.specParameters.size() > 1) {
                 this.specParameters.stream()
                         .filter(p -> !paramResolvers.contains(p))
