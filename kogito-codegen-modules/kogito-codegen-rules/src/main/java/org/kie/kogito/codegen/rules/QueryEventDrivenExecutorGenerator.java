@@ -82,8 +82,8 @@ public class QueryEventDrivenExecutorGenerator implements RuleFileGenerator {
     public GeneratedFile generate() {
         CompilationUnit cu = generator.compilationUnitWithReplacementsOrThrow("Could not create CompilationUnit",
                 t -> t.replace("$QueryType$", queryClassName)
-                        .replace("$DataType$", ruleUnit.getCanonicalName())
-                        .replace("$ReturnType$", String.format("java.util.List<%s>", getReturnType()))
+                        .replace("$DataType$", getDataType())
+                        .replace("$ReturnType$", getReturnType())
                         .replace("$name$", queryName));
 
         return new GeneratedFile(GeneratedFileType.SOURCE, generatedFilePath(), cu.toString());
@@ -94,11 +94,13 @@ public class QueryEventDrivenExecutorGenerator implements RuleFileGenerator {
     }
 
     private String getReturnType() {
-        if (query.getBindings().size() == 1) {
-            Map.Entry<String, Class<?>> binding = query.getBindings().entrySet().iterator().next();
-            return binding.getValue().getCanonicalName();
-        }
-        return queryClassName + ".Result";
+        Map<String, Class<?>> bindings = query.getBindings();
+
+        String innerType = bindings.size() != 1
+                ? queryClassName + ".Result"
+                : bindings.values().iterator().next().getCanonicalName();
+
+        return String.format("java.util.List<%s>", innerType);
     }
 
     private static String toCamelCase(String inputString) {
