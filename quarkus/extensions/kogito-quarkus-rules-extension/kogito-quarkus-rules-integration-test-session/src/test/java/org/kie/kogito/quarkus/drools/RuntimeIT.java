@@ -63,4 +63,33 @@ public class RuntimeIT {
 
         assertEquals(0, ksession.fireAllRules());
     }
+
+    @Test
+    public void testFireUntiHalt() {
+        KieSession ksession = runtimeBuilder.newKieSession("probeKS");
+
+        SessionPseudoClock clock = ksession.getSessionClock();
+
+        new Thread(ksession::fireUntilHalt).start();
+        final ProbeCounter pc = new ProbeCounter();
+
+        ksession.insert(pc);
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        for (int i = 0; i < 10; i++) {
+            ksession.insert(new ProbeEvent(i));
+            clock.advanceTime(1, TimeUnit.SECONDS);
+        }
+
+        synchronized (pc) {
+            if (pc.getTotal() < 10) {
+                try {
+                    pc.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        assertEquals(10, pc.getTotal());
+    }
 }

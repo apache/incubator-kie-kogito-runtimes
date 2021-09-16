@@ -6,4 +6,7 @@
   <kbase name="cepKB" packages="org.drools.cep" eventProcessingMode="stream">
     <ksession name="cepKS" clockType="pseudo"/>
   </kbase>
+  <kbase name="probeKB" packages="org.drools.probe" eventProcessingMode="stream">
+    <ksession name="probeKS" clockType="pseudo"/>
+  </kbase>
 </kmodule>
