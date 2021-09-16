@@ -15,6 +15,6 @@
  */
 package org.kie.kogito.quarkus.addons.common.deployment;
 
-public class AnyEngineAddonProcessor extends KogitoAddOnProcessor {
+public class AnyEngineAddonProcessorImpl extends AnyEngineKogitoAddOnProcessor {
 
 }

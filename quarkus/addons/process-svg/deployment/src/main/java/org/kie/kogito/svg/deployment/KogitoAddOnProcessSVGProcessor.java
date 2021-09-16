@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.svg.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnProcessSVGProcessor extends KogitoAddOnProcessor {
+class KogitoAddOnProcessSVGProcessor extends RequireCapabilityKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-process-svg-extension";
 

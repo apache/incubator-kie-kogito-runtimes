@@ -20,7 +20,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Data Holder to use with {@link KogitoAddOnProcessor} to describe the Kogito Capability required by a given add-on.
+ * Data Holder to use with {@link RequireCapabilityKogitoAddOnProcessor} to describe the Kogito Capability required by a given add-on.
  */
 public final class KogitoCapability {
 

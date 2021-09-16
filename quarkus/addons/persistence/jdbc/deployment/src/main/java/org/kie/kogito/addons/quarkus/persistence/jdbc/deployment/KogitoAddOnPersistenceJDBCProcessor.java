@@ -15,14 +15,19 @@
  */
 package org.kie.kogito.addons.quarkus.persistence.jdbc.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
+import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnPersistenceJDBCProcessor extends KogitoAddOnProcessor {
+class KogitoAddOnPersistenceJDBCProcessor extends RequireCapabilityKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-persistence-jdbc-extension";
+
+    KogitoAddOnPersistenceJDBCProcessor() {
+        super(KogitoCapability.PROCESSES);
+    }
 
     @BuildStep
     FeatureBuildItem feature() {

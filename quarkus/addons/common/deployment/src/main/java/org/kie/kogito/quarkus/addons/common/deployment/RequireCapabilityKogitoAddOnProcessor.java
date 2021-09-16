@@ -36,22 +36,25 @@ import static java.util.Arrays.asList;
  * }
  * </pre>
  *
- * You don't need to point to a particular engine if your add-on fits any set of it.
- * Just by extending this class, it will make any of {@link KogitoCapability#ENGINES} to be presented
- * in the user's classpath.
- * 
+ * If your add-on doesn't require a particular set of {@link KogitoCapability}, use {@link AnyEngineKogitoAddOnProcessor}
+ * instead to verify if at least one engine is presented.
+ *
  * @see <a href="https://quarkus.io/guides/capabilities">Quarkus Extension Capabilities</a>
  */
-public abstract class KogitoAddOnProcessor {
+public abstract class RequireCapabilityKogitoAddOnProcessor {
 
     private final List<KogitoCapability> requiredCapabilities;
 
     /**
-     * Required capabilities that this Add-On depends on
+     * Required capabilities that this Add-On depends on.
+     * Add at least one capability to the list, otherwise an {@link IllegalArgumentException} will be raised.
      *
      * @see <a href="https://quarkus.io/guides/capabilities#declaring-capabilities">Declaring Capabilities</a>
      */
-    public KogitoAddOnProcessor(final KogitoCapability... requiredCapabilities) {
+    public RequireCapabilityKogitoAddOnProcessor(final KogitoCapability... requiredCapabilities) {
+        if (requiredCapabilities == null || requiredCapabilities.length == 0) {
+            throw new IllegalArgumentException("Please set at least one capability");
+        }
         this.requiredCapabilities = asList(requiredCapabilities);
     }
 
@@ -61,17 +64,11 @@ public abstract class KogitoAddOnProcessor {
      */
     @BuildStep
     void verifyCapabilities(final Capabilities capabilities) {
-        if (this.requiredCapabilities.isEmpty()) {
-            if (KogitoCapability.ENGINES.stream().noneMatch(kc -> capabilities.isPresent(kc.getCapability()))) {
-                throw this.exceptionForEngineNotPresent();
-            }
-        } else {
-            final List<KogitoCapability> missing = requiredCapabilities.stream()
-                    .filter(kc -> capabilities.isMissing(kc.getCapability()))
-                    .collect(Collectors.toList());
-            if (!missing.isEmpty()) {
-                throw this.exceptionForRequiredCapabilities(missing);
-            }
+        final List<KogitoCapability> missing = requiredCapabilities.stream()
+                .filter(kc -> capabilities.isMissing(kc.getCapability()))
+                .collect(Collectors.toList());
+        if (!missing.isEmpty()) {
+            throw this.exceptionForRequiredCapabilities(missing);
         }
     }
 
@@ -87,21 +84,6 @@ public abstract class KogitoAddOnProcessor {
                     .append("\n");
         });
         sb.append("Add the above artifacts in your project's pom.xml file");
-        return new IllegalStateException(sb.toString());
-    }
-
-    private IllegalStateException exceptionForEngineNotPresent() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("This Kogito Quarkus Add-on requires at least one of the following Kogito Extensions: \n");
-        KogitoCapability.ENGINES.forEach(c -> {
-            sb.append("\t - ").append(c.getCapability()).append("\n");
-            sb.append("\t\t offered by the artifact ")
-                    .append(KogitoCapability.KOGITO_GROUP_ID)
-                    .append(":")
-                    .append(c.getOfferedBy())
-                    .append("\n");
-        });
-        sb.append("Add one of the above artifacts in your project's pom.xml file");
         return new IllegalStateException(sb.toString());
     }
 

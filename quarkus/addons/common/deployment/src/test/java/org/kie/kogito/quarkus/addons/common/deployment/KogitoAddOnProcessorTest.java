@@ -31,20 +31,20 @@ public class KogitoAddOnProcessorTest {
 
     @Test
     void verifyRequiredCapabilitiesWhenNotPresent() {
-        final RequiresEngineAddonProcessor requiresEngineAddonProcessor = new RequiresEngineAddonProcessor();
+        final RequireEngineAddonProcessor requireEngineAddonProcessor = new RequireEngineAddonProcessor();
         final IllegalStateException exception =
                 assertThrows(IllegalStateException.class,
-                        () -> requiresEngineAddonProcessor.verifyCapabilities(new Capabilities(Collections.emptySet())));
+                        () -> requireEngineAddonProcessor.verifyCapabilities(new Capabilities(Collections.emptySet())));
         assertTrue(exception.getMessage().contains(KogitoCapability.DECISIONS.getCapability()));
         assertTrue(exception.getMessage().contains(KogitoCapability.PREDICTIONS.getCapability()));
     }
 
     @Test
     void verifyAnyEngineRequiredButNotPresent() {
-        final AnyEngineAddonProcessor anyEngineAddonProcessor = new AnyEngineAddonProcessor();
+        final AnyEngineAddonProcessorImpl anyEngineAddonProcessorImpl = new AnyEngineAddonProcessorImpl();
         final IllegalStateException exception =
                 assertThrows(IllegalStateException.class,
-                        () -> anyEngineAddonProcessor.verifyCapabilities(new Capabilities(Collections.emptySet())));
+                        () -> anyEngineAddonProcessorImpl.verifyCapabilities(new Capabilities(Collections.emptySet())));
         assertTrue(exception.getMessage().contains(KogitoCapability.DECISIONS.getCapability()));
         assertTrue(exception.getMessage().contains(KogitoCapability.PREDICTIONS.getCapability()));
         assertTrue(exception.getMessage().contains(KogitoCapability.PROCESSES.getCapability()));
@@ -54,11 +54,11 @@ public class KogitoAddOnProcessorTest {
 
     @Test
     void verifyRequiredCapabilitiesWhenPresent() {
-        final RequiresEngineAddonProcessor requiresEngineAddonProcessor = new RequiresEngineAddonProcessor();
+        final RequireEngineAddonProcessor requireEngineAddonProcessor = new RequireEngineAddonProcessor();
         final Set<String> capabilities = new HashSet<>();
         capabilities.add(KogitoCapability.DECISIONS.getCapability());
         capabilities.add(KogitoCapability.PREDICTIONS.getCapability());
-        assertDoesNotThrow(() -> requiresEngineAddonProcessor.verifyCapabilities(new Capabilities(capabilities)));
+        assertDoesNotThrow(() -> requireEngineAddonProcessor.verifyCapabilities(new Capabilities(capabilities)));
     }
 
 }

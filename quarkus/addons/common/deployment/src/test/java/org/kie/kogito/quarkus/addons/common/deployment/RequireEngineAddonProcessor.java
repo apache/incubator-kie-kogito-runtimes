@@ -18,9 +18,9 @@ package org.kie.kogito.quarkus.addons.common.deployment;
 /**
  * A mock add-on that requires decisions and predictions
  */
-public class RequiresEngineAddonProcessor extends KogitoAddOnProcessor {
+public class RequireEngineAddonProcessor extends RequireCapabilityKogitoAddOnProcessor {
 
-    public RequiresEngineAddonProcessor() {
+    public RequireEngineAddonProcessor() {
         super(KogitoCapability.DECISIONS, KogitoCapability.PREDICTIONS);
     }
 

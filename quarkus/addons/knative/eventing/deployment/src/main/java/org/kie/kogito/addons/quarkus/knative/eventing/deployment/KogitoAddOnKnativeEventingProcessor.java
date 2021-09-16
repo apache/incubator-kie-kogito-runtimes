@@ -15,12 +15,12 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.KogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnKnativeEventingProcessor extends KogitoAddOnProcessor {
+class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-knative-eventing-extension";
 
