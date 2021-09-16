@@ -82,5 +82,10 @@
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.mozilla</groupId>
+      <artifactId>rhino-engine</artifactId> <!-- So that tests still work on JDK 15+. -->
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

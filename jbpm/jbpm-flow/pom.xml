@@ -87,6 +87,12 @@
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.mozilla</groupId>
+      <artifactId>rhino-engine</artifactId>
+      <optional>true</optional> <!-- JDKs older than 15 carry their own. -->
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
