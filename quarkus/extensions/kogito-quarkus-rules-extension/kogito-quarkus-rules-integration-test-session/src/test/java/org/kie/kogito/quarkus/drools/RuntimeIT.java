@@ -15,10 +15,13 @@
  */
 package org.kie.kogito.quarkus.drools;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.time.SessionPseudoClock;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -33,7 +36,7 @@ public class RuntimeIT {
 
     @Test
     public void testRuleEvaluation() {
-        KieSession ksession = runtimeBuilder.newKieSession();
+        KieSession ksession = runtimeBuilder.newKieSession("canDrinkKS");
 
         Result result = new Result();
         ksession.insert(result);
@@ -41,5 +44,23 @@ public class RuntimeIT {
         ksession.fireAllRules();
 
         assertEquals("Mark can NOT drink", result.toString());
+    }
+
+    @Test
+    public void testCepEvaluation() {
+        KieSession ksession = runtimeBuilder.newKieSession("cepKS");
+
+        SessionPseudoClock clock = ksession.getSessionClock();
+
+        ksession.insert(new StockTick("DROO"));
+        clock.advanceTime(6, TimeUnit.SECONDS);
+        ksession.insert(new StockTick("ACME"));
+
+        assertEquals(1, ksession.fireAllRules());
+
+        clock.advanceTime(4, TimeUnit.SECONDS);
+        ksession.insert(new StockTick("ACME"));
+
+        assertEquals(0, ksession.fireAllRules());
     }
 }

@@ -3,4 +3,7 @@
   <kbase name="canDrinkKB" packages="org.drools.simple.candrink">
     <ksession name="canDrinkKS" default="true" />
   </kbase>
+  <kbase name="cepKB" packages="org.drools.cep" eventProcessingMode="stream">
+    <ksession name="cepKS" clockType="pseudo"/>
+  </kbase>
 </kmodule>
