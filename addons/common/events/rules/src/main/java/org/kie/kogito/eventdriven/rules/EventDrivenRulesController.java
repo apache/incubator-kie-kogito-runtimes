@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kie.kogito.eventdriven.rules;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import io.cloudevents.CloudEvent;
-import io.cloudevents.core.provider.ExtensionProvider;
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
-import org.kie.kogito.services.event.impl.JsonStringToObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.eventdriven.rules.EventDrivenRulesController</code>
@@ -46,6 +47,7 @@ public class EventDrivenRulesController {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDrivenRulesController.class);
 
+    private Map<String, EventDrivenQueryExecutor> executors;
     private ConfigBean config;
     private EventEmitter eventEmitter;
     private EventReceiver eventReceiver;
@@ -53,13 +55,15 @@ public class EventDrivenRulesController {
     protected EventDrivenRulesController() {
     }
 
-    protected EventDrivenRulesController(ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+    protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+        this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
     }
 
-    protected void setup(ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+        this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
@@ -67,8 +71,8 @@ public class EventDrivenRulesController {
     }
 
     protected void setup() {
-        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo<>(new JsonStringToObject(CloudEventUtils.Mapper.mapper()),
-                CloudEvent.class));
+        eventReceiver.subscribe(this::handleRequest,
+                new SubscriptionInfo<>(CloudEventUtils.Mapper.mapper()::readValue, CloudEvent.class));
     }
 
     private CompletionStage<Void> handleRequest(CloudEvent event) {
@@ -106,6 +110,11 @@ public class EventDrivenRulesController {
 
     private Optional<CloudEvent> buildResponseCloudEvent(EvaluationContext ctx) {
         return Optional.empty();
+    }
+
+    private static Map<String, EventDrivenQueryExecutor> buildExecutorsMap(Iterable<EventDrivenQueryExecutor> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false)
+                .collect(Collectors.toMap(e -> "____" + e.getRuleUnitId() + "____" + e.getQueryName() + "____", e -> e));
     }
 
     private static class EvaluationContext {
