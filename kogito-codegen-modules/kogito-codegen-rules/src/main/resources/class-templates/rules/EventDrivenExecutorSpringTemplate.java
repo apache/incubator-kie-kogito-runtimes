@@ -15,6 +15,7 @@
  */
 package com.myspace.demo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.eventdriven.rules.AbstractEventDrivenQueryExecutor;
 import org.kie.kogito.rules.RuleUnit;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class $QueryType$EventDrivenExecutor extends AbstractEventDrivenQueryExecutor<$DataType$, $ReturnType$> {
 
     @Autowired
-    public $QueryType$EventDrivenExecutor(RuleUnit<$DataType$> ruleUnit) {
-        super(ruleUnit, "$name$", $QueryType$.class, $DataType$.class);
+    public $QueryType$EventDrivenExecutor(RuleUnit<$DataType$> ruleUnit, ObjectMapper objectMapper) {
+        super(ruleUnit, "$name$", $QueryType$.class, $DataType$.class, objectMapper);
     }
 }

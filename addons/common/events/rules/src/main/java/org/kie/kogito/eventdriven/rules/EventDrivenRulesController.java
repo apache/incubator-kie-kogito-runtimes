@@ -33,8 +33,6 @@ import org.kie.kogito.event.SubscriptionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 
@@ -54,25 +52,22 @@ public class EventDrivenRulesController {
     private ConfigBean config;
     private EventEmitter eventEmitter;
     private EventReceiver eventReceiver;
-    private ObjectMapper mapper;
 
     protected EventDrivenRulesController() {
     }
 
-    protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, ObjectMapper mapper) {
+    protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
-        this.mapper = mapper;
     }
 
-    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, ObjectMapper mapper) {
+    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
-        this.mapper = mapper;
         setup();
     }
 
@@ -124,7 +119,7 @@ public class EventDrivenRulesController {
 
         EventDrivenQueryExecutor executor = optExecutor.get();
         try {
-            Object result = executor.executeQuery(ctx.getRequestCloudEvent(), mapper);
+            Object result = executor.executeQuery(ctx.getRequestCloudEvent());
             ctx.setQueryResult(result);
         } catch (RuntimeException e) {
             ctx.setResponseError(RulesResponseError.INTERNAL_EXECUTION_ERROR);

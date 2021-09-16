@@ -18,6 +18,7 @@ package com.myspace.demo;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.runtime.Startup;
 import org.kie.kogito.eventdriven.rules.AbstractEventDrivenQueryExecutor;
 import org.kie.kogito.rules.RuleUnit;
@@ -28,8 +29,11 @@ public class $QueryType$EventDrivenExecutor extends AbstractEventDrivenQueryExec
     @Inject
     RuleUnit<$DataType$> ruleUnit;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     @PostConstruct
     private void onPostConstruct() {
-        setup(ruleUnit, "$name$", $QueryType$.class, $DataType$.class);
+        setup(ruleUnit, "$name$", $QueryType$.class, $DataType$.class, objectMapper);
     }
 }

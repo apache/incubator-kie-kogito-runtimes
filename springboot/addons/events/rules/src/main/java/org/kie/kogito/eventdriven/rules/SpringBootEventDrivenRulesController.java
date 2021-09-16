@@ -15,33 +15,26 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import io.quarkus.runtime.Startup;
+@Component
+public class SpringBootEventDrivenRulesController extends EventDrivenRulesController {
 
-@Startup
-public class QuarkusEventDrivenRulesController extends EventDrivenRulesController {
-
-    @Inject
-    Instance<EventDrivenQueryExecutor> executors;
-
-    @Inject
-    ConfigBean config;
-
-    @Inject
-    EventEmitter eventEmitter;
-
-    @Inject
-    EventReceiver eventReceiver;
+    @Autowired
+    public SpringBootEventDrivenRulesController(List<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+        super(executors, config, eventEmitter, eventReceiver);
+    }
 
     @PostConstruct
     private void onPostConstruct() {
-        setup(executors, config, eventEmitter, eventReceiver);
+        setup();
     }
 }

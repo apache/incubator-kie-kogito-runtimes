@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
+import java.util.Optional;
+
 import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
@@ -31,22 +33,25 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
     private String queryName;
     private Class<? extends RuleUnitQuery<R>> queryClass;
     private Class<D> dataClass;
+    private ObjectMapper mapper;
 
     protected AbstractEventDrivenQueryExecutor() {
     }
 
-    protected AbstractEventDrivenQueryExecutor(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass) {
+    protected AbstractEventDrivenQueryExecutor(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass, ObjectMapper mapper) {
         this.ruleUnit = ruleUnit;
         this.queryName = queryName;
         this.queryClass = queryClass;
         this.dataClass = dataClass;
+        this.mapper = mapper;
     }
 
-    protected void setup(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass) {
+    protected void setup(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass, ObjectMapper mapper) {
         this.ruleUnit = ruleUnit;
         this.queryName = queryName;
         this.queryClass = queryClass;
         this.dataClass = dataClass;
+        this.mapper = mapper;
     }
 
     @Override
@@ -60,10 +65,16 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
     }
 
     @Override
-    public Object executeQuery(CloudEvent input, ObjectMapper mapper) {
-        return CloudEventUtils.decodeData(input, dataClass, mapper)
+    public Object executeQuery(CloudEvent input) {
+        return decodeData(input)
                 .map(this::executeQuery)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Optional<D> decodeData(CloudEvent input) {
+        return mapper == null
+                ? CloudEventUtils.decodeData(input, dataClass)
+                : CloudEventUtils.decodeData(input, dataClass, mapper);
     }
 
     private R executeQuery(D input) {

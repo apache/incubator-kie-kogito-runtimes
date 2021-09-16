@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.cloudevents.CloudEvent;
 
 public interface EventDrivenQueryExecutor {
@@ -25,6 +23,6 @@ public interface EventDrivenQueryExecutor {
 
     String getQueryName();
 
-    Object executeQuery(CloudEvent input, ObjectMapper mapper);
+    Object executeQuery(CloudEvent input);
 
 }
