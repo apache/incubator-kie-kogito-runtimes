@@ -202,6 +202,7 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
 
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
+            stringParam('PR_BRANCH', '', 'Setup a PR branch name if needed')
             stringParam('PROJECT_VERSION', '', 'Set the project version')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
@@ -223,8 +224,6 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
 
                 env('AUTHOR_CREDS_ID', "${GIT_AUTHOR_CREDENTIALS_ID}")
                 env('GITHUB_TOKEN_CREDS_ID', "${GIT_AUTHOR_TOKEN_CREDENTIALS_ID}")
-                env('GIT_AUTHOR_BOT', "${GIT_BOT_AUTHOR_NAME}")
-                env('BOT_CREDENTIALS_ID', "${GIT_BOT_AUTHOR_CREDENTIALS_ID}")
 
                 env('MAVEN_DEPENDENCIES_REPOSITORY', "${MAVEN_ARTIFACTS_REPOSITORY}")
                 env('MAVEN_DEPLOY_REPOSITORY', "${MAVEN_ARTIFACTS_REPOSITORY}")
@@ -251,6 +250,7 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
 
             // Release information which can override `deployment.properties`
             stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
+            stringParam('PR_BRANCH', '', 'Setup a PR branch name if needed') // To be removed once update-version is done via nightly
 
             stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
 
@@ -265,11 +265,8 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
             env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
 
             env('GIT_AUTHOR', "${GIT_AUTHOR_NAME}")
-
             env('AUTHOR_CREDS_ID', "${GIT_AUTHOR_CREDENTIALS_ID}")
             env('GITHUB_TOKEN_CREDS_ID', "${GIT_AUTHOR_TOKEN_CREDENTIALS_ID}")
-            env('GIT_AUTHOR_BOT', "${GIT_BOT_AUTHOR_NAME}")
-            env('BOT_CREDENTIALS_ID', "${GIT_BOT_AUTHOR_CREDENTIALS_ID}")
 
             env('MAVEN_SETTINGS_CONFIG_FILE_ID', "${MAVEN_SETTINGS_FILE_ID}")
             env('MAVEN_DEPENDENCIES_REPOSITORY', "${MAVEN_ARTIFACTS_REPOSITORY}")
