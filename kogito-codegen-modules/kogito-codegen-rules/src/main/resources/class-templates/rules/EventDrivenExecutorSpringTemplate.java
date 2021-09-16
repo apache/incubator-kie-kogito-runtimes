@@ -15,24 +15,16 @@
  */
 package com.myspace.demo;
 
-import java.util.List;
-
+import org.kie.kogito.eventdriven.rules.AbstractEventDrivenQueryExecutor;
 import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class $unit$Query$name$Endpoint {
+public class $QueryType$EventDrivenExecutor extends AbstractEventDrivenQueryExecutor<$DataType$, $ReturnType$> {
 
     @Autowired
-    RuleUnit<$UnitType$> ruleUnit;
-
-    public List<$ReturnType$> executeQuery($UnitTypeDTO$ unitDTO) {
-        RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance();
-        // Do not return the result directly to allow post execution codegen (like monitoring)
-        List<$ReturnType$> response = instance.executeQuery($unit$Query$name$.class);
-        instance.dispose();
-        return response;
+    public $QueryType$EventDrivenExecutor(RuleUnit<$DataType$> ruleUnit) {
+        super(ruleUnit, "$name$", $QueryType$.class, $DataType$.class);
     }
 }
