@@ -21,6 +21,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-messaging</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jackson</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

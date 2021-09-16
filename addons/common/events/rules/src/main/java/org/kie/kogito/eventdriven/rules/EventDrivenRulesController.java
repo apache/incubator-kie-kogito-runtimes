@@ -15,8 +15,10 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -31,6 +33,8 @@ import org.kie.kogito.event.SubscriptionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 
@@ -42,7 +46,6 @@ public class EventDrivenRulesController {
 
     public static final String REQUEST_EVENT_TYPE = "RulesRequest";
     public static final String RESPONSE_EVENT_TYPE = "RulesResponse";
-    public static final String RESPONSE_FULL_EVENT_TYPE = "RulesResponseFull";
     public static final String RESPONSE_ERROR_EVENT_TYPE = "RulesResponseError";
 
     private static final Logger LOG = LoggerFactory.getLogger(EventDrivenRulesController.class);
@@ -51,22 +54,25 @@ public class EventDrivenRulesController {
     private ConfigBean config;
     private EventEmitter eventEmitter;
     private EventReceiver eventReceiver;
+    private ObjectMapper mapper;
 
     protected EventDrivenRulesController() {
     }
 
-    protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+    protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, ObjectMapper mapper) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
+        this.mapper = mapper;
     }
 
-    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, ObjectMapper mapper) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
+        this.mapper = mapper;
         setup();
     }
 
@@ -101,32 +107,126 @@ public class EventDrivenRulesController {
             LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource(), event.getType());
         }
 
-        return Optional.of(new EvaluationContext(event, kogitoExtension, data));
+        return Optional.of(new EvaluationContext(event, kogitoExtension));
     }
 
     private EvaluationContext processRequest(EvaluationContext ctx) {
+        if (!ctx.isValidRequest()) {
+            ctx.setResponseError(RulesResponseError.BAD_REQUEST);
+            return ctx;
+        }
+
+        Optional<EventDrivenQueryExecutor> optExecutor = getExecutor(ctx.getRuleUnitId(), ctx.getQueryName());
+        if (!optExecutor.isPresent()) {
+            ctx.setResponseError(RulesResponseError.QUERY_NOT_FOUND);
+            return ctx;
+        }
+
+        EventDrivenQueryExecutor executor = optExecutor.get();
+        try {
+            Object result = executor.executeQuery(ctx.getRequestCloudEvent(), mapper);
+            ctx.setQueryResult(result);
+        } catch (RuntimeException e) {
+            ctx.setResponseError(RulesResponseError.INTERNAL_EXECUTION_ERROR);
+        }
+
         return ctx;
     }
 
+    private Optional<EventDrivenQueryExecutor> getExecutor(String ruleUnitId, String queryName) {
+        return Optional.ofNullable(executors.get(buildExecutorId(ruleUnitId, queryName)));
+    }
+
     private Optional<CloudEvent> buildResponseCloudEvent(EvaluationContext ctx) {
-        return Optional.empty();
+        String id = UUID.randomUUID().toString();
+        URI source = buildResponseCloudEventSource(ctx);
+        String subject = ctx.getRequestCloudEvent().getSubject();
+
+        KogitoExtension kogitoExtension = new KogitoExtension();
+        kogitoExtension.setRuleUnitId(ctx.getRuleUnitId());
+        kogitoExtension.setRuleUnitQuery(ctx.getQueryName());
+
+        if (ctx.isResponseError()) {
+            String data = Optional.ofNullable(ctx.getResponseError()).map(RulesResponseError::name).orElse(null);
+            return CloudEventUtils.build(id, source, RESPONSE_ERROR_EVENT_TYPE, subject, data, kogitoExtension);
+        }
+
+        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getQueryResult(), kogitoExtension);
+    }
+
+    private URI buildResponseCloudEventSource(EvaluationContext ctx) {
+        return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getQueryName());
+    }
+
+    private static String buildExecutorId(String ruleUnitId, String queryName) {
+        return String.format("%s#%s", ruleUnitId, queryName);
     }
 
     private static Map<String, EventDrivenQueryExecutor> buildExecutorsMap(Iterable<EventDrivenQueryExecutor> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false)
-                .collect(Collectors.toMap(e -> "____" + e.getRuleUnitId() + "____" + e.getQueryName() + "____", e -> e));
+                .collect(Collectors.toMap(e -> buildExecutorId(e.getRuleUnitId(), e.getQueryName()), e -> e));
     }
 
     private static class EvaluationContext {
 
         private final CloudEvent requestCloudEvent;
+        private final String ruleUnitId;
+        private final String queryName;
+        private final boolean validRequest;
 
-        public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension, Map<String, Object> requestData) {
+        private RulesResponseError responseError;
+        private Object queryResult;
+
+        public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension) {
             this.requestCloudEvent = requestCloudEvent;
+
+            this.ruleUnitId = Optional.ofNullable(requestKogitoExtension)
+                    .map(KogitoExtension::getRuleUnitId)
+                    .orElse(null);
+            this.queryName = Optional.ofNullable(requestKogitoExtension)
+                    .map(KogitoExtension::getRuleUnitQuery)
+                    .orElse(null);
+
+            this.validRequest = requestCloudEvent != null
+                    && requestKogitoExtension != null
+                    && ruleUnitId != null && !ruleUnitId.isEmpty()
+                    && queryName != null && !queryName.isEmpty();
         }
 
         public CloudEvent getRequestCloudEvent() {
             return requestCloudEvent;
+        }
+
+        public String getRuleUnitId() {
+            return ruleUnitId;
+        }
+
+        public String getQueryName() {
+            return queryName;
+        }
+
+        public boolean isValidRequest() {
+            return validRequest;
+        }
+
+        boolean isResponseError() {
+            return queryResult == null;
+        }
+
+        public RulesResponseError getResponseError() {
+            return responseError;
+        }
+
+        public void setResponseError(RulesResponseError responseError) {
+            this.responseError = responseError;
+        }
+
+        public Object getQueryResult() {
+            return queryResult;
+        }
+
+        public void setQueryResult(Object queryResult) {
+            this.queryResult = queryResult;
         }
     }
 

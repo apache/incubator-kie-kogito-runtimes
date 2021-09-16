@@ -15,16 +15,8 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.cloudevents.CloudEvent;
-
-public interface EventDrivenQueryExecutor {
-
-    String getRuleUnitId();
-
-    String getQueryName();
-
-    Object executeQuery(CloudEvent input, ObjectMapper mapper);
-
+public enum RulesResponseError {
+    BAD_REQUEST,
+    QUERY_NOT_FOUND,
+    INTERNAL_EXECUTION_ERROR
 }

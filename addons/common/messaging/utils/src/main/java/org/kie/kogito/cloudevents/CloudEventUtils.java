@@ -118,8 +118,12 @@ public final class CloudEventUtils {
     }
 
     public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass) {
+        return decodeData(event, dataClass, Mapper.mapper());
+    }
+
+    public static <T> Optional<T> decodeData(CloudEvent event, Class<T> dataClass, ObjectMapper mapper) {
         try {
-            final PojoCloudEventData<T> cloudEventData = mapData(event, PojoCloudEventDataMapper.from(Mapper.mapper(), dataClass));
+            final PojoCloudEventData<T> cloudEventData = mapData(event, PojoCloudEventDataMapper.from(mapper, dataClass));
             if (cloudEventData == null) {
                 return Optional.empty();
             }
@@ -198,10 +202,14 @@ public final class CloudEventUtils {
     // This trick allows to inject a mocked ObjectMapper in the unit tests via Mockito#mockStatic
     public static final class Mapper {
 
-        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
+        private static final ObjectMapper OBJECT_MAPPER = newMapper();
 
         private Mapper() {
 
+        }
+
+        public static ObjectMapper newMapper() {
+            return new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
         }
 
         public static ObjectMapper mapper() {

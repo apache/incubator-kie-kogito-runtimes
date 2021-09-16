@@ -21,6 +21,8 @@ import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitQuery;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.cloudevents.CloudEvent;
 
 public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R> implements EventDrivenQueryExecutor {
@@ -58,8 +60,8 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
     }
 
     @Override
-    public Object executeQuery(CloudEvent input) {
-        return CloudEventUtils.decodeData(input, dataClass)
+    public Object executeQuery(CloudEvent input, ObjectMapper mapper) {
+        return CloudEventUtils.decodeData(input, dataClass, mapper)
                 .map(this::executeQuery)
                 .orElseThrow(IllegalArgumentException::new);
     }
