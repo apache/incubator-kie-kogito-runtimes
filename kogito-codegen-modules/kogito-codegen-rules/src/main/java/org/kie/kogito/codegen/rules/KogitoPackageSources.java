@@ -55,14 +55,17 @@ public class KogitoPackageSources extends PackageSources {
             REFLECTION_PERMISSIONS +
             "    }\n" +
             "]";
+
     private GeneratedFile reflectConfigSource;
-    private Map<String, String> modelsByUnit = new HashMap<>();
     private Collection<RuleUnitDescription> ruleUnits;
     private String rulesFileName;
     private Map<String, Collection<QueryModel>> queries;
 
+    private String pkgName;
+
     public static KogitoPackageSources dumpSources(PackageModel pkgModel) {
         KogitoPackageSources sources = dumpPojos(pkgModel);
+        sources.pkgName = pkgModel.getName();
 
         PackageModelWriter packageModelWriter = new PackageModelWriter(pkgModel);
 
@@ -78,7 +81,6 @@ public class KogitoPackageSources extends PackageSources {
             }
         }
 
-        sources.modelsByUnit.putAll(rules.getModelsByUnit());
         return sources;
     }
 
@@ -109,8 +111,8 @@ public class KogitoPackageSources extends PackageSources {
         return pojoClasses.stream().collect(Collectors.joining(JSON_DELIMITER, JSON_PREFIX, JSON_SUFFIX));
     }
 
-    public Map<String, String> getModelsByUnit() {
-        return modelsByUnit;
+    public String getPackageName() {
+        return pkgName;
     }
 
     public Collection<RuleUnitDescription> getRuleUnits() {

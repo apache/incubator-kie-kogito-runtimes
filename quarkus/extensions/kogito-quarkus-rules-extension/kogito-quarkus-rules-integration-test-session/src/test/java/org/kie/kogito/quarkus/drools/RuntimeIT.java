@@ -15,17 +15,23 @@
  */
 package org.kie.kogito.quarkus.drools;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.kie.api.KieBase;
+import org.kie.api.definition.KiePackage;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 
 import io.quarkus.test.junit.QuarkusTest;
 
+import static io.smallrye.common.constraint.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
@@ -36,7 +42,13 @@ public class RuntimeIT {
 
     @Test
     public void testRuleEvaluation() {
-        KieSession ksession = runtimeBuilder.newKieSession("canDrinkKS");
+        // canDrinkKS is the default session
+        KieSession ksession = runtimeBuilder.newKieSession();
+
+        List<String> pkgNames = ksession.getKieBase().getKiePackages().stream().map(KiePackage::getName).collect(Collectors.toList());
+        assertEquals(2, pkgNames.size());
+        assertTrue(pkgNames.contains("org.kie.kogito.quarkus.drools"));
+        assertTrue(pkgNames.contains("org.drools.simple.candrink"));
 
         Result result = new Result();
         ksession.insert(result);
@@ -65,19 +77,16 @@ public class RuntimeIT {
     }
 
     @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
     public void testFireUntiHalt() {
         KieSession ksession = runtimeBuilder.newKieSession("probeKS");
-
-        SessionPseudoClock clock = ksession.getSessionClock();
 
         new Thread(ksession::fireUntilHalt).start();
         final ProbeCounter pc = new ProbeCounter();
 
         ksession.insert(pc);
-        clock.advanceTime(1, TimeUnit.SECONDS);
         for (int i = 0; i < 10; i++) {
             ksession.insert(new ProbeEvent(i));
-            clock.advanceTime(1, TimeUnit.SECONDS);
         }
 
         synchronized (pc) {
@@ -85,11 +94,23 @@ public class RuntimeIT {
                 try {
                     pc.wait();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
 
         assertEquals(10, pc.getTotal());
+    }
+
+    @Test
+    public void testAllPkgsKBase() {
+        KieBase kBase = runtimeBuilder.getKieBase("allKB");
+
+        List<String> pkgNames = kBase.getKiePackages().stream().map(KiePackage::getName).collect(Collectors.toList());
+        assertEquals(4, pkgNames.size());
+        assertTrue(pkgNames.contains("org.kie.kogito.quarkus.drools"));
+        assertTrue(pkgNames.contains("org.drools.simple.candrink"));
+        assertTrue(pkgNames.contains("org.drools.cep"));
+        assertTrue(pkgNames.contains("org.drools.probe"));
     }
 }

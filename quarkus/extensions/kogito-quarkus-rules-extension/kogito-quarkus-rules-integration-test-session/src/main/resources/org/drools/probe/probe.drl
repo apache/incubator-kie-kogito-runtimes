@@ -12,7 +12,7 @@ end
 
 rule "Probe rule" when
     $pc : ProbeCounter()
-    $pe : ProbeEvent( this after $pc )
+    $pe : ProbeEvent( this not before $pc )
 then
    $pc.addValue();
 end
