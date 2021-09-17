@@ -29,7 +29,7 @@ import org.kie.kogito.incubation.rules.RuleUnitIds;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestTypes {
+public class RuleUnitServiceInterfaceTest {
     public static class MyRuleUnitDefinition {
     }
 

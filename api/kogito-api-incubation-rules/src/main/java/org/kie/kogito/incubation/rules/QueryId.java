@@ -26,9 +26,9 @@ public class QueryId extends LocalUriId implements LocalId {
 
     public QueryId(RuleUnitId ruleUnitId, String queryId) {
         super(ruleUnitId.asLocalUri().append(PREFIX).append(queryId));
-        LocalId localDecisionId = ruleUnitId.toLocalId();
-        if (!localDecisionId.asLocalUri().startsWith(RuleUnitId.PREFIX)) {
-            throw new IllegalArgumentException("Not a valid rule unit path "); // fixme use typed exception
+        LocalId localId = ruleUnitId.toLocalId();
+        if (!localId.asLocalUri().startsWith(RuleUnitId.PREFIX)) {
+            throw new InvalidRuleUnitIdException(localId); // fixme use typed exception
         }
 
         this.ruleUnitId = ruleUnitId;
