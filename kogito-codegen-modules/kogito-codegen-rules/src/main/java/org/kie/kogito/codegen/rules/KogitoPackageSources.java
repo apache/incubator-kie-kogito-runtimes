@@ -28,7 +28,6 @@ import org.drools.modelcompiler.builder.PackageModel;
 import org.drools.modelcompiler.builder.PackageModelWriter;
 import org.drools.modelcompiler.builder.PackageSources;
 import org.drools.modelcompiler.builder.QueryModel;
-import org.drools.modelcompiler.builder.RuleWriter;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,11 +64,10 @@ public class KogitoPackageSources extends PackageSources {
 
     public static KogitoPackageSources dumpSources(PackageModel pkgModel) {
         KogitoPackageSources sources = dumpPojos(pkgModel);
-        sources.pkgName = pkgModel.getName();
 
         PackageModelWriter packageModelWriter = new PackageModelWriter(pkgModel);
 
-        RuleWriter rules = PackageSources.writeRules(pkgModel, sources, packageModelWriter);
+        PackageSources.writeRules(pkgModel, sources, packageModelWriter);
         sources.rulesFileName = pkgModel.getRulesFileName();
 
         sources.ruleUnits = pkgModel.getRuleUnits();
@@ -84,8 +82,9 @@ public class KogitoPackageSources extends PackageSources {
         return sources;
     }
 
-    public static KogitoPackageSources dumpPojos(PackageModel pkgModel) {
+    private static KogitoPackageSources dumpPojos(PackageModel pkgModel) {
         KogitoPackageSources sources = new KogitoPackageSources();
+        sources.pkgName = pkgModel.getName();
 
         List<String> pojoClasses = new ArrayList<>();
         PackageModelWriter packageModelWriter = new PackageModelWriter(pkgModel);

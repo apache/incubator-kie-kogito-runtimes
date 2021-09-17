@@ -31,8 +31,8 @@ import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import static io.smallrye.common.constraint.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class RuntimeIT {

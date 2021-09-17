@@ -172,8 +172,8 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }
 
-        Map<String, String> modelsByPackage = new HashMap<>();
-        List<GeneratedFile> generatedFiles = new ArrayList<>(generateModels(modelBuilder, modelsByPackage));
+        Map<String, String> modelsByPackageForLegacyApi = new HashMap<>();
+        List<GeneratedFile> generatedFiles = new ArrayList<>(generateModels(modelBuilder, modelsByPackageForLegacyApi));
 
         List<DroolsError> errors = new ArrayList<>();
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
@@ -181,7 +181,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         if (hasRuleUnits) {
             generateRuleUnits(errors, generatedFiles);
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
-            generateProject(dummyReleaseId, modelsByPackage, generatedFiles);
+            generateProject(dummyReleaseId, modelsByPackageForLegacyApi, generatedFiles);
         } else if (hasRuleFiles()) { // this additional check is necessary because also properties or java files can be loaded
             throw new IllegalStateException("Found DRL files using legacy API, add org.kie.kogito:kogito-legacy-api dependency to enable it");
         }
@@ -231,12 +231,12 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return resources.stream().filter(r -> r.getSourcePath().equals(resource.getSourcePath() + ".properties")).findFirst().orElse(null);
     }
 
-    private List<GeneratedFile> generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> modelsByPackage) {
+    private List<GeneratedFile> generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> modelsByPackageForLegacyApi) {
         List<GeneratedFile> modelFiles = new ArrayList<>();
         List<org.drools.modelcompiler.builder.GeneratedFile> legacyModelFiles = new ArrayList<>();
 
         for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
-            modelsByPackage.put(pkgSources.getPackageName(), pkgSources.getPackageName() + "." + pkgSources.getRulesFileName());
+            modelsByPackageForLegacyApi.put(pkgSources.getPackageName(), pkgSources.getPackageName() + "." + pkgSources.getRulesFileName());
 
             pkgSources.collectGeneratedFiles(legacyModelFiles);
 
