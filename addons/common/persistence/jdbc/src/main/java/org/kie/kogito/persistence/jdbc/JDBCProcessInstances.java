@@ -15,14 +15,7 @@
  */
 package org.kie.kogito.persistence.jdbc;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,28 +40,6 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     static final String PAYLOAD = "payload";
     static final String VERSION = "version";
 
-    enum DatabaseType {
-        POSTGRES("PostgreSQL", "process_instances"),
-        ORACLE("Oracle", "PROCESS_INSTANCES");
-
-        private final String dbIdentifier;
-        private final String tableNamePattern;
-
-        DatabaseType(final String dbIdentifier, final String tableNamePattern) {
-            this.dbIdentifier = dbIdentifier;
-            this.tableNamePattern = tableNamePattern;
-        }
-
-        public static DatabaseType create(final String dbIdentifier) {
-            if ("Oracle".equals(dbIdentifier)) {
-                return ORACLE;
-            } else if ("PostgreSQL".equals(dbIdentifier)) {
-                return POSTGRES;
-            }
-            return null;
-        }
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCProcessInstances.class);
 
     private final Process<?> process;
@@ -76,8 +47,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     private final boolean autoDDL;
     private final DataSource dataSource;
     private final boolean lock;
-
-    private Repository repository;
+    private final Repository repository;
 
     public JDBCProcessInstances(Process<?> process, DataSource dataSource, boolean autoDDL, boolean lock) {
         this.dataSource = dataSource;
@@ -85,6 +55,7 @@ public class JDBCProcessInstances implements MutableProcessInstances {
         this.autoDDL = autoDDL;
         this.lock = lock;
         this.marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
+        this.repository = new GenericRepository();
         init();
     }
 
@@ -93,68 +64,14 @@ public class JDBCProcessInstances implements MutableProcessInstances {
             LOGGER.debug("Auto DDL is disabled, do not running initializer scripts");
             return;
         }
-
-        try (Connection connection = dataSource.getConnection()) {
-            final DatabaseMetaData metaData = connection.getMetaData();
-            final String dbProductName = metaData.getDatabaseProductName();
-            DatabaseType databaseType = DatabaseType.create(dbProductName);
-            if (databaseType == null) {
-                throw new Exception("Database (" + dbProductName + ") not suported");
-            }
-            switch (databaseType) {
-                case ORACLE:
-                    repository = new OracleRepository();
-                    break;
-                case POSTGRES:
-                    repository = new PostgresRepository();
-                    break;
-            }
-
-            final String[] types = { "TABLE" };
-            ResultSet tables = metaData.getTables(null, null, databaseType.tableNamePattern, types);
-            boolean exist = false;
-            while (tables.next()) {
-                LOGGER.debug("Found process_instance table");
-                exist = true;
-            }
-
-            if (!exist) {
-                LOGGER.info("dynamically creating process_instances table");
-                createTable(connection, databaseType);
-            }
-
-        } catch (Exception e) {
-            //not break the execution flow in case of any missing permission for db application user, for instance.
-            LOGGER.error("Error creating process_instances table, the database should be configured properly before " +
-                    "starting the application", e);
-        }
-    }
-
-    private void createTable(final Connection connection, final DatabaseType dbType) {
         try {
-            final List<String> statements = getQueryFromFile(dbType.dbIdentifier, "create_tables");
-            for (String s : statements) {
-                PreparedStatement prepareStatement = connection.prepareStatement(s.trim());
-                prepareStatement.execute();
+            if (!repository.tableExists(dataSource)) {
+                LOGGER.info("dynamically creating process_instances table");
+                repository.createTable(dataSource);
             }
-            LOGGER.info("DDL successfully done for ProcessInstance");
-        } catch (SQLException e1) {
-            LOGGER.error("Error creating process_instances table", e1);
-        }
-    }
-
-    private List<String> getQueryFromFile(final String dbType, final String scriptName) {
-        final String fileName = String.format("sql/%s_%s.sql", scriptName, dbType);
-        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
-            if (stream == null) {
-                throw new Exception();
-            }
-            byte[] buffer = new byte[stream.available()];
-            stream.read(buffer);
-            String[] statments = new String(buffer).split(";");
-            return List.of(statments);
         } catch (Exception e) {
-            throw uncheckedException(e, "Error reading query script file %s", fileName);
+            // not break the execution flow in case of any missing permission for db application user, for instance.
+            LOGGER.error(e.getMessage(), e);
         }
     }
 

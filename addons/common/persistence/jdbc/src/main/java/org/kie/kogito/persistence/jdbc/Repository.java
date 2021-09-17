@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-public abstract class Repository {
+abstract class Repository {
 
     static final String INSERT = "INSERT INTO process_instances (id, payload, process_id, version) VALUES (?, ?, ?, ?)";
     static final String FIND_ALL = "SELECT payload FROM process_instances WHERE process_id = ?";
@@ -30,6 +30,10 @@ public abstract class Repository {
     static final String UPDATE_WITH_LOCK = "UPDATE process_instances SET payload = ?, version = ? WHERE id = ? and version = ?";
     static final String DELETE = "DELETE FROM process_instances WHERE id = ?";
     static final String COUNT = "SELECT COUNT(id) FROM process_instances WHERE process_id = ?";
+
+    abstract boolean tableExists(DataSource dataSource);
+
+    abstract void createTable(DataSource dataSource);
 
     abstract void insertInternal(DataSource dataSource, String processId, UUID id, byte[] payload);
 

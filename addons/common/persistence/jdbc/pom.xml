@@ -7,7 +7,6 @@
   </parent>
   <artifactId>kogito-addons-persistence-jdbc</artifactId>
   <name>Kogito :: Add-Ons :: Persistence :: JDBC</name>
-  <!-- <version>2.0.1-SNAPSHOT</version> -->
 
   <description>JDBC based persistence for Kogito</description>
 

@@ -1,5 +1,5 @@
 CREATE TABLE process_instances(
-    id uuid NOT NULL,
+    id character(36) NOT NULL,
     payload bytea NOT NULL,
     process_id character varying NOT NULL,
     version bigint,
