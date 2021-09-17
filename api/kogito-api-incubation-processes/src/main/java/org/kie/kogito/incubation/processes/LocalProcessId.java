@@ -15,23 +15,16 @@
  */
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.LocalUri;
 import org.kie.kogito.incubation.common.LocalUriId;
 
-public class ProcessId extends LocalUriId implements LocalId {
-    public static class Factory implements ComponentRoot {
-        public ProcessId get(String processId) {
-            return new ProcessId(processId);
-        }
-    }
-
+public class LocalProcessId extends LocalUriId implements LocalId {
     public static final String PREFIX = "processes";
 
     private final String processId;
 
-    public ProcessId(String processId) {
+    public LocalProcessId(String processId) {
         super(LocalUri.Root.append(PREFIX).append(processId));
         this.processId = processId;
     }
@@ -40,8 +33,8 @@ public class ProcessId extends LocalUriId implements LocalId {
         return processId;
     }
 
-    public ProcessInstanceId.Factory instances() {
-        return new ProcessInstanceId.Factory(this);
+    public ProcessInstanceIds instances() {
+        return new ProcessInstanceIds(this);
     }
 
     @Override

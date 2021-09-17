@@ -16,10 +16,14 @@
 
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
+public class ProcessInstanceIds {
+    private final LocalProcessId processId;
 
-public class ProcessIds implements ComponentRoot {
-    public LocalProcessId get(String processId) {
-        return new LocalProcessId(processId);
+    public ProcessInstanceIds(LocalProcessId processId) {
+        this.processId = processId;
+    }
+
+    public ProcessInstanceId get(String processInstanceId) {
+        return new ProcessInstanceId(processId, processInstanceId);
     }
 }

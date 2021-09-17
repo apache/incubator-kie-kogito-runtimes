@@ -18,7 +18,7 @@ package org.kie.kogito.incubation.processes.services;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.common.*;
-import org.kie.kogito.incubation.processes.ProcessId;
+import org.kie.kogito.incubation.processes.LocalProcessId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,7 +39,7 @@ public class TestTypes {
         };
         MapDataContext ctx = MapDataContext.create(); // suppose there is a Map-like structure
                                                       // (it could be even just Map)
-        ProcessId someProcessId = new ProcessId("some.process");
+        LocalProcessId someProcessId = new LocalProcessId("some.process");
 
         // set a context using a Map-like interface
         ctx.set("someParam", 1);

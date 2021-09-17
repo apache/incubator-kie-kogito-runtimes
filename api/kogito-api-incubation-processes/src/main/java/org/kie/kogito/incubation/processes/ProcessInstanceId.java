@@ -20,27 +20,15 @@ import org.kie.kogito.incubation.common.LocalUriId;
 
 public class ProcessInstanceId extends LocalUriId implements LocalId {
 
-    public static class Factory {
-        private final ProcessId processId;
-
-        public Factory(ProcessId processId) {
-            this.processId = processId;
-        }
-
-        public ProcessInstanceId get(String processInstanceId) {
-            return new ProcessInstanceId(processId, processInstanceId);
-        }
-    }
-
     public static final String PREFIX = "instances";
 
-    private final ProcessId processId;
+    private final LocalProcessId processId;
     private final String processInstanceId;
 
-    public ProcessInstanceId(ProcessId processId, String processInstanceId) {
+    public ProcessInstanceId(LocalProcessId processId, String processInstanceId) {
         super(processId.asLocalUri().append(processInstanceId));
         LocalId localDecisionId = processId.toLocalId();
-        if (!localDecisionId.asLocalUri().startsWith(ProcessId.PREFIX)) {
+        if (!localDecisionId.asLocalUri().startsWith(LocalProcessId.PREFIX)) {
             throw new IllegalArgumentException("Not a valid process path"); // fixme use typed exception
         }
 
@@ -53,7 +41,7 @@ public class ProcessInstanceId extends LocalUriId implements LocalId {
         return this;
     }
 
-    public ProcessId processId() {
+    public LocalProcessId processId() {
         return processId;
     }
 
