@@ -34,11 +34,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-class JdbcProcessInstancesIT extends TestHelper {
+class PostgresProcessInstancesIT extends TestHelper {
 
     @Test
     void testBasicTaskFlow() {
-        BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2", false);
+        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, false);
+        BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections
                 .singletonMap("test", "test")));
         processInstance.start();
@@ -72,7 +73,8 @@ class JdbcProcessInstancesIT extends TestHelper {
 
     @Test
     void testBasicFlow() {
-        BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2", false);
+        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, false);
+        BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections
                 .singletonMap("test",
                         "test")));

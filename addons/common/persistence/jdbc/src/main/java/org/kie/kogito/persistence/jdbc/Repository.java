@@ -29,7 +29,7 @@ abstract class Repository {
     static final String UPDATE = "UPDATE process_instances SET payload = ? WHERE id = ?";
     static final String UPDATE_WITH_LOCK = "UPDATE process_instances SET payload = ?, version = ? WHERE id = ? and version = ?";
     static final String DELETE = "DELETE FROM process_instances WHERE id = ?";
-    static final String COUNT = "SELECT COUNT(id) FROM process_instances WHERE process_id = ?";
+    static final String COUNT = "SELECT COUNT(id) as count FROM process_instances WHERE process_id = ?";
 
     abstract boolean tableExists(DataSource dataSource);
 

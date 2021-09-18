@@ -78,6 +78,12 @@
       <groupId>org.testcontainers</groupId>
       <artifactId>oracle-xe</artifactId>
       <version>${version.org.testcontainers}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc11</artifactId>
+      <version>21.3.0.0</version>
     </dependency>
 
     <dependency>

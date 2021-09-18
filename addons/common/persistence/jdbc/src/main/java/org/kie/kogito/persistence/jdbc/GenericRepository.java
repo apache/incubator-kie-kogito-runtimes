@@ -94,8 +94,9 @@ public class GenericRepository extends Repository {
             DatabaseType databaseType = getDataBaseType(connection);
             final List<String> statements = FileLoader.getQueryFromFile(databaseType.dbIdentifier, "create_tables");
             for (String s : statements) {
-                PreparedStatement prepareStatement = connection.prepareStatement(s.trim());
-                prepareStatement.execute();
+                try (PreparedStatement prepareStatement = connection.prepareStatement(s.trim())) {
+                    prepareStatement.execute();
+                }
             }
             LOGGER.info("DDL successfully done for ProcessInstance");
         } catch (SQLException e) {
@@ -141,7 +142,7 @@ public class GenericRepository extends Repository {
             int count = statement.executeUpdate();
             return count == 1;
         } catch (Exception e) {
-            throw uncheckedException(e, "Error updating process instance %s", id);
+            throw uncheckedException(e, "Error updating with lock process instance %s", id);
         }
     }
 

@@ -28,11 +28,12 @@ import org.kie.kogito.process.bpmn2.BpmnVariables;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class JdbcProcessInstancesWithLockIT extends TestHelper {
+class PostgresProcessInstancesWithLockIT extends TestHelper {
 
     @Test
     public void testUpdate() {
-        BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2", true);
+        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, true);
+        BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
@@ -62,7 +63,8 @@ class JdbcProcessInstancesWithLockIT extends TestHelper {
 
     @Test
     public void testRemove() {
-        BpmnProcess process = createProcess(null, "BPMN2-UserTask.bpmn2", true);
+        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, true);
+        BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
