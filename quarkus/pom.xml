@@ -16,12 +16,12 @@
   <description>Parent project for all Quarkus related modules</description>
 
   <packaging>pom</packaging>
-  
+
   <modules>
     <module>bom</module>
-    <module>test</module>
     <module>extensions</module>
     <module>addons</module>
+    <module>test</module>
   </modules>
 
   <build>

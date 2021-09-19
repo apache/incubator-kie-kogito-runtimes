@@ -64,14 +64,18 @@ public class ProtoField {
         this.comment = comment;
     }
 
-    @Override
-    public String toString() {
+    public String serialize() {
         StringBuilder tostring = new StringBuilder();
         if (comment != null) {
-            tostring.append("\t/* " + comment + " */ \n");
+            tostring.append("\t/* ").append(comment).append(" */ \n");
         }
-        tostring.append("\t" + applicability + " " + type + " " + name + " = " + index + "; \n");
+        tostring.append("\t").append(applicability).append(" ").append(type).append(" ").append(name).append(" = ").append(index).append("; \n");
         return tostring.toString();
+    }
+
+    @Override
+    public String toString() {
+        return serialize();
     }
 
     @Override
