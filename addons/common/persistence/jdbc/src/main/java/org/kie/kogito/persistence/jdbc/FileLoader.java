@@ -24,7 +24,7 @@ public class FileLoader {
         final String fileName = String.format("sql/%s_%s.sql", scriptName, dbType);
         try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             if (stream == null) {
-                throw new Exception();
+                throw new IllegalStateException(String.format("Impossible to find %s", fileName);
             }
             byte[] buffer = new byte[stream.available()];
             stream.read(buffer);
