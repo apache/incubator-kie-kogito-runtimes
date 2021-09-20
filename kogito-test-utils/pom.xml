@@ -83,7 +83,7 @@
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc11</artifactId>
-      <version>21.3.0.0</version>
+      <version>{version.com.oracle.database.jdbc}</version>
     </dependency>
 
     <dependency>
