@@ -33,8 +33,6 @@ public class KogitoOracleSqlContainer extends OracleContainer implements TestRes
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoOracleSqlContainer.class);
 
     public static final String ORACLE_CONNECTION_URI = "kogito.persistence.oracle.connection.uri";
-    //Not difined `public` in testcontainers
-    private static final int ORACLE_PORT = 1521;
 
     public KogitoOracleSqlContainer() {
         super("oracleinanutshell/oracle-xe-11g");
@@ -50,12 +48,12 @@ public class KogitoOracleSqlContainer extends OracleContainer implements TestRes
     @Override
     public void start() {
         super.start();
-        LOGGER.info("Oracle server: {}", this.getContainerIpAddress() + ":" + this.getMappedPort(ORACLE_PORT));
+        LOGGER.info("Oracle server: {}", this.getContainerIpAddress() + ":" + this.getOraclePort());
     }
 
     @Override
     public int getMappedPort() {
-        return getMappedPort(ORACLE_PORT);
+        return getOraclePort();
     }
 
     @Override
