@@ -16,66 +16,19 @@
 package org.kie.kogito.codegen.rules;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.drools.compiler.compiler.DroolsError;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
 
-import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_FOLDER;
-
-public class QueryEventDrivenExecutorGenerator implements RuleFileGenerator {
-
-    private final RuleUnitDescription ruleUnit;
-    private final QueryModel query;
-    private final KogitoBuildContext context;
-
-    private final String queryName;
-    private final String queryClassName;
-    private final TemplatedGenerator generator;
+public class QueryEventDrivenExecutorGenerator extends AbstractQueryEntrypointGenerator {
 
     public QueryEventDrivenExecutorGenerator(RuleUnitDescription ruleUnit, QueryModel query, KogitoBuildContext context) {
-        this.ruleUnit = ruleUnit;
-        this.query = query;
-        this.context = context;
-
-        this.queryName = toCamelCase(query.getName());
-        this.queryClassName = ruleUnit.getSimpleName() + "Query" + queryName;
-
-        String targetClassName = queryClassName + "EventDrivenExecutor";
-        this.generator = TemplatedGenerator.builder()
-                .withPackageName(query.getNamespace())
-                .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
-                .withTargetTypeName(targetClassName)
-                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, "EventDrivenExecutor");
-    }
-
-    @Override
-    public String generatedFilePath() {
-        return generator.generatedFilePath();
-    }
-
-    @Override
-    public boolean validate() {
-        return !query.getBindings().isEmpty();
-    }
-
-    @Override
-    public DroolsError getError() {
-        if (query.getBindings().isEmpty()) {
-            return new NoBindingQuery(query);
-        }
-        return null;
+        super(ruleUnit, query, context, "EventDrivenExecutor", "EventDrivenExecutor");
     }
 
     @Override
@@ -101,52 +54,5 @@ public class QueryEventDrivenExecutorGenerator implements RuleFileGenerator {
                 : bindings.values().iterator().next().getCanonicalName();
 
         return String.format("java.util.List<%s>", innerType);
-    }
-
-    private static String toCamelCase(String inputString) {
-        return Stream.of(inputString.split(" "))
-                .map(s -> s.length() > 1 ? s.substring(0, 1).toUpperCase() + s.substring(1) : s.substring(0, 1).toUpperCase())
-                .collect(Collectors.joining());
-    }
-
-    private static class NoBindingQuery extends DroolsError {
-
-        private static final int[] ERROR_LINES = new int[0];
-
-        private final QueryModel query;
-
-        public NoBindingQuery(QueryModel query) {
-            this.query = query;
-        }
-
-        @Override
-        public String getMessage() {
-            return "Query " + query.getName() + " has no bound variable. At least one binding is required to determine the value returned by this query";
-        }
-
-        @Override
-        public int[] getLines() {
-            return ERROR_LINES;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            if (!super.equals(o)) {
-                return false;
-            }
-            NoBindingQuery that = (NoBindingQuery) o;
-            return Objects.equals(query, that.query);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(super.hashCode(), query);
-        }
     }
 }
