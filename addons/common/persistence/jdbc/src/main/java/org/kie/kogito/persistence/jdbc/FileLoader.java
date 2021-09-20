@@ -28,8 +28,8 @@ public class FileLoader {
             }
             byte[] buffer = new byte[stream.available()];
             stream.read(buffer);
-            String[] statments = new String(buffer).split(";");
-            return List.of(statments);
+            String[] statements = new String(buffer).split(";");
+            return Arrays.asList(statements);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Error reading query script file %s", fileName), e);
         }
