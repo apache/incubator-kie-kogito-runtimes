@@ -51,10 +51,14 @@ public class GenericRepository extends Repository {
             this.tableNamePattern = tableNamePattern;
         }
 
+        String getDbIdentifier() {
+            return this.dbIdentifier;
+        }
+
         public static DatabaseType create(final String dbIdentifier) {
-            if ("Oracle".equals(dbIdentifier)) {
+            if (ORACLE.getDbIdentifier().equals(dbIdentifier)) {
                 return ORACLE;
-            } else if ("PostgreSQL".equals(dbIdentifier)) {
+            } else if (POSTGRES.getDbIdentifier().equals(dbIdentifier)) {
                 return POSTGRES;
             } else {
                 var msg = String.format("Unrecognized DB (%s), defaulting to postgres", dbIdentifier);
