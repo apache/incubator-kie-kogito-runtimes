@@ -202,14 +202,10 @@ public final class CloudEventUtils {
     // This trick allows to inject a mocked ObjectMapper in the unit tests via Mockito#mockStatic
     public static final class Mapper {
 
-        private static final ObjectMapper OBJECT_MAPPER = newMapper();
+        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
 
         private Mapper() {
 
-        }
-
-        public static ObjectMapper newMapper() {
-            return new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
         }
 
         public static ObjectMapper mapper() {

@@ -16,14 +16,14 @@
 package com.myspace.demo;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.quarkus.runtime.Startup;
 import org.kie.kogito.eventdriven.rules.AbstractEventDrivenQueryExecutor;
 import org.kie.kogito.rules.RuleUnit;
 
-@Startup
+@ApplicationScoped
 public class $QueryType$EventDrivenExecutor extends AbstractEventDrivenQueryExecutor<$DataType$, $ReturnType$> {
 
     @Inject

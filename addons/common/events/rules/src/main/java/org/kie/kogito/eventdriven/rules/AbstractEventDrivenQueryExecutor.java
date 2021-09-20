@@ -67,7 +67,7 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
     @Override
     public Object executeQuery(CloudEvent input) {
         return decodeData(input)
-                .map(this::executeQuery)
+                .map(this::internalExecuteQuery)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
                 : CloudEventUtils.decodeData(input, dataClass, mapper);
     }
 
-    private R executeQuery(D input) {
+    private R internalExecuteQuery(D input) {
         RuleUnitInstance<D> instance = ruleUnit.createInstance(input);
         R response = instance.executeQuery(queryClass);
         instance.dispose();

@@ -16,6 +16,7 @@
 package org.kie.kogito.eventdriven.rules;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -23,9 +24,7 @@ import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 
-import io.quarkus.runtime.Startup;
-
-@Startup
+@ApplicationScoped
 public class QuarkusEventDrivenRulesController extends EventDrivenRulesController {
 
     @Inject
