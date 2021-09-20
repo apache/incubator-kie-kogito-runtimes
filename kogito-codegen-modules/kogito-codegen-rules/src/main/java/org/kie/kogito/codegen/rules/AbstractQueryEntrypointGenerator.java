@@ -38,7 +38,7 @@ public abstract class AbstractQueryEntrypointGenerator implements RuleFileGenera
     protected final String targetClassName;
     protected final TemplatedGenerator generator;
 
-    public AbstractQueryEntrypointGenerator(
+    protected AbstractQueryEntrypointGenerator(
             RuleUnitDescription ruleUnit,
             QueryModel query,
             KogitoBuildContext context,

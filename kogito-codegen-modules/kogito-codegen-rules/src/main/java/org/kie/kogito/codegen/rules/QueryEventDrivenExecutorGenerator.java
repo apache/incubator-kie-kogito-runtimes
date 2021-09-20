@@ -15,44 +15,62 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.Map;
-
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class QueryEventDrivenExecutorGenerator extends AbstractQueryEntrypointGenerator {
 
+    private final String dataType;
+    private final String returnType;
+
     public QueryEventDrivenExecutorGenerator(RuleUnitDescription ruleUnit, QueryModel query, KogitoBuildContext context) {
         super(ruleUnit, query, context, "EventDrivenExecutor", "EventDrivenExecutor");
+        this.dataType = ruleUnit.getCanonicalName() + (context.hasDI() ? "" : "DTO");
+        this.returnType = String.format("java.util.List<%s>", query.getBindings().size() != 1
+                ? queryClassName + ".Result"
+                : query.getBindings().values().iterator().next().getCanonicalName());
     }
 
     @Override
     public GeneratedFile generate() {
-        CompilationUnit cu = generator.compilationUnitWithReplacementsOrThrow("Could not create CompilationUnit",
-                t -> t.replace("$QueryType$", queryClassName)
-                        .replace("$DataType$", getDataType())
-                        .replace("$ReturnType$", getReturnType())
-                        .replace("$name$", queryName));
+        CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
+
+        ClassOrInterfaceDeclaration classDecl = cu.findFirst(ClassOrInterfaceDeclaration.class)
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Cannot find class declaration"));
+
+        classDecl.setName(targetClassName);
+        classDecl.findAll(ClassOrInterfaceType.class).forEach(this::interpolateClassOrInterfaceType);
+        classDecl.findAll(ConstructorDeclaration.class).forEach(this::interpolateConstructorDeclaration);
+        classDecl.findAll(StringLiteralExpr.class).forEach(this::interpolateStringLiteral);
 
         return new GeneratedFile(GeneratedFileType.SOURCE, generatedFilePath(), cu.toString());
     }
 
-    private String getDataType() {
-        return ruleUnit.getCanonicalName() + (context.hasDI() ? "" : "DTO");
+    private void interpolateClassOrInterfaceType(ClassOrInterfaceType input) {
+        input.setName(interpolatedTypeNameFrom(input.getNameAsString()));
     }
 
-    private String getReturnType() {
-        Map<String, Class<?>> bindings = query.getBindings();
+    private void interpolateConstructorDeclaration(ConstructorDeclaration input) {
+        input.setName(interpolatedTypeNameFrom(input.getNameAsString()));
+    }
 
-        String innerType = bindings.size() != 1
-                ? queryClassName + ".Result"
-                : bindings.values().iterator().next().getCanonicalName();
+    private void interpolateStringLiteral(StringLiteralExpr input) {
+        input.setString(input.getValue().replace("$name$", queryName));
+    }
 
-        return String.format("java.util.List<%s>", innerType);
+    private String interpolatedTypeNameFrom(String input) {
+        return input.replace("$QueryType$", queryClassName)
+                .replace("$DataType$", dataType)
+                .replace("$ReturnType$", returnType);
     }
 }

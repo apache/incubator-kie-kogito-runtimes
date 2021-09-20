@@ -15,13 +15,10 @@
  */
 package org.kie.kogito.codegen.api.template;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
@@ -116,31 +113,6 @@ public final class TemplatedGenerator {
         return compilationUnitOrThrow("Missing template");
     }
 
-    public Optional<CompilationUnit> compilationUnitWithReplacements(UnaryOperator<String> replacer) {
-        String selectedResource = templatePath();
-        if (selectedResource == null) {
-            return Optional.empty();
-        }
-
-        String selectedResourceString = templateString();
-        if (selectedResourceString == null) {
-            return Optional.empty();
-        }
-
-        try {
-            CompilationUnit compilationUnit = parse(replacer.apply(selectedResourceString))
-                    .setPackageDeclaration(packageName);
-            return Optional.of(compilationUnit);
-        } catch (ParseProblemException | AssertionError e) {
-            throw new TemplateInstantiationException(targetTypeName, selectedResource, e);
-        }
-    }
-
-    public CompilationUnit compilationUnitWithReplacementsOrThrow(String errorMessage, UnaryOperator<String> replacer) {
-        return compilationUnitWithReplacements(replacer)
-                .orElseThrow(() -> new InvalidTemplateException(this, errorMessage));
-    }
-
     /**
      * Returns the valid template path if exists or null
      * 
@@ -159,19 +131,6 @@ public final class TemplatedGenerator {
         }
 
         return null;
-    }
-
-    public String templateString() {
-        String path = templatePath();
-        if (path == null) {
-            return null;
-        }
-
-        try {
-            return new String(getResource(path).readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new TemplateInstantiationException(targetTypeName, path, e);
-        }
     }
 
     /**
