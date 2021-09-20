@@ -172,8 +172,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             throw new RuleCodegenError(modelBuilder.getErrors().getErrors());
         }
 
-        Map<String, String> modelsByPackageForLegacyApi = new HashMap<>();
-        List<GeneratedFile> generatedFiles = new ArrayList<>(generateModels(modelBuilder, modelsByPackageForLegacyApi));
+        List<GeneratedFile> generatedFiles = new ArrayList<>(generateModels(modelBuilder));
 
         List<DroolsError> errors = new ArrayList<>();
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
@@ -181,7 +180,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         if (hasRuleUnits) {
             generateRuleUnits(errors, generatedFiles);
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
-            generateProject(dummyReleaseId, modelsByPackageForLegacyApi, generatedFiles);
+            generateProject(dummyReleaseId, modelBuilder, generatedFiles);
         } else if (hasRuleFiles()) { // this additional check is necessary because also properties or java files can be loaded
             throw new IllegalStateException("Found DRL files using legacy API, add org.kie.kogito:kogito-legacy-api dependency to enable it");
         }
@@ -231,13 +230,11 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         return resources.stream().filter(r -> r.getSourcePath().equals(resource.getSourcePath() + ".properties")).findFirst().orElse(null);
     }
 
-    private List<GeneratedFile> generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder, Map<String, String> modelsByPackageForLegacyApi) {
+    private List<GeneratedFile> generateModels(ModelBuilderImpl<KogitoPackageSources> modelBuilder) {
         List<GeneratedFile> modelFiles = new ArrayList<>();
         List<org.drools.modelcompiler.builder.GeneratedFile> legacyModelFiles = new ArrayList<>();
 
         for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
-            modelsByPackageForLegacyApi.put(pkgSources.getPackageName(), pkgSources.getPackageName() + "." + pkgSources.getRulesFileName());
-
             pkgSources.collectGeneratedFiles(legacyModelFiles);
 
             org.drools.modelcompiler.builder.GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
@@ -271,7 +268,16 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 .collect(toList());
     }
 
-    private void generateProject(ReleaseIdImpl dummyReleaseId, Map<String, String> modelsByPackage, List<GeneratedFile> generatedFiles) {
+    private void generateProject(ReleaseIdImpl dummyReleaseId, ModelBuilderImpl<KogitoPackageSources> modelBuilder, List<GeneratedFile> generatedFiles) {
+        ModelSourceClass modelSourceClass = new ModelSourceClass(dummyReleaseId, kieModuleModel.getKieBaseModels(), getModelByKBase(modelBuilder));
+        generatedFiles.add(new GeneratedFile(RULE_TYPE, modelSourceClass.getName(), modelSourceClass.generate()));
+
+        ProjectRuntimeGenerator projectRuntimeGenerator = new ProjectRuntimeGenerator(modelSourceClass.getModelMethod(), context());
+        generatedFiles.add(new GeneratedFile(RULE_TYPE, projectRuntimeGenerator.getName(), projectRuntimeGenerator.generate()));
+    }
+
+    private Map<String, List<String>> getModelByKBase(ModelBuilderImpl<KogitoPackageSources> modelBuilder) {
+        Map<String, String> modelsByPackage = getModelsByPackage(modelBuilder);
         Map<String, List<String>> modelsByKBase = new HashMap<>();
         for (Map.Entry<String, KieBaseModel> entry : kieModuleModel.getKieBaseModels().entrySet()) {
             List<String> kieBasePackages = entry.getValue().getPackages();
@@ -279,20 +285,15 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
             modelsByKBase.put(entry.getKey(),
                     isAllPackages ? new ArrayList<>(modelsByPackage.values()) : kieBasePackages.stream().map(modelsByPackage::get).filter(Objects::nonNull).collect(toList()));
         }
+        return modelsByKBase;
+    }
 
-        ModelSourceClass modelSourceClass = new ModelSourceClass(dummyReleaseId, kieModuleModel.getKieBaseModels(), modelsByKBase);
-
-        generatedFiles.add(new GeneratedFile(
-                RULE_TYPE,
-                modelSourceClass.getName(),
-                modelSourceClass.generate()));
-
-        ProjectRuntimeGenerator projectRuntimeGenerator = new ProjectRuntimeGenerator(modelSourceClass.getModelMethod(), context());
-
-        generatedFiles.add(new GeneratedFile(
-                RULE_TYPE,
-                projectRuntimeGenerator.getName(),
-                projectRuntimeGenerator.generate()));
+    private Map<String, String> getModelsByPackage(ModelBuilderImpl<KogitoPackageSources> modelBuilder) {
+        Map<String, String> modelsByPackage = new HashMap<>();
+        for (KogitoPackageSources pkgSources : modelBuilder.getPackageSources()) {
+            modelsByPackage.put(pkgSources.getPackageName(), pkgSources.getPackageName() + "." + pkgSources.getRulesFileName());
+        }
+        return modelsByPackage;
     }
 
     private void generateRuleUnits(List<DroolsError> errors, List<GeneratedFile> generatedFiles) {
