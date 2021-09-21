@@ -16,8 +16,10 @@
 
 package org.kie.kogito.springboot.archetypes
 
+import org.apache.commons.io.IOUtils
 import spock.lang.Specification
 
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -40,7 +42,7 @@ class AddDependencyToPomWithTextReplaceTest extends Specification {
         }
 
         when:
-        String pomFile = Files.readString(Path.of(this.getClass().getResource(pomFile).toURI()))
+        String pomFile = IOUtils.toString(this.getClass().getResource(pomFile), StandardCharsets.UTF_8)
                 .replace("    <!-- kogito dependencies -->", dependencies)
 
         then:
