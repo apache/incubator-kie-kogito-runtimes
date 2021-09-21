@@ -17,7 +17,6 @@
   <modules>
     <module>decisions</module>
     <module>rules</module>
-    <module>smallrye</module>
   </modules>
 
   <profiles>
@@ -29,6 +28,7 @@
         </property>
       </activation>
       <modules>
+        <module>process</module>
         <module>mongodb</module>
       </modules>
     </profile>

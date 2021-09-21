@@ -15,31 +15,8 @@
  */
 package org.kie.kogito.quarkus.drools;
 
-import javax.inject.Inject;
+import io.quarkus.test.junit.NativeImageTest;
 
-import org.junit.jupiter.api.Test;
-import org.kie.api.runtime.KieSession;
-import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
-
-import io.quarkus.test.junit.QuarkusTest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@QuarkusTest
-public class NativeRuntimeIT {
-
-    @Inject
-    KieRuntimeBuilder runtimeBuilder;
-
-    @Test
-    public void testRuleEvaluation() {
-        KieSession ksession = runtimeBuilder.newKieSession();
-
-        Result result = new Result();
-        ksession.insert(result);
-        ksession.insert(new Person("Mark", 17));
-        ksession.fireAllRules();
-
-        assertEquals("Mark can NOT drink", result.toString());
-    }
+@NativeImageTest
+public class NativeRuntimeIT extends RuntimeIT {
 }
