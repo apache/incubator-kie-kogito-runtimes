@@ -16,12 +16,9 @@
 
 package org.kie.kogito.springboot.archetypes
 
-import org.apache.commons.io.IOUtils
 import spock.lang.Specification
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Path
 
 // we can't use XML with the current Archetype plugin see: https://github.com/apache/maven-archetype/pull/58
 
