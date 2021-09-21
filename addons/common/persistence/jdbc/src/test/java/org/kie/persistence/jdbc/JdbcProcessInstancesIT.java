@@ -103,7 +103,7 @@ class JdbcProcessInstancesIT extends TestHelper {
     }
 
     @Test
-    void testException(DataSource dataSource) {
+    void testException() {
         BpmnProcess process = configure(false);
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.findById(TEST_ID));
