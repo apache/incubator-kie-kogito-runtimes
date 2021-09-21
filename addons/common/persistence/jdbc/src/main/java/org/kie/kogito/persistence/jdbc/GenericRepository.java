@@ -40,8 +40,9 @@ public class GenericRepository extends Repository {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericRepository.class);
 
     private enum DatabaseType {
-        POSTGRES("PostgreSQL", "process_instances"),
-        ORACLE("Oracle", "PROCESS_INSTANCES");
+        ANSI("ansi", "process_instances"),
+        ORACLE("Oracle", "PROCESS_INSTANCES"),
+        POSTGRES("PostgreSQL", "process_instances");
 
         private final String dbIdentifier;
         private final String tableNamePattern;
@@ -61,9 +62,9 @@ public class GenericRepository extends Repository {
             } else if (POSTGRES.getDbIdentifier().equals(dbIdentifier)) {
                 return POSTGRES;
             } else {
-                var msg = String.format("Unrecognized DB (%s), defaulting to postgres", dbIdentifier);
+                var msg = String.format("Unrecognized DB (%s), defaulting to ansi", dbIdentifier);
                 LOGGER.warn(msg);
-                return POSTGRES;
+                return ANSI;
             }
         }
     }

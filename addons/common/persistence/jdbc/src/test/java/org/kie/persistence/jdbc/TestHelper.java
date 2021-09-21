@@ -17,6 +17,7 @@
 package org.kie.persistence.jdbc;
 
 import java.sql.SQLException;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -49,6 +50,10 @@ public class TestHelper {
 
     static DataSource PG_DATA_SOURCE;
     static DataSource ORACLE_DATA_SOURCE;
+
+    public static Stream<DataSource> datasources() {
+        return Stream.of(ORACLE_DATA_SOURCE, PG_DATA_SOURCE);
+    }
 
     public static SecurityPolicy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 

@@ -18,7 +18,11 @@ package org.kie.persistence.jdbc;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
+import javax.sql.DataSource;
+
+import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.persistence.jdbc.JDBCProcessInstances;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.WorkItem;
@@ -34,11 +38,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-class PostgresProcessInstancesIT extends TestHelper {
+class JdbcProcessInstancesIT extends TestHelper {
 
-    @Test
-    void testBasicTaskFlow() {
-        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, false);
+    @ParameterizedTest
+    @MethodSource("datasources")
+    void testBasicTaskFlow(DataSource dataSource) {
+        var factory = new TestProcessInstancesFactory(dataSource, false);
         BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections
                 .singletonMap("test", "test")));
@@ -71,9 +76,10 @@ class PostgresProcessInstancesIT extends TestHelper {
         assertThat(process.instances().values()).isEmpty();
     }
 
-    @Test
-    void testBasicFlow() {
-        var factory = new TestProcessInstancesFactory(PG_DATA_SOURCE, false);
+    @ParameterizedTest
+    @MethodSource("datasources")
+    void testBasicFlow(DataSource dataSource) {
+        var factory = new TestProcessInstancesFactory(dataSource, false);
         BpmnProcess process = createProcess(factory, null, "BPMN2-UserTask.bpmn2");
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections
                 .singletonMap("test",
@@ -97,7 +103,7 @@ class PostgresProcessInstancesIT extends TestHelper {
     }
 
     @Test
-    void testException() {
+    void testException(DataSource dataSource) {
         BpmnProcess process = configure(false);
         JDBCProcessInstances processInstances = (JDBCProcessInstances) process.instances();
         assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> processInstances.findById(TEST_ID));
