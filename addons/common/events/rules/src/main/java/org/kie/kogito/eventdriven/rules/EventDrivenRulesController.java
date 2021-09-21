@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
+import io.cloudevents.jackson.JsonCloudEventData;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.eventdriven.rules.EventDrivenRulesController</code>
@@ -122,6 +123,7 @@ public class EventDrivenRulesController {
             Object result = executor.executeQuery(ctx.getRequestCloudEvent());
             ctx.setQueryResult(result);
         } catch (RuntimeException e) {
+            LOG.error("Internal execution error", e);
             ctx.setResponseError(RulesResponseError.INTERNAL_EXECUTION_ERROR);
         }
 
@@ -150,7 +152,7 @@ public class EventDrivenRulesController {
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
-        return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), ctx.getQueryName());
+        return CloudEventUtils.buildDecisionSource(config.getServiceUrl(), toKebabCase(ctx.getQueryName()));
     }
 
     private static String buildExecutorId(String ruleUnitId, String queryName) {
@@ -160,6 +162,10 @@ public class EventDrivenRulesController {
     private static Map<String, EventDrivenQueryExecutor> buildExecutorsMap(Iterable<EventDrivenQueryExecutor> iterable) {
         return StreamSupport.stream(iterable.spliterator(), false)
                 .collect(Collectors.toMap(e -> buildExecutorId(e.getRuleUnitId(), e.getQueryName()), e -> e));
+    }
+
+    private static String toKebabCase(String inputString) {
+        return inputString == null ? null : inputString.replaceAll("(.)(\\p{Upper})", "$1-$2").toLowerCase();
     }
 
     private static class EvaluationContext {
@@ -182,7 +188,7 @@ public class EventDrivenRulesController {
                     .map(KogitoExtension::getRuleUnitQuery)
                     .orElse(null);
 
-            this.validRequest = requestCloudEvent != null
+            this.validRequest = isValidCloudEvent(requestCloudEvent)
                     && requestKogitoExtension != null
                     && ruleUnitId != null && !ruleUnitId.isEmpty()
                     && queryName != null && !queryName.isEmpty();
@@ -222,6 +228,17 @@ public class EventDrivenRulesController {
 
         public void setQueryResult(Object queryResult) {
             this.queryResult = queryResult;
+        }
+
+        private static boolean isValidCloudEvent(CloudEvent event) {
+            if (event == null || event.getData() == null) {
+                return false;
+            }
+            if (event.getData() instanceof JsonCloudEventData) {
+                JsonCloudEventData jced = (JsonCloudEventData) event.getData();
+                return jced.getNode() != null && !jced.getNode().isNull();
+            }
+            return true;
         }
     }
 
