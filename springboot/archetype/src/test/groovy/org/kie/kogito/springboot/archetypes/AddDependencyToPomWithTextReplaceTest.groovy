@@ -42,7 +42,7 @@ class AddDependencyToPomWithTextReplaceTest extends Specification {
         }
 
         when:
-        String pomFile = IOUtils.toString(this.getClass().getResource(pomFile), StandardCharsets.UTF_8)
+        String pomFile = new String(this.getClass().getResourceAsStream(pomFile).readAllBytes(), StandardCharsets.UTF_8)
                 .replace("    <!-- kogito dependencies -->", dependencies)
 
         then:
