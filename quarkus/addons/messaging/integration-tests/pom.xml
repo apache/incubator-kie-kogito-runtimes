@@ -22,6 +22,9 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <properties>
+    <quarkus.test.list.include>true</quarkus.test.list.include>
+  </properties>
 
   <dependencies>
     <dependency>
