@@ -86,6 +86,8 @@ public class KogitoExtension implements CloudEventExtension {
         readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
         readBooleanExtension(extensions, KOGITO_DMN_FULL_RESULT, this::setDmnFullResult);
         readBooleanExtension(extensions, KOGITO_DMN_FILTERED_CTX, this::setDmnFilteredCtx);
+        readStringExtension(extensions, KOGITO_PMML_MODEL_NAME, this::setPmmlModelName);
+        readBooleanExtension(extensions, KOGITO_PMML_FULL_RESULT, this::setPmmlFullResult);
     }
 
     @Override
@@ -103,6 +105,10 @@ public class KogitoExtension implements CloudEventExtension {
                 return isDmnFullResult();
             case KOGITO_DMN_FILTERED_CTX:
                 return isDmnFilteredCtx();
+            case KOGITO_PMML_MODEL_NAME:
+                return getPmmlModelName();
+            case KOGITO_PMML_FULL_RESULT:
+                return isPmmlFullResult();
         }
         throw ExtensionUtils.generateInvalidKeyException(this.getClass(), key);
     }
