@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>kogito-addons-tracing-decision-api</artifactId>
+  <artifactId>kogito-addons-tracing-api</artifactId>
   <name>Kogito :: Add-Ons :: Tracing :: API</name>
 
   <properties>
