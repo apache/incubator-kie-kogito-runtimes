@@ -16,6 +16,7 @@
 
   <modules>
     <module>decisions</module>
+    <module>predictions</module>
   </modules>
 
   <profiles>
