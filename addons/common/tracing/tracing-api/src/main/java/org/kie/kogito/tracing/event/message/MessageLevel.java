@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.trace;
+package org.kie.kogito.tracing.event.message;
 
-/**
- * Enum meant to contain all the possible event types (decisions, processes, predictions...)
- */
-public enum TraceEventType {
-    DMN
+public enum MessageLevel {
+    ERROR,
+    WARNING,
+    INFO;
 }

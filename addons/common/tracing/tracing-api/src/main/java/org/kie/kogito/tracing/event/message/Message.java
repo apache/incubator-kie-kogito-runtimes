@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.message;
+package org.kie.kogito.tracing.event.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+/**
+ * Abstract <code>Message</code> to be extended by actual model-specific implementations
+ */
 @JsonInclude(NON_NULL)
 public abstract class Message {
 

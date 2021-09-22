@@ -13,45 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.trace;
+package org.kie.kogito.tracing.event.message;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(NON_NULL)
-public class TraceType {
+public class MessageExceptionField {
 
-    @JsonProperty("id")
-    private String id;
+    private String className;
+    private String message;
+    @JsonInclude(NON_NULL)
+    private MessageExceptionField cause;
 
-    @JsonProperty("namespace")
-    private String namespace;
-
-    @JsonProperty("name")
-    private String name;
-
-    private TraceType() {
+    private MessageExceptionField() {
     }
 
-    public TraceType(String id, String namespace, String name) {
-        this.id = id;
-        this.namespace = namespace;
-        this.name = name;
+    public MessageExceptionField(String className, String message, MessageExceptionField cause) {
+        this.className = className;
+        this.message = message;
+        this.cause = cause;
     }
 
-    public String getId() {
-        return id;
+    public String getClassName() {
+        return className;
     }
 
-    public String getNamespace() {
-        return namespace;
+    public String getMessage() {
+        return message;
     }
 
-    public String getName() {
-        return name;
+    public MessageExceptionField getCause() {
+        return cause;
     }
 }

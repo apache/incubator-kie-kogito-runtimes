@@ -17,6 +17,7 @@ package org.kie.kogito.tracing.decision.event.model;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.tracing.event.model.ModelEvent;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

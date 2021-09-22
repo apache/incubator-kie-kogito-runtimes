@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.trace;
+package org.kie.kogito.tracing.event.trace;
 
 import java.util.List;
 import java.util.Map;
 
-import org.kie.kogito.tracing.decision.event.message.Message;
+import org.kie.kogito.tracing.event.message.Message;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

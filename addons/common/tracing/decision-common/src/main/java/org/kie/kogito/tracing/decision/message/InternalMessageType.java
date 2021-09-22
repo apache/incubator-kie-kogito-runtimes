@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.tracing.decision.message;
 
-import org.kie.kogito.tracing.decision.event.message.MessageLevel;
+import org.kie.kogito.tracing.event.message.MessageLevel;
 
 public enum InternalMessageType {
     DMN_MODEL_NOT_FOUND(MessageLevel.ERROR, "DMN model not found"),

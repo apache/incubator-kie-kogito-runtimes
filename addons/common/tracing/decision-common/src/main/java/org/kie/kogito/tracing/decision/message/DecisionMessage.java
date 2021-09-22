@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.tracing.decision.message;
 
-import org.kie.kogito.tracing.decision.event.message.Message;
-import org.kie.kogito.tracing.decision.event.message.MessageCategory;
-import org.kie.kogito.tracing.decision.event.message.MessageExceptionField;
-import org.kie.kogito.tracing.decision.event.message.MessageLevel;
+import org.kie.kogito.tracing.event.message.Message;
+import org.kie.kogito.tracing.event.message.MessageCategory;
+import org.kie.kogito.tracing.event.message.MessageExceptionField;
+import org.kie.kogito.tracing.event.message.MessageLevel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

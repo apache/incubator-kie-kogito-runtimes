@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.message;
+package org.kie.kogito.tracing.event.message;
 
+/**
+ * Enum meant to contain all the possible categories (decisions, processes, predictions...)
+ */
 public enum MessageCategory {
     DMN,
     INTERNAL
