@@ -39,6 +39,7 @@ public class KogitoOracleSqlContainer extends OracleContainer implements TestRes
         withLogConsumer(getLogger());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
+        System.setProperty("oracle.jdbc.timezoneAsRegion", "false");
     }
 
     private Consumer<OutputFrame> getLogger() {
