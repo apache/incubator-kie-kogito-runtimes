@@ -16,36 +16,23 @@
 package org.kie.kogito.tracing.decision.event.model;
 
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.decision.DecisionModelMetadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ModelEvent {
+public abstract class ModelEvent {
 
     private final KogitoGAV gav;
 
     private final String name;
 
-    private final String namespace;
-
-    private final DecisionModelMetadata decisionModelMetadata;
-
-    private final String definition;
-
     @JsonCreator
     public ModelEvent(final @JsonProperty("gav") KogitoGAV gav,
-            final @JsonProperty("name") String name,
-            final @JsonProperty("namespace") String namespace,
-            final @JsonProperty("decisionModelMetadata") DecisionModelMetadata decisionModelMetadata,
-            final @JsonProperty("definition") String definition) {
+            final @JsonProperty("name") String name) {
         this.gav = gav;
         this.name = name;
-        this.namespace = namespace;
-        this.decisionModelMetadata = decisionModelMetadata;
-        this.definition = definition;
     }
 
     public KogitoGAV getGav() {
@@ -56,15 +43,4 @@ public class ModelEvent {
         return name;
     }
 
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public DecisionModelMetadata getDecisionModelMetadata() {
-        return decisionModelMetadata;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
 }

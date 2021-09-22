@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.tracing.decision.event.trace;
 
+/**
+ * Enum meant to contain all the possible event step-types (decisions, processes, predictions...)
+ */
 public enum TraceExecutionStepType {
     DMN_BKM_EVALUATION,
     DMN_BKM_INVOCATION,

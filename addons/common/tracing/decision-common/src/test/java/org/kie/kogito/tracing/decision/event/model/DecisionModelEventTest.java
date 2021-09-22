@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,32 @@ package org.kie.kogito.tracing.decision.event.model;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.decision.DecisionModelMetadata;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ModelEventTest {
+public class DecisionModelEventTest {
 
     @Test
     public void testGetters() {
         final KogitoGAV gav = new KogitoGAV("groupID", "artifactId", "version");
-        final ModelEvent e = new ModelEvent(gav,
-                "name") {
-
-        };
+        final DecisionModelEvent e = new DecisionModelEvent(
+                gav,
+                "name",
+                "namespace",
+                new DecisionModelMetadata(
+                        DecisionModelMetadata.Type.DMN,
+                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                "definition");
 
         assertEquals(gav.getGroupId(), e.getGav().getGroupId());
         assertEquals(gav.getArtifactId(), e.getGav().getArtifactId());
         assertEquals(gav.getVersion(), e.getGav().getVersion());
         assertEquals("name", e.getName());
+        assertEquals("namespace", e.getNamespace());
+        assertEquals(DecisionModelMetadata.Type.DMN, e.getDecisionModelMetadata().getType());
+        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", e.getDecisionModelMetadata().getSpecVersion());
+        assertEquals("definition", e.getDefinition());
     }
+
 }

@@ -20,26 +20,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonInclude(NON_NULL)
-public class Message {
+public abstract class Message {
 
     private MessageLevel level;
     private MessageCategory category;
     private String type;
     private String sourceId;
     private String text;
-    private MessageFEELEvent feelEvent;
     private MessageExceptionField exception;
 
-    private Message() {
-    }
-
-    public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
+    public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageExceptionField exception) {
         this.level = level;
         this.category = category;
         this.type = type;
         this.sourceId = sourceId;
         this.text = text;
-        this.feelEvent = feelEvent;
         this.exception = exception;
     }
 
@@ -61,10 +56,6 @@ public class Message {
 
     public String getText() {
         return text;
-    }
-
-    public MessageFEELEvent getFeelEvent() {
-        return feelEvent;
     }
 
     public MessageExceptionField getException() {

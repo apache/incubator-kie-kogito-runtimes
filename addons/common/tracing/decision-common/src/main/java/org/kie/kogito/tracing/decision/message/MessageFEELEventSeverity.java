@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.message;
+package org.kie.kogito.tracing.decision.message;
 
 public enum MessageFEELEventSeverity {
     TRACE,
