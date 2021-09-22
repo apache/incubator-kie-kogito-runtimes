@@ -36,8 +36,8 @@ public class KogitoExtension implements CloudEventExtension {
     public static final String KOGITO_DMN_EVALUATE_DECISION = "kogitodmnevaldecision";
     public static final String KOGITO_DMN_FULL_RESULT = "kogitodmnfullresult";
     public static final String KOGITO_DMN_FILTERED_CTX = "kogitodmnfilteredctx";
-    public static final String KOGITO_RULEUNIT_ID = "kogitoruleunitid";
-    public static final String KOGITO_RULEUNIT_QUERY = "kogitoruleunitquery";
+    public static final String KOGITO_RULE_UNIT_ID = "kogitoruleunitid";
+    public static final String KOGITO_RULE_UNIT_QUERY = "kogitoruleunitquery";
 
     private static final Set<String> KEYS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             KOGITO_EXECUTION_ID,
@@ -46,8 +46,8 @@ public class KogitoExtension implements CloudEventExtension {
             KOGITO_DMN_EVALUATE_DECISION,
             KOGITO_DMN_FULL_RESULT,
             KOGITO_DMN_FILTERED_CTX,
-            KOGITO_RULEUNIT_ID,
-            KOGITO_RULEUNIT_QUERY)));
+            KOGITO_RULE_UNIT_ID,
+            KOGITO_RULE_UNIT_QUERY)));
 
     private String executionId;
     private String dmnModelName;
@@ -86,8 +86,8 @@ public class KogitoExtension implements CloudEventExtension {
         readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
         readBooleanExtension(extensions, KOGITO_DMN_FULL_RESULT, this::setDmnFullResult);
         readBooleanExtension(extensions, KOGITO_DMN_FILTERED_CTX, this::setDmnFilteredCtx);
-        readStringExtension(extensions, KOGITO_RULEUNIT_ID, this::setRuleUnitId);
-        readStringExtension(extensions, KOGITO_RULEUNIT_QUERY, this::setRuleUnitQuery);
+        readStringExtension(extensions, KOGITO_RULE_UNIT_ID, this::setRuleUnitId);
+        readStringExtension(extensions, KOGITO_RULE_UNIT_QUERY, this::setRuleUnitQuery);
     }
 
     @Override
@@ -105,9 +105,9 @@ public class KogitoExtension implements CloudEventExtension {
                 return isDmnFullResult();
             case KOGITO_DMN_FILTERED_CTX:
                 return isDmnFilteredCtx();
-            case KOGITO_RULEUNIT_ID:
+            case KOGITO_RULE_UNIT_ID:
                 return getRuleUnitId();
-            case KOGITO_RULEUNIT_QUERY:
+            case KOGITO_RULE_UNIT_QUERY:
                 return getRuleUnitQuery();
             default:
                 throw ExtensionUtils.generateInvalidKeyException(this.getClass(), key);
