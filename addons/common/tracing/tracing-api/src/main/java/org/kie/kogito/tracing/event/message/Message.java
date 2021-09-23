@@ -16,6 +16,7 @@
 package org.kie.kogito.tracing.event.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
@@ -23,7 +24,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
  * <code>Message</code> to be eventually extended by model-specific implementations
  */
 @JsonInclude(NON_NULL)
-public class Message {
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class") // Needed for inheritance
+public abstract class Message {
 
     private MessageLevel level;
     private MessageCategory category;
@@ -32,7 +34,8 @@ public class Message {
     private String text;
     private MessageExceptionField exception;
 
-    private Message() {
+    protected Message() {
+        // needed for serialization
     }
 
     public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageExceptionField exception) {

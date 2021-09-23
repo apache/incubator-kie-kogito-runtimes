@@ -50,7 +50,7 @@ public class TraceExecutionStep {
 
     @JsonProperty("messages")
     @JsonInclude(NON_EMPTY)
-    private List<Message> messages;
+    private List<? extends Message> messages;
 
     @JsonProperty("additionalData")
     @JsonInclude(NON_EMPTY)
@@ -63,7 +63,8 @@ public class TraceExecutionStep {
     private TraceExecutionStep() {
     }
 
-    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<Message> messages, Map<String, String> additionalData, List<TraceExecutionStep> children) {
+    public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<? extends Message> messages, Map<String, String> additionalData,
+            List<TraceExecutionStep> children) {
         this.type = type;
         this.duration = duration;
         this.name = name;
@@ -89,7 +90,7 @@ public class TraceExecutionStep {
         return result;
     }
 
-    public List<Message> getMessages() {
+    public List<? extends Message> getMessages() {
         return messages;
     }
 

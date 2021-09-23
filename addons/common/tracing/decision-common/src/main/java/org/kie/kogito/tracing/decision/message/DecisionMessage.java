@@ -21,13 +21,19 @@ import org.kie.kogito.tracing.event.message.MessageExceptionField;
 import org.kie.kogito.tracing.event.message.MessageLevel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonInclude(NON_NULL)
+@JsonTypeName("org.kie.kogito.tracing.decision.message.DecisionMessage") // Needed for inheritance
 public class DecisionMessage extends Message {
 
     private MessageFEELEvent feelEvent;
+
+    private DecisionMessage() {
+        // needed for serialization
+    }
 
     public DecisionMessage(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
         super(level, category, type, sourceId, text, exception);
