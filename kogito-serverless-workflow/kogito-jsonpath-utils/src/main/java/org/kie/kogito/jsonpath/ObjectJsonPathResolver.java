@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.functions;
+package org.kie.kogito.jsonpath;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.kie.kogito.process.workitems.impl.ExpressionWorkItemResolver;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class ObjectJsonPathResolver extends AbstractJsonPathResolver {
+public class ObjectJsonPathResolver extends ExpressionWorkItemResolver {
 
-    protected ObjectJsonPathResolver(String jsonPathExpr, String paramName) {
+    public ObjectJsonPathResolver(String jsonPathExpr, String paramName) {
         super(jsonPathExpr, paramName);
     }
 
     @Override
-    protected Object readValue(JsonNode node) {
+    protected Object evalExpression(Object inputModel) {
+        return readValue(JsonPathUtils.evalExpr(inputModel, expression));
+    }
+
+    private Object readValue(JsonNode node) {
         switch (node.getNodeType()) {
             case NUMBER:
                 if (node.isInt()) {

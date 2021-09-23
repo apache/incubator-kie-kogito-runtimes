@@ -17,17 +17,17 @@ package org.jbpm.compiler.canonical.descriptors;
 
 import java.util.function.Supplier;
 
-import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
+import org.kie.kogito.process.workitems.impl.WorkItemParamResolver;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
 public class WorkItemParamResolverSupplier implements Supplier<Expression> {
 
-    private Class<? extends WorkItemHandlerParamResolver> clazz;
+    private Class<? extends WorkItemParamResolver> clazz;
     private Supplier<Expression>[] args;
 
-    public WorkItemParamResolverSupplier(Class<? extends WorkItemHandlerParamResolver> clazz, Supplier<Expression>... args) {
+    public WorkItemParamResolverSupplier(Class<? extends WorkItemParamResolver> clazz, Supplier<Expression>... args) {
         this.clazz = clazz;
         this.args = args;
     }

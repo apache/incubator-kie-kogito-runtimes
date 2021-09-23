@@ -13,41 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.functions;
+package org.kie.kogito.jsonpath;
 
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
-public abstract class AbstractJsonPathResolver implements WorkItemHandlerParamResolver {
+public class JsonPathUtils {
 
+    private JsonPathUtils() {
+
+    }
+
+    private static final Pattern jsonPathRegexPattern = Pattern.compile("^((\\$\\[).*|(\\$\\.).*)");
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Configuration jsonPathConfig = Configuration
             .builder()
             .mappingProvider(new JacksonMappingProvider())
             .jsonProvider(new JacksonJsonNodeJsonProvider())
             .build();
 
-    private String jsonPathExpr;
-    private String paramName;
-
-    protected AbstractJsonPathResolver(String jsonPathExpr, String paramName) {
-        this.jsonPathExpr = jsonPathExpr;
-        this.paramName = paramName;
+    public static boolean isJsonPath(String expression) {
+        return jsonPathRegexPattern.matcher(expression).matches();
     }
 
-    @Override
-    public Object apply(KogitoWorkItem workItem) {
-        JsonNode node = JsonPath
-                .using(jsonPathConfig)
-                .parse(workItem.getParameter(paramName))
-                .read(jsonPathExpr, JsonNode.class);
-        return readValue(node);
+    static JsonNode evalExpr(Object inputModel, String expression) {
+        return JsonPath
+                .using(JsonPathUtils.getJsonPathConfig())
+                .parse(inputModel)
+                .read(expression, JsonNode.class);
     }
 
-    protected abstract Object readValue(JsonNode node);
+    static ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
+    static Configuration getJsonPathConfig() {
+        return jsonPathConfig;
+    }
+
 }

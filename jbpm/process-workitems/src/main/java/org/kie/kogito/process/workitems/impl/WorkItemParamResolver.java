@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.functions;
+package org.kie.kogito.process.workitems.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.function.Function;
 
-public class JsonNodeJsonPathResolver extends AbstractJsonPathResolver {
+import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
-    protected JsonNodeJsonPathResolver(String jsonPathExpr, String paramName) {
-        super(jsonPathExpr, paramName);
-    }
-
-    @Override
-    protected Object readValue(JsonNode node) {
-        return node;
-    }
+/* Added to make it easier to search for ParamResolver function implementations, 
+ * see https://github.com/kiegroup/kogito-runtimes/pull/778#pullrequestreview-493382982 */
+public interface WorkItemParamResolver extends Function<KogitoWorkItem, Object> {
 
 }

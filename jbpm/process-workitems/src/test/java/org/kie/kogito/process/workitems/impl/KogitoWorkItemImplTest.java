@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class KogitoWorkItemImplTest {
 
-    private static class MyWorkItemHandlerParamResolver implements WorkItemHandlerParamResolver {
+    private static class MyWorkItemHandlerParamResolver implements WorkItemParamResolver {
         @Override
         public Object apply(KogitoWorkItem t) {
             return t.getParameter("name").toString().concat(" is the best");

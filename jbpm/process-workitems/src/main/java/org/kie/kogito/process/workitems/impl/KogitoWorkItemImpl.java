@@ -524,7 +524,7 @@ public class KogitoWorkItemImpl implements InternalKogitoWorkItem, Serializable 
     }
 
     private <T> Object processValue(T obj) {
-        return obj instanceof WorkItemHandlerParamResolver ? ((WorkItemHandlerParamResolver) obj).apply(this) : obj;
+        return obj instanceof WorkItemParamResolver ? ((WorkItemParamResolver) obj).apply(this) : obj;
     }
 
 }
