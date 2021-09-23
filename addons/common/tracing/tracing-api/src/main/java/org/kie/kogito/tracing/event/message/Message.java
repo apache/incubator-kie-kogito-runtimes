@@ -20,10 +20,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /**
- * Abstract <code>Message</code> to be extended by actual model-specific implementations
+ * <code>Message</code> to be eventually extended by model-specific implementations
  */
 @JsonInclude(NON_NULL)
-public abstract class Message {
+public class Message {
 
     private MessageLevel level;
     private MessageCategory category;
@@ -31,6 +31,9 @@ public abstract class Message {
     private String sourceId;
     private String text;
     private MessageExceptionField exception;
+
+    private Message() {
+    }
 
     public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageExceptionField exception) {
         this.level = level;
