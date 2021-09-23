@@ -76,7 +76,7 @@
     <!-- plugin versions -->
     <version.antapacheregexp>1.8.2</version.antapacheregexp>
     <version.antrun.plugin>1.8</version.antrun.plugin>
-    <version.archetype.plugin>3.0.1</version.archetype.plugin>
+    <version.archetype.plugin>3.2.0</version.archetype.plugin>
     <version.asciidoctor.plugin>1.5.2.1</version.asciidoctor.plugin>
     <version.build.helper.plugin>3.0.0</version.build.helper.plugin>
     <version.clean.plugin>3.1.0</version.clean.plugin>
@@ -104,7 +104,7 @@
     <version.org.xolstice.maven.protobuf>0.6.1</version.org.xolstice.maven.protobuf>
     <version.plugin.plugin>3.6.0</version.plugin.plugin>
     <version.project.sources.plugin>0.3</version.project.sources.plugin>
-    <version.rpkgtests.maven.plugin>0.10.0</version.rpkgtests.maven.plugin>
+    <version.rpkgtests.maven.plugin>0.11.0</version.rpkgtests.maven.plugin>
     <version.resources.plugin>3.1.0</version.resources.plugin>
     <version.site.plugin>3.7.1</version.site.plugin>
     <version.shade.plugin>3.0.0</version.shade.plugin>
