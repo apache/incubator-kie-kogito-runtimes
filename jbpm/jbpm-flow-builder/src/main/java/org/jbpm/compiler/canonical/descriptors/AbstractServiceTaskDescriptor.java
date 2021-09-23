@@ -16,7 +16,11 @@
 package org.jbpm.compiler.canonical.descriptors;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.jbpm.compiler.canonical.NodeValidator;
 import org.jbpm.workflow.core.node.DataAssociation;
@@ -25,7 +29,12 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
@@ -56,6 +65,8 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnionType;
 
 public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractServiceTaskDescriptor.class);
 
     static final String PARAM_INTERFACE = "Interface";
     static final String PARAM_OPERATION = "Operation";
@@ -218,4 +229,29 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
 
         return cls;
     }
+
+    public static void forEach(JsonNode node, Consumer<Entry<String, JsonNode>> consumer) {
+        Iterator<Entry<String, JsonNode>> iter = node.fields();
+        while (iter.hasNext()) {
+            consumer.accept(iter.next());
+        }
+    }
+
+    public static Object processWorkItemValue(JsonNode jsonNode, String paramName, Class<? extends WorkItemHandlerParamResolver> clazz, Predicate<String> isExpression) {
+        if (jsonNode.isTextual()) {
+            String str = jsonNode.asText();
+            return isExpression.test(str) ? new WorkItemParamResolverSupplier(clazz, () -> new StringLiteralExpr(str), () -> new StringLiteralExpr(paramName)) : str;
+        } else if (jsonNode.isBoolean()) {
+            return jsonNode.asBoolean();
+        } else if (jsonNode.isInt()) {
+            return jsonNode.asInt();
+        } else if (jsonNode.isDouble()) {
+            return jsonNode.asDouble();
+        } else {
+            /* this code is here for backward compatibility, we probably need to throw exception directly here */
+            logger.warn("Suspicious node {}, trying to convert to string", jsonNode);
+            return new ObjectMapper().convertValue(jsonNode, String.class);
+        }
+    }
+
 }

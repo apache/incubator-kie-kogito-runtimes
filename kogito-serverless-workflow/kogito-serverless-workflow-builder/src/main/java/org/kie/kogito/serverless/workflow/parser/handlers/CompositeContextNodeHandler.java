@@ -15,11 +15,10 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.drools.mvel.java.JavaDialect;
+import org.jbpm.compiler.canonical.descriptors.AbstractServiceTaskDescriptor;
 import org.jbpm.compiler.canonical.descriptors.OpenApiTaskDescriptor;
 import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.process.core.datatype.DataTypeResolver;
@@ -35,15 +34,13 @@ import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.parser.util.WorkflowAppContext;
 import org.kie.kogito.serverless.workflow.suppliers.RestBodyBuilderSupplier;
-import org.kie.kogito.serverless.workflow.suppliers.WorkItemParamResolverSupplier;
 import org.kogito.workitem.openapi.JsonNodeResultHandler;
+import org.kogito.workitem.openapi.suppliers.JsonNodeResultHandlerExprSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.actions.Action;
@@ -195,21 +192,19 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                 }
                 return workItemFactory;
             case OPENAPI:
-                WorkItemNodeFactory<CompositeContextNodeFactory<P>> openApiFactory = embeddedSubProcess.workItemNode(idGenerator.getId())
-                        .workParameter(TaskDescriptor.KEY_WORKITEM_OPERATION, ServerlessWorkflowUtils.getOpenApiOperationId(actionFunction))
-                        .workParameter(TaskDescriptor.KEY_WORKITEM_INTERFACE, ServerlessWorkflowUtils.getOpenApiURI(actionFunction))
-                        .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, OpenApiTaskDescriptor.TYPE)
-                        .workName(OpenApiTaskDescriptor.TYPE)
-                        .name(actionFunction.getName())
-                        .workParameter(TaskDescriptor.KEY_SERVICE_IMPL, TaskDescriptor.DEFAULT_SERVICE_IMPL)
-                        .metaData(OpenApiTaskDescriptor.PARAM_META_RESULT_HANDLER_TYPE, JsonNodeResultHandler.class)
-                        .inMapping(WORKITEM_PARAM, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
-                        .outMapping(WORKITEM_RESULT, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
 
-                if (functionArgs != null && !functionArgs.isEmpty()) {
-                    processArgs(openApiFactory, functionArgs, WORKITEM_PARAM, JsonNodeJsonPathResolver.class);
-                }
-                return openApiFactory;
+                return OpenApiTaskDescriptor.builderFor(ServerlessWorkflowUtils.getOpenApiURI(actionFunction),
+                        ServerlessWorkflowUtils.getOpenApiOperationId(actionFunction))
+                        .withModelParameter(WORKITEM_PARAM)
+                        .withFunctionArgs(functionArgs, JsonNodeJsonPathResolver.class, JsonNode.class, CompositeContextNodeHandler::isJsonPathExpr)
+                        .withResultHandler(new JsonNodeResultHandlerExprSupplier(), JsonNodeResultHandler.class)
+                        .build(embeddedSubProcess.workItemNode(idGenerator.getId())).name(functionRef.getRefName())
+                        .inMapping(WORKITEM_PARAM,
+                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
+                        .outMapping(
+                                WORKITEM_RESULT,
+                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+
             default:
                 return emptyNode(embeddedSubProcess, actionName);
         }
@@ -218,33 +213,11 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
 
     private void processArgs(WorkItemNodeFactory<CompositeContextNodeFactory<P>> workItemFactory,
             JsonNode functionArgs, String paramName, Class<? extends AbstractJsonPathResolver> clazz) {
-        Iterator<Entry<String, JsonNode>> iter = functionArgs.fields();
-        while (iter.hasNext()) {
-            Entry<String, JsonNode> entry = iter.next();
-            workItemFactory.workParameter(entry.getKey(), processWorkItemValue(entry.getValue(), paramName, clazz)).workParameterDefinition(entry.getKey(),
-                    DataTypeResolver.fromObject(entry.getValue()));
-        }
-    }
-
-    private Object processWorkItemValue(JsonNode jsonNode, String paramName, Class<? extends AbstractJsonPathResolver> clazz) {
-        if (jsonNode.isTextual()) {
-            String str = jsonNode.asText();
-            return isJsonPathExpr(str) ? new WorkItemParamResolverSupplier(clazz, () -> new StringLiteralExpr(str), () -> new StringLiteralExpr(paramName)) : str;
-        } else if (jsonNode.isBoolean()) {
-            return jsonNode.asBoolean();
-        } else if (jsonNode.isInt()) {
-            return jsonNode.asInt();
-        } else if (jsonNode.isDouble()) {
-            return jsonNode.asDouble();
-        } else {
-            /* this code is here for backward compatibility, we probably need to throw exception directly here */
-            logger.warn("Suspicious node {}, trying to convert to string", jsonNode);
-            return new ObjectMapper().convertValue(jsonNode, String.class);
-        }
-    }
-
-    private boolean isJsonPathExpr(String str) {
-        return str.trim().startsWith("$");
+        AbstractServiceTaskDescriptor.forEach(functionArgs,
+                entry -> workItemFactory
+                        .workParameter(entry.getKey(), AbstractServiceTaskDescriptor.processWorkItemValue(entry.getValue(), paramName, clazz, CompositeContextNodeHandler::isJsonPathExpr))
+                        .workParameterDefinition(entry.getKey(),
+                                DataTypeResolver.fromObject(entry.getValue())));
     }
 
     private enum ActionType {
@@ -274,6 +247,10 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                 return ActionType.EMPTY;
             }
         }
+    }
+
+    private static boolean isJsonPathExpr(String str) {
+        return str.trim().startsWith("$");
     }
 
     private NodeFactory<?, ?> emptyNode(CompositeContextNodeFactory<P> embeddedSubProcess, String actionName) {

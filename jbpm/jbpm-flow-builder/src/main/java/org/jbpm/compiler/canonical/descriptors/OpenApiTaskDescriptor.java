@@ -20,12 +20,21 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ParameterDefinition;
+import org.jbpm.process.core.Work;
+import org.jbpm.process.core.datatype.DataTypeResolver;
+import org.jbpm.process.core.impl.ParameterDefinitionImpl;
+import org.jbpm.process.core.impl.WorkImpl;
+import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
+import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.process.workitems.impl.WorkItemHandlerParamResolver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.CompilationUnit;
@@ -45,18 +54,29 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
     public static final String TYPE = "OpenApi Task";
     private static final String PARAM_PREFIX = "ServiceParam_";
-    public static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
-    public static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
+    private static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
+    private static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
+    private static final String PARAM_META_PARAM_RESOLVER_TYPE = "ParamResolverType";
     private static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
+    private static final String MODEL_PARAMETER = "ModelParameter";
 
     private static final String VAR_INPUT_MODEL = "inputModel";
     private static final String METHOD_GET_PARAM = "getParameter";
     private static final NameExpr workItemNameExpr = new NameExpr("workItem");
 
-    private static final ClassOrInterfaceType JSON_NODE_CLASS = new ClassOrInterfaceType(null, JsonNode.class.getCanonicalName());
-
     protected OpenApiTaskDescriptor(WorkItemNode workItemNode) {
         super(workItemNode);
+    }
+
+    /**
+     * Creates a new {@link WorkItemBuilder} based on this descriptor
+     *
+     * @param interfaceResource the OpenApi Specification Resource (normally a URI)
+     * @param operation the OpenApi operation identification
+     * @return a new {@link WorkItemBuilder}
+     */
+    public static WorkItemBuilder builderFor(final String interfaceResource, final String operation) {
+        return new WorkItemBuilder(interfaceResource, operation);
     }
 
     /**
@@ -104,19 +124,19 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
     @Override
     protected void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callServiceMethod) {
-        // declare the input model
+        ClassOrInterfaceType type = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_PARAM_RESOLVER_TYPE));
         getParameters(workItemNode)
-                .forEach(p -> callServiceMethod.addArgument(new CastExpr(JSON_NODE_CLASS, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
+                .forEach(p -> callServiceMethod.addArgument(new CastExpr(type, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
     }
 
     @Override
     protected Expression handleServiceCallResult(final BlockStmt executeWorkItemBody, final MethodCallExpr callService) {
-        final MethodCallExpr getInputModel = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr("Parameter"));
+        final MethodCallExpr getInputModel = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr((String) workItemNode.getMetaData(MODEL_PARAMETER)));
         final VariableDeclarationExpr inputModel =
                 new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
         executeWorkItemBody.addStatement(inputModel);
         // fetch the handler type
-        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, ((Class<?>) workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE)).getCanonicalName());
+        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE));
         // get the handler
         final MethodCallExpr getResultHandler = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
         // convert the result into the given type
@@ -128,6 +148,114 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         return new MethodCallExpr(resultHandler.getVariable(0).getNameAsExpression(), "apply")
                 .addArgument(new NameExpr(VAR_INPUT_MODEL))
                 .addArgument(callService);
+    }
+
+    /**
+     * Builder for {@link WorkItemNode}s for OpenApi Service Tasks
+     * The result WorkItem has the same attributes as one created by a BPMN Editor.
+     */
+    public static final class WorkItemBuilder {
+
+        private final String operation;
+        private final String interfaceResource;
+        private Class<? extends WorkItemHandlerParamResolver> paramResolverClass;
+        private Class<?> paramResolverOutputType;
+        private Class<?> resultHandlerType;
+        private Supplier<Expression> resultHandlerExpression;
+        private String modelParameter = "Parameter";
+        private JsonNode functionArgs;
+        private Predicate<String> exprTest;
+
+        private WorkItemBuilder(final String interfaceResource, final String operation) {
+            this.operation = operation;
+            this.interfaceResource = interfaceResource;
+        }
+
+        /**
+         * 
+         * @param resolverClass Class used to resolve work item parameters
+         * @param outputClass Class output of resolving procedure
+         * @return the {@link WorkItemBuilder}
+         */
+        public WorkItemBuilder withFunctionArgs(JsonNode functionArgs, Class<? extends WorkItemHandlerParamResolver> resolverClass, Class<?> outputClass, Predicate<String> exprTest) {
+            this.functionArgs = functionArgs;
+            this.paramResolverClass = resolverClass;
+            this.paramResolverOutputType = outputClass;
+            this.exprTest = exprTest;
+            return this;
+        }
+
+        /**
+         * 
+         * @param resultHandler
+         * @param resultHandlerType
+         * @return
+         */
+        public WorkItemBuilder withResultHandler(final Supplier<Expression> resultHandler, final Class<?> resultHandlerType) {
+            this.resultHandlerType = resultHandlerType;
+            this.resultHandlerExpression = resultHandler;
+            return this;
+        }
+
+        /**
+         * 
+         * @param modelParameter
+         * @return
+         */
+        public WorkItemBuilder withModelParameter(String modelParameter) {
+            this.modelParameter = modelParameter;
+            return this;
+        }
+
+        public <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> build(WorkItemNodeFactory<T> factory) {
+            factory.metaData(KEY_WORKITEM_TYPE, TYPE);
+            factory.workName(TYPE);
+            factory.workParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
+            factory.workParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
+            factory.workParameter(KEY_WORKITEM_OPERATION, this.operation);
+            if (this.resultHandlerExpression != null) {
+                factory.workParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
+                factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
+            }
+            if (functionArgs != null) {
+                factory.metaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverOutputType.getCanonicalName());
+                forEach(functionArgs,
+                        entry -> factory.workParameter(entry.getKey(), processWorkItemValue(entry.getValue(), modelParameter, this.paramResolverClass, this.exprTest)).workParameterDefinition(
+                                entry.getKey(),
+                                DataTypeResolver.fromObject(entry.getValue())));
+            }
+
+            factory.metaData(MODEL_PARAMETER, modelParameter);
+            return factory;
+        }
+
+        protected WorkItemNode build() {
+            WorkItemNode workItemNode = new WorkItemNode();
+            workItemNode.setMetaData(KEY_WORKITEM_TYPE, TYPE);
+
+            Work work = new WorkImpl();
+            work.setName(TYPE);
+            work.setParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
+            work.setParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
+            work.setParameter(KEY_WORKITEM_OPERATION, this.operation);
+
+            if (functionArgs != null) {
+                workItemNode.setMetaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverOutputType.getCanonicalName());
+                forEach(functionArgs, entry -> {
+                    work.setParameter(entry.getKey(), processWorkItemValue(entry.getValue(), modelParameter, this.paramResolverClass, this.exprTest));
+                    work.addParameterDefinition(new ParameterDefinitionImpl(entry.getKey(), DataTypeResolver.fromObject(entry.getValue())));
+                });
+            }
+            if (this.resultHandlerExpression != null) {
+                work.setParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
+                workItemNode.setMetaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
+            }
+            workItemNode.setMetaData(MODEL_PARAMETER, modelParameter);
+
+            workItemNode.setWork(work);
+            return workItemNode;
+        }
+
     }
 
     /**
