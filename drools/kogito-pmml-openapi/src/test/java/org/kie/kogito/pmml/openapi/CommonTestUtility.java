@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -62,6 +63,11 @@ public class CommonTestUtility {
             @Override
             public Object evaluate(Object o, Map<String, Object> map) {
                 return null;
+            }
+
+            @Override
+            protected LinkedHashMap<String, Double> getProbabilityResultMap() {
+                return new LinkedHashMap<>();
             }
         };
         toReturn.setMiningFields(miningFields);

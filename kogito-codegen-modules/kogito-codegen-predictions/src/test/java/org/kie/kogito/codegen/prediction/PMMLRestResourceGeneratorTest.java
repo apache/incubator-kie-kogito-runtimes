@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.prediction;
 
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -80,6 +81,11 @@ class PMMLRestResourceGeneratorTest {
             @Override
             public Object evaluate(Object o, Map<String, Object> map) {
                 return null;
+            }
+
+            @Override
+            protected LinkedHashMap<String, Double> getProbabilityResultMap() {
+                return new LinkedHashMap<>();
             }
         };
     }
