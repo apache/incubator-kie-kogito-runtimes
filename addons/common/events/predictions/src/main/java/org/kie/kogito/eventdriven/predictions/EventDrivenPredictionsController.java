@@ -30,6 +30,7 @@ import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.prediction.PredictionModel;
+import org.kie.kogito.prediction.PredictionModelNotFoundException;
 import org.kie.kogito.prediction.PredictionModels;
 import org.kie.pmml.api.runtime.PMMLContext;
 import org.slf4j.Logger;
@@ -127,7 +128,7 @@ public class EventDrivenPredictionsController {
     private Optional<PredictionModel> getPredictionModel(String modelName) {
         try {
             return Optional.ofNullable(predictionModels.getPredictionModel(modelName));
-        } catch (RuntimeException e) {
+        } catch (PredictionModelNotFoundException e) {
             LOG.warn("Model not found with name=\"{}\"", modelName);
             return Optional.empty();
         }
