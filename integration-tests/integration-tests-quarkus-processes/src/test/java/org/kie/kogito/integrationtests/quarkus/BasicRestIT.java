@@ -16,6 +16,7 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -268,9 +269,26 @@ class BasicRestIT {
                 .get("/AdHocFragments/{id}/tasks", id)
                 .then()
                 .statusCode(200)
-                .body("$.size", is(1))
+                .body("$.size()", is(1))
                 .body("[0].name", is("Task"));
 
         assertExpectedUnitOfWorkEvents(1);
+    }
+
+    @Test
+    void testCustomErrorStrategy() {
+        Map<String, String> params = Collections.singletonMap("inout", "javierito");
+
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .body(params)
+                .post("/exce_proc")
+                .then()
+                .statusCode(201)
+                .body("id", not(emptyOrNullString()))
+                .body("inout", is("pepito"))
+                .header("Location", not(emptyOrNullString()));
+
     }
 }
