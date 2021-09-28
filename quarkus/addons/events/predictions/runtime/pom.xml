@@ -29,25 +29,25 @@
 
   <build>
     <plugins>
-<!--      <plugin>-->
-<!--        <groupId>io.quarkus</groupId>-->
-<!--        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>-->
-<!--        <version>${version.io.quarkus}</version>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <phase>compile</phase>-->
-<!--            <goals>-->
-<!--              <goal>extension-descriptor</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>-->
-<!--              <capabilities>-->
-<!--                <provides>org.kie.kogito.addons.events.decisions</provides>-->
-<!--              </capabilities>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+      <plugin>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+        <version>${version.io.quarkus}</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>extension-descriptor</goal>
+            </goals>
+            <configuration>
+              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
+              <capabilities>
+                <provides>org.kie.kogito.addons.events.predictions</provides>
+              </capabilities>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
