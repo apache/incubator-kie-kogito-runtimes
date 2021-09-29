@@ -19,6 +19,7 @@ import java.util.Set;
 
 import io.cloudevents.CloudEventExtension;
 import io.cloudevents.CloudEventExtensions;
+import io.cloudevents.core.provider.ExtensionProvider;
 
 import static org.kie.kogito.cloudevents.extension.KogitoExtensionUtils.readStringExtension;
 import static org.kie.kogito.event.CloudEventExtensionConstants.RULE_UNIT_ID;
@@ -30,6 +31,10 @@ public class KogitoRulesExtension implements CloudEventExtension {
 
     private String ruleUnitId;
     private String ruleUnitQuery;
+
+    public static void register() {
+        ExtensionProvider.getInstance().registerExtension(KogitoRulesExtension.class, KogitoRulesExtension::new);
+    }
 
     @Override
     public void readFrom(CloudEventExtensions extensions) {
