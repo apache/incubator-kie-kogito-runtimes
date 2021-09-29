@@ -19,14 +19,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import io.cloudevents.CloudEventExtension;
 import io.cloudevents.CloudEventExtensions;
-import io.cloudevents.core.extensions.impl.ExtensionUtils;
 import io.cloudevents.core.provider.ExtensionProvider;
+
+import static org.kie.kogito.cloudevents.extension.KogitoExtensionUtils.readBooleanExtension;
+import static org.kie.kogito.cloudevents.extension.KogitoExtensionUtils.readStringExtension;
 
 public class KogitoExtension implements CloudEventExtension {
 
@@ -36,8 +36,6 @@ public class KogitoExtension implements CloudEventExtension {
     public static final String KOGITO_DMN_EVALUATE_DECISION = "kogitodmnevaldecision";
     public static final String KOGITO_DMN_FULL_RESULT = "kogitodmnfullresult";
     public static final String KOGITO_DMN_FILTERED_CTX = "kogitodmnfilteredctx";
-    public static final String KOGITO_RULE_UNIT_ID = "kogitoruleunitid";
-    public static final String KOGITO_RULE_UNIT_QUERY = "kogitoruleunitquery";
 
     private static final Set<String> KEYS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             KOGITO_EXECUTION_ID,
@@ -45,9 +43,7 @@ public class KogitoExtension implements CloudEventExtension {
             KOGITO_DMN_MODEL_NAMESPACE,
             KOGITO_DMN_EVALUATE_DECISION,
             KOGITO_DMN_FULL_RESULT,
-            KOGITO_DMN_FILTERED_CTX,
-            KOGITO_RULE_UNIT_ID,
-            KOGITO_RULE_UNIT_QUERY)));
+            KOGITO_DMN_FILTERED_CTX)));
 
     private String executionId;
     private String dmnModelName;
@@ -55,27 +51,9 @@ public class KogitoExtension implements CloudEventExtension {
     private String dmnEvaluateDecision;
     private Boolean dmnFullResult;
     private Boolean dmnFilteredCtx;
-    private String ruleUnitId;
-    private String ruleUnitQuery;
 
     public static void register() {
         ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
-    }
-
-    private static void readStringExtension(CloudEventExtensions extensions, String key, Consumer<String> consumer) {
-        Optional.ofNullable(extensions.getExtension(key))
-                // there seems to be a bug in the cloudevents sdk so that, when a extension attributes is null,
-                // it returns a "null" String instead of a real null object
-                .filter(obj -> !("null".equals(obj)))
-                .map(Object::toString)
-                .ifPresent(consumer);
-    }
-
-    private static void readBooleanExtension(CloudEventExtensions extensions, String key, Consumer<Boolean> consumer) {
-        Optional.ofNullable(extensions.getExtension(key))
-                .filter(Boolean.class::isInstance)
-                .map(Boolean.class::cast)
-                .ifPresent(consumer);
     }
 
     @Override
@@ -86,8 +64,6 @@ public class KogitoExtension implements CloudEventExtension {
         readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
         readBooleanExtension(extensions, KOGITO_DMN_FULL_RESULT, this::setDmnFullResult);
         readBooleanExtension(extensions, KOGITO_DMN_FILTERED_CTX, this::setDmnFilteredCtx);
-        readStringExtension(extensions, KOGITO_RULE_UNIT_ID, this::setRuleUnitId);
-        readStringExtension(extensions, KOGITO_RULE_UNIT_QUERY, this::setRuleUnitQuery);
     }
 
     @Override
@@ -105,12 +81,8 @@ public class KogitoExtension implements CloudEventExtension {
                 return isDmnFullResult();
             case KOGITO_DMN_FILTERED_CTX:
                 return isDmnFilteredCtx();
-            case KOGITO_RULE_UNIT_ID:
-                return getRuleUnitId();
-            case KOGITO_RULE_UNIT_QUERY:
-                return getRuleUnitQuery();
             default:
-                throw ExtensionUtils.generateInvalidKeyException(this.getClass(), key);
+                return null;
         }
     }
 
@@ -167,22 +139,6 @@ public class KogitoExtension implements CloudEventExtension {
         this.dmnFilteredCtx = dmnFilteredCtx;
     }
 
-    public String getRuleUnitId() {
-        return ruleUnitId;
-    }
-
-    public void setRuleUnitId(String ruleUnitId) {
-        this.ruleUnitId = ruleUnitId;
-    }
-
-    public String getRuleUnitQuery() {
-        return ruleUnitQuery;
-    }
-
-    public void setRuleUnitQuery(String ruleUnitQuery) {
-        this.ruleUnitQuery = ruleUnitQuery;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -193,13 +149,12 @@ public class KogitoExtension implements CloudEventExtension {
         }
         KogitoExtension that = (KogitoExtension) o;
         return Objects.equals(executionId, that.executionId) && Objects.equals(dmnModelName, that.dmnModelName) && Objects.equals(dmnModelNamespace, that.dmnModelNamespace)
-                && Objects.equals(dmnEvaluateDecision, that.dmnEvaluateDecision) && Objects.equals(dmnFullResult, that.dmnFullResult) && Objects.equals(dmnFilteredCtx, that.dmnFilteredCtx)
-                && Objects.equals(ruleUnitId, that.ruleUnitId) && Objects.equals(ruleUnitQuery, that.ruleUnitQuery);
+                && Objects.equals(dmnEvaluateDecision, that.dmnEvaluateDecision) && Objects.equals(dmnFullResult, that.dmnFullResult) && Objects.equals(dmnFilteredCtx, that.dmnFilteredCtx);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(executionId, dmnModelName, dmnModelNamespace, dmnEvaluateDecision, dmnFullResult, dmnFilteredCtx, ruleUnitId, ruleUnitQuery);
+        return Objects.hash(executionId, dmnModelName, dmnModelNamespace, dmnEvaluateDecision, dmnFullResult, dmnFilteredCtx);
     }
 
     @Override
@@ -211,8 +166,6 @@ public class KogitoExtension implements CloudEventExtension {
                 ", dmnEvaluateDecision='" + dmnEvaluateDecision + '\'' +
                 ", dmnFullResult=" + dmnFullResult +
                 ", dmnFilteredCtx=" + dmnFilteredCtx +
-                ", ruleUnitId='" + ruleUnitId + '\'' +
-                ", ruleUnitQuery='" + ruleUnitQuery + '\'' +
                 '}';
     }
 }

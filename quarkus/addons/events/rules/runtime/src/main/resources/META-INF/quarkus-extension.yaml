@@ -1,5 +1,5 @@
 name: Kogito Add-On Events Rules
-description: Kogito Add-On for processing events on Rules (DMN) based projects
+description: Kogito Add-On for processing events on Rules (DRL) based projects
 metadata:
   keywords:
     - kogito

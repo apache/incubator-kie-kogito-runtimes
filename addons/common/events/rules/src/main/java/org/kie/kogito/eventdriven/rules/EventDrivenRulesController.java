@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.kie.kogito.cloudevents.CloudEventUtils;
-import org.kie.kogito.cloudevents.extension.KogitoExtension;
+import org.kie.kogito.cloudevents.extension.KogitoRulesExtension;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
@@ -92,10 +92,10 @@ public class EventDrivenRulesController {
     }
 
     private Optional<EvaluationContext> buildEvaluationContext(CloudEvent event) {
-        KogitoExtension kogitoExtension = ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, event);
+        KogitoRulesExtension extension = ExtensionProvider.getInstance().parseExtension(KogitoRulesExtension.class, event);
         Map<String, Object> data = CloudEventUtils.decodeMapData(event, String.class, Object.class).orElse(null);
 
-        if (kogitoExtension == null) {
+        if (extension == null) {
             LOG.warn("Received CloudEvent(id={} source={} type={}) with null Kogito extension", event.getId(), event.getSource(), event.getType());
         }
 
@@ -103,7 +103,7 @@ public class EventDrivenRulesController {
             LOG.warn("Received CloudEvent(id={} source={} type={}) with null data", event.getId(), event.getSource(), event.getType());
         }
 
-        return Optional.of(new EvaluationContext(event, kogitoExtension));
+        return Optional.of(new EvaluationContext(event, extension));
     }
 
     private EvaluationContext processRequest(EvaluationContext ctx) {
@@ -139,16 +139,16 @@ public class EventDrivenRulesController {
         URI source = buildResponseCloudEventSource(ctx);
         String subject = ctx.getRequestCloudEvent().getSubject();
 
-        KogitoExtension kogitoExtension = new KogitoExtension();
-        kogitoExtension.setRuleUnitId(ctx.getRuleUnitId());
-        kogitoExtension.setRuleUnitQuery(ctx.getQueryName());
+        KogitoRulesExtension extension = new KogitoRulesExtension();
+        extension.setRuleUnitId(ctx.getRuleUnitId());
+        extension.setRuleUnitQuery(ctx.getQueryName());
 
         if (ctx.isResponseError()) {
             String data = Optional.ofNullable(ctx.getResponseError()).map(RulesResponseError::name).orElse(null);
-            return CloudEventUtils.build(id, source, RESPONSE_ERROR_EVENT_TYPE, subject, data, kogitoExtension);
+            return CloudEventUtils.build(id, source, RESPONSE_ERROR_EVENT_TYPE, subject, data, extension);
         }
 
-        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getQueryResult(), kogitoExtension);
+        return CloudEventUtils.build(id, source, RESPONSE_EVENT_TYPE, subject, ctx.getQueryResult(), extension);
     }
 
     private URI buildResponseCloudEventSource(EvaluationContext ctx) {
@@ -178,18 +178,18 @@ public class EventDrivenRulesController {
         private RulesResponseError responseError;
         private Object queryResult;
 
-        public EvaluationContext(CloudEvent requestCloudEvent, KogitoExtension requestKogitoExtension) {
+        public EvaluationContext(CloudEvent requestCloudEvent, KogitoRulesExtension requestExtension) {
             this.requestCloudEvent = requestCloudEvent;
 
-            this.ruleUnitId = Optional.ofNullable(requestKogitoExtension)
-                    .map(KogitoExtension::getRuleUnitId)
+            this.ruleUnitId = Optional.ofNullable(requestExtension)
+                    .map(KogitoRulesExtension::getRuleUnitId)
                     .orElse(null);
-            this.queryName = Optional.ofNullable(requestKogitoExtension)
-                    .map(KogitoExtension::getRuleUnitQuery)
+            this.queryName = Optional.ofNullable(requestExtension)
+                    .map(KogitoRulesExtension::getRuleUnitQuery)
                     .orElse(null);
 
             this.validRequest = isValidCloudEvent(requestCloudEvent)
-                    && requestKogitoExtension != null
+                    && requestExtension != null
                     && ruleUnitId != null && !ruleUnitId.isEmpty()
                     && queryName != null && !queryName.isEmpty();
         }
