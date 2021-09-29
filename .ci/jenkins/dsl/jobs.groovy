@@ -85,8 +85,15 @@ if (Utils.isLTSBranch(this)) {
 }
 
 // Tools job
-KogitoJobUtils.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito', 'Kogito Runtimes')
-KogitoJobUtils.createKie7UpdateJob(this, 'kogito-runtimes', 'kogito-kie7-bom', 'Kogito Runtimes')
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-dependencies-bom', 'kogito-build-parent', 'kogito-quarkus-bom' ],
+  compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
+  properties: [ 'version.io.quarkus', 'version.io.quarkus.quarkus-test-maven' ],
+])
+KogitoJobUtils.createKie7UpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-kie7-bom' ],
+  properties: [ 'version.org.kie7' ],
+])
 
 /////////////////////////////////////////////////////////////////
 // Methods
