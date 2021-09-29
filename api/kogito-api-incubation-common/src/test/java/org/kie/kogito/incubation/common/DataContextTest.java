@@ -16,10 +16,10 @@
 
 package org.kie.kogito.incubation.common;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.Map;
 import java.util.Objects;
+
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +47,8 @@ public class DataContextTest {
                 return Objects.equals(firstName, user.firstName)
                         && Objects.equals(lastName, user.lastName)
                         && Objects.equals(addr, user.addr);
-            } else return false;
+            } else
+                return false;
         }
 
         @Override
