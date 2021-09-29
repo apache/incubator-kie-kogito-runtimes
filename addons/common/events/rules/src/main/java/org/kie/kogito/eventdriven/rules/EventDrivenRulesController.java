@@ -64,15 +64,14 @@ public class EventDrivenRulesController {
         this.eventReceiver = eventReceiver;
     }
 
-    protected void setup(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
+    protected void init(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
         this.eventReceiver = eventReceiver;
-        setup();
     }
 
-    protected void setup() {
+    protected void subscribe() {
         eventReceiver.subscribe(this::handleRequest,
                 new SubscriptionInfo<>(CloudEventUtils.Mapper.mapper()::readValue, CloudEvent.class));
     }

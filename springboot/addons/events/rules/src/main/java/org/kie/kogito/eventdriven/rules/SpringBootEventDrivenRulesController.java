@@ -35,6 +35,6 @@ public class SpringBootEventDrivenRulesController extends EventDrivenRulesContro
 
     @PostConstruct
     private void onPostConstruct() {
-        setup();
+        subscribe();
     }
 }

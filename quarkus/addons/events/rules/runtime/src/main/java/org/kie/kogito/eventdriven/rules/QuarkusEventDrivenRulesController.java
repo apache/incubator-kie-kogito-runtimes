@@ -42,6 +42,7 @@ public class QuarkusEventDrivenRulesController extends EventDrivenRulesControlle
 
     @PostConstruct
     private void onPostConstruct() {
-        setup(executors, config, eventEmitter, eventReceiver);
+        init(executors, config, eventEmitter, eventReceiver);
+        subscribe();
     }
 }
