@@ -1,7 +1,8 @@
 import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.FolderUtils
-import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
+import org.kie.jenkins.jobdsl.KogitoJobUtils
+import org.kie.jenkins.jobdsl.Utils
 
 JENKINSFILE_PATH = '.ci/jenkins'
 
@@ -84,8 +85,8 @@ if (Utils.isLTSBranch(this)) {
 }
 
 // Tools job
-KogitoJobTemplate.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito', 'Kogito Runtimes')
-KogitoJobTemplate.createKie7UpdateJob(this, 'kogito-runtimes', 'kogito-kie7-bom', 'Kogito Runtimes')
+KogitoJobUtils.createQuarkusUpdateJob(this, 'kogito-runtimes', 'kogito', 'Kogito Runtimes')
+KogitoJobUtils.createKie7UpdateJob(this, 'kogito-runtimes', 'kogito-kie7-bom', 'Kogito Runtimes')
 
 /////////////////////////////////////////////////////////////////
 // Methods
