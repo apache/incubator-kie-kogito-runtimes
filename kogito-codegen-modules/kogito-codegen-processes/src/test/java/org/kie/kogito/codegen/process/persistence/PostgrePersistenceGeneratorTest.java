@@ -36,11 +36,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE;
 
-class PostgrePersistenceGeneratorTest {
-
-    private static final String TEST_RESOURCES = "src/test/resources";
+class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -51,7 +50,7 @@ class PostgrePersistenceGeneratorTest {
                 .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
                 .build();
 
-        context.setApplicationProperty("kogito.persistence.type", POSTGRESQL_PERSISTENCE_TYPE);
+        context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
@@ -87,5 +86,10 @@ class PostgrePersistenceGeneratorTest {
         compilationUnit
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
+    }
+
+    @Override
+    protected String persistenceType() {
+        return POSTGRESQL_PERSISTENCE_TYPE;
     }
 }

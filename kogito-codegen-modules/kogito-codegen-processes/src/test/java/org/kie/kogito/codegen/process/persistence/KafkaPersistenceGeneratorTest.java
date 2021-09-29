@@ -30,7 +30,6 @@ import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
-import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -39,10 +38,9 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import static com.github.javaparser.StaticJavaParser.parse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KAFKA_PERSISTENCE_TYPE;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
 
-class KafkaPersistenceGeneratorTest {
-
-    private static final String TEST_RESOURCES = "src/test/resources";
+class KafkaPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -53,16 +51,13 @@ class KafkaPersistenceGeneratorTest {
                 .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
                 .build();
 
-        context.setApplicationProperty("kogito.persistence.type", KAFKA_PERSISTENCE_TYPE);
+        context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
                 protoGenerator);
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
-
-        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
-        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
 
         if (context.hasDI()) {
             Optional<GeneratedFile> persistenceFactoryImpl = generatedFiles.stream()
@@ -81,5 +76,10 @@ class KafkaPersistenceGeneratorTest {
                     .findFirst(ClassOrInterfaceDeclaration.class)
                     .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
         }
+    }
+
+    @Override
+    protected String persistenceType() {
+        return KAFKA_PERSISTENCE_TYPE;
     }
 }
