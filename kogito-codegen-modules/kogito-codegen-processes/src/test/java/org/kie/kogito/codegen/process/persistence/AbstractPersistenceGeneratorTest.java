@@ -48,6 +48,7 @@ public abstract class AbstractPersistenceGeneratorTest {
                 .build();
 
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
+        context.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "true");
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
