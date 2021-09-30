@@ -34,6 +34,6 @@ public class SpringBootEventDrivenPredictionsController extends EventDrivenPredi
 
     @PostConstruct
     private void onPostConstruct() {
-        setup();
+        subscribe();
     }
 }

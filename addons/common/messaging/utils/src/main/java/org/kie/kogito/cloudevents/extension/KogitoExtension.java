@@ -36,8 +36,6 @@ public class KogitoExtension implements CloudEventExtension {
     public static final String KOGITO_DMN_EVALUATE_DECISION = "kogitodmnevaldecision";
     public static final String KOGITO_DMN_FULL_RESULT = "kogitodmnfullresult";
     public static final String KOGITO_DMN_FILTERED_CTX = "kogitodmnfilteredctx";
-    public static final String KOGITO_PMML_MODEL_NAME = "kogitopmmlmodelname";
-    public static final String KOGITO_PMML_FULL_RESULT = "kogitopmmlfullresult";
 
     private static final Set<String> KEYS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             KOGITO_EXECUTION_ID,
@@ -45,9 +43,7 @@ public class KogitoExtension implements CloudEventExtension {
             KOGITO_DMN_MODEL_NAMESPACE,
             KOGITO_DMN_EVALUATE_DECISION,
             KOGITO_DMN_FULL_RESULT,
-            KOGITO_DMN_FILTERED_CTX,
-            KOGITO_PMML_MODEL_NAME,
-            KOGITO_PMML_FULL_RESULT)));
+            KOGITO_DMN_FILTERED_CTX)));
 
     private String executionId;
     private String dmnModelName;
@@ -55,8 +51,6 @@ public class KogitoExtension implements CloudEventExtension {
     private String dmnEvaluateDecision;
     private Boolean dmnFullResult;
     private Boolean dmnFilteredCtx;
-    private String pmmlModelName;
-    private Boolean pmmlFullResult;
 
     public static void register() {
         ExtensionProvider.getInstance().registerExtension(KogitoExtension.class, KogitoExtension::new);
@@ -70,8 +64,6 @@ public class KogitoExtension implements CloudEventExtension {
         readStringExtension(extensions, KOGITO_DMN_EVALUATE_DECISION, this::setDmnEvaluateDecision);
         readBooleanExtension(extensions, KOGITO_DMN_FULL_RESULT, this::setDmnFullResult);
         readBooleanExtension(extensions, KOGITO_DMN_FILTERED_CTX, this::setDmnFilteredCtx);
-        readStringExtension(extensions, KOGITO_PMML_MODEL_NAME, this::setPmmlModelName);
-        readBooleanExtension(extensions, KOGITO_PMML_FULL_RESULT, this::setPmmlFullResult);
     }
 
     @Override
@@ -89,10 +81,6 @@ public class KogitoExtension implements CloudEventExtension {
                 return isDmnFullResult();
             case KOGITO_DMN_FILTERED_CTX:
                 return isDmnFilteredCtx();
-            case KOGITO_PMML_MODEL_NAME:
-                return getPmmlModelName();
-            case KOGITO_PMML_FULL_RESULT:
-                return isPmmlFullResult();
             default:
                 return null;
         }
@@ -149,22 +137,6 @@ public class KogitoExtension implements CloudEventExtension {
 
     public void setDmnFilteredCtx(Boolean dmnFilteredCtx) {
         this.dmnFilteredCtx = dmnFilteredCtx;
-    }
-
-    public String getPmmlModelName() {
-        return pmmlModelName;
-    }
-
-    public void setPmmlModelName(String pmmlModelName) {
-        this.pmmlModelName = pmmlModelName;
-    }
-
-    public Boolean isPmmlFullResult() {
-        return pmmlFullResult;
-    }
-
-    public void setPmmlFullResult(Boolean pmmlFullResult) {
-        this.pmmlFullResult = pmmlFullResult;
     }
 
     @Override
