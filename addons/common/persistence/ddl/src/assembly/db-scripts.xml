@@ -18,7 +18,7 @@
             <directory>${path.to.persistence.modules}/jdbc/src/main/resources/sql</directory>
             <outputDirectory>jdbc</outputDirectory>
             <includes>
-                <include>*_create.sql</include>
+                <include>create_table*.sql</include>
             </includes>
         </fileSet>
     </fileSets>
