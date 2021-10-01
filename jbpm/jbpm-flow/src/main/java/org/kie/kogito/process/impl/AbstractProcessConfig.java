@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.kie.api.event.process.ProcessEventListener;
-import org.kie.kogito.async.AsyncExecutor;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
@@ -44,7 +43,6 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     private final ProcessEventListenerConfig processEventListenerConfig;
     private final UnitOfWorkManager unitOfWorkManager;
     private final JobsService jobsService;
-    private final AsyncExecutor asyncExecutor;
 
     protected AbstractProcessConfig(
             Iterable<WorkItemHandlerConfig> workItemHandlerConfig,
@@ -54,8 +52,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
             Iterable<JobsService> jobsService,
             Iterable<EventPublisher> eventPublishers,
             String kogitoService,
-            Iterable<UnitOfWorkEventListener> unitOfWorkListeners,
-            Iterable<? extends AsyncExecutor> asyncExecutor) {
+            Iterable<UnitOfWorkEventListener> unitOfWorkListeners) {
 
         this.workItemHandlerConfig = orDefault(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
         this.processEventListenerConfig = merge(processEventListenerConfigs, processEventListeners);
@@ -63,7 +60,6 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
                 () -> new DefaultUnitOfWorkManager(
                         new CollectingUnitOfWorkFactory()));
         this.jobsService = orDefault(jobsService, () -> null);
-        this.asyncExecutor = orDefault(asyncExecutor, () -> null);
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
         unitOfWorkListeners.forEach(listener -> unitOfWorkManager().register(listener));
@@ -93,11 +89,6 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
     @Override
     public JobsService jobsService() {
         return jobsService;
-    }
-
-    @Override
-    public AsyncExecutor asyncExecutor() {
-        return asyncExecutor;
     }
 
     public org.kie.kogito.Addons addons() {

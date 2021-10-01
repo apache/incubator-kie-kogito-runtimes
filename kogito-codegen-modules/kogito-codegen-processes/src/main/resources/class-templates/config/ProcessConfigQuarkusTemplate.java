@@ -15,16 +15,15 @@
  */
 package $Package$;
 
-import javax.enterprise.inject.Instance;
-
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessEventListenerConfig;
 import org.kie.kogito.process.WorkItemHandlerConfig;
-import org.kie.kogito.services.async.ProcessAsyncExecutor;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.kogito.uow.events.UnitOfWorkEventListener;
+
+import javax.enterprise.inject.Instance;
 
 @javax.inject.Singleton
 public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessConfig {
@@ -38,8 +37,8 @@ public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessCo
             Instance<ProcessEventListener> processEventListeners,
             Instance<EventPublisher> eventPublishers,
             ConfigBean configBean,
-            Instance<UnitOfWorkEventListener> unitOfWorkEventListeners,
-            Instance<ProcessAsyncExecutor> asyncExecutor) {
+            Instance<UnitOfWorkEventListener> unitOfWorkEventListeners) {
+
         super(workItemHandlerConfig,
               processEventListenerConfigs,
               processEventListeners,
@@ -47,7 +46,7 @@ public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessCo
               jobsService,
               eventPublishers,
               configBean.getServiceUrl(),
-              unitOfWorkEventListeners,
-              asyncExecutor);
+              unitOfWorkEventListeners);
     }
+
 }

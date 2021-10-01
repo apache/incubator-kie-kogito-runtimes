@@ -29,6 +29,7 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
+import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,22 +59,27 @@ public class ServerlessWorkflowIT extends AbstractCodegenIT {
 
     @ParameterizedTest
     @ValueSource(strings = { "serverless/single-operation-with-delay.sw.json", "serverless/single-operation-with-delay.sw.yml" })
+    //    @ValueSource(strings = {"serverless/single-operation-with-delay.sw.yml" })
     public void testSingleFunctionCallWithDelayWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);
         assertThat(app).isNotNull();
 
-        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("SmallDelay", 1);
+        NodeLeftCountDownProcessEventListener listener = new NodeLeftCountDownProcessEventListener("End", 1);
         app.config().get(ProcessConfig.class).processEventListeners().listeners().add(listener);
 
         Process<? extends Model> p = app.get(Processes.class).processById("function");
 
-        Model m = p.createModel();
-        Map<String, Object> parameters = new HashMap<>();
-        m.fromMap(parameters);
+        ProcessInstance<?> processInstance = UnitOfWorkExecutor.executeInUnitOfWork(app.unitOfWorkManager(), () -> {
 
-        ProcessInstance<?> processInstance = p.createInstance(m);
-        processInstance.start();
+            Model m = p.createModel();
+            Map<String, Object> parameters = new HashMap<>();
+            m.fromMap(parameters);
+            ProcessInstance<?> pi = p.createInstance(m);
+            pi.start();
+
+            return pi;
+        });
 
         boolean completed = listener.waitTillCompleted(5000);
         assertThat(completed).isTrue();

@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -116,8 +115,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private final List<NodeInstance> nodeInstances = new ArrayList<>();
 
-    private Map<String, List<KogitoEventListener>> eventListeners = new ConcurrentHashMap<>();
-    private Map<String, List<KogitoEventListener>> externalEventListeners = new ConcurrentHashMap<>();
+    private Map<String, List<KogitoEventListener>> eventListeners = new HashMap<>();
+    private Map<String, List<KogitoEventListener>> externalEventListeners = new HashMap<>();
 
     private List<String> completedNodeIds = new ArrayList<>();
     private List<String> activatingNodeIds;
@@ -195,9 +194,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     @Override
     public Collection<NodeInstance> getNodeInstances(boolean recursive) {
-        Collection<NodeInstance> result = nodeInstances;
+        Collection<NodeInstance> result = new ArrayList<>(nodeInstances);
         if (recursive) {
-            result = new ArrayList<>(result);
             for (NodeInstance nodeInstance : nodeInstances) {
                 if (nodeInstance instanceof KogitoNodeInstanceContainer) {
                     result.addAll(((org.jbpm.workflow.instance.NodeInstanceContainer) nodeInstance).getNodeInstances(true));
@@ -583,85 +581,87 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     @SuppressWarnings("unchecked")
     public void signalEvent(String type, Object event) {
         logger.debug("Signal {} received with data {} in process instance {}", type, event, getStringId());
-        if (getState() != KogitoProcessInstance.STATE_ACTIVE) {
-            return;
-        }
+        synchronized (this) {
+            if (getState() != KogitoProcessInstance.STATE_ACTIVE) {
+                return;
+            }
 
-        if ("timerTriggered".equals(type)) {
-            TimerInstance timer = (TimerInstance) event;
-            if (timer.getId().equals(slaTimerId)) {
+            if ("timerTriggered".equals(type)) {
+                TimerInstance timer = (TimerInstance) event;
+                if (timer.getId().equals(slaTimerId)) {
+                    handleSLAViolation();
+                    // no need to pass the event along as it was purely for SLA tracking
+                    return;
+                }
+            }
+            if ("slaViolation".equals(type)) {
                 handleSLAViolation();
                 // no need to pass the event along as it was purely for SLA tracking
                 return;
             }
-        }
-        if ("slaViolation".equals(type)) {
-            handleSLAViolation();
-            // no need to pass the event along as it was purely for SLA tracking
-            return;
-        }
 
-        List<NodeInstance> currentView = new ArrayList<>(this.nodeInstances);
+            List<NodeInstance> currentView = new ArrayList<>(this.nodeInstances);
 
-        try {
-            this.activatingNodeIds = new ArrayList<>();
-            List<KogitoEventListener> listeners = eventListeners.get(type);
-            if (listeners != null) {
-                for (KogitoEventListener listener : listeners) {
-                    listener.signalEvent(type, event);
+            try {
+                this.activatingNodeIds = new ArrayList<>();
+                List<KogitoEventListener> listeners = eventListeners.get(type);
+                if (listeners != null) {
+                    for (KogitoEventListener listener : listeners) {
+                        listener.signalEvent(type, event);
+                    }
                 }
-            }
-            listeners = externalEventListeners.get(type);
-            if (listeners != null) {
-                for (KogitoEventListener listener : listeners) {
-                    listener.signalEvent(type, event);
+                listeners = externalEventListeners.get(type);
+                if (listeners != null) {
+                    for (KogitoEventListener listener : listeners) {
+                        listener.signalEvent(type, event);
+                    }
                 }
-            }
-            for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
-                if (node instanceof EventNodeInterface
-                        && ((EventNodeInterface) node).acceptsEvent(type, event, getResolver(node, currentView))) {
-                    if (node instanceof EventNode && ((EventNode) node).getFrom() == null) {
-                        EventNodeInstance eventNodeInstance = (EventNodeInstance) getNodeInstance(node);
-                        eventNodeInstance.signalEvent(type, event);
-                    } else {
-                        if (node instanceof EventSubProcessNode && (resolveVariables(((EventSubProcessNode) node).getEvents()).contains(type))) {
-                            EventSubProcessNodeInstance eventNodeInstance = (EventSubProcessNodeInstance) getNodeInstance(node);
+                for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
+                    if (node instanceof EventNodeInterface
+                            && ((EventNodeInterface) node).acceptsEvent(type, event, getResolver(node, currentView))) {
+                        if (node instanceof EventNode && ((EventNode) node).getFrom() == null) {
+                            EventNodeInstance eventNodeInstance = (EventNodeInstance) getNodeInstance(node);
                             eventNodeInstance.signalEvent(type, event);
                         } else {
-                            List<NodeInstance> nodeInstances = getNodeInstances(node.getId(), currentView);
-                            if (nodeInstances != null && !nodeInstances.isEmpty()) {
-                                for (NodeInstance nodeInstance : nodeInstances) {
-                                    ((EventNodeInstanceInterface) nodeInstance).signalEvent(type, event);
+                            if (node instanceof EventSubProcessNode && (resolveVariables(((EventSubProcessNode) node).getEvents()).contains(type))) {
+                                EventSubProcessNodeInstance eventNodeInstance = (EventSubProcessNodeInstance) getNodeInstance(node);
+                                eventNodeInstance.signalEvent(type, event);
+                            } else {
+                                List<NodeInstance> nodeInstances = getNodeInstances(node.getId(), currentView);
+                                if (nodeInstances != null && !nodeInstances.isEmpty()) {
+                                    for (NodeInstance nodeInstance : nodeInstances) {
+                                        ((EventNodeInstanceInterface) nodeInstance).signalEvent(type, event);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            if (((org.jbpm.workflow.core.WorkflowProcess) getWorkflowProcess()).isDynamic()) {
-                for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
-                    if (type.equals(node.getName()) && node.getIncomingConnections().isEmpty()) {
-                        NodeInstance nodeInstance = getNodeInstance(node);
-                        if (event != null) {
-                            Map<String, Object> dynamicParams = new HashMap<>(getVariables());
-                            if (event instanceof Map) {
-                                dynamicParams.putAll((Map<String, Object>) event);
-                            } else {
-                                dynamicParams.put("Data", event);
+                if (((org.jbpm.workflow.core.WorkflowProcess) getWorkflowProcess()).isDynamic()) {
+                    for (org.kie.api.definition.process.Node node : getWorkflowProcess().getNodes()) {
+                        if (type.equals(node.getName()) && node.getIncomingConnections().isEmpty()) {
+                            NodeInstance nodeInstance = getNodeInstance(node);
+                            if (event != null) {
+                                Map<String, Object> dynamicParams = new HashMap<>(getVariables());
+                                if (event instanceof Map) {
+                                    dynamicParams.putAll((Map<String, Object>) event);
+                                } else {
+                                    dynamicParams.put("Data", event);
+                                }
+                                nodeInstance.setDynamicParameters(dynamicParams);
                             }
-                            nodeInstance.setDynamicParameters(dynamicParams);
+                            nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
+                        } else if (node instanceof CompositeNode) {
+                            Optional<NodeInstance> instance = this.nodeInstances.stream().filter(ni -> ni.getNodeId() == node.getId()).findFirst();
+                            instance.ifPresent(n -> ((CompositeNodeInstance) n).signalEvent(type, event));
                         }
-                        nodeInstance.trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-                    } else if (node instanceof CompositeNode) {
-                        Optional<NodeInstance> instance = this.nodeInstances.stream().filter(ni -> ni.getNodeId() == node.getId()).findFirst();
-                        instance.ifPresent(n -> ((CompositeNodeInstance) n).signalEvent(type, event));
                     }
                 }
-            }
-        } finally {
-            if (this.activatingNodeIds != null) {
-                this.activatingNodeIds.clear();
-                this.activatingNodeIds = null;
+            } finally {
+                if (this.activatingNodeIds != null) {
+                    this.activatingNodeIds.clear();
+                    this.activatingNodeIds = null;
+                }
             }
         }
     }

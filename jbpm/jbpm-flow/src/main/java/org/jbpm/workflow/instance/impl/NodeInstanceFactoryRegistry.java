@@ -181,7 +181,6 @@ public class NodeInstanceFactoryRegistry {
             return factory(
                     ThrowLinkNodeInstance::new);
         }
-
         if (AsyncEventNode.class == clazz) {
             return factory(
                     AsyncEventNodeInstance::new);

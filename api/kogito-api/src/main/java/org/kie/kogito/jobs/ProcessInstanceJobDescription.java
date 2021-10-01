@@ -35,7 +35,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
     private final String rootProcessId;
     private final String nodeInstanceId;
 
-    private ProcessInstanceJobDescription(long timerId,
+    private ProcessInstanceJobDescription(String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,
@@ -67,11 +67,22 @@ public class ProcessInstanceJobDescription implements JobDescription {
             String processId,
             String rootProcessId,
             String nodeInstanceId) {
+        return of(String.valueOf(timerId), expirationTime, DEFAULT_PRIORITY, processInstanceId, rootProcessInstanceId, processId,
+                rootProcessId, nodeInstanceId);
+    }
+
+    public static ProcessInstanceJobDescription of(String timerId,
+            ExpirationTime expirationTime,
+            String processInstanceId,
+            String rootProcessInstanceId,
+            String processId,
+            String rootProcessId,
+            String nodeInstanceId) {
         return of(timerId, expirationTime, DEFAULT_PRIORITY, processInstanceId, rootProcessInstanceId, processId,
                 rootProcessId, nodeInstanceId);
     }
 
-    public static ProcessInstanceJobDescription of(long timerId,
+    public static ProcessInstanceJobDescription of(String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,

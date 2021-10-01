@@ -381,9 +381,18 @@ public class PersistenceGenerator extends AbstractGenerator {
                     fqnProtoStreamMarshaller.replace('.', '/') + JAVA,
                     parsedClazzFile.toString()));
 
+            String objectMarshallerStrategyServiceDescriptor = "";
+            try {
+                objectMarshallerStrategyServiceDescriptor =
+                        IOUtils.toString(getClass().getResourceAsStream("/META-INF/services/org.kie.kogito.serialization.process.ObjectMarshallerStrategy"), "UTF-8");
+            } catch (Exception e) {
+
+            }
+            objectMarshallerStrategyServiceDescriptor += "\n" + fqnProtoStreamMarshaller + "\n";
+
             generatedFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
                     "META-INF/services/org.kie.kogito.serialization.process.ObjectMarshallerStrategy",
-                    fqnProtoStreamMarshaller + "\n"));
+                    objectMarshallerStrategyServiceDescriptor));
         }
         return generatedFiles;
     }

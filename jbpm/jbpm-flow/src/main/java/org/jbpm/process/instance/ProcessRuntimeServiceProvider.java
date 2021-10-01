@@ -15,7 +15,6 @@
  */
 package org.jbpm.process.instance;
 
-import org.kie.kogito.async.AsyncExecutor;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.jobs.JobsService;
@@ -35,6 +34,4 @@ public interface ProcessRuntimeServiceProvider {
     KogitoProcessEventSupport getEventSupport();
 
     UnitOfWorkManager getUnitOfWorkManager();
-
-    AsyncExecutor getAsyncExecutor();
 }

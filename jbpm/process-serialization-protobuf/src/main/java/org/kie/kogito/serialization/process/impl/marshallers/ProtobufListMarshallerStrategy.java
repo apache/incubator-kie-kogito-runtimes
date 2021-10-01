@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.async;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
+package org.kie.kogito.serialization.process.impl.marshallers;
 
-public interface AsyncExecutor {
+import java.util.List;
 
-    <T> CompletableFuture<T> run(Supplier<T> action);
+public class ProtobufListMarshallerStrategy extends ProtobufObjectMarshallerStrategy {
+
+    @Override
+    public Integer order() {
+        return DEFAULT_ORDER;
+    }
+
+    @Override
+    public boolean acceptForMarshalling(Object value) {
+        return List.class.isInstance(value);
+    }
 }

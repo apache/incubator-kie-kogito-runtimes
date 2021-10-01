@@ -15,9 +15,9 @@
  */
 package org.jbpm.workflow.core.node;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.impl.NodeImpl;
@@ -27,6 +27,11 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.jobs.ExactExpirationTime;
+import org.kie.kogito.jobs.ExpirationTime;
+import org.kie.kogito.jobs.JobsService;
+import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.uow.WorkUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +43,10 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(AsyncEventNodeInstance.class);
-    private final String eventType = UUID.randomUUID().toString();
+    private static final String TIMER_TRIGGERED_EVENT = "timerTriggered";
 
     private final KogitoEventListener listener = new AsyncExternalEventListener();
+    private String jobId = "";
 
     //receive the signal when it is the node is executed
     private class AsyncExternalEventListener implements KogitoEventListener {
@@ -56,27 +62,36 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         }
     }
 
-    public void internalTrigger(final KogitoNodeInstance from, String type) {
-        super.internalTrigger(from, type);
-        Optional<CompletableFuture<Void>> futureExecution = Optional.ofNullable(getProcessInstance().getKnowledgeRuntime().getProcessRuntime())
-                .filter(InternalProcessRuntime.class::isInstance)
-                .map(InternalProcessRuntime.class::cast)
-                .map(InternalProcessRuntime::getAsyncExecutor)
-                .map(asyncExecutor -> asyncExecutor.run(() -> {
-                    getProcessInstance().signalEvent(getEventType(), null);
-                    return null;
-                }))
-                .map(result -> result.thenAccept(r -> logger.info("Async trigger executed for node {}", getNode())));
+    @Override
+    public void internalTrigger(KogitoNodeInstance from, String type) {
+        final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
+        //Deffer the timer scheduling to the end of current UnitOfWork execution chain
+        processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
+                WorkUnit.create(this, instance -> {
+                    ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
+                    ProcessInstanceJobDescription jobDescription =
+                            ProcessInstanceJobDescription.of(instance.getStringId(),
+                                    expirationTime,
+                                    instance.getProcessInstance().getStringId(),
+                                    instance.getProcessInstance().getRootProcessInstanceId(),
+                                    instance.getProcessInstance().getProcessId(),
+                                    instance.getProcessInstance().getRootProcessId(),
+                                    Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                    JobsService jobService = processRuntime.getJobsService();
+                    String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
+                    setJobId(jobId);
+                }, i -> {
+                }, WorkUnit.LOW_PRIORITY));
+    }
 
-        if (!futureExecution.isPresent()) {
-            logger.warn("No async executor service found continuing as sync operation for node {}", getNode());
-            triggerCompleted();
-        }
+    @Override
+    public void addEventListeners() {
+        getProcessInstance().addEventListener(getEventType(), getEventListener(), true);
     }
 
     @Override
     public String getEventType() {
-        return eventType;
+        return TIMER_TRIGGERED_EVENT + ":" + getStringId();
     }
 
     @Override
@@ -84,9 +99,27 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         return new AsyncEventNode(super.getNode());
     }
 
+    public Node getActualNode() {
+        return super.getNode();
+    }
+
     @Override
     protected KogitoEventListener getEventListener() {
         return listener;
+    }
+
+    @Override
+    public void cancel() {
+        ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService().cancelJob(getJobId());
+        super.cancel();
+    }
+
+    public String getJobId() {
+        return this.jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 
     @Override

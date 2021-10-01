@@ -20,7 +20,6 @@ import java.util.Optional;
 import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManager;
 import org.kie.api.event.process.ProcessEventListener;
-import org.kie.kogito.async.AsyncExecutor;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
@@ -40,14 +39,12 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     private final KogitoWorkItemManager workItemManager;
     private final KogitoProcessEventSupportImpl eventSupport;
     private final UnitOfWorkManager unitOfWorkManager;
-    private final AsyncExecutor asyncExecutor;
 
     public AbstractProcessRuntimeServiceProvider(JobsService jobsService,
             WorkItemHandlerConfig workItemHandlerProvider,
             ProcessEventListenerConfig processEventListenerProvider,
             SignalManagerHub compositeSignalManager,
-            UnitOfWorkManager unitOfWorkManager,
-            AsyncExecutor asyncExecutor) {
+            UnitOfWorkManager unitOfWorkManager) {
         this.unitOfWorkManager = unitOfWorkManager;
         processInstanceManager = new DefaultProcessInstanceManager();
         signalManager = new LightSignalManager(
@@ -57,7 +54,6 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
         this.eventSupport = new KogitoProcessEventSupportImpl(this.unitOfWorkManager);
         this.jobsService = jobsService;
         this.workItemManager = new LightWorkItemManager(processInstanceManager, signalManager, eventSupport);
-        this.asyncExecutor = asyncExecutor;
 
         for (String workItem : workItemHandlerProvider.names()) {
             workItemManager.registerWorkItemHandler(
@@ -97,10 +93,5 @@ public class AbstractProcessRuntimeServiceProvider implements ProcessRuntimeServ
     @Override
     public UnitOfWorkManager getUnitOfWorkManager() {
         return unitOfWorkManager;
-    }
-
-    @Override
-    public AsyncExecutor getAsyncExecutor() {
-        return asyncExecutor;
     }
 }

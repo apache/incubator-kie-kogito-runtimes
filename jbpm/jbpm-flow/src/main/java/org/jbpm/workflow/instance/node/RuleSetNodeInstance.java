@@ -126,7 +126,6 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
             if (ruleType.isDecision()) {
                 RuleSetNode.RuleType.Decision decisionModel = (RuleSetNode.RuleType.Decision) ruleType;
-                String decisionName = decisionModel.getName();
                 String namespace = resolveVariable(decisionModel.getNamespace());
                 String model = resolveVariable(decisionModel.getModel());
 
@@ -140,7 +139,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
 
                 //Input Binding
                 DMNContext context = DMNJSONUtils.ctx(modelInstance, jsonResolver.resolveAll(inputs));
-                DMNResult dmnResult = modelInstance.evaluateDecisionService(context, decisionName);
+                DMNResult dmnResult = modelInstance.evaluateAll(context);
                 if (dmnResult.hasErrors()) {
                     String errors = dmnResult.getMessages(Severity.ERROR).stream()
                             .map(Object::toString)

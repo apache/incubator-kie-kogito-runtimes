@@ -31,7 +31,7 @@ import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.timer.TimerInstance;
-import org.kie.services.jobs.impl.InMemoryJobService;
+import org.kie.services.jobs.impl.LegacyInMemoryJobService;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,7 +71,7 @@ public class TimerTest extends AbstractBaseTest {
         processRuntime.getProcessInstanceManager().internalAddProcessInstance(processInstance);
 
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
-        JobsService jobService = new InMemoryJobService(processRuntime.getKogitoProcessRuntime(), new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
+        JobsService jobService = new LegacyInMemoryJobService(kruntime, new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
         ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(-1, ExactExpirationTime.now(), processInstance.getStringId(), "test");
         String jobId = jobService.scheduleProcessInstanceJob(desc);

@@ -39,6 +39,8 @@ import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.junit.jupiter.api.Test;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
+import org.kie.kogito.StaticApplication;
+import org.kie.kogito.StaticConfig;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -47,6 +49,7 @@ import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessError;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
+import org.kie.kogito.process.bpmn2.BpmnProcesses;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
@@ -499,6 +502,9 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
 
         TestClassLoader cl = new TestClassLoader(this.getClass().getClassLoader(), trgMfs.getMap());
         Map<String, BpmnProcess> processes = new HashMap<>();
+        BpmnProcesses bpmnProcesses = new BpmnProcesses();
+        StaticApplication application = new StaticApplication(new StaticConfig(null, config), bpmnProcesses);
+
         for (String className : classData.keySet()) {
             Class<?> processClass = Class.forName(className, true, cl);
 
@@ -506,7 +512,7 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
             Process process = (Process) processMethod.invoke(null);
             assertThat(process).isNotNull();
 
-            processes.put(process.getId(), new BpmnProcess(process, config));
+            processes.put(process.getId(), new BpmnProcess(process, config, application));
         }
 
         return processes;

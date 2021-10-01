@@ -67,7 +67,12 @@ public class CallbackJobsServiceResource {
             if (processInstanceFound.isPresent()) {
                 ProcessInstance<?> processInstance = processInstanceFound.get();
                 String[] ids = timerId.split("_");
-                processInstance.send(Sig.of("timerTriggered", TimerInstance.with(Long.parseLong(ids[1]), timerId, limit)));
+
+                try {
+                    processInstance.send(Sig.of("timerTriggered", TimerInstance.with(Long.parseLong(ids[1]), timerId, limit)));
+                } catch (NumberFormatException exception) {
+                    processInstance.send(Sig.of("timerTriggered:" + ids[1], null));
+                }
             } else {
                 return Response.status(Status.NOT_FOUND).entity("Process instance with id " + processInstanceId + " not found").build();
             }
