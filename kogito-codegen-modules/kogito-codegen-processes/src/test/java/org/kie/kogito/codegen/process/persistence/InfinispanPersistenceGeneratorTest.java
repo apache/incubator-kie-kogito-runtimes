@@ -57,7 +57,7 @@ class InfinispanPersistenceGeneratorTest extends AbstractPersistenceGeneratorTes
                     .filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java"))
                     .findFirst();
 
-            if(hasDataIndexProto(context)) {
+            if (hasDataIndexProto(context)) {
                 List<GeneratedFile> marshallerFiles = generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("MessageMarshaller.java")).collect(Collectors.toList());
 
                 String expectedMarshaller = "PersonMessageMarshaller";

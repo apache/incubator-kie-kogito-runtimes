@@ -57,7 +57,7 @@ class KafkaPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
                     .filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java"))
                     .findFirst();
 
-            if(hasProtoMarshaller(context)) {
+            if (hasProtoMarshaller(context)) {
                 List<GeneratedFile> marshallerFiles = generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("MessageMarshaller.java")).collect(Collectors.toList());
 
                 String expectedMarshaller = "PersonMessageMarshaller";
