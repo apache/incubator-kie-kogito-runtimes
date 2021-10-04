@@ -18,19 +18,26 @@ package org.kie.kogito.codegen.process.persistence;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.api.utils.KogitoContextTestUtils.contextBuilders;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_PROTO_MARSHALLER;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasDataIndexProto;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasProtoMarshaller;
 
 public abstract class AbstractPersistenceGeneratorTest {
 
@@ -38,39 +45,41 @@ public abstract class AbstractPersistenceGeneratorTest {
 
     protected abstract String persistenceType();
 
-    @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void withProto(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder
-                .withApplicationProperties(new File(TEST_RESOURCES))
-                .withPackageName(this.getClass().getPackage().getName())
-                .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
-                .build();
+    public static Stream<Arguments> persistenceTestContexts() {
+        return contextBuilders()
+                .map(args -> args.get()[0])
+                .map(KogitoBuildContext.Builder.class::cast)
+                .map(contextBuilder -> contextBuilder.withApplicationProperties(new File(TEST_RESOURCES))
+                        .withPackageName(AbstractPersistenceGeneratorTest.class.getPackage().getName())
+                        .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build()))
+                .flatMap(AbstractPersistenceGeneratorTest::initDifferentOptions)
+                .map(Arguments::of);
+    }
 
-        context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
-        context.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "true");
+    private static Stream<KogitoBuildContext> initDifferentOptions(KogitoBuildContext.Builder contextBuilder) {
+        KogitoBuildContext allOptionsContext = contextBuilder.build();
+        allOptionsContext.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "true");
+        allOptionsContext.setApplicationProperty(KOGITO_PERSISTENCE_PROTO_MARSHALLER, "true");
 
-        ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
-        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
-                context,
-                protoGenerator);
-        Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
+        KogitoBuildContext noDataIndexContext = contextBuilder.build();
+        noDataIndexContext.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "false");
+        noDataIndexContext.setApplicationProperty(KOGITO_PERSISTENCE_PROTO_MARSHALLER, "true");
 
-        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
-        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
+        KogitoBuildContext noMarshallerContext = contextBuilder.build();
+        noMarshallerContext.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "true");
+        noMarshallerContext.setApplicationProperty(KOGITO_PERSISTENCE_PROTO_MARSHALLER, "false");
+
+        KogitoBuildContext noOptionsContext = contextBuilder.build();
+        noOptionsContext.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "false");
+        noOptionsContext.setApplicationProperty(KOGITO_PERSISTENCE_PROTO_MARSHALLER, "false");
+
+        return Stream.of(allOptionsContext, noDataIndexContext, noMarshallerContext, noOptionsContext);
     }
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void skipProto(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder
-                .withApplicationProperties(new File(TEST_RESOURCES))
-                .withPackageName(this.getClass().getPackage().getName())
-                .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
-                .build();
-
+    @MethodSource("persistenceTestContexts")
+    void persistenceGeneratorSanityCheck(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
-        context.setApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION, "false");
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
@@ -78,6 +87,12 @@ public abstract class AbstractPersistenceGeneratorTest {
                 protoGenerator);
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
-        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE))).isEmpty();
+        int expectedDataIndexProto = hasDataIndexProto(context) ? 2 : 0;
+        int expectedListDataIndexProto = hasDataIndexProto(context) ? 1 : 0;
+        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(expectedDataIndexProto);
+        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(expectedListDataIndexProto);
+
+        int expectedProtoMarshaller = hasProtoMarshaller(context) ? 10 : 0;
+        assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(GeneratedFileType.SOURCE) && gf.relativePath().endsWith("Marshaller.java"))).hasSize(expectedProtoMarshaller);
     }
 }

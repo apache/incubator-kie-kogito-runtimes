@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.process.persistence;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -58,14 +56,8 @@ class MongoDBPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
     private static final String TRANSACTION_FILE_PATH = "org/kie/kogito/mongodb/transaction/MongoDBTransactionManagerImpl.java";
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void test(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder
-                .withApplicationProperties(new File(TEST_RESOURCES))
-                .withPackageName(this.getClass().getPackage().getName())
-                .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
-                .build();
-
+    @MethodSource("persistenceTestContexts")
+    void test(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));

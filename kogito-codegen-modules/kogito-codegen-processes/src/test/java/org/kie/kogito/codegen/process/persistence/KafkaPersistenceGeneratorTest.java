@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.process.persistence;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.GeneratedPOJO;
@@ -39,18 +37,13 @@ import static com.github.javaparser.StaticJavaParser.parse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KAFKA_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasProtoMarshaller;
 
 class KafkaPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void test(KogitoBuildContext.Builder contextBuilder) {
-        KogitoBuildContext context = contextBuilder
-                .withApplicationProperties(new File(TEST_RESOURCES))
-                .withPackageName(this.getClass().getPackage().getName())
-                .withAddonsConfig(AddonsConfig.builder().withPersistence(true).build())
-                .build();
-
+    @MethodSource("persistenceTestContexts")
+    void test(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
@@ -63,12 +56,15 @@ class KafkaPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
             Optional<GeneratedFile> persistenceFactoryImpl = generatedFiles.stream()
                     .filter(gf -> gf.relativePath().equals("org/kie/kogito/persistence/KogitoProcessInstancesFactoryImpl.java"))
                     .findFirst();
-            List<GeneratedFile> marshallerFiles = generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("MessageMarshaller.java")).collect(Collectors.toList());
 
-            String expectedMarshaller = "PersonMessageMarshaller";
-            assertThat(persistenceFactoryImpl).isNotEmpty();
-            assertThat(marshallerFiles.size()).isEqualTo(1);
-            assertThat(marshallerFiles.get(0).relativePath()).endsWith(expectedMarshaller + ".java");
+            if(hasProtoMarshaller(context)) {
+                List<GeneratedFile> marshallerFiles = generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("MessageMarshaller.java")).collect(Collectors.toList());
+
+                String expectedMarshaller = "PersonMessageMarshaller";
+                assertThat(persistenceFactoryImpl).isNotEmpty();
+                assertThat(marshallerFiles.size()).isEqualTo(1);
+                assertThat(marshallerFiles.get(0).relativePath()).endsWith(expectedMarshaller + ".java");
+            }
 
             final CompilationUnit compilationUnit = parse(new ByteArrayInputStream(persistenceFactoryImpl.get().contents()));
 

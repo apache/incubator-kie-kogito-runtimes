@@ -91,7 +91,9 @@ public class PersistenceGenerator extends AbstractGenerator {
      */
     // Generic
     public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION = "kogito.persistence.data-index.proto.generation";
-    public static final String KOGITO_PERSISTENCE_MARSHALLING = "kogito.persistence.marshalling";
+    public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION_DEFAULT = "true";
+    public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER = "kogito.persistence.proto.marshaller";
+    public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT = "false";
     public static final String KOGITO_PERSISTENCE_TYPE = "kogito.persistence.type";
     public static final String KOGITO_PERSISTENCE_OPTIMISTIC_LOCK = "kogito.persistence.optimistic.lock";
     public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
@@ -106,13 +108,6 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String KOGITO_PERSISTENCE_FILESYSTEM_PATH = "kogito.persistence.filesystem.path";
     // Kafka specific
     public static final String QUARKUS_KAFKA_STREAMS_TOPICS_PROP = "quarkus.kafka-streams.topics";
-
-    /**
-     * Marshalling type
-     */
-    public static final String JSON_KOGITO_PERSISTENCE_MARSHALLING = "json";
-    public static final String PROTO_KOGITO_PERSISTENCE_MARSHALLING = "proto";
-    public static final String DEFAULT_KOGITO_PERSISTENCE_MARSHALLING = PROTO_KOGITO_PERSISTENCE_MARSHALLING;
 
     /**
      * Constants used during codegen
@@ -181,8 +176,7 @@ public class PersistenceGenerator extends AbstractGenerator {
                 throw new IllegalArgumentException("Unknown persistenceType " + persistenceType());
         }
 
-        generatedFiles.addAll(generateMarshaller());
-
+        generatedFiles.addAll(generateProtoMarshaller());
         generatedFiles.addAll(generateProtoForDataIndex());
 
         return generatedFiles;
@@ -196,10 +190,6 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     public String persistenceType() {
         return context().getApplicationProperty(KOGITO_PERSISTENCE_TYPE).orElse(PersistenceGenerator.DEFAULT_PERSISTENCE_TYPE);
-    }
-
-    public String marshallingType() {
-        return context().getApplicationProperty(KOGITO_PERSISTENCE_MARSHALLING).orElse(PersistenceGenerator.DEFAULT_KOGITO_PERSISTENCE_MARSHALLING);
     }
 
     protected Collection<GeneratedFile> infinispanBasedPersistence() {
@@ -241,23 +231,49 @@ public class PersistenceGenerator extends AbstractGenerator {
         return generatedFiles;
     }
 
-    protected Collection<GeneratedFile> generateMarshaller() {
-        switch (marshallingType()) {
-            case JSON_KOGITO_PERSISTENCE_MARSHALLING:
-                return generateJsonMarshaller();
-            case PROTO_KOGITO_PERSISTENCE_MARSHALLING:
-                return generateProtoMarshaller();
-            default:
-                throw new IllegalArgumentException("Unknown marshallingTyoe " + marshallingType());
-        }
-    }
+    protected Collection<GeneratedFile> kafkaBasedPersistence() {
+        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
+                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
+                .setModifiers(Modifier.Keyword.PUBLIC)
+                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
 
-    protected Collection<GeneratedFile> generateJsonMarshaller() {
-        // TODO implement json marshalling strategy. This probably requires to generate a ObjectMarshallerStrategy impl for each complex type
-        return Collections.emptyList();
+        if (context().hasDI()) {
+            context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
+        }
+
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+        TemplatedGenerator generator = TemplatedGenerator.builder().withTemplateBasePath(CLASS_TEMPLATES_PERSISTENCE)
+                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
+                .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
+                .build(context(), "KafkaStreamsTopologyProducer");
+        CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
+        ClassOrInterfaceDeclaration producer = parsedClazzFile.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(
+                generator,
+                "Failed to find template for KafkaStreamsTopologyProducer"));
+
+        MethodCallExpr asListOfProcesses = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
+
+        protoGenerator.getProcessIds().forEach(p -> asListOfProcesses.addArgument(new StringLiteralExpr(p)));
+        producer.getFieldByName("processes")
+                .orElseThrow(() -> new InvalidTemplateException(generator, "Failed to find field 'processes' in KafkaStreamsTopologyProducer template"))
+                .getVariable(0).setInitializer(asListOfProcesses);
+
+        String clazzName = KOGITO_PROCESS_INSTANCE_PACKAGE + "." + producer.getName().asString();
+        generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
+                clazzName.replace('.', '/') + JAVA,
+                parsedClazzFile.toString()));
+
+        CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
+        compilationUnit.getTypes().add(persistenceProviderClazz);
+        generatePersistenceProviderClazz(persistenceProviderClazz, compilationUnit).ifPresent(generatedFiles::add);
+        return generatedFiles;
     }
 
     protected Collection<GeneratedFile> generateProtoMarshaller() {
+        if (!hasProtoMarshaller(context())) {
+            LOGGER.debug("Proto marshaller generation is skipped because " + KOGITO_PERSISTENCE_PROTO_MARSHALLER + "=false");
+            return Collections.emptyList();
+        }
         Proto proto = protoGenerator.protoOfDataClasses(context().getPackageName(), "import \"kogito-types.proto\";");
 
         List<String> variableMarshallers = new ArrayList<>();
@@ -371,51 +387,22 @@ public class PersistenceGenerator extends AbstractGenerator {
         return generatedFiles;
     }
 
-    protected Collection<GeneratedFile> kafkaBasedPersistence() {
-        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
-                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
-
-        if (context().hasDI()) {
-            context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
-        }
-
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
-        TemplatedGenerator generator = TemplatedGenerator.builder().withTemplateBasePath(CLASS_TEMPLATES_PERSISTENCE)
-                .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .withPackageName(KOGITO_PROCESS_INSTANCE_PACKAGE)
-                .build(context(), "KafkaStreamsTopologyProducer");
-        CompilationUnit parsedClazzFile = generator.compilationUnitOrThrow();
-        ClassOrInterfaceDeclaration producer = parsedClazzFile.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(
-                generator,
-                "Failed to find template for KafkaStreamsTopologyProducer"));
-
-        MethodCallExpr asListOfProcesses = new MethodCallExpr(new NameExpr("java.util.Arrays"), "asList");
-
-        protoGenerator.getProcessIds().forEach(p -> asListOfProcesses.addArgument(new StringLiteralExpr(p)));
-        producer.getFieldByName("processes")
-                .orElseThrow(() -> new InvalidTemplateException(generator, "Failed to find field 'processes' in KafkaStreamsTopologyProducer template"))
-                .getVariable(0).setInitializer(asListOfProcesses);
-
-        String clazzName = KOGITO_PROCESS_INSTANCE_PACKAGE + "." + producer.getName().asString();
-        generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE,
-                clazzName.replace('.', '/') + JAVA,
-                parsedClazzFile.toString()));
-
-        CompilationUnit compilationUnit = new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE);
-        compilationUnit.getTypes().add(persistenceProviderClazz);
-        generatePersistenceProviderClazz(persistenceProviderClazz, compilationUnit).ifPresent(generatedFiles::add);
-        return generatedFiles;
-    }
-
-    private Collection<GeneratedFile> generateProtoForDataIndex() {
-        boolean generateProto = "true".equalsIgnoreCase(context().getApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION).orElse("false"));
-        if (!generateProto) {
-            LOGGER.debug("Proto generation is skipped because " + KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION + "=false");
+    protected Collection<GeneratedFile> generateProtoForDataIndex() {
+        if (!hasDataIndexProto(context())) {
+            LOGGER.debug("Proto generation for data-index is skipped because " + KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION + "=false");
             return Collections.emptyList();
         }
         return protoGenerator.generateProtoFiles();
+    }
+
+    public static boolean hasProtoMarshaller(KogitoBuildContext context) {
+        return "true".equalsIgnoreCase(context.getApplicationProperty(KOGITO_PERSISTENCE_PROTO_MARSHALLER)
+                .orElse(KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT));
+    }
+
+    public static boolean hasDataIndexProto(KogitoBuildContext context) {
+        return "true".equalsIgnoreCase(context.getApplicationProperty(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION)
+                .orElse(KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION_DEFAULT));
     }
 
     private CompilationUnit generateProtostreamBaseMarshaller(TemplatedGenerator generatorProtostreamSerialization, String protobufType, Class<?> javaClazz, String method) {
