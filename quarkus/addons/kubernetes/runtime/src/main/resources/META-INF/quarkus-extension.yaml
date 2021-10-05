@@ -12,6 +12,7 @@ metadata:
     - kubernetes
     - eventing
     - cloudevents
+    - knative
   guide: https://quarkus.io/guides/kogito
   categories:
     - "business-automation"
