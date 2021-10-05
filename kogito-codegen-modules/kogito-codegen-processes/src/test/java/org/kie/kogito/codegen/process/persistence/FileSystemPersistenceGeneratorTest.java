@@ -64,7 +64,7 @@ class FileSystemPersistenceGeneratorTest {
 
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE)).count()).isEqualTo(2);
         assertThat(generatedFiles.stream().filter(gf -> gf.type().equals(ProtoGenerator.PROTO_TYPE) && gf.relativePath().endsWith(".json")).count()).isEqualTo(1);
-        int expectedNumberOfFiles = context.hasRESTForGenerator(persistenceGenerator) ? 15 : 14;
+        int expectedNumberOfFiles = 15;
         assertThat(generatedFiles).hasSize(expectedNumberOfFiles);
 
         if (context.hasDI()) {

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-tck</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>kogito-junit-examples</artifactId>
+
+    <name>Kogito Test Compatibilty Kit Test Cases Example</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kogito.junit.runtime>standalone</kogito.junit.runtime>
+        <java.util.logging.config.file>src/resources/test/logging-test.properties</java.util.logging.config.file>
+    </properties>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-extension</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-core</artifactId>
+        </dependency>
+        <!-- it should be exchanged -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-runtime-java</artifactId>
+        </dependency>
+        <!-- could be another persistence implementation -->
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-junit5-persistence-fs</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

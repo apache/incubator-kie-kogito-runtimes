@@ -1,0 +1,6 @@
+org.kie.kogito.junit.deployment.spi.impl.DecisionRuntimeBuildGeneratorProvider
+org.kie.kogito.junit.deployment.spi.impl.ProcessRuntimeBuildGeneratorProvider
+org.kie.kogito.junit.deployment.spi.impl.BuildIncrementalRuleRuntimeBuildGeneratorProvider
+org.kie.kogito.junit.deployment.spi.impl.PredictionRuntimeBuildGeneratorProvider
+org.kie.kogito.junit.deployment.spi.impl.PersistenceRuntimeBuildGeneratorProvider
+

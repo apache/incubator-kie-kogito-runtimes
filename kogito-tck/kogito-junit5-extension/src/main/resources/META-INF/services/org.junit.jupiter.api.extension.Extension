@@ -1,0 +1,2 @@
+org.kie.kogito.junit.extension.KogitoUnitTestEnvironmentExtension
+org.kie.kogito.junit.extension.KogitoUnitTestDeploymentExtension

@@ -1,0 +1,48 @@
+package org.kie.kogito.test.engine.domain
+
+unit PersonUnit;
+
+import org.kie.kogito.test.engine.domain.Person;
+
+rule "initial actions"
+    when
+    then 
+        System.out.println("Rule in initial actions ruleflow-group fired.");
+end
+
+rule "add new person"
+    when
+    then
+        insert( new Person() );
+        System.out.println("new person was inserted");
+end
+
+rule "person detector"
+    when
+        $person: /persons
+    then
+        System.out.println("There is a person.");
+end
+
+
+rule "wanted person detector"
+    when
+        $person: /persons[name == "wanted person"]
+    then
+        System.out.println("Wanted person");
+end
+
+rule "change unwanted person to wanted"
+    when
+        $person: /persons[name == "unwanted person"]
+    then
+        modify ($person){
+            setName("unwanted")
+        };
+        System.out.println("Unwanted person.");
+end
+
+
+
+
+

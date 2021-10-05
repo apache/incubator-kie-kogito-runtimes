@@ -24,12 +24,16 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractApplicationSection;
+import org.kie.kogito.process.ProcessInstancesFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -40,6 +44,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.UnknownType;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
@@ -49,7 +54,6 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     public static final String SECTION_CLASS_NAME = "Processes";
 
     private final List<ProcessGenerator> processes;
-    private final List<BodyDeclaration<?>> factoryMethods;
 
     private BlockStmt byProcessIdBody = new BlockStmt();
     private BlockStmt processesBody = new BlockStmt();
@@ -58,11 +62,11 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
     public ProcessContainerGenerator(KogitoBuildContext context) {
         super(context, SECTION_CLASS_NAME);
         this.processes = new ArrayList<>();
-        this.factoryMethods = new ArrayList<>();
 
         this.templatedGenerator = TemplatedGenerator.builder()
                 .withTargetTypeName(SECTION_CLASS_NAME)
                 .build(context, "ProcessContainer");
+
     }
 
     public void addProcess(ProcessGenerator p) {
@@ -74,6 +78,9 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
         ObjectCreationExpr newProcess = new ObjectCreationExpr()
                 .setType(r.targetCanonicalName())
                 .addArgument("application");
+        if (context.getAddonsConfig().usePersistence() && !context.hasDI()) {
+            newProcess.addArgument("processInstancesFactory");
+        }
         MethodCallExpr expr = new MethodCallExpr(newProcess, "configure");
         MethodCallExpr method = new MethodCallExpr(new NameExpr("mappedProcesses"), "computeIfAbsent",
                 nodeList(new StringLiteralExpr(r.processId()),
@@ -90,6 +97,27 @@ public class ProcessContainerGenerator extends AbstractApplicationSection {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("Invalid Template: No CompilationUnit");
 
         registerProcessesExplicitly(compilationUnit);
+        if (context.getAddonsConfig().usePersistence() && !context.hasDI()) {
+            ClassOrInterfaceDeclaration clazz = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).get();
+
+            Expression expression = new ObjectCreationExpr(null, new ClassOrInterfaceType(null, "org.kie.kogito.persistence.KogitoProcessInstancesFactoryImpl"), NodeList.nodeList());
+            FieldDeclaration pathField = new FieldDeclaration().addVariable(new VariableDeclarator()
+                    .setType(new ClassOrInterfaceType(null, ProcessInstancesFactory.class.getCanonicalName()))
+                    .setName("processInstancesFactory")
+                    .setInitializer(expression));
+
+            clazz.addMember(pathField);
+
+            BlockStmt getMethodBody = new BlockStmt();
+            getMethodBody.addStatement(new ReturnStmt(new NameExpr("processInstancesFactory")));
+
+            MethodDeclaration getMethod = new MethodDeclaration()
+                    .addModifier(Keyword.PUBLIC)
+                    .setName("processInstancesFactory")
+                    .setType("org.kie.kogito.process.ProcessInstancesFactory")
+                    .setBody(getMethodBody);
+            clazz.addMember(getMethod);
+        }
         return compilationUnit;
     }
 

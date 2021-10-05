@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<definitions id="Definition"
+             targetNamespace="http://www.jboss.org/drools"
+             typeLanguage="http://www.java.com/javaTypes"
+             expressionLanguage="http://www.mvel.org/2.0"
+             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd"
+             xmlns:g="http://www.jboss.org/drools/flow/gpd"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:tns="http://www.jboss.org/drools">
+
+  <itemDefinition id="_personItem" structureRef="java.util.List"/>
+
+  <process processType="Private" isExecutable="true" id="org.jbpm.test.functional.FireUntilHalt" name="FireUntilHalt" >
+	<property id="persons" itemSubjectRef="_personItem" name="persons"/>
+    <!-- nodes -->
+    <startEvent id="_1" name="Start" />
+    <endEvent id="_3" name="End" >
+        <terminateEventDefinition/>
+    </endEvent>
+    <businessRuleTask id="_4" name="Initial Actions" g:ruleFlowGroup="unit:org.kie.kogito.test.engine.domain.PersonUnit" >
+      <ioSpecification id="_ugd6QE8QEDiTNMCLyjv0ag">
+        <dataInput id="_7B8CC121-6F99-464A-93F8-9EAC4BE4601A_personsInputX" dtype="java.util.List" itemSubjectRef="_personItem" name="persons"/>
+        <inputSet id="_ugd6QU8QEDiTNMCLyjv0ag">
+          <dataInputRefs>_7B8CC121-6F99-464A-93F8-9EAC4BE4601A_personsInputX</dataInputRefs>
+        </inputSet>
+      </ioSpecification>
+      <dataInputAssociation id="_ugehUE8QEDiTNMCLyjv0ag">
+        <sourceRef>persons</sourceRef>
+        <targetRef>_7B8CC121-6F99-464A-93F8-9EAC4BE4601A_personsInputX</targetRef>
+      </dataInputAssociation>
+    </businessRuleTask>
+
+    <!-- connections -->
+    <sequenceFlow id="_1-_4" sourceRef="_1" targetRef="_4" />
+    <sequenceFlow id="_4-_3" sourceRef="_4" targetRef="_3" />
+
+
+  </process>
+
+</definitions>

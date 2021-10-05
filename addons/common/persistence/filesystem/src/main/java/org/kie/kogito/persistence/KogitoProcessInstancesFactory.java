@@ -33,4 +33,6 @@ public abstract class KogitoProcessInstancesFactory implements ProcessInstancesF
 
     public abstract String path();
 
+    public abstract void setPath(String path);
+
 }

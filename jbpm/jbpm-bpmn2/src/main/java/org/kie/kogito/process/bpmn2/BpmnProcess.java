@@ -56,6 +56,13 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
     }
 
     @Override
+    public ProcessInstance<BpmnVariables> createInstance(String businessKey, Model m) {
+        BpmnVariables vars = new BpmnVariables();
+        vars.fromMap(m.toMap());
+        return createInstance(businessKey, vars);
+    }
+
+    @Override
     public ProcessInstance<BpmnVariables> createInstance(String businessKey, BpmnVariables variables) {
         BpmnVariables variablesModel = createModel();
         variablesModel.fromMap(variables.toMap());
