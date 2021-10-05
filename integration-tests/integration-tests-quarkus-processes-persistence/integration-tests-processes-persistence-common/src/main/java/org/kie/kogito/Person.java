@@ -15,11 +15,12 @@
  */
 package org.kie.kogito;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Person {
+public class Person implements Serializable {
 
     private String id;
     private String name;

@@ -93,7 +93,7 @@ public class PersistenceGenerator extends AbstractGenerator {
     public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION = "kogito.persistence.data-index.proto.generation";
     public static final String KOGITO_PERSISTENCE_DATA_INDEX_PROTO_GENERATION_DEFAULT = "true";
     public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER = "kogito.persistence.proto.marshaller";
-    public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT = "false";
+    public static final String KOGITO_PERSISTENCE_PROTO_MARSHALLER_DEFAULT = "true";
     public static final String KOGITO_PERSISTENCE_TYPE = "kogito.persistence.type";
     public static final String KOGITO_PERSISTENCE_OPTIMISTIC_LOCK = "kogito.persistence.optimistic.lock";
     public static final String KOGITO_PERSISTENCE_AUTO_DDL = "kogito.persistence.auto.ddl";
@@ -271,6 +271,7 @@ public class PersistenceGenerator extends AbstractGenerator {
 
     protected Collection<GeneratedFile> generateProtoMarshaller() {
         if (!hasProtoMarshaller(context())) {
+            // TODO implement a validation check to verify that data classes implement Serializable
             LOGGER.debug("Proto marshaller generation is skipped because " + KOGITO_PERSISTENCE_PROTO_MARSHALLER + "=false");
             return Collections.emptyList();
         }
