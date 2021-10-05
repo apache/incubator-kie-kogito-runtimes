@@ -64,6 +64,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public void internalTrigger(KogitoNodeInstance from, String type) {
+        addEventListeners();
         final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
         //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
