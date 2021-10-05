@@ -26,10 +26,7 @@ public class FileLoader {
             if (stream == null) {
                 throw new IllegalStateException(String.format("Impossible to find %s", fileName));
             }
-            byte[] buffer = new byte[stream.available()];
-            int count = 0;
-            while ((count = stream.read(buffer)) > 0) {
-            }
+            byte[] buffer = stream.readAllBytes();
             String[] statements = new String(buffer).split(";");
             return List.of(statements);
         } catch (Exception e) {

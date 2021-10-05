@@ -58,6 +58,7 @@ public class TestHelper {
     public static SecurityPolicy securityPolicy = SecurityPolicy.of(IdentityProviders.of("john"));
 
     public static final String TEST_ID = "02ac3854-46ee-42b7-8b63-5186c9889d96";
+    private static final String ORACLE_TIMEZONE_PROPERTY = "oracle.jdbc.timezoneAsRegion";
 
     @BeforeAll
     public static void startContainerAndPublicPortIsAvailable() {
@@ -66,12 +67,14 @@ public class TestHelper {
 
         ORACLE_CONTAINER.start();
         ORACLE_DATA_SOURCE = getOracleDataSource(ORACLE_CONTAINER);
+        System.setProperty(ORACLE_TIMEZONE_PROPERTY, "false");
     }
 
     @AfterAll
     public static void close() {
         PG_CONTAINER.stop();
         ORACLE_CONTAINER.stop();
+        System.clearProperty(ORACLE_TIMEZONE_PROPERTY);
     }
 
     public static BpmnProcess createProcess(TestProcessInstancesFactory factory, ProcessConfig config, String fileName) {
