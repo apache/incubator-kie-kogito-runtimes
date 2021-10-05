@@ -1,0 +1,17 @@
+name: Kogito Add-On Kubernetes
+description: Adds support for Kubernetes integrations within Kogito engine.
+metadata:
+  keywords:
+    - kogito
+    - processes
+    - decisions
+    - rules
+    - bpmn
+    - drl
+    - dmn
+    - kubernetes
+    - eventing
+    - cloudevents
+  guide: https://quarkus.io/guides/kogito
+  categories:
+    - "business-automation"
