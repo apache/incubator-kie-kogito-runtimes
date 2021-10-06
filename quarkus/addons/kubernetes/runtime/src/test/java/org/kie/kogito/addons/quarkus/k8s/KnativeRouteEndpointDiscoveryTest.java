@@ -15,37 +15,44 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 
-import javax.inject.Inject;
+import org.junit.jupiter.api.Test;
 
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.mock.EnableKnativeMockClient;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import io.fabric8.knative.serving.v1.Route;
+import io.fabric8.knative.serving.v1.RouteBuilder;
+import io.fabric8.knative.serving.v1.RouteStatus;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@QuarkusTest
-@WithKubernetesTestServer // needed to resolve the mock k8s client in our services
 @EnableKnativeMockClient(crud = true)
 public class KnativeRouteEndpointDiscoveryTest {
 
-    @Inject
-    KnativeRouteEndpointDiscovery endpointDiscovery;
-
     static KnativeClient knativeClient;
 
-    @BeforeEach
-    public void setupMockData() {
-        this.endpointDiscovery.setKnativeClient(knativeClient);
-    }
-
     @Test
-    public void testSimpleCase() {
+    public void testBaseCase() {
+        final KnativeRouteEndpointDiscovery endpointDiscovery = new KnativeRouteEndpointDiscovery();
+        endpointDiscovery.setKnativeClient(knativeClient);
+
+        // configure mock
+        final RouteStatus status = new RouteStatus();
+        status.setUrl("http://192.168.2.32");
+        final Route route = new RouteBuilder().withNewMetadata().withName("ksvc1").withNamespace("test").and().withStatus(status).build();
+        knativeClient.routes().create(route);
+
         final Optional<Endpoint> endpoint = endpointDiscovery.findEndpoint("test", "ksvc1");
-        assertTrue(endpoint.isEmpty());
+        assertTrue(endpoint.isPresent());
+
+        try {
+            new URL(endpoint.get().getURL());
+        } catch (MalformedURLException e) {
+            fail("The generated URL " + endpoint.get().getURL() + " is invalid"); //verbose
+        }
     }
 }

@@ -37,20 +37,22 @@ public class KubernetesServiceEndpointDiscovery implements EndpointDiscovery {
     @Inject
     KubernetesClient kubernetesClient;
 
+    private final EndpointBuilder portBuilder = new EndpointBuilder();
+
     @Override
     public Optional<Endpoint> findEndpoint(String namespace, String name) {
         final Service service = kubernetesClient.services().inNamespace(namespace).withName(name).get();
         if (service == null) {
             return Optional.empty();
         }
-        return Optional.of(Endpoint.fromKubeService(service));
+        return Optional.of(portBuilder.buildFrom(service));
     }
 
     @Override
     public List<Endpoint> findEndpoint(String namespace, Map<String, String> labels) {
         final List<Service> services = kubernetesClient.services().inNamespace(namespace).withLabels(labels).list().getItems();
         final List<Endpoint> endpoints = new ArrayList<>();
-        services.forEach(s -> endpoints.add(Endpoint.fromKubeService(s)));
+        services.forEach(s -> endpoints.add(portBuilder.buildFrom(s)));
         return endpoints;
     }
 }

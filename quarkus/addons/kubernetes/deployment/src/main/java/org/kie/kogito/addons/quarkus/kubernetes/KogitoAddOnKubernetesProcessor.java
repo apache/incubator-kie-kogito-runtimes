@@ -15,9 +15,10 @@
  */
 package org.kie.kogito.addons.quarkus.kubernetes;
 
+import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
 class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
 

@@ -15,68 +15,88 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-
-import io.fabric8.kubernetes.api.model.Service;
 
 /**
  * Reference of the discovered endpoint
  */
 public class Endpoint {
 
-    private List<String> URLs = new ArrayList<>();
-
-    /**
-     * Creates the {@link Endpoint} reference based on a Kubernetes Service instance.
-     */
-    public static Endpoint fromKubeService(Service service) {
-        return new Endpoint(KubernetesServiceUtil.buildURLsForStandardPorts(service));
-    }
+    private String URL;
+    private Map<String, String> secondaryURLs = new HashMap<>();
 
     public Endpoint() {
     }
 
-    public Endpoint(final List<String> urls) {
-        this.URLs = urls;
-    }
-
     public Endpoint(final String url) {
-        this.URLs.add(url);
+        this.URL = url;
     }
 
-    public List<String> getURLs() {
-        return Collections.unmodifiableList(URLs);
+    public String getURL() {
+        return URL;
     }
 
-    public void setURLs(List<String> URLs) {
-        this.URLs = URLs;
+    public void setURL(String URL) {
+        this.URL = URL;
     }
 
-    @Override
-    public String toString() {
-        return "Endpoint{" +
-                " URLs='" + URLs + '\'' +
-                '}';
+    /**
+     * Map to secondary URLs found in the target service.
+     * For example, a service might expose monitoring ports targeting the very same service.
+     * Key is the name of the port, and the value the resolved URL via Cluster IP.
+     */
+    public Map<String, String> getSecondaryURLs() {
+        return Collections.unmodifiableMap(secondaryURLs);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    /**
+     * From the ServicePort spec:
+     * <p/>
+     * <quote>
+     * The name of this port within the service. This must be a DNS_LABEL.
+     * All ports within a ServiceSpec must have unique names.
+     * When considering the endpoints for a Service, this must match the 'name' field in the EndpointPort.
+     * Optional if only one ServicePort is defined on this service.
+     * </quote>
+     *
+     * @see <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#serviceport-v1-core">ServicePort v1 core</a>
+     * @param portName non-null, non-empty port name
+     * @param URL non-null, non-empty URL
+     * @throws NullPointerException in case either parameters are null or empty
+     */
+    public void addSecondaryURL(final String portName, final String URL) {
+        if (portName == null || portName.isEmpty()) {
+            throw new NullPointerException("Service port name can't be null or empty");
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        if (URL == null || URL.isEmpty()) {
+            throw new NullPointerException("Endpoint URL can't be null or empty");
         }
-        Endpoint endpoint = (Endpoint) o;
-        return Objects.equals(URLs, endpoint.URLs);
+        if (this.secondaryURLs == null) {
+            this.secondaryURLs = new HashMap<>();
+        }
+        this.secondaryURLs.put(portName, URL);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(URLs);
+    public String getSecondaryURL(final String portName) {
+        return this.secondaryURLs.get(portName);
+    }
+
+    public void removeSecondaryURL(final String portName) {
+        this.secondaryURLs.remove(portName);
+    }
+
+    /**
+     * Set the given URL as primary if none defined.
+     *
+     * @param url the given URL
+     */
+    public void setURLIfEmpty(final String url) {
+        if (url != null && !url.isEmpty()) {
+            if (this.getURL() == null || this.getURL().isEmpty()) {
+                this.setURL(url);
+            }
+        }
     }
 }

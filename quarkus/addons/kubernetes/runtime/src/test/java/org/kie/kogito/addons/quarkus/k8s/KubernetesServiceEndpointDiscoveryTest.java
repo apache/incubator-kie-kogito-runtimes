@@ -20,9 +20,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
+
+import org.junit.jupiter.api.Test;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
@@ -32,10 +35,7 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -50,63 +50,50 @@ public class KubernetesServiceEndpointDiscoveryTest {
     @Inject
     KubernetesServiceEndpointDiscovery endpointDiscovery;
 
-    @BeforeEach
-    public void setupMockData() {
-        if (!mockServer.getClient().services().inNamespace("test").list().getItems().isEmpty()) {
+    private void createServiceIfNotExist(final String name, Map<String, String> labels, Integer... ports) {
+        if (mockServer.getClient().services().inNamespace("test").withName(name).get() != null) {
             return;
         }
-
-        final Service svc1 = new ServiceBuilder()
+        final List<ServicePort> sPorts = new ArrayList<>();
+        for (Integer integer : ports) {
+            final ServicePort port = new ServicePort();
+            port.setPort(integer);
+            sPorts.add(port);
+        }
+        final Service svc = new ServiceBuilder()
                 .withNewMetadata()
-                .withName("svc1").withNamespace("test")
+                .withName(name).withNamespace("test")
+                .withLabels(labels)
                 .and().withSpec(new ServiceSpec()).build();
-        final Service svc2 = new ServiceBuilder()
-                .withNewMetadata()
-                .withName("svc2").withNamespace("test")
-                .withLabels(Collections.singletonMap("app", "test1"))
-                .and().withSpec(new ServiceSpec()).build();
+        svc.getSpec().setClusterIP("127.0.0.1");
+        svc.getSpec().setPorts(sPorts);
 
-        final ServicePort defaultPort = new ServicePort();
-        defaultPort.setPort(80);
-
-        final ServicePort randomPort = new ServicePort();
-        randomPort.setPort(8778);
-
-        final List<ServicePort> ports = new ArrayList<>();
-        ports.add(defaultPort);
-        ports.add(randomPort);
-
-        svc1.getSpec().setClusterIP("127.0.0.1");
-        svc1.getSpec().setPorts(ports);
-
-        svc2.getSpec().setClusterIP("192.168.32.148");
-        svc2.getSpec().setPorts(Collections.singletonList(randomPort));
-
-        mockServer.getClient().services().create(svc1);
-        mockServer.getClient().services().create(svc2);
+        mockServer.getClient().services().create(svc);
     }
 
     @Test
     public void testGetURLOnStandardPort() {
+        createServiceIfNotExist("svc1", Collections.emptyMap(), 80, 8776);
         final Optional<Endpoint> endpoint = endpointDiscovery.findEndpoint("test", "svc1");
         assertTrue(endpoint.isPresent());
-        assertEquals(1, endpoint.get().getURLs().size());
+        assertFalse(endpoint.get().getURL().isEmpty());
         try {
-            new URL(endpoint.get().getURLs().get(0));
+            new URL(endpoint.get().getURL());
         } catch (MalformedURLException e) {
-            fail("The generated URL " + endpoint.get().getURLs().get(0) + " is invalid"); //verbose
+            fail("The generated URL " + endpoint.get().getURL() + " is invalid"); //verbose
         }
     }
 
     @Test
     public void testGetURLOnRandomPort() {
+        createServiceIfNotExist("svc2", Collections.singletonMap("app", "test1"), 8778);
         final List<Endpoint> endpoints = endpointDiscovery.findEndpoint("test", Collections.singletonMap("app", "test1"));
         assertFalse(endpoints.isEmpty());
-        assertEquals(1, endpoints.get(0).getURLs().size());
+        assertFalse(endpoints.get(0).getURL().isEmpty());
         try {
-            new URL(endpoints.get(0).getURLs().get(0));
+            new URL(endpoints.get(0).getURL());
         } catch (MalformedURLException e) {
-            fail("The generated URL " + endpoints.get(0).getURLs().get(0) + " is invalid"); //verbose
+            fail("The generated URL " + endpoints.get(0).getURL() + " is invalid"); //verbose
         }
     }
 }

@@ -26,11 +26,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Performs the discovery operations for Knative Routes
@@ -68,6 +69,9 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
             return Optional.empty();
         }
         final Route route = knativeClient.routes().inNamespace(namespace).withName(name).get();
+        if (route == null || route.getStatus() == null) {
+            return Optional.empty();
+        }
         return Optional.of(new Endpoint(route.getStatus().getUrl()));
     }
 
