@@ -27,6 +27,8 @@ class CloudEventExtensionConstantsTest {
     void verifyKeysNamingConvention() {
         final Pattern nameValidation = Pattern.compile("^[a-z0-9]{1,20}$");
         assertThat(CloudEventExtensionConstants.ADDONS).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.PMML_FULL_RESULT).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.PMML_MODEL_NAME).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_ID).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_INSTANCE_ID).matches(nameValidation);
@@ -37,6 +39,8 @@ class CloudEventExtensionConstantsTest {
         assertThat(CloudEventExtensionConstants.PROCESS_START_FROM_NODE).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID).matches(nameValidation);
         assertThat(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.RULE_UNIT_ID).matches(nameValidation);
+        assertThat(CloudEventExtensionConstants.RULE_UNIT_QUERY).matches(nameValidation);
     }
 
 }
