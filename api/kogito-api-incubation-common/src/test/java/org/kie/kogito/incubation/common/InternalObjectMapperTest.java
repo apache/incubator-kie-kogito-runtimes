@@ -23,11 +23,11 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class InternalObjectMapperTest {
-    
+
     @Test
     public void testFastAsUsingCast() {
-        MapDataContext ctx = new MapDataContext(Map.of("full name", "John Doe","age", 47));
-        
+        DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
+
         MapDataContext converted = InternalObjectMapper.convertValue(ctx, MapDataContext.class);
         assertThat(converted).isSameAs(ctx);
     }
