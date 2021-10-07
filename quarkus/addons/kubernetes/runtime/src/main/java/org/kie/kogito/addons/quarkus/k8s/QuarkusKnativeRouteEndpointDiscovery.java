@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.kubernetes;
 
-import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+package org.kie.kogito.addons.quarkus.k8s;
 
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
+import javax.inject.Singleton;
 
-class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
 
-    private static final String FEATURE = "kogito-addon-kubernetes-extension";
+@Singleton
+public class QuarkusKnativeRouteEndpointDiscovery extends KnativeRouteEndpointDiscovery {
 
-    @BuildStep
-    FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
+    public QuarkusKnativeRouteEndpointDiscovery(final KubernetesClient kubernetesClient) {
+        super(kubernetesClient);
     }
 }

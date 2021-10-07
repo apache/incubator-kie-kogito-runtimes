@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.kubernetes;
+package org.kie.kogito.addons.springboot.k8s;
 
-import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.stereotype.Service;
 
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
+@Service
+@EnableDiscoveryClient
+public class SpringKubernetesServiceEndpointDiscovery extends KubernetesServiceEndpointDiscovery {
 
-class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
-
-    private static final String FEATURE = "kogito-addon-kubernetes-extension";
-
-    @BuildStep
-    FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
+    @Autowired
+    public SpringKubernetesServiceEndpointDiscovery(final KubernetesClient kubernetesClient) {
+        super(kubernetesClient);
     }
+
 }

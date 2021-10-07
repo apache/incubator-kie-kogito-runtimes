@@ -19,25 +19,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
-
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.mock.EnableKnativeMockClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.knative.serving.v1.RouteBuilder;
 import io.fabric8.knative.serving.v1.RouteStatus;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.addons.k8s.Endpoint;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @EnableKnativeMockClient(crud = true)
-public class KnativeRouteEndpointDiscoveryTest {
+public class QuarkusKnativeRouteEndpointDiscoveryTest {
 
     static KnativeClient knativeClient;
 
     @Test
     public void testBaseCase() {
-        final KnativeRouteEndpointDiscovery endpointDiscovery = new KnativeRouteEndpointDiscovery();
+        final QuarkusKnativeRouteEndpointDiscovery endpointDiscovery = new QuarkusKnativeRouteEndpointDiscovery(null);
         endpointDiscovery.setKnativeClient(knativeClient);
 
         // configure mock

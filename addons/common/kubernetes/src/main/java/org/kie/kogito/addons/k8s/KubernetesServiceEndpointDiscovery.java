@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s;
+package org.kie.kogito.addons.k8s;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-/**
- * Performs the discovery operations on Kubernetes Core Services.
- *
- * @see <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#servicespec-v1-core">Kubernetes ServiceSpec API</a>
- */
-@Singleton
 public class KubernetesServiceEndpointDiscovery implements EndpointDiscovery {
 
-    @Inject
-    KubernetesClient kubernetesClient;
-
     private final EndpointBuilder portBuilder = new EndpointBuilder();
+    private KubernetesClient kubernetesClient;
+
+    public KubernetesServiceEndpointDiscovery(final KubernetesClient kubernetesClient) {
+        this.kubernetesClient = kubernetesClient;
+    }
 
     @Override
     public Optional<Endpoint> findEndpoint(String namespace, String name) {

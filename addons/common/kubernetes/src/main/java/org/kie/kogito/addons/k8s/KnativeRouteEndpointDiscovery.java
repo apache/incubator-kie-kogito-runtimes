@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.kie.kogito.addons.quarkus.k8s;
+package org.kie.kogito.addons.k8s;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,16 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Performs the discovery operations for Knative Routes
@@ -39,27 +33,36 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  * @see <a href="https://rohaan.medium.com/accessing-knative-rest-api-using-fabric8-knative-client-443a16ac43f7">Accessing Knative REST API using Fabric8 Knative Client</a>
  * @see <a href="https://github.com/knative/specs/blob/main/specs/serving/knative-api-specification-1.0.md#route-2">Knative Service</a>
  */
-@Singleton
 public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
-
-    @Inject
-    KubernetesClient kubernetesClient;
-
-    KnativeClient knativeClient;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KnativeRouteEndpointDiscovery.class);
 
-    @PostConstruct
-    public void configureKnativeClient() {
-        if (kubernetesClient.isAdaptable(KnativeClient.class)) {
-            knativeClient = kubernetesClient.adapt(KnativeClient.class);
-        } else {
-            LOGGER.warn("Impossible to adapt Fabric8 Kubernetes Client to Knative Client. Discovery operations for Knative won't work");
-        }
+    KnativeClient knativeClient;
+
+    public KnativeRouteEndpointDiscovery(final KubernetesClient kubernetesClient) {
+        this.adaptKnativeClientFromKube(kubernetesClient);
     }
 
+    /**
+     * Defines the {@link KnativeClient} directly.
+     *
+     */
     public void setKnativeClient(KnativeClient knativeClient) {
         this.knativeClient = knativeClient;
+    }
+
+    /**
+     * Creates a {@link KnativeClient} from the {@link KubernetesClient} instance.
+     * Either this method or {@link #setKnativeClient(KnativeClient)} must be called by child classes
+     * before calling the discovery methods.
+     *
+     */
+    public final void adaptKnativeClientFromKube(final KubernetesClient kubernetesClient) {
+        if (kubernetesClient != null && kubernetesClient.isAdaptable(KnativeClient.class)) {
+            knativeClient = kubernetesClient.adapt(KnativeClient.class);
+        } else {
+            LOGGER.warn("Impossible to adapt Fabric8 Kubernetes Client to Knative Client. Discovery operations for Knative won't be performed.");
+        }
     }
 
     @Override

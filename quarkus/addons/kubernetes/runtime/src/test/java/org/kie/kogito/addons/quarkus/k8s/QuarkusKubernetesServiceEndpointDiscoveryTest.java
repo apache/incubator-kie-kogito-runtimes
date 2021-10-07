@@ -25,8 +25,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.junit.jupiter.api.Test;
-
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePort;
@@ -35,6 +33,8 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.addons.k8s.Endpoint;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,13 +42,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @WithKubernetesTestServer
 @QuarkusTest
-public class KubernetesServiceEndpointDiscoveryTest {
+public class QuarkusKubernetesServiceEndpointDiscoveryTest {
 
     @KubernetesTestServer
     KubernetesServer mockServer;
 
     @Inject
-    KubernetesServiceEndpointDiscovery endpointDiscovery;
+    QuarkusKubernetesServiceEndpointDiscovery endpointDiscovery;
 
     private void createServiceIfNotExist(final String name, Map<String, String> labels, Integer... ports) {
         if (mockServer.getClient().services().inNamespace("test").withName(name).get() != null) {

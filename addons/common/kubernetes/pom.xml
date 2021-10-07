@@ -13,5 +13,33 @@
   <name>Kogito :: Add-Ons :: Kubernetes</name>
   <description>Common library for Kogito Kubernetes Addons implementations</description>
 
+  <dependencies>
+    <!-- Provided because Quarkus and Spring Boot might use slightly different versions -->
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>kubernetes-model</artifactId>
+      <version>${version.io.fabric8.kubernetes-client}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>kubernetes-client</artifactId>
+      <version>${version.io.fabric8.kubernetes-client}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>knative-client</artifactId>
+      <version>${version.io.fabric8.kubernetes-client}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
 
 </project>
