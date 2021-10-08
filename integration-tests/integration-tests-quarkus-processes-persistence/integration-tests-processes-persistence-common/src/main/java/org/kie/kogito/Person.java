@@ -15,11 +15,14 @@
  */
 package org.kie.kogito;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@RegisterForReflection
 public class Person implements Serializable {
 
     private String id;

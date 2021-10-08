@@ -15,8 +15,11 @@
  */
 package org.kie.kogito;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 
+@RegisterForReflection
 public class Address implements Serializable {
 
     private String street;
