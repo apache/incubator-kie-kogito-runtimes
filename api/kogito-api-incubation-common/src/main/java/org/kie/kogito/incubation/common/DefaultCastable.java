@@ -25,6 +25,9 @@ package org.kie.kogito.incubation.common;
 public interface DefaultCastable extends Castable {
 
     default <T extends DataContext> T as(Class<T> type) {
+        if (type.isInstance(this)) {
+            return type.cast(this);
+        }
         return (T) InternalObjectMapper.convertValue(this, type);
     }
 }
