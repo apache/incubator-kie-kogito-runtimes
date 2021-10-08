@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s;
+package org.kie.kogito.addons.k8s.workitems;
 
-import javax.inject.Singleton;
+public class EndpointCallerException extends RuntimeException {
 
-import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
-
-import io.fabric8.kubernetes.client.KubernetesClient;
-
-@Singleton
-public class QuarkusKnativeRouteEndpointDiscovery extends KnativeRouteEndpointDiscovery {
-
-    public QuarkusKnativeRouteEndpointDiscovery(final KubernetesClient kubernetesClient) {
-        super(kubernetesClient);
+    public EndpointCallerException(final String message, final Throwable exception) {
+        super(message, exception);
     }
+
+    public EndpointCallerException(final String message) {
+        super(message);
+    }
+
 }

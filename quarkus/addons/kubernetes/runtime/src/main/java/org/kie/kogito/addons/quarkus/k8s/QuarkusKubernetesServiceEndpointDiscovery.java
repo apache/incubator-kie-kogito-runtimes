@@ -18,8 +18,9 @@ package org.kie.kogito.addons.quarkus.k8s;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
 import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
+
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
  * Performs the discovery operations on Kubernetes Core Services.

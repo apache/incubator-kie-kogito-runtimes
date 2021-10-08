@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.springboot.k8s;
+package org.kie.kogito.addons.k8s;
 
-import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+/**
+ * Discovery implementation that tries to find the endpoint on a regular Kubernetes service, and then fallback to Knative if not found.
+ */
+public class ServiceAndThenRouteEndpointDiscovery extends EndpointDiscoveryComposite {
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
-@Service
-public class SpringKubernetesServiceEndpointDiscovery extends KubernetesServiceEndpointDiscovery {
-
-    @Autowired
-    public SpringKubernetesServiceEndpointDiscovery(final KubernetesClient kubernetesClient) {
-        super(kubernetesClient);
+    public ServiceAndThenRouteEndpointDiscovery(KubernetesServiceEndpointDiscovery kubeDiscovery, KnativeRouteEndpointDiscovery knativeDiscovery) {
+        super(kubeDiscovery, knativeDiscovery);
     }
 
 }

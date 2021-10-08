@@ -14,13 +14,21 @@
   <description>Common library for Kogito Kubernetes Addons implementations</description>
 
   <dependencies>
-    <!-- Provided because Quarkus and Spring Boot might use slightly different versions -->
     <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>kubernetes-model</artifactId>
-      <version>${version.io.fabric8.kubernetes-client}</version>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Provided because Quarkus and Spring Boot might use slightly different versions -->
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>

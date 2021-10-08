@@ -19,13 +19,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.addons.k8s.Endpoint;
+
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.mock.EnableKnativeMockClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.knative.serving.v1.RouteBuilder;
 import io.fabric8.knative.serving.v1.RouteStatus;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.addons.k8s.Endpoint;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;

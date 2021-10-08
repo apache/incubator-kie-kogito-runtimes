@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.springboot.k8s;
+package org.kie.kogito.addons.quarkus.k8s;
 
-import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.inject.Singleton;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
+import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
 
-@Service
-public class SpringKubernetesServiceEndpointDiscovery extends KubernetesServiceEndpointDiscovery {
+@Singleton
+public class DefaultQuarkusEndpointDiscovery extends ServiceAndThenRouteEndpointDiscovery {
 
-    @Autowired
-    public SpringKubernetesServiceEndpointDiscovery(final KubernetesClient kubernetesClient) {
-        super(kubernetesClient);
+    public DefaultQuarkusEndpointDiscovery(QuarkusKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery,
+                                           QuarkusKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
+        super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
     }
 
 }

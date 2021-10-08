@@ -21,11 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Performs the discovery operations for Knative Routes
@@ -45,7 +46,6 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
 
     /**
      * Defines the {@link KnativeClient} directly.
-     *
      */
     public void setKnativeClient(KnativeClient knativeClient) {
         this.knativeClient = knativeClient;
@@ -55,7 +55,6 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
      * Creates a {@link KnativeClient} from the {@link KubernetesClient} instance.
      * Either this method or {@link #setKnativeClient(KnativeClient)} must be called by child classes
      * before calling the discovery methods.
-     *
      */
     public final void adaptKnativeClientFromKube(final KubernetesClient kubernetesClient) {
         if (kubernetesClient != null && kubernetesClient.isAdaptable(KnativeClient.class)) {

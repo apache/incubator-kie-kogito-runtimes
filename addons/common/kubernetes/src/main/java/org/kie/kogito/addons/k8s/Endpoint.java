@@ -15,14 +15,16 @@
  */
 package org.kie.kogito.addons.k8s;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Reference of the discovered endpoint
  */
-public class Endpoint {
+public class Endpoint implements Serializable {
 
     private String URL;
     private Map<String, String> secondaryURLs = new HashMap<>();
@@ -98,5 +100,22 @@ public class Endpoint {
                 this.setURL(url);
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Endpoint endpoint = (Endpoint) o;
+        return Objects.equals(URL, endpoint.URL) && Objects.equals(secondaryURLs, endpoint.secondaryURLs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(URL, secondaryURLs);
     }
 }

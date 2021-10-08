@@ -15,18 +15,17 @@
  */
 package org.kie.kogito.addons.springboot.k8s;
 
-import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
+import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.fabric8.kubernetes.client.KubernetesClient;
-
 @Service
-public class SpringKubernetesServiceEndpointDiscovery extends KubernetesServiceEndpointDiscovery {
+public class DefaultSpringEndpointDiscovery extends ServiceAndThenRouteEndpointDiscovery {
 
     @Autowired
-    public SpringKubernetesServiceEndpointDiscovery(final KubernetesClient kubernetesClient) {
-        super(kubernetesClient);
+    public DefaultSpringEndpointDiscovery(SpringKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery,
+                                          SpringKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
+        super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
     }
 
 }
