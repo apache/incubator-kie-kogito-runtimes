@@ -1,7 +1,8 @@
 import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.FolderUtils
-import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
+import org.kie.jenkins.jobdsl.KogitoJobUtils
+import org.kie.jenkins.jobdsl.Utils
 
 JENKINSFILE_PATH = '.ci/jenkins'
 
@@ -25,27 +26,42 @@ def getJobParams(String jobName, String jobFolder, String jenkinsfileName, Strin
 Map getMultijobPRConfig() {
     return [
         parallel: true,
+        buildchain: true,
         jobs : [
             [
-                id: 'Runtimes',
+                id: 'kogito-runtimes',
                 primary: true,
+                env : [
+                    // Sonarcloud analysis only on main branch
+                    // As we have only Community edition
+                    DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
+                ]
             ], [
-                id: 'Optaplanner',
-                dependsOn: 'Runtimes',
+                id: 'optaplanner',
+                dependsOn: 'kogito-runtimes',
                 repository: 'optaplanner',
             ], [
-                id: 'Apps',
-                dependsOn: 'Optaplanner',
+                id: 'kogito-apps',
+                dependsOn: 'optaplanner',
                 repository: 'kogito-apps'
             ], [
-                id: 'Examples',
+                id: 'kogito-examples',
                 dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
+            ], [
+                id: 'optaweb-employee-rostering',
+                repository: 'optaweb-employee-rostering'
+            ], [
+                id: 'optaweb-vehicle-routing',
+                repository: 'optaweb-vehicle-routing'
+            ], [
+                id: 'optaplanner-quickstarts',
+                repository: 'optaplanner-quickstarts',
+                env : [
+                    BUILD_MVN_OPTS: '-Dfull'
+                ]
             ]
         ],
-        extraEnv : [
-            ENABLE_SONARCLOUD: Utils.isMainBranch(this)
-        ]
     ]
 }
 
@@ -82,6 +98,18 @@ if (Utils.isLTSBranch(this)) {
     setupQuarkusJob(Utils.getQuarkusLTSVersion(this))
     setupNativeLTSJob()
 }
+
+// Tools job
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-dependencies-bom', 'kogito-build-parent', 'kogito-quarkus-bom' ],
+  compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
+  properties: [ 'version.io.quarkus', 'version.io.quarkus.quarkus-test-maven' ],
+])
+KogitoJobUtils.createKie7UpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-kie7-bom' ],
+  properties: [ 'version.org.kie7' ],
+])
+
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////

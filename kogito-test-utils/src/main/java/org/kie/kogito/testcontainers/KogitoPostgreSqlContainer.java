@@ -28,12 +28,13 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 /**
  * PostgreSQL Container for Kogito examples.
  */
-public class KogitoPostgreSqlContainer extends PostgreSQLContainer implements TestResource {
+public class KogitoPostgreSqlContainer extends PostgreSQLContainer<KogitoPostgreSqlContainer> implements TestResource {
 
     public static final String POSTGRESQL_CONNECTION_URI = "kogito.persistence.postgresql.connection.uri";
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoPostgreSqlContainer.class);
 
     public KogitoPostgreSqlContainer() {
+        super("postgres:9.6.12");
         withLogConsumer(getLogger());
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         withStartupTimeout(Constants.CONTAINER_START_TIMEOUT);
