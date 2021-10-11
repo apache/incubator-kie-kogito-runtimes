@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s.workitems;
+package org.kie.kogito.addons.springboot.k8s.workitems;
 
 import org.kie.kogito.addons.k8s.EndpointDiscovery;
 import org.kie.kogito.addons.k8s.workitems.AbstractDiscoveredEndpointCaller;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class QuarkusDiscoveredEndpointCaller extends AbstractDiscoveredEndpointCaller {
+@Service
+public class SpringDiscoveredEndpointCaller extends AbstractDiscoveredEndpointCaller {
 
-    EndpointDiscovery endpointDiscovery;
+    private EndpointDiscovery endpointDiscovery;
 
-    public QuarkusDiscoveredEndpointCaller(ObjectMapper objectMapper) {
+    public SpringDiscoveredEndpointCaller(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
@@ -33,6 +37,8 @@ public class QuarkusDiscoveredEndpointCaller extends AbstractDiscoveredEndpointC
         return endpointDiscovery;
     }
 
+    @Qualifier("default")
+    @Autowired
     public void setEndpointDiscovery(EndpointDiscovery endpointDiscovery) {
         this.endpointDiscovery = endpointDiscovery;
     }

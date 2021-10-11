@@ -47,7 +47,7 @@ public class LocalEndpointDiscovery implements EndpointDiscovery {
     }
 
     public void addCache(final EndpointQueryKey key, final Endpoint endpoint) {
-        if (key == null || endpoint ==null) {
+        if (key == null || endpoint == null) {
             throw new IllegalArgumentException("Nor Key or Endpoint can be null");
         }
         this.inMemoryCache.put(key, endpoint);

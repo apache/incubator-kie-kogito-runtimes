@@ -15,9 +15,6 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -27,10 +24,8 @@ import io.fabric8.kubernetes.client.KubernetesClient;
  *
  * @see <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#servicespec-v1-core">Kubernetes ServiceSpec API</a>
  */
-@Singleton
 public class QuarkusKubernetesServiceEndpointDiscovery extends KubernetesServiceEndpointDiscovery {
 
-    @Inject
     KubernetesClient kubernetesClient;
 
     public QuarkusKubernetesServiceEndpointDiscovery(KubernetesClient kubernetesClient) {

@@ -17,10 +17,10 @@ package org.kie.kogito.addons.k8s.workitems;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.HttpMethod;
@@ -63,21 +63,34 @@ public abstract class AbstractDiscoveredEndpointCaller {
 
     protected abstract EndpointDiscovery getEndpointDiscovery();
 
-    public Map<String, Object> discoverAndCall(WorkItem workItem, String namespace, String serviceName, String httpMethod) {
+    /**
+     * Central entry point for a WorkItemHandler to discover an endpoint based on its labels and call a Kogito REST service.
+     *
+     * @param workItem The given workitem for the current process
+     * @param namespace Where the service is located
+     * @param workItemServiceKey the key from the workitem parameter that holds the service label to search for. It will be used to build the final URL.
+     *        For example: `my-service` can be the label key of the Service and also the path of the target endpoint
+     * @param httpMethod the HTTP method to make the request
+     * @return the result of the REST call
+     */
+    public Map<String, Object> discoverAndCall(WorkItem workItem, String namespace, String workItemServiceKey, String httpMethod) {
         final Map<String, Object> data = new HashMap<>(workItem.getParameters());
-        final String service = (String) data.remove(serviceName);
+        final String service = (String) data.remove(workItemServiceKey);
 
-        final Optional<Endpoint> endpoint = this.getEndpointDiscovery().findEndpoint(namespace, service);
+        final List<Endpoint> endpoint = this.getEndpointDiscovery().findEndpoint(namespace, Collections.singletonMap(service, null));
         if (endpoint.isEmpty()) {
-            throw new IllegalArgumentException("Kubernetes service " + service + " not found in the namespace " + namespace);
+            throw new IllegalArgumentException("Kubernetes service with label " + service + " not found in the namespace " + namespace);
         }
-        LOGGER.debug("Found endpoint for service {} in namespace {} with URL {}", service, namespace, endpoint.get().getURL());
+        if (endpoint.size() > 1) {
+            LOGGER.warn("Found more than one endpoint using labels {}:null. Returning the first one in the list. Try to be more specific in the query search.", service);
+        }
+        LOGGER.debug("Found endpoint for service {} in namespace {} with URL {}", service, namespace, endpoint.get(0).getURL());
 
         INTERNAL_FIELDS.forEach(data::remove);
 
-        final Request request = createRequest(endpoint.get(), createRequestPayload(data), httpMethod);
+        final Request request = createRequest(String.format("%s/%s", endpoint.get(0).getURL(), service), createRequestPayload(data), httpMethod);
         try (Response response = this.httpClient.newCall(request).execute()) {
-            return createResultsFromResponse(response);
+            return createResultsFromResponse(response, request.url().toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,31 +109,31 @@ public abstract class AbstractDiscoveredEndpointCaller {
         }
     }
 
-    private Request createRequest(Endpoint endpoint, RequestBody body, String httpMethod) {
-        Request.Builder builder = new Request.Builder().url(endpoint.getURL()).get();
+    private Request createRequest(String url, RequestBody body, String httpMethod) {
+        Request.Builder builder = new Request.Builder().url(url).get();
         switch (httpMethod) {
             case HttpMethod.DELETE:
-                builder = new Request.Builder().url(endpoint.getURL()).delete(body);
+                builder = new Request.Builder().url(url).delete(body);
                 break;
             case HttpMethod.POST:
-                builder = new Request.Builder().url(endpoint.getURL()).post(body);
+                builder = new Request.Builder().url(url).post(body);
                 break;
             case HttpMethod.PUT:
-                builder = new Request.Builder().url(endpoint.getURL()).put(body);
+                builder = new Request.Builder().url(url).put(body);
                 break;
         }
         return builder.build();
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> createResultsFromResponse(Response response) throws IOException {
+    private Map<String, Object> createResultsFromResponse(final Response response, final String url) throws IOException {
         String payload = "";
         if (response.body() != null) {
             payload = response.body().string();
         }
         LOGGER.debug("Response code {} and payload {}", response.code(), payload);
         if (!response.isSuccessful()) {
-            throw new EndpointCallerException("Unsuccessful response from service " + response.message() + " (code " + response.code() + ")");
+            throw new EndpointCallerException("Unsuccessful response from service (" + url + "). Response: " + response.message() + " (code " + response.code() + ")");
         }
         return objectMapper.readValue(payload, Map.class);
     }

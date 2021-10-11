@@ -28,6 +28,7 @@ public class Endpoint implements Serializable {
 
     private String URL;
     private Map<String, String> secondaryURLs = new HashMap<>();
+    private Map<String, String> labels = new HashMap<>();
 
     public Endpoint() {
     }
@@ -42,6 +43,17 @@ public class Endpoint implements Serializable {
 
     public void setURL(String URL) {
         this.URL = URL;
+    }
+
+    /**
+     * Labels given to the Service
+     */
+    public Map<String, String> getLabels() {
+        return Collections.unmodifiableMap(labels);
+    }
+
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
     }
 
     /**

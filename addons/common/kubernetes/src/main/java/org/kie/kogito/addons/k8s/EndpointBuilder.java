@@ -50,6 +50,8 @@ public class EndpointBuilder {
             return null;
         }
         final Endpoint endpoint = new Endpoint();
+        endpoint.setLabels(service.getMetadata().getLabels());
+
         String url = null;
 
         // look for the label primary-port-name

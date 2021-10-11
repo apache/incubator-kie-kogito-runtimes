@@ -15,13 +15,10 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
-import javax.inject.Singleton;
-
 import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
 
-@Singleton
 public class QuarkusKnativeRouteEndpointDiscovery extends KnativeRouteEndpointDiscovery {
 
     public QuarkusKnativeRouteEndpointDiscovery(final KubernetesClient kubernetesClient) {

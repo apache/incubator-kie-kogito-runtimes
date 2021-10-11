@@ -24,9 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.k8s.Endpoint;
+import org.kie.kogito.addons.k8s.EndpointDiscovery;
 
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
@@ -48,8 +50,9 @@ public class QuarkusKubernetesServiceEndpointDiscoveryTest {
     @KubernetesTestServer
     KubernetesServer mockServer;
 
+    @Named("default")
     @Inject
-    QuarkusKubernetesServiceEndpointDiscovery endpointDiscovery;
+    EndpointDiscovery endpointDiscovery;
 
     private void createServiceIfNotExist(final String name, Map<String, String> labels, Integer... ports) {
         if (mockServer.getClient().services().inNamespace("test").withName(name).get() != null) {

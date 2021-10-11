@@ -28,18 +28,18 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Provided because Quarkus and Spring Boot might use slightly different versions -->
+    <!-- Optional because Quarkus and Spring Boot might use slightly different versions -->
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
       <version>${version.io.fabric8.kubernetes-client}</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>knative-client</artifactId>
       <version>${version.io.fabric8.kubernetes-client}</version>
-      <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
 
     <dependency>

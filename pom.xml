@@ -141,9 +141,6 @@
             <name>!productized</name>
         </property>
       </activation>
-      <modules>
-        <module>kogito-cloud-services</module>
-      </modules>
     </profile>
     <profile>
       <id>integration-test-modules</id>

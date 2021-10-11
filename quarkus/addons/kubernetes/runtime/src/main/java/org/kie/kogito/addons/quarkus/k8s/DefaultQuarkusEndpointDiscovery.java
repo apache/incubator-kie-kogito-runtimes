@@ -15,15 +15,12 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
-import javax.inject.Singleton;
-
 import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
 
-@Singleton
 public class DefaultQuarkusEndpointDiscovery extends ServiceAndThenRouteEndpointDiscovery {
 
     public DefaultQuarkusEndpointDiscovery(QuarkusKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery,
-                                           QuarkusKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
+            QuarkusKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
         super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
     }
 

@@ -247,23 +247,6 @@
         <artifactId>smallrye-mutiny-vertx-web-client</artifactId>
         <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>
-      <!--  kubernetes and OpenShift clients -->
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-client</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>openshift-client</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>kubernetes-server-mock</artifactId>
-        <version>${version.io.fabric8.kubernetes-client}</version>
-        <scope>test</scope>
-      </dependency>
       <!-- metrics - monitoring -->
       <dependency>
         <groupId>io.micrometer</groupId>

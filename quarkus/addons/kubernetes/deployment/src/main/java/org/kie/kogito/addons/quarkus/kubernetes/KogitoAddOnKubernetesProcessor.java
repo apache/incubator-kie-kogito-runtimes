@@ -15,8 +15,11 @@
  */
 package org.kie.kogito.addons.quarkus.kubernetes;
 
+import org.kie.kogito.addons.quarkus.k8s.EndpointCallerProducer;
+import org.kie.kogito.addons.quarkus.k8s.EndpointDiscoveryProducer;
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
@@ -27,5 +30,15 @@ class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem endpointDiscoveryProducer() {
+        return new AdditionalBeanBuildItem(EndpointDiscoveryProducer.class);
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem endpointCallerProducer() {
+        return new AdditionalBeanBuildItem(EndpointCallerProducer.class);
     }
 }

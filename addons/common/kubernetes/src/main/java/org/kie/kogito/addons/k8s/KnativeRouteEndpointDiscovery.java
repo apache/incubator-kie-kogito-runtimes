@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 
 /**
  * Performs the discovery operations for Knative Routes
@@ -57,10 +58,18 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
      * before calling the discovery methods.
      */
     public final void adaptKnativeClientFromKube(final KubernetesClient kubernetesClient) {
-        if (kubernetesClient != null && kubernetesClient.isAdaptable(KnativeClient.class)) {
-            knativeClient = kubernetesClient.adapt(KnativeClient.class);
-        } else {
-            LOGGER.warn("Impossible to adapt Fabric8 Kubernetes Client to Knative Client. Discovery operations for Knative won't be performed.");
+        try {
+            if (kubernetesClient != null && kubernetesClient.isAdaptable(KnativeClient.class)) {
+                knativeClient = kubernetesClient.adapt(KnativeClient.class);
+            } else {
+                LOGGER.warn("Impossible to adapt Fabric8 Kubernetes Client to Knative Client. Discovery operations for Knative won't be performed.");
+            }
+        } catch (KubernetesClientException ex) {
+            // when running on a local environment, the client might try to ping the cluster.
+            // instead of returning `false` from isAdaptable, it's throwing the exception.
+            // We catch heto avoid initialization errors on such envs
+            LOGGER.warn("Error trying to adapt current Kubernetes Client to Knative. Turn on DEBUG to see the full stack trace: {}", ex.getMessage());
+            LOGGER.debug("Stack trace: ", ex);
         }
     }
 
