@@ -30,8 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class MapDataContext implements MapLikeDataContext {
 
     public static <T> MapDataContext from(T object) {
-        return MapperLoader.objectMapper()
-                .convertValue(object, MapDataContext.class);
+        return Reshape.of(object).as(MapDataContext.class);
     }
 
     public static MapDataContext of(Map<String, Object> map) {
@@ -56,11 +55,11 @@ public class MapDataContext implements MapLikeDataContext {
     }
 
     @Override
-    public <T extends DataContext> T as(Class<T> type) {
+    public <T> T as(Class<T> type) {
         if (type.isInstance(this)) { // this short circuit is needed as the below passes `map`, not `this`, to the InternalObjectMapper
             return type.cast(this);
         }
-        return MapperLoader.objectMapper().convertValue(map, type);
+        return Reshape.of(map).as(type);
     }
 
     // required to unwrap the POJO to the map
@@ -77,7 +76,7 @@ public class MapDataContext implements MapLikeDataContext {
 
     @Override
     public <T> T get(String key, Class<T> expectedType) {
-        return MapperLoader.objectMapper().convertValue(map.get(key), expectedType);
+        return Reshape.of(map.get(key)).as(expectedType);
     }
 
     // required to unwrap the map to the root of the mapped object

@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.Reshape;
 import org.kie.kogito.incubation.common.objectmapper.quarkus.QuarkusInternalObjectMapper;
 import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
@@ -57,7 +58,7 @@ public class QuarkusRuleUnitService implements RuleUnitService {
                     "Not a valid query id " + id.toLocalId());
         }
 
-        Map<String, Object> payload = inputContext.as(MapDataContext.class).toMap();
+        Map<String, Object> payload = Reshape.of(inputContext).as(MapDataContext.class).toMap();
         RuleUnitData ruleUnitData = this.convertValue(payload, ruleUnitId);
         RuleUnit<RuleUnitData> ruleUnit = ruleUnits.get().create((Class<RuleUnitData>) ruleUnitData.getClass());
         RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);

@@ -28,6 +28,7 @@ import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.Reshape;
 import org.kie.kogito.incubation.decisions.LocalDecisionId;
 import org.kie.kogito.incubation.decisions.LocalDecisionServiceId;
 import org.kie.kogito.incubation.decisions.services.DecisionService;
@@ -59,7 +60,7 @@ public class QuarkusDecisionService implements DecisionService {
                 decisionModels.getDecisionModel(
                         localDecisionId.namespace(), localDecisionId.name());
 
-        DMNContext ctx = DMNJSONUtils.ctx(decisionModel, inputContext.as(MapDataContext.class).toMap());
+        DMNContext ctx = DMNJSONUtils.ctx(decisionModel, Reshape.of(inputContext).as(MapDataContext.class).toMap());
         DMNResult dmnResult;
 
         if (decisionServiceId == null) {

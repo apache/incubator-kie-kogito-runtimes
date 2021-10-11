@@ -45,7 +45,7 @@ public class QuarkusStraightThroughProcessService implements StraightThroughProc
         if (processPath.startsWith(LocalProcessId.PREFIX)) {
             LocalProcessId pid = (LocalProcessId) processId;
             Process<? extends Model> process = processes.processById(pid.processId());
-            MapDataContext mdc = inputContext.as(MapDataContext.class);
+            MapDataContext mdc = Reshape.of(inputContext).as(MapDataContext.class);
             Class<? extends Model> modelType = process.createModel().getClass();
             Model model = internalObjectMapper.convertValue(mdc, modelType);
             ProcessInstance<? extends Model> instance = process.createInstance(model);

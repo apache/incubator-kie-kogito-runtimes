@@ -16,13 +16,19 @@
 
 package org.kie.kogito.incubation.common;
 
-import java.util.ServiceLoader;
+public final class ReshapableDataContext implements DataContext, Reshapable {
+    public static ReshapableDataContext of(Object original) {
+        return new ReshapableDataContext(original);
+    }
 
-import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+    private final Object original;
 
-class MapperLoader {
-    public static InternalObjectMapper objectMapper() {
-        return ServiceLoader.load(InternalObjectMapper.class).findFirst()
-                .orElseThrow();
+    ReshapableDataContext(Object original) {
+        this.original = original;
+    }
+
+    @Override
+    public <T> T as(Class<T> type) {
+        return Reshape.objectMapper().convertValue(original, type);
     }
 }

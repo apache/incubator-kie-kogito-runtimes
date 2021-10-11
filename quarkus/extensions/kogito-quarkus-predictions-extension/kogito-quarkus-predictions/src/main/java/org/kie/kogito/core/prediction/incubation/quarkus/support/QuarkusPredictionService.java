@@ -27,6 +27,7 @@ import org.kie.api.pmml.PMML4Result;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.Reshape;
 import org.kie.kogito.incubation.predictions.LocalPredictionId;
 import org.kie.kogito.incubation.predictions.services.PredictionService;
 import org.kie.kogito.prediction.PredictionModel;
@@ -51,7 +52,7 @@ public class QuarkusPredictionService implements PredictionService {
         PredictionModel predictionModel =
                 predictionModels.get().getPredictionModel(localPredictionId.name());
 
-        PMMLContext ctx = predictionModel.newContext(inputContext.as(MapDataContext.class).toMap());
+        PMMLContext ctx = predictionModel.newContext(Reshape.of(inputContext).as(MapDataContext.class).toMap());
 
         PMML4Result pmml4Result = predictionModel.evaluateAll(ctx);
         Map<String, Object> resultMap = Collections.singletonMap(

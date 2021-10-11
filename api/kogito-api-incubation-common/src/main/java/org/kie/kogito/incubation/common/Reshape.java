@@ -16,12 +16,17 @@
 
 package org.kie.kogito.incubation.common;
 
-/**
- * Represents a type that can be converted into a {@link DataContext}
- */
-public interface Castable {
-    /**
-     * Converts this object into the given type.
-     */
-    <T extends DataContext> T as(Class<T> type);
+import java.util.ServiceLoader;
+
+import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+
+public class Reshape {
+    static InternalObjectMapper objectMapper() {
+        return ServiceLoader.load(InternalObjectMapper.class).findFirst()
+                .orElseThrow();
+    }
+
+    public static ReshapableDataContext of(Object original) {
+        return new ReshapableDataContext(original);
+    }
 }

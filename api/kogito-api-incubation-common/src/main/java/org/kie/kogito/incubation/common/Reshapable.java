@@ -17,12 +17,11 @@
 package org.kie.kogito.incubation.common;
 
 /**
- * A DataContext that behaves like a Map.
+ * Represents a type that can be converted into a {@link DataContext}
  */
-public interface MapLikeDataContext extends DataContext, DefaultReshaping {
-    void set(String key, Object value);
-
-    Object get(String key);
-
-    <T> T get(String key, Class<T> expectedType);
+public interface Reshapable {
+    /**
+     * Converts this object into the given type.
+     */
+    <T> T as(Class<T> type);
 }

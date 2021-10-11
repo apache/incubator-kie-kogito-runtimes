@@ -23,7 +23,7 @@ import org.kie.kogito.incubation.processes.LocalProcessId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTypes {
-    public static class MyDataContext implements DataContext, DefaultCastable {
+    public static class MyDataContext implements DataContext, DefaultReshaping {
         int someParam;
     }
 
@@ -49,7 +49,7 @@ public class TestTypes {
                 svc.evaluate(someProcessId, ctx);
 
         // bind the data in the result to a typed bean
-        MyDataContext mdc = result.as(MyDataContext.class);
+        MyDataContext mdc = Reshape.of(result).as(MyDataContext.class);
 
         MapLikeDataContext map = mdc.as(MapLikeDataContext.class);
 

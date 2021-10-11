@@ -26,7 +26,7 @@ import org.kie.kogito.incubation.decisions.LocalDecisionServiceId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestTypes {
-    public static class MyDataContext implements DataContext, DefaultCastable {
+    public static class MyDataContext implements DataContext, DefaultReshaping {
         int someParam;
     }
 
@@ -64,7 +64,7 @@ public class TestTypes {
                 svc.evaluate(decisionId, ctx);
 
         // bind the data in the result to a typed bean
-        MyDataContext mdc = result.as(MyDataContext.class);
+        MyDataContext mdc = Reshape.of(result).as(MyDataContext.class);
         assertEquals(1, mdc.someParam);
 
         // the same method is used for services

@@ -16,9 +16,9 @@
 
 package org.kie.kogito.incubation.common;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +28,7 @@ public class InternalObjectMapperTest {
     public void testFastAsUsingCast() {
         DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
 
-        MapDataContext converted = MapperLoader.objectMapper().convertValue(ctx, MapDataContext.class);
+        MapDataContext converted = Reshape.of(ctx).as(MapDataContext.class);
         assertThat(converted).isSameAs(ctx);
     }
 }

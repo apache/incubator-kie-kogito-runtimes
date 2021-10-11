@@ -16,20 +16,25 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.kie.kogito.incubation.common.objectmapper.quarkus.QuarkusInternalObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.quarkus.jackson.ObjectMapperCustomizer;
 
 /**
  * Internal use only. Wraps and configures a custom ObjectMapper for DataSources
  */
 @ApplicationScoped
-class RuleUnitDataObjectCustomizer implements ObjectMapperCustomizer {
+class RuleUnitDataObjectCustomizer {
 
-    @Override
-    public void customize(ObjectMapper objectMapper) {
-        objectMapper.registerModule(new RuleUnitDataJacksonModule());
+    @Inject
+    QuarkusInternalObjectMapper mapper;
+
+    @PostConstruct
+    public void customize() {
+        mapper.getObjectMapper().registerModule(new RuleUnitDataJacksonModule());
     }
 }

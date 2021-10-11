@@ -20,10 +20,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.application.ReflectiveAppRoot;
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.DefaultCastable;
-import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 
@@ -33,7 +30,7 @@ public class RuleUnitServiceInterfaceTest {
     public static class MyRuleUnitDefinition {
     }
 
-    public static class MyDataContext implements DataContext, DefaultCastable {
+    public static class MyDataContext implements DataContext, DefaultReshaping {
         int someParam;
     }
 
@@ -63,7 +60,7 @@ public class RuleUnitServiceInterfaceTest {
                 svc.evaluate(someQuery, ctx);
 
         // bind the data in the result to a typed bean
-        Stream<MyDataContext> mdcs = result.map(r -> r.as(MyDataContext.class));
+        Stream<MyDataContext> mdcs = result.map(r -> Reshape.of(r).as(MyDataContext.class));
 
         assertEquals("/rule-units" +
                 "/" + MyRuleUnitDefinition.class.getCanonicalName() +

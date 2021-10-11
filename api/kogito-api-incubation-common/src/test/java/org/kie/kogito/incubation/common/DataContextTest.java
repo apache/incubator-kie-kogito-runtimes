@@ -38,7 +38,7 @@ public class DataContextTest {
 
     }
 
-    public static class User implements DataContext, DefaultCastable {
+    public static class User implements DataContext, DefaultReshaping {
         String firstName;
         String lastName;
         Address addr;
@@ -96,7 +96,7 @@ public class DataContextTest {
 
         MapDataContext ctx = u.as(MapDataContext.class);
         assertNotEquals(Address.class, ctx.get("addr").getClass());
-        Address addr = new MyObjectMapper().convertValue(ctx.get("addr"), Address.class);
+        Address addr = Reshape.of(ctx.get("addr")).as(Address.class); // uses MyObjectMapper internally
         assertEquals("Abbey Rd.", addr.street);
     }
 

@@ -22,12 +22,12 @@ package org.kie.kogito.incubation.common;
  * Provides a default implementation for the {@link #as(Class)} method,
  * delegating to {@link org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper#convertValue(Object, Class)}
  */
-public interface DefaultCastable extends Castable {
+public interface DefaultReshaping extends Reshapable {
 
-    default <T extends DataContext> T as(Class<T> type) {
+    default <T> T as(Class<T> type) {
         if (type.isInstance(this)) {
             return type.cast(this);
         }
-        return MapperLoader.objectMapper().convertValue(this, type);
+        return Reshape.of(this).as(type);
     }
 }
