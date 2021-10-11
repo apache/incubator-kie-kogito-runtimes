@@ -26,7 +26,7 @@ public class StructureValue extends TypedValue {
     @JsonProperty("value")
     private Map<String, TypedValue> value;
 
-    private StructureValue() {
+    protected StructureValue() {
     }
 
     public StructureValue(String type) {

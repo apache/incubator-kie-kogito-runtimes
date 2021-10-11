@@ -26,7 +26,7 @@ public class CollectionValue extends TypedValue {
     @JsonProperty("value")
     private Collection<TypedValue> value;
 
-    private CollectionValue() {
+    protected CollectionValue() {
     }
 
     public CollectionValue(String type) {
