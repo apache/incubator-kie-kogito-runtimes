@@ -22,7 +22,7 @@ import org.kie.kogito.test.resources.ConditionalQuarkusTestResource;
 import org.kie.kogito.testcontainers.KogitoOracleSqlContainer;
 
 /**
- * PostgreSQL quarkus resource that works within the test lifecycle.
+ * Oracle SQL quarkus resource that works within the test lifecycle.
  */
 public class OracleSqlQuarkusTestResource extends ConditionalQuarkusTestResource<KogitoOracleSqlContainer> {
 

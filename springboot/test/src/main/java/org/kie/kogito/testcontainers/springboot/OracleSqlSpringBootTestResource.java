@@ -22,7 +22,7 @@ import org.kie.kogito.test.resources.ConditionalSpringBootTestResource;
 import org.kie.kogito.testcontainers.KogitoOracleSqlContainer;
 
 /**
- * oracle spring boot resource that works within the test lifecycle.
+ * Oracle SQL Springboot resource that works within the test lifecycle.
  *
  */
 public class OracleSqlSpringBootTestResource extends ConditionalSpringBootTestResource<KogitoOracleSqlContainer> {
