@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-deprecated-parent</artifactId>
-    <version>1.12.0.Final</version>
+    <version>1.12.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-events-smallrye</artifactId>
   <name>Kogito :: Add-Ons :: Deprecated :: Events :: Smallrye Messaging</name>
