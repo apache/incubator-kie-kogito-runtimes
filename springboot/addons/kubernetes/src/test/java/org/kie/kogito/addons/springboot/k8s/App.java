@@ -15,19 +15,14 @@
  */
 package org.kie.kogito.addons.springboot.k8s;
 
-import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Service
-@Qualifier("default")
-public class DefaultSpringEndpointDiscovery extends ServiceAndThenRouteEndpointDiscovery {
+@SpringBootApplication(scanBasePackages = "org.kie.kogito.addons.springboot.k8s.**")
+public class App {
 
-    @Autowired
-    public DefaultSpringEndpointDiscovery(SpringKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery,
-            SpringKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
-        super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
+    public static void main(String[] args) {
+        SpringApplication.run(App.class, args);
     }
 
 }

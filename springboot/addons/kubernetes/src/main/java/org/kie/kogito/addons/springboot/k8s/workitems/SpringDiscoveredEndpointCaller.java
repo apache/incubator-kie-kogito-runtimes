@@ -18,7 +18,6 @@ package org.kie.kogito.addons.springboot.k8s.workitems;
 import org.kie.kogito.addons.k8s.EndpointDiscovery;
 import org.kie.kogito.addons.k8s.workitems.AbstractDiscoveredEndpointCaller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +36,6 @@ public class SpringDiscoveredEndpointCaller extends AbstractDiscoveredEndpointCa
         return endpointDiscovery;
     }
 
-    @Qualifier("default")
     @Autowired
     public void setEndpointDiscovery(EndpointDiscovery endpointDiscovery) {
         this.endpointDiscovery = endpointDiscovery;

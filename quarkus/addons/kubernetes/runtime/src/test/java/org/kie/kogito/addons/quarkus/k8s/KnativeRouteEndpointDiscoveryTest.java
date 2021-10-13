@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.k8s.Endpoint;
+import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
 
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.mock.EnableKnativeMockClient;
@@ -32,13 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @EnableKnativeMockClient(crud = true)
-public class QuarkusKnativeRouteEndpointDiscoveryTest {
+public class KnativeRouteEndpointDiscoveryTest {
 
     static KnativeClient knativeClient;
 
     @Test
     public void testBaseCase() {
-        final QuarkusKnativeRouteEndpointDiscovery endpointDiscovery = new QuarkusKnativeRouteEndpointDiscovery(null);
+        final KnativeRouteEndpointDiscovery endpointDiscovery = new KnativeRouteEndpointDiscovery(null);
         endpointDiscovery.setKnativeClient(knativeClient);
 
         // configure mock

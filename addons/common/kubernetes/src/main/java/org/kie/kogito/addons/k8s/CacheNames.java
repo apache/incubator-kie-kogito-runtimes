@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s;
+package org.kie.kogito.addons.k8s;
 
-import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
+/**
+ * Cache names for the discovery API.
+ */
+public final class CacheNames {
 
-public class DefaultQuarkusEndpointDiscovery extends ServiceAndThenRouteEndpointDiscovery {
+    public static final String CACHE_BY_NAME = "endpoint-by-name";
+    public static final String CACHE_BY_LABELS = "endpoint-by-labels";
 
-    public DefaultQuarkusEndpointDiscovery(QuarkusKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery,
-            QuarkusKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery) {
-        super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
+    private CacheNames() {
     }
 
 }

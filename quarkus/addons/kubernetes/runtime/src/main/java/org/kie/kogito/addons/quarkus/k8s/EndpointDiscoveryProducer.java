@@ -22,6 +22,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
+import org.kie.kogito.addons.k8s.KubernetesServiceEndpointDiscovery;
+import org.kie.kogito.addons.k8s.ServiceAndThenRouteEndpointDiscovery;
+
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 @ApplicationScoped
@@ -34,10 +38,9 @@ public class EndpointDiscoveryProducer {
     @Singleton
     @Default
     @Named("default")
-    public DefaultQuarkusEndpointDiscovery endpointDiscovery() {
-        final QuarkusKubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery = new QuarkusKubernetesServiceEndpointDiscovery(kubernetesClient);
-        final QuarkusKnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery = new QuarkusKnativeRouteEndpointDiscovery(kubernetesClient);
-        final DefaultQuarkusEndpointDiscovery defaultQuarkusEndpointDiscovery = new DefaultQuarkusEndpointDiscovery(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
-        return defaultQuarkusEndpointDiscovery;
+    public ServiceAndThenRouteEndpointDiscovery endpointDiscovery() {
+        final KubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery = new KubernetesServiceEndpointDiscovery(kubernetesClient);
+        final KnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery = new KnativeRouteEndpointDiscovery(kubernetesClient);
+        return new CachedServiceAndThenRouteEndpointDiscovery(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
     }
 }

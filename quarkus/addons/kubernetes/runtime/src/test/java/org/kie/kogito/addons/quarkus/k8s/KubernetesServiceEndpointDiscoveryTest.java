@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @WithKubernetesTestServer
 @QuarkusTest
-public class QuarkusKubernetesServiceEndpointDiscoveryTest {
+public class KubernetesServiceEndpointDiscoveryTest {
 
     @KubernetesTestServer
     KubernetesServer mockServer;
