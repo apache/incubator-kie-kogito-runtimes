@@ -51,10 +51,9 @@ public class LegacyInMemoryJobService extends InMemoryJobService {
                         String[] ids = id.split("_");
                         try {
                             long timerId = Long.parseLong(ids[1]);
-                            pi.signalEvent("timerTriggered", TimerInstance.with(timerId, id, counter.decrementAndGet()));
+                            pi.signalEvent(TriggerJobCommand.TIMER_TRIGGERED, TimerInstance.with(timerId, id, counter.decrementAndGet()));
                         } catch (NumberFormatException e) {
-                            //todo check id != long
-                            pi.signalEvent("timerTriggered:" + ids[1], null);
+                            pi.signalEvent(TriggerJobCommand.ASYNC_TRIGGERED + ids[1], null);
                         }
                         if (counter.get() == 0) {
                             cancelJob(id, false);

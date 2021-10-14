@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -31,11 +30,8 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,50 +136,6 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
         return new StartProcessOnExpiredTimer(description.id(), description.process(), false, description.expirationTime().repeatLimit());
     }
 
-    private class JobSignal implements Signal<TimerInstance> {
-
-        String signal;
-        TimerInstance payload;
-
-        public JobSignal(String signal, TimerInstance payload) {
-            this.signal = signal;
-            this.payload = payload;
-        }
-
-        @Override
-        public String channel() {
-            return this.signal;
-        }
-
-        @Override
-        public TimerInstance payload() {
-            return payload;
-        }
-
-        @Override
-        public String referenceId() {
-            return null;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof JobSignal)) {
-                return false;
-            }
-            JobSignal jobSignal = (JobSignal) o;
-            return Objects.equals(signal, jobSignal.signal) &&
-                    Objects.equals(payload, jobSignal.payload);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(signal, payload);
-        }
-    }
-
     private class SignalProcessInstanceOnExpiredTimer implements Runnable {
 
         private final String id;
@@ -204,27 +156,12 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
         public void run() {
             try {
                 LOGGER.info("Job {} started", id);
-                UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
-                    Process<? extends Model> process = processes.processById(processId);
-                    Optional<? extends ProcessInstance<?>> pi = process.instances().findById(processInstanceId);
-                    if (pi.isPresent()) {
-                        String[] ids = id.split("_");
-                        try {
-                            long timerId = Long.parseLong(ids[1]);
-                            pi.get().send(new JobSignal("timerTriggered", TimerInstance.with(timerId, id, --limit)));
-                        } catch (NumberFormatException e) {
-                            //todo check id != long
-                            pi.get().send(new JobSignal("timerTriggered:" + ids[1], null));
-                        }
-                        if (limit == 0) {
-                            cancelJob(id, false);
-                        }
-                    } else {
-                        // since owning process instance does not exist cancel timers
-                        cancelJob(id, false);
-                    }
-                    return null;
-                });
+                Process<? extends Model> process = processes.processById(processId);
+                limit--;
+                Boolean executed = new TriggerJobCommand(processInstanceId, id, limit, process, unitOfWorkManager).execute();
+                if (limit == 0 || !executed) {
+                    cancelJob(id, false);
+                }
                 LOGGER.debug("Job {} completed", id);
             } finally {
                 if (removeAtExecution) {
@@ -261,7 +198,6 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
                     if (pi != null) {
                         pi.start(TRIGGER, null);
                     }
-
                     return null;
                 });
                 limit--;

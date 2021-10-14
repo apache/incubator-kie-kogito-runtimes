@@ -35,6 +35,8 @@ import org.kie.kogito.uow.WorkUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.services.jobs.impl.TriggerJobCommand.ASYNC_TRIGGERED;
+
 /**
  * Runtime counterpart of an event node.
  *
@@ -43,8 +45,6 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(AsyncEventNodeInstance.class);
-    private static final String TIMER_TRIGGERED_EVENT = "timerTriggered";
-
     private final KogitoEventListener listener = new AsyncExternalEventListener();
     private String jobId = "";
 
@@ -92,7 +92,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public String getEventType() {
-        return TIMER_TRIGGERED_EVENT + ":" + getStringId();
+        return ASYNC_TRIGGERED + ":" + getStringId();
     }
 
     @Override
