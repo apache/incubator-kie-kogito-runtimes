@@ -33,13 +33,13 @@ public class CacheableServiceAndThenRouteEndpointDiscovery extends ServiceAndThe
         super(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
     }
 
-    @Cacheable(CacheNames.CACHE_BY_NAME)
+    @Cacheable(cacheNames = CacheNames.CACHE_BY_NAME, cacheManager = CachingConfig.CACHE_MANAGER)
     @Override
     public Optional<Endpoint> findEndpoint(String namespace, String name) {
         return super.findEndpoint(namespace, name);
     }
 
-    @Cacheable(CacheNames.CACHE_BY_LABELS)
+    @Cacheable(cacheNames = CacheNames.CACHE_BY_LABELS, cacheManager = CachingConfig.CACHE_MANAGER)
     @Override
     public List<Endpoint> findEndpoint(String namespace, Map<String, String> labels) {
         return super.findEndpoint(namespace, labels);
