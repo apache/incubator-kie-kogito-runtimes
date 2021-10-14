@@ -43,7 +43,7 @@ public class OracleSqlQuarkusTestResource extends ConditionalQuarkusTestResource
         return properties;
     }
 
-    public static class Conditional extends PostgreSqlQuarkusTestResource {
+    public static class Conditional extends OracleSqlQuarkusTestResource {
 
         public Conditional() {
             enableConditional();
