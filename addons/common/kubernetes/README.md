@@ -6,8 +6,7 @@ and [Caffeine](https://github.com/ben-manes/caffeine) as the cache implementatio
 
 ## Discovery Service
 
-The Kogito Kubernetes Add-on exposes
-an [`EndpointDiscovery`](src/main/java/org/kie/kogito/addons/k8s/EndpointDiscovery.java) service in the engine. This
+The Kogito Kubernetes Add-on exposes an [`EndpointDiscovery`](src/main/java/org/kie/kogito/addons/k8s/EndpointDiscovery.java) service in the engine. This
 means that you can inject this bean in your custom Kogito Service to interact with Kubernetes services deployed in the
 same cluster as your service.
 
@@ -15,22 +14,19 @@ An example of usage could be a custom process Service Task to invoke the discove
 specific service, turning it possible to make HTTP calls to this service in runtime.
 
 Although an approach like this is possible, it's not recommended. The Discovery Service is meant to be used internally
-by other components such as
-the [Rest Work Item handler](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-workitems/kogito-rest-workitem)
-or the [Open API](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-workitems/kogito-openapi-workitem) one.
+by other components such as the [Rest Work Item handler](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-workitems/kogito-rest-workitem) or
+the [Open API](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-workitems/kogito-openapi-workitem) one.
 
 ### Service Discovery Cache
 
 To avoid round trips to the Kubernetes server every time, each runtime implementation adds a cache layer in between
 calls. This cache is highly customizable since its configuration is exposed by the target runtime. For more details
-please see the [Quarkus](../../../quarkus/addons/kubernetes) and
-[Spring Boot](../../../springboot/addons/kubernetes) add-on implementations.
+please see the [Quarkus](../../../quarkus/addons/kubernetes) and [Spring Boot](../../../springboot/addons/kubernetes) add-on implementations.
 
 ### Usage
 
-Please refer the target runtime add-on implementation for the specific exposed bean. In general, the interaction
-with the Discovery Service is pretty straightforward. You can either fetch the endpoint exposed by
-any [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/)
+Please refer the target runtime add-on implementation for the specific exposed bean. In general, the interaction with
+the Discovery Service is pretty straightforward. You can either fetch the endpoint exposed by any [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 or [Knative Route](https://github.com/knative/specs/blob/main/specs/serving/knative-api-specification-1.0.md#route).
 
 The default implementation first tries to find a Kubernetes Service with the given parameters, for example namespace and

@@ -12,14 +12,13 @@ for more information about any needed customization.
 
 ## Caching
 
-To avoid round trips to the Kubernetes Core API, this implementation uses
-the [Spring Boot Cache feature](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html)
+To avoid round trips to the Kubernetes Core API, this implementation uses the [Spring Boot Cache feature](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html)
 with the default configuration.
 
 The default configuration should be enough for most use cases, but if you need to fine tune the cache for your needs,
-please refer to
-the [Spring Boot Caffeine documentation](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider-caffeine)
-.
+please refer to the [Spring Boot Caffeine documentation](https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider-caffeine).
+
+You can configure the internal caches by their names: `endpoint-by-name` and `endpoint-by-labels`.
 
 ## Usage
 

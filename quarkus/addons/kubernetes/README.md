@@ -10,17 +10,18 @@ for more information about any needed customization.
 
 ## Caching
 
-To avoid round trips to the Kubernetes Core API, this implementation uses
-the [Quarkus Application Data Caching extension](https://quarkus.io/guides/cache) with the default configuration.
+To avoid round trips to the Kubernetes Core API, this implementation uses the [Quarkus Application Data Caching extension](https://quarkus.io/guides/cache)
+with the default configuration.
 
 The default configuration should be enough for most use cases, but if you need to fine tune the cache for your needs,
 please refer to the [Quarkus guide](https://quarkus.io/guides/cache#configuring-the-underlying-caching-provider).
 
+You can configure the internal caches by their names: `endpoint-by-name` and `endpoint-by-labels`. 
+
 ## Usage
 
-This extension exposes the
-bean [`CachedServiceAndThenRouteEndpointDiscovery`](runtime/src/main/java/org/kie/kogito/addons/quarkus/k8s/CachedServiceAndThenRouteEndpointDiscovery.java)
-. You can inject it into your custom Kogito service and start using it:
+This extension exposes the bean [`CachedServiceAndThenRouteEndpointDiscovery`](runtime/src/main/java/org/kie/kogito/addons/quarkus/k8s/CachedServiceAndThenRouteEndpointDiscovery.java).
+You can inject it into your custom Kogito service and start using it:
 
 ````java
 import java.util.Optional;

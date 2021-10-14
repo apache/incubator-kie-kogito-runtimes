@@ -43,7 +43,7 @@ import okhttp3.Response;
  * This service is meant to be used with KogitoWorkItemHandlers to call well-known Kogito services deployed in the very same Kubernetes cluster.
  */
 // TODO: review this implementation with the team. This class should be part of kogito-rest-workitem. Then we can inject the discoverability to that use case.
-// TODO: see more at . This implementation is inherited from the old "DiscoveredServiceWorkItemHandler".
+// TODO: see more at https://issues.redhat.com/browse/KOGITO-6109. This implementation is inherited from the old "DiscoveredServiceWorkItemHandler".
 public abstract class AbstractDiscoveredEndpointCaller {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveredEndpointCaller.class);
