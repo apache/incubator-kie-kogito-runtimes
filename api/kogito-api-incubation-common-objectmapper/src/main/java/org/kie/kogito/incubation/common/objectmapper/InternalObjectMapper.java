@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.common;
+package org.kie.kogito.incubation.common.objectmapper;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+import java.util.ServiceLoader;
 
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class InternalObjectMapperTest {
-
-    @Test
-    public void testFastAsUsingCast() {
-        DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
-
-        MapDataContext converted = InternalObjectMapper.objectMapper().convertValue(ctx, MapDataContext.class);
-        assertThat(converted).isSameAs(ctx);
+/**
+ * For internal use only.
+ * Provides a method to convert an object into a given type.
+ * This is an implementation detail. We may move this to a separate module in the future.
+ */
+public interface InternalObjectMapper {
+    <T> T convertValue(Object self, Class<T> type);
+    public static InternalObjectMapper objectMapper() {
+        return ServiceLoader.load(InternalObjectMapper.class).findFirst()
+                .orElseThrow(MissingInternalObjectMapper::new);
     }
 }

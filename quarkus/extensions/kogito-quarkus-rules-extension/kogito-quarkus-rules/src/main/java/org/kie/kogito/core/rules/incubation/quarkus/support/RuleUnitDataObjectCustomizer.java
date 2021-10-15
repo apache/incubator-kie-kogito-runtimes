@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.common;
+package org.kie.kogito.core.rules.incubation.quarkus.support;
 
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+import javax.enterprise.context.ApplicationScoped;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.quarkus.jackson.ObjectMapperCustomizer;
 
-public class InternalObjectMapperTest {
+/**
+ * Wraps and configures a custom ObjectMapper for DataSources
+ */
+@ApplicationScoped
+class RuleUnitDataObjectCustomizer implements ObjectMapperCustomizer {
 
-    @Test
-    public void testFastAsUsingCast() {
-        DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
-
-        MapDataContext converted = InternalObjectMapper.objectMapper().convertValue(ctx, MapDataContext.class);
-        assertThat(converted).isSameAs(ctx);
+    @Override
+    public void customize(ObjectMapper objectMapper) {
+        objectMapper.registerModule(new RuleUnitDataJacksonModule());
     }
 }

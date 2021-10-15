@@ -19,6 +19,7 @@ package org.kie.kogito.incubation.common;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,7 +63,7 @@ public class DataContextTest {
 
         MapDataContext ctx = u.as(MapDataContext.class);
         assertNotEquals(Address.class, ctx.get("addr").getClass());
-        Address addr = InternalObjectMapper.convertValue(ctx.get("addr"), Address.class);
+        Address addr = InternalObjectMapper.objectMapper().convertValue(ctx.get("addr"), Address.class);
         assertEquals("Abbey Rd.", addr.street);
     }
 

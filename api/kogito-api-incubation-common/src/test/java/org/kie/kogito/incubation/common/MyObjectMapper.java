@@ -18,16 +18,13 @@ package org.kie.kogito.incubation.common;
 
 import java.util.Map;
 
+import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * For internal use only.
- * Provides a method to convert an object into a given type.
- * This is an implementation detail. We may move this to a separate module in the future.
- */
-public class InternalObjectMapper {
+public class MyObjectMapper implements InternalObjectMapper {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     static {
@@ -35,7 +32,7 @@ public class InternalObjectMapper {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
-    public static <T> T convertValue(Object self, Class<T> type) {
+    public <T> T convertValue(Object self, Class<T> type) {
         if (type.isInstance(self)) {
             return type.cast(self);
         }
@@ -50,8 +47,5 @@ public class InternalObjectMapper {
             }
         }
         return objectMapper.convertValue(self, type);
-    }
-
-    private InternalObjectMapper() {
     }
 }
