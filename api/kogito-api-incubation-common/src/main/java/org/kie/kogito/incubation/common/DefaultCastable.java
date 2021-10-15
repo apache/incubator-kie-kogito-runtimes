@@ -20,7 +20,7 @@ package org.kie.kogito.incubation.common;
  * Utility interface, useful to mix-in to get a default `as` implementation.
  * <p>
  * Provides a default implementation for the {@link #as(Class)} method,
- * delegating to {@link InternalObjectMapper#convertValue(Object, Class)}
+ * delegating to {@link org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper#convertValue(Object, Class)}
  */
 public interface DefaultCastable extends Castable {
 
@@ -28,6 +28,6 @@ public interface DefaultCastable extends Castable {
         if (type.isInstance(this)) {
             return type.cast(this);
         }
-        return (T) InternalObjectMapper.convertValue(this, type);
+        return MapperLoader.objectMapper().convertValue(this, type);
     }
 }

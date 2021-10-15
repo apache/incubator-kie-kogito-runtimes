@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.kie.kogito.Model;
 import org.kie.kogito.incubation.common.*;
+import org.kie.kogito.incubation.common.objectmapper.quarkus.QuarkusInternalObjectMapper;
 import org.kie.kogito.incubation.processes.LocalProcessId;
 import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
 import org.kie.kogito.process.Process;
@@ -32,6 +33,8 @@ import org.kie.kogito.process.Processes;
 
 @ApplicationScoped
 public class QuarkusStraightThroughProcessService implements StraightThroughProcessService {
+    @Inject
+    QuarkusInternalObjectMapper internalObjectMapper;
     @Inject
     Instance<Processes> processesInstance;
 
@@ -44,7 +47,7 @@ public class QuarkusStraightThroughProcessService implements StraightThroughProc
             Process<? extends Model> process = processes.processById(pid.processId());
             MapDataContext mdc = inputContext.as(MapDataContext.class);
             Class<? extends Model> modelType = process.createModel().getClass();
-            Model model = InternalObjectMapper.convertValue(mdc, modelType);
+            Model model = internalObjectMapper.convertValue(mdc, modelType);
             ProcessInstance<? extends Model> instance = process.createInstance(model);
             instance.start();
             Map<String, Object> map = instance.variables().toMap();

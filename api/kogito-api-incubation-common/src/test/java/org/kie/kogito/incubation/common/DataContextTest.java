@@ -96,7 +96,7 @@ public class DataContextTest {
 
         MapDataContext ctx = u.as(MapDataContext.class);
         assertNotEquals(Address.class, ctx.get("addr").getClass());
-        Address addr = InternalObjectMapper.convertValue(ctx.get("addr"), Address.class);
+        Address addr = new MyObjectMapper().convertValue(ctx.get("addr"), Address.class);
         assertEquals("Abbey Rd.", addr.street);
     }
 
