@@ -59,7 +59,6 @@ public class ServerlessWorkflowIT extends AbstractCodegenIT {
 
     @ParameterizedTest
     @ValueSource(strings = { "serverless/single-operation-with-delay.sw.json", "serverless/single-operation-with-delay.sw.yml" })
-    //    @ValueSource(strings = {"serverless/single-operation-with-delay.sw.yml" })
     public void testSingleFunctionCallWithDelayWorkflow(String processLocation) throws Exception {
 
         Application app = generateCodeProcessesOnly(processLocation);

@@ -278,7 +278,6 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
             return buildCompositeNodeInstance(new CompositeNodeEndInstance(), node);
         }
 
-        //here should check the aync to create an async node instance
         org.kie.api.definition.process.Node actualNode = resolveAsync(node);
 
         NodeInstanceFactory conf = NodeInstanceFactoryRegistry.getInstance(getProcessInstance().getKnowledgeRuntime().getEnvironment()).getProcessNodeInstanceFactory(actualNode);
