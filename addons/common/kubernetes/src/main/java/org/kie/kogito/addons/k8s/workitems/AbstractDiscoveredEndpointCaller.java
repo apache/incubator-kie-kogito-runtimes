@@ -42,8 +42,10 @@ import okhttp3.Response;
 /**
  * This service is meant to be used with KogitoWorkItemHandlers to call well-known Kogito services deployed in the very same Kubernetes cluster.
  */
-// TODO: review this implementation with the team. This class should be part of kogito-rest-workitem. Then we can inject the discoverability to that use case.
-// TODO: see more at https://issues.redhat.com/browse/KOGITO-6109. This implementation is inherited from the old "DiscoveredServiceWorkItemHandler".
+/*
+ * TODO: review this implementation with the team. This class should be part of kogito-rest-workitem. Then we can inject the discoverability to that use case.
+ * see more at https://issues.redhat.com/browse/KOGITO-6109. This implementation is inherited from the old "DiscoveredServiceWorkItemHandler".
+ */
 public abstract class AbstractDiscoveredEndpointCaller {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveredEndpointCaller.class);
@@ -84,15 +86,15 @@ public abstract class AbstractDiscoveredEndpointCaller {
         if (endpoint.size() > 1) {
             LOGGER.warn("Found more than one endpoint using labels {}:null. Returning the first one in the list. Try to be more specific in the query search.", service);
         }
-        LOGGER.debug("Found endpoint for service {} in namespace {} with URL {}", service, namespace, endpoint.get(0).getURL());
+        LOGGER.debug("Found endpoint for service {} in namespace {} with URL {}", service, namespace, endpoint.get(0).getUrl());
 
         INTERNAL_FIELDS.forEach(data::remove);
 
-        final Request request = createRequest(String.format("%s/%s", endpoint.get(0).getURL(), service), createRequestPayload(data), httpMethod);
+        final Request request = createRequest(String.format("%s/%s", endpoint.get(0).getUrl(), service), createRequestPayload(data), httpMethod);
         try (Response response = this.httpClient.newCall(request).execute()) {
             return createResultsFromResponse(response, request.url().toString());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new EndpointCallerException(e);
         }
     }
 
@@ -110,7 +112,7 @@ public abstract class AbstractDiscoveredEndpointCaller {
     }
 
     private Request createRequest(String url, RequestBody body, String httpMethod) {
-        Request.Builder builder = new Request.Builder().url(url).get();
+        Request.Builder builder;
         switch (httpMethod) {
             case HttpMethod.DELETE:
                 builder = new Request.Builder().url(url).delete(body);
@@ -120,6 +122,9 @@ public abstract class AbstractDiscoveredEndpointCaller {
                 break;
             case HttpMethod.PUT:
                 builder = new Request.Builder().url(url).put(body);
+                break;
+            default:
+                builder = new Request.Builder().url(url).get();
                 break;
         }
         return builder.build();

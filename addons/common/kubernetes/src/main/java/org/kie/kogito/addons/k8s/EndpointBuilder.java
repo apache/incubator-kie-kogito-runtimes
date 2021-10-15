@@ -62,40 +62,43 @@ public class EndpointBuilder {
 
         for (ServicePort port : service.getSpec().getPorts()) {
             if (primaryPort != null && !primaryPort.isEmpty() && primaryPort.equals(port.getName())) {
-                endpoint.setURL(urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort())));
+                endpoint.setUrl(urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort())));
                 continue;
             }
             if (SECURE_HTTP_PROTOCOL.equals(port.getName())) {
                 url = urlForServiceAndPort(port, service, SECURE_HTTP_PROTOCOL);
-                endpoint.setURLIfEmpty(url);
+                endpoint.setUrlIfEmpty(url);
             }
             if (NONSECURE_HTTP_PROTOCOL.equals(port.getName())) {
                 url = urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort()));
-                endpoint.setURLIfEmpty(url);
+                endpoint.setUrlIfEmpty(url);
             }
             if (url == null) {
                 url = urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort()));
             }
             if (port.getName() != null && !port.getName().isEmpty()) {
-                endpoint.addSecondaryURL(port.getName(), url);
+                endpoint.addSecondaryUrl(port.getName(), url);
             }
         }
 
         // fallback to the first one
-        if (endpoint.getURL() == null) {
-            endpoint.setURL(urlForServiceAndPort(service.getSpec().getPorts().get(0), service, NONSECURE_HTTP_PROTOCOL));
-            endpoint.removeSecondaryURL(service.getSpec().getPorts().get(0).getName());
+        if (endpoint.urlIsEmpty()) {
+            endpoint.setUrl(urlForServiceAndPort(service.getSpec().getPorts().get(0), service, NONSECURE_HTTP_PROTOCOL));
+            endpoint.removeSecondaryUrl(service.getSpec().getPorts().get(0).getName());
             return endpoint;
         }
 
-        // clean up
-        if (endpoint.getURL().equals(endpoint.getSecondaryURL(NONSECURE_HTTP_PROTOCOL))) {
-            endpoint.removeSecondaryURL(NONSECURE_HTTP_PROTOCOL);
-        }
-        if (endpoint.getURL().equals(endpoint.getSecondaryURL(SECURE_HTTP_PROTOCOL))) {
-            endpoint.removeSecondaryURL(SECURE_HTTP_PROTOCOL);
-        }
+        this.removeDuplicateUrls(endpoint);
         return endpoint;
+    }
+
+    private void removeDuplicateUrls(final Endpoint endpoint) {
+        if (endpoint.getUrl().equals(endpoint.getSecondaryUrl(NONSECURE_HTTP_PROTOCOL))) {
+            endpoint.removeSecondaryUrl(NONSECURE_HTTP_PROTOCOL);
+        }
+        if (endpoint.getUrl().equals(endpoint.getSecondaryUrl(SECURE_HTTP_PROTOCOL))) {
+            endpoint.removeSecondaryUrl(SECURE_HTTP_PROTOCOL);
+        }
     }
 
     private String urlForServiceAndPort(final ServicePort port, final Service service, final String protocol) {

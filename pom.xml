@@ -135,14 +135,6 @@
 
   <profiles>
     <profile>
-      <id>default</id>
-      <activation>
-        <property>
-            <name>!productized</name>
-        </property>
-      </activation>
-    </profile>
-    <profile>
       <id>integration-test-modules</id>
       <activation>
         <property>

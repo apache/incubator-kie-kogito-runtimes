@@ -80,11 +80,11 @@ public class KubernetesServiceEndpointDiscoveryTest {
         createServiceIfNotExist("svc1", Collections.emptyMap(), 80, 8776);
         final Optional<Endpoint> endpoint = endpointDiscovery.findEndpoint("test", "svc1");
         assertTrue(endpoint.isPresent());
-        assertFalse(endpoint.get().getURL().isEmpty());
+        assertFalse(endpoint.get().getUrl().isEmpty());
         try {
-            new URL(endpoint.get().getURL());
+            new URL(endpoint.get().getUrl());
         } catch (MalformedURLException e) {
-            fail("The generated URL " + endpoint.get().getURL() + " is invalid"); //verbose
+            fail("The generated URL " + endpoint.get().getUrl() + " is invalid"); //verbose
         }
     }
 
@@ -93,11 +93,11 @@ public class KubernetesServiceEndpointDiscoveryTest {
         createServiceIfNotExist("svc2", Collections.singletonMap("app", "test1"), 8778);
         final List<Endpoint> endpoints = endpointDiscovery.findEndpoint("test", Collections.singletonMap("app", "test1"));
         assertFalse(endpoints.isEmpty());
-        assertFalse(endpoints.get(0).getURL().isEmpty());
+        assertFalse(endpoints.get(0).getUrl().isEmpty());
         try {
-            new URL(endpoints.get(0).getURL());
+            new URL(endpoints.get(0).getUrl());
         } catch (MalformedURLException e) {
-            fail("The generated URL " + endpoints.get(0).getURL() + " is invalid"); //verbose
+            fail("The generated URL " + endpoints.get(0).getUrl() + " is invalid"); //verbose
         }
     }
 }

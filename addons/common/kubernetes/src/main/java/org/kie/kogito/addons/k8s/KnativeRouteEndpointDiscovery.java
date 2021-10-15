@@ -67,7 +67,7 @@ public class KnativeRouteEndpointDiscovery implements EndpointDiscovery {
         } catch (KubernetesClientException ex) {
             // when running on a local environment, the client might try to ping the cluster.
             // instead of returning `false` from isAdaptable, it's throwing the exception.
-            // We catch heto avoid initialization errors on such envs
+            // We catch it here to avoid initialization errors on such envs
             LOGGER.warn("Error trying to adapt current Kubernetes Client to Knative. Turn on DEBUG to see the full stack trace: {}", ex.getMessage());
             LOGGER.debug("Stack trace: ", ex);
         }

@@ -28,23 +28,33 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- Optional because Quarkus and Spring Boot might use slightly different versions -->
+    <!-- Provided because Quarkus and Spring Boot might use slightly different versions -->
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-client</artifactId>
       <version>${version.io.fabric8.kubernetes-client}</version>
-      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>knative-client</artifactId>
       <version>${version.io.fabric8.kubernetes-client}</version>
-      <optional>true</optional>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-workitems</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

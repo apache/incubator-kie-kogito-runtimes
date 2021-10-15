@@ -46,7 +46,7 @@ public class EndpointFetcher {
         if (endpoint.isEmpty()) {
             System.out.println("Endpoint not found :(");
         } else {
-            System.out.println("This is the url for the service " + name + ": " + endpoint.get().getURL());
+            System.out.println("This is the url for the service " + name + ": " + endpoint.get().getUrl());
         }
     }
 }

@@ -25,4 +25,8 @@ public class EndpointCallerException extends RuntimeException {
         super(message);
     }
 
+    public EndpointCallerException(final Throwable exception) {
+        super(exception);
+    }
+
 }

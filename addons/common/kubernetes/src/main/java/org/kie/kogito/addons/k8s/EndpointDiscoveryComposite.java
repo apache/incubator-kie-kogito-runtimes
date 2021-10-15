@@ -34,14 +34,6 @@ public class EndpointDiscoveryComposite implements EndpointDiscovery {
         endpointDiscoveryList.addAll(Arrays.asList(endpointDiscovery));
     }
 
-    public EndpointDiscoveryComposite(EndpointDiscovery endpointDiscovery) {
-        endpointDiscoveryList.add(endpointDiscovery);
-    }
-
-    public EndpointDiscoveryComposite() {
-
-    }
-
     public void add(final EndpointDiscovery endpointDiscovery) {
         this.endpointDiscoveryList.add(endpointDiscovery);
     }

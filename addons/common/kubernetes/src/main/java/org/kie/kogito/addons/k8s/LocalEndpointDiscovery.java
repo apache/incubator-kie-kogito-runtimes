@@ -23,6 +23,9 @@ import java.util.Optional;
 
 /**
  * In memory {@link EndpointDiscovery} implementation.
+ * Can be used to run the service locally with a pre-loaded service registry (use {@link #addCache(EndpointQueryKey, Endpoint)}).
+ * This way, the discovery service won't need to fetch the k8s API for a service, and the communication between services can
+ * be tested.
  */
 public class LocalEndpointDiscovery implements EndpointDiscovery {
 

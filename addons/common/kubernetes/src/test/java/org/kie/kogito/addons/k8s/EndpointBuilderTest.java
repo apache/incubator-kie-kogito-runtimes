@@ -90,7 +90,7 @@ class EndpointBuilderTest {
 
         testCases.forEach((s, e) -> {
             final Endpoint endpoint = builder.buildFrom(s);
-            assertEquals(e, endpoint.getURL());
+            assertEquals(e, endpoint.getUrl(), "Failed to assert test case for service " + s.getMetadata().getName());
         });
     }
 
@@ -107,9 +107,10 @@ class EndpointBuilderTest {
                         .build())
                 .build();
         final Endpoint endpoint = new EndpointBuilder().buildFrom(multiplePorts);
-        assertEquals("http://127.0.0.1:8080", endpoint.getURL());
+        assertEquals("http://127.0.0.1:8080", endpoint.getUrl());
         assertFalse(endpoint.getSecondaryURLs().isEmpty());
         assertEquals(1, endpoint.getSecondaryURLs().size());
-        assertEquals("http://127.0.0.1:8775", endpoint.getSecondaryURL("randomport"));
+        assertEquals("http://127.0.0.1:8775", endpoint.getSecondaryUrl("randomport"));
+        assertFalse(endpoint.getLabels().isEmpty());
     }
 }

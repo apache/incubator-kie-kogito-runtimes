@@ -38,7 +38,7 @@ public class EndpointDiscoveryTest {
 
     @Test
     void verifyKubernetesIntegration() {
-        final EndpointDiscovery mockedEndpointDiscovery = new EndpointDiscoveryConfig().EndpointDiscovery(kubernetesClient);
+        final EndpointDiscovery mockedEndpointDiscovery = new EndpointDiscoveryConfig().endpointDiscovery(kubernetesClient);
         final Optional<Endpoint> endpoint = mockedEndpointDiscovery.findEndpoint("test", "test");
         assertTrue(endpoint.isEmpty()); // we haven't created anything
     }

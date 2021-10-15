@@ -27,7 +27,7 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 public class EndpointDiscoveryConfig {
 
     @Bean
-    public EndpointDiscovery EndpointDiscovery(KubernetesClient kubernetesClient) {
+    public EndpointDiscovery endpointDiscovery(KubernetesClient kubernetesClient) {
         final KubernetesServiceEndpointDiscovery kubernetesServiceEndpointDiscovery = new KubernetesServiceEndpointDiscovery(kubernetesClient);
         final KnativeRouteEndpointDiscovery knativeRouteEndpointDiscovery = new KnativeRouteEndpointDiscovery(kubernetesClient);
         return new CacheableServiceAndThenRouteEndpointDiscovery(kubernetesServiceEndpointDiscovery, knativeRouteEndpointDiscovery);
