@@ -117,7 +117,7 @@ public class DataContextTest {
 
     @Test
     public void testFastAsUsingCast() {
-        DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
+        MapDataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
 
         MapDataContext converted = ctx.as(MapDataContext.class);
         assertThat(converted).isSameAs(ctx);

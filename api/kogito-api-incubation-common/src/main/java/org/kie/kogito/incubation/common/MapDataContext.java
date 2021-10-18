@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * A data context that wraps a <code>Map<String, Object></code>.
  */
-public class MapDataContext implements MapLikeDataContext {
+public class MapDataContext implements MapLikeDataContext, DefaultReshaping {
 
     public static <T> MapDataContext from(T object) {
         return Reshape.of(object).as(MapDataContext.class);
