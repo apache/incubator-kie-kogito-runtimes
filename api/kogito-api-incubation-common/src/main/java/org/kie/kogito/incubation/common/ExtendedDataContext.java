@@ -40,35 +40,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public final class ExtendedDataContext implements DataContext {
-    public static ExtendedDataContext of(DataContext meta, DataContext data) {
+    public static ExtendedDataContext of(MetaDataContext meta, DataContext data) {
         return new ExtendedDataContext(meta, data);
     }
 
     public static ExtendedDataContext ofData(DataContext data) {
-        return new ExtendedDataContext(EmptyDataContext.Instance, data);
+        return new ExtendedDataContext(EmptyMetaDataContext.Instance, data);
     }
 
-    private DataContext meta = EmptyDataContext.Instance;
+    private MetaDataContext meta = EmptyMetaDataContext.Instance;
     private DataContext data = EmptyDataContext.Instance;
 
     ExtendedDataContext() {
     }
 
-    ExtendedDataContext(DataContext meta, DataContext data) {
+    ExtendedDataContext(MetaDataContext meta, DataContext data) {
         this.meta = meta;
         this.data = data;
     }
 
-    void setMeta(DataContext meta) {
+    void setMeta(MetaDataContext meta) {
         this.meta = meta;
     }
 
-    void setData(DataContext meta) {
-        this.meta = meta;
+    void setData(DataContext data) {
+        this.data = data;
     }
 
     @JsonProperty("meta")
-    public DataContext meta() {
+    public MetaDataContext meta() {
         return meta;
     }
 

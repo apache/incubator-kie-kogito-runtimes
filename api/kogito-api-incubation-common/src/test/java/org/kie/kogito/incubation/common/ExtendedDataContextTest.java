@@ -34,7 +34,7 @@ public class ExtendedDataContextTest {
         MapDataContext meta = MapDataContext.create();
         meta.set("meta-value", "this is not data");
 
-        ExtendedDataContext ctx = ExtendedDataContext.of(data, meta);
+        ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
         assertEquals(ctx.data().as(MapDataContext.class), ctx.as(MapDataContext.class),
                 "Converting an ExtendedContext should be equivalent to converting its data section");
@@ -52,7 +52,7 @@ public class ExtendedDataContextTest {
         MapDataContext meta = MapDataContext.create();
         meta.set("meta-value", "this is not data");
 
-        ExtendedDataContext ctx = ExtendedDataContext.of(data, meta);
+        ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
 
         assertSame(ctx, ctx.as(DataContext.class));
         assertSame(ctx, ctx.as(ExtendedDataContext.class));

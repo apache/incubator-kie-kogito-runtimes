@@ -19,9 +19,9 @@ package org.kie.kogito.incubation.common;
 /**
  * An empty DataContext singleton
  */
-public final class EmptyDataContext implements DataContext, DefaultCastable {
-    public static final DataContext Instance = new EmptyDataContext();
+public final class EmptyMetaDataContext implements MetaDataContext {
+    public static final MetaDataContext Instance = new EmptyMetaDataContext();
 
-    private EmptyDataContext() {
+    private EmptyMetaDataContext() {
     }
 }
