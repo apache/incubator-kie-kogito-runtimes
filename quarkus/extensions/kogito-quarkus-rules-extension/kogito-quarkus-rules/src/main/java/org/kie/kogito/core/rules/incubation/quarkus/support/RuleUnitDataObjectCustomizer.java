@@ -24,10 +24,13 @@ import org.kie.kogito.incubation.common.objectmapper.quarkus.QuarkusInternalObje
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.quarkus.runtime.Startup;
+
 /**
  * Internal use only. Wraps and configures a custom ObjectMapper for DataSources
  */
 @ApplicationScoped
+@Startup
 class RuleUnitDataObjectCustomizer {
 
     @Inject
