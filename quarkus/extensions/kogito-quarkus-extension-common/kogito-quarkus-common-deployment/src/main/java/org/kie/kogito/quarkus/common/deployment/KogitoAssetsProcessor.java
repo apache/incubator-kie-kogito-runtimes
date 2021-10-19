@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
@@ -70,6 +71,7 @@ public class KogitoAssetsProcessor {
     public List<KogitoGeneratedClassesBuildItem> generateModel(
             Capabilities capabilities,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
@@ -101,6 +103,7 @@ public class KogitoAssetsProcessor {
                 context,
                 generatedFiles,
                 generatedBeans,
+                jaxrsProducer,
                 liveReload.isLiveReload());
 
         registerDataEventsForReflection(optionalIndex.map(KogitoGeneratedClassesBuildItem::getIndexedClasses), context, reflectiveClass);
@@ -122,13 +125,18 @@ public class KogitoAssetsProcessor {
             KogitoBuildContext context,
             Collection<GeneratedFile> generatedFiles,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer,
             boolean useDebugSymbols) throws IOException {
 
         List<AppDependency> dependencies = curateOutcomeBuildItem.getEffectiveModel().getUserDependencies();
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
-        generatedBeanBuildItems.forEach(generatedBeans::produce);
+//        generatedBeanBuildItems.forEach(generatedBeans::produce);
+        generatedBeanBuildItems.forEach(b -> {
+            LOGGER.info(b.getName());
+            jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData()));
+        });
         return Optional.of(indexBuildItems(context, generatedBeanBuildItems));
     }
 
