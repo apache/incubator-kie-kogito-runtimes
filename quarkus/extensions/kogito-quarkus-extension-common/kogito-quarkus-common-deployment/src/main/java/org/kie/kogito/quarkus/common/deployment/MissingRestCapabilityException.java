@@ -19,7 +19,7 @@ package org.kie.kogito.quarkus.common.deployment;
 public class MissingRestCapabilityException extends RuntimeException {
     public MissingRestCapabilityException() {
         super("No REST capability detected. " +
-                "Add the RestEasy or RestEasy Reactive extensions if you want Kogito to generate REST endpoints automatically. " +
+                "Add the RestEasy extension if you want Kogito to generate REST endpoints automatically. " +
                 "You may also disable automated REST generation by setting `kogito.generate.rest = false` ");
     }
 }
