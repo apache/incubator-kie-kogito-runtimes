@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.kie.kogito.serialization.process.protobuf;
 
 public final class KogitoNodeInstanceContentsProtobuf {
@@ -11526,6 +11527,12 @@ public final class KogitoNodeInstanceContentsProtobuf {
      * @return The executedInstances.
      */
     int getExecutedInstances();
+
+    /**
+     * <code>bool hasAsyncInstances = 5;</code>
+     * @return The hasAsyncInstances.
+     */
+    boolean getHasAsyncInstances();
   }
   /**
    * Protobuf type {@code org.kie.kogito.serialization.process.protobuf.ForEachNodeInstanceContent}
@@ -11604,6 +11611,11 @@ public final class KogitoNodeInstanceContentsProtobuf {
             case 32: {
 
               executedInstances_ = input.readInt32();
+              break;
+            }
+            case 40: {
+
+              hasAsyncInstances_ = input.readBool();
               break;
             }
             default: {
@@ -11724,6 +11736,17 @@ public final class KogitoNodeInstanceContentsProtobuf {
       return executedInstances_;
     }
 
+    public static final int HASASYNCINSTANCES_FIELD_NUMBER = 5;
+    private boolean hasAsyncInstances_;
+    /**
+     * <code>bool hasAsyncInstances = 5;</code>
+     * @return The hasAsyncInstances.
+     */
+    @java.lang.Override
+    public boolean getHasAsyncInstances() {
+      return hasAsyncInstances_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -11749,6 +11772,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
       }
       if (executedInstances_ != 0) {
         output.writeInt32(4, executedInstances_);
+      }
+      if (hasAsyncInstances_ != false) {
+        output.writeBool(5, hasAsyncInstances_);
       }
       unknownFields.writeTo(output);
     }
@@ -11779,6 +11805,10 @@ public final class KogitoNodeInstanceContentsProtobuf {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(4, executedInstances_);
       }
+      if (hasAsyncInstances_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, hasAsyncInstances_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -11805,6 +11835,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
           != other.getTotalInstances()) return false;
       if (getExecutedInstances()
           != other.getExecutedInstances()) return false;
+      if (getHasAsyncInstances()
+          != other.getHasAsyncInstances()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -11828,6 +11860,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
       hash = (53 * hash) + getTotalInstances();
       hash = (37 * hash) + EXECUTEDINSTANCES_FIELD_NUMBER;
       hash = (53 * hash) + getExecutedInstances();
+      hash = (37 * hash) + HASASYNCINSTANCES_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getHasAsyncInstances());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -11973,6 +12008,8 @@ public final class KogitoNodeInstanceContentsProtobuf {
 
         executedInstances_ = 0;
 
+        hasAsyncInstances_ = false;
+
         return this;
       }
 
@@ -12012,6 +12049,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         result.totalInstances_ = totalInstances_;
         result.executedInstances_ = executedInstances_;
+        result.hasAsyncInstances_ = hasAsyncInstances_;
         onBuilt();
         return result;
       }
@@ -12078,6 +12116,9 @@ public final class KogitoNodeInstanceContentsProtobuf {
         }
         if (other.getExecutedInstances() != 0) {
           setExecutedInstances(other.getExecutedInstances());
+        }
+        if (other.getHasAsyncInstances() != false) {
+          setHasAsyncInstances(other.getHasAsyncInstances());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -12396,6 +12437,37 @@ public final class KogitoNodeInstanceContentsProtobuf {
       public Builder clearExecutedInstances() {
         
         executedInstances_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private boolean hasAsyncInstances_ ;
+      /**
+       * <code>bool hasAsyncInstances = 5;</code>
+       * @return The hasAsyncInstances.
+       */
+      @java.lang.Override
+      public boolean getHasAsyncInstances() {
+        return hasAsyncInstances_;
+      }
+      /**
+       * <code>bool hasAsyncInstances = 5;</code>
+       * @param value The hasAsyncInstances to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHasAsyncInstances(boolean value) {
+        
+        hasAsyncInstances_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool hasAsyncInstances = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHasAsyncInstances() {
+        
+        hasAsyncInstances_ = false;
         onChanged();
         return this;
       }
@@ -13154,14 +13226,15 @@ public final class KogitoNodeInstanceContentsProtobuf {
       "entSubProcessNodeInstanceContent\022\031\n\021time" +
       "r_instance_id\030\001 \003(\t\022O\n\007context\030\002 \001(\0132>.o" +
       "rg.kie.kogito.serialization.process.prot" +
-      "obuf.WorkflowContext\"\273\001\n\032ForEachNodeInst" +
+      "obuf.WorkflowContext\"\326\001\n\032ForEachNodeInst" +
       "anceContent\022\031\n\021timer_instance_id\030\001 \003(\t\022O" +
       "\n\007context\030\002 \001(\0132>.org.kie.kogito.seriali" +
       "zation.process.protobuf.WorkflowContext\022" +
       "\026\n\016totalInstances\030\003 \001(\005\022\031\n\021executedInsta" +
-      "nces\030\004 \001(\005\"/\n\035AsyncEventNodeInstanceCont" +
-      "ent\022\016\n\006job_id\030\001 \001(\tB$B\"KogitoNodeInstanc" +
-      "eContentsProtobufb\006proto3"
+      "nces\030\004 \001(\005\022\031\n\021hasAsyncInstances\030\005 \001(\010\"/\n" +
+      "\035AsyncEventNodeInstanceContent\022\016\n\006job_id" +
+      "\030\001 \001(\tB$B\"KogitoNodeInstanceContentsProt" +
+      "obufb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -13252,7 +13325,7 @@ public final class KogitoNodeInstanceContentsProtobuf {
     internal_static_org_kie_kogito_serialization_process_protobuf_ForEachNodeInstanceContent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_kie_kogito_serialization_process_protobuf_ForEachNodeInstanceContent_descriptor,
-        new java.lang.String[] { "TimerInstanceId", "Context", "TotalInstances", "ExecutedInstances", });
+        new java.lang.String[] { "TimerInstanceId", "Context", "TotalInstances", "ExecutedInstances", "HasAsyncInstances", });
     internal_static_org_kie_kogito_serialization_process_protobuf_AsyncEventNodeInstanceContent_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_org_kie_kogito_serialization_process_protobuf_AsyncEventNodeInstanceContent_fieldAccessorTable = new

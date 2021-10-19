@@ -29,6 +29,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
 import org.jbpm.workflow.core.node.ForEachNode;
 import org.jbpm.workflow.core.node.ForEachNode.ForEachJoinNode;
 import org.jbpm.workflow.core.node.ForEachNode.ForEachSplitNode;
@@ -55,6 +56,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private int totalInstances;
     private int executedInstances;
+    boolean hasAsyncInstances;
 
     public ForEachNode getForEachNode() {
         return (ForEachNode) getNode();
@@ -74,6 +76,14 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     public void setTotalInstances(int totalInstances) {
         this.totalInstances = totalInstances;
+    }
+
+    public boolean getHasAsyncInstances() {
+        return hasAsyncInstances;
+    }
+
+    public void setHasAsyncInstances(boolean hasAsyncInstances) {
+        this.hasAsyncInstances = hasAsyncInstances;
     }
 
     @Override
@@ -148,7 +158,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     }
 
     private boolean isSequential() {
-        return getForEachNode().isSequential();
+        return getForEachNode().isSequential() || hasAsyncInstances;
     }
 
     public class ForEachSplitNodeInstance extends NodeInstanceImpl {
@@ -182,6 +192,9 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 for (NodeInstance nodeInstance : nodeInstances) {
                     logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
                     nodeInstance.trigger(this, getForEachSplitNode().getTo().getToType());
+
+                    //this is required because Parallel instances execution does not work with async, so the it fallbacks to sequential
+                    hasAsyncInstances = checkAsyncInstance(nodeInstance);
                     if (isSequential()) {
                         // for sequential mode trigger only first item from the list
                         break;
@@ -193,6 +206,12 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 }
             }
         }
+    }
+
+    private boolean checkAsyncInstance(NodeInstance nodeInstance) {
+        return ((CompositeContextNodeInstance) nodeInstance).getNodeInstances().stream()
+                .anyMatch(i -> i instanceof AsyncEventNodeInstance
+                        || (i instanceof LambdaSubProcessNodeInstance && ((LambdaSubProcessNodeInstance) i).isAsyncWaitingNodeInstance()));
     }
 
     public class ForEachJoinNodeInstance extends NodeInstanceImpl {
@@ -236,10 +255,11 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
             boolean isCompletionConditionMet = evaluateCompletionCondition(getForEachNode().getCompletionConditionExpression(), tempVariables);
             if (isSequential() && !isCompletionConditionMet && !areNodeInstancesCompleted()) {
-                getFirstCompositeNodeInstance().ifPresent(nodeInstance -> {
-                    logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
-                    nodeInstance.trigger(null, getForEachNode().getForEachSplitNode().getTo().getToType());
-                });
+                getFirstCompositeNodeInstance()
+                        .ifPresent(nodeInstance -> {
+                            logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
+                            nodeInstance.trigger(null, getForEachNode().getForEachSplitNode().getTo().getToType());
+                        });
             }
 
             if (areNodeInstancesCompleted() || isCompletionConditionMet) {

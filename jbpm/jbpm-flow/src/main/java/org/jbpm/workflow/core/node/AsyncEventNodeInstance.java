@@ -31,10 +31,12 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
+import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.uow.WorkUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
 import static org.kie.services.jobs.impl.TriggerJobCommand.ASYNC_TRIGGERED;
 
 /**
@@ -65,6 +67,8 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
     @Override
     public void internalTrigger(KogitoNodeInstance from, String type) {
         addEventListeners();
+        addAsyncStatus();
+
         final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
         //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
@@ -83,6 +87,14 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
                     setJobId(jobId);
                 }, i -> {
                 }, WorkUnit.LOW_PRIORITY));
+    }
+
+    private void addAsyncStatus() {
+        getProcessInstance().getMetaData().put(ASYNC_WAITING, true);
+    }
+
+    private void clearAsyncStatus() {
+        getProcessInstance().getMetaData().remove(ASYNC_WAITING);
     }
 
     @Override
@@ -129,9 +141,11 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         NodeInstanceContainer instanceContainer = (NodeInstanceContainer) getNodeInstanceContainer();
         instanceContainer.setCurrentLevel(getLevel());
         instanceContainer.removeNodeInstance(this);
+        instanceContainer.setState(ProcessInstance.STATE_ACTIVE);
 
         NodeInstance actualInstance = instanceContainer.getNodeInstance(getNode());
         //trigger the actual node
         triggerNodeInstance((org.jbpm.workflow.instance.NodeInstance) actualInstance, NodeImpl.CONNECTION_DEFAULT_TYPE);
+        clearAsyncStatus();
     }
 }

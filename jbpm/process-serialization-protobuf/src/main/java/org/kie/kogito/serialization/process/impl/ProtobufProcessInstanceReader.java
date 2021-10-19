@@ -398,6 +398,7 @@ public class ProtobufProcessInstanceReader {
         ForEachNodeInstance nodeInstance = new ForEachNodeInstance();
         nodeInstance.setExecutedInstances(content.getExecutedInstances());
         nodeInstance.setTotalInstances(content.getTotalInstances());
+        nodeInstance.setHasAsyncInstances(content.getHasAsyncInstances());
 
         setCommonNodeInstanceData(ruleFlowProcessInstance, parentContainer, protoNodeInstance, nodeInstance);
         buildWorkflowContext(nodeInstance, content.getContext());

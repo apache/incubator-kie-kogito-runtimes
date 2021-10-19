@@ -71,7 +71,6 @@ public class ForEachNode extends CompositeContextNode {
         join.setName("ForEachJoin");
         join.setMetaData("hidden", true);
         join.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:join");
-        //        join.setMetaData(CUSTOM_ASYNC, "true");
         super.addNode(join);//Node ID 3
         super.linkOutgoingConnections(
                 new CompositeNode.NodeAndType(join, Node.CONNECTION_DEFAULT_TYPE),

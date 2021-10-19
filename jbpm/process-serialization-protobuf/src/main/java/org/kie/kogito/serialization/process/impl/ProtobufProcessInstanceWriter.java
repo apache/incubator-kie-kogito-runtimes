@@ -299,7 +299,8 @@ public class ProtobufProcessInstanceWriter {
 
         foreachBuilder
                 .setTotalInstances(nodeInstance.getTotalInstances())
-                .setExecutedInstances(nodeInstance.getExecutedInstances());
+                .setExecutedInstances(nodeInstance.getExecutedInstances())
+                .setHasAsyncInstances(nodeInstance.getHasAsyncInstances());
         return Any.pack(foreachBuilder.build());
     }
 

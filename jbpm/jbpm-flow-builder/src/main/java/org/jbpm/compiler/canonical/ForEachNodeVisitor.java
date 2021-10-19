@@ -55,8 +55,7 @@ public class ForEachNodeVisitor extends AbstractCompositeNodeVisitor<ForEachNode
         body.addStatement(getAssignedFactoryMethod(factoryField, ForEachNodeFactory.class, getNodeId(node), getNodeKey(), new LongLiteralExpr(node.getId())))
                 .addStatement(getNameMethod(node, "ForEach"));
 
-        boolean sequential = true; //node.isSequential(); //Parallel is not yet supported
-        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_SEQUENTIAL, new BooleanLiteralExpr(sequential)));
+        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_SEQUENTIAL, new BooleanLiteralExpr(node.isSequential())));
 
         visitMetaData(node.getMetaData(), body, getNodeId(node));
 
