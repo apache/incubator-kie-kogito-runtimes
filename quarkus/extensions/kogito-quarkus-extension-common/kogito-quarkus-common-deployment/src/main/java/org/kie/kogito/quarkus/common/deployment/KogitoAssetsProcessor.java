@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
@@ -45,6 +44,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.*;
 
@@ -79,7 +79,7 @@ public class KogitoAssetsProcessor {
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
 
-        if (capabilities.isMissing(Capability.RESTEASY) &&
+        if (capabilities.isCapabilityWithPrefixMissing(Capability.RESTEASY) &&
                 !"false".equalsIgnoreCase(
                         context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
                                 .orElse("true"))) {
@@ -132,7 +132,7 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
-//        generatedBeanBuildItems.forEach(generatedBeans::produce);
+        //        generatedBeanBuildItems.forEach(generatedBeans::produce);
         generatedBeanBuildItems.forEach(b -> {
             LOGGER.info(b.getName());
             jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData()));
