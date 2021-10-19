@@ -77,7 +77,7 @@ public class KogitoAssetsProcessor {
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
 
-        if (capabilities.isPresent(Capability.RESTEASY) &&
+        if (capabilities.isMissing(Capability.RESTEASY) &&
                 !"false".equalsIgnoreCase(
                         context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
                                 .orElse("true"))) {
