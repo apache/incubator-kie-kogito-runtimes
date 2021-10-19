@@ -132,7 +132,7 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
-        //        generatedBeanBuildItems.forEach(generatedBeans::produce);
+                generatedBeanBuildItems.forEach(generatedBeans::produce);
         generatedBeanBuildItems.forEach(b -> {
             LOGGER.info(b.getName());
             jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData()));
