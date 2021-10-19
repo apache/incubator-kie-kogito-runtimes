@@ -27,6 +27,7 @@ import java.util.Objects;
 public class Endpoint implements Serializable {
 
     private String url;
+    private String name;
     private Map<String, String> secondaryURLs = new HashMap<>();
     private Map<String, String> labels = new HashMap<>();
 
@@ -43,6 +44,17 @@ public class Endpoint implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * An optional name for this endpoint.
+     */
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -66,22 +78,12 @@ public class Endpoint implements Serializable {
     }
 
     /**
-     * From the ServicePort spec:
-     * <p/>
-     * <quote>
-     * The name of this port within the service. This must be a DNS_LABEL.
-     * All ports within a ServiceSpec must have unique names.
-     * When considering the endpoints for a Service, this must match the 'name' field in the EndpointPort.
-     * Optional if only one ServicePort is defined on this service.
-     * </quote>
-     *
-     * @see <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#serviceport-v1-core">ServicePort v1 core</a>
-     * @param portName non-null, non-empty port name
+     * @param name non-null, non-empty URL name
      * @param url non-null, non-empty URL
      * @throws NullPointerException in case either parameters are null or empty
      */
-    public void addSecondaryUrl(final String portName, final String url) {
-        if (portName == null || portName.isEmpty()) {
+    public void addSecondaryUrl(final String name, final String url) {
+        if (name == null || name.isEmpty()) {
             throw new NullPointerException("Service port name can't be null or empty");
         }
         if (url == null || url.isEmpty()) {
@@ -90,15 +92,15 @@ public class Endpoint implements Serializable {
         if (this.secondaryURLs == null) {
             this.secondaryURLs = new HashMap<>();
         }
-        this.secondaryURLs.put(portName, url);
+        this.secondaryURLs.put(name, url);
     }
 
-    public String getSecondaryUrl(final String portName) {
-        return this.secondaryURLs.get(portName);
+    public String getSecondaryUrl(final String name) {
+        return this.secondaryURLs.get(name);
     }
 
-    public void removeSecondaryUrl(final String portName) {
-        this.secondaryURLs.remove(portName);
+    public void removeSecondaryUrl(final String name) {
+        this.secondaryURLs.remove(name);
     }
 
     /**
@@ -106,9 +108,10 @@ public class Endpoint implements Serializable {
      *
      * @param url the given URL
      */
-    public void setUrlIfEmpty(final String url) {
+    public void setUrlIfEmpty(final String name, final String url) {
         if (url != null && !url.isEmpty() && this.urlIsEmpty()) {
             this.setUrl(url);
+            this.setName(name);
         }
     }
 
@@ -125,11 +128,11 @@ public class Endpoint implements Serializable {
             return false;
         }
         Endpoint endpoint = (Endpoint) o;
-        return Objects.equals(url, endpoint.url) && Objects.equals(secondaryURLs, endpoint.secondaryURLs);
+        return Objects.equals(name, endpoint.name) && Objects.equals(url, endpoint.url) && Objects.equals(secondaryURLs, endpoint.secondaryURLs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, secondaryURLs);
+        return Objects.hash(name, url, secondaryURLs);
     }
 }

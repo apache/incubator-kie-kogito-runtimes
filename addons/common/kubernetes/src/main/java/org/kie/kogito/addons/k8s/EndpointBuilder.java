@@ -63,15 +63,21 @@ public class EndpointBuilder {
         for (ServicePort port : service.getSpec().getPorts()) {
             if (primaryPort != null && !primaryPort.isEmpty() && primaryPort.equals(port.getName())) {
                 endpoint.setUrl(urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort())));
+                endpoint.setName(port.getName());
                 continue;
             }
             if (SECURE_HTTP_PROTOCOL.equals(port.getName())) {
                 url = urlForServiceAndPort(port, service, SECURE_HTTP_PROTOCOL);
-                endpoint.setUrlIfEmpty(url);
+                if (NONSECURE_HTTP_PROTOCOL.equals(endpoint.getName())) {
+                    endpoint.setUrl(url);
+                    endpoint.setName(port.getName());
+                } else {
+                    endpoint.setUrlIfEmpty(port.getName(), url);
+                }
             }
             if (NONSECURE_HTTP_PROTOCOL.equals(port.getName())) {
                 url = urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort()));
-                endpoint.setUrlIfEmpty(url);
+                endpoint.setUrlIfEmpty(port.getName(), url);
             }
             if (url == null) {
                 url = urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort()));

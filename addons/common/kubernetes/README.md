@@ -75,4 +75,4 @@ subjects:
 ### Discovery Service with custom WIH
 
 - [The onboarding Example](https://github.com/kiegroup/kogito-examples/tree/stable/onboarding-example) uses this add-on
-  to discovery other Kogito Process deployed in the same Kubernetes cluster via a custom Work Item Handler.
+  to discover other Kogito Process deployed in the same Kubernetes cluster via a custom Work Item Handler.

@@ -56,6 +56,16 @@ class EndpointBuilderTest {
                 .build();
         testCases.put(httpsService, "https://127.0.0.1:8443");
 
+        final Service httpAndHttpsService = new ServiceBuilder()
+                .withNewMetadata()
+                .withName("svc2")
+                .endMetadata()
+                .withSpec(new ServiceSpecBuilder().withClusterIP("127.0.0.1")
+                        .withPorts(new ServicePortBuilder().withName("http").withPort(8080).build(), new ServicePortBuilder().withName("https").withPort(8443).build())
+                        .build())
+                .build();
+        testCases.put(httpAndHttpsService, "https://127.0.0.1:8443");
+
         final Service secureServiceNonConventionalPort = new ServiceBuilder()
                 .withNewMetadata()
                 .withName("svc3")
@@ -111,6 +121,48 @@ class EndpointBuilderTest {
         assertFalse(endpoint.getSecondaryURLs().isEmpty());
         assertEquals(1, endpoint.getSecondaryURLs().size());
         assertEquals("http://127.0.0.1:8775", endpoint.getSecondaryUrl("randomport"));
+        assertFalse(endpoint.getLabels().isEmpty());
+    }
+
+    @Test
+    public void testMultipleValidPorts() {
+        final Service multiplePorts = new ServiceBuilder()
+                .withNewMetadata()
+                .withName("svc7")
+                .withLabels(Collections.singletonMap(EndpointBuilder.PRIMARY_PORT_NAME, "niceport"))
+                .endMetadata()
+                .withSpec(new ServiceSpecBuilder().withClusterIP("127.0.0.1")
+                        .withPorts(new ServicePortBuilder().withPort(8080).withName("http").build(),
+                                new ServicePortBuilder().withPort(8443).withName("https").build())
+                        .build())
+                .build();
+        final Endpoint endpoint = new EndpointBuilder().buildFrom(multiplePorts);
+        assertEquals("https://127.0.0.1:8443", endpoint.getUrl());
+        assertFalse(endpoint.getSecondaryURLs().isEmpty());
+        assertEquals(1, endpoint.getSecondaryURLs().size());
+        assertEquals("http://127.0.0.1:8080", endpoint.getSecondaryUrl("http"));
+        assertFalse(endpoint.getLabels().isEmpty());
+    }
+
+    @Test
+    public void testMultipleValidPortsAndLabel() {
+        final Service multiplePorts = new ServiceBuilder()
+                .withNewMetadata()
+                .withName("svc7")
+                .withLabels(Collections.singletonMap(EndpointBuilder.PRIMARY_PORT_NAME, "niceport"))
+                .endMetadata()
+                .withSpec(new ServiceSpecBuilder().withClusterIP("127.0.0.1")
+                        .withPorts(new ServicePortBuilder().withPort(8080).withName("http").build(),
+                                new ServicePortBuilder().withPort(8443).withName("https").build(),
+                                new ServicePortBuilder().withPort(8181).withName("niceport").build())
+                        .build())
+                .build();
+        final Endpoint endpoint = new EndpointBuilder().buildFrom(multiplePorts);
+        assertEquals("http://127.0.0.1:8181", endpoint.getUrl());
+        assertFalse(endpoint.getSecondaryURLs().isEmpty());
+        assertEquals(2, endpoint.getSecondaryURLs().size());
+        assertEquals("http://127.0.0.1:8080", endpoint.getSecondaryUrl("http"));
+        assertEquals("https://127.0.0.1:8443", endpoint.getSecondaryUrl("https"));
         assertFalse(endpoint.getLabels().isEmpty());
     }
 }
