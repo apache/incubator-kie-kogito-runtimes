@@ -39,7 +39,7 @@ public class QuarkusDecisionService implements DecisionService {
     Instance<DecisionModels> decisionModelsInstance;
 
     @Override
-    public DataContext evaluate(LocalId decisionId, DataContext inputContext) {
+    public ExtendedDataContext evaluate(LocalId decisionId, DataContext inputContext) {
         LocalDecisionId localDecisionId;
         LocalDecisionServiceId decisionServiceId = null;
         if (decisionId instanceof LocalDecisionId) {

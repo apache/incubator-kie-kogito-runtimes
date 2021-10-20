@@ -37,7 +37,7 @@ public class QuarkusPredictionService implements PredictionService {
     Instance<PredictionModels> predictionModels;
 
     @Override
-    public DataContext evaluate(LocalId predictionId, DataContext inputContext) {
+    public ExtendedDataContext evaluate(LocalId predictionId, DataContext inputContext) {
         LocalPredictionId localPredictionId;
         if (predictionId instanceof LocalPredictionId) {
             localPredictionId = (LocalPredictionId) predictionId;
