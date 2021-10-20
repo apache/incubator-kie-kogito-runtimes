@@ -87,6 +87,11 @@ public class KogitoAssetsProcessor {
             throw new MissingRestCapabilityException();
         }
 
+        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET)) {
+            throw new MissingServletCapabilityException();
+        }
+
+
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
         // The HotReloadSupportClass has to be generated only during the first model generation
