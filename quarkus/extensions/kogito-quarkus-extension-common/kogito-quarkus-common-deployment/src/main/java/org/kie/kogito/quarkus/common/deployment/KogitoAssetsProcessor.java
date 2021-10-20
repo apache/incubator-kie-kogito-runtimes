@@ -137,11 +137,8 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
-                generatedBeanBuildItems.forEach(generatedBeans::produce);
-        generatedBeanBuildItems.forEach(b -> {
-            LOGGER.info(b.getName());
-            jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData()));
-        });
+        generatedBeanBuildItems.forEach(generatedBeans::produce);
+        generatedBeanBuildItems.forEach(b -> jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData())));
         return Optional.of(indexBuildItems(context, generatedBeanBuildItems));
     }
 
@@ -262,8 +259,8 @@ public class KogitoAssetsProcessor {
     }
 
     private void addChildrenClasses(IndexView index,
-            String superClass,
-            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+                                    String superClass,
+                                    BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         index.getAllKnownSubclasses(DotName.createSimple(superClass))
                 .forEach(c -> reflectiveClass.produce(
                         new ReflectiveClassBuildItem(true, true, c.name().toString())));
