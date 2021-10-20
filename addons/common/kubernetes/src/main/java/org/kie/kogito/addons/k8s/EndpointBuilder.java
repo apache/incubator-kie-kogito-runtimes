@@ -52,14 +52,13 @@ public class EndpointBuilder {
         final Endpoint endpoint = new Endpoint();
         endpoint.setLabels(service.getMetadata().getLabels());
 
-        String url = null;
-
         // look for the label primary-port-name
         String primaryPort = null;
         if (service.getMetadata().getLabels() != null) {
             primaryPort = service.getMetadata().getLabels().get(PRIMARY_PORT_NAME);
         }
 
+        String url = null;
         for (ServicePort port : service.getSpec().getPorts()) {
             if (primaryPort != null && !primaryPort.isEmpty() && primaryPort.equals(port.getName())) {
                 endpoint.setUrl(urlForServiceAndPort(port, service, httpProtocolForPort(port.getPort())));
@@ -85,6 +84,7 @@ public class EndpointBuilder {
             if (port.getName() != null && !port.getName().isEmpty()) {
                 endpoint.addSecondaryUrl(port.getName(), url);
             }
+            url = null;
         }
 
         // fallback to the first one

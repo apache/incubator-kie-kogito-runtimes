@@ -133,14 +133,16 @@ class EndpointBuilderTest {
                 .endMetadata()
                 .withSpec(new ServiceSpecBuilder().withClusterIP("127.0.0.1")
                         .withPorts(new ServicePortBuilder().withPort(8080).withName("http").build(),
-                                new ServicePortBuilder().withPort(8443).withName("https").build())
+                                new ServicePortBuilder().withPort(8443).withName("https").build(),
+                                new ServicePortBuilder().withPort(8778).withName("randomport").build())
                         .build())
                 .build();
         final Endpoint endpoint = new EndpointBuilder().buildFrom(multiplePorts);
         assertEquals("https://127.0.0.1:8443", endpoint.getUrl());
         assertFalse(endpoint.getSecondaryURLs().isEmpty());
-        assertEquals(1, endpoint.getSecondaryURLs().size());
+        assertEquals(2, endpoint.getSecondaryURLs().size());
         assertEquals("http://127.0.0.1:8080", endpoint.getSecondaryUrl("http"));
+        assertEquals("http://127.0.0.1:8778", endpoint.getSecondaryUrl("randomport"));
         assertFalse(endpoint.getLabels().isEmpty());
     }
 
