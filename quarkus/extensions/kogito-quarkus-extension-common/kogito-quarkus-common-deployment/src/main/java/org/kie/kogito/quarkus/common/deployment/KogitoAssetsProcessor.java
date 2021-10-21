@@ -91,7 +91,6 @@ public class KogitoAssetsProcessor {
             throw new MissingServletCapabilityException();
         }
 
-
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
         // The HotReloadSupportClass has to be generated only during the first model generation
@@ -259,8 +258,8 @@ public class KogitoAssetsProcessor {
     }
 
     private void addChildrenClasses(IndexView index,
-                                    String superClass,
-                                    BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
+            String superClass,
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         index.getAllKnownSubclasses(DotName.createSimple(superClass))
                 .forEach(c -> reflectiveClass.produce(
                         new ReflectiveClassBuildItem(true, true, c.name().toString())));
