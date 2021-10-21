@@ -40,6 +40,7 @@ public class KogitoDMNCodeCodestartIT {
     @RegisterExtension
     public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest.builder()
             .standaloneExtensionCatalog()
+            .extension(ArtifactCoords.pom("io.quarkus", "quarkus-resteasy-jackson", null)) // account for KOGITO-5817
             .extension(ArtifactCoords.fromString("org.kie.kogito:kogito-quarkus-decisions:" + projectVersion()))
             .languages(JAVA)
             .build();
