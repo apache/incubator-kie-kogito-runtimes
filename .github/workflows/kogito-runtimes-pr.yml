@@ -22,7 +22,6 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [11]
-        maven-version: ['3.8.1']
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
@@ -44,11 +43,10 @@ jobs:
         run: |
           echo "Available storage:"
           df -h
-      - name: Setup Maven And Java Version
-        uses: s4u/setup-maven-action@v1.2.1
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java-version }}
-          maven-version: ${{ matrix.maven-version }}
       # See https://docs.github.com/en/actions/guides/building-and-testing-java-with-maven#caching-dependencies
       - name: Cache Maven packages
         uses: actions/cache@v2
