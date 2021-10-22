@@ -73,7 +73,7 @@ public class TimerTest extends AbstractBaseTest {
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         JobsService jobService = new LegacyInMemoryJobService(kruntime, new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
-        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(-1, ExactExpirationTime.now(), processInstance.getStringId(), "test");
+        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(ExactExpirationTime.now(), processInstance.getStringId(), "test");
         String jobId = jobService.scheduleProcessInstanceJob(desc);
 
         try {
@@ -84,7 +84,7 @@ public class TimerTest extends AbstractBaseTest {
         assertEquals(1, counter);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.of(-1, DurationExpirationTime.after(500), processInstance.getStringId(), "test");
+        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.after(500), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertEquals(0, counter);
         try {
@@ -95,7 +95,7 @@ public class TimerTest extends AbstractBaseTest {
         assertEquals(1, counter);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.of(-1, DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
+        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertEquals(0, counter);
         try {

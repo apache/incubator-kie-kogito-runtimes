@@ -106,29 +106,4 @@ public interface WorkUnit<T> {
             }
         };
     }
-
-    static <S> WorkUnit<S> create(S data, Consumer<S> action, Consumer<S> compensation, Integer priority) {
-        return new WorkUnit<S>() {
-
-            @Override
-            public S data() {
-                return data;
-            }
-
-            @Override
-            public void perform() {
-                action.accept(data());
-            }
-
-            @Override
-            public void abort() {
-                compensation.accept(data());
-            }
-
-            @Override
-            public Integer priority() {
-                return priority;
-            }
-        };
-    }
 }

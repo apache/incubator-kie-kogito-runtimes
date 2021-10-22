@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
+import org.kie.kogito.jobs.JobId;
+import org.kie.kogito.jobs.JobIdResolver;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +49,8 @@ public class LegacyInMemoryJobService extends InMemoryJobService {
                 UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                     ProcessInstance pi = processRuntime.getProcessInstance(description.processInstanceId());
                     if (pi != null) {
-                        String[] ids = id.split("_");
-                        try {
-                            long timerId = Long.parseLong(ids[1]);
-                            pi.signalEvent(TriggerJobCommand.TIMER_TRIGGERED, TimerInstance.with(timerId, id, counter.decrementAndGet()));
-                        } catch (NumberFormatException e) {
-                            pi.signalEvent(TriggerJobCommand.ASYNC_TRIGGERED + ids[1], null);
-                        }
+                        JobId jobId = JobIdResolver.resolve(id);
+                        pi.signalEvent(jobId.signal(), jobId.payload(counter.decrementAndGet()));
                         if (counter.get() == 0) {
                             cancelJob(id, false);
                         }

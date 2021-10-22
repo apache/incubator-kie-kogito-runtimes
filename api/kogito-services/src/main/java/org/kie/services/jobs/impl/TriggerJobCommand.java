@@ -18,17 +18,16 @@ package org.kie.services.jobs.impl;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.kie.kogito.jobs.JobId;
+import org.kie.kogito.jobs.JobIdResolver;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
-import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 public class TriggerJobCommand {
 
-    public static final String ASYNC_TRIGGERED = "asyncTriggered";
-    public static final String TIMER_TRIGGERED = "timerTriggered";
     private String processInstanceId;
     private String timerId;
     private Integer limit;
@@ -47,22 +46,18 @@ public class TriggerJobCommand {
         return UnitOfWorkExecutor.executeInUnitOfWork(uom, () -> {
             Optional<? extends ProcessInstance<?>> processInstanceFound = process.instances().findById(processInstanceId);
             return processInstanceFound.map(processInstance -> {
-                String[] ids = timerId.split("_");
-                try {
-                    processInstance.send(new JobSignal(TIMER_TRIGGERED, TimerInstance.with(Long.parseLong(ids[1]), timerId, limit)));
-                } catch (NumberFormatException exception) {
-                    processInstance.send(new JobSignal(ASYNC_TRIGGERED + ":" + ids[1], null));
-                }
+                JobId jobId = JobIdResolver.resolve(timerId);
+                processInstance.send(new JobSignal(jobId.signal(), jobId.payload(limit)));
                 return true;
             }).orElse(false);
         });
     }
 
-    private class JobSignal implements Signal<TimerInstance> {
+    private class JobSignal implements Signal<Object> {
         private String signal;
-        private TimerInstance payload;
+        private Object payload;
 
-        public JobSignal(String signal, TimerInstance payload) {
+        public JobSignal(String signal, Object payload) {
             this.signal = signal;
             this.payload = payload;
         }
@@ -73,7 +68,7 @@ public class TriggerJobCommand {
         }
 
         @Override
-        public TimerInstance payload() {
+        public Object payload() {
             return payload;
         }
 

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class InMemoryJobService implements JobsService, AutoCloseable {
 
+    public static final String IN_MEMORY_JOB_SERVICE_POOL_SIZE_PROPERTY = "kogito.in-memory.job-service.pool-size";
     private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryJobService.class);
     protected static final String TRIGGER = "timer";
 
@@ -52,14 +53,13 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     protected InMemoryJobService(Processes processes, UnitOfWorkManager unitOfWorkManager) {
         this.processes = processes;
         this.unitOfWorkManager = unitOfWorkManager;
-        this.scheduler = new ScheduledThreadPoolExecutor(10);
+        this.scheduler = new ScheduledThreadPoolExecutor(Integer.parseInt(System.getProperty(IN_MEMORY_JOB_SERVICE_POOL_SIZE_PROPERTY, "10")));
     }
 
     public static InMemoryJobService get(final Processes processes, final UnitOfWorkManager unitOfWorkManager) {
         Objects.requireNonNull(processes);
         Objects.requireNonNull(unitOfWorkManager);
-        INSTANCE.putIfAbsent(processes, new InMemoryJobService(processes, unitOfWorkManager));
-        return INSTANCE.get(processes);
+        return INSTANCE.computeIfAbsent(processes, (k) -> new InMemoryJobService(processes, unitOfWorkManager));
     }
 
     @Override
