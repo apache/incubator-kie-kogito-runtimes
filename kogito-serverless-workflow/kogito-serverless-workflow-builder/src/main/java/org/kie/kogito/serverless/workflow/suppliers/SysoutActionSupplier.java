@@ -18,25 +18,21 @@ package org.kie.kogito.serverless.workflow.suppliers;
 import java.util.function.Supplier;
 
 import org.jbpm.compiler.canonical.descriptors.SupplierUtils;
-import org.kie.kogito.serverless.workflow.ObjectMapperFactory;
-import org.kie.kogito.serverless.workflow.actions.InjectAction;
+import org.kie.kogito.serverless.workflow.actions.ExpressionAction;
+import org.kie.kogito.serverless.workflow.actions.SysoutAction;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.expr.Expression;
 
-public class InjectActionSupplier extends InjectAction implements Supplier<Expression> {
+public class SysoutActionSupplier extends ExpressionAction implements Supplier<Expression> {
 
-    public InjectActionSupplier(JsonNode node) {
-        super(node);
+    public SysoutActionSupplier(String lang, String expr) {
+        super(lang, expr);
+
     }
 
     @Override
     public Expression get() {
-        try {
-            return SupplierUtils.getExpression(InjectAction.class, ObjectMapperFactory.getObjectMapper().writeValueAsString(node).replace("\"", "\\\""));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-        }
+        return SupplierUtils.getExpression(SysoutAction.class, lang, expr);
     }
+
 }
