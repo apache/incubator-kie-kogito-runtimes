@@ -15,15 +15,17 @@
  */
 package org.kie.kogito.quarkus.dmn;
 
+import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
+
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartData.QuarkusDataKey;
 import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
 import io.quarkus.maven.ArtifactCoords;
-
-import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
 
 public class KogitoDMNCodeCodestartIT {
 
@@ -42,6 +44,7 @@ public class KogitoDMNCodeCodestartIT {
             .standaloneExtensionCatalog()
             .extension(ArtifactCoords.pom("io.quarkus", "quarkus-resteasy-jackson", null)) // account for KOGITO-5817
             .extension(ArtifactCoords.fromString("org.kie.kogito:kogito-quarkus-decisions:" + projectVersion()))
+            .putData(QuarkusDataKey.APP_CONFIG, Map.of("quarkus.http.test-port", "0"))
             .languages(JAVA)
             .build();
 
