@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.quarkus.dmn;
 
-import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
-
 import java.util.Map;
 import java.util.Properties;
 
@@ -26,6 +24,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartData.QuarkusDataKey;
 import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
 import io.quarkus.maven.ArtifactCoords;
+
+import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
 
 public class KogitoDMNCodeCodestartIT {
 
