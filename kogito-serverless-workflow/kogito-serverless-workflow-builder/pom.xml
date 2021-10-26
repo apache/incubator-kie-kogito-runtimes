@@ -82,7 +82,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-jsonpath-utils</artifactId>
+      <artifactId>kogito-jsonpath-expression</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

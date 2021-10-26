@@ -27,10 +27,10 @@ public class ExpressionHandlerFactory {
     private static final Map<String, String> expHandlerClasses = new HashMap<>();
     private static final Map<String, ExpressionHandler> expHandlerInstances = new ConcurrentHashMap<>();
 
-    private static final String JSONPATH_CLASSNAME = "org.kie.kogito.jsonpath.JsonPathExpressionHandler";
+    private static final String JSONPATH_CLASSNAME = "org.kie.kogito.expr.jsonpath.JsonPathExpressionHandler";
     private static final String JSONPATH_LANG = "jsonpath";
 
-    private static final String JQ_CLASSNAME = "org.kie.kogito.jq.JqExpressionHandler";
+    private static final String JQ_CLASSNAME = "org.kie.kogito.expr.jq.JqExpressionHandler";
     private static final String JQ_LANG = "jq";
 
     static {
