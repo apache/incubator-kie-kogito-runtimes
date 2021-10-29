@@ -21,7 +21,6 @@ import java.util.Map;
 import org.drools.core.common.EndOperationListener;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.core.time.TimerService;
 import org.jbpm.workflow.instance.impl.CodegenNodeInstanceFactoryRegistry;
@@ -89,11 +88,6 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
     @Override
     public long getLastIdleTimestamp() {
         return 0;
-    }
-
-    @Override
-    public void queueWorkingMemoryAction(WorkingMemoryAction action) {
-
     }
 
     @Override
