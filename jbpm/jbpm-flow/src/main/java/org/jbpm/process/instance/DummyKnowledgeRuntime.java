@@ -131,11 +131,6 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
     }
 
     @Override
-    public void executeQueuedActions() {
-
-    }
-
-    @Override
     public <T extends SessionClock> T getSessionClock() {
         return null;
     }

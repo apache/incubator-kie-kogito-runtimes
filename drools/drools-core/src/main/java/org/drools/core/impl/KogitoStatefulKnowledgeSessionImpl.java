@@ -138,7 +138,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
                     modifiedClass,
                     this.activation);
             if (h.isTraitOrTraitable()) {
-                workingMemory.updateTraits(h, mask, modifiedClass, this.activation);
+                reteEvaluator.updateTraits(h, mask, modifiedClass, this.activation);
             }
         }
 
@@ -173,7 +173,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
         @Override
         protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContextImpl(workingMemory.getKnowledgeRuntime());
+            return new KogitoProcessContextImpl(reteEvaluator.getKnowledgeRuntime());
         }
 
         @Override
