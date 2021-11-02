@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class StructureValue extends TypedValue {
 
     @JsonProperty("value")
-    private Map<String, TypedValue> value;
+    protected Map<String, TypedValue> value;
 
     protected StructureValue() {
     }

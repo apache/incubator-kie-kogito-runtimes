@@ -34,10 +34,10 @@ public abstract class BaseTypedValue<C extends BaseTypedValue<C, S, U>, S extend
     }
 
     @JsonProperty("kind")
-    private Kind kind;
+    protected Kind kind;
 
     @JsonProperty("type")
-    private String type;
+    protected String type;
 
     protected BaseTypedValue() {
     }
