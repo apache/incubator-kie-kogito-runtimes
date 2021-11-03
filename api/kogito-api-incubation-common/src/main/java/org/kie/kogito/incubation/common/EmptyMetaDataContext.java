@@ -16,9 +16,12 @@
 
 package org.kie.kogito.incubation.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * An empty DataContext singleton
  */
+@JsonSerialize // ensure Jackson won't complain even if it is an empty object
 public final class EmptyMetaDataContext implements MetaDataContext {
     public static final MetaDataContext Instance = new EmptyMetaDataContext();
 

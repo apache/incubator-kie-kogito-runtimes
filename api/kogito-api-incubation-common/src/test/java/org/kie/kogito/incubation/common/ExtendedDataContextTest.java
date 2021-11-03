@@ -74,4 +74,56 @@ public class ExtendedDataContextTest {
         assertEquals(data, edc.data());
     }
 
+    @Test
+    public void convertMapDataContextToExtendedWraps() {
+        User data = new User();
+        data.firstName = "Paul";
+        data.lastName = "McCartney";
+        data.addr = new Address();
+        data.addr.street = "Abbey Rd.";
+
+        MapDataContext mapData = data.as(MapDataContext.class);
+        ExtendedDataContext edc = mapData.as(ExtendedDataContext.class);
+        assertEquals(mapData, edc.data());
+    }
+
+    @Test
+    public void convertMetaToMap() {
+        User data = new User();
+        data.firstName = "Paul";
+        data.lastName = "McCartney";
+        data.addr = new Address();
+        data.addr.street = "Abbey Rd.";
+
+        MapDataContext meta = MapDataContext.create();
+        meta.set("meta-value", "this is not data");
+
+        ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
+
+        assertEquals(meta, ctx.meta());
+
+        MapDataContext fromMeta = MapDataContext.from(ctx.meta());
+        assertEquals(meta, fromMeta);
+
+    }
+
+    @Test
+    public void convertCustomMetaToMap() {
+        User data = new User();
+        data.firstName = "Paul";
+        data.lastName = "McCartney";
+        data.addr = new Address();
+        data.addr.street = "Abbey Rd.";
+
+        CustomMeta meta = new CustomMeta();
+        meta.value = "this is not data";
+
+        ExtendedDataContext ctx = ExtendedDataContext.of(meta, data);
+
+        assertEquals(meta, ctx.meta());
+
+        MapDataContext fromMeta = MapDataContext.from(ctx.meta());
+        assertEquals(meta.value, fromMeta.get("value"));
+    }
+
 }

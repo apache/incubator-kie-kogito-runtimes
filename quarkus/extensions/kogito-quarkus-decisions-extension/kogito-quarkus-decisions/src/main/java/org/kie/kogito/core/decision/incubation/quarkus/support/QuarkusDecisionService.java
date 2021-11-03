@@ -16,19 +16,19 @@
 
 package org.kie.kogito.core.decision.incubation.quarkus.support;
 
+import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.kie.dmn.api.core.DMNContext;
+import org.kie.dmn.api.core.DMNMetadata;
 import org.kie.dmn.api.core.DMNResult;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.ExtendedDataContext;
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.decisions.LocalDecisionId;
 import org.kie.kogito.incubation.decisions.LocalDecisionServiceId;
 import org.kie.kogito.incubation.decisions.services.DecisionService;
@@ -60,7 +60,17 @@ public class QuarkusDecisionService implements DecisionService {
                 decisionModels.getDecisionModel(
                         localDecisionId.namespace(), localDecisionId.name());
 
-        DMNContext ctx = DMNJSONUtils.ctx(decisionModel, inputContext.as(MapDataContext.class).toMap());
+        ExtendedDataContext extendedDataContext = inputContext.as(ExtendedDataContext.class);
+
+        Map<String, Object> map = extendedDataContext.data().as(MapDataContext.class).toMap();
+        DMNContext ctx = DMNJSONUtils.ctx(decisionModel, map);
+        MetaDataContext inputMeta = extendedDataContext.meta();
+        MapDataContext mapInputMeta = MapDataContext.from(inputMeta);
+        DMNMetadata metadata = ctx.getMetadata();
+        for (Map.Entry<String, Object> kv : mapInputMeta.toMap().entrySet()) {
+            metadata.set(kv.getKey(), kv.getValue());
+        }
+
         DMNResult dmnResult;
 
         if (decisionServiceId == null) {
