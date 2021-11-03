@@ -68,7 +68,7 @@ public class CommonTestUtility {
 
     public static KiePMMLModel getKiePMMLModelInternal(final List<MiningField> miningFields, final List<OutputField> outputFields) {
         String modelName = "MODEL_NAME";
-        return getKiePMMLModelInternal(modelName, Collections.emptyList(), Collections.emptyList());
+        return getKiePMMLModelInternal(modelName, miningFields, outputFields);
     }
 
     public static KiePMMLModel getKiePMMLModelInternal(String modelName, final List<MiningField> miningFieldsParam, final List<OutputField> outputFieldsParam) {
