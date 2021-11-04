@@ -20,7 +20,7 @@ import java.net.URL;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.parser.OpenAPIV3Parser;
@@ -31,7 +31,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@QuarkusIntegrationTest
+@QuarkusTest
 public class EndpointsIT {
 
     @TestHTTPResource("/")
@@ -51,27 +51,26 @@ public class EndpointsIT {
     }
 
     @Test
-    public void testProcessRestEndpoint() {
+    public void testGeneratedRestEndpoint() {
         given()
-                .body("{}")
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/tests")
+                .body("{\"p\": {\"name\": \"Paul\"}}")
+                .post("/dmnModel")
                 .then()
-                .statusCode(201)
-                .body("id", not(emptyOrNullString()))
-                .header("Location", not(emptyOrNullString()));
+                .statusCode(200)
+                .body("d.Hello", not(emptyOrNullString()));
     }
 
     @Test
-    public void staticFile() {
+    public void testGeneratedResource() {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/static.txt")
+                .get("/dmnDefinitions.json")
                 .then()
                 .statusCode(200)
-                .body(is("I am a file"));
+                .body("definitions.tAddress.type", is("object"));
 
     }
 
