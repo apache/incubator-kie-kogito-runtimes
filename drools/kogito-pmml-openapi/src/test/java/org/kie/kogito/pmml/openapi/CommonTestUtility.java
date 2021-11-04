@@ -33,6 +33,7 @@ import org.kie.pmml.api.enums.RESULT_FEATURE;
 import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 import org.kie.pmml.api.models.OutputField;
+import org.kie.pmml.api.runtime.PMMLContext;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,17 +57,38 @@ public class CommonTestUtility {
         return source.stream().filter(jsonNode -> toLook.equals(jsonNode.asText())).findFirst().orElse(null);
     }
 
-    public static KiePMMLModel getKiePMMLModelInternal(List<MiningField> miningFields, List<OutputField> outputFields) {
+    public static KiePMMLModel getKiePMMLModelInternal() {
         String modelName = "MODEL_NAME";
-        KiePMMLModel toReturn = new KiePMMLModel(modelName, Collections.emptyList()) {
+        return getKiePMMLModelInternal(modelName, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static KiePMMLModel getKiePMMLModelInternal(String modelName) {
+        return getKiePMMLModelInternal(modelName, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static KiePMMLModel getKiePMMLModelInternal(final List<MiningField> miningFields, final List<OutputField> outputFields) {
+        String modelName = "MODEL_NAME";
+        return getKiePMMLModelInternal(modelName, miningFields, outputFields);
+    }
+
+    public static KiePMMLModel getKiePMMLModelInternal(String modelName, final List<MiningField> miningFieldsParam, final List<OutputField> outputFieldsParam) {
+        return new KiePMMLModel(modelName, Collections.emptyList()) {
+
             @Override
-            public Object evaluate(Object o, Map<String, Object> map) {
+            public Object evaluate(Object knowledgeBase, Map<String, Object> requestData, PMMLContext context) {
                 return null;
             }
+
+            @Override
+            public List<MiningField> getMiningFields() {
+                return miningFieldsParam;
+            }
+
+            @Override
+            public List<OutputField> getOutputFields() {
+                return outputFieldsParam;
+            }
         };
-        toReturn.setMiningFields(miningFields);
-        toReturn.setOutputFields(outputFields);
-        return toReturn;
     }
 
     public static List<MiningField> getRandomMiningFields() {
