@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.rules.units;
 
-import org.kie.api.runtime.KieSession;
+import org.drools.core.common.ReteEvaluator;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 
 public class InterpretedRuleUnitInstance<T extends RuleUnitData> extends AbstractRuleUnitInstance<T> {
 
-    InterpretedRuleUnitInstance(RuleUnit<T> unit, T workingMemory, KieSession ksession) {
-        super(unit, workingMemory, ksession);
+    InterpretedRuleUnitInstance(RuleUnit<T> unit, T workingMemory, ReteEvaluator reteEvaluator) {
+        super(unit, workingMemory, reteEvaluator);
     }
 }

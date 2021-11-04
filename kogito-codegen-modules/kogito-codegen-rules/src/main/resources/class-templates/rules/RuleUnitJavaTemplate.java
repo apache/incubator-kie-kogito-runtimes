@@ -18,11 +18,10 @@ package $Package$;
 import org.drools.core.ClockType;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.SessionConfigurationImpl;
-import org.drools.core.impl.EnvironmentImpl;
+import org.drools.core.common.ReteEvaluator;
 import org.drools.core.impl.InternalKnowledgeBase;
+import org.drools.core.impl.KogitoRuleUnitExecutor;
 import org.kie.api.conf.EventProcessingOption;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionsPool;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 import org.kie.kogito.rules.units.impl.AbstractRuleUnit;
 
@@ -35,25 +34,23 @@ public class $Name$ extends AbstractRuleUnit<$ModelName$> {
     }
 
     public $InstanceName$ internalCreateInstance($ModelName$ value) {
-        return new $InstanceName$( this, value, createLegacySession());
+        return new $InstanceName$( this, value, createReteEvaluator());
     }
 
-    private KieSession createLegacySession() {
+    private ReteEvaluator createReteEvaluator() {
         SessionConfigurationImpl sessionConfig = new SessionConfigurationImpl();
         sessionConfig.setClockType($ClockType$);
 
-        KieSession ks = kb.newKieSession(sessionConfig, new EnvironmentImpl());
-        ((org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl)ks).setStateless( /*$IsStateful$*/ true );
-        ((org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl)ks).setApplication( app );
+        ReteEvaluator reteEvaluator = new KogitoRuleUnitExecutor( kb, sessionConfig, app );
 
         org.kie.kogito.Config config = app.config();
         if (config != null) {
-            RuleEventListenerConfig ruleEventListenerConfig = config.get(org.kie.kogito.rules.RuleConfig.class)
-                    .ruleEventListeners();
-            ruleEventListenerConfig.agendaListeners().forEach(ks::addEventListener);
-            ruleEventListenerConfig.ruleRuntimeListeners().forEach(ks::addEventListener);
+            RuleEventListenerConfig ruleEventListenerConfig = config.get(org.kie.kogito.rules.RuleConfig.class).ruleEventListeners();
+            ruleEventListenerConfig.agendaListeners().forEach(reteEvaluator.getActivationsManager().getAgendaEventSupport()::addEventListener);
+            ruleEventListenerConfig.ruleRuntimeListeners().forEach(reteEvaluator.getRuleRuntimeEventSupport()::addEventListener);
         }
-        return ks;
+
+        return reteEvaluator;
     }
 
     private static InternalKnowledgeBase createKnowledgeBase() {

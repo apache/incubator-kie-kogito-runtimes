@@ -15,16 +15,17 @@
  */
 package org.kie.kogito.rules.units;
 
-import org.kie.api.runtime.KieSession;
+import org.drools.core.common.ReteEvaluator;
 import org.kie.kogito.rules.RuleUnit;
 
 public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionData> {
 
-    public SessionRuleUnitInstance(RuleUnit<SessionData> unit, SessionData memory, KieSession kieSession) {
-        super(unit, memory, kieSession);
+    public SessionRuleUnitInstance(RuleUnit<SessionData> unit, SessionData memory, ReteEvaluator reteEvaluator) {
+        super(unit, memory, reteEvaluator);
     }
 
-    protected void bind(KieSession runtime, SessionData memory) {
-        memory.getDataSource().subscribe(new EntryPointDataProcessor(runtime));
+    @Override
+    protected void bind(ReteEvaluator reteEvaluator, SessionData memory) {
+        memory.getDataSource().subscribe(new EntryPointDataProcessor(reteEvaluator.getDefaultEntryPoint()));
     }
 }

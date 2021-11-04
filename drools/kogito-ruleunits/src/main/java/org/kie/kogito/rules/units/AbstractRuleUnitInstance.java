@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import org.kie.api.runtime.KieSession;
+import org.drools.core.common.ReteEvaluator;
 import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.time.SessionClock;
 import org.kie.kogito.rules.DataSource;
@@ -32,29 +32,29 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
 
     private final T unitMemory;
     private final RuleUnit<T> unit;
-    private final KieSession runtime;
+    private final ReteEvaluator reteEvaluator;
 
-    public AbstractRuleUnitInstance(RuleUnit<T> unit, T unitMemory, KieSession runtime) {
+    public AbstractRuleUnitInstance(RuleUnit<T> unit, T unitMemory, ReteEvaluator reteEvaluator) {
         this.unit = unit;
-        this.runtime = runtime;
+        this.reteEvaluator = reteEvaluator;
         this.unitMemory = unitMemory;
-        bind(runtime, unitMemory);
+        bind(reteEvaluator, unitMemory);
     }
 
     @Override
     public int fire() {
-        return runtime.fireAllRules();
+        return reteEvaluator.fireAllRules();
     }
 
     @Override
     public void dispose() {
-        runtime.dispose();
+        reteEvaluator.dispose();
     }
 
     @Override
     public List<Map<String, Object>> executeQuery(String query) {
         fire();
-        return runtime.getQueryResults(query).toList();
+        return reteEvaluator.getQueryResults(query).toList();
     }
 
     @Override
@@ -77,28 +77,27 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
 
     @Override
     public <C extends SessionClock> C getClock() {
-        return runtime.getSessionClock();
+        return (C) reteEvaluator.getSessionClock();
     }
 
     public T workingMemory() {
         return unitMemory;
     }
 
-    protected void bind(KieSession runtime, T workingMemory) {
+    protected void bind(ReteEvaluator reteEvaluator, T workingMemory) {
         try {
             for (Field f : workingMemory.getClass().getDeclaredFields()) {
                 f.setAccessible(true);
-                Object v = null;
-                v = f.get(workingMemory);
+                Object v = f.get(workingMemory);
                 String dataSourceName = String.format(
                         "%s.%s", workingMemory.getClass().getCanonicalName(), f.getName());
                 if (v instanceof DataSource) {
                     DataSource<?> o = (DataSource<?>) v;
-                    EntryPoint ep = runtime.getEntryPoint(dataSourceName);
+                    EntryPoint ep = reteEvaluator.getEntryPoint(dataSourceName);
                     o.subscribe(new EntryPointDataProcessor(ep));
                 }
                 try {
-                    runtime.setGlobal(dataSourceName, v);
+                    reteEvaluator.setGlobal(dataSourceName, v);
                 } catch (RuntimeException e) {
                     // ignore if the global doesn't exist
                 }

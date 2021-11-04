@@ -18,7 +18,7 @@ package org.kie.kogito.codegen.rules;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import org.kie.api.runtime.KieSession;
+import org.drools.core.common.ReteEvaluator;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 import org.kie.kogito.codegen.api.GeneratedFile;
@@ -97,7 +97,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
         methodDeclaration.setName("bind")
                 .addAnnotation("Override")
                 .addModifier(Modifier.Keyword.PROTECTED)
-                .addParameter(KieSession.class.getCanonicalName(), "runtime")
+                .addParameter(ReteEvaluator.class.getCanonicalName(), "reteEvaluator")
                 .addParameter(ruleUnitDescription.getRuleUnitName(), "value")
                 .setType(void.class)
                 .setBody(methodBlock);
@@ -127,13 +127,13 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
                     MethodCallExpr drainInto = new MethodCallExpr(fieldAccessor, "subscribe")
                             .addArgument(new ObjectCreationExpr(null, StaticJavaParser.parseClassOrInterfaceType(EntryPointDataProcessor.class.getName()), NodeList.nodeList(
                                     new MethodCallExpr(
-                                            new NameExpr("runtime"), "getEntryPoint",
+                                            new NameExpr("reteEvaluator"), "getEntryPoint",
                                             NodeList.nodeList(new StringLiteralExpr(entryPointName))))));
 
                     methodBlock.addStatement(drainInto);
                 }
 
-                MethodCallExpr setGlobalCall = new MethodCallExpr(new NameExpr("runtime"), "setGlobal");
+                MethodCallExpr setGlobalCall = new MethodCallExpr(new NameExpr("reteEvaluator"), "setGlobal");
                 setGlobalCall.addArgument(new StringLiteralExpr(propertyName));
                 setGlobalCall.addArgument(new MethodCallExpr(new NameExpr("value"), methodName));
                 methodBlock.addStatement(setGlobalCall);
@@ -199,12 +199,12 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
                 .addConstructor(Modifier.Keyword.PUBLIC)
                 .addParameter(RuleUnitGenerator.ruleUnitType(canonicalName), "unit")
                 .addParameter(canonicalName, "value")
-                .addParameter(KieSession.class.getCanonicalName(), "session")
+                .addParameter(ReteEvaluator.class.getCanonicalName(), "reteEvaluator")
                 .setBody(new BlockStmt().addStatement(new MethodCallExpr(
                         "super",
                         new NameExpr("unit"),
                         new NameExpr("value"),
-                        new NameExpr("session"))));
+                        new NameExpr("reteEvaluator"))));
         classDecl.addMember(bindMethod());
         if (!queryClasses.isEmpty()) {
             classDecl.addMember(createQueryMethod());
