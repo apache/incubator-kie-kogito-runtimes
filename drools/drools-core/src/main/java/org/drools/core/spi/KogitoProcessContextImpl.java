@@ -15,6 +15,9 @@
  */
 package org.drools.core.spi;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.CaseAssignment;
 import org.kie.api.runtime.process.CaseData;
@@ -28,9 +31,11 @@ import org.slf4j.LoggerFactory;
 public class KogitoProcessContextImpl extends AbstractProcessContext implements KogitoProcessContext {
 
     private static Logger logger = LoggerFactory.getLogger(KogitoProcessContextImpl.class);
+    private Map<String, Object> contextData;
 
     public KogitoProcessContextImpl(KieRuntime kruntime) {
         super(kruntime);
+        contextData = new HashMap<>();
     }
 
     @Override
@@ -56,5 +61,15 @@ public class KogitoProcessContextImpl extends AbstractProcessContext implements 
     @Override
     public CaseData getCaseData() {
         throw new UnsupportedOperationException();
+    }
+
+    public void setContextData(Map<String, Object> contextData) {
+        this.contextData = contextData;
+
+    }
+
+    @Override
+    public Map<String, Object> getContextData() {
+        return contextData;
     }
 }

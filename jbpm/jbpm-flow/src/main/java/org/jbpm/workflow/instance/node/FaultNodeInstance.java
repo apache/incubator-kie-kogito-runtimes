@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
+import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.InternalProcessRuntime;
@@ -128,7 +129,11 @@ public class FaultNodeInstance extends NodeInstanceImpl {
     }
 
     protected void handleException(String faultName, ExceptionScopeInstance exceptionScopeInstance) {
-        exceptionScopeInstance.handleException(faultName, getFaultData());
+        KogitoProcessContextImpl context = new KogitoProcessContextImpl(this.getProcessInstance().getKnowledgeRuntime());
+        context.setProcessInstance(this.getProcessInstance());
+        context.setNodeInstance(this);
+        context.getContextData().put("Exception", getFaultData());
+        exceptionScopeInstance.handleException(faultName, context);
     }
 
 }

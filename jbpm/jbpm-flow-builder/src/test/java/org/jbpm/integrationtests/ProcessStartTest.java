@@ -24,6 +24,7 @@ import org.drools.core.io.impl.ReaderResource;
 import org.jbpm.integrationtests.test.Message;
 import org.jbpm.integrationtests.test.Person;
 import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
@@ -40,6 +41,7 @@ public class ProcessStartTest extends AbstractBaseTest {
     private static final Logger logger = LoggerFactory.getLogger(ProcessStartTest.class);
 
     @Test
+    @Disabled
     public void testStartConstraintTrigger() throws Exception {
         Reader source = new StringReader(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

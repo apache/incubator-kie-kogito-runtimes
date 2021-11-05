@@ -35,7 +35,7 @@ public final class BooleanDataType implements DataType {
     }
 
     public boolean verifyDataType(final Object value) {
-        if (value instanceof Boolean) {
+        if (value == null || value instanceof Boolean) {
             return true;
         }
         return false;

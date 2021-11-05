@@ -23,9 +23,11 @@ import java.util.regex.Matcher;
 
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.jbpm.util.PatternConstants;
+import org.jbpm.workflow.core.impl.DataAssociation;
+import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
@@ -77,7 +79,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_WAIT_FOR_COMPLETION, new BooleanLiteralExpr(node.isWaitForCompletion())))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(node.isIndependent())));
 
-        Map<String, String> inputTypes = (Map<String, String>) node.getMetaData("BPMN.InputTypes");
+        Map<String, String> inputTypes = node.getIoSpecification().getInputTypes();
 
         String subProcessModelClassName = ProcessToExecModelGenerator.extractModelClassName(subProcessId);
         ModelMetaData subProcessModel = new ModelMetaData(subProcessId,
@@ -115,28 +117,39 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         BlockStmt actionBody = new BlockStmt();
         actionBody.addStatement(subProcessModel.newInstance("model"));
 
-        for (Map.Entry<String, String> e : subProcessNode.getInMappings().entrySet()) {
-            // check if given mapping is an expression
-            Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(e.getValue());
-            if (matcher.find()) {
-                String expression = matcher.group(1);
-                String topLevelVariable = expression.split("\\.")[0];
-                Variable v = variableScope.findVariable(topLevelVariable);
-
-                actionBody.addStatement(makeAssignment(v));
-                actionBody.addStatement(subProcessModel.callSetter("model", e.getKey(), dotNotationToGetExpression(expression)));
-            } else {
-                Variable v = variableScope.findVariable(e.getValue());
+        for (DataAssociation dataAssociation : subProcessNode.getIoSpecification().getDataInputAssociation()) {
+            if (dataAssociation.getAssignments().isEmpty()) {
+                String procVar = dataAssociation.getSources().get(0).getLabel();
+                String input = dataAssociation.getTarget().getLabel();
+                Variable v = variableScope.findVariable(procVar);
                 if (v != null) {
                     actionBody.addStatement(makeAssignment(v));
-                    actionBody.addStatement(subProcessModel.callSetter("model", e.getKey(), e.getValue()));
+                    actionBody.addStatement(subProcessModel.callSetter("model", input, procVar));
+                }
+            } else {
+                Assignment assignment = dataAssociation.getAssignments().get(0);
+                if (assignment.getFrom().hasExpression()) {
+                    String to = assignment.getTo().getLabel();
+                    String from = assignment.getFrom().getExpression();
+                    Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(from);
+                    if (matcher.find()) {
+                        String expression = matcher.group(1);
+                        String topLevelVariable = expression.split("\\.")[0];
+                        Variable v = variableScope.findVariable(topLevelVariable);
+
+                        actionBody.addStatement(makeAssignment(v));
+                        actionBody.addStatement(subProcessModel.callSetter("model", to, dotNotationToGetExpression(expression)));
+                    } else {
+                        // it is constant
+                        actionBody.addStatement(subProcessModel.callSetter("model", to, new StringLiteralExpr(from)));
+                    }
                 }
             }
         }
 
         subProcessNode.getInAssociations().stream().filter(da -> da.getAssignments() != null && !da.getAssignments().isEmpty()).forEach(da -> {
             if (da.getTransformation() == null && da.getSources().size() == 1) {
-                actionBody.addStatement(subProcessModel.callSetter("model", da.getTarget(), new StringLiteralExpr(da.getSources().get(0))));
+                actionBody.addStatement(subProcessModel.callSetter("model", da.getTarget().getLabel(), new StringLiteralExpr(da.getSources().get(0).getLabel())));
             }
         });
 
@@ -158,8 +171,8 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
 
     private BlockStmt unbind(VariableScope variableScope, SubProcessNode subProcessNode) {
         BlockStmt stmts = new BlockStmt();
-
-        for (Map.Entry<String, String> e : subProcessNode.getOutMappings().entrySet()) {
+        Map<String, String> dataOutputs = subProcessNode.getIoSpecification().getOutputTypes();
+        for (Map.Entry<String, String> e : subProcessNode.getIoSpecification().getOutputMappingBySources().entrySet()) {
 
             // check if given mapping is an expression
             Matcher matcher = PatternConstants.PARAMETER_MATCHER.matcher(e.getValue());
@@ -167,10 +180,10 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
 
                 String expression = matcher.group(1);
                 String topLevelVariable = expression.split("\\.")[0];
-                Map<String, String> dataOutputs = (Map<String, String>) subProcessNode.getMetaData("BPMN.OutputTypes");
+
                 Variable variable = new Variable();
                 variable.setName(topLevelVariable);
-                variable.setType(new ObjectDataType(dataOutputs.get(e.getKey())));
+                variable.setType(DataTypeResolver.fromType(dataOutputs.get(e.getKey()), Thread.currentThread().getContextClassLoader()));
 
                 stmts.addStatement(makeAssignment(variableScope.findVariable(topLevelVariable)));
                 stmts.addStatement(makeAssignmentFromModel(variable, e.getKey()));

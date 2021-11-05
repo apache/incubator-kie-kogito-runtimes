@@ -74,16 +74,25 @@ public class ObjectDataType implements DataType {
         if (value == null) {
             return true;
         }
-        try {
-            Class<?> clazz = Class.forName(className, true, value.getClass().getClassLoader());
-            if (clazz.isInstance(value)) {
-                return true;
-            }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException(
-                    "Could not find data type " + className);
+
+        Class<?> clazz = find(getStringType(), value.getClass().getClassLoader());
+        if (clazz == null) {
+            clazz = find(getStringType(), Thread.currentThread().getContextClassLoader());
         }
-        return false;
+        if (clazz == null) {
+            throw new IllegalArgumentException("Could not find data type " + className);
+        }
+
+        return clazz.isInstance(value);
+
+    }
+
+    private Class<?> find(String type, ClassLoader classLoader) {
+        try {
+            return Class.forName(type, true, classLoader);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
     public Object readValue(String value) {

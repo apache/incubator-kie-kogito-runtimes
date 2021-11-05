@@ -156,8 +156,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     }
 
     private RestWorkItemTargetInfo getTargetInfo(KogitoWorkItem workItem) {
-        String varName = ((WorkItemNode) ((WorkItemNodeInstance) workItem.getNodeInstance()).getNode()).getOutMapping(
-                RESULT);
+        String varName = ((WorkItemNode) ((WorkItemNodeInstance) workItem.getNodeInstance()).getNode()).getIoSpecification().getOutputMappingBySources().get(RESULT);
         if (varName != null) {
             KogitoProcessInstance pi = workItem.getProcessInstance();
             Object instance = pi.getVariables().get(varName);

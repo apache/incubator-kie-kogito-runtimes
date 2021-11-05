@@ -16,16 +16,13 @@
 package org.jbpm.workflow.instance.node;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 import org.drools.core.spi.KogitoProcessContextImpl;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.impl.ElementIoHelper;
 import org.jbpm.workflow.core.node.ActionNode;
-import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -48,11 +45,16 @@ public class ActionNodeInstance extends NodeInstanceImpl {
             throw new IllegalArgumentException(
                     "An ActionNode only accepts default incoming connections!");
         }
+
+        Map<String, Object> data = ElementIoHelper.processInputs(this, key -> getVariable(key));
+
         Action action = (Action) getActionNode().getAction().getMetaData("Action");
         try {
             KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
             context.setNodeInstance(this);
-            executeAction(action);
+            context.setProcessInstance(getProcessInstance());
+            context.setContextData(data);
+            executeAction(action, context);
         } catch (WorkflowRuntimeException wre) {
             throw wre;
         } catch (Exception e) {
@@ -62,24 +64,6 @@ public class ActionNodeInstance extends NodeInstanceImpl {
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }
         triggerCompleted();
-    }
-
-    public void setOutputVariable(Object variable) {
-        List<DataAssociation> outputs = getActionNode().getOutAssociations();
-        if (outputs != null && !outputs.isEmpty()) {
-
-            for (DataAssociation output : outputs) {
-
-                VariableScopeInstance variableScopeInstance = (VariableScopeInstance) getProcessInstance().getContextInstance(VariableScope.VARIABLE_SCOPE);
-                if (variableScopeInstance != null) {
-
-                    Variable var = variableScopeInstance.getVariableScope().getVariables().stream().filter(v -> v.getId().equals(output.getTarget())).findFirst().orElse(null);
-                    if (var != null) {
-                        variableScopeInstance.setVariable(var.getName(), variable);
-                    }
-                }
-            }
-        }
     }
 
     public void triggerCompleted() {

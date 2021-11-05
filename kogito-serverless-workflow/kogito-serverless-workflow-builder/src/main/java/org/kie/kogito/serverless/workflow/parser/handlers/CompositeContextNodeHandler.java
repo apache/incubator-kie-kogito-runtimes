@@ -162,7 +162,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                                         workflowAppContext))
                         .workParameter(SERVICE_IMPL_KEY, ServerlessWorkflowUtils.resolveFunctionMetadata(
                                 actionFunction, SERVICE_IMPL_KEY, workflowAppContext, "Java"))
-                        .inMapping(WORKITEM_PARAM, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+                        .inMapping(ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR, WORKITEM_PARAM);
 
                 if (functionArgs == null || functionArgs.isEmpty()) {
                     serviceFactory.workParameter(WORKITEM_PARAM_TYPE, ServerlessWorkflowParser.JSON_NODE)
@@ -195,8 +195,8 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                                 .resolveFunctionMetadataAsInt(actionFunction, "port",
                                         workflowAppContext))
                         .workParameter(RestWorkItemHandler.BODY_BUILDER, new RestBodyBuilderSupplier())
-                        .inMapping(RestWorkItemHandler.CONTENT_DATA,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
+                        .inMapping(ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR,
+                                RestWorkItemHandler.CONTENT_DATA)
                         .outMapping(RestWorkItemHandler.RESULT,
                                 ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
                 if (functionArgs != null && !functionArgs.isEmpty()) {
@@ -212,8 +212,8 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                         .withArgs(functionsToMap(functionArgs), JsonNodeResolver.class, JsonNode.class, s -> true)
                         .withResultHandler(new JsonNodeResultHandlerExprSupplier(), JsonNodeResultHandler.class)
                         .build(embeddedSubProcess.workItemNode(idGenerator.getId())).name(functionRef.getRefName())
-                        .inMapping(WORKITEM_PARAM,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
+                        .inMapping(ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR,
+                                WORKITEM_PARAM)
                         .outMapping(
                                 WORKITEM_RESULT,
                                 ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);

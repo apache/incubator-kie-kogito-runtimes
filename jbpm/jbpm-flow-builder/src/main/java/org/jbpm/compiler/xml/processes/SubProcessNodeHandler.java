@@ -86,6 +86,7 @@ public class SubProcessNodeHandler extends AbstractNodeHandler {
         for (String eventType : subProcessNode.getActionTypes()) {
             writeActions(eventType, subProcessNode.getActions(eventType), xmlDump);
         }
+
         writeTimers(subProcessNode.getTimers(), xmlDump);
         endNode("subProcess", xmlDump);
     }

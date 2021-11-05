@@ -65,6 +65,8 @@ public class CodegenUserTaskTest {
 
             assertThat(completeTaskMethods).hasSize(2);
 
+            // here there is a confusion. name of the node is static while
+            // input process is dynamic (during runtime execution)
             completeTaskMethods.forEach(completeTaskMethod -> assertThat(context.getRestAnnotator().getEndpointValue(completeTaskMethod)
                     .map(url -> url.contains("/{id}/FirstTask/{taskId}") ||
                             url.contains("/{id}/SecondTask/{taskId}"))

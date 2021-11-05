@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.jbpm.compiler.canonical.NodeValidator;
-import org.jbpm.workflow.core.node.DataAssociation;
+import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
@@ -140,7 +140,7 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
                                             AssignExpr.Operator.ASSIGN),
                                     exceptions));
             results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
-                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
+                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0).getLabel()))
                     .addArgument(new NameExpr(RESULT_NAME));
         }
 

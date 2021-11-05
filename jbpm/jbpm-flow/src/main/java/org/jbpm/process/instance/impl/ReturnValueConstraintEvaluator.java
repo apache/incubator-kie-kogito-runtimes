@@ -124,6 +124,7 @@ public class ReturnValueConstraintEvaluator
         try {
             KogitoProcessContextImpl context = new KogitoProcessContextImpl(((ProcessInstance) instance.getProcessInstance()).getKnowledgeRuntime());
             context.setNodeInstance(instance);
+            context.setProcessInstance(instance.getProcessInstance());
             value = this.evaluator.evaluate(context);
         } catch (Exception e) {
             throw new RuntimeException("unable to execute ReturnValueEvaluator: ",
