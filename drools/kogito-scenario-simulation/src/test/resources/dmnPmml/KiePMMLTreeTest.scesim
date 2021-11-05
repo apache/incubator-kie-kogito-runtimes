@@ -14,8 +14,8 @@
           </factIdentifier>
           <className>java.lang.Integer</className>
           <factAlias>#</factAlias>
+          <columnWidth>70</columnWidth>
           <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
-          <columnWidth>70.0</columnWidth>
         </FactMapping>
         <FactMapping>
           <expressionElements/>
@@ -29,8 +29,8 @@
           </factIdentifier>
           <className>java.lang.String</className>
           <factAlias>Scenario description</factAlias>
+          <columnWidth>300</columnWidth>
           <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
-          <columnWidth>300.0</columnWidth>
         </FactMapping>
         <FactMapping>
           <expressionElements>
@@ -50,8 +50,8 @@
           <factAlias>humidity</factAlias>
           <expressionAlias>value</expressionAlias>
           <genericTypes/>
-          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
           <columnWidth>337.66666666666663</columnWidth>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
         </FactMapping>
         <FactMapping>
           <expressionElements>
@@ -71,8 +71,8 @@
           <factAlias>temperature</factAlias>
           <expressionAlias>value</expressionAlias>
           <genericTypes/>
-          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
           <columnWidth>337.66666666666663</columnWidth>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
         </FactMapping>
         <FactMapping>
           <expressionElements>
@@ -92,8 +92,8 @@
           <factAlias>Decision</factAlias>
           <expressionAlias>value</expressionAlias>
           <genericTypes/>
-          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
           <columnWidth>337.66666666666663</columnWidth>
+          <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
         </FactMapping>
       </factMappings>
     </scesimModelDescriptor>
@@ -141,7 +141,7 @@
               <name>1|3</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">&quot;nothing&quot;</rawValue>
+            <rawValue class="string">"nothing"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -199,7 +199,7 @@
               <name>1|3</name>
               <type>EXPECT</type>
             </expressionIdentifier>
-            <rawValue class="string">&quot;umbrella&quot;</rawValue>
+            <rawValue class="string">"umbrella"</rawValue>
           </FactMappingValue>
           <FactMappingValue>
             <factIdentifier>
@@ -232,8 +232,8 @@
           <className>java.lang.Void</className>
           <factAlias>INSTANCE 1</factAlias>
           <expressionAlias>PROPERTY 1</expressionAlias>
+          <columnWidth>114</columnWidth>
           <factMappingValueType>NOT_EXPRESSION</factMappingValueType>
-          <columnWidth>114.0</columnWidth>
         </FactMapping>
       </factMappings>
     </scesimModelDescriptor>
@@ -255,7 +255,7 @@
     </scesimData>
   </background>
   <settings>
-    <dmnFilePath>src/main/resources/com/myspace/puppa/KiePMMLTree.dmn</dmnFilePath>
+    <dmnFilePath>drools/kogito-scenario-simulation/src/test/resources/dmnPmml/KiePMMLTree.dmn</dmnFilePath>
     <type>DMN</type>
     <dmnNamespace>https://kiegroup.org/dmn/_FAA4232D-9D61-4089-BB05-5F5D7C1AECE1</dmnNamespace>
     <dmnName>TestTreeDMN</dmnName>
