@@ -18,7 +18,6 @@ package org.kie.kogito.core.rules.incubation.quarkus.support;
 
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import javax.enterprise.context.ApplicationScoped;

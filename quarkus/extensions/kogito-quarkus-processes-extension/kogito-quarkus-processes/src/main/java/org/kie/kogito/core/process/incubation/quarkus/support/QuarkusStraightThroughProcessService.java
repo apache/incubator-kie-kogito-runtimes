@@ -17,7 +17,6 @@
 package org.kie.kogito.core.process.incubation.quarkus.support;
 
 import java.util.Map;
-import java.util.ServiceLoader;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;

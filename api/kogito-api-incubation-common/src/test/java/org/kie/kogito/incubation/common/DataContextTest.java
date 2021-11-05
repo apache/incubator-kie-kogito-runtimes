@@ -21,6 +21,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -88,5 +91,11 @@ public class DataContextTest {
 
         MapDataContext converted = ctx.as(MapDataContext.class);
         assertThat(converted).isSameAs(ctx);
+    }
+
+    @Test
+    public void shouldAllowEmptyMetaDataContext() throws JsonProcessingException {
+        MetaDataContext mdc = EmptyMetaDataContext.Instance;
+        assertEquals("{}", new ObjectMapper().writeValueAsString(mdc));
     }
 }

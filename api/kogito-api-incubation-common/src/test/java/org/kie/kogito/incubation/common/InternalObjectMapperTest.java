@@ -16,10 +16,10 @@
 
 package org.kie.kogito.incubation.common;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

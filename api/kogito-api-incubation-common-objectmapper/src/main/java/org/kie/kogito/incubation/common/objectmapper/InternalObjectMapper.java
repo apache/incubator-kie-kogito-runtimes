@@ -25,6 +25,7 @@ import java.util.ServiceLoader;
  */
 public interface InternalObjectMapper {
     <T> T convertValue(Object self, Class<T> type);
+
     public static InternalObjectMapper objectMapper() {
         return ServiceLoader.load(InternalObjectMapper.class).findFirst()
                 .orElseThrow(MissingInternalObjectMapper::new);

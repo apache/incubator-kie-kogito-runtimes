@@ -20,10 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 
 /**
  * A data context that wraps a <code>Map<String, Object></code>.
