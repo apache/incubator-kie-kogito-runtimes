@@ -20,6 +20,8 @@ import java.util.Map;
 
 import javax.enterprise.inject.spi.CDI;
 
+import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.common.MapLikeDataContext;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
@@ -42,6 +44,14 @@ public class QuarkusInternalObjectMapper implements InternalObjectMapper {
 
         if (MapLikeDataContext.class == type || MapDataContext.class == type) {
             return (T) MapDataContext.of(objectMapper.convertValue(self, Map.class));
+        }
+
+        if (ExtendedDataContext.class == type) {
+            if (self instanceof DataContext) {
+                return (T) ExtendedDataContext.ofData((DataContext) self);
+            } else {
+                return (T) ExtendedDataContext.ofData(convertValue(self, MapDataContext.class));
+            }
         }
 
         return objectMapper.convertValue(self, type);
