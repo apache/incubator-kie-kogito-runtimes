@@ -18,7 +18,7 @@ package org.kie.kogito.rules.units;
 import org.drools.core.common.ReteEvaluator;
 import org.kie.kogito.rules.RuleUnit;
 
-public class SessionRuleUnitInstance extends AbstractRuleUnitInstance<SessionData> {
+public class SessionRuleUnitInstance extends ReteEvaluatorBasedRuleUnitInstance<SessionData> {
 
     public SessionRuleUnitInstance(RuleUnit<SessionData> unit, SessionData memory, ReteEvaluator reteEvaluator) {
         super(unit, memory, reteEvaluator);

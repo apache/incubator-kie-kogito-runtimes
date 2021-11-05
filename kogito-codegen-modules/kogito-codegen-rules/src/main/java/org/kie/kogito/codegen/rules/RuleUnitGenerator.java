@@ -82,7 +82,7 @@ public class RuleUnitGenerator implements RuleFileGenerator {
                 .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetTypeName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, "RuleUnit");
+                .build(context, "RuleUnitOn" + (context.useLegacySession() ? "KieSession" : "ReteEvaluator"));
     }
 
     // override config for this rule unit with the given values
@@ -92,7 +92,7 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public RuleUnitInstanceGenerator instance(RuleUnitHelper ruleUnitHelper, List<String> queryClasses) {
-        return new RuleUnitInstanceGenerator(ruleUnit, ruleUnitHelper, queryClasses);
+        return new RuleUnitInstanceGenerator(context, ruleUnit, ruleUnitHelper, queryClasses);
     }
 
     public List<QueryEndpointGenerator> queries() {
