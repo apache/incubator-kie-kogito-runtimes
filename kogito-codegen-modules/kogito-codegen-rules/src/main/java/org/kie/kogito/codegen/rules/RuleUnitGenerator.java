@@ -55,6 +55,8 @@ import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.TEMPLATE_RULE_
 
 public class RuleUnitGenerator implements RuleFileGenerator {
 
+    public static final String KOGITO_USE_LEGACY_SESSION = "kogito.uselegacysession";
+
     private final RuleUnitDescription ruleUnit;
     private final String ruleUnitPackageName;
     private final String typeName;
@@ -86,7 +88,7 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     static boolean useLegacySession(KogitoBuildContext context) {
-        return "true".equalsIgnoreCase(context.getApplicationProperty(KogitoBuildContext.KOGITO_USE_LEGACY_SESSION).orElse("true"));
+        return "true".equalsIgnoreCase(context.getApplicationProperty(KOGITO_USE_LEGACY_SESSION).orElse("true"));
     }
 
     // override config for this rule unit with the given values

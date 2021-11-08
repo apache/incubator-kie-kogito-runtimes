@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.drools.core.common.ReteEvaluator;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionPseudoClock;
@@ -54,13 +55,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.kie.kogito.codegen.rules.RuleUnitGenerator.KOGITO_USE_LEGACY_SESSION;
 
 public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
+    private enum SessionType { LEGACY, LIGHTWEIGHT }
+
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnit(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnit.drl");
+    @EnumSource(SessionType.class)
+    public void testRuleUnit(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnit.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -73,7 +77,7 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         RuleUnit<AdultUnit> unit = application.get(RuleUnits.class).create(AdultUnit.class);
         RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
 
-        if (useLegacySession) {
+        if (sessionType == SessionType.LEGACY) {
             assertTrue(((AbstractRuleUnitInstance) instance).getEvaluator() instanceof KieSession);
         } else {
             assertTrue(((AbstractRuleUnitInstance) instance).getEvaluator() instanceof ReteEvaluator);
@@ -91,9 +95,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitModify(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnitModify.drl");
+    @EnumSource(SessionType.class)
+    public void testRuleUnitModify(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitModify.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -109,9 +113,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitDelete(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnitDelete.drl");
+    @EnumSource(SessionType.class)
+    public void testRuleUnitDelete(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitDelete.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -130,9 +134,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitQuery(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQuery(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -153,9 +157,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitQueryOnPrimitive(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQueryOnPrimitive(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -177,9 +181,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitQueryWithNoRules(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession,
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQueryWithNoRules(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
                 "org/kie/kogito/codegen/unit/RuleUnitQueryNoRules.drl");
 
         AdultUnit adults = new AdultUnit();
@@ -202,9 +206,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitExecutor(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession,
+    @EnumSource(SessionType.class)
+    public void testRuleUnitExecutor(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
                 "org/kie/kogito/codegen/unit/RuleUnit.drl",
                 "org/kie/kogito/codegen/unit/PersonsUnit.drl");
 
@@ -231,9 +235,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void generateSinglePackageSingleUnit(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession,
+    @EnumSource(SessionType.class)
+    public void generateSinglePackageSingleUnit(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
                 "org/kie/kogito/codegen/rules/multiunit/MultiUnit.drl",
                 "org/kie/kogito/codegen/rules/multiunit/MultiUnit2.drl");
 
@@ -254,9 +258,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void singletonStore(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
+    @EnumSource(SessionType.class)
+    public void singletonStore(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
 
         ArrayList<String> data = new ArrayList<>();
         AtomicReference<Datum> lastSeen = new AtomicReference<>();
@@ -282,9 +286,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void test2PatternsOopath(boolean useLegacySession) throws Exception {
-        Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/TwoPatternsQuery.drl");
+    @EnumSource(SessionType.class)
+    public void test2PatternsOopath(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/TwoPatternsQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -313,10 +317,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
     }
 
     @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void testRuleUnitWithNoBindQueryShouldntCompile(boolean useLegacySession) throws Exception {
+    @EnumSource(SessionType.class)
+    public void testRuleUnitWithNoBindQueryShouldntCompile(SessionType sessionType) throws Exception {
         try {
-            Application application = createApplication(useLegacySession, "org/kie/kogito/codegen/unit/RuleUnitNoBindQuery.drl");
+            Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitNoBindQuery.drl");
             fail("A query without binding shouldn't compile");
         } catch (RuleCodegenError e) {
             // ignore
@@ -347,9 +351,9 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertEquals(usePropertyReactivity ? 46 : 50, mario.getAge());
     }
 
-    private Application createApplication(boolean useLegacySession, String... drls) throws Exception {
+    private Application createApplication(SessionType sessionType, String... drls) throws Exception {
         KogitoBuildContext context = newContext();
-        context.setApplicationProperty(KogitoBuildContext.KOGITO_USE_LEGACY_SESSION, "" + useLegacySession);
+        context.setApplicationProperty(KOGITO_USE_LEGACY_SESSION, "" + (sessionType == SessionType.LEGACY));
         return createApplication(context, drls);
     }
 

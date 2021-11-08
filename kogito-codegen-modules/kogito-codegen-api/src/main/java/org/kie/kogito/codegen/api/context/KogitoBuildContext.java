@@ -37,7 +37,6 @@ public interface KogitoBuildContext {
     String DEFAULT_PACKAGE_NAME = "org.kie.kogito.app";
     String KOGITO_GENERATE_REST = "kogito.generate.rest";
     String KOGITO_GENERATE_DI = "kogito.generate.di";
-    String KOGITO_USE_LEGACY_SESSION = "kogito.uselegacysession";
 
     static String generateRESTConfigurationKeyForResource(String generatorType) {
         return String.format("%s.%s", KOGITO_GENERATE_REST, generatorType);
