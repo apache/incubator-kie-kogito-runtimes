@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-common-parent</artifactId>
-    <version>1.13.0.Final</version>
+    <version>1.13.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-events-parent</artifactId>
   <packaging>pom</packaging>
