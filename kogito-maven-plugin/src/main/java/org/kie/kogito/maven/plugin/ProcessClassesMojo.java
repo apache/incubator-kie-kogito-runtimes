@@ -159,7 +159,6 @@ public class ProcessClassesMojo extends AbstractKieMojo {
 
     private Collection<GeneratedFile> generateJsonSchema(Stream<Class<?>> classes) throws IOException {
         return new JsonSchemaGenerator.ClassBuilder(classes)
-                .withGenSchemaPredicate(x -> true)
                 .withSchemaVersion(schemaVersion).build()
                 .generate();
     }

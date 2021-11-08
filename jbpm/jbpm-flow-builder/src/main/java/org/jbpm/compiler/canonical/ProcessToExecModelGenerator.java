@@ -215,11 +215,10 @@ public class ProcessToExecModelGenerator {
 
         @Override
         public void accept(CompilationUnit cu) {
-            Optional<ClassOrInterfaceDeclaration> clazz = cu.findFirst(ClassOrInterfaceDeclaration.class);
-            if (clazz.isEmpty()) {
-                throw new NoSuchElementException("Cannot find class declaration in the template");
-            }
-            clazz.get().addAndGetAnnotation(ProcessInput.class)
+            ClassOrInterfaceDeclaration clazz = cu.findFirst(ClassOrInterfaceDeclaration.class)
+                    .orElseThrow(() -> new NoSuchElementException("Cannot find class declaration in the template"));
+
+            clazz.addAndGetAnnotation(ProcessInput.class)
                     .addPair(PROCESS_NAME_PARAM, new StringLiteralExpr(processId));
         }
     }

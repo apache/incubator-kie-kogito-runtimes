@@ -72,7 +72,7 @@ public class JsonSchemaGenerator {
 
         private Stream<Class<?>> stream;
         private Function<? super Class<?>, String> getSchemaName = JsonSchemaGenerator::getSchemaName;
-        private Predicate<? super Class<?>> shouldGenSchema = JsonSchemaGenerator::shouldGenSchema;
+        private Predicate<? super Class<?>> shouldGenSchema = clazz -> true;
         private SchemaVersion schemaVersion = DEFAULT_SCHEMA_VERSION;
 
         public ClassBuilder(Stream<Class<?>> stream) {
@@ -104,7 +104,7 @@ public class JsonSchemaGenerator {
         }
 
         private boolean ensureHasAnnotations(Class<?> c) {
-            boolean needsJsonSchema = shouldGenSchema(c);
+            boolean needsJsonSchema = c.isAnnotationPresent(UserTask.class) || c.isAnnotationPresent(ProcessInput.class);
             if (!needsJsonSchema) {
                 logger.warn("Could not retrieve neither UserTask nor Process annotation from class {} but was expected. " +
                         "This may be a class loader bug. If JsonSchemas have been generated you may ignore this message.", c);
@@ -189,10 +189,6 @@ public class JsonSchemaGenerator {
         }
         UserTask userTask = c.getAnnotation(UserTask.class);
         return JsonSchemaUtil.getJsonSchemaName(userTask.processName(), userTask.taskName());
-    }
-
-    private static boolean shouldGenSchema(Class<?> c) {
-        return c.isAnnotationPresent(UserTask.class) || c.isAnnotationPresent(ProcessInput.class);
     }
 
     private static boolean checkFields(FieldScope fieldScope) {

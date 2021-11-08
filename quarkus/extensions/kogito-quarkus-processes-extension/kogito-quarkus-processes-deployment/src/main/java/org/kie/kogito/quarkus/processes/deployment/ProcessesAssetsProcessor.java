@@ -272,16 +272,14 @@ public class ProcessesAssetsProcessor {
         annotations.addAll(index.getAnnotations(DotName.createSimple(ProcessInput.class.getCanonicalName())));
         annotations.addAll(index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName())));
 
-        System.out.println(annotations);
-
-        List<Class<?>> stream = annotations.stream()
+        List<Class<?>> annotatedClasses = annotations.stream()
                 .map(ann -> loadClassFromAnnotation(ann, cl))
                 .filter(Optional::isPresent)
                 .map(Optional::get).collect(Collectors.toList());
 
-        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream.stream())
-                .withGenSchemaPredicate(x -> true)
-                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
+        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(annotatedClasses.stream())
+                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version"))
+                .build();
 
         return jsonSchemaGenerator.generate();
     }
