@@ -59,7 +59,10 @@ import static org.kie.kogito.codegen.rules.RuleUnitGenerator.KOGITO_USE_LEGACY_S
 
 public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
-    private enum SessionType { LEGACY, LIGHTWEIGHT }
+    private enum SessionType {
+        LEGACY,
+        LIGHTWEIGHT
+    }
 
     @ParameterizedTest
     @EnumSource(SessionType.class)
