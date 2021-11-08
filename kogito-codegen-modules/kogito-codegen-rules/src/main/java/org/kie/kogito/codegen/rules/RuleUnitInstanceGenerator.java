@@ -50,6 +50,7 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static org.kie.kogito.codegen.rules.IncrementalRuleCodegen.RULE_TYPE;
+import static org.kie.kogito.codegen.rules.RuleUnitGenerator.useLegacySession;
 
 public class RuleUnitInstanceGenerator implements RuleFileGenerator {
 
@@ -77,7 +78,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
         this.ruleUnitHelper = ruleUnitHelper;
         this.queryClasses = queryClasses;
 
-        if (context.useLegacySession()) {
+        if (useLegacySession(context)) {
             unitInstanceAbstractClass = KieSessionBasedRuleUnitInstance.class;
             unitEvaluatorClass = KieSession.class;
         } else {

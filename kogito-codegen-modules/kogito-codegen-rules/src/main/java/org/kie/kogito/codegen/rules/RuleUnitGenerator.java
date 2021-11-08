@@ -82,7 +82,11 @@ public class RuleUnitGenerator implements RuleFileGenerator {
                 .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetTypeName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
-                .build(context, "RuleUnitOn" + (context.useLegacySession() ? "KieSession" : "ReteEvaluator"));
+                .build(context, "RuleUnitOn" + (useLegacySession(context) ? "KieSession" : "ReteEvaluator"));
+    }
+
+    static boolean useLegacySession(KogitoBuildContext context) {
+        return "true".equalsIgnoreCase(context.getApplicationProperty(KogitoBuildContext.KOGITO_USE_LEGACY_SESSION).orElse("true"));
     }
 
     // override config for this rule unit with the given values

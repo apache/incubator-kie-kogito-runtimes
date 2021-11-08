@@ -97,10 +97,6 @@ public interface KogitoBuildContext {
                 "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_REST).orElse("true"));
     }
 
-    default boolean useLegacySession() {
-        return "true".equalsIgnoreCase(getApplicationProperty(KOGITO_USE_LEGACY_SESSION).orElse("true"));
-    }
-
     default boolean isValidationSupported() {
         return hasClassAvailable(KogitoCodeGenConstants.VALIDATION_CLASS);
     }

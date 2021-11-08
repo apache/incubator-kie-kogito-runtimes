@@ -15,18 +15,15 @@
  */
 package org.kie.kogito.rules.units;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
 import org.drools.core.common.ReteEvaluator;
-import org.kie.api.runtime.rule.EntryPoint;
 import org.kie.api.time.SessionClock;
-import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 
-public class ReteEvaluatorBasedRuleUnitInstance<T extends RuleUnitData> extends AbstractRuleUnitInstance<ReteEvaluator, T> {
+public abstract class ReteEvaluatorBasedRuleUnitInstance<T extends RuleUnitData> extends AbstractRuleUnitInstance<ReteEvaluator, T> {
 
     public ReteEvaluatorBasedRuleUnitInstance(RuleUnit<T> unit, T unitMemory, ReteEvaluator evaluator) {
         super(unit, unitMemory, evaluator);
@@ -51,28 +48,5 @@ public class ReteEvaluatorBasedRuleUnitInstance<T extends RuleUnitData> extends 
     @Override
     public <C extends SessionClock> C getClock() {
         return (C) evaluator.getSessionClock();
-    }
-
-    protected void bind(ReteEvaluator reteEvaluator, T workingMemory) {
-        try {
-            for (Field f : workingMemory.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                Object v = f.get(workingMemory);
-                String dataSourceName = String.format(
-                        "%s.%s", workingMemory.getClass().getCanonicalName(), f.getName());
-                if (v instanceof DataSource) {
-                    DataSource<?> o = (DataSource<?>) v;
-                    EntryPoint ep = reteEvaluator.getEntryPoint(dataSourceName);
-                    o.subscribe(new EntryPointDataProcessor(ep));
-                }
-                try {
-                    reteEvaluator.setGlobal(dataSourceName, v);
-                } catch (RuntimeException e) {
-                    // ignore if the global doesn't exist
-                }
-            }
-        } catch (IllegalAccessException e) {
-            throw new Error(e);
-        }
     }
 }
