@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,6 +39,7 @@ import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -62,6 +64,7 @@ public class JsonSchemaGenerator {
     public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_7;
     private static final GeneratedFileType JSON_SCHEMA_TYPE = GeneratedFileType.of("JSON_SCHEMA", GeneratedFileType.Category.RESOURCE, true, true);
 
+    private final Map<String, DefinitionKey> definitionKeyCache = new HashMap<>();
     private final Map<String, List<Class<?>>> map;
     private final SchemaVersion schemaVersion;
 
@@ -153,11 +156,12 @@ public class JsonSchemaGenerator {
             ObjectNode objectNode = context.createStandardDefinitionReference(scope.getDeclaredType(), null);
             objectNode.put(param.value().toString().toLowerCase(), true);
 
-            Optional<DefinitionKey> optional = ((SchemaGenerationContextImpl) context).getDefinedTypes().stream().filter(key -> key.getType().equals(scope.getDeclaredType())).findFirst();
+            Optional<DefinitionKey> optional = lookupDefinitionKey(scope.getDeclaredType(), context);
 
             if (optional.isPresent()) {
-                DefinitionKey definitionKey = ((SchemaGenerationContextImpl) context).getDefinedTypes().stream().filter(key -> key.getType().equals(scope.getDeclaredType())).findFirst().get();
-                SchemaDefinitionNamingStrategy strategy = Optional.ofNullable(context.getGeneratorConfig().getDefinitionNamingStrategy()).orElse(new DefaultSchemaDefinitionNamingStrategy());
+                DefinitionKey definitionKey = optional.get();
+                SchemaDefinitionNamingStrategy strategy = Optional.ofNullable(context.getGeneratorConfig().getDefinitionNamingStrategy())
+                        .orElse(new DefaultSchemaDefinitionNamingStrategy());
                 String refPath =
                         context.getKeyword(SchemaKeyword.TAG_REF_MAIN) + "/" + context.getKeyword(SchemaKeyword.TAG_DEFINITIONS) + "/" + strategy.getDefinitionNameForKey(definitionKey, context);
                 objectNode.put(context.getKeyword(SchemaKeyword.TAG_REF), refPath);
@@ -166,6 +170,16 @@ public class JsonSchemaGenerator {
             return new CustomPropertyDefinition(objectNode, AttributeInclusion.YES);
         }
         return null;
+    }
+
+    private Optional<DefinitionKey> lookupDefinitionKey(ResolvedType type, SchemaGenerationContext context) {
+        DefinitionKey definitionKey = this.definitionKeyCache.computeIfAbsent(type.getTypeName(), typeName -> {
+            return ((SchemaGenerationContextImpl) context).getDefinedTypes().stream()
+                    .filter(key -> key.getType().equals(type))
+                    .findFirst()
+                    .orElse(null);
+        });
+        return Optional.ofNullable(definitionKey);
     }
 
     private static String getSchemaName(Class<?> c) {

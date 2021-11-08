@@ -25,7 +25,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(TYPE)
 public @interface ProcessInput {
 
-    String PROCESS_NAME_PARAM = "processName";
-
     String processName();
 }

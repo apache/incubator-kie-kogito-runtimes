@@ -60,6 +60,7 @@ public class ProcessToExecModelGenerator {
     private static final String PROCESS_CLASS_SUFFIX = "Process";
     private static final String MODEL_CLASS_SUFFIX = "Model";
     private static final String PROCESS_TEMPLATE_FILE = "/class-templates/ProcessTemplate.java";
+    private static final String PROCESS_NAME_PARAM = "processName";
 
     private final ProcessVisitor processVisitor;
 
@@ -219,7 +220,7 @@ public class ProcessToExecModelGenerator {
                 throw new NoSuchElementException("Cannot find class declaration in the template");
             }
             clazz.get().addAndGetAnnotation(ProcessInput.class)
-                    .addPair(ProcessInput.PROCESS_NAME_PARAM, new StringLiteralExpr(processId));
+                    .addPair(PROCESS_NAME_PARAM, new StringLiteralExpr(processId));
         }
     }
 
