@@ -3,7 +3,7 @@
 ################################################
 #### Quarkus part
 
-# ../ecosystem-ci/ci-prerequisites.sh
+../ecosystem-ci/ci-prerequisites.sh
 
 ################################################
 
