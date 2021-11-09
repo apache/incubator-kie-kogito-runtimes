@@ -88,7 +88,7 @@ public class KogitoRuleUnitExecutor extends RuleUnitExecutorImpl {
                     modifiedClass,
                     this.activation);
             if (h.isTraitOrTraitable()) {
-                getWrappedEvaluator().updateTraits(h, mask, modifiedClass, this.activation);
+                toStatefulKnowledgeSession().updateTraits(h, mask, modifiedClass, this.activation);
             }
         }
 
@@ -123,7 +123,7 @@ public class KogitoRuleUnitExecutor extends RuleUnitExecutorImpl {
 
         @Override
         protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContextImpl(getWrappedEvaluator());
+            return new KogitoProcessContextImpl(toStatefulKnowledgeSession());
         }
     }
 }
