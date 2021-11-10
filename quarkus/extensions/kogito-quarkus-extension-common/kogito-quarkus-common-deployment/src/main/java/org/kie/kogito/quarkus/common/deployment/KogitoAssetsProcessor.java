@@ -81,7 +81,6 @@ public class KogitoAssetsProcessor {
         if (hasRestCapabilities && !"false".equalsIgnoreCase(
                         context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
                                 .orElse("true"))) {
-
             throw new MissingRestCapabilityException();
         }
 
