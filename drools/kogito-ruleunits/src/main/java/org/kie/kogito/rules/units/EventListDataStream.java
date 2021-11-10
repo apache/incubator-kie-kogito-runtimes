@@ -43,21 +43,24 @@ public class EventListDataStream<T> implements DataStream<T> {
     public void append(T t) {
         values.add(t);
         for (DataProcessor subscriber : subscribers) {
-            EventFactHandle fh = (EventFactHandle) subscriber.insert(null, t);
-            long timestamp = fh.getStartTimestamp();
-            WorkingMemoryEntryPoint ep = fh.getEntryPoint(null);
-            SessionPseudoClock clock = (SessionPseudoClock) ep.getReteEvaluator().getSessionClock();
-            long advanceTime = timestamp - clock.getCurrentTime();
-            if (advanceTime > 0) {
-                clock.advanceTime(advanceTime, TimeUnit.MILLISECONDS);
-            }
+            insertAndAdvanceClock(t, subscriber);
         }
     }
 
     @Override
     public void subscribe(DataProcessor subscriber) {
         subscribers.add(subscriber);
-        values.forEach(subscriber::insert);
+        values.forEach(v -> insertAndAdvanceClock(v, subscriber));
     }
 
+    private void insertAndAdvanceClock(T t, DataProcessor subscriber) {
+        EventFactHandle fh = (EventFactHandle) subscriber.insert(null, t);
+        long timestamp = fh.getStartTimestamp();
+        WorkingMemoryEntryPoint ep = fh.getEntryPoint(null);
+        SessionPseudoClock clock = (SessionPseudoClock) ep.getReteEvaluator().getSessionClock();
+        long advanceTime = timestamp - clock.getCurrentTime();
+        if (advanceTime > 0) {
+            clock.advanceTime(advanceTime, TimeUnit.MILLISECONDS);
+        }
+    }
 }

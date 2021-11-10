@@ -48,12 +48,4 @@ public class StockTick {
     public long getTimestamp() {
         return timestamp;
     }
-
-    public String toJson() {
-        try {
-            return new ObjectMapper().writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
