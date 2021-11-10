@@ -18,9 +18,6 @@ package org.kie.kogito.codegen.data;
 import org.kie.api.definition.type.Role;
 import org.kie.api.definition.type.Timestamp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Role(Role.Type.EVENT)
 @Timestamp("timestamp")
 public class StockTick {
