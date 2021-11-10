@@ -24,8 +24,12 @@ import org.drools.core.common.EventFactHandle;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.kogito.rules.DataProcessor;
 import org.kie.kogito.rules.DataStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventListDataStream<T> implements DataStream<T> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventListDataStream.class);
 
     private final ArrayList<T> values = new ArrayList<>();
     private final List<DataProcessor> subscribers = new ArrayList<>();
@@ -61,6 +65,9 @@ public class EventListDataStream<T> implements DataStream<T> {
         long advanceTime = timestamp - clock.getCurrentTime();
         if (advanceTime > 0) {
             clock.advanceTime(advanceTime, TimeUnit.MILLISECONDS);
+        } else if (advanceTime < 0) {
+            LOGGER.warn("Received an event with a timestamp that is " + (-advanceTime) + " milliseconds in the past. " +
+                    "Evaluation of out of order events could lead to unpredictable results.");
         }
     }
 }
