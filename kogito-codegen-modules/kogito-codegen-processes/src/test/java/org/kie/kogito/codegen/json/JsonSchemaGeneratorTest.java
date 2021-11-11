@@ -16,12 +16,15 @@
 package org.kie.kogito.codegen.json;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.jbpm.util.JsonSchemaUtil;
 import org.junit.jupiter.api.Test;
@@ -45,6 +48,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JsonSchemaGeneratorTest {
+
+    private static final String ALL_OF = "allOf";
+    private static final String REF = "$ref";
+    private static final String INPUT = "input";
+    private static final String OUTPUT = "output";
 
     private enum Color {
         GREEN,
@@ -72,6 +80,9 @@ public class JsonSchemaGeneratorTest {
 
         @UserTaskParam(UserTaskParam.ParamType.OUTPUT)
         private String name;
+
+        @UserTaskParam(UserTaskParam.ParamType.OUTPUT)
+        private Address address;
 
         @SuppressWarnings("unused")
         private String ignored;
@@ -155,9 +166,9 @@ public class JsonSchemaGeneratorTest {
                                 .build().generate();
         assertEquals(3, files.size());
         Iterator<GeneratedFile> iterator = files.iterator();
-        assertEmptyProcessSchema("emptyProcessName.json", iterator.next(), SchemaVersion.DRAFT_7);
-        assertProcessSchema("processName.json", iterator.next(), SchemaVersion.DRAFT_7);
-        assertTaskSchema("org#jbpm#test_test.json", iterator.next(), SchemaVersion.DRAFT_7);
+        assertEmptyProcessSchema("emptyProcessName.json", iterator.next(), SchemaVersion.DRAFT_2019_09);
+        assertProcessSchema("processName.json", iterator.next(), SchemaVersion.DRAFT_2019_09);
+        assertTaskSchema("org#jbpm#test_test.json", iterator.next(), SchemaVersion.DRAFT_2019_09, Arrays.asList("name", "address", "color"), Arrays.asList("name", "address", "age"));
     }
 
     @Test
@@ -173,16 +184,16 @@ public class JsonSchemaGeneratorTest {
     }
 
     @Test
-    public void testJsonSchemaGeneratorDraft2019() throws IOException {
+    public void testJsonSchemaGeneratorDraft7() throws IOException {
         Collection<GeneratedFile> files =
                 new JsonSchemaGenerator.ClassBuilder(
                         Stream.of(EmptyProcessInputModel.class, PersonInputParams.class, ProcessInputModel.class, PersonOutputParams.class, IgnoredClass.class))
-                                .withSchemaVersion("DRAFT_2019_09").build().generate();
+                                .withSchemaVersion("DRAFT_7").build().generate();
         assertEquals(3, files.size());
         Iterator<GeneratedFile> iterator = files.iterator();
-        assertEmptyProcessSchema("emptyProcessName.json", iterator.next(), SchemaVersion.DRAFT_2019_09);
-        assertProcessSchema("processName.json", iterator.next(), SchemaVersion.DRAFT_2019_09);
-        assertTaskSchema("org#jbpm#test_test.json", iterator.next(), SchemaVersion.DRAFT_2019_09);
+        assertEmptyProcessSchema("emptyProcessName.json", iterator.next(), SchemaVersion.DRAFT_7);
+        assertProcessSchema("processName.json", iterator.next(), SchemaVersion.DRAFT_7);
+        assertTaskSchema("org#jbpm#test_test.json", iterator.next(), SchemaVersion.DRAFT_7, Arrays.asList("name", "address", "color"), Arrays.asList("name", "address", "age"));
     }
 
     @Test
@@ -190,7 +201,8 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(PersonInputOutputParams.class)).build().generate();
         assertEquals(1, files.size());
         GeneratedFile file = files.iterator().next();
-        assertTaskSchema("InputOutput_test.json", file, SchemaVersion.DRAFT_7);
+
+        assertTaskSchema("InputOutput_test.json", file, SchemaVersion.DRAFT_2019_09, Arrays.asList("name", "address", "color"), List.of("age"));
     }
 
     @Test
@@ -211,7 +223,7 @@ public class JsonSchemaGeneratorTest {
     public void testJsonSchemaGenerationForProcess() throws IOException {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(ProcessInputModel.class)).build().generate();
         assertEquals(1, files.size());
-        assertProcessSchema("processName.json", files.iterator().next(), SchemaVersion.DRAFT_7);
+        assertProcessSchema("processName.json", files.iterator().next(), SchemaVersion.DRAFT_2019_09);
     }
 
     @Test
@@ -219,7 +231,7 @@ public class JsonSchemaGeneratorTest {
         Collection<GeneratedFile> files = new JsonSchemaGenerator.ClassBuilder(Stream.of(EmptyProcessInputModel.class)).build().generate();
         assertEquals(1, files.size());
 
-        assertEmptyProcessSchema("emptyProcessName.json", files.iterator().next(), SchemaVersion.DRAFT_7);
+        assertEmptyProcessSchema("emptyProcessName.json", files.iterator().next(), SchemaVersion.DRAFT_2019_09);
     }
 
     private void assertEmptyProcessSchema(String fileName, GeneratedFile file, SchemaVersion schemaVersion) throws IOException {
@@ -255,7 +267,7 @@ public class JsonSchemaGeneratorTest {
         assertEquals("#/" + definitionsPath + "/Person", address.get("$ref").asText());
     }
 
-    private void assertTaskSchema(String fileName, GeneratedFile file, SchemaVersion schemaVersion) throws IOException {
+    private void assertTaskSchema(String fileName, GeneratedFile file, SchemaVersion schemaVersion, List<String> inputs, List<String> outputs) throws IOException {
         assertEquals(JsonSchemaUtil.getJsonDir().resolve(fileName).toString(), file.relativePath());
         ObjectReader reader = new ObjectMapper().reader();
         JsonNode node = reader.readTree(file.contents());
@@ -270,12 +282,65 @@ public class JsonSchemaGeneratorTest {
         assertEquals("object", node.get("type").asText());
         JsonNode properties = node.get("properties");
         assertEquals(4, properties.size());
-        assertEquals("integer", properties.get("age").get("type").asText());
-        assertEquals("string", properties.get("name").get("type").asText());
-        JsonNode color = properties.get("color");
-        assertEquals("#/" + definitionsPath + "/Color", color.get("$ref").asText());
-        JsonNode address = properties.get("address");
-        assertEquals("#/" + definitionsPath + "/Address", address.get("$ref").asText());
+        assertBasicTaskField(properties, "age", "integer", inputs, outputs);
+        assertBasicTaskField(properties, "name", "string", inputs, outputs);
+        assertTaskFieldWithRef(properties, "color", "#/" + definitionsPath + "/Color", inputs, outputs);
+        assertTaskFieldWithRef(properties, "address", "#/" + definitionsPath + "/Address", inputs, outputs);
+    }
+
+    private void assertBasicTaskField(JsonNode properties, String name, String type, List<String> inputs, List<String> outputs) {
+        JsonNode property = properties.get(name);
+        assertEquals(type, property.get("type").asText());
+        if (inputs.contains(name)) {
+            checkNodeHasInputField(property);
+        }
+        if (outputs.contains(name)) {
+            checkNodeHasOutputField(property);
+        }
+    }
+
+    private void checkNodeHasInputField(JsonNode node) {
+        assertTrue(node.has(INPUT));
+        assertTrue(node.get(INPUT).asBoolean());
+    }
+
+    private void checkNodeHasOutputField(JsonNode node) {
+        assertTrue(node.has(OUTPUT));
+        assertTrue(node.get(OUTPUT).asBoolean());
+    }
+
+    private void assertChildAssignmentNode(ArrayNode arrayNode, String assignment) {
+        Iterable<JsonNode> iterable = () -> arrayNode.iterator();
+        JsonNode childAssignment = StreamSupport.stream(iterable.spliterator(), false)
+                .filter(node -> node.has(assignment))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(childAssignment);
+        assertTrue(childAssignment.get(assignment).asBoolean());
+    }
+
+    private void assertTaskFieldWithRef(JsonNode properties, String name, String refPath, List<String> inputs, List<String> outputs) {
+        JsonNode property = properties.get(name);
+        if (property.has(ALL_OF)) {
+            ArrayNode allOf = (ArrayNode) property.get(ALL_OF);
+            assertEquals(refPath, allOf.get(0).get(REF).asText());
+            if (inputs.contains(name)) {
+                assertChildAssignmentNode(allOf, INPUT);
+            }
+            if (outputs.contains(name)) {
+                assertChildAssignmentNode(allOf, OUTPUT);
+            }
+        } else {
+            assertEquals(refPath, property.get("$ref").asText());
+            if (inputs.contains(name)) {
+                checkNodeHasInputField(property);
+            }
+            if (outputs.contains(name)) {
+                checkNodeHasOutputField(property);
+            }
+        }
+
     }
 
     private void assertPersonNode(JsonNode personNode, String definitionsPath) {
@@ -285,8 +350,8 @@ public class JsonSchemaGeneratorTest {
         JsonNode personProperties = personNode.get("properties");
         assertEquals("string", personProperties.get("name").get("type").asText());
         assertEquals("integer", personProperties.get("age").get("type").asText());
-        assertEquals("#/" + definitionsPath + "/Address", personProperties.get("address").get("$ref").asText());
-        assertEquals("#/" + definitionsPath + "/Person", personProperties.get("parent").get("$ref").asText());
+        assertEquals("#/" + definitionsPath + "/Address", personProperties.get("address").get(REF).asText());
+        assertEquals("#/" + definitionsPath + "/Person", personProperties.get("parent").get(REF).asText());
     }
 
     private void assertAddressNode(JsonNode addressNode) {
@@ -312,6 +377,6 @@ public class JsonSchemaGeneratorTest {
     }
 
     private String resolveDefinitionsProperty(SchemaVersion schemaVersion) {
-        return SchemaVersion.DRAFT_7.equals(schemaVersion) ? "definitions" : "$defs";
+        return SchemaVersion.DRAFT_2019_09.equals(schemaVersion) ? "$defs" : "definitions";
     }
 }

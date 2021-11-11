@@ -20,12 +20,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,9 +36,9 @@ import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.victools.jsonschema.generator.CustomDefinition.AttributeInclusion;
 import com.github.victools.jsonschema.generator.CustomPropertyDefinition;
@@ -53,18 +50,13 @@ import com.github.victools.jsonschema.generator.SchemaGenerator;
 import com.github.victools.jsonschema.generator.SchemaGeneratorConfigBuilder;
 import com.github.victools.jsonschema.generator.SchemaKeyword;
 import com.github.victools.jsonschema.generator.SchemaVersion;
-import com.github.victools.jsonschema.generator.impl.DefinitionKey;
-import com.github.victools.jsonschema.generator.impl.SchemaGenerationContextImpl;
-import com.github.victools.jsonschema.generator.naming.DefaultSchemaDefinitionNamingStrategy;
-import com.github.victools.jsonschema.generator.naming.SchemaDefinitionNamingStrategy;
 
 public class JsonSchemaGenerator {
 
     public static final Logger logger = LoggerFactory.getLogger(JsonSchemaGenerator.class);
-    public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_7;
+    public static final SchemaVersion DEFAULT_SCHEMA_VERSION = SchemaVersion.DRAFT_2019_09;
     private static final GeneratedFileType JSON_SCHEMA_TYPE = GeneratedFileType.of("JSON_SCHEMA", GeneratedFileType.Category.RESOURCE, true, true);
 
-    private final Map<String, DefinitionKey> definitionKeyCache = new HashMap<>();
     private final Map<String, List<Class<?>>> map;
     private final SchemaVersion schemaVersion;
 
@@ -72,7 +64,6 @@ public class JsonSchemaGenerator {
 
         private Stream<Class<?>> stream;
         private Function<? super Class<?>, String> getSchemaName = JsonSchemaGenerator::getSchemaName;
-        private Predicate<? super Class<?>> shouldGenSchema = clazz -> true;
         private SchemaVersion schemaVersion = DEFAULT_SCHEMA_VERSION;
 
         public ClassBuilder(Stream<Class<?>> stream) {
@@ -84,11 +75,6 @@ public class JsonSchemaGenerator {
             return this;
         }
 
-        public ClassBuilder withGenSchemaPredicate(Predicate<? super Class<?>> shouldGenSchema) {
-            this.shouldGenSchema = shouldGenSchema;
-            return this;
-        }
-
         public ClassBuilder withSchemaVersion(String schemaVersion) {
             this.schemaVersion = schemaVersion == null ? DEFAULT_SCHEMA_VERSION : SchemaVersion.valueOf(schemaVersion.trim().toUpperCase());
             return this;
@@ -96,7 +82,6 @@ public class JsonSchemaGenerator {
 
         public JsonSchemaGenerator build() {
             Map<String, List<Class<?>>> map = stream
-                    .filter(shouldGenSchema)
                     .filter(this::ensureHasAnnotations)
                     .collect(Collectors.groupingBy(getSchemaName));
 
@@ -153,33 +138,16 @@ public class JsonSchemaGenerator {
         UserTaskParam param = scope.getAnnotation(UserTaskParam.class);
 
         if (param != null) {
-            ObjectNode objectNode = context.createStandardDefinitionReference(scope.getDeclaredType(), null);
-            objectNode.put(param.value().toString().toLowerCase(), true);
+            final ObjectNode refNode = context.createStandardDefinitionReference(scope.getDeclaredType(), null);
 
-            Optional<DefinitionKey> optional = lookupDefinitionKey(scope.getDeclaredType(), context);
+            ObjectNode rootNode = context.getGeneratorConfig().createObjectNode();
+            ArrayNode allOfNode = rootNode.withArray(context.getKeyword(SchemaKeyword.TAG_ALLOF));
+            allOfNode.add(refNode);
+            allOfNode.addObject().put(param.value().toString().toLowerCase(), true);
 
-            if (optional.isPresent()) {
-                DefinitionKey definitionKey = optional.get();
-                SchemaDefinitionNamingStrategy strategy = Optional.ofNullable(context.getGeneratorConfig().getDefinitionNamingStrategy())
-                        .orElse(new DefaultSchemaDefinitionNamingStrategy());
-                String refPath =
-                        context.getKeyword(SchemaKeyword.TAG_REF_MAIN) + "/" + context.getKeyword(SchemaKeyword.TAG_DEFINITIONS) + "/" + strategy.getDefinitionNameForKey(definitionKey, context);
-                objectNode.put(context.getKeyword(SchemaKeyword.TAG_REF), refPath);
-            }
-
-            return new CustomPropertyDefinition(objectNode, AttributeInclusion.YES);
+            return new CustomPropertyDefinition(rootNode, AttributeInclusion.YES);
         }
         return null;
-    }
-
-    private Optional<DefinitionKey> lookupDefinitionKey(ResolvedType type, SchemaGenerationContext context) {
-        DefinitionKey definitionKey = this.definitionKeyCache.computeIfAbsent(type.getTypeName(), typeName -> {
-            return ((SchemaGenerationContextImpl) context).getDefinedTypes().stream()
-                    .filter(key -> key.getType().equals(type))
-                    .findFirst()
-                    .orElse(null);
-        });
-        return Optional.ofNullable(definitionKey);
     }
 
     private static String getSchemaName(Class<?> c) {
@@ -187,8 +155,11 @@ public class JsonSchemaGenerator {
             ProcessInput process = c.getAnnotation(ProcessInput.class);
             return JsonSchemaUtil.getJsonSchemaName(process.processName());
         }
-        UserTask userTask = c.getAnnotation(UserTask.class);
-        return JsonSchemaUtil.getJsonSchemaName(userTask.processName(), userTask.taskName());
+        if (c.isAnnotationPresent(UserTask.class)) {
+            UserTask userTask = c.getAnnotation(UserTask.class);
+            return JsonSchemaUtil.getJsonSchemaName(userTask.processName(), userTask.taskName());
+        }
+        throw new RuntimeException("Cannot create the schema name. Class must be have UserTask or ProcessInput annotation");
     }
 
     private static boolean checkFields(FieldScope fieldScope) {
