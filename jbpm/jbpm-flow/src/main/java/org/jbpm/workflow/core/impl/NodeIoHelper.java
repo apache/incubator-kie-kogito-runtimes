@@ -21,21 +21,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.drools.core.spi.KogitoProcessContextImpl;
-import org.jbpm.process.core.context.variable.Variable;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.DataType;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
-import org.jbpm.process.core.datatype.impl.type.StringDataType;
-import org.jbpm.process.core.datatype.impl.type.UndefinedDataType;
 import org.jbpm.process.core.impl.DataTransformerRegistry;
-import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.process.instance.impl.AssignmentAction;
 import org.jbpm.process.instance.impl.AssignmentProducer;
-import org.jbpm.process.instance.impl.util.TypeTransformer;
 import org.jbpm.workflow.core.node.Assignment;
 import org.jbpm.workflow.core.node.Transformation;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
@@ -47,106 +38,24 @@ import org.slf4j.LoggerFactory;
  * this class allows to simplify input output processing as a cross cutting concern (actions or node themselves)
  *
  */
-public class ElementIoHelper {
-    protected static final Logger logger = LoggerFactory.getLogger(ElementIoHelper.class);
+public class NodeIoHelper {
+    protected static final Logger logger = LoggerFactory.getLogger(NodeIoHelper.class);
 
     private NodeInstanceImpl nodeInstance;
 
-    public ElementIoHelper(NodeInstanceImpl nodeInstance) {
+    public NodeIoHelper(NodeInstanceImpl nodeInstance) {
         this.nodeInstance = nodeInstance;
     }
 
-    private TypeTransformer typeTransformer = new TypeTransformer();
-
     public void processInputs(Collection<DataAssociation> dataAssociation, Function<String, Object> sourceResolver, Function<String, Object> targetResolver, AssignmentProducer producer) {
-        BiFunction<Map<String, Object>, DataAssociation, Map<String, Object>> converter = (dataSet, mapping) -> {
-            HashMap<String, Object> transformationDataSet = new HashMap<>();
-            transformationDataSet.put(mapping.getTarget().getLabel(), dataSet.get(mapping.getSources().get(0).getLabel()));
-            return transformationDataSet;
-        };
-        this.processDataAssociations(converter, dataAssociation, sourceResolver, targetResolver, producer);
-    }
-
-    public void processOutputs(Collection<DataAssociation> dataAssociation, Function<String, Object> sourceResolver, Function<String, Object> targetResolver) {
-        AssignmentProducer producer = (target, value) -> {
-            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance.resolveContextInstance(VariableScope.VARIABLE_SCOPE, target);
-            if (variableScopeInstance == null && nodeInstance != null) {
-                nodeInstance.setVariable(target, value);
-                return;
-            }
-
-            // proper inforation about the type
-            Variable varDef = variableScopeInstance.getVariableScope().findVariable(target);
-            DataType dataType = varDef.getType();
-
-            // undefined or null we don't need to compute anything
-            if (value == null || dataType instanceof UndefinedDataType) {
-                if (nodeInstance != null) {
-                    variableScopeInstance.setVariable(nodeInstance, target, value);
-                } else {
-                    variableScopeInstance.setVariable(target, value);
-                }
-                return;
-            }
-
-            // we try to convert with the converter
-            // only if there is a TypeConverter registered for the data type
-            if (value instanceof String) {
-                value = dataType.readValue((String) value);
-            }
-
-            // the dataType is already the type
-            if (dataType.verifyDataType(value)) {
-                if (nodeInstance != null) {
-                    variableScopeInstance.setVariable(nodeInstance, target, value);
-                } else {
-                    variableScopeInstance.setVariable(target, value);
-                }
-                return;
-            }
-
-            // if we use some strict variable this should not be needed but test require this.
-            // this is some heuristics to try to transform stuff into the target type
-            if (value != null && !(value instanceof Throwable)) {
-                try {
-                    if (!dataType.getStringType().endsWith("java.lang.Object") && dataType instanceof ObjectDataType) {
-                        ClassLoader classLoader = ((ObjectDataType) dataType).getClassLoader();
-                        if (classLoader != null) {
-                            value = typeTransformer.transform(classLoader, value, dataType.getStringType());
-                        } else {
-                            value = typeTransformer.transform(value, dataType.getStringType());
-                        }
-                    } else if (!(dataType instanceof StringDataType) && !(dataType instanceof ObjectDataType)) {
-                        value = typeTransformer.transform(value, dataType.getStringType());
-                    }
-                } catch (Exception e) {
-                    logger.trace("error trying to transform value {}", value);
-                }
-            }
-
-            if (!dataType.verifyDataType(value)) {
-                if (dataType instanceof StringDataType) {
-                    // last chance to put proper value
-                    value = value.toString();
-                } else {
-                    throw new IllegalArgumentException("value " + value + " does not match " + dataType.getStringType());
-                }
-            }
-            if (nodeInstance != null) {
-                variableScopeInstance.setVariable(nodeInstance, target, value);
-            } else {
-                variableScopeInstance.setVariable(target, value);
-            }
-        };
-        this.processDataAssociations((dataSet, mapping) -> dataSet, dataAssociation, sourceResolver, targetResolver, producer);
+        this.processDataAssociations(dataAssociation, sourceResolver, targetResolver, producer);
     }
 
     public void processOutputs(Collection<DataAssociation> dataAssociation, Function<String, Object> sourceResolver, Function<String, Object> targetResolver, AssignmentProducer producer) {
-        this.processDataAssociations((dataSet, mapping) -> dataSet, dataAssociation, sourceResolver, targetResolver, producer);
+        this.processDataAssociations(dataAssociation, sourceResolver, targetResolver, producer);
     }
 
     private void processDataAssociations(
-            BiFunction<Map<String, Object>, DataAssociation, Map<String, Object>> converter,
             Collection<DataAssociation> dataAssociation,
             Function<String, Object> sourceResolver,
             Function<String, Object> targetResolver,
@@ -160,12 +69,11 @@ public class ElementIoHelper {
                 Object value = sourceResolver.apply(source.getLabel());
                 sources.put(source.getLabel(), value);
             });
-            processDataAssociation(converter, mapping, sources, sourceResolver, targetResolver, producer);
+            processDataAssociation(mapping, sources, sourceResolver, targetResolver, producer);
         }
     }
 
     private void processDataAssociation(
-            BiFunction<Map<String, Object>, DataAssociation, Map<String, Object>> converter,
             DataAssociation mapping,
             Map<String, Object> dataSet,
             Function<String, Object> sourceResolver,
@@ -173,15 +81,11 @@ public class ElementIoHelper {
             AssignmentProducer producer) {
         try {
             if (mapping.getTransformation() != null) {
-                Map<String, Object> transformationDataSet = null;
-                // FIXME this is wrong for inputs as it should not require transforming to targets
-                // transformations are applied over sources otherwise you only allow expressions over one single attribute which is not correct
-                transformationDataSet = converter.apply(dataSet, mapping);
                 Transformation transformation = mapping.getTransformation();
                 DataTransformer transformer = DataTransformerRegistry.get().find(transformation.getLanguage());
                 Object parameterValue = null;
                 if (transformer != null) {
-                    parameterValue = transformer.transform(transformation.getCompiledExpression(), transformationDataSet);
+                    parameterValue = transformer.transform(transformation.getCompiledExpression(), dataSet);
                 }
                 if (parameterValue != null) {
                     producer.accept(mapping.getTarget().getLabel(), parameterValue);
@@ -203,13 +107,9 @@ public class ElementIoHelper {
     }
 
     private void handleAssignment(Assignment assignment, Function<String, Object> sourceResolver, Function<String, Object> targetResolver, AssignmentProducer producer) {
-        if (nodeInstance == null) {
-            logger.debug("handle assignment is not possible for {}", assignment);
-            return;
-        }
         AssignmentAction action = (AssignmentAction) assignment.getMetaData("Action");
         try {
-            KogitoProcessContextImpl context = new KogitoProcessContextImpl(nodeInstance.getProcessInstance().getKnowledgeRuntime());
+            KogitoProcessContextImpl context = nodeInstance != null ? new KogitoProcessContextImpl(nodeInstance.getProcessInstance().getKnowledgeRuntime()) : new KogitoProcessContextImpl(null);
             context.setNodeInstance(nodeInstance);
             action.execute(sourceResolver, targetResolver, producer);
         } catch (Exception e) {
@@ -245,7 +145,7 @@ public class ElementIoHelper {
             Function<String, Object> sourceResolver,
             Function<String, Object> targetResolver) {
 
-        ElementIoHelper ioHelper = new ElementIoHelper(nodeInstanceImpl);
+        NodeIoHelper ioHelper = new NodeIoHelper(nodeInstanceImpl);
         Map<String, Object> inputSet = new HashMap<>();
         // for inputs resolve it is supposed to create object by default constructor (that is the reason is null
         ioHelper.processInputs(dataInputAssociation, sourceResolver, targetResolver, (target, value) -> inputSet.put(target, value));
@@ -265,12 +165,12 @@ public class ElementIoHelper {
             Function<String, Object> sourceResolver,
             Function<String, Object> targetResolver) {
 
-        ElementIoHelper ioHelper = new ElementIoHelper(nodeInstanceImpl);
-        ioHelper.processOutputs(dataOutputAssociations, sourceResolver, targetResolver);
+        NodeIoHelper ioHelper = new NodeIoHelper(nodeInstanceImpl);
+        ioHelper.processOutputs(dataOutputAssociations, sourceResolver, targetResolver, new DefaultAssignmentProducer(nodeInstanceImpl));
     }
 
     public static Map<String, Object> processOutputs(List<DataAssociation> dataOutputAssociations, Function<String, Object> sourceResolver) {
-        ElementIoHelper ioHelper = new ElementIoHelper(null);
+        NodeIoHelper ioHelper = new NodeIoHelper(null);
         Map<String, Object> outputSet = new HashMap<>();
         ioHelper.processOutputs(dataOutputAssociations, sourceResolver, key -> null, (key, value) -> outputSet.put(key, value));
         return outputSet;

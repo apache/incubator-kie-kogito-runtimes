@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -57,7 +57,7 @@ public class StartNodeInstance extends NodeInstanceImpl {
         String variableName = (String) getStartNode().getMetaData(TRIGGER_MAPPING_INPUT);
         if (variableName != null) {
             Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
-            ElementIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+            NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
         }
         triggerCompleted();
     }

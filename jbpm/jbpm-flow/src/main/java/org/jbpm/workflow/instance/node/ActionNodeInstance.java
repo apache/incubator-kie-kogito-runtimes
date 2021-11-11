@@ -21,7 +21,7 @@ import java.util.Map;
 import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
@@ -46,7 +46,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
                     "An ActionNode only accepts default incoming connections!");
         }
 
-        Map<String, Object> data = ElementIoHelper.processInputs(this, key -> getVariable(key));
+        Map<String, Object> data = NodeIoHelper.processInputs(this, key -> getVariable(key));
 
         Action action = (Action) getActionNode().getAction().getMetaData("Action");
         try {

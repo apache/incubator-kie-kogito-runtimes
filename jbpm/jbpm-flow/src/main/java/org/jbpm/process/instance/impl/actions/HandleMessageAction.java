@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.jbpm.process.instance.impl.Action;
 import org.jbpm.ruleflow.core.Metadata;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
@@ -49,7 +49,7 @@ public class HandleMessageAction implements Action, Serializable {
 
         // compute inputs for message action
         NodeInstanceImpl impl = ((NodeInstanceImpl) context.getNodeInstance());
-        Map<String, Object> inputSet = ElementIoHelper.processInputs(impl, varRef -> impl.getVariable(varRef));
+        Map<String, Object> inputSet = NodeIoHelper.processInputs(impl, varRef -> impl.getVariable(varRef));
         workItem.getParameters().put(variableName, inputSet.get(variableName));
 
         ((InternalKogitoWorkItemManager) context.getKogitoProcessRuntime().getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);

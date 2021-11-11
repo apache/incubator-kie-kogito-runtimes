@@ -29,7 +29,7 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.impl.ExtendedNodeInstanceImpl;
@@ -64,7 +64,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
             EventNode eventNode = (EventNode) getNode();
             Map<String, Object> outputSet = new HashMap<>();
             outputSet.put(eventNode.getInputVariableName(), event);
-            ElementIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+            NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
             triggerCompleted();
         }
     }

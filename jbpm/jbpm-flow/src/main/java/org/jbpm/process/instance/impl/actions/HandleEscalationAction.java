@@ -23,7 +23,7 @@ import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.Action;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
@@ -51,7 +51,7 @@ public class HandleEscalationAction implements Action, Serializable {
             NodeInstanceImpl impl = ((NodeInstanceImpl) context.getNodeInstance());
             // for event nodes we create a "virtual assignment and we process it"
             Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
-            ElementIoHelper.processOutputs(impl, varRef -> outputSet.get(varRef), target -> impl.getVariable(target));
+            NodeIoHelper.processOutputs(impl, varRef -> outputSet.get(varRef), target -> impl.getVariable(target));
             context.getContextData().put("Exception", context.getVariable(variableName));
             scopeInstance.handleException(faultName, context);
         } else {

@@ -34,7 +34,7 @@ import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.impl.DataAssociation;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
@@ -321,7 +321,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                 outputSet.put("event", event);
             }
 
-            Map<String, Object> parameters = ElementIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
+            Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
             startProcessWithParamsAndTrigger(processId, parameters, type, false);
         }
     }

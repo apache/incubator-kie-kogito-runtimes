@@ -44,7 +44,7 @@ import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DataAssociation;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
@@ -226,7 +226,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             }
             return getVariable(varRef);
         };
-        Map<String, Object> inputSet = ElementIoHelper.processInputs(this, varResolver);
+        Map<String, Object> inputSet = NodeIoHelper.processInputs(this, varResolver);
 
         inputSet.putAll(resolvedParameters);
         if (dynamicParameters != null) {
@@ -242,7 +242,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
         if (workItemNode != null && workItem.getState() == COMPLETED) {
             validateWorkItemResultVariable(getProcessInstance().getProcessName(), workItemNode.getOutAssociations(), workItem);
-            ElementIoHelper.processOutputs(this, varRef -> workItem.getResult(varRef), varName -> this.getVariable(varName));
+            NodeIoHelper.processOutputs(this, varRef -> workItem.getResult(varRef), varName -> this.getVariable(varName));
         }
 
         if (getNode() == null) {

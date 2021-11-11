@@ -37,7 +37,7 @@ import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.jbpm.workflow.core.node.RuleUnitFactory;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -99,7 +99,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             RuleSetNode ruleSetNode = getRuleSetNode();
 
             KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime()).orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
-            Map<String, Object> inputs = ElementIoHelper.processInputs(this, varRef -> getVariable(varRef));
+            Map<String, Object> inputs = NodeIoHelper.processInputs(this, varRef -> getVariable(varRef));
 
             RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
             if (ruleType.isDecision()) {
@@ -127,7 +127,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 }
                 //Output Binding
                 Map<String, Object> outputSet = dmnResult.getContext().getAll();
-                ElementIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+                NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
 
                 triggerCompleted();
             } else if (ruleType.isRuleFlowGroup()) {
@@ -283,7 +283,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
         }
 
         Map<String, Object> outputSet = objects;
-        ElementIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+        NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
         factHandles.clear();
     }
 

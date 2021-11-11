@@ -33,7 +33,7 @@ import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.workflow.core.Node;
-import org.jbpm.workflow.core.impl.ElementIoHelper;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.kie.api.KieBase;
 import org.kie.api.definition.process.Process;
@@ -78,7 +78,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                     "A SubProcess node only accepts default incoming connections!");
         }
 
-        Map<String, Object> parameters = ElementIoHelper.processInputs(this, key -> getVariable(key));
+        Map<String, Object> parameters = NodeIoHelper.processInputs(this, key -> getVariable(key));
 
         String processIdExpression = getSubProcessNode().getProcessId();
         if (processIdExpression == null) {
@@ -203,7 +203,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         removeEventListeners();
 
         Map<String, Object> outputSet = processInstance.getVariables();
-        ElementIoHelper.processOutputs(this, varRef -> outputSet.get(varRef), varName -> this.getVariable(varName));
+        NodeIoHelper.processOutputs(this, varRef -> outputSet.get(varRef), varName -> this.getVariable(varName));
 
         if (processInstance.getState() == ProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();
