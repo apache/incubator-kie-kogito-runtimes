@@ -29,14 +29,25 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class KogitoAssetsProcessorTest {
 
     @Test
-    public void validateAvailableCapabilitiesWithOptaPlanner() {
+    public void validateAvailableCapabilitiesWithOptaPlannerNoRest() {
+        KogitoBuildContext context = QuarkusKogitoBuildContext.builder().build();
+        Capabilities capabilities = capabilities("org.optaplanner.optaplanner-quarkus");
+        KogitoAssetsProcessor processor = new KogitoAssetsProcessor();
+
+        assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
+        processor.validateAvailableCapabilities(context, capabilities);
+        assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).contains("false");
+    }
+
+    @Test
+    public void validateAvailableCapabilitiesWithOptaPlannerWithRest() {
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder().build();
         Capabilities capabilities = capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, "org.optaplanner.optaplanner-quarkus");
         KogitoAssetsProcessor processor = new KogitoAssetsProcessor();
 
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
         processor.validateAvailableCapabilities(context, capabilities);
-        assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).contains("false");
+        assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
     }
 
     @Test

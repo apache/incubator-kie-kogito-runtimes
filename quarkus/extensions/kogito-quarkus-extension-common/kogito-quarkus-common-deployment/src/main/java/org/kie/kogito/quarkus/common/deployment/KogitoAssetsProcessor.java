@@ -108,13 +108,15 @@ public class KogitoAssetsProcessor {
 
     void validateAvailableCapabilities(KogitoBuildContext context, Capabilities capabilities) {
         boolean hasOptaPlannerCapability = capabilities.isCapabilityWithPrefixPresent("org.optaplanner");
-        if (hasOptaPlannerCapability &&
-                kogitoGenerateRest(context).isEmpty()) { // if OptaPlanner is available, REST generation is opt-in (instead of opt-out)
+        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
+
+        // disable REST if OptaPlanner capability is available but REST is not (user can override via property)
+        if (hasOptaPlannerCapability && !hasRestCapabilities &&
+                kogitoGenerateRest(context).isEmpty()) {
             context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
             LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
         }
 
-        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
         if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
             throw new MissingRestCapabilityException();
         }
