@@ -15,13 +15,14 @@
  */
 package org.kie.kogito.quarkus.common.deployment;
 
-import io.quarkus.deployment.Capabilities;
-import io.quarkus.deployment.Capability;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 
-import java.util.Set;
+import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -94,7 +95,7 @@ class KogitoAssetsProcessorTest {
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).contains("false");
     }
 
-    private Capabilities capabilities(String ... values) {
+    private Capabilities capabilities(String... values) {
         return new Capabilities(Set.of(values));
     }
 }

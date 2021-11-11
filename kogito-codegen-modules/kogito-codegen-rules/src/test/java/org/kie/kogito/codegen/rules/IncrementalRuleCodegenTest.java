@@ -274,8 +274,7 @@ public class IncrementalRuleCodegenTest {
         assertThat(generatedFiles).hasSizeGreaterThan(0);
         if (contextBuilder.build().hasRESTGloballyAvailable()) {
             assertThat(generatedFiles.stream()).anyMatch(f -> f.relativePath().endsWith("KogitoObjectMapper.java"));
-        }
-        else {
+        } else {
             assertThat(generatedFiles.stream()).noneMatch(f -> f.relativePath().endsWith("KogitoObjectMapper.java"));
         }
     }
