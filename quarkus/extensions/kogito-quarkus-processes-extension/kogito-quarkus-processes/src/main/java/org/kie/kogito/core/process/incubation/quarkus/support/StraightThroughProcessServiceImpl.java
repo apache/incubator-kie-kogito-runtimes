@@ -16,6 +16,8 @@
 
 package org.kie.kogito.core.process.incubation.quarkus.support;
 
+import java.util.Map;
+
 import org.kie.kogito.Model;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.Id;
@@ -27,8 +29,6 @@ import org.kie.kogito.incubation.processes.services.StraightThroughProcessServic
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-
-import java.util.Map;
 
 class StraightThroughProcessServiceImpl implements StraightThroughProcessService {
 

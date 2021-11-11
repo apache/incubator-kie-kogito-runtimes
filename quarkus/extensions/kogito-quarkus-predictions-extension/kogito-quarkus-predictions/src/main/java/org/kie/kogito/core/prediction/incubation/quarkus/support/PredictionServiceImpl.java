@@ -16,6 +16,9 @@
 
 package org.kie.kogito.core.prediction.incubation.quarkus.support;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.kie.api.pmml.PMML4Result;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
@@ -27,9 +30,6 @@ import org.kie.kogito.incubation.predictions.services.PredictionService;
 import org.kie.kogito.prediction.PredictionModel;
 import org.kie.kogito.prediction.PredictionModels;
 import org.kie.pmml.api.runtime.PMMLContext;
-
-import java.util.Collections;
-import java.util.Map;
 
 public class PredictionServiceImpl implements PredictionService {
     private final PredictionModels predictionModels;
