@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.jandex.CompositeIndex;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
@@ -93,14 +92,6 @@ public class KogitoQuarkusResourceUtils {
                 .withAppPaths(appPaths)
                 .withGAV(new KogitoGAV(appArtifact.getGroupId(), appArtifact.getArtifactId(), appArtifact.getVersion()))
                 .build();
-
-        // Propagate Quarkus configs to KogitoBuildContext
-        for (String propertyName : ConfigProvider.getConfig().getPropertyNames()) {
-            // Property found in src/main/resources should not be overridden
-            if (context.getApplicationProperty(propertyName).isEmpty()) {
-                context.setApplicationProperty(propertyName, ConfigProvider.getConfig().getValue(propertyName, String.class));
-            }
-        }
 
         if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_REST)) {
             LOGGER.info("Disabling REST generation because class '" + QuarkusKogitoBuildContext.QUARKUS_REST + "' is not available");

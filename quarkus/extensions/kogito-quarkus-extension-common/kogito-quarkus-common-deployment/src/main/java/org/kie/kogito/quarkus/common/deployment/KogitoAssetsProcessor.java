@@ -77,12 +77,7 @@ public class KogitoAssetsProcessor {
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
 
-        boolean hasRestCapabilities = capabilities.isMissing(Capability.RESTEASY) || capabilities.isMissing(Capability.RESTEASY_JSON_JACKSON);
-        if (hasRestCapabilities && !"false".equalsIgnoreCase(
-                        context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
-                                .orElse("true"))) {
-            throw new MissingRestCapabilityException();
-        }
+        validateAvailableCapabilities(context, capabilities);
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
@@ -109,6 +104,25 @@ public class KogitoAssetsProcessor {
         return optionalIndex
                 .map(Collections::singletonList)
                 .orElse(Collections.emptyList());
+    }
+
+    void validateAvailableCapabilities(KogitoBuildContext context, Capabilities capabilities) {
+        boolean hasOptaPlannerCapability = capabilities.isCapabilityWithPrefixPresent("org.optaplanner");
+        if (hasOptaPlannerCapability &&
+                kogitoGenerateRest(context).isEmpty()) { // if OptaPlanner is available, REST generation is opt-in (instead of opt-out)
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
+        }
+
+        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
+        if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
+            throw new MissingRestCapabilityException();
+        }
+    }
+
+    private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {
+        return context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
+                .map("true"::equalsIgnoreCase);
     }
 
     private Collection<GeneratedFile> generateFiles(KogitoBuildContext context) {
