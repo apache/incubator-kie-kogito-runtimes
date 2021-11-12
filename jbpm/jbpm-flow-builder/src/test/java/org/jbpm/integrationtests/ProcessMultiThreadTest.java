@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class ProcessMultiThreadTest extends AbstractBaseTest {
@@ -55,8 +56,7 @@ public class ProcessMultiThreadTest extends AbstractBaseTest {
             KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.integrationtests.multithread");
             final ProcessInstanceSignalRunner[] r = new ProcessInstanceSignalRunner[THREAD_COUNT];
             for (int i = 0; i < t.length; i++) {
-                KogitoProcessInstance current = kruntime.getProcessInstance(processInstance.getStringId());
-                r[i] = new ProcessInstanceSignalRunner(i, current, "event" + (i + 1));
+                r[i] = new ProcessInstanceSignalRunner(i, processInstance, "event" + (i + 1));
                 t[i] = new Thread(r[i], "thread-" + i);
                 t[i].start();
             }
@@ -69,8 +69,8 @@ public class ProcessMultiThreadTest extends AbstractBaseTest {
             if (!success) {
                 fail("Multithread test failed. Look at the stack traces for details. ");
             }
-            //assertEquals(2, list.size());
-            //assertEquals(list.get(1), list.get(0));
+            assertEquals(2, list.size());
+            assertNotEquals(list.get(1), list.get(0));
             assertEquals(KogitoProcessInstance.STATE_COMPLETED, processInstance.getState());
         } catch (Exception e) {
             e.printStackTrace();
