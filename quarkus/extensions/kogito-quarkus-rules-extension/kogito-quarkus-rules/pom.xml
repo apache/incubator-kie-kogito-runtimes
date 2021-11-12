@@ -24,6 +24,11 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-api-incubation-rules-services</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jackson</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- kogito -->
         <dependency>
