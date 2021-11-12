@@ -70,8 +70,6 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     static final String PROCESS_INSTANCE_SIGNAL_EVENT = "kcontext.getProcessInstance().signalEvent(";
     static final String RUNTIME_SIGNAL_EVENT = "kcontext.getKogitoProcessRuntime().signalEvent(";
 
-    protected static final String EVENT_TYPE = "EventType";
-
     public static final String INPUT_TYPES = "BPMN.InputTypes";
     public static final String OUTPUT_TYPES = "BPMN.OutputTypes";
 
@@ -259,8 +257,6 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         String dialect = "mvel";
         if ("http://www.java.com/java".equals(xmlNode.getAttribute("scriptFormat"))) {
             dialect = "java";
-        } else if ("http://www.javascript.com/javascript".equals(xmlNode.getAttribute("scriptFormat"))) {
-            dialect = "JavaScript";
         }
         NodeList subNodeList = xmlNode.getChildNodes();
         for (int j = 0; j < subNodeList.getLength(); j++) {
@@ -325,8 +321,6 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             String dialect = consequenceAction.getDialect();
             if (JavaDialect.ID.equals(dialect)) {
                 xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVA_LANGUAGE + "\"");
-            } else if ("JavaScript".equals(dialect)) {
-                xmlDump.append(" scriptFormat=\"" + XmlBPMNProcessDumper.JAVASCRIPT_LANGUAGE + "\"");
             }
             String consequence = consequenceAction.getConsequence();
             if (consequence != null) {

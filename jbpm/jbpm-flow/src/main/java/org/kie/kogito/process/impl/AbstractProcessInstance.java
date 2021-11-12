@@ -85,7 +85,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected CompletionEventListener completionEventListener;
 
-    protected Long version;
+    protected long version;
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
@@ -163,6 +163,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
             return;
         }
 
+        for (org.kie.api.runtime.process.NodeInstance nodeInstance : processInstance.getNodeInstances()) {
+            if (nodeInstance instanceof WorkItemNodeInstance) {
+                ((WorkItemNodeInstance) nodeInstance).internalRemoveWorkItem();
+            }
+        }
+
         processInstance.disconnect();
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, null);
     }
@@ -222,9 +228,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
         this.id = processInstance.getStringId();
         addCompletionEventListener();
-        KogitoProcessInstance processInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(pi.id(), pi));
-        unbind(variables, processInstance.getVariables());
+        ((MutableProcessInstances<T>) process.instances()).create(id, this);
+        KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
+        if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
+            addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
+        }
+        unbind(variables, kogitoProcessInstance.getVariables());
         if (this.processInstance != null) {
             this.status = this.processInstance.getState();
         }
@@ -297,11 +306,11 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-    public Long version() {
+    public long version() {
         return this.version;
     }
 
-    public void setVersion(Long version) {
+    public void setVersion(long version) {
         this.version = version;
     }
 
@@ -430,9 +439,14 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public List<WorkItem> workItems(Policy<?>... policies) {
+        return workItems(WorkItemNodeInstance.class::isInstance, policies);
+    }
+
+    @Override
+    public List<WorkItem> workItems(Predicate<KogitoNodeInstance> p, Policy<?>... policies) {
         return processInstance().getNodeInstances(true)
                 .stream()
-                .filter(ni -> ni instanceof WorkItemNodeInstance && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
+                .filter(ni -> p.test(ni) && ((WorkItemNodeInstance) ni).getWorkItem().enforce(policies))
                 .map(ni -> new BaseWorkItem(ni.getStringId(),
                         ((WorkItemNodeInstance) ni).getWorkItemId(),
                         Long.toString(((WorkItemNodeInstance) ni).getNode().getId()),

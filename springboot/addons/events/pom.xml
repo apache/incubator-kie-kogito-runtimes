@@ -10,12 +10,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>kogito-addons-springboot-events-parent</artifactId>
-  <name>Kogito :: Add-Ons :: Spring Boot</name>
+  <name>Kogito :: Add-Ons :: Spring Boot :: Events - Parent</name>
   <description>Parent Module for Kogito Spring Boot Events Addons</description>
   <packaging>pom</packaging>
 
   <modules>
     <module>decisions</module>
+    <module>predictions</module>
+    <module>rules</module>
   </modules>
 
   <profiles>

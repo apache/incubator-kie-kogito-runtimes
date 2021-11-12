@@ -36,16 +36,17 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
+import org.kie.memorycompiler.resources.KiePath;
 import org.kie.memorycompiler.resources.ResourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppArtifact;
-import io.quarkus.bootstrap.model.AppDependency;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
+import io.quarkus.maven.dependency.Dependency;
+import io.quarkus.maven.dependency.ResolvedDependency;
 
 import static java.util.stream.Collectors.toList;
 
@@ -74,7 +75,7 @@ public class KogitoQuarkusResourceUtils {
                     System.getProperty("kogito.codegen.resources.directory", "target/generated-resources/kogito/"),
                     "target/generated-sources/kogito/");
 
-    public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, AppArtifact appArtifact) {
+    public static KogitoBuildContext kogitoBuildContext(Iterable<Path> paths, IndexView index, Dependency appArtifact) {
         // scan and parse paths
         AppPaths.BuildTool buildTool;
         if (System.getProperty("org.gradle.appname") == null) {
@@ -146,7 +147,7 @@ public class KogitoQuarkusResourceUtils {
 
     public static Collection<GeneratedBeanBuildItem> compileGeneratedSources(
             KogitoBuildContext context,
-            List<AppDependency> dependencies,
+            Collection<ResolvedDependency> dependencies,
             Collection<GeneratedFile> generatedFiles,
             boolean useDebugSymbols) throws IOException {
         Collection<GeneratedFile> javaFiles =
@@ -190,9 +191,9 @@ public class KogitoQuarkusResourceUtils {
         Collection<GeneratedBeanBuildItem> buildItems = new ArrayList<>();
         Path location = generatedFileWriterBuilder.build(appPaths.getFirstProjectPath()).getClassesDir();
 
-        for (String fileName : resources.getFileNames()) {
-            byte[] data = resources.getBytes(fileName);
-            String className = toClassName(fileName);
+        for (KiePath path : resources.getFilePaths()) {
+            byte[] data = resources.getBytes(path);
+            String className = toClassName(path.asString());
 
             // Write the bytecode of the class retriggering the hot reload in the file system
             // This is necessary to workaround the problem fixed by https://github.com/quarkusio/quarkus/pull/15726 and
@@ -201,8 +202,7 @@ public class KogitoQuarkusResourceUtils {
                 for (Path classPath : appPaths.getClassesPaths()) {
                     // Write the class bytecode in the first available directory class path if any
                     if (classPath.toFile().isDirectory()) {
-                        Path path = pathOf(classPath.toString(), HOT_RELOAD_SUPPORT_PATH + ".class");
-                        Files.write(path, data);
+                        Files.write(pathOf(classPath.toString(), HOT_RELOAD_SUPPORT_PATH + ".class"), data);
                         break;
                     }
                 }

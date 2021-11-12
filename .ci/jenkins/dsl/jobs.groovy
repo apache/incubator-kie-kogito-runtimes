@@ -1,7 +1,8 @@
 import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.FolderUtils
-import org.kie.jenkins.jobdsl.Utils
 import org.kie.jenkins.jobdsl.KogitoJobType
+import org.kie.jenkins.jobdsl.KogitoJobUtils
+import org.kie.jenkins.jobdsl.Utils
 
 JENKINSFILE_PATH = '.ci/jenkins'
 
@@ -25,27 +26,42 @@ def getJobParams(String jobName, String jobFolder, String jenkinsfileName, Strin
 Map getMultijobPRConfig() {
     return [
         parallel: true,
+        buildchain: true,
         jobs : [
             [
-                id: 'Runtimes',
+                id: 'kogito-runtimes',
                 primary: true,
+                env : [
+                    // Sonarcloud analysis only on main branch
+                    // As we have only Community edition
+                    DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
+                ]
             ], [
-                id: 'Optaplanner',
-                dependsOn: 'Runtimes',
+                id: 'optaplanner',
+                dependsOn: 'kogito-runtimes',
                 repository: 'optaplanner',
             ], [
-                id: 'Apps',
-                dependsOn: 'Optaplanner',
+                id: 'kogito-apps',
+                dependsOn: 'optaplanner',
                 repository: 'kogito-apps'
             ], [
-                id: 'Examples',
+                id: 'kogito-examples',
                 dependsOn: 'Optaplanner',
                 repository: 'kogito-examples'
+            ], [
+                id: 'optaweb-employee-rostering',
+                repository: 'optaweb-employee-rostering'
+            ], [
+                id: 'optaweb-vehicle-routing',
+                repository: 'optaweb-vehicle-routing'
+            ], [
+                id: 'optaplanner-quickstarts',
+                repository: 'optaplanner-quickstarts',
+                env : [
+                    OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: '-Dfull'
+                ]
             ]
         ],
-        extraEnv : [
-            ENABLE_SONARCLOUD: Utils.isMainBranch(this)
-        ]
     ]
 }
 
@@ -64,8 +80,6 @@ setupMultijobPrLTSChecks()
 
 // Nightly jobs
 if (Utils.isMainBranch(this)) {
-    setupDroolsJob()
-
     setupQuarkusJob('main')
 }
 setupNativeJob()
@@ -82,6 +96,18 @@ if (Utils.isLTSBranch(this)) {
     setupQuarkusJob(Utils.getQuarkusLTSVersion(this))
     setupNativeLTSJob()
 }
+
+// Tools job
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-dependencies-bom', 'kogito-build-parent', 'kogito-quarkus-bom' ],
+  compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
+  properties: [ 'version.io.quarkus', 'version.io.quarkus.quarkus-test-maven' ],
+])
+KogitoJobUtils.createKie7UpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
+  modules: [ 'kogito-kie-bom' ],
+  properties: [ 'version.org.kie' ],
+])
+
 /////////////////////////////////////////////////////////////////
 // Methods
 /////////////////////////////////////////////////////////////////
@@ -96,23 +122,6 @@ void setupMultijobPrNativeChecks() {
 
 void setupMultijobPrLTSChecks() {
     KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
-}
-
-void setupDroolsJob() {
-    def jobParams = getJobParams('kogito-drools-snapshot', FolderUtils.getNightlyFolder(this), "${JENKINSFILE_PATH}/Jenkinsfile.drools", 'Kogito Runtimes Drools Snapshot')
-    jobParams.triggers = [ cron : 'H 2 * * *' ]
-    KogitoJobTemplate.createPipelineJob(this, jobParams).with {
-        parameters {
-            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
-            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
-
-            stringParam('DROOLS_VERSION', '', '(optional) If not set, then it will be guessed from drools repository')
-            stringParam('DROOLS_REPOSITORY', '', '(optional) In case Drools given version is in a specific repository')
-        }
-        environmentVariables {
-            env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
-        }
-    }
 }
 
 void setupQuarkusJob(String quarkusBranch) {
@@ -199,6 +208,7 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
             stringParam('PROJECT_VERSION', '', 'Set the project version')
+            stringParam('DROOLS_VERSION', '', 'Drools version to set')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
@@ -247,6 +257,7 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
 
             // Release information which can override `deployment.properties`
             stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
+            stringParam('DROOLS_VERSION', '', 'Override `deployment.properties`. Drools version to set')
 
             stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
 

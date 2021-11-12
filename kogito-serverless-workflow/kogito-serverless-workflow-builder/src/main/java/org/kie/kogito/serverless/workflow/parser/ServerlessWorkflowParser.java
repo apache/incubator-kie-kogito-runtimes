@@ -29,6 +29,7 @@ import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
@@ -53,7 +54,7 @@ public class ServerlessWorkflowParser {
     public static final String DEFAULT_VERSION = "1.0";
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
-    public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
+    public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
@@ -116,15 +117,21 @@ public class ServerlessWorkflowParser {
         return process;
     }
 
-    public static <T extends RuleFlowNodeContainerFactory<T, ?>> StartNodeFactory<T> messageStartNode(StartNodeFactory<T> nodeFactory,
-            EventDefinition eventDefinition) {
-        return nodeFactory
-                .name(eventDefinition.getName())
+    public static <T extends RuleFlowNodeContainerFactory<T, ?>> StartNodeFactory<T> messageStartNode(StartNodeFactory<T> nodeFactory, EventDefinition eventDefinition) {
+        return messageNode(nodeFactory, eventDefinition).trigger(JSON_NODE, DEFAULT_WORKFLOW_VAR);
+    }
+
+    public static <T extends RuleFlowNodeContainerFactory<T, ?>> EventNodeFactory<T> messageEventNode(EventNodeFactory<T> nodeFactory, EventDefinition eventDefinition) {
+        return messageNode(nodeFactory, eventDefinition).eventType("Message-" + eventDefinition.getType()).variableName(DEFAULT_WORKFLOW_VAR);
+    }
+
+    public static <T extends NodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> T messageNode(T nodeFactory, EventDefinition eventDefinition) {
+        return nodeFactory.name(eventDefinition.getName())
+                .metaData(Metadata.EVENT_TYPE, "message")
                 .metaData(Metadata.TRIGGER_MAPPING, DEFAULT_WORKFLOW_VAR)
                 .metaData(Metadata.TRIGGER_TYPE, "ConsumeMessage")
                 .metaData(Metadata.TRIGGER_REF, eventDefinition.getType())
-                .metaData(Metadata.MESSAGE_TYPE, JSON_NODE)
-                .trigger(JSON_NODE, DEFAULT_WORKFLOW_VAR);
+                .metaData(Metadata.MESSAGE_TYPE, JSON_NODE);
     }
 
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> SubProcessNodeFactory<T> subprocessNode(SubProcessNodeFactory<T> nodeFactory) {

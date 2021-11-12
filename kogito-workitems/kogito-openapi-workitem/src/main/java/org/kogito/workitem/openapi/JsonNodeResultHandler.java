@@ -15,43 +15,35 @@
  */
 package org.kogito.workitem.openapi;
 
-import java.io.IOException;
+import org.kie.kogito.jackson.utils.MergeUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.process.workitems.impl.OpenApiResultHandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonNodeResultHandler implements OpenApiResultHandler {
 
-    private final JsonNodeParser parser;
-    private final ObjectMapper mapper;
-
-    public JsonNodeResultHandler() {
-        this.mapper = new ObjectMapper();
-        this.parser = new JsonNodeParser(mapper);
-    }
-
     @Override
     public Object apply(Object inputModel, JsonNode response) {
-        return this.merge(response, this.parser.parse(inputModel));
+        return MergeUtils.merge(response, fromModel(inputModel));
     }
 
-    public Object merge(JsonNode src, JsonNode dest) {
-        if (dest.isArray()) {
-            return ((ArrayNode) dest).add(src);
+    private JsonNode fromModel(Object inputModel) {
+        ObjectMapper mapper = ObjectMapperFactory.get();
+        if (inputModel instanceof JsonNode) {
+            return (JsonNode) inputModel;
         }
-        final ObjectReader reader = this.mapper.readerForUpdating(dest);
-        try {
-            if (src.isArray()) {
-                ObjectNode node = (ObjectNode) reader.createObjectNode();
-                node.set("response", src);
-                return reader.readValue(node);
+        if (inputModel instanceof String) {
+
+            try {
+                return mapper.readTree((String) inputModel);
+            } catch (JsonProcessingException e) {
+                // fallback to valueToTree
             }
-            return reader.readValue(src);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to merge input model and JSON response: " + src, e);
         }
+
+        return mapper.valueToTree(inputModel);
     }
 }

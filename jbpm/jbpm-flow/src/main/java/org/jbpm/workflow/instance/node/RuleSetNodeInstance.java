@@ -94,7 +94,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     private String ruleFlowGroup;
     private final JsonResolver jsonResolver = new JsonResolver();
 
-    // NOTE: ContetxInstances are not persisted as current functionality (exception scope) does not require it
+    // NOTE: ContextInstances are not persisted as current functionality (exception scope) does not require it
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private TypeTransformer typeTransformer;
@@ -266,7 +266,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     public void cancel() {
         super.cancel();
         if (actAsWaitState()) {
-            ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda()).deactivateRuleFlowGroup(getRuleFlowGroup());
+            ((InternalAgenda) getProcessInstance().getKnowledgeRuntime().getAgenda()).getAgendaGroupsManager().deactivateRuleFlowGroup(getRuleFlowGroup());
         }
     }
 
