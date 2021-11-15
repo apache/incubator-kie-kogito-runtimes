@@ -15,20 +15,11 @@
  */
 package org.kie.kogito.monitoring.prometheus.common;
 
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
-
-import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 
 public class PrometheusRegistryProvider {
 
     private static PrometheusMeterRegistry prometheusMeterRegistry;
-
-    static {
-        PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-        MonitoringRegistry.addRegistry(registry);
-        prometheusMeterRegistry = registry;
-    }
 
     private PrometheusRegistryProvider() {
     }
@@ -36,4 +27,9 @@ public class PrometheusRegistryProvider {
     public static PrometheusMeterRegistry getPrometheusMeterRegistry() {
         return prometheusMeterRegistry;
     }
+
+    public static void setPrometheusMeterRegistry(PrometheusMeterRegistry registry) {
+        prometheusMeterRegistry = registry;
+    }
+
 }

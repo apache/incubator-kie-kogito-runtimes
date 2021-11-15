@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.core.common;
+package org.kie.kogito.monitoring.prometheus.quarkus.rest;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public class MonitoringRegistry {
+import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
 
-    private static CompositeMeterRegistry compositeMeterRegistry = Metrics.globalRegistry;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.quarkus.runtime.Startup;
 
-    private MonitoringRegistry() {
+/**
+ * This class is needed to inject context-original PrometheusMeterRegistry.
+ */
+@Startup
+@Singleton
+public class QuarkusPrometheusMeterRegistrySetter {
+
+    @Inject
+    public void init(PrometheusMeterRegistry registry) {
+        PrometheusRegistryProvider.setPrometheusMeterRegistry(registry);
     }
 
-    public static void addRegistry(MeterRegistry registry) {
-        compositeMeterRegistry.add(registry);
-    }
-
-    public static CompositeMeterRegistry getDefaultMeterRegistry() {
-        return compositeMeterRegistry;
-    }
 }
