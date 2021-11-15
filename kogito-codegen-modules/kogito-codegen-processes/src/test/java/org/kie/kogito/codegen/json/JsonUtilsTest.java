@@ -80,10 +80,10 @@ public class JsonUtilsTest {
         assertTrue(property instanceof ArrayNode);
         ArrayNode propertyNode = (ArrayNode) property;
         assertEquals(4, propertyNode.size());
-        assertEquals(1, propertyNode.get(0).asInt());
-        assertEquals(2, propertyNode.get(1).asInt());
-        assertEquals(3, propertyNode.get(2).asInt());
-        assertEquals(4, propertyNode.get(3).asInt());
+        assertEquals(4, propertyNode.get(0).asInt());
+        assertEquals(1, propertyNode.get(1).asInt());
+        assertEquals(2, propertyNode.get(2).asInt());
+        assertEquals(3, propertyNode.get(3).asInt());
     }
 
     @Test

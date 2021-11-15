@@ -17,9 +17,12 @@
 package org.kie.kogito.codegen.json;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +46,8 @@ public class JsonUtils {
 
     /**
      * Merge two JSON documents.
-     * 
-     * @param src JsonNode to be merged
+     *
+     * @param src    JsonNode to be merged
      * @param target JsonNode to merge to
      */
     public static void merge(JsonNode src, JsonNode target) {
@@ -91,28 +94,29 @@ public class JsonUtils {
 
     private static void writeArray(Map.Entry<String, JsonNode> srcEntry, JsonNode target) {
         JsonNode targetNode = target.get(srcEntry.getKey());
-
-        if (targetNode != null) {
-            if (targetNode instanceof ArrayNode) {
-                ArrayNode targetArrayNode = (ArrayNode) targetNode;
-                List<JsonNode> sourceNodes = toList(targetArrayNode);
-                srcEntry.getValue().forEach(jsonNode -> {
-                    if (!sourceNodes.contains(jsonNode)) {
-                        targetArrayNode.add(jsonNode);
-                    }
-                });
-            } else {
-                List<JsonNode> sourceNodes = toList((ArrayNode) srcEntry.getValue());
-                if (!sourceNodes.contains(targetNode)) {
-                    sourceNodes.add(targetNode);
-                }
-
-                ArrayNode targetArrayNode = JsonNodeFactory.instance.arrayNode();
-                sourceNodes.forEach(targetArrayNode::add);
-                ((ObjectNode) target).replace(srcEntry.getKey(), targetArrayNode);
-            }
+        ArrayNode targetArrayNode;
+        Set<JsonNode> existingNodes;
+        if (targetNode instanceof ArrayNode) {
+            targetArrayNode = (ArrayNode) targetNode;
+            existingNodes = new HashSet<>();
+            targetArrayNode.forEach(existingNodes::add);
         } else {
-            ((ObjectNode) target).replace(srcEntry.getKey(), srcEntry.getValue());
+            targetArrayNode = JsonNodeFactory.instance.arrayNode();
+
+            if (targetNode != null) {
+                existingNodes = Collections.singleton(targetNode);
+                targetArrayNode.add(targetNode);
+            } else {
+                existingNodes = Collections.emptySet();
+            }
+        }
+        srcEntry.getValue().forEach(node -> addNotDuplicate(targetArrayNode, node, existingNodes));
+        ((ObjectNode) target).replace(srcEntry.getKey(), targetArrayNode);
+    }
+
+    private static void addNotDuplicate(ArrayNode array, JsonNode node, Set<JsonNode> existingNodes) {
+        if (!existingNodes.contains(node)) {
+            array.add(node);
         }
     }
 
@@ -123,8 +127,8 @@ public class JsonUtils {
     }
 
     private static void updateObject(JsonNode target,
-            ValueNode value,
-            Map.Entry<String, JsonNode> src) {
+                                     ValueNode value,
+                                     Map.Entry<String, JsonNode> src) {
         boolean newEntry = true;
         Iterator<Map.Entry<String, JsonNode>> iter = target.fields();
         while (iter.hasNext()) {
