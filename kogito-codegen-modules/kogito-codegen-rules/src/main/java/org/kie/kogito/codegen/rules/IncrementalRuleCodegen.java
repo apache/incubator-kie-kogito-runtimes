@@ -32,10 +32,10 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
+import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.drools.modelcompiler.builder.ModelSourceClass;
 import org.kie.api.builder.model.KieBaseModel;
@@ -83,7 +83,6 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     public static final String TEMPLATE_RULE_FOLDER = "/class-templates/rules/";
     public static final String GENERATOR_NAME = "rules";
     private static final Logger LOGGER = LoggerFactory.getLogger(IncrementalRuleCodegen.class);
-    private static final GeneratedFileType JSON_MAPPER_TYPE = GeneratedFileType.of("JSON_MAPPER", GeneratedFileType.Category.SOURCE);
 
     public static IncrementalRuleCodegen ofCollectedResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Resource> generatedRules = resources.stream()
@@ -299,12 +298,12 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
     private void generateRuleUnits(List<DroolsError> errors, List<GeneratedFile> generatedFiles) {
         RuleUnitHelper ruleUnitHelper = new RuleUnitHelper();
 
-        if (context().hasDI()) {
+        if (context().hasRESTForGenerator(this)) {
             TemplatedGenerator generator = TemplatedGenerator.builder()
                     .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                     .build(context(), "KogitoObjectMapper");
 
-            generatedFiles.add(new GeneratedFile(JSON_MAPPER_TYPE,
+            generatedFiles.add(new GeneratedFile(REST_TYPE,
                     generator.generatedFilePath(),
                     generator.compilationUnitOrThrow().toString()));
         }
@@ -441,17 +440,17 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
     private static KieModuleModel findKieModuleModel(Path[] resourcePaths) {
         for (Path resourcePath : resourcePaths) {
-            Path moduleXmlPath = resourcePath.resolve(KogitoKieModuleModelImpl.KMODULE_JAR_PATH);
+            Path moduleXmlPath = resourcePath.resolve(KieModuleModelImpl.KMODULE_JAR_PATH.asString());
             if (Files.exists(moduleXmlPath)) {
                 try (ByteArrayInputStream bais = new ByteArrayInputStream(Files.readAllBytes(moduleXmlPath))) {
-                    return KogitoKieModuleModelImpl.fromXML(bais);
+                    return KieModuleModelImpl.fromXML(bais);
                 } catch (IOException e) {
                     throw new UncheckedIOException("Impossible to open " + moduleXmlPath, e);
                 }
             }
         }
 
-        return new KogitoKieModuleModelImpl();
+        return new KieModuleModelImpl();
     }
 
     @Override
