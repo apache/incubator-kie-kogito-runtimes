@@ -104,7 +104,7 @@ public interface KogitoBuildContext {
 
     Collection<String> getApplicationProperties();
 
-    void setApplicationProperty(String key, Object value);
+    void setApplicationProperty(String key, String value);
 
     String getPackageName();
 
@@ -147,6 +147,8 @@ public interface KogitoBuildContext {
 
     interface Builder {
         Builder withPackageName(String packageName);
+
+        Builder withApplicationPropertyProvider(KogitoApplicationPropertyProvider applicationProperties);
 
         Builder withApplicationProperties(Properties applicationProperties);
 
