@@ -99,7 +99,9 @@ public class AppPaths {
         this.isJar = isJar;
         this.projectPaths.addAll(projectPaths);
         this.classesPaths.addAll(classesPaths);
-        if (bt == BuildTool.GRADLE) {
+        // this is false also in case of remote devmode
+        boolean mavenResourcePathExists = Paths.get("src", "main", "resources").toFile().exists();
+        if (bt == BuildTool.GRADLE || !mavenResourcePathExists) {
             resourcesPath = Paths.get(""); // no prefix required
         } else {
             resourcesPath = Paths.get("src", "main", "resources");
