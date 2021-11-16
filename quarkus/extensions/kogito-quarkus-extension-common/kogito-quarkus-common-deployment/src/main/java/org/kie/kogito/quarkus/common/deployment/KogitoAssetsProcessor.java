@@ -81,9 +81,10 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
+        boolean localMavenBuild = Arrays.stream(context.getAppPaths().getResourcePaths()).anyMatch(path -> path.toString().contains("resources"));
         // The HotReloadSupportClass has to be generated only during the first model generation
         // During actual hot reloads it will be regenrated by the compilation providers in order to retrigger this build step
-        if (!liveReload.isLiveReload()) {
+        if (!liveReload.isLiveReload() && localMavenBuild) {
             generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, HOT_RELOAD_SUPPORT_PATH + ".java", getHotReloadSupportSource()));
         }
 
