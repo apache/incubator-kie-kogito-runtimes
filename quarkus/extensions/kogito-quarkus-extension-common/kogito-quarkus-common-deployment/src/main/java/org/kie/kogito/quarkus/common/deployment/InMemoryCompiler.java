@@ -60,7 +60,11 @@ public class InMemoryCompiler {
             compilerSettings.addClasspath(classPath.toFile());
         }
         for (ResolvedDependency i : userDependencies) {
-            compilerSettings.addClasspath(i.getResolvedPaths().getSinglePath().toFile());
+            if (i.isResolved()) {
+                compilerSettings.addClasspath(i.getResolvedPaths().getSinglePath().toFile());
+            } else {
+                logger.warn("Unresolved dependency found: " + i);
+            }
         }
     }
 
