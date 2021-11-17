@@ -38,16 +38,16 @@ import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class JsonUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
+
     /* see https://stackoverflow.com/questions/9895041/merging-two-json-documents-using-jackson for alternative approaches to merge */
     private JsonUtils() {
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
-
     /**
      * Merge two JSON documents.
      *
-     * @param src    JsonNode to be merged
+     * @param src JsonNode to be merged
      * @param target JsonNode to merge to
      */
     public static void merge(JsonNode src, JsonNode target) {
@@ -127,8 +127,8 @@ public class JsonUtils {
     }
 
     private static void updateObject(JsonNode target,
-                                     ValueNode value,
-                                     Map.Entry<String, JsonNode> src) {
+            ValueNode value,
+            Map.Entry<String, JsonNode> src) {
         boolean newEntry = true;
         Iterator<Map.Entry<String, JsonNode>> iter = target.fields();
         while (iter.hasNext()) {
