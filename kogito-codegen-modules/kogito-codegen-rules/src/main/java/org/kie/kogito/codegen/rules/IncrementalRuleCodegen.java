@@ -76,6 +76,8 @@ import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableToCompiler;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
+import static org.kie.kogito.codegen.core.utils.GrafanaDashboardUtils.isDomainDashboardEnabled;
+import static org.kie.kogito.codegen.core.utils.GrafanaDashboardUtils.isOperationDashboardEnabled;
 
 public class IncrementalRuleCodegen extends AbstractGenerator {
 
@@ -338,7 +340,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         if (!context().hasDI()) {
             generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
         }
-        if (context().getAddonsConfig().useMonitoring()) {
+        if (context().getAddonsConfig().useMonitoring() && isDomainDashboardEnabled(context(), ruleUnit.typeName())) {
             String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), ruleUnit.typeName());
             String dashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
                     domainDashboardDrlTemplate,
@@ -370,7 +372,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         }
 
         if (context().hasRESTForGenerator(this)) {
-            if (context().getAddonsConfig().usePrometheusMonitoring()) {
+            if (context().getAddonsConfig().usePrometheusMonitoring() && isOperationDashboardEnabled(context(), query.getEndpointName())) {
                 String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), query.getEndpointName());
                 String dashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
                         operationalDashboardDrlTemplate,

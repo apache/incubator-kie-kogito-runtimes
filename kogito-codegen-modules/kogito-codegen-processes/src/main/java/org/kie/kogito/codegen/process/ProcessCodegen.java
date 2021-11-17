@@ -76,6 +76,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static org.kie.kogito.codegen.core.utils.GrafanaDashboardUtils.isOperationDashboardEnabled;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.buildDashboardName;
 import static org.kie.kogito.grafana.GrafanaConfigurationWriter.generateOperationalDashboard;
 
@@ -551,14 +552,17 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // generate Grafana dashboards
         if (context().getAddonsConfig().usePrometheusMonitoring()) {
-            String globalDbName = buildDashboardName(context().getGAV(), "Global");
-            String globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE, globalDbName, "Global", context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
-            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(globalDbJson, globalDbName + ".json"));
-
+            if (isOperationDashboardEnabled(context(), "Global")) {
+                String globalDbName = buildDashboardName(context().getGAV(), "Global");
+                String globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE, globalDbName, "Global", context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
+                generatedFiles.addAll(DashboardGeneratedFileUtils.operational(globalDbJson, globalDbName + ".json"));
+            }
             for (KogitoWorkflowProcess process : processes.values()) {
-                String dbName = buildDashboardName(context().getGAV(), process.getId());
-                String dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE, dbName, process.getId(), context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
-                generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dbJson, dbName + ".json"));
+                if (isOperationDashboardEnabled(context(), process.getId())) {
+                    String dbName = buildDashboardName(context().getGAV(), process.getId());
+                    String dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE, dbName, process.getId(), context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
+                    generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dbJson, dbName + ".json"));
+                }
             }
         }
 
