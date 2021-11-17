@@ -42,7 +42,14 @@ jobs:
       - name: Build Chain
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
         with:
-          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build Chain ${{ matrix.java-version }}
+        id: build-chain
+        uses: kiegroup/github-action-build-chain@v2.6.18
+        with:
+          definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
           starting-project: kiegroup/optaplanner
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Surefire Report
