@@ -29,7 +29,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
-import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,16 +68,12 @@ public class ServerlessWorkflowIT extends AbstractCodegenIT {
 
         Process<? extends Model> p = app.get(Processes.class).processById("function");
 
-        ProcessInstance<?> processInstance = UnitOfWorkExecutor.executeInUnitOfWork(app.unitOfWorkManager(), () -> {
+        Model m = p.createModel();
+        Map<String, Object> parameters = new HashMap<>();
+        m.fromMap(parameters);
 
-            Model m = p.createModel();
-            Map<String, Object> parameters = new HashMap<>();
-            m.fromMap(parameters);
-            ProcessInstance<?> pi = p.createInstance(m);
-            pi.start();
-
-            return pi;
-        });
+        ProcessInstance<?> processInstance = p.createInstance(m);
+        processInstance.start();
 
         boolean completed = listener.waitTillCompleted(5000);
         assertThat(completed).isTrue();

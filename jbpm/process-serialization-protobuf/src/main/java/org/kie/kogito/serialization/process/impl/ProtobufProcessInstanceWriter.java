@@ -288,7 +288,6 @@ public class ProtobufProcessInstanceWriter {
         if (timerInstances != null) {
             foreachBuilder.addAllTimerInstanceId(timerInstances);
         }
-        //List<NodeInstance> nodeInstances = nodeInstance.getNodeInstances().stream().collect(Collectors.toList());
         List<NodeInstance> nodeInstances = nodeInstance.getNodeInstances().stream().filter(CompositeContextNodeInstance.class::isInstance).collect(Collectors.toList());
 
         List<ContextInstance> exclusiveGroupInstances = nodeInstance.getContextInstances(ExclusiveGroup.EXCLUSIVE_GROUP);

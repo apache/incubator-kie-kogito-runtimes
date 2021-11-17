@@ -193,7 +193,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                     logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
                     nodeInstance.trigger(this, getForEachSplitNode().getTo().getToType());
 
-                    //this is required because Parallel instances execution does not work with async, so the it fallbacks to sequential
+                    //this is required because Parallel instances execution does not work with async, so it fallbacks to sequential
                     hasAsyncInstances = checkAsyncInstance(nodeInstance);
                     if (isSequential()) {
                         // for sequential mode trigger only first item from the list
