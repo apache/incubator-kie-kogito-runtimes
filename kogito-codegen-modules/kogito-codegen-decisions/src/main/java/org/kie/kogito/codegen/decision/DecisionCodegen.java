@@ -60,8 +60,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.util.stream.Collectors.toList;
-import static org.kie.kogito.codegen.core.utils.GrafanaDashboardUtils.isDomainDashboardEnabled;
-import static org.kie.kogito.codegen.core.utils.GrafanaDashboardUtils.isOperationDashboardEnabled;
 
 public class DecisionCodegen extends AbstractGenerator {
 
@@ -239,27 +237,24 @@ public class DecisionCodegen extends AbstractGenerator {
     private void generateAndStoreGrafanaDashboards(DecisionRestResourceGenerator resourceGenerator) {
         Definitions definitions = resourceGenerator.getDmnModel().getDefinitions();
         List<Decision> decisions = definitions.getDrgElement().stream().filter(x -> x.getParentDRDElement() instanceof Decision).map(x -> (Decision) x).collect(toList());
-
+        Optional<String> operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
+                operationalDashboardDmnTemplate,
+                resourceGenerator.getNameURL(),
+                context().getProperties(),
+                resourceGenerator.getNameURL(),
+                context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
+                context().getAddonsConfig().useTracing());
         String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), resourceGenerator.getNameURL());
-        if (isOperationDashboardEnabled(context(), resourceGenerator.getNameURL())) {
-            String operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                    operationalDashboardDmnTemplate,
-                    dashboardName,
-                    resourceGenerator.getNameURL(),
-                    context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
-                    context().getAddonsConfig().useTracing());
-            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(operationalDashboard, dashboardName + ".json"));
-        }
-        if (isDomainDashboardEnabled(context(), resourceGenerator.getNameURL())) {
-            String domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
-                    domainDashboardDmnTemplate,
-                    dashboardName,
-                    resourceGenerator.getNameURL(),
-                    context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
-                    decisions,
-                    context().getAddonsConfig().useTracing());
-            generatedFiles.addAll(DashboardGeneratedFileUtils.domain(domainDashboard, dashboardName + ".json"));
-        }
+        operationalDashboard.ifPresent(dashboard -> generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, dashboardName + ".json")));
+        Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
+                domainDashboardDmnTemplate,
+                resourceGenerator.getNameURL(),
+                context().getProperties(),
+                resourceGenerator.getNameURL(),
+                context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
+                decisions,
+                context().getAddonsConfig().useTracing());
+        domainDashboard.ifPresent(dashboard -> generatedFiles.addAll(DashboardGeneratedFileUtils.domain(dashboard, dashboardName + ".json")));
     }
 
     private void storeFile(GeneratedFileType type, String path, String source) {

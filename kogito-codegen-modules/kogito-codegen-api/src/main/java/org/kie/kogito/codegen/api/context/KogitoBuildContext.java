@@ -145,6 +145,8 @@ public interface KogitoBuildContext {
 
     Optional<KogitoGAV> getGAV();
 
+    Properties getProperties();
+
     interface Builder {
         Builder withPackageName(String packageName);
 

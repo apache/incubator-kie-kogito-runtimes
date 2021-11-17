@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.core.utils;
+package org.kie.kogito.grafana.utils;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import java.util.Optional;
+import java.util.Properties;
 
 public class GrafanaDashboardUtils {
 
@@ -28,17 +28,17 @@ public class GrafanaDashboardUtils {
     private GrafanaDashboardUtils() {
     }
 
-    public static boolean isOperationDashboardEnabled(final KogitoBuildContext context, final String toVerify) {
-        return isDashboardEnabled(context, DISABLED_OPERATIONAL_DASHBOARDS, toVerify);
+    public static boolean isOperationDashboardEnabled(final Properties applicationProperties, final String toVerify) {
+        return isDashboardEnabled(applicationProperties, DISABLED_OPERATIONAL_DASHBOARDS, toVerify);
     }
 
-    public static boolean isDomainDashboardEnabled(final KogitoBuildContext context, final String toVerify) {
-        return isDashboardEnabled(context, DISABLED_DOMAIN_DASHBOARDS, toVerify);
+    public static boolean isDomainDashboardEnabled(final Properties applicationProperties, final String toVerify) {
+        return isDashboardEnabled(applicationProperties, DISABLED_DOMAIN_DASHBOARDS, toVerify);
 
     }
 
-    static boolean isDashboardEnabled(final KogitoBuildContext context, final String dashboardProperty, final String toVerify) {
-        return context.getApplicationProperty(dashboardProperty)
+    static boolean isDashboardEnabled(final Properties applicationProperties, final String dashboardProperty, final String toVerify) {
+        return Optional.ofNullable(applicationProperties.getProperty(dashboardProperty))
                 .map(value -> {
                     List<String> items = Arrays.asList(value.split("\\s*,\\s*"));
                     return !items.contains(toVerify);
