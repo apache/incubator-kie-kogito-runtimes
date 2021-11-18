@@ -18,11 +18,10 @@ package org.drools.core.impl;
 import org.drools.core.KogitoWorkingMemory;
 import org.drools.core.SessionConfiguration;
 import org.drools.core.base.DefaultKnowledgeHelper;
-import org.drools.core.base.ReteEvaluatorForRHS;
+import org.drools.core.base.StatefulKnowledgeSessionForRHS;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
-import org.drools.core.common.ReteEvaluator;
 import org.drools.core.factmodel.traits.Thing;
 import org.drools.core.kogito.factory.KogitoDefaultFactHandle;
 import org.drools.core.spi.AbstractProcessContext;
@@ -100,10 +99,6 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         this.application = application;
     }
 
-    public Object startProcessInstance(String subProcessInstanceId) {
-        throw new UnsupportedOperationException("org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl.startProcessInstance -> TODO");
-    }
-
     public static class RuleUnitKnowledgeHelper extends DefaultKnowledgeHelper {
 
         private final KogitoStatefulKnowledgeSessionImpl kogitoSession;
@@ -138,7 +133,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
                     modifiedClass,
                     this.activation);
             if (h.isTraitOrTraitable()) {
-                reteEvaluator.updateTraits(h, mask, modifiedClass, this.activation);
+                toStatefulKnowledgeSession().updateTraits(h, mask, modifiedClass, this.activation);
             }
         }
 
@@ -173,16 +168,16 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
         @Override
         protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContextImpl(reteEvaluator.getKnowledgeRuntime());
+            return new KogitoProcessContextImpl(toStatefulKnowledgeSession());
         }
 
         @Override
-        protected KogitoReteEvaluatorForRHS createWrappedSession(ReteEvaluator reteEvaluator) {
+        protected KogitoReteEvaluatorForRHS toStatefulKnowledgeSession() {
             return new KogitoReteEvaluatorForRHS((KogitoStatefulKnowledgeSessionImpl) reteEvaluator);
         }
     }
 
-    public static class KogitoReteEvaluatorForRHS extends ReteEvaluatorForRHS implements KogitoProcessRuntime.Provider {
+    public static class KogitoReteEvaluatorForRHS extends StatefulKnowledgeSessionForRHS implements KogitoProcessRuntime.Provider {
 
         public KogitoReteEvaluatorForRHS(KogitoStatefulKnowledgeSessionImpl delegate) {
             super(delegate);

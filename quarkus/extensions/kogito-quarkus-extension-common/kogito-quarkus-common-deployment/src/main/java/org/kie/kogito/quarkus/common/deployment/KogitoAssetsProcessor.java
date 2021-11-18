@@ -31,7 +31,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppDependency;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -45,6 +44,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
+import io.quarkus.maven.dependency.ResolvedDependency;
 
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.*;
 
@@ -77,19 +77,7 @@ public class KogitoAssetsProcessor {
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
-
-        if (capabilities.isCapabilityWithPrefixMissing(Capability.RESTEASY) &&
-                !"false".equalsIgnoreCase(
-                        context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
-                                .orElse("true"))) {
-
-            throw new MissingRestCapabilityException();
-        }
-
-        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET)) {
-            throw new MissingServletCapabilityException();
-        }
+        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
@@ -119,6 +107,31 @@ public class KogitoAssetsProcessor {
                 .orElse(Collections.emptyList());
     }
 
+    void validateAvailableCapabilities(KogitoBuildContext context, Capabilities capabilities) {
+        boolean hasOptaPlannerCapability = capabilities.isCapabilityWithPrefixPresent("org.optaplanner");
+        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
+
+        // disable REST if OptaPlanner capability is available but REST is not (user can override via property)
+        if (hasOptaPlannerCapability && !hasRestCapabilities &&
+                kogitoGenerateRest(context).isEmpty()) {
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
+        }
+
+        if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
+            throw new MissingRestCapabilityException();
+        }
+      
+        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET)) {
+            throw new MissingServletCapabilityException();
+        }
+    }
+
+    private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {
+        return context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
+                .map("true"::equalsIgnoreCase);
+    }
+
     private Collection<GeneratedFile> generateFiles(KogitoBuildContext context) {
         return ApplicationGeneratorDiscovery
                 .discover(context)
@@ -132,7 +145,7 @@ public class KogitoAssetsProcessor {
             BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer,
             boolean useDebugSymbols) throws IOException {
 
-        List<AppDependency> dependencies = curateOutcomeBuildItem.getEffectiveModel().getUserDependencies();
+        Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
@@ -223,6 +236,8 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceInputValue"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceOutputValue"));
+        reflectiveClass.produce(
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.typedvalue.BaseTypedValue"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.typedvalue.TypedValue"));
         reflectiveClass.produce(

@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+package org.kie.kogito.incubation.common;
 
-public class ObjectMapperFactory {
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
-    private ObjectMapperFactory() {
-    }
+/**
+ * An empty DataContext singleton
+ */
+@JsonAutoDetect // ensure Jackson won't complain even if it is an empty object
+public final class EmptyMetaDataContext implements MetaDataContext {
+    public static final MetaDataContext Instance = new EmptyMetaDataContext();
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
-    public static ObjectMapper getObjectMapper() {
-        return objectMapper;
+    private EmptyMetaDataContext() {
     }
 }

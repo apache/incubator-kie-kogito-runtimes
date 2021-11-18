@@ -22,19 +22,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.jupiter.api.Test;
+import org.drools.core.common.ReteEvaluator;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.kie.api.runtime.KieSession;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.builder.conf.PropertySpecificOption;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.codegen.data.StockTick;
+import org.kie.kogito.codegen.data.ValueDrop;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
 import org.kie.kogito.codegen.rules.multiunit.MultiUnit;
 import org.kie.kogito.codegen.rules.singleton.Datum;
 import org.kie.kogito.codegen.rules.singleton.Singleton;
 import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
+import org.kie.kogito.codegen.unit.StockUnit;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataSource;
@@ -43,6 +50,7 @@ import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnitQuery;
 import org.kie.kogito.rules.RuleUnits;
+import org.kie.kogito.rules.units.AbstractRuleUnitInstance;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -50,12 +58,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.kie.kogito.codegen.rules.RuleUnitGenerator.KOGITO_USE_LEGACY_SESSION;
 
 public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
-    @Test
-    public void testRuleUnit() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnit.drl");
+    private enum SessionType {
+        LEGACY,
+        LIGHTWEIGHT
+    }
+
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnit(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnit.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -68,6 +83,12 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         RuleUnit<AdultUnit> unit = application.get(RuleUnits.class).create(AdultUnit.class);
         RuleUnitInstance<AdultUnit> instance = unit.createInstance(adults);
 
+        if (sessionType == SessionType.LEGACY) {
+            assertTrue(((AbstractRuleUnitInstance) instance).getEvaluator() instanceof KieSession);
+        } else {
+            assertTrue(((AbstractRuleUnitInstance) instance).getEvaluator() instanceof ReteEvaluator);
+        }
+
         assertTrue(instance.getClock() instanceof SessionPseudoClock);
 
         assertEquals(2, instance.fire());
@@ -79,9 +100,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(adults.getResults().getResults().containsAll(asList("Mario", "Marilena", "Sofia")));
     }
 
-    @Test
-    public void testRuleUnitModify() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitModify.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitModify(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitModify.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -96,9 +118,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(adults.getResults().getResults().containsAll(asList("Sofia")));
     }
 
-    @Test
-    public void testRuleUnitDelete() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitDelete.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitDelete(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitDelete.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -116,9 +139,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(results.containsAll(asList("Mario", "Marilena")));
     }
 
-    @Test
-    public void testRuleUnitQuery() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQuery(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -138,9 +162,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(results.containsAll(asList("Mario", "Marilena")));
     }
 
-    @Test
-    public void testRuleUnitQueryOnPrimitive() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQueryOnPrimitive(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -161,9 +186,11 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(results.containsAll(asList(45, 47)));
     }
 
-    @Test
-    public void testRuleUnitQueryWithNoRules() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitQueryNoRules.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitQueryWithNoRules(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
+                "org/kie/kogito/codegen/unit/RuleUnitQueryNoRules.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -184,9 +211,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertThat(results).containsExactlyInAnyOrder(99);
     }
 
-    @Test
-    public void testRuleUnitExecutor() throws Exception {
-        Application application = generateCodeRulesOnly(
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitExecutor(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
                 "org/kie/kogito/codegen/unit/RuleUnit.drl",
                 "org/kie/kogito/codegen/unit/PersonsUnit.drl");
 
@@ -212,9 +240,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertTrue(adultData21.getResults().getResults().containsAll(asList("Mario")));
     }
 
-    @Test
-    public void generateSinglePackageSingleUnit() throws Exception {
-        Application application = generateCodeRulesOnly(
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void generateSinglePackageSingleUnit(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType,
                 "org/kie/kogito/codegen/rules/multiunit/MultiUnit.drl",
                 "org/kie/kogito/codegen/rules/multiunit/MultiUnit2.drl");
 
@@ -234,10 +263,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
     }
 
-    @Test
-    public void singletonStore() throws Exception {
-        Application application = generateCodeRulesOnly(
-                "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void singletonStore(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/rules/singleton/Singleton.drl");
 
         ArrayList<String> data = new ArrayList<>();
         AtomicReference<Datum> lastSeen = new AtomicReference<>();
@@ -262,9 +291,10 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
     }
 
-    @Test
-    public void test2PatternsOopath() throws Exception {
-        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/TwoPatternsQuery.drl");
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void test2PatternsOopath(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/TwoPatternsQuery.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -292,38 +322,44 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         assertEquals("Mario", results.get(0).getName());
     }
 
-    @Test
-    public void testRuleUnitWithNoBindQueryShouldntCompile() throws Exception {
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testRuleUnitWithNoBindQueryShouldntCompile(SessionType sessionType) throws Exception {
         try {
-            Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/RuleUnitNoBindQuery.drl");
+            Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/RuleUnitNoBindQuery.drl");
             fail("A query without binding shouldn't compile");
         } catch (RuleCodegenError e) {
             // ignore
         }
     }
 
-    @Test
-    public void testRuleUnitNoPropertyReactivity() throws Exception {
-        // KOGITO-5101
-        checckPropertyReactvity(false);
+    @ParameterizedTest
+    @EnumSource(SessionType.class)
+    public void testCep(SessionType sessionType) throws Exception {
+        Application application = createApplication(sessionType, "org/kie/kogito/codegen/unit/Stock.drl");
+
+        StockUnit stockUnit = new StockUnit();
+        RuleUnit<StockUnit> unit = application.get(RuleUnits.class).create(StockUnit.class);
+        RuleUnitInstance<StockUnit> instance = unit.createInstance(stockUnit);
+
+        stockUnit.getStockTicks().append(new StockTick("IBM", 2000, 100));
+        stockUnit.getStockTicks().append(new StockTick("IBM", 1700, 170));
+        stockUnit.getStockTicks().append(new StockTick("IBM", 1500, 240));
+
+        ValueDrop valueDrop = (ValueDrop) instance.executeQuery("highestValueDrop", "IBM").get(0).get("$s");
+        assertEquals(300, valueDrop.getDropAmount());
     }
 
-    @Test
-    public void testRuleUnitWithPropertyReactivity() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void checckPropertyReactvity(boolean usePropertyReactivity) throws Exception {
         // KOGITO-5101
-        checckPropertyReactvity(true);
-    }
-
-    private void checckPropertyReactvity(boolean usePropertyReactivity) throws Exception {
         KogitoBuildContext context = newContext();
         if (!usePropertyReactivity) {
             context.setApplicationProperty(PropertySpecificOption.PROPERTY_NAME, PropertySpecificOption.DISABLED.toString());
         }
 
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.RULES, Arrays.asList("org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl"));
-
-        Application application = generateCode(resourcesTypeMap, context);
+        Application application = createApplication(context, "org/kie/kogito/codegen/unit/RuleUnitNoPropReact.drl");
 
         AdultUnit adults = new AdultUnit();
 
@@ -336,5 +372,18 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         instance.fire();
 
         assertEquals(usePropertyReactivity ? 46 : 50, mario.getAge());
+    }
+
+    private Application createApplication(SessionType sessionType, String... drls) throws Exception {
+        KogitoBuildContext context = newContext();
+        context.setApplicationProperty(KOGITO_USE_LEGACY_SESSION, "" + (sessionType == SessionType.LEGACY));
+        return createApplication(context, drls);
+    }
+
+    private Application createApplication(KogitoBuildContext context, String... drls) throws Exception {
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        resourcesTypeMap.put(TYPE.RULES, Arrays.asList(drls));
+        Application application = generateCode(resourcesTypeMap, context);
+        return application;
     }
 }
