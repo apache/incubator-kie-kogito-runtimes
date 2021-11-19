@@ -25,6 +25,9 @@ public class PrometheusRegistryProvider {
     }
 
     public static PrometheusMeterRegistry getPrometheusMeterRegistry() {
+        if (prometheusMeterRegistry == null) {
+            throw new IllegalStateException("PrometheusRegistryProvider has not been initialized");
+        }
         return prometheusMeterRegistry;
     }
 
