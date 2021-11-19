@@ -33,14 +33,19 @@ jobs:
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
         uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@main
-      - name: Java and Maven Setup
-        uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java-version }}
-          maven-version: ${{ matrix.maven-version }}
-          cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
+      # See https://docs.github.com/en/actions/guides/building-and-testing-java-with-maven#caching-dependencies
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Build Chain
-        uses: radtriste/kogito-pipelines/.ci/actions/build-chain@test_composite
+        uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
