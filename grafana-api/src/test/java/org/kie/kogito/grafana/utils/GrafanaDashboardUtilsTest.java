@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,12 @@ class GrafanaDashboardUtilsTest {
         assertTrue(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Traffic"));
         assertFalse(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Loan"));
         assertFalse(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Hello"));
+
+        values = " Hello, Loan ";
+        properties.setProperty(DISABLED_OPERATIONAL_DASHBOARDS, values);
+        assertTrue(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Traffic"));
+        assertFalse(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Loan"));
+        assertFalse(GrafanaDashboardUtils.isOperationDashboardEnabled(properties, "Hello"));
     }
 
     @Test
@@ -63,6 +69,12 @@ class GrafanaDashboardUtilsTest {
         assertFalse(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Hello"));
 
         values = "Hello,Loan";
+        properties.setProperty(DISABLED_DOMAIN_DASHBOARDS, values);
+        assertTrue(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Traffic"));
+        assertFalse(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Loan"));
+        assertFalse(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Hello"));
+
+        values = " Hello, Loan ";
         properties.setProperty(DISABLED_DOMAIN_DASHBOARDS, values);
         assertTrue(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Traffic"));
         assertFalse(GrafanaDashboardUtils.isDomainDashboardEnabled(properties, "Loan"));

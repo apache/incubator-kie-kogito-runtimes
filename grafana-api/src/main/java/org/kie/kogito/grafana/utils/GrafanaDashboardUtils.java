@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class GrafanaDashboardUtils {
 
@@ -39,9 +40,13 @@ public class GrafanaDashboardUtils {
 
     static boolean isDashboardEnabled(final Properties applicationProperties, final String dashboardProperty, final String toVerify) {
         return Optional.ofNullable(applicationProperties.getProperty(dashboardProperty))
-                .map(value -> {
-                    List<String> items = Arrays.asList(value.split("\\s*,\\s*"));
-                    return !items.contains(toVerify);
-                }).orElse(true);
+                .map(value -> !containsValue(value, toVerify)).orElse(true);
+    }
+
+    static boolean containsValue(String value, String toVerify) {
+        List<String> items =  Arrays.stream(value.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+        return items.contains(toVerify);
     }
 }
