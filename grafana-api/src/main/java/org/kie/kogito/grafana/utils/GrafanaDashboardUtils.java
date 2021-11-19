@@ -44,7 +44,7 @@ public class GrafanaDashboardUtils {
     }
 
     static boolean containsValue(String value, String toVerify) {
-        List<String> items =  Arrays.stream(value.split(","))
+        List<String> items = Arrays.stream(value.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
         return items.contains(toVerify);
