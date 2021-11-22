@@ -16,7 +16,7 @@
 package org.kie.kogito.monitoring.prometheus.common.rest;
 
 /**
- * Needed only to notify AddonsConfigDiscovery about prometheus availability
+ * This class must always have exact FQCN as <code>org.kie.kogito.monitoring.prometheus.common.rest. MetricsResource </code>
  */
 public interface MetricsResource {
 
