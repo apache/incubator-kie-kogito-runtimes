@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 
 public class GrafanaDashboardUtils {
 
-    public static final String DISABLED_OPERATIONAL_DASHBOARDS = "grafana.disabled.operational.dashboards";
-    public static final String DISABLED_DOMAIN_DASHBOARDS = "grafana.disabled.domain.dashboards";
+    public static final String DISABLED_OPERATIONAL_DASHBOARDS = "kogito.grafana.disabled.operational.dashboards";
+    public static final String DISABLED_DOMAIN_DASHBOARDS = "kogito.grafana.disabled.domain.dashboards";
 
     private GrafanaDashboardUtils() {
     }
@@ -47,6 +47,6 @@ public class GrafanaDashboardUtils {
         List<String> items = Arrays.stream(value.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
-        return items.contains(toVerify);
+        return items.contains(toVerify.trim());
     }
 }
