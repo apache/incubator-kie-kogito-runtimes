@@ -15,11 +15,9 @@
  */
 package org.kie.kogito.monitoring.prometheus.common.rest;
 
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+/**
+ * Needed only to notify AddonsConfigDiscovery about prometheus availability
+ */
+public interface MetricsResource {
 
-public abstract class MetricsResource {
-
-    public String scrape() {
-        return PrometheusRegistryProvider.getPrometheusMeterRegistry().scrape();
-    }
 }
