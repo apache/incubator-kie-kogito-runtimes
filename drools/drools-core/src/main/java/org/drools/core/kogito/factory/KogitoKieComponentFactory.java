@@ -19,8 +19,8 @@ import org.drools.core.common.AgendaFactory;
 import org.drools.core.common.KogitoDefaultAgendaFactory;
 import org.drools.core.common.KogitoPhreakWorkingMemoryFactory;
 import org.drools.core.common.WorkingMemoryFactory;
-import org.drools.core.reteoo.KieComponentFactory;
 import org.drools.core.spi.FactHandleFactory;
+import org.drools.runtime.factory.KieComponentFactory;
 
 public class KogitoKieComponentFactory extends KieComponentFactory {
 

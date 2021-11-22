@@ -28,6 +28,8 @@ import java.util.List;
 
 import org.drools.core.WorkingMemory;
 import org.drools.core.audit.event.LogEvent;
+import org.drools.runtime.audit.WorkingMemoryFileLogger;
+import org.drools.runtime.audit.WorkingMemoryLog;
 import org.kie.api.event.KieRuntimeEventManager;
 import org.kie.api.logger.KieRuntimeLogger;
 import org.slf4j.Logger;
