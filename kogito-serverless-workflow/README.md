@@ -15,9 +15,9 @@ The sections below describe in detail the supported features.
 | State         | Status             |
 | ------------- | ------------------ |
 | Event         | :white_check_mark: |
-| Operation	    | :white_check_mark: |
+| Operation     | :white_check_mark: |
 | Switch        | :white_check_mark: |
-| Delay	        | :white_check_mark: |
+| Delay         | :white_check_mark: |
 | Parallel      | :white_check_mark: |
 | SubFlow       | :white_check_mark: |
 | Inject        | :white_check_mark: |
