@@ -24,7 +24,7 @@ import org.drools.core.spi.AbstractProcessContext;
 import org.drools.core.spi.KnowledgeHelper;
 import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.core.util.bitmask.BitMask;
-import org.drools.runtime.consequence.DefaultKnowledgeHelper;
+import org.drools.kiesession.consequence.DefaultKnowledgeHelper;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.Application;

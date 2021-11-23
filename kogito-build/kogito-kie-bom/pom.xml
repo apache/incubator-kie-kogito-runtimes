@@ -80,7 +80,7 @@
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-runtime</artifactId>
+                <artifactId>drools-kiesession</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
             <dependency>
