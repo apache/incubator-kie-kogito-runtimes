@@ -31,7 +31,6 @@ import org.drools.core.common.ReteEvaluator;
 import org.drools.core.common.RuleBasePartitionId;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.rule.impl.RuleImpl;
-import org.drools.core.factmodel.traits.TraitRegistry;
 import org.drools.core.impl.InternalKieContainer;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.reteoo.AsyncReceiveNode;
@@ -281,11 +280,6 @@ public class KieBaseImpl implements InternalKnowledgeBase {
     @Override
     public void disposeStatefulSession(InternalWorkingMemory statefulSession) {
         delegate.disposeStatefulSession(statefulSession);
-    }
-
-    @Override
-    public TraitRegistry getTraitRegistry() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
