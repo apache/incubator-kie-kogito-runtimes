@@ -50,7 +50,7 @@ public class MonitoringIT {
 
         String response = given().contentType(ContentType.JSON)
                 .when()
-                .get("/q/metrics")
+                .get("/metrics")
                 .then()
                 .statusCode(200)
                 .extract().body().asString();
@@ -85,7 +85,7 @@ public class MonitoringIT {
 
         response = given().contentType(ContentType.JSON)
                 .when()
-                .get("/q/metrics")
+                .get("/metrics")
                 .then()
                 .statusCode(200)
                 .extract().body().asString();
