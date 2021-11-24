@@ -341,7 +341,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
         Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
                 domainDashboardDrlTemplate,
                 ruleUnit.typeName(),
-                context().getProperties(),
+                context().getPropertiesMap(),
                 ruleUnit.typeName(),
                 context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                 context().getAddonsConfig().useTracing());
@@ -372,7 +372,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
                 Optional<String> operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
                         operationalDashboardDrlTemplate,
                         query.getEndpointName(),
-                        context().getProperties(),
+                        context().getPropertiesMap(),
                         query.getEndpointName(),
                         context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                         context().getAddonsConfig().useTracing());

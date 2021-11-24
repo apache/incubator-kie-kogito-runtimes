@@ -240,7 +240,7 @@ public class DecisionCodegen extends AbstractGenerator {
         Optional<String> operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
                 operationalDashboardDmnTemplate,
                 resourceGenerator.getNameURL(),
-                context().getProperties(),
+                context().getPropertiesMap(),
                 resourceGenerator.getNameURL(),
                 context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                 context().getAddonsConfig().useTracing());
@@ -249,7 +249,7 @@ public class DecisionCodegen extends AbstractGenerator {
         Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDMNDashboard(
                 domainDashboardDmnTemplate,
                 resourceGenerator.getNameURL(),
-                context().getProperties(),
+                context().getPropertiesMap(),
                 resourceGenerator.getNameURL(),
                 context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                 decisions,

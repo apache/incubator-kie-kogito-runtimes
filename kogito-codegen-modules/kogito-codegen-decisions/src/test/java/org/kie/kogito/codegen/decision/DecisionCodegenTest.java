@@ -146,10 +146,8 @@ public class DecisionCodegenTest {
                 AddonsConfig.builder().withMonitoring(true).withPrometheusMonitoring(true).build(),
                 contextBuilder);
         KogitoBuildContext build = contextBuilder.build();
-        Properties properties = build.getProperties();
-        properties.setProperty(DISABLED_OPERATIONAL_DASHBOARDS, "Vacations");
-        properties.setProperty(DISABLED_DOMAIN_DASHBOARDS, "Vacations");
-        contextBuilder.withApplicationProperties(properties);
+        build.setApplicationProperty(DISABLED_OPERATIONAL_DASHBOARDS, "Vacations");
+        build.setApplicationProperty(DISABLED_DOMAIN_DASHBOARDS, "Vacations");
         generateTestDashboards(decisionCodeGenerator, 0);
     }
 

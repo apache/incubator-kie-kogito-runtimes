@@ -554,7 +554,7 @@ public class ProcessCodegen extends AbstractGenerator {
 
             Optional<String> globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE,
                     "Global",
-                    context().getProperties(),
+                    context().getPropertiesMap(),
                     "Global",
                     context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                     false);
@@ -564,7 +564,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 String dbName = buildDashboardName(context().getGAV(), process.getId());
                 Optional<String> dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE,
                         process.getId(),
-                        context().getProperties(),
+                        context().getPropertiesMap(),
                         process.getId(),
                         context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
                         false);

@@ -22,8 +22,8 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -54,22 +54,26 @@ public class GrafanaConfigurationWriter {
     }
 
     /**
-     *
      * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
      * @param dashboardIdentifier: the identifier used to create th <b>dashboard name</b>
+     * @param propertiesMap: used to retrieve information of excluded grafana dashboards
      * @param handlerName: The name of the endpoint.
      * @param gav
      * @param generateAuditLink
      * @return: The template customized for the endpoint.
      */
-    public static Optional<String> generateOperationalDashboard(String templatePath, String dashboardIdentifier, Properties properties, String handlerName, KogitoGAV gav, boolean generateAuditLink) {
-        if (isOperationDashboardEnabled(properties, dashboardIdentifier)) {
-            String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.ofNullable(gav), dashboardIdentifier);
+    public static Optional<String> generateOperationalDashboard(String templatePath, String dashboardIdentifier,
+            Map<String, String> propertiesMap, String handlerName, KogitoGAV gav, boolean generateAuditLink) {
+        if (isOperationDashboardEnabled(propertiesMap, dashboardIdentifier)) {
+            String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.ofNullable(gav),
+                    dashboardIdentifier);
             String template = readStandardDashboard(templatePath);
             template = customizeTemplate(template, handlerName, gav.getArtifactId(), gav.getVersion());
-            JGrafana jgrafana = initialize(template, String.format("%s - Operational Dashboard", dashboardName), generateAuditLink);
+            JGrafana jgrafana = initialize(template, String.format("%s - Operational Dashboard", dashboardName),
+                    generateAuditLink);
             return Optional.of(serialize(jgrafana));
         } else {
+            logger.debug("Operational Dashboard {} disabled", dashboardIdentifier);
             return Optional.empty();
         }
     }
@@ -79,21 +83,25 @@ public class GrafanaConfigurationWriter {
      *
      * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
      * @param dashboardIdentifier: the identifier used to create th <b>dashboard name</b>
-     * @param properties
+     * @param propertiesMap: used to retrieve information of excluded grafana dashboards
      * @param endpoint: The name of the endpoint.
      * @param gav
      * @param decisions: The decisions in the DMN model.
      * @param generateAuditLink
-     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been
+     *          specified in the arguments.
      */
-    public static Optional<String> generateDomainSpecificDMNDashboard(String templatePath, String dashboardIdentifier, Properties properties, String endpoint, KogitoGAV gav, List<Decision> decisions,
+    public static Optional<String> generateDomainSpecificDMNDashboard(String templatePath, String dashboardIdentifier, Map<String, String> propertiesMap, String endpoint, KogitoGAV gav,
+            List<Decision> decisions,
             boolean generateAuditLink) {
-        if (isDomainDashboardEnabled(properties, dashboardIdentifier)) {
-            String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.ofNullable(gav), dashboardIdentifier);
+        if (isDomainDashboardEnabled(propertiesMap, dashboardIdentifier)) {
+            String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.ofNullable(gav),
+                    dashboardIdentifier);
             String template = readStandardDashboard(templatePath);
             template = customizeTemplate(template, endpoint, gav.getArtifactId(), gav.getVersion());
 
-            JGrafana jgrafana = initialize(template, String.format("%s - Domain Dashboard", dashboardName), generateAuditLink);
+            JGrafana jgrafana = initialize(template, String.format("%s - Domain Dashboard", dashboardName),
+                    generateAuditLink);
 
             for (Decision decision : decisions) {
                 QName type = decision.getVariable().getTypeRef();
@@ -120,6 +128,7 @@ public class GrafanaConfigurationWriter {
             }
             return Optional.of(serialize(jgrafana));
         } else {
+            logger.debug("Domain Dashboard {} disabled", dashboardIdentifier);
             return Optional.empty();
         }
     }
@@ -129,15 +138,16 @@ public class GrafanaConfigurationWriter {
      *
      * @param templatePath: The path to the dashboard template. It must be a valid grafana dashboard in JSON format.
      * @param dashboardIdentifier: the identifier used to create th <b>dashboard name</b>
-     * @param properties
+     * @param propertiesMap
      * @param endpoint: The name of the endpoint.
      * @param gav
      * @param generateAuditLink
-     * @return: The customized template containing also specific panels for the DMN decisions that have been specified in the arguments.
+     * @return: The customized template containing also specific panels for the DMN decisions that have been
+     *          specified in the arguments.
      */
-    public static Optional<String> generateDomainSpecificDrlDashboard(String templatePath, String dashboardIdentifier, Properties properties, String endpoint, KogitoGAV gav,
+    public static Optional<String> generateDomainSpecificDrlDashboard(String templatePath, String dashboardIdentifier, Map<String, String> propertiesMap, String endpoint, KogitoGAV gav,
             boolean generateAuditLink) {
-        if (isDomainDashboardEnabled(properties, dashboardIdentifier)) {
+        if (isDomainDashboardEnabled(propertiesMap, dashboardIdentifier)) {
             String dashboardName = GrafanaConfigurationWriter.buildDashboardName(Optional.ofNullable(gav), dashboardIdentifier);
             String template = readStandardDashboard(templatePath);
             template = customizeTemplate(template, endpoint, gav.getArtifactId(), gav.getVersion());
@@ -145,6 +155,7 @@ public class GrafanaConfigurationWriter {
             JGrafana jgrafana = initialize(template, String.format("%s - Domain Dashboard", dashboardName), generateAuditLink);
             return Optional.of(serialize(jgrafana));
         } else {
+            logger.debug("Domain Dashboard {} disabled", dashboardIdentifier);
             return Optional.empty();
         }
     }

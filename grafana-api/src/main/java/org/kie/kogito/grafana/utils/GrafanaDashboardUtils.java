@@ -17,8 +17,8 @@ package org.kie.kogito.grafana.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class GrafanaDashboardUtils {
@@ -29,17 +29,17 @@ public class GrafanaDashboardUtils {
     private GrafanaDashboardUtils() {
     }
 
-    public static boolean isOperationDashboardEnabled(final Properties applicationProperties, final String toVerify) {
-        return isDashboardEnabled(applicationProperties, DISABLED_OPERATIONAL_DASHBOARDS, toVerify);
+    public static boolean isOperationDashboardEnabled(final Map<String, String> propertiesMap, final String toVerify) {
+        return isDashboardEnabled(propertiesMap, DISABLED_OPERATIONAL_DASHBOARDS, toVerify);
     }
 
-    public static boolean isDomainDashboardEnabled(final Properties applicationProperties, final String toVerify) {
-        return isDashboardEnabled(applicationProperties, DISABLED_DOMAIN_DASHBOARDS, toVerify);
+    public static boolean isDomainDashboardEnabled(final Map<String, String> propertiesMap, final String toVerify) {
+        return isDashboardEnabled(propertiesMap, DISABLED_DOMAIN_DASHBOARDS, toVerify);
 
     }
 
-    static boolean isDashboardEnabled(final Properties applicationProperties, final String dashboardProperty, final String toVerify) {
-        return Optional.ofNullable(applicationProperties.getProperty(dashboardProperty))
+    static boolean isDashboardEnabled(final Map<String, String> propertiesMap, final String dashboardProperty, final String toVerify) {
+        return Optional.ofNullable(propertiesMap.get(dashboardProperty))
                 .map(value -> !containsValue(value, toVerify)).orElse(true);
     }
 

@@ -182,11 +182,6 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     }
 
     @Override
-    public Properties getProperties() {
-        return applicationProperties;
-    }
-
-    @Override
     public String toString() {
         return "KogitoBuildContext{" +
                 "contextName='" + contextName + '\'' +
