@@ -22,7 +22,7 @@ import org.drools.core.common.WorkingMemoryFactory;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.kiesession.factory.RuntimeComponentFactoryImpl;
 
-public class KogitoKieComponentFactory extends RuntimeComponentFactoryImpl {
+public class KogitoRuntimeComponentFactory extends RuntimeComponentFactoryImpl {
 
     @Override
     public FactHandleFactory getFactHandleFactoryService() {
