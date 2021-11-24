@@ -8,30 +8,52 @@ specification.
 ## Current Status
 
 Currently, Kogito implements the [**version
-0.6**](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md) of the specification. The
-sections below describe in detail the current status of the supported features.
+0.6**](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md) of the specification. 
+
+The following table lists the current status of the features as defined by the specification:
+
+| Feature       | Status               |
+| ------------- | -------------------- |
+| States        | :first_quarter_moon: |
+| Functions     | :first_quarter_moon: |
+| Events        | :first_quarter_moon: |
+| Retries       | :new_moon:           |
+| Workflow Data | :full_moon:          |
+| Expressions   | :full_moon:          |
+| Error Handling | :full_moon:         |
+| Compensation   | :full_moon:         |
+
+Legend:
+
+| Symbol        | Meaning              |
+| ------------- | -------------------- |
+| :full_moon: | Fully implemented |
+| :first_quarter_moon: | Partially implemented |
+| :new_moon: | Not Implemented |
+
+The sections below describe in detail the current status of the supported features.
 
 ### Workflow Model - States
 
-| State         | Status             |
-| ------------- | ------------------ |
-| Event         | :white_check_mark: |
-| Operation     | :white_check_mark: |
-| Switch        | :white_check_mark: |
-| Delay         | :white_check_mark: |
-| Parallel      | :white_check_mark: |
-| SubFlow       | :white_check_mark: |
-| Inject        | :white_check_mark: |
-| ForEach       | :x:                |
-| Callback      | :white_check_mark: |
+| State         | Status      |
+| ------------- | ----------- |
+| Event         | :full_moon: |
+| Operation     | :full_moon: |
+| Switch        | :full_moon: |
+| Delay         | :full_moon: |
+| Parallel      | :full_moon: |
+| SubFlow       | :full_moon: |
+| Inject        | :full_moon: |
+| ForEach       | :new_moon:  |
+| Callback      | :full_moon: |
 
 ### Workflow Model - Functions
 
 | Function Type | Status             | Obs |
 | ------------- | ------------------ | --- |
-| rest          | :white_check_mark: | You can find more details about the Kogito OpenAPI implementation [here](../kogito-codegen-modules/kogito-codegen-openapi) |
-| rpc           | :x:                | |
-| expression    | :white_check_mark: | Either `jq` or `jsonpath` |
+| rest          | :full_moon: | You can find more details about the Kogito OpenAPI implementation [here](../kogito-codegen-modules/kogito-codegen-openapi) |
+| rpc           | :new_moon:                | |
+| expression    | :full_moon: | Either `jq` or `jsonpath` |
 
 Additionally, even though they are not defined in the specification, Kogito also supports `sysout` and `java` functions.
 
@@ -170,12 +192,12 @@ Or, if you prefer you can pass only the necessary data:
 
 | Definition | Status             |
 | ---------- | ------------------ |
-| Name       | :white_check_mark: |
-| Source     | :white_check_mark: |
-| Type       | :white_check_mark: |
-| Kind       | :white_check_mark: |
-| Correlation | :x:               |
-| Metadata    | :white_check_mark: |
+| Name       | :full_moon: |
+| Source     | :full_moon: |
+| Type       | :full_moon: |
+| Kind       | :full_moon: |
+| Correlation | :new_moon:               |
+| Metadata    | :full_moon: |
 
 ### Workflow Model - Retries
 
@@ -183,12 +205,12 @@ Kogito **does not**
 support [retries](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md#Retry-Definition) just
 yet.
 
-## Workflow Data
+### Workflow Data
 
 Data manipulation (filtering and transformation) on Kogito is fully implemented and can be used either `jq`
 or `jsonpath`.
 
-## Workflow Expressions
+### Workflow Expressions
 
 Kogito supports either `jq` or `jsonpath` to define workflow expressions. As defined in the specification, `jq` is the
 default expression language. If you wish to use `jsonpath` instead, set the attribute `expressionLang` in the workflow
@@ -204,14 +226,47 @@ definition:
 }
 ```
 
-## Workflow Error Handling
+### Workflow Error Handling
 
 Kogito supports error handling. Find more details about this implementation on
-our [documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-serverless-workflow-error-handling_kogito-developing-decision-services)
-.
+our [documentation](https://docs.jboss.org/kogito/release/latest/html_single/#con-serverless-workflow-error-handling_kogito-developing-decision-services).
 
-## Workflow Compensation
+### Workflow Compensation
 
 Kogito supports workflow compensation as described in
-the [specification](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md#Workflow-Compensation)
-.
+the [specification](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md#Workflow-Compensation).
+
+## Debugging the Workflow Execution
+
+In order to debug the workflow runtime execution, you can add a listener to your project scope and print the events
+emitted by the engine. For example:
+
+```java
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
+import org.kie.api.event.process.ProcessVariableChangedEvent;
+import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
+import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
+
+@ApplicationScoped
+public class ListenerConfig extends DefaultProcessEventListenerConfig {
+
+    public ListenerConfig() {
+    }
+
+    @PostConstruct
+    public void setup() {
+        register(new DefaultKogitoProcessEventListener() {
+            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+                System.out.println(event);
+            }
+
+            public void afterVariableChanged(ProcessVariableChangedEvent event) {
+                System.out.println(event);
+            }
+        });
+    }
+}
+```
