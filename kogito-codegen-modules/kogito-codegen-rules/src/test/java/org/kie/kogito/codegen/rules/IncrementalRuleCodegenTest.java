@@ -232,16 +232,13 @@ public class IncrementalRuleCodegenTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     public void generateGrafanaDashboardsExcluded(KogitoBuildContext.Builder contextBuilder) {
         contextBuilder.withAddonsConfig(AddonsConfig.builder()
-                                                .withPrometheusMonitoring(true)
-                                                .withMonitoring(true)
-                                                .build());
-
-
+                .withPrometheusMonitoring(true)
+                .withMonitoring(true)
+                .build());
 
         KogitoBuildContext context = contextBuilder.build();
         context.setApplicationProperty(DISABLED_OPERATIONAL_DASHBOARDS, "find-adults,find-adults-age");
         context.setApplicationProperty(DISABLED_DOMAIN_DASHBOARDS, "AdultUnit");
-
 
         IncrementalRuleCodegen incrementalRuleCodegen = getIncrementalRuleCodegenFromFiles(
                 context,
