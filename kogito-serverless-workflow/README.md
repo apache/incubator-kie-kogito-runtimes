@@ -2,9 +2,6 @@
 
 Kogito is an implementation of the [CNCF Serverless Workflow Specification](https://serverlessworkflow.io/).
 
-The implementation is an ongoing effort, thus it might not be in sync with the latest features defined in the
-specification.
-
 ## Current Status
 
 Currently, Kogito implements the [**version
@@ -196,7 +193,7 @@ Or, if you prefer you can pass only the necessary data:
 | Source     | :full_moon: |
 | Type       | :full_moon: |
 | Kind       | :full_moon: |
-| Correlation | :new_moon:               |
+| Correlation | :new_moon:  |
 | Metadata    | :full_moon: |
 
 ### Workflow Model - Retries
@@ -235,38 +232,3 @@ our [documentation](https://docs.jboss.org/kogito/release/latest/html_single/#co
 
 Kogito supports workflow compensation as described in
 the [specification](https://github.com/serverlessworkflow/specification/blob/0.6.x/specification.md#Workflow-Compensation).
-
-## Debugging the Workflow Execution
-
-In order to debug the workflow runtime execution, you can add a listener to your project scope and print the events
-emitted by the engine. For example:
-
-```java
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-
-import org.kie.api.event.process.ProcessNodeTriggeredEvent;
-import org.kie.api.event.process.ProcessVariableChangedEvent;
-import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
-import org.kie.kogito.process.impl.DefaultProcessEventListenerConfig;
-
-@ApplicationScoped
-public class ListenerConfig extends DefaultProcessEventListenerConfig {
-
-    public ListenerConfig() {
-    }
-
-    @PostConstruct
-    public void setup() {
-        register(new DefaultKogitoProcessEventListener() {
-            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
-                System.out.println(event);
-            }
-
-            public void afterVariableChanged(ProcessVariableChangedEvent event) {
-                System.out.println(event);
-            }
-        });
-    }
-}
-```
