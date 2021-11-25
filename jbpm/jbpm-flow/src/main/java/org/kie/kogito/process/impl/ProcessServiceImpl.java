@@ -165,17 +165,18 @@ public class ProcessServiceImpl implements ProcessService {
             String user,
             List<String> groups,
             MapOutput taskModel) {
+        HumanTaskTransition transition = HumanTaskTransition.withModel(phase, taskModel, Policies.of(user, groups));
+        return taskTransition(process, id, taskId, transition);
+    }
+
+    private <T extends MappableToModel<R>, R> Optional<R> taskTransition(Process<T> process, String id, String taskId, HumanTaskTransition transition) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
                 .findById(id)
                 .map(pi -> {
-                    pi.transitionWorkItem(
-                            taskId,
-                            HumanTaskTransition.withModel(phase, taskModel, Policies.of(user, groups)));
-                    return pi;
-                })
-                .map(ProcessInstance::variables)
-                .map(MappableToModel::toModel));
+                    pi.transitionWorkItem(taskId, transition);
+                    return pi.variables().toModel();
+                }));
     }
 
     @Override
@@ -202,16 +203,8 @@ public class ProcessServiceImpl implements ProcessService {
             String user,
             List<String> groups,
             MapOutput model) {
-        return UnitOfWorkExecutor.executeInUnitOfWork(
-                application.unitOfWorkManager(), () -> process
-                        .instances()
-                        .findById(id)
-                        .map(pi -> {
-                            pi.transitionWorkItem(
-                                    taskId,
-                                    HumanTaskTransition.withModel(phase, model, Policies.of(user, groups)));
-                            return pi.variables().toModel();
-                        }));
+        HumanTaskTransition transition = HumanTaskTransition.withModel(phase, model, Policies.of(user, groups));
+        return taskTransition(process, id, taskId, transition);
     }
 
     @Override
@@ -234,16 +227,9 @@ public class ProcessServiceImpl implements ProcessService {
             String phase,
             String user,
             List<String> groups) {
-        return UnitOfWorkExecutor.executeInUnitOfWork(
-                application.unitOfWorkManager(), () -> process
-                        .instances()
-                        .findById(id)
-                        .map(pi -> {
-                            pi.transitionWorkItem(taskId,
-                                    HumanTaskTransition.withoutModel(phase,
-                                            Policies.of(user, groups)));
-                            return pi.variables().toModel();
-                        }));
+        HumanTaskTransition transition =
+                HumanTaskTransition.withoutModel(phase, Policies.of(user, groups));
+        return taskTransition(process, id, taskId, transition);
     }
 
     @Override
