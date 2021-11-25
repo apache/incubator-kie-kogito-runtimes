@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.core.common;
+package org.kie.kogito.monitoring.core.common.mock;
+
+import org.kie.kogito.monitoring.MonitoringRegistryManager;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
-public class MonitoringRegistry {
+/**
+ * Not-CDI class - meant only for tests
+ */
+public class MockedMonitoringRegistryManager implements MonitoringRegistryManager {
 
-    private static CompositeMeterRegistry compositeMeterRegistry = Metrics.globalRegistry;
+    private static CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry();
 
-    private MonitoringRegistry() {
+    public MockedMonitoringRegistryManager() {
     }
 
-    public static void addRegistry(MeterRegistry registry) {
+    @Override
+    public void addRegistry(MeterRegistry registry) {
         compositeMeterRegistry.add(registry);
     }
 
-    public static CompositeMeterRegistry getDefaultMeterRegistry() {
+    @Override
+    public CompositeMeterRegistry getDefaultMeterRegistry() {
         return compositeMeterRegistry;
     }
 }

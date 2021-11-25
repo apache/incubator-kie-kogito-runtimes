@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,34 @@
 package org.kie.kogito.monitoring.prometheus.quarkus.rest;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.inject.Singleton;
 
 import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
-import org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource;
 
-@Path("/metrics")
-public class QuarkusMetricsResource implements MetricsResource {
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.quarkus.runtime.Startup;
 
-    private PrometheusMeterRegistryManager registryManager;
+/**
+ * This class is needed to inject context-original PrometheusMeterRegistry.
+ */
+@Startup
+@Singleton
+public class QuarkusPrometheusMeterRegistryManager implements PrometheusMeterRegistryManager {
+
+    private PrometheusMeterRegistry registry;
 
     @Inject
-    public void init(PrometheusMeterRegistryManager registryManager) {
-        this.registryManager = registryManager;
+    public void init(PrometheusMeterRegistry registry) {
+        this.registry = registry;
     }
 
-    @GET
-    @Produces({ MediaType.TEXT_PLAIN })
-    public Response getMetrics() {
-        return Response.ok(registryManager.scrape()).build();
+    @Override
+    public PrometheusMeterRegistry getPrometheusMeterRegistry() {
+        return registry;
+    }
+
+    @Override
+    public String scrape() {
+        return registry.scrape();
     }
 }

@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.monitoring.prometheus.springboot.rest;
 
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,11 +25,22 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
  * This class is needed to inject context-original PrometheusMeterRegistry.
  */
 @Configuration
-public class SpringbootPrometheusMeterRegistrySetter {
+public class SpringbootPrometheusMeterRegistryManager implements PrometheusMeterRegistryManager {
+
+    private PrometheusMeterRegistry registry;
 
     @Autowired
     public void init(PrometheusMeterRegistry registry) {
-        PrometheusRegistryProvider.setPrometheusMeterRegistry(registry);
+        this.registry = registry;
     }
 
+    @Override
+    public PrometheusMeterRegistry getPrometheusMeterRegistry() {
+        return registry;
+    }
+
+    @Override
+    public String scrape() {
+        return registry.scrape();
+    }
 }

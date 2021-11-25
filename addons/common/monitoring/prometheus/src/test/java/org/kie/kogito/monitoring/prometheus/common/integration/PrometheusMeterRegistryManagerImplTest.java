@@ -18,22 +18,27 @@ package org.kie.kogito.monitoring.prometheus.common.integration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
+import org.kie.kogito.monitoring.MonitoringRegistryManager;
+import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
-import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
+import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
+import org.kie.kogito.monitoring.prometheus.common.PrometheusMeterRegistryManagerImpl;
 
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 
-public class PrometheusRegistryProviderTest {
+public class PrometheusMeterRegistryManagerImplTest {
 
     @Test
     public void prometheusMetricsAreExported() {
         PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
-        MonitoringRegistry.addRegistry(registry);
-        PrometheusRegistryProvider.setPrometheusMeterRegistry(registry);
-        SystemMetricsCollector systemMetricsCollector = new SystemMetricsCollector(KogitoGAV.EMPTY_GAV, MonitoringRegistry.getDefaultMeterRegistry());
+        MonitoringRegistryManager monitoringRegistryManager = new MockedMonitoringRegistryManager();
+        monitoringRegistryManager.addRegistry(registry);
+        PrometheusMeterRegistryManager prometheusMeterRegistryManager = new PrometheusMeterRegistryManagerImpl(registry);
+        SystemMetricsCollector systemMetricsCollector = new SystemMetricsCollector(KogitoGAV.EMPTY_GAV,
+                monitoringRegistryManager.getDefaultMeterRegistry());
         systemMetricsCollector.registerElapsedTimeSampleMetrics("endpoint", 1);
-        Assertions.assertTrue(PrometheusRegistryProvider.getPrometheusMeterRegistry().scrape().contains("api_execution_elapsed_seconds"));
+        Assertions.assertTrue(prometheusMeterRegistryManager.scrape().contains("api_execution_elapsed_seconds"));
     }
+
 }

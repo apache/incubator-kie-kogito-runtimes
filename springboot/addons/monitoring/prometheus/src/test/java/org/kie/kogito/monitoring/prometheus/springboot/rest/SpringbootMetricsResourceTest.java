@@ -40,8 +40,8 @@ class SpringbootMetricsResourceTest {
         }
 
         @Override
-        public String scrape() {
-            return expectedValue;
+        public ResponseEntity<?> getMetrics() {
+            return ResponseEntity.ok(expectedValue);
         }
     }
 

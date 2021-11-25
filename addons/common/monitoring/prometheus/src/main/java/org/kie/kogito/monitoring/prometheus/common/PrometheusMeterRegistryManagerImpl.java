@@ -15,24 +15,29 @@
  */
 package org.kie.kogito.monitoring.prometheus.common;
 
+import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
+
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 
-public class PrometheusRegistryProvider {
+/**
+ * Not-CDI class - meant only for tests
+ */
+public class PrometheusMeterRegistryManagerImpl implements PrometheusMeterRegistryManager {
 
-    private static PrometheusMeterRegistry prometheusMeterRegistry;
+    private PrometheusMeterRegistry registry;
 
-    private PrometheusRegistryProvider() {
+    public PrometheusMeterRegistryManagerImpl(PrometheusMeterRegistry registry) {
+        this.registry = registry;
     }
 
-    public static PrometheusMeterRegistry getPrometheusMeterRegistry() {
-        if (prometheusMeterRegistry == null) {
-            throw new IllegalStateException("PrometheusRegistryProvider has not been initialized");
-        }
-        return prometheusMeterRegistry;
+    @Override
+    public PrometheusMeterRegistry getPrometheusMeterRegistry() {
+        return registry;
     }
 
-    public static void setPrometheusMeterRegistry(PrometheusMeterRegistry registry) {
-        prometheusMeterRegistry = registry;
+    @Override
+    public String scrape() {
+        return registry.scrape();
     }
 
 }

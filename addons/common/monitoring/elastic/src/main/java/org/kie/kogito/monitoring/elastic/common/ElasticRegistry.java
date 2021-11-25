@@ -18,7 +18,7 @@ package org.kie.kogito.monitoring.elastic.common;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
+import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +29,7 @@ public class ElasticRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticRegistry.class);
     private ElasticMeterRegistry registry;
+    protected MonitoringRegistryManager monitoringRegistryManager;
 
     protected ElasticRegistry() {
     }
@@ -39,7 +40,7 @@ public class ElasticRegistry {
 
     protected void start(ElasticConfig elasticConfig, ThreadFactory threadFactory) {
         registry = ElasticMeterRegistry.builder(elasticConfig).build();
-        MonitoringRegistry.addRegistry(registry);
+        monitoringRegistryManager.addRegistry(registry);
         registry.start(threadFactory);
         logger.debug("Micrometer Elastic publisher started.");
     }

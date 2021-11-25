@@ -22,6 +22,7 @@ import javax.ws.rs.core.FeatureContext;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.mock.MockedConfigBean;
+import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.mockito.ArgumentCaptor;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -40,7 +41,8 @@ class QuarkusMetricsFilterRegisterTest {
 
     private void commonConfigure(boolean httpInterceptorUseDefault, int numberOfTimes) {
         FeatureContext contextMock = mock(FeatureContext.class);
-        QuarkusMetricsFilterRegister filterRegister = new QuarkusMetricsFilterRegister(new MockedConfigBean());
+        QuarkusMetricsFilterRegister filterRegister = new QuarkusMetricsFilterRegister(new MockedConfigBean(),
+                new MockedMonitoringRegistryManager());
 
         @SuppressWarnings("unchecked")
         Instance<Boolean> instanceHttpInterceptorUseDefault = mock(Instance.class);

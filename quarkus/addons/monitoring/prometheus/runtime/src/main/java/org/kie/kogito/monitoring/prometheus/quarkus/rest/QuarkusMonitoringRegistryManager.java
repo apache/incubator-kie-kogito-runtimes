@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.prometheus.common.rest;
+package org.kie.kogito.monitoring.prometheus.quarkus.rest;
 
-public interface MetricsResource {
+import javax.inject.Singleton;
+
+import org.kie.kogito.monitoring.core.common.MonitoringRegistryManagerImpl;
+
+import io.quarkus.runtime.Startup;
+
+/**
+ * This class is needed to inject context-original CompositeMeterRegistry.
+ */
+@Startup
+@Singleton
+public class QuarkusMonitoringRegistryManager extends MonitoringRegistryManagerImpl {
 
 }

@@ -19,12 +19,15 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.mock.MockedConfigBean;
+import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class SpringMetricsFilterRegisterTest {
 
@@ -36,7 +39,8 @@ class SpringMetricsFilterRegisterTest {
 
     private void commonConfigure(boolean httpInterceptorUseDefault, int numberOfTimes) {
         InterceptorRegistry registryMock = mock(InterceptorRegistry.class);
-        SpringbootMetricsFilterRegister filterRegister = new SpringbootMetricsFilterRegister(new MockedConfigBean());
+        SpringbootMetricsFilterRegister filterRegister = new SpringbootMetricsFilterRegister(new MockedConfigBean(),
+                new MockedMonitoringRegistryManager());
 
         filterRegister.setHttpInterceptorUseDefault(httpInterceptorUseDefault);
         filterRegister.addInterceptors(registryMock);

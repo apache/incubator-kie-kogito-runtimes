@@ -23,8 +23,8 @@ import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
+import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.Constants;
-import org.kie.kogito.monitoring.core.common.MonitoringRegistry;
 import org.kie.kogito.monitoring.core.common.process.MetricsProcessEventListener;
 import org.kie.kogito.monitoring.core.common.rule.RuleMetricsListenerConfig;
 import org.slf4j.Logger;
@@ -39,22 +39,25 @@ public class QuarkusEventListenerFactory {
 
     ConfigBean configBean;
 
+    MonitoringRegistryManager monitoringRegistryManager;
+
     @Inject
-    public QuarkusEventListenerFactory(ConfigBean configBean) {
+    public QuarkusEventListenerFactory(ConfigBean configBean, MonitoringRegistryManager monitoringRegistryManager) {
         this.configBean = configBean;
+        this.monitoringRegistryManager = monitoringRegistryManager;
     }
 
     @Produces
     @IfBuildProperty(name = Constants.MONITORING_RULE_USE_DEFAULT, stringValue = "true", enableIfMissing = true)
     public DefaultRuleEventListenerConfig produceRuleListener() {
         LOGGER.debug("Producing default listener for rule monitoring.");
-        return new RuleMetricsListenerConfig(configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), MonitoringRegistry.getDefaultMeterRegistry());
+        return new RuleMetricsListenerConfig(configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), monitoringRegistryManager.getDefaultMeterRegistry());
     }
 
     @Produces
     @IfBuildProperty(name = Constants.MONITORING_PROCESS_USE_DEFAULT, stringValue = "true", enableIfMissing = true)
     public KogitoProcessEventListener produceProcessListener() {
         LOGGER.debug("Producing default listener for process monitoring.");
-        return new MetricsProcessEventListener("default-process-monitoring-listener", configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), MonitoringRegistry.getDefaultMeterRegistry());
+        return new MetricsProcessEventListener("default-process-monitoring-listener", configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), monitoringRegistryManager.getDefaultMeterRegistry());
     }
 }

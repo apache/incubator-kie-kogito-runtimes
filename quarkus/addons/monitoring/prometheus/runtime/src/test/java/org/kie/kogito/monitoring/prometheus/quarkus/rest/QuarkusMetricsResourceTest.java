@@ -41,8 +41,8 @@ class QuarkusMetricsResourceTest {
         }
 
         @Override
-        public String scrape() {
-            return expectedValue;
+        public Response getMetrics() {
+            return Response.ok(expectedValue).build();
         }
     }
 

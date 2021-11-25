@@ -17,6 +17,7 @@ package org.kie.kogito.monitoring.elastic.springboot;
 
 import javax.annotation.PostConstruct;
 
+import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.kie.kogito.monitoring.elastic.common.ElasticConfigFactory;
 import org.kie.kogito.monitoring.elastic.common.ElasticRegistry;
 import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;
@@ -53,6 +54,11 @@ public class SpringbootElasticRegistryProvider extends ElasticRegistry {
 
     @Autowired
     ThreadPoolTaskExecutor executor;
+
+    @Autowired
+    public void init(MonitoringRegistryManager monitoringRegistryManager) {
+        this.monitoringRegistryManager = monitoringRegistryManager;
+    }
 
     @PostConstruct
     protected void onStart() {

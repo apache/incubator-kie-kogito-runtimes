@@ -18,6 +18,7 @@ package org.kie.kogito.monitoring.core.quarkus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.mock.MockedConfigBean;
+import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.process.MetricsProcessEventListener;
 import org.kie.kogito.monitoring.core.common.rule.RuleMetricsListenerConfig;
 
@@ -29,7 +30,7 @@ class QuarkusEventListenerFactoryTest {
 
     @BeforeEach
     public void init() {
-        factory = new QuarkusEventListenerFactory(new MockedConfigBean());
+        factory = new QuarkusEventListenerFactory(new MockedConfigBean(), new MockedMonitoringRegistryManager());
     }
 
     @Test
