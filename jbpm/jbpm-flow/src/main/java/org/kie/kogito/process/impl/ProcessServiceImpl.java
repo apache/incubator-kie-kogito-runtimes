@@ -157,16 +157,6 @@ public class ProcessServiceImpl implements ProcessService {
                 .findFirst();
     }
 
-    private <T extends MappableToModel<R>, R> Optional<R> taskTransition(Process<T> process, String id, String taskId, HumanTaskTransition transition) {
-        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
-                .instances()
-                .findById(id)
-                .map(pi -> {
-                    pi.transitionWorkItem(taskId, transition);
-                    return pi.variables().toModel();
-                }));
-    }
-
     @Override
     public <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
             String id,
@@ -195,7 +185,13 @@ public class ProcessServiceImpl implements ProcessService {
                 (model == null) ?
                         HumanTaskTransition.withoutModel(phase, Policies.of(user, groups))
                         : HumanTaskTransition.withModel(phase, model, Policies.of(user, groups));
-        return taskTransition(process, id, taskId, transition);
+        return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
+                .instances()
+                .findById(id)
+                .map(pi -> {
+                    pi.transitionWorkItem(taskId, transition);
+                    return pi.variables().toModel();
+                }));
     }
 
     @Override
