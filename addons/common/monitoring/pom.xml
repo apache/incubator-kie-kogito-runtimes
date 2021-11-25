@@ -13,6 +13,7 @@
 
   <description>Monitoring addons for runtime</description>
   <modules>
+    <module>api</module>
     <module>core</module>
     <module>prometheus</module>
   </modules>
