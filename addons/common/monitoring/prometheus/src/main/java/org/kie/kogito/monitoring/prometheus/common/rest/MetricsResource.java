@@ -17,13 +17,9 @@ package org.kie.kogito.monitoring.prometheus.common.rest;
 
 import org.kie.kogito.monitoring.prometheus.common.PrometheusRegistryProvider;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
-
 public abstract class MetricsResource {
 
-    protected static final PrometheusMeterRegistry prometheusRegistry = PrometheusRegistryProvider.getPrometheusMeterRegistry();
-
     public String scrape() {
-        return prometheusRegistry.scrape();
+        return PrometheusRegistryProvider.getPrometheusMeterRegistry().scrape();
     }
 }
