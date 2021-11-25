@@ -62,7 +62,7 @@ public class $Type$Resource {
                                      @RequestParam("user") final String user,
                                      @RequestParam("group") final List<String> groups,
                                      @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.completeTask(process, id, taskId, phase, user, groups, model)
+        return processService.taskTransition(process, id, taskId, phase, user, groups, model)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
@@ -87,7 +87,7 @@ public class $Type$Resource {
                                        @RequestParam(value = "group",
                                                required = false) final List<String> groups,
                                        @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, user, groups, model)
+        return processService.taskTransition(process, id, taskId, phase, user, groups, null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

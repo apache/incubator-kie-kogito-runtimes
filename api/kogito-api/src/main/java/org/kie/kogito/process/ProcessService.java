@@ -53,14 +53,6 @@ public interface ProcessService {
 
     <T extends Model> Optional<WorkItem> getTaskByName(ProcessInstance<T> pi, String taskName);
 
-    <T extends MappableToModel<R>, R> Optional<R> completeTask(Process<T> process,
-            String id,
-            String taskId,
-            String phase,
-            String user,
-            List<String> groups,
-            MapOutput taskModel);
-
     <T extends Model, R extends MapOutput> Optional<R> saveTask(Process<T> process,
             String id,
             String taskId,
@@ -84,13 +76,6 @@ public interface ProcessService {
             String user,
             List<String> groups,
             Function<WorkItem, R> mapper);
-
-    <T extends MappableToModel<R>, R> Optional<R> abortTask(Process<T> process,
-            String id,
-            String taskId,
-            String phase,
-            String user,
-            List<String> groups);
 
     <T extends Model> Optional<Comment> addComment(Process<T> process,
             String id,

@@ -157,18 +157,6 @@ public class ProcessServiceImpl implements ProcessService {
                 .findFirst();
     }
 
-    @Override
-    public <T extends MappableToModel<R>, R> Optional<R> completeTask(Process<T> process,
-            String id,
-            String taskId,
-            String phase,
-            String user,
-            List<String> groups,
-            MapOutput taskModel) {
-        HumanTaskTransition transition = HumanTaskTransition.withModel(phase, taskModel, Policies.of(user, groups));
-        return taskTransition(process, id, taskId, transition);
-    }
-
     private <T extends MappableToModel<R>, R> Optional<R> taskTransition(Process<T> process, String id, String taskId, HumanTaskTransition transition) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
@@ -203,7 +191,10 @@ public class ProcessServiceImpl implements ProcessService {
             String user,
             List<String> groups,
             MapOutput model) {
-        HumanTaskTransition transition = HumanTaskTransition.withModel(phase, model, Policies.of(user, groups));
+        HumanTaskTransition transition =
+                (model == null) ?
+                        HumanTaskTransition.withoutModel(phase, Policies.of(user, groups))
+                        : HumanTaskTransition.withModel(phase, model, Policies.of(user, groups));
         return taskTransition(process, id, taskId, transition);
     }
 
@@ -218,18 +209,6 @@ public class ProcessServiceImpl implements ProcessService {
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(pi -> pi.workItem(taskId, Policies.of(user, groups)))
                 .map(mapper::apply);
-    }
-
-    @Override
-    public <T extends MappableToModel<R>, R> Optional<R> abortTask(Process<T> process,
-            String id,
-            String taskId,
-            String phase,
-            String user,
-            List<String> groups) {
-        HumanTaskTransition transition =
-                HumanTaskTransition.withoutModel(phase, Policies.of(user, groups));
-        return taskTransition(process, id, taskId, transition);
     }
 
     @Override
