@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.expr.jq;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
@@ -52,6 +56,8 @@ public class JqParsedExpression implements ParsedExpression {
             out = new BooleanOutput();
         } else if (String.class.isAssignableFrom(returnClass)) {
             out = new StringOutput();
+        } else if (Collection.class.isAssignableFrom(returnClass)) {
+            out = new CollectionOutput();
         } else {
             out = new JsonNodeOutput((JsonNode) context);
         }
@@ -88,6 +94,26 @@ public class JqParsedExpression implements ParsedExpression {
         @Override
         public String getResult() {
             return sb.toString();
+        }
+
+    }
+
+    private static class CollectionOutput implements TypedOutput<Collection> {
+        Collection result = new ArrayList<>();
+
+        @Override
+        public void emit(JsonNode out) throws JsonQueryException {
+            Object obj = JsonObjectUtils.toJavaValue(out);
+            if (obj instanceof Collection)
+                result.addAll((Collection) obj); 
+            else {
+                result.add(obj);
+            }
+        }
+
+        @Override
+        public Collection<?> getResult() {
+            return result;
         }
 
     }

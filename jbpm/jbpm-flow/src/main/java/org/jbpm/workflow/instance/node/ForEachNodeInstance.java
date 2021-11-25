@@ -28,6 +28,7 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
 import org.jbpm.workflow.core.node.ForEachNode;
@@ -40,6 +41,7 @@ import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
 import org.kie.api.definition.process.Connection;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
 import org.slf4j.Logger;
@@ -129,14 +131,24 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return getForEachNode().getCompositeNode();
     }
 
-    private Collection<?> evaluateCollectionExpression(String collectionExpression) {
+    private <T> T evaluateExpression(ParsedExpression expression, Class<T> resultClass) {
+        return expression.eval(
+                ((VariableScope) getContextContainer().getDefaultContext(VariableScope.VARIABLE_SCOPE)).findVariable((String) getForEachNode().getMetaData(Metadata.VARIABLE)).getValue(), resultClass);
+    }
+
+    private Collection<?> evaluateCollectionExpression() {
         Object collection;
-        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, collectionExpression);
+        String collectionExpression = getForEachNode().getCollectionExpression();
+        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(
+                VariableScope.VARIABLE_SCOPE, collectionExpression);
         if (variableScopeInstance != null) {
             collection = variableScopeInstance.getVariable(collectionExpression);
+        } else if (getForEachNode().getEvaluateExpression() != null) {
+            collection = evaluateExpression(getForEachNode().getEvaluateExpression(), Collection.class);
         } else {
             try {
-                collection = MVELProcessHelper.evaluator().eval(collectionExpression, new NodeInstanceResolverFactory(this));
+                collection = MVELProcessHelper.evaluator().eval(collectionExpression, new NodeInstanceResolverFactory(
+                        this));
             } catch (Throwable t) {
                 throw new IllegalArgumentException(
                         "Could not find collection " + collectionExpression);
@@ -172,8 +184,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         @Override
         public void internalTrigger(KogitoNodeInstance fromm, String type) {
             triggerTime = new Date();
-            String collectionExpression = getForEachNode().getCollectionExpression();
-            Collection<?> collection = evaluateCollectionExpression(collectionExpression);
+            Collection<?> collection = evaluateCollectionExpression();
             setTotalInstances(collection.size());
 
             ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
@@ -304,16 +315,20 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         private boolean evaluateCompletionCondition(String expression, Map<String, Object> tempVariables) {
             if (expression == null || expression.isEmpty()) {
                 return false;
-            }
-            try {
-                Object result = MVELProcessHelper.evaluator().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
-                if (!(result instanceof Boolean)) {
-                    throw new RuntimeException("Completion condition expression must return boolean values: " + result
-                            + " for expression " + expression);
+            } else if (getForEachNode().getEvaluateExpression() != null) {
+                return evaluateExpression(getForEachNode().getEvaluateExpression(), Boolean.class);
+            } else {
+                try {
+                    Object result = MVELProcessHelper.evaluator().eval(expression,
+                            new ForEachNodeInstanceResolverFactory(this, tempVariables));
+                    if (!(result instanceof Boolean)) {
+                        throw new RuntimeException("Completion condition expression must return boolean values: " +
+                                result + " for expression " + expression);
+                    }
+                    return ((Boolean) result).booleanValue();
+                } catch (Throwable t) {
+                    throw new IllegalArgumentException("Could not evaluate completion condition  " + expression, t);
                 }
-                return ((Boolean) result).booleanValue();
-            } catch (Throwable t) {
-                throw new IllegalArgumentException("Could not evaluate completion condition  " + expression, t);
             }
         }
     }

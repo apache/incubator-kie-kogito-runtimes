@@ -30,6 +30,7 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionHandler;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerFactory;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
@@ -49,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.actions.Action;
@@ -230,25 +230,9 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
         Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
         while (iter.hasNext()) {
             Entry<String, JsonNode> entry = iter.next();
-            map.put(entry.getKey(), processValue(entry.getValue()));
+            map.put(entry.getKey(), JsonObjectUtils.toJavaValue(entry.getValue()));
         }
         return map;
-    }
-
-    private static Object processValue(JsonNode jsonNode) {
-        if (jsonNode.isTextual()) {
-            return jsonNode.asText();
-        } else if (jsonNode.isBoolean()) {
-            return jsonNode.asBoolean();
-        } else if (jsonNode.isInt()) {
-            return jsonNode.asInt();
-        } else if (jsonNode.isDouble()) {
-            return jsonNode.asDouble();
-        } else {
-            /* this code is here for backward compatibility, we probably need to throw exception directly here */
-            logger.warn("Suspicious node {}, trying to convert to string", jsonNode);
-            return new ObjectMapper().convertValue(jsonNode, String.class);
-        }
     }
 
     private void processArgs(WorkItemNodeFactory<N> workItemFactory,
