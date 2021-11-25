@@ -21,6 +21,7 @@ import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.factory.ForEachNodeFactory;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.node.CompositeNode.NodeAndType;
 import org.jbpm.workflow.core.node.ForEachNode;
 
 import com.github.javaparser.ast.NodeList;
@@ -72,9 +73,15 @@ public class ForEachNodeVisitor extends AbstractCompositeNodeVisitor<ForEachNode
         }
         // visit nodes
         visitNodes(getNodeId(node), node.getNodes(), body, ((VariableScope) node.getCompositeNode().getDefaultContext(VariableScope.VARIABLE_SCOPE)), metadata);
-        body.addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_INCOMING_CONNECTIONS, new LongLiteralExpr(node.getLinkedIncomingNode(Node.CONNECTION_DEFAULT_TYPE).getNodeId())))
-                .addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_OUTGOING_CONNECTIONS, new LongLiteralExpr(node.getLinkedOutgoingNode(Node.CONNECTION_DEFAULT_TYPE).getNodeId())))
-                .addStatement(getDoneMethod(getNodeId(node)));
-
+        visitConnections(getNodeId(node), node.getNodes(), body);
+        NodeAndType incomingNode = node.getLinkedIncomingNode(Node.CONNECTION_DEFAULT_TYPE);
+        if (incomingNode != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_INCOMING_CONNECTIONS, new LongLiteralExpr(incomingNode.getNodeId())));
+        }
+        NodeAndType outgoingNode = node.getLinkedOutgoingNode(Node.CONNECTION_DEFAULT_TYPE);
+        if (outgoingNode != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_LINK_OUTGOING_CONNECTIONS, new LongLiteralExpr(outgoingNode.getNodeId())));
+        }
+        body.addStatement(getDoneMethod(getNodeId(node)));
     }
 }
