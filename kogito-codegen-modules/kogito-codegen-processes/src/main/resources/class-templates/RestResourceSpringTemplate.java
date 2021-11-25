@@ -109,7 +109,7 @@ public class $Type$Resource {
     public List<TaskModel> getTasks_$name$(@PathVariable("id") String id,
                                            @RequestParam(value = "user", required = false) final String user,
                                            @RequestParam(value = "group", required = false) final List<String> groups) {
-        return processService.getTasks(process, id, SecurityPolicy.of(IdentityProviders.of(user, groups))
+        return processService.getTasks(process, id, SecurityPolicy.of(IdentityProviders.of(user, groups)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                 .stream()
                 .map($TaskModelFactory$::from)
