@@ -32,7 +32,6 @@ import io.serverlessworkflow.api.workflow.Events;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WorkflowUtilsTest {
 
@@ -48,10 +47,6 @@ public class WorkflowUtilsTest {
         objectMapper = ServerlessWorkflowUtils.getObjectMapper("yml");
         assertNotNull(objectMapper);
         assertThat(objectMapper).isInstanceOf(YamlObjectMapper.class);
-
-        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper("unsupported"));
-
-        assertThrows(IllegalArgumentException.class, () -> ServerlessWorkflowUtils.getObjectMapper(null));
     }
 
     @Test

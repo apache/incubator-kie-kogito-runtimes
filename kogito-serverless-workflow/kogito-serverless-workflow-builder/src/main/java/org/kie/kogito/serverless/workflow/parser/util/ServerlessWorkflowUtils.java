@@ -15,10 +15,8 @@
  */
 package org.kie.kogito.serverless.workflow.parser.util;
 
-import java.io.Reader;
 import java.util.NoSuchElementException;
 
-import org.drools.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,20 +46,7 @@ public class ServerlessWorkflowUtils {
     }
 
     public static BaseObjectMapper getObjectMapper(String workflowFormat) {
-        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(DEFAULT_WORKFLOW_FORMAT)) {
-            return new JsonObjectMapper();
-        }
-
-        if (workflowFormat != null && workflowFormat.equalsIgnoreCase(ALTERNATE_WORKFLOW_FORMAT)) {
-            return new YamlObjectMapper();
-        }
-
-        LOGGER.error("unable to determine workflow format {}", workflowFormat);
-        throw new IllegalArgumentException("invalid workflow format");
-    }
-
-    public static String readWorkflowFile(Reader reader) {
-        return StringUtils.readFileAsString(reader);
+        return ALTERNATE_WORKFLOW_FORMAT.equals(workflowFormat) ? new YamlObjectMapper() : new JsonObjectMapper();
     }
 
     public static EventDefinition getWorkflowEventFor(Workflow workflow, String eventName) {

@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.parser;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +37,6 @@ import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
@@ -58,9 +58,8 @@ public class ServerlessWorkflowParser {
     private Process process;
 
     public static ServerlessWorkflowParser of(Reader workflowFile,
-            String workflowFormat) throws JsonProcessingException {
-        return of(ServerlessWorkflowUtils.getObjectMapper(workflowFormat).readValue(ServerlessWorkflowUtils
-                .readWorkflowFile(workflowFile), Workflow.class));
+            String workflowFormat) throws IOException {
+        return of(ServerlessWorkflowUtils.getObjectMapper(workflowFormat).readValue(workflowFile, Workflow.class));
     }
 
     public static ServerlessWorkflowParser of(Workflow workflow) {
