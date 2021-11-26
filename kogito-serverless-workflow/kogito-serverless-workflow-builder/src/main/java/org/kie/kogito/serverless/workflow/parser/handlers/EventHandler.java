@@ -48,7 +48,7 @@ public class EventHandler extends CompositeContextNodeHandler<EventState> {
     @Override
     public CompositeContextNodeFactory<?> makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
         OnEvents onEvent = state.getOnEvents().get(0);
-        CompositeContextNodeFactory<?> nodeFactory = handleActions(factory, onEvent.getActions());
+        CompositeContextNodeFactory<?> embeddedSubProcess = handleActions(makeCompositeNode(factory), onEvent.getActions());
         List<String> onEventRefs = onEvent.getEventRefs();
         if (onEventRefs.size() == 1) {
             startFactory = ServerlessWorkflowParser.messageStartNode(factory.startNode(parserContext.newId()), ServerlessWorkflowUtils
@@ -61,7 +61,7 @@ public class EventHandler extends CompositeContextNodeHandler<EventState> {
                         startFactory.getNode().getId());
             }
         }
-        return nodeFactory;
+        return embeddedSubProcess;
     }
 
     @Override

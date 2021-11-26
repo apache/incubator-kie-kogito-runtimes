@@ -17,10 +17,12 @@ package org.kie.kogito.expr.jq;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerUtils;
 import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,8 +38,10 @@ public class JqParsedExpression implements ParsedExpression {
 
     private Scope scope;
     private JsonQuery query;
+    private String expr;
 
     public JqParsedExpression(Scope scope, String expr) {
+        this.expr = expr;
         this.scope = scope;
         try {
             this.query = JsonQuery.compile(expr, Versions.JQ_1_6);
@@ -130,7 +134,7 @@ public class JqParsedExpression implements ParsedExpression {
 
         @Override
         public void emit(JsonNode out) throws JsonQueryException {
-            if (out.isArray() || out.isObject()) {
+            if (out.isObject()) {
                 MergeUtils.merge(out, context);
             }
             if (this.result == null) {
@@ -161,4 +165,10 @@ public class JqParsedExpression implements ParsedExpression {
             throw new IllegalArgumentException("Unable to evaluate content " + context + " using query " + query, e);
         }
     }
+
+    @Override
+    public Optional<String> varName() {
+        return ExpressionHandlerUtils.fallbackVarToName(expr);
+    }
+
 }

@@ -50,11 +50,11 @@ public class WorkflowAppContext {
     }
 
     public String getApplicationProperty(String key) {
-        if (applicationProperties != null && applicationProperties.containsKey(key)) {
-            return applicationProperties.getProperty(key);
-        } else {
-            return DEFAULT_PROP_VALUE;
-        }
+        return getApplicationProperty(key, DEFAULT_PROP_VALUE);
+    }
+
+    public String getApplicationProperty(String key, String def) {
+        return applicationProperties != null ? applicationProperties.getProperty(key, def) : def;
     }
 
     public Properties getApplicationProperties() {

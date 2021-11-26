@@ -69,6 +69,7 @@ public class StateHandlerFactory {
                 break;
             case FOREACH:
                 result = new ForEachStateHandler((ForEachState) state, workflow, parserContext);
+                break;
             default:
                 logger.warn("Unsupported state {}. Ignoring it", state.getName());
                 return Optional.empty();

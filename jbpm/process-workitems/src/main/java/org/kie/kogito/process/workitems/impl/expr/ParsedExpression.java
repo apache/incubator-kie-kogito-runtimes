@@ -15,8 +15,11 @@
  */
 package org.kie.kogito.process.workitems.impl.expr;
 
+import java.util.Optional;
+
 public interface ParsedExpression {
 
     <T> T eval(Object context, Class<T> returnClass);
 
+    Optional<String> varName();
 }

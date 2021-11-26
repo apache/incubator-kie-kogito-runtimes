@@ -23,6 +23,7 @@ import org.jbpm.process.core.context.AbstractContext;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
@@ -47,10 +48,10 @@ public class ForEachNode extends CompositeContextNode {
     private String outputCollectionExpression;
     private String completionConditionExpression;
     private String exprLanguage;
+    private Action finishAction;
     private boolean waitForCompletion = true;
     private boolean sequential = true;
     private ParsedExpression evaluateExpression;
-    private ParsedExpression finishExpression;
 
     public ForEachNode() {
         // Split
@@ -109,18 +110,23 @@ public class ForEachNode extends CompositeContextNode {
         this.exprLanguage = exprLanguage;
     }
 
+    public String getExpressionLanguage() {
+        return exprLanguage;
+    }
+
+    public Action getCompletionAction() {
+        return finishAction;
+    }
+
+    public void setCompletionAction(Action finishAction) {
+        this.finishAction = finishAction;
+    }
+
     public ParsedExpression getEvaluateExpression() {
-        if (evaluateExpression != null && ExpressionHandlerFactory.isSupported(exprLanguage)) {
+        if (evaluateExpression == null && ExpressionHandlerFactory.isSupported(exprLanguage)) {
             evaluateExpression = ExpressionHandlerFactory.get(exprLanguage).parse(collectionExpression);
         }
         return evaluateExpression;
-    }
-
-    public ParsedExpression getFinishExpression() {
-        if (finishExpression != null && completionConditionExpression != null && ExpressionHandlerFactory.isSupported(exprLanguage)) {
-            finishExpression = ExpressionHandlerFactory.get(exprLanguage).parse(completionConditionExpression);
-        }
-        return finishExpression;
     }
 
     public String getOutputVariableName() {

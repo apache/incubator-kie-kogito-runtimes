@@ -35,6 +35,6 @@ public class OperationHandler extends CompositeContextNodeHandler<OperationState
 
     @Override
     public CompositeContextNodeFactory<?> makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
-        return handleActions(factory, state.getActions());
+        return handleActions(makeCompositeNode(factory), state.getActions());
     }
 }

@@ -21,23 +21,37 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ForEachNodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.suppliers.ForEachCollectorActionSupplier;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.ForEachState;
 
-public class ForEachStateHandler extends StateHandler<ForEachState> {
+public class ForEachStateHandler extends CompositeContextNodeHandler<ForEachState> {
+
+    private final String outputVarName;
 
     protected ForEachStateHandler(ForEachState state, Workflow workflow, ParserContext parserContext) {
         super(state, workflow, parserContext);
+        outputVarName =
+                workflowAppContext.getApplicationProperty(ServerlessWorkflowUtils.APP_PROPERTIES_BASE + ServerlessWorkflowUtils.APP_PROPERTIES_STATES_BASE + "foreach.outputVarName", "_swf_eval_temp");
     }
 
     @Override
     protected ForEachNodeFactory<?> makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
         ForEachNodeFactory<?> result =
                 factory.forEachNode(parserContext.newId()).sequential(false).waitForCompletion(true).expressionLanguage(workflow.getExpressionLang()).collectionExpression(state.getInputCollection())
-                        .metaData(Metadata.VARIABLE, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR).outputCollectionExpression(state.getOutputCollection())
-                        .variable(state.getIterationParam(), new ObjectDataType());
-
+                        .outputVariable(outputVarName, new ObjectDataType())
+                        .metaData(Metadata.VARIABLE, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+        if (state.getIterationParam() != null) {
+            result.variable(state.getIterationParam(), new ObjectDataType());
+            handleActions(result, state.getActions(), outputVarName, state.getIterationParam());
+        } else {
+            handleActions(result, state.getActions(), outputVarName);
+        }
+        if (state.getOutputCollection() != null) {
+            result.completionAction(new ForEachCollectorActionSupplier(workflow.getExpressionLang(), state.getOutputCollection()));
+        }
         return result;
     }
 

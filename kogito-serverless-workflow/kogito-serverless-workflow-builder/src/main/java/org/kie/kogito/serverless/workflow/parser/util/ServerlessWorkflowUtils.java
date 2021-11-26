@@ -33,10 +33,10 @@ public class ServerlessWorkflowUtils {
 
     public static final String DEFAULT_WORKFLOW_FORMAT = "json";
     public static final String ALTERNATE_WORKFLOW_FORMAT = "yml";
-    private static final String APP_PROPERTIES_BASE = "kogito.sw.";
+    public static final String APP_PROPERTIES_BASE = "kogito.sw.";
     private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
     private static final String APP_PROPERTIES_EVENTS_BASE = "events.";
-    private static final String APP_PROPERTIES_STATES_BASE = "states.";
+    public static final String APP_PROPERTIES_STATES_BASE = "states.";
 
     public static final String OPENAPI_OPERATION_SEPARATOR = "#";
 

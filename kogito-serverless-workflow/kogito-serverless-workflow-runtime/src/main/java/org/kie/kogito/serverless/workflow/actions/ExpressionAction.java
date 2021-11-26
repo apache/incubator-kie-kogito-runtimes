@@ -15,27 +15,24 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
-import org.jbpm.process.instance.impl.Action;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
-import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getWorkflowData;
+public class ExpressionAction extends BaseExpressionAction {
 
-public class ExpressionAction implements Action {
+    private String outputVar;
 
-    protected String lang;
-    protected String expr;
-
-    public ExpressionAction(String lang, String expr) {
-        this.lang = lang;
-        this.expr = expr;
+    public ExpressionAction(String lang, String expr, String outputVar, String... addAttrs) {
+        super(lang, expr, addAttrs);
+        this.outputVar = outputVar;
     }
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        ExpressionHandlerFactory.get(lang).parse(expr).eval(getWorkflowData(context), JsonNode.class);
+        JsonNode result = evaluate(context, JsonNode.class);
+        if (outputVar != null) {
+            context.setVariable(outputVar, result);
+        }
     }
-
 }

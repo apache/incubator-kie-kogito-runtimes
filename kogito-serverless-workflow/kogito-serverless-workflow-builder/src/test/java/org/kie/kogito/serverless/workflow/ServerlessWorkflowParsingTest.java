@@ -671,7 +671,7 @@ public class ServerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json" })
+    @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json", "/exec/foreach.sw.json"})
     public void testSpecExamplesParsing(String workflowLocation) throws IOException {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 

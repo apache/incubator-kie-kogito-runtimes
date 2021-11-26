@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.expr.jsonpath;
 
+import java.util.Optional;
+
+import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerUtils;
 import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -56,6 +59,11 @@ public class JsonPathParsedExpression implements ParsedExpression {
             return Boolean.class.isAssignableFrom(returnClass) && result instanceof ArrayNode ? (T) Boolean.valueOf(!((ArrayNode) result).isEmpty())
                     : jsonPathConfig.mappingProvider().map(result, returnClass, jsonPathConfig);
         }
+    }
+
+    @Override
+    public Optional<String> varName() {
+        return ExpressionHandlerUtils.fallbackVarToName(expr);
     }
 
 }
