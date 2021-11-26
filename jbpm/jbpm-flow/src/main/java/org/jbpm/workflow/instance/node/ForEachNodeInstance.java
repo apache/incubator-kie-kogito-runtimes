@@ -258,7 +258,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 outputCollection.add(outputVariable);
 
                 subprocessVariableScopeInstance.setVariable(this, TEMP_OUTPUT_VAR, outputCollection);
-                // add temp collection under actual mi output name for completion condition evaluation
+                // add temp collection under actual output name for completion condition evaluation
                 tempVariables.put(getForEachNode().getOutputVariableName(), outputVariable);
                 String outputCollectionName = getForEachNode().getOutputCollectionExpression();
                 tempVariables.put(outputCollectionName, outputCollection);
@@ -315,8 +315,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         private boolean evaluateCompletionCondition(String expression, Map<String, Object> tempVariables) {
             if (expression == null || expression.isEmpty()) {
                 return false;
-            } else if (getForEachNode().getEvaluateExpression() != null) {
-                return evaluateExpression(getForEachNode().getEvaluateExpression(), Boolean.class);
+            } else if (getForEachNode().getFinishExpression() != null) {
+                return evaluateExpression(getForEachNode().getFinishExpression(), Boolean.class);
             } else {
                 try {
                     Object result = MVELProcessHelper.evaluator().eval(expression,

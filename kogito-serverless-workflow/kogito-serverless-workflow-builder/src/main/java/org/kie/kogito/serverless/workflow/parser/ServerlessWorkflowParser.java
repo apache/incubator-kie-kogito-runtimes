@@ -88,9 +88,9 @@ public class ServerlessWorkflowParser {
                         DEFAULT_PACKAGE) : DEFAULT_PACKAGE)
                 .visibility("Public")
                 .variable(DEFAULT_WORKFLOW_VAR, JsonNode.class);
-        ParserContext parserContext = new ParserContext(idGenerator);
-        Collection<StateHandler<?, ?, ?>> handlers =
-                workflow.getStates().stream().map(state -> StateHandlerFactory.getStateHandler(state, workflow, factory, parserContext))
+        ParserContext parserContext = new ParserContext(idGenerator, factory);
+        Collection<StateHandler<?>> handlers =
+                workflow.getStates().stream().map(state -> StateHandlerFactory.getStateHandler(state, workflow, parserContext))
                         .filter(Optional::isPresent).map(Optional::get).filter(state -> !state.usedForCompensation()).collect(Collectors.toList());
         handlers.forEach(StateHandler::handleStart);
         handlers.forEach(StateHandler::handleEnd);

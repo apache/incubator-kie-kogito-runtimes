@@ -28,6 +28,7 @@ import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
+import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -58,8 +59,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.serverlessworkflow.api.interfaces.State;
 
-public abstract class CompositeContextNodeHandler<S extends State, P extends RuleFlowNodeContainerFactory<P, ?>, N extends AbstractCompositeNodeFactory<N, P>> extends
-        StateHandler<S, N, P> {
+public abstract class CompositeContextNodeHandler<S extends State> extends StateHandler<S> {
 
     private static final Logger logger = LoggerFactory.getLogger(CompositeContextNodeHandler.class);
 
@@ -83,13 +83,12 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
 
     private final WorkflowAppContext workflowAppContext = WorkflowAppContext.ofAppResources();
 
-    protected CompositeContextNodeHandler(S state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory,
-            ParserContext parserContext) {
-        super(state, workflow, factory, parserContext);
+    protected CompositeContextNodeHandler(S state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
-    protected final N handleActions(List<Action> actions) {
-        N embeddedSubProcess = (N) factory.compositeContextNode(parserContext.newId()).name(state.getName()).autoComplete(true);
+    protected final CompositeContextNodeFactory<?> handleActions(RuleFlowNodeContainerFactory<?, ?> factory, List<Action> actions) {
+        CompositeContextNodeFactory<?> embeddedSubProcess = factory.compositeContextNode(parserContext.newId()).name(state.getName()).autoComplete(true);
 
         if (actions != null && !actions.isEmpty()) {
             NodeFactory<?, ?> startNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
@@ -112,7 +111,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
         return embeddedSubProcess;
     }
 
-    protected final NodeFactory<?, ?> getActionNode(N embeddedSubProcess,
+    protected final NodeFactory<?, ?> getActionNode(AbstractCompositeNodeFactory<?, ?> embeddedSubProcess,
             Action action) {
         FunctionRef functionRef = action.getFunctionRef();
         JsonNode functionArgs = functionRef.getArguments();
@@ -145,7 +144,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                         .name(actionName)
                         .action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText()));
             case SERVICE:
-                WorkItemNodeFactory<N> serviceFactory = embeddedSubProcess
+                WorkItemNodeFactory<?> serviceFactory = embeddedSubProcess
                         .workItemNode(parserContext.newId())
                         .name(actionName)
                         .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, SERVICE_TASK_TYPE)
@@ -173,7 +172,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
                 return serviceFactory;
 
             case REST:
-                WorkItemNodeFactory<N> workItemFactory = embeddedSubProcess
+                WorkItemNodeFactory<?> workItemFactory = embeddedSubProcess
                         .workItemNode(parserContext.newId())
                         .name(actionFunction.getName())
                         .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
@@ -235,7 +234,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
         return map;
     }
 
-    private void processArgs(WorkItemNodeFactory<N> workItemFactory,
+    private void processArgs(WorkItemNodeFactory<?> workItemFactory,
             JsonNode functionArgs, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
         ExpressionHandler expressionHandler = ExpressionHandlerFactory.get(workflow.getExpressionLang());
         Map<String, Object> map = functionsToMap(functionArgs);
@@ -279,7 +278,7 @@ public abstract class CompositeContextNodeHandler<S extends State, P extends Rul
         }
     }
 
-    private NodeFactory<?, ?> emptyNode(N embeddedSubProcess, String actionName) {
+    private NodeFactory<?, ?> emptyNode(AbstractCompositeNodeFactory<?, ?> embeddedSubProcess, String actionName) {
         return embeddedSubProcess
                 .actionNode(parserContext.newId())
                 .name(actionName)

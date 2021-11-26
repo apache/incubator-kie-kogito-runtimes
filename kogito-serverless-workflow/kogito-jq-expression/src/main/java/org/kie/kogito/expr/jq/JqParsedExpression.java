@@ -105,7 +105,7 @@ public class JqParsedExpression implements ParsedExpression {
         public void emit(JsonNode out) throws JsonQueryException {
             Object obj = JsonObjectUtils.toJavaValue(out);
             if (obj instanceof Collection)
-                result.addAll((Collection) obj); 
+                result.addAll((Collection) obj);
             else {
                 result.add(obj);
             }

@@ -75,8 +75,8 @@ class JqExpressionHandlerTest {
         JsonNode node = new ObjectMapper().createObjectNode().put("foo", "Javierito").put("main", "Pepito").put("another", "Fulanito");
         assertEquals("Javierito Pepito Fulanito", parsedExpression.eval(node, String.class));
     }
-    
-    @Test 
+
+    @Test
     void testCollection() {
         ParsedExpression parsedExpression = ExpressionHandlerFactory.get("jq").parse(".foo");
         ObjectMapper objectMapper = new ObjectMapper();

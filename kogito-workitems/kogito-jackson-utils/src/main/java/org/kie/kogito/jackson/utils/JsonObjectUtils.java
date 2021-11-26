@@ -36,7 +36,7 @@ public class JsonObjectUtils {
             return jsonNode.asDouble();
         } else if (jsonNode.isArray()) {
             Collection result = new ArrayList<>();
-            for (JsonNode item :((ArrayNode) jsonNode)) {
+            for (JsonNode item : ((ArrayNode) jsonNode)) {
                 result.add(toJavaValue(item));
             }
             return result;
