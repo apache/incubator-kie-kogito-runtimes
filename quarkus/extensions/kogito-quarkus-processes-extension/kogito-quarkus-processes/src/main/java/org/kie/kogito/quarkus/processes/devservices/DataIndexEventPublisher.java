@@ -18,25 +18,39 @@ package org.kie.kogito.quarkus.processes.devservices;
 
 import java.util.Collection;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.quarkus.arc.properties.UnlessBuildProperty;
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
 
+@ApplicationScoped
+@UnlessBuildProperty(name = DataIndexEventPublisher.KOGITO_DATA_INDEX, stringValue = "")
 public class DataIndexEventPublisher implements EventPublisher {
 
     public static final String KOGITO_DATA_INDEX = "kogito.data-index.url";
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexEventPublisher.class);
 
-    private final String dataIndexUrl;
-    private final WebClient webClient;
+    @ConfigProperty(name = KOGITO_DATA_INDEX)
+    String dataIndexUrl;
 
-    public DataIndexEventPublisher(String dataIndexUrl, WebClient webClient) {
-        this.dataIndexUrl = dataIndexUrl;
-        this.webClient = webClient;
+    @Inject
+    Vertx vertx;
+
+    WebClient webClient;
+
+    @PostConstruct
+    public void init() {
+        webClient = WebClient.create(vertx);
     }
 
     @Override
