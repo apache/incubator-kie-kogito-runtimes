@@ -56,8 +56,8 @@ public class QuarkusElasticRegistryProvider extends ElasticRegistry {
     public Optional<String> documentType;
 
     @Inject
-    public void init(MonitoringRegistryManager monitoringRegistryManager) {
-        this.monitoringRegistryManager = monitoringRegistryManager;
+    public QuarkusElasticRegistryProvider(MonitoringRegistryManager monitoringRegistryManager) {
+        super(monitoringRegistryManager);
     }
 
     public void config(@Observes StartupEvent event) {

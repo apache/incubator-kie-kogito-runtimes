@@ -56,8 +56,8 @@ public class SpringbootElasticRegistryProvider extends ElasticRegistry {
     ThreadPoolTaskExecutor executor;
 
     @Autowired
-    public void init(MonitoringRegistryManager monitoringRegistryManager) {
-        this.monitoringRegistryManager = monitoringRegistryManager;
+    public SpringbootElasticRegistryProvider(MonitoringRegistryManager monitoringRegistryManager) {
+        super(monitoringRegistryManager);
     }
 
     @PostConstruct

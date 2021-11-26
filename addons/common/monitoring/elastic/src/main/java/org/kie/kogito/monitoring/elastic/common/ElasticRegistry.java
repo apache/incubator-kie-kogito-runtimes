@@ -31,7 +31,8 @@ public class ElasticRegistry {
     private ElasticMeterRegistry registry;
     protected MonitoringRegistryManager monitoringRegistryManager;
 
-    protected ElasticRegistry() {
+    protected ElasticRegistry(MonitoringRegistryManager monitoringRegistryManager) {
+        this.monitoringRegistryManager = monitoringRegistryManager;
     }
 
     protected void start(ElasticConfig elasticConfig) {

@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 
 import io.micrometer.elastic.ElasticConfig;
 
@@ -29,7 +30,7 @@ public class ElasticRegistryTest {
 
     @Test
     public void testElasticMicrometerIsUsingOurProperties() throws InterruptedException {
-        ElasticRegistry elasticRegistry = new ElasticRegistry();
+        ElasticRegistry elasticRegistry = new ElasticRegistry(new MockedMonitoringRegistryManager());
 
         KogitoElasticConfig kogitoElasticConfig = new KogitoElasticConfig();
         kogitoElasticConfig.withProperty(KogitoElasticConfig.HOST_KEY, "http://mylocalhost:8080");
