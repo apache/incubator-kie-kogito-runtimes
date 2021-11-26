@@ -89,7 +89,7 @@ public class $Type$Resource {
                                        @RequestParam(value = "group",
                                                required = false) final List<String> groups,
                                        @RequestBody(required = false) final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(IdentityProviders.of(user, groups)), null)
+        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(IdentityProviders.of(user, groups)), model)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
