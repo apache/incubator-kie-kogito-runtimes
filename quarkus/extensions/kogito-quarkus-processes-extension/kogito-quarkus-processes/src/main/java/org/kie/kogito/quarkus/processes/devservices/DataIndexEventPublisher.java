@@ -17,9 +17,11 @@
 package org.kie.kogito.quarkus.processes.devservices;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -39,52 +41,86 @@ public class DataIndexEventPublisher implements EventPublisher {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexEventPublisher.class);
 
     @ConfigProperty(name = KOGITO_DATA_INDEX)
-    String dataIndexUrl;
+    Optional<String> optionalDataIndexUrl;
 
     @Inject
-    Vertx vertx;
-
-    WebClient webClient;
+    Instance<Vertx> vertx;
+    EventPublisher delegate;
 
     @PostConstruct
     public void init() {
-        webClient = WebClient.create(vertx);
-    }
-
-    @Override
-    public void publish(DataEvent<?> event) {
-        LOGGER.debug("Sending event to data index: {}", event);
-        switch (event.getType()) {
-            case "ProcessInstanceEvent":
-                webClient.postAbs(dataIndexUrl + "/processes")
-                        .expect(ResponsePredicate.SC_ACCEPTED)
-                        .sendJson(event, result -> {
-                            if (result.failed()) {
-                                LOGGER.error("Failed to send message to Data Index", result.cause());
-                            } else {
-                                LOGGER.debug("Event published to Data Index");
-                            }
-                        });
-                break;
-            case "UserTaskInstanceEvent":
-                webClient.postAbs(dataIndexUrl + "/tasks")
-                        .expect(ResponsePredicate.SC_ACCEPTED)
-                        .sendJson(event, result -> {
-                            if (result.failed()) {
-                                LOGGER.error("Failed to send message to Data Index", result.cause());
-                            } else {
-                                LOGGER.debug("Event published to Data Index");
-                            }
-                        });
-                break;
-            default:
-                LOGGER.debug("Unknown type of event '{}', ignoring for this publisher", event.getType());
+        if (optionalDataIndexUrl.isPresent()) {
+            this.delegate = new ActiveEventPublisher(optionalDataIndexUrl.get(), WebClient.create(vertx.get()));
+        } else {
+            this.delegate = new InactiveEventPublisher();
         }
     }
 
     @Override
+    public void publish(DataEvent<?> event) {
+        delegate.publish(event);
+    }
+
+    @Override
     public void publish(Collection<DataEvent<?>> events) {
-        events.forEach(this::publish);
+        delegate.publish(events);
+    }
+
+    static class InactiveEventPublisher implements EventPublisher {
+        @Override
+        public void publish(DataEvent<?> event) {
+        }
+
+        @Override
+        public void publish(Collection<DataEvent<?>> events) {
+        }
+    }
+
+    static class ActiveEventPublisher implements EventPublisher {
+        private final String dataIndexUrl;
+        private final WebClient webClient;
+
+        public ActiveEventPublisher(String dataIndexUrl, WebClient webClient) {
+            this.dataIndexUrl = dataIndexUrl;
+            this.webClient = webClient;
+        }
+
+        @Override
+        public void publish(DataEvent<?> event) {
+            LOGGER.debug("Sending event to data index: {}", event);
+            switch (event.getType()) {
+                case "ProcessInstanceEvent":
+                    webClient.postAbs(dataIndexUrl + "/processes")
+                            .expect(ResponsePredicate.SC_ACCEPTED)
+                            .sendJson(event, result -> {
+                                if (result.failed()) {
+                                    LOGGER.error("Failed to send message to Data Index", result.cause());
+                                } else {
+                                    LOGGER.debug("Event published to Data Index");
+                                }
+                            });
+                    break;
+                case "UserTaskInstanceEvent":
+                    webClient.postAbs(dataIndexUrl + "/tasks")
+                            .expect(ResponsePredicate.SC_ACCEPTED)
+                            .sendJson(event, result -> {
+                                if (result.failed()) {
+                                    LOGGER.error("Failed to send message to Data Index", result.cause());
+                                } else {
+                                    LOGGER.debug("Event published to Data Index");
+                                }
+                            });
+                    break;
+                default:
+                    LOGGER.debug("Unknown type of event '{}', ignoring for this publisher", event.getType());
+            }
+        }
+
+        @Override
+        public void publish(Collection<DataEvent<?>> events) {
+            events.forEach(this::publish);
+        }
+
     }
 
 }
