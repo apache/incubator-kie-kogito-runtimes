@@ -77,8 +77,8 @@ class KogitoAssetsProcessorTest {
         assertThatThrownBy(() -> processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY_JSON_JACKSON)))
                 .isInstanceOf(MissingRestCapabilityException.class);
 
-//        assertThatThrownBy(() -> processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON)))
-//                .isInstanceOf(MissingServletCapabilityException.class);
+        //        assertThatThrownBy(() -> processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON)))
+        //                .isInstanceOf(MissingServletCapabilityException.class);
 
         processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, Capability.SERVLET));
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();

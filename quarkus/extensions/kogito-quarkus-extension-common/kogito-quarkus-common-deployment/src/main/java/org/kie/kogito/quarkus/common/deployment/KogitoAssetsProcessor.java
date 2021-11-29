@@ -127,9 +127,9 @@ public class KogitoAssetsProcessor {
             throw new MissingRestCapabilityException();
         }
 
-//        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET) && kogitoGenerateRestEnabled) {
-//            throw new MissingServletCapabilityException();
-//        }
+        //        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET) && kogitoGenerateRestEnabled) {
+        //            throw new MissingServletCapabilityException();
+        //        }
     }
 
     private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {
