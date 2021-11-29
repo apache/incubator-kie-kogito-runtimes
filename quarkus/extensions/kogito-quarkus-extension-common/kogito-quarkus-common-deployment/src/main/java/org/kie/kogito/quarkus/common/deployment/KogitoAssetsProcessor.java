@@ -113,7 +113,8 @@ public class KogitoAssetsProcessor {
 
     void validateAvailableCapabilities(KogitoBuildContext context, Capabilities capabilities) {
         boolean hasOptaPlannerCapability = capabilities.isCapabilityWithPrefixPresent("org.optaplanner");
-        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
+        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON)
+                || capabilities.isPresent(Capability.RESTEASY_REACTIVE) && capabilities.isPresent(Capability.RESTEASY_REACTIVE_JSON_JACKSON);
 
         // disable REST if OptaPlanner capability is available but REST is not (user can override via property)
         if (hasOptaPlannerCapability && !hasRestCapabilities &&
