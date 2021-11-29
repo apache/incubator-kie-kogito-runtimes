@@ -43,8 +43,9 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
-import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import io.quarkus.maven.dependency.ResolvedDependency;
+import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
+import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.*;
 
@@ -72,12 +73,15 @@ public class KogitoAssetsProcessor {
             Capabilities capabilities,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer,
+            BuildProducer<AdditionalStaticResourceBuildItem> staticResProducer,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
         // configure the application generator
         KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
+
+        validateAvailableCapabilities(context, capabilities);
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
@@ -100,7 +104,7 @@ public class KogitoAssetsProcessor {
 
         registerDataEventsForReflection(optionalIndex.map(KogitoGeneratedClassesBuildItem::getIndexedClasses), context, reflectiveClass);
 
-        registerResources(generatedFiles, resource, genResBI);
+        registerResources(generatedFiles, staticResProducer, resource, genResBI);
 
         return optionalIndex
                 .map(Collections::singletonList)
@@ -118,13 +122,14 @@ public class KogitoAssetsProcessor {
             LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
         }
 
-        if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
+        boolean kogitoGenerateRestEnabled = kogitoGenerateRest(context).orElse(true);
+        if (!hasRestCapabilities && kogitoGenerateRestEnabled) {
             throw new MissingRestCapabilityException();
         }
-      
-        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET)) {
-            throw new MissingServletCapabilityException();
-        }
+
+//        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET) && kogitoGenerateRestEnabled) {
+//            throw new MissingServletCapabilityException();
+//        }
     }
 
     private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {

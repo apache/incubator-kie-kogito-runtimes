@@ -19,9 +19,11 @@ package org.kie.kogito.quarkus.common.deployment;
 public class MissingRestCapabilityException extends RuntimeException {
     public MissingRestCapabilityException() {
         super("No REST capability detected! \n" +
-                "Add the RestEasy (quarkus-resteasy) and RestEasy Jackson (quarkus-resteasy-jackson) extensions if you want " +
+                "Add the RestEasy (quarkus-resteasy), RestEasy Jackson (quarkus-resteasy-jackson) and Undertow (quarkus-undertow) extensions if you want " +
                 "Kogito to generate REST endpoints automatically. \n" +
-                "RestEasy Reactive extension is currently not supported: see https://issues.redhat.com/browse/KOGITO-6131 \n" +
+                "If you want to use RestEasy Reactive, add RestEasy Reactive (quarkus-resteasy-reactive) " +
+                "and RestEasy Reactive Jackson (quarkus-resteasy-reactive-jackson) extensions without Undertow extension. \n"
+                +
                 "You may also disable automated REST generation by setting `kogito.generate.rest = false`. \n" +
                 "You may also override this notice by setting `kogito.generate.rest = true` ");
     }
