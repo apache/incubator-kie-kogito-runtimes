@@ -21,9 +21,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 public class AppPaths {
 
@@ -39,6 +42,7 @@ public class AppPaths {
 
     private final boolean isJar;
     private final Path resourcesPath;
+    private final Path testResourcesPath;
 
     public static AppPaths fromProjectDir(Path projectDir) {
         return new AppPaths(Collections.singleton(projectDir), Collections.emptyList(), false, BuildTool.MAVEN);
@@ -101,8 +105,10 @@ public class AppPaths {
         this.classesPaths.addAll(classesPaths);
         if (bt == BuildTool.GRADLE) {
             resourcesPath = Paths.get(""); // no prefix required
+            testResourcesPath = Paths.get("");
         } else {
             resourcesPath = Paths.get("src", "main", "resources");
+            testResourcesPath = Paths.get("src", "test", "resources");
         }
     }
 
@@ -142,7 +148,11 @@ public class AppPaths {
     }
 
     public Path[] getResourcePaths() {
-        return transformPaths(projectPaths, p -> p.resolve(resourcesPath));
+        List<Path> resPath = transformPathsToList(projectPaths, p -> p.resolve(resourcesPath));
+        List<Path> tstPath = transformPathsToList(projectPaths, p -> p.resolve(testResourcesPath));
+        Set<Path> toReturn = new HashSet<>(resPath);
+        toReturn.addAll(tstPath);
+        return toReturn.toArray(new Path[0]);
     }
 
     public Path[] getSourcePaths() {
@@ -159,6 +169,10 @@ public class AppPaths {
 
     private Path[] transformPaths(Collection<Path> paths, UnaryOperator<Path> f) {
         return paths.stream().map(f).toArray(Path[]::new);
+    }
+
+    private List<Path> transformPathsToList(Collection<Path> paths, UnaryOperator<Path> f) {
+        return paths.stream().map(f).collect(Collectors.toList());
     }
 
     @Override
