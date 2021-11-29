@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.drools.core.kogito.factory;
 
-import org.drools.core.reteoo.KieComponentFactory;
-import org.drools.core.reteoo.KieComponentFactoryFactory;
+package org.kie.kogito.serialization.process.impl.marshallers;
 
-public class KogitoComponentFactoryFactory implements KieComponentFactoryFactory {
+import java.util.List;
+
+public class ProtobufListMarshallerStrategy extends ProtobufObjectMarshallerStrategy {
 
     @Override
-    public KieComponentFactory createKieComponentFactory() {
-        return new KogitoKieComponentFactory();
+    public Integer order() {
+        return DEFAULT_ORDER;
+    }
+
+    @Override
+    public boolean acceptForMarshalling(Object value) {
+        return List.class.isInstance(value);
     }
 }

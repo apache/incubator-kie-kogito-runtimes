@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
@@ -104,7 +105,7 @@ public interface KogitoBuildContext {
 
     Collection<String> getApplicationProperties();
 
-    void setApplicationProperty(String key, Object value);
+    void setApplicationProperty(String key, String value);
 
     String getPackageName();
 
@@ -145,8 +146,18 @@ public interface KogitoBuildContext {
 
     Optional<KogitoGAV> getGAV();
 
+    default Map<String, String> getPropertiesMap() {
+        return getApplicationProperties().stream()
+                .filter(key -> getApplicationProperty(key).isPresent())
+                .collect(Collectors.toUnmodifiableMap(key -> key,
+                        key -> getApplicationProperty(key).get()));
+    }
+
     interface Builder {
+
         Builder withPackageName(String packageName);
+
+        Builder withApplicationPropertyProvider(KogitoApplicationPropertyProvider applicationProperties);
 
         Builder withApplicationProperties(Properties applicationProperties);
 
