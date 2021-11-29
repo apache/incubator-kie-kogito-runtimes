@@ -15,7 +15,7 @@
  */
 package org.jbpm.test.util;
 
-import org.drools.core.impl.KnowledgeBaseImpl;
+import org.drools.core.impl.RuleBase;
 import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
 import org.jbpm.process.instance.impl.util.LoggingPrintStream;
 import org.junit.jupiter.api.AfterAll;
@@ -42,7 +42,7 @@ public abstract class AbstractBaseTest {
     public KogitoProcessRuntime createKogitoProcessRuntime(Process... process) {
         KieBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         for (Process processToAdd : process) {
-            ((KnowledgeBaseImpl) kbase).addProcess(processToAdd);
+            ((RuleBase) kbase).addProcess(processToAdd);
         }
         return KogitoProcessRuntime.asKogitoProcessRuntime(kbase.newKieSession());
     }
