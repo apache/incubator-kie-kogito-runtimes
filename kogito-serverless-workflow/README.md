@@ -46,7 +46,11 @@ The sections below describe in detail the current status of the supported featur
 
 #### Examples
 
-1. [The Callback Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-callback-quarkus)
+1. [Event Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-events-quarkus)
+2. [Operation Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-functions-quarkus)
+3. [Switch, Parallel, and SubFlow Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-order-processing)
+4. [Inject and Switch Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-greeting-quarkus)
+5. [Callback Example](https://github.com/kiegroup/kogito-examples/tree/main/serverless-workflow-callback-quarkus)
 
 ### Workflow Model - Functions
 
