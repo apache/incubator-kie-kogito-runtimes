@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
-import org.drools.core.impl.InternalKnowledgeBase;
+import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
