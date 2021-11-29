@@ -27,6 +27,7 @@ import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
+import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,7 @@ class CustomDashboardGeneratedUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void loadCustomGrafanaDashboardsList(KogitoBuildContext.Builder contextBuilder) {
         final KogitoBuildContext context = contextBuilder
+                .withAppPaths(AppPaths.fromTestDir(new File(".").toPath()))
                 .build();
         Collection<GeneratedFile> retrieved = CustomDashboardGeneratedUtils.loadCustomGrafanaDashboardsList(context);
         assertNotNull(retrieved);
@@ -53,6 +55,7 @@ class CustomDashboardGeneratedUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void addToGeneratedFiles(KogitoBuildContext.Builder contextBuilder) {
         final KogitoBuildContext context = contextBuilder
+                .withAppPaths(AppPaths.fromTestDir(new File(".").toPath()))
                 .build();
         Collection<CollectedResource> collectedResources =
                 CollectedResourceProducer.fromPaths(context.getAppPaths().getPaths());
@@ -84,6 +87,7 @@ class CustomDashboardGeneratedUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void getMappedJsons(KogitoBuildContext.Builder contextBuilder) {
         final KogitoBuildContext context = contextBuilder
+                .withAppPaths(AppPaths.fromTestDir(new File(".").toPath()))
                 .build();
         Collection<CollectedResource> collectedResources =
                 CollectedResourceProducer.fromPaths(context.getAppPaths().getPaths());
