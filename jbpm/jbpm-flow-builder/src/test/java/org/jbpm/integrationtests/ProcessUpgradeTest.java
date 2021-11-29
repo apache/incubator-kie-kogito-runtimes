@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.io.impl.ByteArrayResource;
 import org.drools.core.io.impl.ReaderResource;
+import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
 import org.jbpm.integrationtests.handler.TestWorkItemHandler;
 import org.jbpm.integrationtests.test.Person;
 import org.jbpm.process.instance.ProcessInstance;

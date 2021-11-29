@@ -15,8 +15,8 @@
  */
 package org.jbpm.test.util;
 
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.drools.core.impl.KnowledgeBaseImpl;
+import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
 import org.jbpm.process.instance.impl.util.LoggingPrintStream;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

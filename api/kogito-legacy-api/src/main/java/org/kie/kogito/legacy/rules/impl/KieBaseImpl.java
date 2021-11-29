@@ -143,6 +143,11 @@ public class KieBaseImpl implements InternalKnowledgeBase {
     }
 
     @Override
+    public KieSessionsPool getSessionPool() {
+        return delegate.getSessionPool();
+    }
+
+    @Override
     public Set<String> getEntryPointIds() {
         return delegate.getEntryPointIds();
     }
@@ -208,8 +213,23 @@ public class KieBaseImpl implements InternalKnowledgeBase {
     }
 
     @Override
+    public void addStatefulSession(InternalWorkingMemory wm) {
+        delegate.addStatefulSession(wm);
+    }
+
+    @Override
+    public KieSession newKieSession(KieSessionConfiguration conf, Environment environment, boolean fromPool) {
+        return delegate.newKieSession(conf, environment, fromPool);
+    }
+
+    @Override
     public int getWorkingMemoryCounter() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void registerSegmentPrototype(LeftTupleSource tupleSource, SegmentMemory smem) {
+        delegate.registerSegmentPrototype(tupleSource, smem);
     }
 
     @Override
@@ -283,8 +303,18 @@ public class KieBaseImpl implements InternalKnowledgeBase {
     }
 
     @Override
+    public InternalKieContainer getKieContainer() {
+        return delegate.getKieContainer();
+    }
+
+    @Override
     public Class<?> registerAndLoadTypeDefinition(String s, byte[] bytes) throws ClassNotFoundException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public InternalKnowledgePackage[] getPackages() {
+        return delegate.getPackages();
     }
 
     @Override
@@ -373,8 +403,8 @@ public class KieBaseImpl implements InternalKnowledgeBase {
     }
 
     @Override
-    public boolean removeObjectsGeneratedFromResource(Resource resource) {
-        throw new UnsupportedOperationException();
+    public boolean removeObjectsGeneratedFromResource(Resource resource, Collection<InternalWorkingMemory> workingMemories) {
+        return delegate.removeObjectsGeneratedFromResource(resource, workingMemories);
     }
 
     @Override
