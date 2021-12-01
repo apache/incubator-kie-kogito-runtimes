@@ -36,9 +36,7 @@ public class DefaultDecisionModelResourceTest {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
                 "namespace",
                 "name",
-                new DecisionModelMetadata(
-                        DecisionModelMetadata.Type.DMN,
-                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new DecisionModelMetadata("http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
                 new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(GAV, resource.getGav());
         assertEquals("name", resource.getModelName());
@@ -52,9 +50,7 @@ public class DefaultDecisionModelResourceTest {
         final DecisionModelResource resource = new DefaultDecisionModelResource(GAV,
                 "namespace",
                 "name",
-                new DecisionModelMetadata(
-                        DecisionModelMetadata.Type.DMN,
-                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new DecisionModelMetadata("http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
                 new InputStreamReader(new ByteArrayInputStream(CONTENT.getBytes())));
         assertEquals(CONTENT, resource.get().trim());
     }

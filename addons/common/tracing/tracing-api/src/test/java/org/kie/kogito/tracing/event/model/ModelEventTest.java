@@ -17,6 +17,7 @@ package org.kie.kogito.tracing.event.model;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.event.ModelMetadata;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,7 +27,8 @@ public class ModelEventTest {
     public void testGetters() {
         final KogitoGAV gav = new KogitoGAV("groupID", "artifactId", "version");
         final ModelEvent e = new ModelEvent(gav,
-                "name") {
+                "name", new ModelMetadata(ModelMetadata.Type.DMN) {
+                }) {
 
         };
 

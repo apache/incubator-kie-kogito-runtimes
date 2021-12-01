@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.decision.DecisionModelMetadata;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DecisionModelEventTest {
 
@@ -30,9 +30,7 @@ public class DecisionModelEventTest {
                 gav,
                 "name",
                 "namespace",
-                new DecisionModelMetadata(
-                        DecisionModelMetadata.Type.DMN,
-                        "http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
+                new DecisionModelMetadata("http://www.omg.org/spec/DMN/20151101/dmn.xsd"),
                 "definition");
 
         assertEquals(gav.getGroupId(), e.getGav().getGroupId());
@@ -40,8 +38,8 @@ public class DecisionModelEventTest {
         assertEquals(gav.getVersion(), e.getGav().getVersion());
         assertEquals("name", e.getName());
         assertEquals("namespace", e.getNamespace());
-        assertEquals(DecisionModelMetadata.Type.DMN, e.getDecisionModelMetadata().getType());
-        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", e.getDecisionModelMetadata().getSpecVersion());
+        assertEquals(DecisionModelMetadata.Type.DMN, e.getModelMetadata().getType());
+        assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", e.getModelMetadata().getSpecVersion());
         assertEquals("definition", e.getDefinition());
     }
 

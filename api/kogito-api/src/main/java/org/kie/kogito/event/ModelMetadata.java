@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.decision;
-
-import org.kie.kogito.event.ModelMetadata;
+package org.kie.kogito.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DecisionModelMetadata extends ModelMetadata {
+public abstract class ModelMetadata {
 
-    @JsonProperty("specVersion")
-    private String specVersion;
-
-    public DecisionModelMetadata() {
-        super(Type.DMN);
+    public enum Type {
+        DMN
     }
 
-    public DecisionModelMetadata(String specVersion) {
-        super(Type.DMN);
-        this.specVersion = specVersion;
+    @JsonProperty("type")
+    private Type type;
+
+    public ModelMetadata(Type type) {
+        this.type = type;
     }
 
-    public String getSpecVersion() {
-        return specVersion;
+    public Type getType() {
+        return type;
     }
-
 }

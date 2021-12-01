@@ -26,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("org.kie.kogito.tracing.decision.event.model.DecisionModelEvent") // Needed for inheritance
-public class DecisionModelEvent extends ModelEvent {
+public class DecisionModelEvent extends ModelEvent<DecisionModelMetadata> {
 
     private final String namespace;
-
-    private final DecisionModelMetadata decisionModelMetadata;
 
     private final String definition;
 
@@ -38,20 +36,15 @@ public class DecisionModelEvent extends ModelEvent {
     public DecisionModelEvent(final @JsonProperty("gav") KogitoGAV gav,
             final @JsonProperty("name") String name,
             final @JsonProperty("namespace") String namespace,
-            final @JsonProperty("decisionModelMetadata") DecisionModelMetadata decisionModelMetadata,
+            final @JsonProperty("modelMetadata") DecisionModelMetadata decisionModelMetadata,
             final @JsonProperty("definition") String definition) {
-        super(gav, name);
+        super(gav, name, decisionModelMetadata);
         this.namespace = namespace;
-        this.decisionModelMetadata = decisionModelMetadata;
         this.definition = definition;
     }
 
     public String getNamespace() {
         return namespace;
-    }
-
-    public DecisionModelMetadata getDecisionModelMetadata() {
-        return decisionModelMetadata;
     }
 
     public String getDefinition() {

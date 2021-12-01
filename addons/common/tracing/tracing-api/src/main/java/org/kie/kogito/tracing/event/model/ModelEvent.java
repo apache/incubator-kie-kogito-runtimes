@@ -16,6 +16,7 @@
 package org.kie.kogito.tracing.event.model;
 
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.event.ModelMetadata;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,18 +27,23 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Abstract <code>ModelEvent</code> to be extended by actual model-specific implementations
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class") // Needed for inheritance
-public abstract class ModelEvent {
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+// Needed for inheritance
+public abstract class ModelEvent<T extends ModelMetadata> {
 
     private final KogitoGAV gav;
 
     private final String name;
 
+    private final T modelMetadata;
+
     @JsonCreator
     protected ModelEvent(final @JsonProperty("gav") KogitoGAV gav,
-            final @JsonProperty("name") String name) {
+            final @JsonProperty("name") String name,
+            final @JsonProperty("modelMetadata") T modelMetadata) {
         this.gav = gav;
         this.name = name;
+        this.modelMetadata = modelMetadata;
     }
 
     public KogitoGAV getGav() {
@@ -48,4 +54,7 @@ public abstract class ModelEvent {
         return name;
     }
 
+    public T getModelMetadata() {
+        return modelMetadata;
+    }
 }
