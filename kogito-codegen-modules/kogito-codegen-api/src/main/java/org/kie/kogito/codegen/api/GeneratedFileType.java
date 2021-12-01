@@ -27,6 +27,7 @@ public interface GeneratedFileType {
 
     GeneratedFileType SOURCE = of(Category.SOURCE);
     GeneratedFileType RESOURCE = of(Category.RESOURCE);
+    GeneratedFileType META_INF_RESOURCE = of(Category.META_INF_RESOURCE);
     GeneratedFileType COMPILED_CLASS = of(Category.COMPILED_CLASS);
 
     String name();
@@ -50,6 +51,12 @@ public interface GeneratedFileType {
          * For Quarkus it will be subject of GeneratedResourceBuildItem and NativeImageResourceBuildItem too
          */
         RESOURCE,
+        /**
+         * a RESOURCE file which will be placed under META-INF/resources/.
+         * For Quarkus it will be subject of GeneratedResourceBuildItem, NativeImageResourceBuildItem and AdditionalStaticResourceBuildItem
+         * so it could be served without Servlet dependency
+         */
+        META_INF_RESOURCE,
         /**
          * Represent a class file (Java compiled file)
          */

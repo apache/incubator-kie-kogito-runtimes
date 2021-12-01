@@ -187,8 +187,8 @@ public class PredictionCodegen extends AbstractGenerator {
         try {
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.jsonSchemaNode());
             String jsonFile = String.format("%s.json", getSanitizedClassName(model.getName()));
-            String jsonFilePath = String.format("META-INF/resources/%s", jsonFile);
-            files.add(new GeneratedFile(GeneratedFileType.RESOURCE, jsonFilePath, jsonContent));
+            String jsonFilePath = String.format(GeneratedFile.META_INF_RESOURCES + "/%s", jsonFile);
+            files.add(new GeneratedFile(GeneratedFileType.META_INF_RESOURCE, jsonFilePath, jsonContent));
         } catch (Exception e) {
             LOGGER.warn("Failed to write OAS schema");
         }

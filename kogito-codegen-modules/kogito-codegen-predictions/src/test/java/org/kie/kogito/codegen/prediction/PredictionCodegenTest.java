@@ -159,8 +159,8 @@ class PredictionCodegenTest {
                     .count());
             // OpenAPI Json schema
             assertEquals(expectedRestEndpoints, generatedFiles.stream()
-                    .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.RESOURCE) &&
-                            generatedFile.type().name().equals(GeneratedFileType.RESOURCE.name()) &&
+                    .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.META_INF_RESOURCE) &&
+                            generatedFile.type().name().equals(GeneratedFileType.META_INF_RESOURCE.name()) &&
                             !generatedFile.relativePath().endsWith(REFLECT_JSON))
                     .count());
         }

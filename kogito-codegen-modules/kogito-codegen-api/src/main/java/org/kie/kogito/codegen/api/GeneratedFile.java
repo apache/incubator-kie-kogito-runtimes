@@ -21,6 +21,8 @@ import java.util.Objects;
 
 public class GeneratedFile {
 
+    public static final String META_INF_RESOURCES = "META-INF/resources";
+
     private final Path path;
     private final String pathAsString;
     private final byte[] contents;

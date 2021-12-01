@@ -60,7 +60,6 @@ public class KogitoQuarkusResourceUtils {
     static final String HOT_RELOAD_SUPPORT_CLASS = "HotReloadSupportClass";
     static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
     static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
-    static final String STATIC_RESOURCE_DIR = "META-INF/resources";
 
     private KogitoQuarkusResourceUtils() {
         // utility class
@@ -141,13 +140,13 @@ public class KogitoQuarkusResourceUtils {
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
-            if (f.category() == GeneratedFileType.Category.RESOURCE) {
-                if (f.relativePath().startsWith(STATIC_RESOURCE_DIR)) {
-                    String resoucePath = f.relativePath().substring(STATIC_RESOURCE_DIR.length());
-                    staticResProducer.produce(new AdditionalStaticResourceBuildItem(resoucePath, false));
-                }
+            if (f.category() == GeneratedFileType.Category.RESOURCE || f.category() == GeneratedFileType.Category.META_INF_RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
+            }
+            if (f.category() == GeneratedFileType.Category.META_INF_RESOURCE) {
+                String resoucePath = f.relativePath().substring(GeneratedFile.META_INF_RESOURCES.length());
+                staticResProducer.produce(new AdditionalStaticResourceBuildItem(resoucePath, false));
             }
         }
     }
