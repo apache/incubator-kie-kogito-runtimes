@@ -145,7 +145,7 @@ public abstract class StateHandler<S extends State> {
         node.done();
     }
 
-    public void connect(long sourceId) {
+    public void connect(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {
         incomingConnections.add(sourceId);
     }
 
@@ -243,10 +243,10 @@ public abstract class StateHandler<S extends State> {
             if (produceEvents.isEmpty()) {
                 if (transition.isCompensate()) {
                     long eventId = compensationEvent(factory, sourceId);
-                    targetState.connect(eventId);
+                    targetState.connect(factory, eventId);
                     callback.ifPresent(c -> c.onIdTarget(eventId));
                 } else {
-                    targetState.connect(sourceId);
+                    targetState.connect(factory, sourceId);
                     callback.ifPresent(c -> c.onStateTarget(targetState));
                 }
             } else {
@@ -272,7 +272,7 @@ public abstract class StateHandler<S extends State> {
                 } else {
                     callback.ifPresent(c -> c.onIdTarget(actionNode.getNode().getId()));
                 }
-                targetState.connect(endNode.getNode().getId());
+                targetState.connect(factory, endNode.getNode().getId());
             }
         } else {
             callback.ifPresent(HandleTransitionCallBack::onEmptyTarget);

@@ -28,11 +28,15 @@ class SWFSupplierUtils {
     }
 
     public static String[] getVarArgs(String lang, String expr, String outputVar, String... addVars) {
-        String[] varArgs = new String[3 + addVars.length];
-        varArgs[0] = lang;
-        varArgs[1] = expr;
-        varArgs[2] = outputVar;
-        return addVarArgs(varArgs, 3, addVars);
+        if (outputVar == null) {
+            return getVarArgs(lang, expr, addVars);
+        } else {
+            String[] varArgs = new String[3 + addVars.length];
+            varArgs[0] = lang;
+            varArgs[1] = expr;
+            varArgs[2] = outputVar;
+            return addVarArgs(varArgs, 3, addVars);
+        }
 
     }
 

@@ -88,7 +88,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
             long eventId = parserContext.newId();
             ServerlessWorkflowParser.consumeEventNode(factory.eventNode(eventId), eventDefinition).done().connection(
                     startNode.getNode().getId(), eventId);
-            targetState.connect(eventId);
+            targetState.connect(factory, eventId);
         }
     }
 
@@ -169,8 +169,8 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     }
 
     @Override
-    public void connect(long sourceId) {
-        parserContext.factory().connection(sourceId, getNode().getNode().getId());
+    public void connect(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {
+        factory.connection(sourceId, getNode().getNode().getId());
     }
 
     @Override

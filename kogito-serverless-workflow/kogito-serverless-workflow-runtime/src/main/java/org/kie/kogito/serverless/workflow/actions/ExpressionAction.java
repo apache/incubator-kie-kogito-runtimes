@@ -23,6 +23,10 @@ public class ExpressionAction extends BaseExpressionAction {
 
     private String outputVar;
 
+    public ExpressionAction(String lang, String expr) {
+        this(lang, expr, null);
+    }
+
     public ExpressionAction(String lang, String expr, String outputVar, String... addAttrs) {
         super(lang, expr, addAttrs);
         this.outputVar = outputVar;
