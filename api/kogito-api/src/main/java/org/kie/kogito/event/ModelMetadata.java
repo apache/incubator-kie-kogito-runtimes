@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.event;
 
+import org.kie.kogito.ModelDomain;
 import org.kie.kogito.decision.DecisionModelMetadata;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -24,23 +25,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@type", visible = true)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DecisionModelMetadata.class, name = "decision"),
+        @JsonSubTypes.Type(value = DecisionModelMetadata.class, name = "DECISION"),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ModelMetadata {
 
-    public enum Type {
-        DMN
+    @JsonProperty("@type")
+    private ModelDomain modelDomain;
+
+    public ModelMetadata(ModelDomain modelDomain) {
+        this.modelDomain = modelDomain;
     }
 
-    @JsonProperty("type")
-    private Type type;
-
-    public ModelMetadata(Type type) {
-        this.type = type;
-    }
-
-    public Type getType() {
-        return type;
+    public ModelDomain getModelDomain() {
+        return modelDomain;
     }
 }

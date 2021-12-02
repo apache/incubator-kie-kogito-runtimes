@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.decision;
 
+import org.kie.kogito.ModelDomain;
 import org.kie.kogito.event.ModelMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,11 +26,11 @@ public final class DecisionModelMetadata extends ModelMetadata {
     private String specVersion;
 
     public DecisionModelMetadata() {
-        super(Type.DMN);
+        super(ModelDomain.DECISION);
     }
 
     public DecisionModelMetadata(String specVersion) {
-        super(Type.DMN);
+        super(ModelDomain.DECISION);
         this.specVersion = specVersion;
     }
 

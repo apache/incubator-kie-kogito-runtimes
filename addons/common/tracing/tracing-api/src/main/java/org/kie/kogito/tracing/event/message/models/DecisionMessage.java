@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.tracing.event.message.models;
 
+import org.kie.kogito.ModelDomain;
 import org.kie.kogito.tracing.event.message.Message;
 import org.kie.kogito.tracing.event.message.MessageCategory;
 import org.kie.kogito.tracing.event.message.MessageExceptionField;
@@ -35,7 +36,7 @@ public final class DecisionMessage extends Message {
     }
 
     public DecisionMessage(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {
-        super(level, category, type, sourceId, text, exception);
+        super(level, category, type, sourceId, text, exception, ModelDomain.DECISION);
         this.feelEvent = feelEvent;
     }
 

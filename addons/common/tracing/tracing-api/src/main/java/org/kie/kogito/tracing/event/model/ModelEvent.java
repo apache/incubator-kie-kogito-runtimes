@@ -16,10 +16,10 @@
 package org.kie.kogito.tracing.event.model;
 
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.ModelDomain;
 import org.kie.kogito.event.ModelMetadata;
 import org.kie.kogito.tracing.event.model.models.DecisionModelEvent;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -30,24 +30,35 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@type", visible = true)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = DecisionModelEvent.class, name = "decision"),
+        @JsonSubTypes.Type(value = DecisionModelEvent.class, name = "DECISION"),
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ModelEvent<T extends ModelMetadata> {
 
-    private final KogitoGAV gav;
+    @JsonProperty("gav")
+    private KogitoGAV gav;
 
-    private final String name;
+    @JsonProperty("name")
+    private String name;
 
-    private final T modelMetadata;
+    @JsonProperty("modelMetadata")
+    private T modelMetadata;
 
-    @JsonCreator
-    protected ModelEvent(final @JsonProperty("gav") KogitoGAV gav,
-            final @JsonProperty("name") String name,
-            final @JsonProperty("modelMetadata") T modelMetadata) {
+    @JsonProperty("@type")
+    private ModelDomain modelDomain;
+
+    protected ModelEvent() {
+
+    }
+
+    protected ModelEvent(final KogitoGAV gav,
+            final String name,
+            final T modelMetadata,
+            final ModelDomain modelDomain) {
         this.gav = gav;
         this.name = name;
         this.modelMetadata = modelMetadata;
+        this.modelDomain = modelDomain;
     }
 
     public KogitoGAV getGav() {

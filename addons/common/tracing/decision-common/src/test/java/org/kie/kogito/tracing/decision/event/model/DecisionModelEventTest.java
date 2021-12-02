@@ -17,6 +17,7 @@ package org.kie.kogito.tracing.decision.event.model;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.ModelDomain;
 import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.tracing.event.model.models.DecisionModelEvent;
 
@@ -39,7 +40,7 @@ public class DecisionModelEventTest {
         assertEquals(gav.getVersion(), e.getGav().getVersion());
         assertEquals("name", e.getName());
         assertEquals("namespace", e.getNamespace());
-        assertEquals(DecisionModelMetadata.Type.DMN, e.getModelMetadata().getType());
+        assertEquals(ModelDomain.DECISION, e.getModelMetadata().getModelDomain());
         assertEquals("http://www.omg.org/spec/DMN/20151101/dmn.xsd", e.getModelMetadata().getSpecVersion());
         assertEquals("definition", e.getDefinition());
     }
