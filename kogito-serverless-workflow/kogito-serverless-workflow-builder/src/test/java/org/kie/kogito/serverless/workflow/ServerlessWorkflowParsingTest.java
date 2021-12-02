@@ -40,7 +40,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.utils.WorkflowTestUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
@@ -671,7 +670,8 @@ public class ServerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json", "/exec/foreach.sw.json"})
+    @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json",
+            "/exec/foreach.sw.json" })
     public void testSpecExamplesParsing(String workflowLocation) throws IOException {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 

@@ -92,7 +92,7 @@ public class JsonObjectUtils {
         return objectNode;
     }
 
-    public static ArrayNode mapToArray(Iterable<?> iterable) {
+    private static ArrayNode mapToArray(Iterable<?> iterable) {
         return mapToArray(iterable, ObjectMapperFactory.get().createArrayNode());
     }
 

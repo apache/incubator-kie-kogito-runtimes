@@ -27,7 +27,7 @@ import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getWorkflow
 
 public abstract class BaseExpressionAction implements Action {
 
-    protected ParsedExpression expr;
+    private ParsedExpression expr;
     private String[] addVars;
 
     public BaseExpressionAction(String lang, String expr, String... addVars) {
@@ -47,4 +47,8 @@ public abstract class BaseExpressionAction implements Action {
         return result;
     }
 
+    protected final <T> T assign(KogitoProcessContext context, T value) {
+        expr.assign(getWorkflowData(context), value);
+        return value;
+    }
 }

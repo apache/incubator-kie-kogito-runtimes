@@ -17,16 +17,16 @@ package org.kie.kogito.expr.jq;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
-import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerUtils;
 import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
+import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.thisptr.jackson.jq.JsonQuery;
 import net.thisptr.jackson.jq.Output;
@@ -167,8 +167,8 @@ public class JqParsedExpression implements ParsedExpression {
     }
 
     @Override
-    public Optional<String> varName() {
-        return ExpressionHandlerUtils.fallbackVarToName(expr);
+    public void assign(Object context, Object value) {
+        JsonObjectUtils.addToNode(ExpressionHandlerUtils.fallbackVarToName(expr).orElseThrow(() -> new IllegalArgumentException("Cannot find a valid variable name for expression " + expr)), value,
+                (ObjectNode) context);
     }
-
 }

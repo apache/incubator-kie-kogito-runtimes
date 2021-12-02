@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.parser.util;
+package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.NoSuchElementException;
 
@@ -172,5 +172,4 @@ public class ServerlessWorkflowUtils {
     public static boolean isOpenApiOperation(FunctionDefinition function) {
         return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(OPENAPI_OPERATION_SEPARATOR);
     }
-
 }

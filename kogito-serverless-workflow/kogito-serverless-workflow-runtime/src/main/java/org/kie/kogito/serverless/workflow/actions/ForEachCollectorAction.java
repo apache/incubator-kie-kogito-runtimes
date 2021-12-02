@@ -18,11 +18,10 @@ package org.kie.kogito.serverless.workflow.actions;
 import org.jbpm.workflow.instance.node.ForEachNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getWorkflowData;
 
 public class ForEachCollectorAction extends BaseExpressionAction {
 
@@ -33,12 +32,8 @@ public class ForEachCollectorAction extends BaseExpressionAction {
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
         Iterable<?> collectedValues = (Iterable<?>) context.getVariable(ForEachNodeInstance.TEMP_OUTPUT_VAR);
-        JsonNode arrayNode = evaluate(context, JsonNode.class);
-        if (arrayNode instanceof ArrayNode) {
-            JsonObjectUtils.mapToArray(collectedValues, (ArrayNode) arrayNode);
-        } else {
-            getWorkflowData(context).set(expr.varName().orElseThrow(() -> new IllegalArgumentException("Cannot get a valid var name from expression " + expr)),
-                    JsonObjectUtils.mapToArray(collectedValues));
-        }
+        JsonNode node = evaluate(context, JsonNode.class);
+        ArrayNode arrayNode = node instanceof ArrayNode ? (ArrayNode) node : assign(context, ObjectMapperFactory.get().createArrayNode());
+        JsonObjectUtils.mapToArray(collectedValues, arrayNode);
     }
 }

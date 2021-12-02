@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow;
+package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
-import org.kie.kogito.serverless.workflow.parser.util.WorkflowAppContext;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
