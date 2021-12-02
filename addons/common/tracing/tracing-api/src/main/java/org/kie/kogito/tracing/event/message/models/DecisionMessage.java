@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.message;
+package org.kie.kogito.tracing.event.message.models;
 
 import org.kie.kogito.tracing.event.message.Message;
 import org.kie.kogito.tracing.event.message.MessageCategory;
 import org.kie.kogito.tracing.event.message.MessageExceptionField;
+import org.kie.kogito.tracing.event.message.MessageFEELEvent;
 import org.kie.kogito.tracing.event.message.MessageLevel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonInclude(NON_NULL)
-@JsonTypeName("org.kie.kogito.tracing.decision.message.DecisionMessage") // Needed for inheritance
-public class DecisionMessage extends Message {
+public final class DecisionMessage extends Message {
 
     private MessageFEELEvent feelEvent;
 

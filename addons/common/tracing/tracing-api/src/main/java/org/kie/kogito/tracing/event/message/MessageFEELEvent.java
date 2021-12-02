@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.message;
-
-import org.kie.kogito.tracing.event.message.MessageExceptionField;
+package org.kie.kogito.tracing.event.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -15,16 +15,20 @@
  */
 package org.kie.kogito.tracing.event.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.kie.kogito.tracing.event.message.models.DecisionMessage;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * <code>Message</code> to be eventually extended by model-specific implementations
  */
-@JsonInclude(NON_NULL)
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class") // Needed for inheritance
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@type", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = DecisionMessage.class, name = "decision"),
+})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Message {
 
     private MessageLevel level;

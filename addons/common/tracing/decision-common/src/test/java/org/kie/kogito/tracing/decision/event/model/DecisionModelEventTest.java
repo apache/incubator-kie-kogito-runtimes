@@ -18,6 +18,7 @@ package org.kie.kogito.tracing.decision.event.model;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.decision.DecisionModelMetadata;
+import org.kie.kogito.tracing.event.model.models.DecisionModelEvent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

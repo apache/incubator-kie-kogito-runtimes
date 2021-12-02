@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.tracing.decision.event.model;
+package org.kie.kogito.tracing.event.model.models;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.tracing.event.model.ModelEvent;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeName("org.kie.kogito.tracing.decision.event.model.DecisionModelEvent") // Needed for inheritance
-public class DecisionModelEvent extends ModelEvent<DecisionModelMetadata> {
+public final class DecisionModelEvent extends ModelEvent<DecisionModelMetadata> {
 
     private final String namespace;
 

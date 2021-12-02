@@ -17,18 +17,22 @@ package org.kie.kogito.tracing.event.model;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.event.ModelMetadata;
+import org.kie.kogito.tracing.event.model.models.DecisionModelEvent;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  * Abstract <code>ModelEvent</code> to be extended by actual model-specific implementations
  */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "@type", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = DecisionModelEvent.class, name = "decision"),
+})
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-// Needed for inheritance
 public abstract class ModelEvent<T extends ModelMetadata> {
 
     private final KogitoGAV gav;

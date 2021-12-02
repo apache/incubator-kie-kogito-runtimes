@@ -19,7 +19,7 @@ import org.kie.kogito.event.ModelMetadata;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DecisionModelMetadata extends ModelMetadata {
+public final class DecisionModelMetadata extends ModelMetadata {
 
     @JsonProperty("specVersion")
     private String specVersion;
