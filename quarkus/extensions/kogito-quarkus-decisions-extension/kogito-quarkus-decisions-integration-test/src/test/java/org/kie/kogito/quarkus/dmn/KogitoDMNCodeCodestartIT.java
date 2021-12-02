@@ -18,7 +18,6 @@ package org.kie.kogito.quarkus.dmn;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -28,7 +27,6 @@ import io.quarkus.maven.ArtifactCoords;
 
 import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
 
-@Disabled("Disabling for 1.14.0.Final release to pass")
 public class KogitoDMNCodeCodestartIT {
 
     public static String projectVersion() {
