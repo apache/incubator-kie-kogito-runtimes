@@ -24,7 +24,7 @@
   </properties>
 
   <modules>
-    <module>kogito-wiring-static</module>
+    <module>kogito-drools-wiring-static</module>
     <module>drools-core</module>
     <module>drools-compiler</module>
     <module>kogito-drools-model</module>

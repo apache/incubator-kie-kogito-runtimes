@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-wiring-static</artifactId>
+      <artifactId>kogito-drools-wiring-static</artifactId>
     </dependency>
   </dependencies>
 </project>
