@@ -131,7 +131,7 @@ public class DecisionCodegen extends AbstractGenerator {
         try {
             oasResult = DMNOASGeneratorFactory.generator(models).build();
             String jsonContent = new ObjectMapper().writeValueAsString(oasResult.getJsonSchemaNode());
-            storeFile(GeneratedFileType.META_INF_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/dmnDefinitions.json", jsonContent);
+            storeFile(GeneratedFileType.STATIC_HTTP_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/dmnDefinitions.json", jsonContent);
         } catch (Exception e) {
             LOGGER.error("Error while trying to generate OpenAPI specification for the DMN models", e);
         }

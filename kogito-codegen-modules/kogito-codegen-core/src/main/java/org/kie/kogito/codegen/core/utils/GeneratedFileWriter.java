@@ -98,7 +98,7 @@ public class GeneratedFileWriter {
             GeneratedFileType.Category category = f.category();
             switch (category) {
                 case RESOURCE: // since codegen happens after maven-resource-plugin (both in Quarkus and SB), need to manually place in the correct (CP) location
-                case META_INF_RESOURCE:
+                case STATIC_HTTP_RESOURCE:
                 case COMPILED_CLASS:
                     writeGeneratedFile(f, classesDir);
                     break;

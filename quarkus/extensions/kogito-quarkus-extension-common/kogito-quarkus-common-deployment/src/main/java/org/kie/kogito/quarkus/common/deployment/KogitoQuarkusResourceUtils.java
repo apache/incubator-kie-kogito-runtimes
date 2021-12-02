@@ -140,11 +140,11 @@ public class KogitoQuarkusResourceUtils {
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
-            if (f.category() == GeneratedFileType.Category.RESOURCE || f.category() == GeneratedFileType.Category.META_INF_RESOURCE) {
+            if (f.category() == GeneratedFileType.Category.RESOURCE || f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
             }
-            if (f.category() == GeneratedFileType.Category.META_INF_RESOURCE) {
+            if (f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
                 String resoucePath = f.relativePath().substring(GeneratedFile.META_INF_RESOURCES.length());
                 staticResProducer.produce(new AdditionalStaticResourceBuildItem(resoucePath, false));
             }
