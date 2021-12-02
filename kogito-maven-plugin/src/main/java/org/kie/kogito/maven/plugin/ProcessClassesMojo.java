@@ -108,7 +108,6 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, protoGenerator);
                 Collection<GeneratedFile> persistenceFiles = persistenceGenerator.generate();
 
-                System.out.println("ProcessClassesMojo!! : persistenceFiles = " + persistenceFiles);
                 validateGeneratedFileTypes(persistenceFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
 
                 Collection<GeneratedFile> generatedClasses = persistenceFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.SOURCE)).collect(Collectors.toList());
