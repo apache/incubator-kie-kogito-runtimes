@@ -123,14 +123,9 @@ public class KogitoAssetsProcessor {
             LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
         }
 
-        boolean kogitoGenerateRestEnabled = kogitoGenerateRest(context).orElse(true);
-        if (!hasRestCapabilities && kogitoGenerateRestEnabled) {
+        if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
             throw new MissingRestCapabilityException();
         }
-
-        //        if (capabilities.isPresent(Capability.RESTEASY) && capabilities.isMissing(Capability.SERVLET) && kogitoGenerateRestEnabled) {
-        //            throw new MissingServletCapabilityException();
-        //        }
     }
 
     private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {

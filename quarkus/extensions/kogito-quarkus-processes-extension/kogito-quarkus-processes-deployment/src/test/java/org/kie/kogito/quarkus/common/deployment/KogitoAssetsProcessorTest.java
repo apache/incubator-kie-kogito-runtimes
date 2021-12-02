@@ -43,7 +43,7 @@ class KogitoAssetsProcessorTest {
     @Test
     public void validateAvailableCapabilitiesWithOptaPlannerWithRest() {
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder().build();
-        Capabilities capabilities = capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, Capability.SERVLET, "org.optaplanner.optaplanner-quarkus");
+        Capabilities capabilities = capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, "org.optaplanner.optaplanner-quarkus");
         KogitoAssetsProcessor processor = new KogitoAssetsProcessor();
 
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
@@ -54,7 +54,7 @@ class KogitoAssetsProcessorTest {
     @Test
     public void validateAvailableCapabilitiesWithoutOptaPlanner() {
         KogitoBuildContext context = QuarkusKogitoBuildContext.builder().build();
-        Capabilities capabilities = capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, Capability.SERVLET);
+        Capabilities capabilities = capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON);
         KogitoAssetsProcessor processor = new KogitoAssetsProcessor();
 
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
@@ -77,10 +77,7 @@ class KogitoAssetsProcessorTest {
         assertThatThrownBy(() -> processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY_JSON_JACKSON)))
                 .isInstanceOf(MissingRestCapabilityException.class);
 
-        //        assertThatThrownBy(() -> processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON)))
-        //                .isInstanceOf(MissingServletCapabilityException.class);
-
-        processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON, Capability.SERVLET));
+        processor.validateAvailableCapabilities(context, capabilities(Capability.RESTEASY, Capability.RESTEASY_JSON_JACKSON));
         assertThat(context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)).isEmpty();
     }
 

@@ -25,10 +25,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
     </dependency>
-<!--     <dependency> -->
-<!--       <groupId>io.quarkus</groupId> -->
-<!--       <artifactId>quarkus-undertow</artifactId> -->
-<!--     </dependency> -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-health</artifactId>
