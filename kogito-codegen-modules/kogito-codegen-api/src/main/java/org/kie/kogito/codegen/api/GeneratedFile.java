@@ -56,10 +56,10 @@ public class GeneratedFile {
         this.contents = contents;
 
         if (type.category().equals(GeneratedFileType.Category.STATIC_HTTP_RESOURCE) && !path.startsWith(META_INF_RESOURCES)) {
-            LOGGER.warn("STATIC_HTTP_RESOURCE has to be placed under " + META_INF_RESOURCES + " : {}", this.toString());
+            LOGGER.warn("STATIC_HTTP_RESOURCE has to be placed under " + META_INF_RESOURCES + " : {}", this);
         }
         if (!type.category().equals(GeneratedFileType.Category.STATIC_HTTP_RESOURCE) && path.startsWith(META_INF_RESOURCES)) {
-            LOGGER.warn("Use GeneratedFileType.Category.STATIC_HTTP_RESOURCE for a static resource under " + META_INF_RESOURCES + " : {}", this.toString());
+            LOGGER.warn("Use GeneratedFileType.Category.STATIC_HTTP_RESOURCE for a static resource under " + META_INF_RESOURCES + " : {}", this);
         }
     }
 
