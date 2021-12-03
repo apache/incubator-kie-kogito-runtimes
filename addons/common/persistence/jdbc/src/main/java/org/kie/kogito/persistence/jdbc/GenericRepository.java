@@ -106,6 +106,7 @@ public class GenericRepository extends Repository {
             LOGGER.info("DDL successfully done for ProcessInstance");
         } catch (SQLException e) {
             var msg = "Error creating process_instances table, the database should be configured properly before starting the application";
+            LOGGER.error(msg, e);
             throw new RuntimeException(msg);
         }
     }
@@ -117,7 +118,7 @@ public class GenericRepository extends Repository {
             statement.setString(1, id.toString());
             statement.setBytes(2, payload);
             statement.setString(3, processId);
-            statement.setLong(4, 1L);
+            statement.setLong(4, 0L);
             statement.executeUpdate();
         } catch (Exception e) {
             throw uncheckedException(e, "Error inserting process instance %s", id);

@@ -16,9 +16,11 @@
 package org.kie.kogito.serverless.workflow.parser;
 
 import java.io.Reader;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.ruleflow.core.Metadata;
@@ -29,22 +31,18 @@ import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.StartNodeFactory;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
-import io.serverlessworkflow.api.interfaces.State;
 
 public class ServerlessWorkflowParser {
-
-    private static final Logger logger = LoggerFactory.getLogger(ServerlessWorkflowParser.class);
 
     public static final String NODE_START_NAME = "Start";
     public static final String NODE_END_NAME = "End";
@@ -53,7 +51,7 @@ public class ServerlessWorkflowParser {
     public static final String DEFAULT_VERSION = "1.0";
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
-    public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
+    public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
@@ -83,7 +81,6 @@ public class ServerlessWorkflowParser {
         if (workflowStartStateName == null || workflowStartStateName.trim().isEmpty()) {
             throw new IllegalArgumentException("workflow does not define a starting state");
         }
-
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess(workflow.getId())
                 .name(workflow.getName() == null ? DEFAULT_NAME : workflow.getName())
                 .version(workflow.getVersion() == null ? DEFAULT_VERSION : workflow.getVersion())
@@ -91,21 +88,20 @@ public class ServerlessWorkflowParser {
                         DEFAULT_PACKAGE) : DEFAULT_PACKAGE)
                 .visibility("Public")
                 .variable(DEFAULT_WORKFLOW_VAR, JsonNode.class);
-        Map<String, StateHandler<?, ?, ?>> stateHandlers = new LinkedHashMap<>();
-        for (State state : workflow.getStates()) {
-            StateHandler<?, ?, ?> stateHandler = StateHandlerFactory.getStateHandler(state, workflow, factory, idGenerator);
-            if (stateHandler == null) {
-                logger.warn("Unsupported state {}. Ignoring it", state.getName());
-            } else {
-                stateHandlers.put(state.getName(), stateHandler);
-                stateHandler.handleStart(workflowStartStateName);
-            }
+        ParserContext parserContext = new ParserContext(idGenerator);
+        Collection<StateHandler<?, ?, ?>> handlers =
+                workflow.getStates().stream().map(state -> StateHandlerFactory.getStateHandler(state, workflow, factory, parserContext))
+                        .filter(Optional::isPresent).map(Optional::get).filter(state -> !state.usedForCompensation()).collect(Collectors.toList());
+        handlers.forEach(StateHandler::handleStart);
+        handlers.forEach(StateHandler::handleEnd);
+        handlers.forEach(StateHandler::handleState);
+        handlers.forEach(StateHandler::handleTransitions);
+        handlers.forEach(StateHandler::handleErrors);
+        handlers.forEach(StateHandler::handleConnections);
+        if (parserContext.isCompensation()) {
+            factory.metaData(Metadata.COMPENSATION, true);
+            factory.addCompensationContext(workflow.getId());
         }
-        stateHandlers.values().forEach(StateHandler::handleEnd);
-        stateHandlers.values().forEach(StateHandler::handleState);
-        stateHandlers.values().forEach(s -> s.handleTransitions(stateHandlers));
-        stateHandlers.values().forEach(s -> s.handleErrors(stateHandlers));
-        stateHandlers.values().forEach(StateHandler::handleConnections);
         return factory.validate().getProcess();
     }
 
@@ -116,15 +112,21 @@ public class ServerlessWorkflowParser {
         return process;
     }
 
-    public static <T extends RuleFlowNodeContainerFactory<T, ?>> StartNodeFactory<T> messageStartNode(StartNodeFactory<T> nodeFactory,
-            EventDefinition eventDefinition) {
-        return nodeFactory
-                .name(eventDefinition.getName())
+    public static <T extends RuleFlowNodeContainerFactory<T, ?>> StartNodeFactory<T> messageStartNode(StartNodeFactory<T> nodeFactory, EventDefinition eventDefinition) {
+        return messageNode(nodeFactory, eventDefinition).trigger(JSON_NODE, DEFAULT_WORKFLOW_VAR);
+    }
+
+    public static <T extends RuleFlowNodeContainerFactory<T, ?>> EventNodeFactory<T> messageEventNode(EventNodeFactory<T> nodeFactory, EventDefinition eventDefinition) {
+        return messageNode(nodeFactory, eventDefinition).eventType("Message-" + eventDefinition.getType()).variableName(DEFAULT_WORKFLOW_VAR);
+    }
+
+    public static <T extends NodeFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> T messageNode(T nodeFactory, EventDefinition eventDefinition) {
+        return nodeFactory.name(eventDefinition.getName())
+                .metaData(Metadata.EVENT_TYPE, "message")
                 .metaData(Metadata.TRIGGER_MAPPING, DEFAULT_WORKFLOW_VAR)
                 .metaData(Metadata.TRIGGER_TYPE, "ConsumeMessage")
                 .metaData(Metadata.TRIGGER_REF, eventDefinition.getType())
-                .metaData(Metadata.MESSAGE_TYPE, JSON_NODE)
-                .trigger(JSON_NODE, DEFAULT_WORKFLOW_VAR);
+                .metaData(Metadata.MESSAGE_TYPE, JSON_NODE);
     }
 
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> SubProcessNodeFactory<T> subprocessNode(SubProcessNodeFactory<T> nodeFactory) {

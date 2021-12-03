@@ -24,7 +24,7 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie7-bom</artifactId>
+        <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -94,8 +94,8 @@
 
     <!-- test -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core-dynamic</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wiring-dynamic</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -126,18 +126,6 @@
       <properties>
         <sonar.exclusions>**/JBPMMessages.java</sonar.exclusions>
       </properties>
-    </profile>
-    <profile>
-      <id>java15-javascript</id>
-      <activation>
-        <jdk>[15,)</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.mozilla</groupId> <!-- JDKs older than 15 carry their own. -->
-          <artifactId>rhino-engine</artifactId>
-        </dependency>
-      </dependencies>
     </profile>
   </profiles>
 </project>

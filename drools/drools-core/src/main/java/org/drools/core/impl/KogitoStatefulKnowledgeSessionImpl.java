@@ -17,9 +17,6 @@ package org.drools.core.impl;
 
 import org.drools.core.KogitoWorkingMemory;
 import org.drools.core.SessionConfiguration;
-import org.drools.core.WorkingMemory;
-import org.drools.core.base.DefaultKnowledgeHelper;
-import org.drools.core.base.WrappedStatefulKnowledgeSessionForRHS;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalFactHandle;
 import org.drools.core.common.InternalWorkingMemoryEntryPoint;
@@ -32,6 +29,9 @@ import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.core.time.KogitoTimerServiceFactory;
 import org.drools.core.time.TimerService;
 import org.drools.core.util.bitmask.BitMask;
+import org.drools.kiesession.consequence.DefaultKnowledgeHelper;
+import org.drools.kiesession.consequence.StatefulKnowledgeSessionForRHS;
+import org.drools.kiesession.session.StatefulKnowledgeSessionImpl;
 import org.kie.api.runtime.Environment;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.api.runtime.process.ProcessInstance;
@@ -100,10 +100,6 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
         this.application = application;
     }
 
-    public Object startProcessInstance(String subProcessInstanceId) {
-        throw new UnsupportedOperationException("org.drools.core.impl.KogitoStatefulKnowledgeSessionImpl.startProcessInstance -> TODO");
-    }
-
     public static class RuleUnitKnowledgeHelper extends DefaultKnowledgeHelper {
 
         private final KogitoStatefulKnowledgeSessionImpl kogitoSession;
@@ -138,7 +134,7 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
                     modifiedClass,
                     this.activation);
             if (h.isTraitOrTraitable()) {
-                workingMemory.updateTraits(h, mask, modifiedClass, this.activation);
+                toStatefulKnowledgeSession().updateTraits(h, mask, modifiedClass, this.activation);
             }
         }
 
@@ -173,18 +169,18 @@ public class KogitoStatefulKnowledgeSessionImpl extends StatefulKnowledgeSession
 
         @Override
         protected AbstractProcessContext createProcessContext() {
-            return new KogitoProcessContextImpl(workingMemory.getKnowledgeRuntime());
+            return new KogitoProcessContextImpl(toStatefulKnowledgeSession());
         }
 
         @Override
-        protected WrappedStatefulKnowledgeSessionForRHS createWrappedSession(WorkingMemory workingMemory) {
-            return new KogitoWrappedStatefulKnowledgeSessionForRHS((KogitoStatefulKnowledgeSessionImpl) workingMemory);
+        protected KogitoReteEvaluatorForRHS toStatefulKnowledgeSession() {
+            return new KogitoReteEvaluatorForRHS((KogitoStatefulKnowledgeSessionImpl) reteEvaluator);
         }
     }
 
-    public static class KogitoWrappedStatefulKnowledgeSessionForRHS extends WrappedStatefulKnowledgeSessionForRHS implements KogitoProcessRuntime.Provider {
+    public static class KogitoReteEvaluatorForRHS extends StatefulKnowledgeSessionForRHS implements KogitoProcessRuntime.Provider {
 
-        public KogitoWrappedStatefulKnowledgeSessionForRHS(KogitoStatefulKnowledgeSessionImpl delegate) {
+        public KogitoReteEvaluatorForRHS(KogitoStatefulKnowledgeSessionImpl delegate) {
             super(delegate);
         }
 

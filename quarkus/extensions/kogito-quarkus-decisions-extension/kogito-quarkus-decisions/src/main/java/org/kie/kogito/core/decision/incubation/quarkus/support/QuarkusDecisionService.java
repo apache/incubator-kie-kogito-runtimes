@@ -16,59 +16,30 @@
 
 package org.kie.kogito.core.decision.incubation.quarkus.support;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.kie.dmn.api.core.DMNContext;
-import org.kie.dmn.api.core.DMNResult;
-import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.MapDataContext;
-import org.kie.kogito.incubation.decisions.LocalDecisionId;
-import org.kie.kogito.incubation.decisions.LocalDecisionServiceId;
 import org.kie.kogito.incubation.decisions.services.DecisionService;
 
 @ApplicationScoped
 public class QuarkusDecisionService implements DecisionService {
     @Inject
     Instance<DecisionModels> decisionModelsInstance;
+    DecisionServiceImpl delegate;
+
+    @PostConstruct
+    void startup() {
+        this.delegate = new DecisionServiceImpl(decisionModelsInstance.get());
+    }
 
     @Override
-    public DataContext evaluate(LocalId decisionId, DataContext inputContext) {
-        LocalDecisionId localDecisionId;
-        LocalDecisionServiceId decisionServiceId = null;
-        if (decisionId instanceof LocalDecisionId) {
-            localDecisionId = (LocalDecisionId) decisionId;
-
-        } else if (decisionId instanceof LocalDecisionServiceId) {
-            decisionServiceId = (LocalDecisionServiceId) decisionId;
-            localDecisionId = (LocalDecisionId) decisionServiceId.decisionId();
-        } else {
-            // LocalDecisionId.parse(decisionId);
-            throw new IllegalArgumentException(
-                    "Not a valid decision id " + decisionId.toLocalId().asLocalUri());
-        }
-
-        DecisionModels decisionModels = decisionModelsInstance.get();
-
-        DecisionModel decisionModel =
-                decisionModels.getDecisionModel(
-                        localDecisionId.namespace(), localDecisionId.name());
-
-        DMNContext ctx = DMNJSONUtils.ctx(decisionModel, inputContext.as(MapDataContext.class).toMap());
-        DMNResult dmnResult;
-
-        if (decisionServiceId == null) {
-            dmnResult = decisionModel.evaluateAll(ctx);
-        } else {
-            dmnResult = decisionModel.evaluateDecisionService(
-                    ctx, decisionServiceId.serviceId());
-        }
-
-        return MapDataContext.of(dmnResult.getContext().getAll());
+    public ExtendedDataContext evaluate(LocalId decisionId, DataContext inputContext) {
+        return delegate.evaluate(decisionId, inputContext);
     }
 }

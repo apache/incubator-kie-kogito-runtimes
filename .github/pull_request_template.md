@@ -13,6 +13,16 @@ Please make sure that your PR meets the following requirements:
 
 <details>
 <summary>
+How to replicate CI configuration locally?
+</summary>
+
+Build Chain tool does "simple" maven build(s), the builds are just Maven commands, but because the repositories relates and depends on each other and any change in API or class method could affect several of those repositories there is a need to use [build-chain tool](https://github.com/kiegroup/github-action-build-chain) to handle cross repository builds and be sure that we always use latest version of the code for each repository.
+ 
+[build-chain tool](https://github.com/kiegroup/github-action-build-chain) is a build tool which can be used on command line locally or in Github Actions workflow(s), in case you need to change multiple repositories and send multiple dependent pull requests related with a change you can easily reproduce the same build by executing it on Github hosted environment or locally in your development environment. See [local execution](https://github.com/kiegroup/github-action-build-chain#local-execution) details to get more information about it.
+</details>
+
+<details>
+<summary>
 How to retest this PR or trigger a specific build:
 </summary>
 
@@ -20,19 +30,19 @@ How to retest this PR or trigger a specific build:
   Please add comment: <b>Jenkins retest this</b>
 
 * <b>Run (or rerun) specific test(s)</b>  
-  Please add comment: <b>Jenkins (re)run [runtimes|optaplanner|apps|examples] tests</b>
+  Please add comment: <b>Jenkins (re)run [kogito-runtimes|optaplanner|kogito-apps|kogito-examples|optaplanner-quickstarts|optaweb-employee-rostering|optaweb-vehicle-routing] tests</b>
  
 * <b>Quarkus LTS checks</b>  
   Please add comment: <b>Jenkins run LTS</b>
 
 * <b>Run (or rerun) LTS specific test(s)</b>  
-  Please add comment: <b>Jenkins (re)run [runtimes|optaplanner|apps|examples] LTS</b>
+  Please add comment: <b>Jenkins (re)run [kogito-runtimes|optaplanner|kogito-apps|kogito-examples|optaplanner-quickstarts|optaweb-employee-rostering|optaweb-vehicle-routing] LTS</b>
 
 * <b>Native checks</b>  
   Please add comment: <b>Jenkins run native</b>
 
 * <b>Run (or rerun) native specific test(s)</b>  
-  Please add comment: <b>Jenkins (re)run [runtimes|optaplanner|apps|examples] native</b>
+  Please add comment: <b>Jenkins (re)run [kogito-runtimes|optaplanner|kogito-apps|kogito-examples|optaplanner-quickstarts|optaweb-employee-rostering|optaweb-vehicle-routing] native</b>
 
 * <b>Full Kogito testing</b> (with cloud images and operator BDD testing)  
   Please add comment: <b>Jenkins run BDD</b>  

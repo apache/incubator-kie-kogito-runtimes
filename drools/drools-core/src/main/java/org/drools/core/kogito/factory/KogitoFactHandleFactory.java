@@ -16,11 +16,9 @@
 package org.drools.core.kogito.factory;
 
 import org.drools.core.WorkingMemoryEntryPoint;
-import org.drools.core.common.InternalFactHandle;
-import org.drools.core.common.InternalWorkingMemory;
-import org.drools.core.reteoo.ObjectTypeConf;
+import org.drools.core.common.DefaultFactHandle;
+import org.drools.core.common.EventFactHandle;
 import org.drools.core.reteoo.ReteooFactHandleFactory;
-import org.drools.core.rule.TypeDeclaration;
 import org.drools.core.spi.FactHandleFactory;
 
 public class KogitoFactHandleFactory extends ReteooFactHandleFactory {
@@ -34,28 +32,13 @@ public class KogitoFactHandleFactory extends ReteooFactHandleFactory {
     }
 
     @Override
-    public InternalFactHandle newFactHandle(long id, Object object, long recency, ObjectTypeConf conf,
-            InternalWorkingMemory workingMemory, WorkingMemoryEntryPoint wmEntryPoint) {
-        if (conf != null && conf.isEvent()) {
-            TypeDeclaration type = conf.getTypeDeclaration();
-            long timestamp;
-            if (type != null && type.getTimestampExtractor() != null) {
-                timestamp = type.getTimestampExtractor().getLongValue(workingMemory,
-                        object);
-            } else {
-                timestamp = workingMemory.getTimerService().getCurrentTime();
-            }
-            long duration = 0;
-            if (type != null && type.getDurationExtractor() != null) {
-                duration = type.getDurationExtractor().getLongValue(workingMemory,
-                        object);
-            }
-            return new KogitoEventFactHandle(id, object, recency, timestamp, duration,
-                    wmEntryPoint != null ? wmEntryPoint : workingMemory);
-        }
+    protected DefaultFactHandle createDefaultFactHandle(long id, Object object, long recency, WorkingMemoryEntryPoint entryPoint, boolean isTrait) {
+        return new KogitoDefaultFactHandle(id, object, recency, entryPoint, isTrait);
+    }
 
-        return new KogitoDefaultFactHandle(id, object, recency,
-                wmEntryPoint != null ? wmEntryPoint : workingMemory);
+    @Override
+    protected EventFactHandle createEventFactHandle(long id, Object object, long recency, WorkingMemoryEntryPoint entryPoint, boolean isTrait, long timestamp, long duration) {
+        return new KogitoEventFactHandle(id, object, recency, timestamp, duration, entryPoint, isTrait);
     }
 
     @Override

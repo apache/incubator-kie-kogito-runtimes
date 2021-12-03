@@ -62,7 +62,15 @@
     </dependency>
      <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-jsonpath-utils</artifactId>
+      <artifactId>kogito-jsonpath-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-jq-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.jackson-jq</groupId>
+      <artifactId>quarkus-jackson-jq</artifactId>
     </dependency>
   </dependencies>
 

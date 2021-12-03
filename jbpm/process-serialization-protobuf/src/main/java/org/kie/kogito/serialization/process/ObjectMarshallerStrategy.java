@@ -17,7 +17,7 @@ package org.kie.kogito.serialization.process;
 
 public interface ObjectMarshallerStrategy extends Comparable<ObjectMarshallerStrategy> {
 
-    static final Integer DEFAULT_ORDER = 10;
+    Integer DEFAULT_ORDER = 10;
 
     default Integer order() {
         return DEFAULT_ORDER;

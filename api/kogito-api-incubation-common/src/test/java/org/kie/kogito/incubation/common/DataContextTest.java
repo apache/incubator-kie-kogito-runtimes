@@ -17,46 +17,19 @@
 package org.kie.kogito.incubation.common;
 
 import java.util.Map;
-import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DataContextTest {
-    public static class Address {
-        String street;
-
-        @Override
-        public boolean equals(Object o) {
-            return (o instanceof Address)
-                    && Objects.equals(((Address) o).street, street);
-        }
-
-    }
-
-    public static class User implements DataContext, DefaultCastable {
-        String firstName;
-        String lastName;
-        Address addr;
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof User) {
-                User user = (User) o;
-                return Objects.equals(firstName, user.firstName)
-                        && Objects.equals(lastName, user.lastName)
-                        && Objects.equals(addr, user.addr);
-            } else
-                return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(firstName, lastName, addr);
-        }
-    }
-
     @Test
     public void fromMap() {
         MapDataContext ctx = MapDataContext.create();
@@ -93,7 +66,7 @@ public class DataContextTest {
 
         MapDataContext ctx = u.as(MapDataContext.class);
         assertNotEquals(Address.class, ctx.get("addr").getClass());
-        Address addr = InternalObjectMapper.convertValue(ctx.get("addr"), Address.class);
+        Address addr = InternalObjectMapper.objectMapper().convertValue(ctx.get("addr"), Address.class);
         assertEquals("Abbey Rd.", addr.street);
     }
 
@@ -110,6 +83,19 @@ public class DataContextTest {
         User user = mdc.get("Paul", User.class);
         assertNotNull(user);
         assertEquals(paul, user);
+    }
 
+    @Test
+    public void testFastAsUsingCast() {
+        DataContext ctx = new MapDataContext(Map.of("full name", "John Doe", "age", 47));
+
+        MapDataContext converted = ctx.as(MapDataContext.class);
+        assertThat(converted).isSameAs(ctx);
+    }
+
+    @Test
+    public void shouldAllowEmptyMetaDataContext() throws JsonProcessingException {
+        MetaDataContext mdc = EmptyMetaDataContext.Instance;
+        assertEquals("{}", new ObjectMapper().writeValueAsString(mdc));
     }
 }

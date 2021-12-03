@@ -36,7 +36,7 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie7-bom</artifactId>
+        <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -60,7 +60,7 @@
         </exclusion>
         <exclusion>
           <groupId>org.drools</groupId>
-          <artifactId>drools-core-reflective</artifactId>
+          <artifactId>drools-wiring-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
-import org.drools.core.common.InternalWorkingMemory;
+import org.drools.core.common.ReteEvaluator;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
 import org.drools.core.event.ProcessEventSupport;
@@ -56,6 +56,7 @@ import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessJobDescription;
+import org.kie.kogito.process.Processes;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.jobs.impl.InMemoryJobService;
@@ -86,7 +87,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         this.runtimeContext = runtimeContext;
         this.processInstanceManager = services.getProcessInstanceManager();
         this.signalManager = services.getSignalManager();
-        this.jobService = services.getJobsService() == null ? new InMemoryJobService(kogitoProcessRuntime, this.unitOfWorkManager) : services.getJobsService();
+        this.jobService = services.getJobsService() == null ? InMemoryJobService.get(application.get(Processes.class), this.unitOfWorkManager) : services.getJobsService();
         this.processEventSupport = services.getEventSupport();
         this.workItemManager = services.getKogitoWorkItemManager();
         if (isActive()) {
@@ -514,16 +515,9 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         }
 
         @Override
-        public void execute(InternalWorkingMemory workingMemory) {
-
+        public void execute(ReteEvaluator reteEvaluator) {
             signalEvent(type, event);
         }
-
-        @Override
-        public void execute(InternalKnowledgeRuntime kruntime) {
-            signalEvent(type, event);
-        }
-
     }
 
     @Override

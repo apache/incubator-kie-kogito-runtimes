@@ -35,6 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.kie.kogito.Model;
+import org.kie.kogito.ProcessInput;
 import org.kie.kogito.UserTask;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -48,6 +49,7 @@ import org.kie.memorycompiler.JavaCompiler;
 import org.kie.memorycompiler.JavaCompilerFactory;
 import org.kie.memorycompiler.JavaCompilerSettings;
 import org.kie.memorycompiler.JavaConfiguration;
+import org.kie.memorycompiler.resources.KiePath;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
@@ -118,8 +120,11 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 generatedResources.forEach(this::writeGeneratedFile);
 
                 // Json schema generation
-                Stream<Class<?>> classStream = reflections.getTypesAnnotatedWith(UserTask.class).stream();
-                generateJsonSchema(classStream).forEach(this::writeGeneratedFile);
+                Stream<Class<?>> processClassStream = reflections.getTypesAnnotatedWith(ProcessInput.class).stream();
+                generateJsonSchema(processClassStream).forEach(this::writeGeneratedFile);
+
+                Stream<Class<?>> userTaskClassStream = reflections.getTypesAnnotatedWith(UserTask.class).stream();
+                generateJsonSchema(userTaskClassStream).forEach(this::writeGeneratedFile);
             }
         } catch (Exception e) {
             throw new MojoExecutionException("Error during processing model classes", e);
@@ -145,16 +150,15 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                 throw new MojoFailureException(Arrays.toString(result.getErrors()));
             }
 
-            for (String fileName : trgMfs.getFileNames()) {
-                byte[] data = trgMfs.getBytes(fileName);
-                writeGeneratedFile(new GeneratedFile(GeneratedFileType.COMPILED_CLASS, fileName, data));
+            for (KiePath path : trgMfs.getFilePaths()) {
+                byte[] data = trgMfs.getBytes(path);
+                writeGeneratedFile(new GeneratedFile(GeneratedFileType.COMPILED_CLASS, path.asString(), data));
             }
         }
     }
 
     private Collection<GeneratedFile> generateJsonSchema(Stream<Class<?>> classes) throws IOException {
         return new JsonSchemaGenerator.ClassBuilder(classes)
-                .withGenSchemaPredicate(x -> true)
                 .withSchemaVersion(schemaVersion).build()
                 .generate();
     }

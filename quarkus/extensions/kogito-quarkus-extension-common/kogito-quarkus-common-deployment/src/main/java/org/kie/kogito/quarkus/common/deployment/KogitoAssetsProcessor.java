@@ -16,13 +16,7 @@
 package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -30,13 +24,15 @@ import javax.inject.Inject;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
+import org.jboss.logging.Logger;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppDependency;
+import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
@@ -47,18 +43,16 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.index.IndexingUtil;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
+import io.quarkus.maven.dependency.ResolvedDependency;
 
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.HOT_RELOAD_SUPPORT_PATH;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.compileGeneratedSources;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getHotReloadSupportSource;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.*;
 
 /**
  * Main class of the Kogito extension
  */
 public class KogitoAssetsProcessor {
+
+    private static final Logger LOGGER = Logger.getLogger(KogitoAssetsProcessor.class);
 
     @Inject
     ArchiveRootBuildItem root;
@@ -74,13 +68,16 @@ public class KogitoAssetsProcessor {
      */
     @BuildStep
     public List<KogitoGeneratedClassesBuildItem> generateModel(
+            Capabilities capabilities,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             BuildProducer<GeneratedResourceBuildItem> genResBI) throws IOException {
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
+        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), combinedIndexBuildItem.getIndex(), curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
+
+        validateAvailableCapabilities(context, capabilities);
 
         Collection<GeneratedFile> generatedFiles = generateFiles(context);
 
@@ -109,6 +106,27 @@ public class KogitoAssetsProcessor {
                 .orElse(Collections.emptyList());
     }
 
+    void validateAvailableCapabilities(KogitoBuildContext context, Capabilities capabilities) {
+        boolean hasOptaPlannerCapability = capabilities.isCapabilityWithPrefixPresent("org.optaplanner");
+        boolean hasRestCapabilities = capabilities.isPresent(Capability.RESTEASY) && capabilities.isPresent(Capability.RESTEASY_JSON_JACKSON);
+
+        // disable REST if OptaPlanner capability is available but REST is not (user can override via property)
+        if (hasOptaPlannerCapability && !hasRestCapabilities &&
+                kogitoGenerateRest(context).isEmpty()) {
+            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            LOGGER.info("Disabling Kogito REST generation because OptaPlanner extension is available, specify `kogito.generate.rest = true` to re-enable it");
+        }
+
+        if (!hasRestCapabilities && kogitoGenerateRest(context).orElse(true)) {
+            throw new MissingRestCapabilityException();
+        }
+    }
+
+    private Optional<Boolean> kogitoGenerateRest(KogitoBuildContext context) {
+        return context.getApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST)
+                .map("true"::equalsIgnoreCase);
+    }
+
     private Collection<GeneratedFile> generateFiles(KogitoBuildContext context) {
         return ApplicationGeneratorDiscovery
                 .discover(context)
@@ -121,7 +139,7 @@ public class KogitoAssetsProcessor {
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             boolean useDebugSymbols) throws IOException {
 
-        List<AppDependency> dependencies = curateOutcomeBuildItem.getEffectiveModel().getUserDependencies();
+        Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
 
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
@@ -211,6 +229,8 @@ public class KogitoAssetsProcessor {
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceInputValue"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.decision.event.trace.TraceOutputValue"));
+        reflectiveClass.produce(
+                new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.typedvalue.BaseTypedValue"));
         reflectiveClass.produce(
                 new ReflectiveClassBuildItem(true, true, "org.kie.kogito.tracing.typedvalue.TypedValue"));
         reflectiveClass.produce(
