@@ -34,13 +34,17 @@
   <dependencies>
     <dependency>
       <groupId>org.drools</groupId>
-      <artifactId>drools-kiesession</artifactId>
+      <artifactId>drools-core</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.drools</groupId>
           <artifactId>drools-wiring-dynamic</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-kiesession</artifactId>
     </dependency>
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
