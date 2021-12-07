@@ -41,7 +41,7 @@ public class TraceResourceId {
     @JsonInclude(NON_NULL)
     private String decisionServiceName;
 
-    private TraceResourceId() {
+    public TraceResourceId() {
     }
 
     public TraceResourceId(String serviceUrl, String modelNamespace, String modelName) {

@@ -60,7 +60,7 @@ public class TraceExecutionStep {
     @JsonInclude(NON_EMPTY)
     private List<TraceExecutionStep> children;
 
-    private TraceExecutionStep() {
+    public TraceExecutionStep() {
     }
 
     public TraceExecutionStep(TraceExecutionStepType type, long duration, String name, JsonNode result, List<Message> messages, Map<String, String> additionalData, List<TraceExecutionStep> children) {

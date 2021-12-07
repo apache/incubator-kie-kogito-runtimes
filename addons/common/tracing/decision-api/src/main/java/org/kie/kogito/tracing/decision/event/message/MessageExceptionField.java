@@ -26,7 +26,7 @@ public class MessageExceptionField {
     @JsonInclude(NON_NULL)
     private MessageExceptionField cause;
 
-    private MessageExceptionField() {
+    public MessageExceptionField() {
     }
 
     public MessageExceptionField(String className, String message, MessageExceptionField cause) {

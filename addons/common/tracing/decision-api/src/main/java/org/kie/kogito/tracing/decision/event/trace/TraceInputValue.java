@@ -44,7 +44,7 @@ public class TraceInputValue {
     @JsonInclude(NON_EMPTY)
     private List<Message> messages;
 
-    private TraceInputValue() {
+    public TraceInputValue() {
     }
 
     public TraceInputValue(String id, String name, TypedValue value, List<Message> messages) {

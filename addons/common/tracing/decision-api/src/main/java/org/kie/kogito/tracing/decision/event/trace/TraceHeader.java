@@ -58,7 +58,7 @@ public class TraceHeader {
     @JsonInclude(NON_EMPTY)
     private List<Message> messages;
 
-    private TraceHeader() {
+    public TraceHeader() {
     }
 
     public TraceHeader(TraceEventType type, String executionId, Long startTs, Long endTs, Long duration, TraceResourceId resourceId, List<Message> messages) {

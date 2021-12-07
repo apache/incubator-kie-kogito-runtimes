@@ -50,7 +50,7 @@ public class TraceOutputValue {
     @JsonInclude(NON_EMPTY)
     private List<Message> messages;
 
-    private TraceOutputValue() {
+    public TraceOutputValue() {
     }
 
     public TraceOutputValue(String id, String name, String status, TypedValue value, Map<String, TypedValue> inputs, List<Message> messages) {

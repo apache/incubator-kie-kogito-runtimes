@@ -30,7 +30,7 @@ public class MessageFEELEvent {
     @JsonInclude(NON_NULL)
     private MessageExceptionField sourceException;
 
-    private MessageFEELEvent() {
+    public MessageFEELEvent() {
     }
 
     public MessageFEELEvent(MessageFEELEventSeverity severity, String message, Integer line, Integer column, MessageExceptionField sourceException) {

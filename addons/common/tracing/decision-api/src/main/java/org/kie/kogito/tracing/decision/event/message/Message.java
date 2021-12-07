@@ -30,7 +30,7 @@ public class Message {
     private MessageFEELEvent feelEvent;
     private MessageExceptionField exception;
 
-    private Message() {
+    public Message() {
     }
 
     public Message(MessageLevel level, MessageCategory category, String type, String sourceId, String text, MessageFEELEvent feelEvent, MessageExceptionField exception) {

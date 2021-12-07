@@ -34,7 +34,7 @@ public class TraceType {
     @JsonProperty("name")
     private String name;
 
-    private TraceType() {
+    public TraceType() {
     }
 
     public TraceType(String id, String namespace, String name) {
