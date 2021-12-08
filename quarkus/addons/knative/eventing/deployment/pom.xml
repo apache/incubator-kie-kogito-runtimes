@@ -27,6 +27,23 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-common-deployment</artifactId>
     </dependency>
+
+    <!-- Dependencies that can be added in the end project -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-kubernetes-deployment</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-minikube-deployment</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-openshift-deployment</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

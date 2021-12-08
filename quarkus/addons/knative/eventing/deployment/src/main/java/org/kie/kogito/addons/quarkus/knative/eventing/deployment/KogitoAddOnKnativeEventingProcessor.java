@@ -15,18 +15,45 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
+import java.util.List;
+
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.ApplicationInfoBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.kubernetes.deployment.KnativeConfig;
+import io.quarkus.kubernetes.deployment.KubernetesConfigUtil;
+import io.quarkus.kubernetes.spi.KubernetesResourceMetadataBuildItem;
 
 class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-knative-eventing-extension";
 
+    private static final String KNATIVE = "knative";
+
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
+
+    @BuildStep
+    public void checkKnativeEnabled(ApplicationInfoBuildItem applicationInfo, KnativeConfig config,
+            BuildProducer<KubernetesResourceMetadataBuildItem> resourceMeta) {
+        List<String> targets = KubernetesConfigUtil.getUserSpecifiedDeploymentTargets();
+        boolean knativeEnabled = targets.contains(KNATIVE);
+
+        // gets the knative target service
+    }
+
+    // gets the vanilla
+
+    // gets the openshift ones
+
+    // generate the KogitoSource or SinkBindings
+
+    // generate the Knative Triggers
+
 
 }
