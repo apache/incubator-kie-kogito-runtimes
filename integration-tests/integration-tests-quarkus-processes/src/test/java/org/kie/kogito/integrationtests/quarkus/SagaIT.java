@@ -15,11 +15,6 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +24,15 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+
 @QuarkusIntegrationTest
 public class SagaIT {
 
-    public static final String PATH = "/saga_error";
+    public static final String PATH = "/order_saga_error_workflow";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
