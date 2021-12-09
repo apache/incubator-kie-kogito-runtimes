@@ -11,7 +11,7 @@
   <name>Kogito :: Integration Tests :: Quarkus :: RESTEasy Reactive</name>
 
   <properties>
-    <!-- excluded because of https://issues.redhat.com/browse/KOGITO-5338 -->
+    <!-- excluded because of https://issues.redhat.com/browse/KOGITO-6395 -->
     <quarkus.test.list.include>false</quarkus.test.list.include>
   </properties>
 

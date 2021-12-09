@@ -27,6 +27,7 @@ import org.jboss.jandex.Indexer;
 import org.jboss.logging.Logger;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
@@ -151,7 +152,13 @@ public class KogitoAssetsProcessor {
         Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
                 compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
         generatedBeanBuildItems.forEach(generatedBeans::produce);
-        generatedBeanBuildItems.forEach(b -> jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData())));
+        Set<String> restResourceClassNameSet = generatedFiles.stream()
+                .filter(file -> file.type().equals(Generator.REST_TYPE))
+                .map(file -> toClassName(file.path().toString()))
+                .collect(Collectors.toSet());
+        generatedBeanBuildItems.stream()
+                .filter(b -> restResourceClassNameSet.contains(b.getName()))
+                .forEach(b -> jaxrsProducer.produce(new GeneratedJaxRsResourceBuildItem(b.getName(), b.getData())));
         return Optional.of(indexBuildItems(context, generatedBeanBuildItems));
     }
 
