@@ -75,7 +75,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-        RestWorkItemTargetInfo targetInfo = getTargetInfo(workItem);
+        Class<?> targetInfo = getTargetInfo(workItem);
         logger.debug("Using target {}", targetInfo);
         //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
@@ -110,8 +110,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
             request.basicAuthentication(user, password);
         }
         HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
-        manager.completeWorkItem(workItem.getStringId(), targetInfo != null ? Collections.singletonMap(RESULT,
-                resultHandler.apply(targetInfo, response)) : Collections.emptyMap());
+        manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
 
     }
 
@@ -155,16 +154,11 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
                 });
     }
 
-    private RestWorkItemTargetInfo getTargetInfo(KogitoWorkItem workItem) {
+    private Class<?> getTargetInfo(KogitoWorkItem workItem) {
         String varName = ((WorkItemNode) ((WorkItemNodeInstance) workItem.getNodeInstance()).getNode()).getOutMapping(
                 RESULT);
         if (varName != null) {
-            KogitoProcessInstance pi = workItem.getProcessInstance();
-            Object instance = pi.getVariables().get(varName);
-            Class<?> type = getType(pi, varName);
-            if (instance != null || type != null) {
-                return new RestWorkItemTargetInfo(instance, type);
-            }
+            return getType(workItem.getProcessInstance(), varName);
         }
         logger.warn("no out mapping for {}", RESULT);
         return null;

@@ -44,8 +44,6 @@ import org.kie.kogito.serverless.workflow.suppliers.RestBodyBuilderSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowAppContext;
-import org.kogito.workitem.openapi.JsonNodeResultHandler;
-import org.kogito.workitem.openapi.suppliers.JsonNodeResultHandlerExprSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -216,7 +214,6 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .withExprLang(workflow.getExpressionLang())
                         .withModelParameter(WORKITEM_PARAM)
                         .withArgs(functionsToMap(functionArgs), JsonNodeResolver.class, JsonNode.class, s -> true)
-                        .withResultHandler(new JsonNodeResultHandlerExprSupplier(), JsonNodeResultHandler.class)
                         .build(embeddedSubProcess.workItemNode(parserContext.newId())).name(functionRef.getRefName())
                         .inMapping(WORKITEM_PARAM,
                                 ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)

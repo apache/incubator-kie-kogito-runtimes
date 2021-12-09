@@ -29,11 +29,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- OpenApi Client -->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-openapi-workitem</artifactId>
-    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>

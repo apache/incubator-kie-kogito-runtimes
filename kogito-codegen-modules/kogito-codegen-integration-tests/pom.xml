@@ -85,11 +85,6 @@
         <!-- OpenApi Required Libraries for Codegen Test -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-openapi-workitem</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-jsonpath-expression</artifactId>
             <scope>test</scope>
         </dependency>

@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ParameterDefinition;
@@ -36,7 +35,6 @@ import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
-import org.kie.kogito.process.workitems.impl.OpenApiResultHandler;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -162,8 +160,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         private String exprLang = "jq";
         private Class<? extends ExpressionWorkItemResolver> paramResolverClass;
         private Class<?> paramResolverOutputType;
-        private Class<? extends OpenApiResultHandler> resultHandlerType;
-        private Supplier<Expression> resultHandlerExpression;
         private String modelParameter = "Parameter";
         private Map<String, Object> functionArgs;
         private Predicate<String> exprTest;
@@ -178,18 +174,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
             this.paramResolverClass = resolverClass;
             this.paramResolverOutputType = outputClass;
             this.exprTest = exprTest;
-            return this;
-        }
-
-        /**
-         * 
-         * @param resultHandler
-         * @param resultHandlerType
-         * @return
-         */
-        public WorkItemBuilder withResultHandler(final Supplier<Expression> resultHandler, final Class<? extends OpenApiResultHandler> resultHandlerType) {
-            this.resultHandlerType = resultHandlerType;
-            this.resultHandlerExpression = resultHandler;
             return this;
         }
 
@@ -220,10 +204,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
             factory.workParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
             factory.workParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
             factory.workParameter(KEY_WORKITEM_OPERATION, this.operation);
-            if (this.resultHandlerExpression != null) {
-                factory.workParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-                factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
-            }
             if (functionArgs != null) {
                 factory.metaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverOutputType.getCanonicalName());
                 functionArgs.entrySet().forEach(
@@ -253,10 +233,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
                     work.setParameter(entry.getKey(), processWorkItemValue(exprLang, entry.getValue(), modelParameter, this.paramResolverClass, this.exprTest));
                     work.addParameterDefinition(new ParameterDefinitionImpl(entry.getKey(), DataTypeResolver.fromObject(entry.getValue(), this.exprTest)));
                 });
-            }
-            if (this.resultHandlerExpression != null) {
-                work.setParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-                workItemNode.setMetaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
             }
             workItemNode.setMetaData(MODEL_PARAMETER, modelParameter);
 
