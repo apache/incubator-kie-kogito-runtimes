@@ -16,13 +16,15 @@
 
 package org.kie.kogito.quarkus.processes.devservices;
 
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.utility.Base58;
 import org.testcontainers.utility.DockerImageName;
-
-import io.quarkus.devservices.common.ConfigureUtil;
 
 /**
  * This container wraps Data Index Service container
@@ -35,36 +37,33 @@ public class DataIndexInMemoryContainer extends GenericContainer<DataIndexInMemo
      */
     public static final String DEV_SERVICE_LABEL = "kogito-dev-service-data-index";
     private static final Logger LOGGER = LoggerFactory.getLogger(DataIndexInMemoryContainer.class);
-
-    private final int fixedExposedPort;
+    private final int port;
     private final boolean useSharedNetwork;
     private String hostName = null;
 
     public DataIndexInMemoryContainer(DockerImageName dockerImageName, int fixedExposedPort, String serviceName, boolean useSharedNetwork) {
         super(dockerImageName);
-        this.fixedExposedPort = fixedExposedPort;
+        this.port = fixedExposedPort;
         this.useSharedNetwork = useSharedNetwork;
-
+        withPrivilegedMode(true);
+        withNetwork(Network.SHARED);
+        if (useSharedNetwork) {
+            hostName = "data-index-" + Base58.randomString(5);
+            setNetworkAliases(Collections.singletonList(hostName));
+        } else {
+            withExposedPorts(PORT);
+        }
         if (serviceName != null) { // Only adds the label in dev mode.
             withLabel(DEV_SERVICE_LABEL, serviceName);
         }
-        withPrivilegedMode(true);
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
     }
 
     @Override
     protected void configure() {
         super.configure();
-
-        if (useSharedNetwork) {
-            hostName = ConfigureUtil.configureSharedNetwork(this, "data-index");
-            return;
-        }
-
-        if (fixedExposedPort > 0) {
-            addFixedExposedPort(fixedExposedPort, PORT);
-        } else {
-            addExposedPorts(PORT);
+        if ((port > 0) && !useSharedNetwork) {
+            addFixedExposedPort(port, PORT);
         }
     }
 
