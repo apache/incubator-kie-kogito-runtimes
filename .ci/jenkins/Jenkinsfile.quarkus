@@ -75,7 +75,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('kogito-runtimes')
-                        .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
             }
@@ -94,7 +94,7 @@ pipeline {
                 script {
                     getMavenCommand('integration-tests')
                         .withProfiles(['persistence'])
-                        .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                         .run('clean verify')
                 }
             }
@@ -112,7 +112,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('optaplanner')
-                        .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
             }
@@ -130,7 +130,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('kogito-apps')
-                        .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
             }
@@ -148,7 +148,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand('kogito-examples')
-                        .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
             }
@@ -167,7 +167,7 @@ pipeline {
                 script {
                     getMavenCommand('kogito-examples-persistence')
                             .withProfiles(['persistence'])
-                            .withProperty('maven.test.failure.ignore')
+                        .withProperty('maven.test.failure.ignore', true)
                             .run('clean verify')
                 }
             }
