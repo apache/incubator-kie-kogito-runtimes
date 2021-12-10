@@ -26,20 +26,16 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.branches.Branch;
 import io.serverlessworkflow.api.states.ParallelState;
 
-public class ParallelHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends StateHandler<ParallelState, SplitFactory<P>, P> {
+public class ParallelHandler extends StateHandler<ParallelState> {
 
-    private JoinFactory<P> connectionNode;
-
-    protected ParallelHandler(ParallelState state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory,
-            ParserContext parserContext) {
-        super(state, workflow, factory, parserContext);
-
+    protected ParallelHandler(ParallelState state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
     @Override
-    public SplitFactory<P> makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
-        SplitFactory<P> nodeFactory = (SplitFactory<P>) factory.splitNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_START_NAME).type(Split.TYPE_AND);
-        connectionNode = (JoinFactory<P>) factory.joinNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME).type(Split.TYPE_AND);
+    public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+        SplitFactory<?> nodeFactory = factory.splitNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_START_NAME).type(Split.TYPE_AND);
+        JoinFactory<?> connectionNode = factory.joinNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME).type(Split.TYPE_AND);
         for (Branch branch : state.getBranches()) {
             long branchId = parserContext.newId();
             if (branch.getWorkflowId() == null || branch.getWorkflowId().isEmpty()) {
@@ -48,13 +44,7 @@ public class ParallelHandler<P extends RuleFlowNodeContainerFactory<P, ?>> exten
             ServerlessWorkflowParser.subprocessNode(factory.subProcessNode(branchId).name(branch.getName()).processId(branch
                     .getWorkflowId()).waitForCompletion(true)).done().connection(nodeFactory.getNode().getId(), branchId).connection(branchId, connectionNode.getNode().getId());
         }
-        return nodeFactory;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public JoinFactory<P> getOutgoingNode() {
-        return connectionNode;
+        return new MakeNodeResult(nodeFactory, connectionNode);
     }
 
     @Override

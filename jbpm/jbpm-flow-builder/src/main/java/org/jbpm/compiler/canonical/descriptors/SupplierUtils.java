@@ -25,13 +25,11 @@ public class SupplierUtils {
     }
 
     public static Expression getExpression(Class<?> runtimeClass, String... args) {
-
         ObjectCreationExpr result = new ObjectCreationExpr().setType(runtimeClass.getCanonicalName());
         for (String arg : args) {
             result.addArgument(new StringLiteralExpr(arg));
         }
         return result;
-
     }
 
 }

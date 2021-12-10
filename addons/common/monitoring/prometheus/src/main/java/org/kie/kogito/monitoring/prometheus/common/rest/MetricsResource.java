@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.monitoring.prometheus.common.rest;
 
+/**
+ * This class must always have exact FQCN as <code>org.kie.kogito.monitoring.prometheus.common.rest. MetricsResource </code>
+ */
 public interface MetricsResource {
 
 }
