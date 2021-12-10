@@ -167,7 +167,7 @@ pipeline {
                 script {
                     getMavenCommand('kogito-examples-persistence')
                             .withProfiles(['persistence'])
-                        .withProperty('maven.test.failure.ignore', true)
+                            .withProperty('maven.test.failure.ignore', true)
                             .run('clean verify')
                 }
             }
