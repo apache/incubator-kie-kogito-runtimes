@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.monitoring.prometheus.common;
+package org.kie.kogito.monitoring.prometheus.common.integration;
 
 import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
 

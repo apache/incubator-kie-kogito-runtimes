@@ -22,15 +22,14 @@ import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
 import org.kie.kogito.monitoring.prometheus.api.PrometheusMeterRegistryManager;
-import org.kie.kogito.monitoring.prometheus.common.PrometheusMeterRegistryManagerImpl;
 
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 
-public class PrometheusMeterRegistryManagerImplTest {
+class PrometheusMeterRegistryManagerImplTest {
 
     @Test
-    public void prometheusMetricsAreExported() {
+    void prometheusMetricsAreExported() {
         PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         MonitoringRegistryManager monitoringRegistryManager = new MockedMonitoringRegistryManager();
         monitoringRegistryManager.addRegistry(registry);
