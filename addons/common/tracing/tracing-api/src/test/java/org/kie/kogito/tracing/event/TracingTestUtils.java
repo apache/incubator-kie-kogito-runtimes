@@ -53,6 +53,6 @@ public class TracingTestUtils {
         return resultStringBuilder.toString();
     }
 
-    public TracingTestUtils() {
+    private TracingTestUtils() {
     }
 }
