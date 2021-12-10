@@ -20,8 +20,8 @@ public class KogitoKnowledgeBuilderConfigurationImpl extends KnowledgeBuilderCon
     public KogitoKnowledgeBuilderConfigurationImpl() {
     }
 
-    public KogitoKnowledgeBuilderConfigurationImpl(ClassLoader... classLoaders) {
-        super(classLoaders);
+    public KogitoKnowledgeBuilderConfigurationImpl(ClassLoader classLoader) {
+        super(classLoader);
     }
 
     @Override
