@@ -24,16 +24,16 @@ import com.github.javaparser.ast.expr.Expression;
 
 public class ForEachCollectorActionSupplier extends ForEachCollectorAction implements Supplier<Expression> {
 
-    private String[] varArgs;
+    private Expression expression;
 
     public ForEachCollectorActionSupplier(String lang, String expr) {
         super(lang, expr);
-        varArgs = SWFSupplierUtils.getVarArgs(lang, expr);
+        expression = SupplierUtils.getExpression(ForEachCollectorAction.class, lang, expr);
     }
 
     @Override
     public Expression get() {
-        return SupplierUtils.getExpression(ForEachCollectorAction.class, varArgs);
+        return expression;
     }
 
 }

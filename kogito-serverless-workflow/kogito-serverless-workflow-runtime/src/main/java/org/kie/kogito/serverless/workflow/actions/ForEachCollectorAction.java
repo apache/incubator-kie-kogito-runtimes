@@ -19,6 +19,7 @@ import org.jbpm.workflow.instance.node.ForEachNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -26,14 +27,13 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 public class ForEachCollectorAction extends BaseExpressionAction {
 
     public ForEachCollectorAction(String lang, String expr) {
-        super(lang, expr);
+        super(lang, expr, SWFConstants.DEFAULT_WORKFLOW_VAR);
     }
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        Iterable<?> collectedValues = (Iterable<?>) context.getVariable(ForEachNodeInstance.TEMP_OUTPUT_VAR);
         JsonNode node = evaluate(context, JsonNode.class);
-        ArrayNode arrayNode = node instanceof ArrayNode ? (ArrayNode) node : assign(context, ObjectMapperFactory.get().createArrayNode());
-        JsonObjectUtils.mapToArray(collectedValues, arrayNode);
+        JsonObjectUtils.mapToArray((Iterable<?>) context.getVariable(ForEachNodeInstance.TEMP_OUTPUT_VAR),
+                node instanceof ArrayNode ? (ArrayNode) node : assign(context, ObjectMapperFactory.get().createArrayNode()));
     }
 }

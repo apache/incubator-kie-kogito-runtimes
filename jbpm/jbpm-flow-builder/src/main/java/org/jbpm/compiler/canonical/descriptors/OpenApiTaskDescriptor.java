@@ -38,13 +38,10 @@ import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
@@ -126,27 +123,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         ClassOrInterfaceType type = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_PARAM_RESOLVER_TYPE));
         getParameters(workItemNode)
                 .forEach(p -> callServiceMethod.addArgument(new CastExpr(type, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
-    }
-
-    @Override
-    protected Expression handleServiceCallResult(final BlockStmt executeWorkItemBody, final MethodCallExpr callService) {
-        final MethodCallExpr getInputModel = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr((String) workItemNode.getMetaData(MODEL_PARAMETER)));
-        final VariableDeclarationExpr inputModel =
-                new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
-        executeWorkItemBody.addStatement(inputModel);
-        // fetch the handler type
-        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE));
-        // get the handler
-        final MethodCallExpr getResultHandler = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
-        // convert the result into the given type
-        final CastExpr castToHandler = new CastExpr(resultHandlerType, getResultHandler);
-        // temp to hold the result handler with the correct cast
-        final VariableDeclarationExpr resultHandler =
-                new VariableDeclarationExpr(new VariableDeclarator(castToHandler.getType(), "resultHandler", castToHandler));
-        executeWorkItemBody.addStatement(resultHandler);
-        return new MethodCallExpr(resultHandler.getVariable(0).getNameAsExpression(), "apply")
-                .addArgument(new NameExpr(VAR_INPUT_MODEL))
-                .addArgument(callService);
     }
 
     /**

@@ -15,27 +15,24 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
+import org.jbpm.process.instance.impl.Action;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.jackson.utils.MergeUtils;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getJsonNode;
 
-public class ExpressionAction extends BaseExpressionAction {
+public class MergeAction implements Action {
 
-    protected final String outputVar;
-    protected final String collectVar;
+    protected String inputName;
+    protected String outputName;
 
-    public ExpressionAction(String lang, String expr, String inputVar, String outputVar, String collectVar, String... addAttrs) {
-        super(lang, expr, inputVar, addAttrs);
-        this.outputVar = outputVar;
-        this.collectVar = collectVar;
+    public MergeAction(String inputName, String outputName) {
+        this.inputName = inputName;
+        this.outputName = outputName;
     }
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        JsonNode result = evaluate(context, JsonNode.class);
-        context.setVariable(outputVar, result);
-        if (collectVar != null) {
-            context.setVariable(collectVar, result);
-        }
+        MergeUtils.merge(getJsonNode(context, inputName), getJsonNode(context, outputName));
     }
 }

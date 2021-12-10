@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
-import org.kie.kogito.jackson.utils.MergeUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
@@ -134,9 +133,6 @@ public class JqParsedExpression implements ParsedExpression {
 
         @Override
         public void emit(JsonNode out) throws JsonQueryException {
-            if (out.isObject()) {
-                MergeUtils.merge(out, context);
-            }
             if (this.result == null) {
                 this.result = out;
             } else if (!arrayCreated) {

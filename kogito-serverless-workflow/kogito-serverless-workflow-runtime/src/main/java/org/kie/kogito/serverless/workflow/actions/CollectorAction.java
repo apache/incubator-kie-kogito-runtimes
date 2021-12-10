@@ -16,26 +16,26 @@
 package org.kie.kogito.serverless.workflow.actions;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.jackson.utils.MergeUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ExpressionAction extends BaseExpressionAction {
+public class CollectorAction extends BaseExpressionAction {
 
-    protected final String outputVar;
-    protected final String collectVar;
+    private String outputVar;
 
-    public ExpressionAction(String lang, String expr, String inputVar, String outputVar, String collectVar, String... addAttrs) {
-        super(lang, expr, inputVar, addAttrs);
+    public CollectorAction(String lang, String expr, String inputVar, String outputVar) {
+        super(lang, expr, inputVar);
         this.outputVar = outputVar;
-        this.collectVar = collectVar;
     }
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        JsonNode result = evaluate(context, JsonNode.class);
-        context.setVariable(outputVar, result);
-        if (collectVar != null) {
-            context.setVariable(collectVar, result);
+        JsonNode node = evaluate(context, JsonNode.class);
+        if (node == null) {
+            node = ObjectMapperFactory.get().createObjectNode();
         }
+        context.setVariable(outputVar, MergeUtils.merge(ActionUtils.getJsonNode(context, modelVar), node));
     }
 }

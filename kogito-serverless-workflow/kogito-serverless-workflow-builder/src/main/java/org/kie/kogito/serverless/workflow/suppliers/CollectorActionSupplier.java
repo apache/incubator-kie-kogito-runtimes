@@ -18,17 +18,17 @@ package org.kie.kogito.serverless.workflow.suppliers;
 import java.util.function.Supplier;
 
 import org.jbpm.compiler.canonical.descriptors.SupplierUtils;
-import org.kie.kogito.serverless.workflow.actions.SysoutAction;
+import org.kie.kogito.serverless.workflow.actions.CollectorAction;
 
 import com.github.javaparser.ast.expr.Expression;
 
-public class SysoutActionSupplier extends SysoutAction implements Supplier<Expression> {
+public class CollectorActionSupplier extends CollectorAction implements Supplier<Expression> {
 
-    private final Expression expression;
+    private Expression expression;
 
-    public SysoutActionSupplier(String lang, String expr, String inputVar, String... addVars) {
-        super(lang, expr, inputVar, addVars);
-        this.expression = SupplierUtils.getExpression(SysoutAction.class, SWFSupplierUtils.getVarArgs(lang, expr, inputVar, addVars));
+    public CollectorActionSupplier(String lang, String expr, String inputVar, String outputVar) {
+        super(lang, expr, inputVar, outputVar);
+        expression = SupplierUtils.getExpression(CollectorAction.class, lang, expr, inputVar, outputVar);
     }
 
     @Override
