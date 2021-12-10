@@ -186,7 +186,7 @@ pipeline {
                 script {
                     getMavenCommand('kogito-examples-events')
                             .withProfiles(['events'])
-                            .withProperty('maven.test.failure.ignore')
+                            .withProperty('maven.test.failure.ignore', true)
                             .run('clean verify')
                 }
             }
