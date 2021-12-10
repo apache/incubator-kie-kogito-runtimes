@@ -17,7 +17,6 @@
 package org.kie.kogito.quarkus.processes.deployment;
 
 import java.io.Closeable;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -67,7 +66,7 @@ public class KogitoDevServicesProcessor {
             BuildProducer<SystemPropertyBuildItem> systemProperties,
             LaunchModeBuildItem launchMode,
             KogitoBuildTimeConfig buildTimeConfig,
-            List<DevServicesSharedNetworkBuildItem> devServicesSharedNetwork,
+            Optional<DevServicesSharedNetworkBuildItem> devServicesSharedNetwork,
             Optional<ConsoleInstalledBuildItem> consoleInstalled,
             CuratedApplicationShutdownBuildItem applicationShutdown,
             LoggingSetupBuildItem loggingSetup) {
@@ -93,7 +92,7 @@ public class KogitoDevServicesProcessor {
 
         DataIndexInstance dataIndex;
         try {
-            dataIndex = startDataIndex(configuration, launchMode, !devServicesSharedNetwork.isEmpty());
+            dataIndex = startDataIndex(configuration, launchMode, devServicesSharedNetwork.isPresent());
             if (dataIndex != null) {
                 closeable = dataIndex.getCloseable();
                 systemProperties.produce(new SystemPropertyBuildItem(KOGITO_DATA_INDEX, dataIndex.getUrl()));
