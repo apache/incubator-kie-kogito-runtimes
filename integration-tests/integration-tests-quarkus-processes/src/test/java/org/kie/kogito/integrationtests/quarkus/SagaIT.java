@@ -32,7 +32,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 @QuarkusIntegrationTest
 public class SagaIT {
 
-    public static final String PATH = "/order_saga_error_workflow";
+    public static final String PATH = "/saga_error";
 
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
