@@ -68,7 +68,7 @@
       <exclusions>
         <exclusion>
           <groupId>org.drools</groupId>
-          <artifactId>drools-core</artifactId>
+          <artifactId>drools-wiring-dynamic</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -83,7 +83,7 @@
 
 
         <dependency>
-            <groupId>org.kie.kogito</groupId>
+            <groupId>org.drools</groupId>
             <artifactId>drools-decisiontables</artifactId>
             <scope>test</scope>
         </dependency>

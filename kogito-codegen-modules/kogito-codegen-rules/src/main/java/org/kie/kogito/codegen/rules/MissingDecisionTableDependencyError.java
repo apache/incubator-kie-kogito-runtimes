@@ -22,7 +22,7 @@ public class MissingDecisionTableDependencyError extends Error {
                 "Verify you have added decision table support to your project dependencies: \n" +
                 "\n" +
                 "<dependency>\n" +
-                "      <groupId>org.kie.kogito</groupId>\n" +
+                "      <groupId>org.drools</groupId>\n" +
                 "      <artifactId>drools-decisiontables</artifactId>\n" +
                 "</dependency>");
     }
