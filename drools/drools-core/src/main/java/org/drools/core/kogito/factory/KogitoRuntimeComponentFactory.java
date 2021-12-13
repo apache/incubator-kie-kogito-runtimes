@@ -18,9 +18,12 @@ package org.drools.core.kogito.factory;
 import org.drools.core.common.AgendaFactory;
 import org.drools.core.common.KogitoDefaultAgendaFactory;
 import org.drools.core.common.KogitoPhreakWorkingMemoryFactory;
+import org.drools.core.marshalling.impl.KogitoSerializablePlaceholderResolverStrategy;
 import org.drools.core.spi.FactHandleFactory;
 import org.drools.kiesession.factory.RuntimeComponentFactoryImpl;
 import org.drools.kiesession.factory.WorkingMemoryFactory;
+import org.kie.api.marshalling.ObjectMarshallingStrategy;
+import org.kie.api.marshalling.ObjectMarshallingStrategyAcceptor;
 
 public class KogitoRuntimeComponentFactory extends RuntimeComponentFactoryImpl {
 
@@ -43,4 +46,8 @@ public class KogitoRuntimeComponentFactory extends RuntimeComponentFactoryImpl {
         return agendaFactory;
     }
 
+    @Override
+    public ObjectMarshallingStrategy createDefaultObjectMarshallingStrategy(ObjectMarshallingStrategyAcceptor acceptor) {
+        return new KogitoSerializablePlaceholderResolverStrategy(acceptor);
+    }
 }
