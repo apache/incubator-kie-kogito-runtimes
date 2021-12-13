@@ -18,11 +18,9 @@ package org.kie.kogito.monitoring.elastic.quarkus;
 import java.util.Optional;
 
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.kie.kogito.monitoring.elastic.common.ElasticConfigFactory;
 import org.kie.kogito.monitoring.elastic.common.ElasticRegistry;
 import org.kie.kogito.monitoring.elastic.common.KogitoElasticConfig;
@@ -54,11 +52,6 @@ public class QuarkusElasticRegistryProvider extends ElasticRegistry {
     public Optional<String> indexDateSeparator;
     @ConfigProperty(name = "kogito.addon.monitoring.elastic.documentType")
     public Optional<String> documentType;
-
-    @Inject
-    public QuarkusElasticRegistryProvider(MonitoringRegistryManager monitoringRegistryManager) {
-        super(monitoringRegistryManager);
-    }
 
     public void config(@Observes StartupEvent event) {
         ElasticConfigFactory elasticConfigFactory = new ElasticConfigFactory();

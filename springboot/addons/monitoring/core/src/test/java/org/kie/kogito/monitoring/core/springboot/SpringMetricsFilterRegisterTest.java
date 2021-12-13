@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.monitoring.core.common.mock.MockedConfigBean;
-import org.kie.kogito.monitoring.core.common.mock.MockedMonitoringRegistryManager;
 import org.mockito.ArgumentCaptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -39,8 +38,7 @@ class SpringMetricsFilterRegisterTest {
 
     private void commonConfigure(boolean httpInterceptorUseDefault, int numberOfTimes) {
         InterceptorRegistry registryMock = mock(InterceptorRegistry.class);
-        SpringbootMetricsFilterRegister filterRegister = new SpringbootMetricsFilterRegister(new MockedConfigBean(),
-                new MockedMonitoringRegistryManager());
+        SpringbootMetricsFilterRegister filterRegister = new SpringbootMetricsFilterRegister(new MockedConfigBean());
 
         filterRegister.setHttpInterceptorUseDefault(httpInterceptorUseDefault);
         filterRegister.addInterceptors(registryMock);

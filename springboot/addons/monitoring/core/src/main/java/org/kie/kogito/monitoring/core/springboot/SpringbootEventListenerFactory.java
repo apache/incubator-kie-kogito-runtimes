@@ -19,7 +19,6 @@ import org.drools.core.config.DefaultRuleEventListenerConfig;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
-import org.kie.kogito.monitoring.MonitoringRegistryManager;
 import org.kie.kogito.monitoring.core.common.Constants;
 import org.kie.kogito.monitoring.core.common.process.MetricsProcessEventListener;
 import org.kie.kogito.monitoring.core.common.rule.RuleMetricsListenerConfig;
@@ -30,6 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.micrometer.core.instrument.Metrics;
+
 @Configuration
 public class SpringbootEventListenerFactory {
 
@@ -37,12 +38,9 @@ public class SpringbootEventListenerFactory {
 
     ConfigBean configBean;
 
-    MonitoringRegistryManager monitoringRegistryManager;
-
     @Autowired
-    public SpringbootEventListenerFactory(ConfigBean configBean, MonitoringRegistryManager monitoringRegistryManager) {
+    public SpringbootEventListenerFactory(ConfigBean configBean) {
         this.configBean = configBean;
-        this.monitoringRegistryManager = monitoringRegistryManager;
     }
 
     @Bean
@@ -54,7 +52,7 @@ public class SpringbootEventListenerFactory {
         LOGGER.debug("Producing default listener for process monitoring.");
         return new MetricsProcessEventListener("default-process-monitoring-listener",
                 configBean.getGav().orElse(KogitoGAV.EMPTY_GAV),
-                monitoringRegistryManager.getDefaultMeterRegistry());
+                Metrics.globalRegistry);
     }
 
     @ConditionalOnProperty(
@@ -64,6 +62,6 @@ public class SpringbootEventListenerFactory {
     @Bean
     public DefaultRuleEventListenerConfig produceRuleListener() {
         LOGGER.debug("Producing default listener for rule monitoring.");
-        return new RuleMetricsListenerConfig(configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), monitoringRegistryManager.getDefaultMeterRegistry());
+        return new RuleMetricsListenerConfig(configBean.getGav().orElse(KogitoGAV.EMPTY_GAV), Metrics.globalRegistry);
     }
 }
