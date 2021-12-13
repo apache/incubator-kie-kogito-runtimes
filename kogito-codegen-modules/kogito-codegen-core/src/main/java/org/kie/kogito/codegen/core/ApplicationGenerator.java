@@ -111,6 +111,14 @@ public class ApplicationGenerator {
         return applicationMainGenerator.generate();
     }
 
+    public Collection<ApplicationSection> getApplicationSections() {
+        return generators.stream()
+                .map(Generator::section)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
     private boolean filterGeneratedFile(GeneratedFile generatedFile) {
         boolean keepFile = context.hasRESTGloballyAvailable() || !REST_TYPE.equals(generatedFile.type());
         if (!keepFile) {
@@ -120,10 +128,8 @@ public class ApplicationGenerator {
     }
 
     private Collection<GeneratedFile> generateApplicationSections() {
-        return generators.stream()
-                .map(Generator::section)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        return this.getApplicationSections()
+                .stream()
                 .map(section -> new GeneratedFile(APPLICATION_SECTION_TYPE,
                         getFilePath(section.sectionClassName()),
                         section.compilationUnit().toString()))

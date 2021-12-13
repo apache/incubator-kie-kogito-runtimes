@@ -27,12 +27,11 @@
       <artifactId>quarkus-reactive-messaging-http</artifactId>
     </dependency>
 
-    <!-- Dependencies that can be added in the end project -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-kubernetes</artifactId>
-      <scope>provided</scope>
     </dependency>
+    <!-- Dependencies that can be added in the end project -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-minikube</artifactId>
@@ -67,6 +66,7 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
