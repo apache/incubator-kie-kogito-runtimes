@@ -49,6 +49,12 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    <dependency> <!-- make IT module to depend transitively Quarkus BOM due to Jenkins CI failing to locate Quarkus dependency on the local nexus repo -->
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-bom</artifactId>
+      <version>${version.io.quarkus}</version>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-process-management</artifactId>
