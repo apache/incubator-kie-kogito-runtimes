@@ -16,10 +16,6 @@
 package org.kie.kogito.serverless.workflow.actions;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
-import org.kie.kogito.jackson.utils.MergeUtils;
-import org.kie.kogito.jackson.utils.ObjectMapperFactory;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class CollectorAction extends BaseExpressionAction {
 
@@ -32,10 +28,6 @@ public class CollectorAction extends BaseExpressionAction {
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        JsonNode node = evaluate(context, JsonNode.class);
-        if (node == null) {
-            node = ObjectMapperFactory.get().createObjectNode();
-        }
-        context.setVariable(outputVar, MergeUtils.merge(ActionUtils.getJsonNode(context, modelVar), node));
+        assign(context, context.getVariable(outputVar));
     }
 }

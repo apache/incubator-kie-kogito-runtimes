@@ -86,13 +86,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -120,13 +122,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         TimerNode timerNode = (TimerNode) process.getNodes()[3];
@@ -155,16 +159,18 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof WorkItemNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
-        WorkItemNode workItemNode = (WorkItemNode) ((CompositeContextNode) compositeNode.getNodes()[1]).getNodes()[1];
+        WorkItemNode workItemNode = (WorkItemNode) compositeNode.getNodes()[1];
         assertEquals("helloWorld", workItemNode.getName());
         assertEquals("org.something.other.TestService", workItemNode.getWork().getParameter("Interface"));
         assertEquals("get", workItemNode.getWork().getParameter("Operation"));
@@ -220,13 +226,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -256,13 +264,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -288,15 +298,19 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(4, compositeNode.getNodes().length);
+        assertEquals(6, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[3];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[4];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[5];
         assertTrue(node instanceof EndNode);
     }
 
@@ -326,36 +340,43 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         compositeNode = (CompositeContextNode) process.getNodes()[3];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         compositeNode = (CompositeContextNode) process.getNodes()[4];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof CompositeContextNode);
+        assertTrue(node instanceof Node);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
+
     }
 
     @ParameterizedTest

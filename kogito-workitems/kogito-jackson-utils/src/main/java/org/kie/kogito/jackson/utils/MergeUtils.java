@@ -37,7 +37,9 @@ public class MergeUtils {
     }
 
     public static JsonNode merge(JsonNode src, JsonNode target, boolean skipDuplicates) {
-        if (target.isArray()) {
+        if (target == null || target.isNull()) {
+            return src;
+        } else if (target.isArray()) {
             return mergeArray(src, (ArrayNode) target, skipDuplicates);
         } else if (target.isObject()) {
             return mergeObject(src, (ObjectNode) target, skipDuplicates);
@@ -56,7 +58,7 @@ public class MergeUtils {
             while (mergedIterator.hasNext()) {
                 Map.Entry<String, JsonNode> entry = mergedIterator.next();
                 JsonNode found = target.get(entry.getKey());
-                target.set(entry.getKey(), found != null ? merge(entry.getValue(), found) : entry.getValue());
+                target.set(entry.getKey(), found != null ? merge(entry.getValue(), found, skipDuplicates) : entry.getValue());
             }
         } else {
             target.set("response", src);

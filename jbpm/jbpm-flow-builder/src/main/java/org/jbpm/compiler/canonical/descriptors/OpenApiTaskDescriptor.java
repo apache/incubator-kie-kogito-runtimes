@@ -50,13 +50,10 @@ import static java.util.Objects.requireNonNull;
 public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
     public static final String TYPE = "OpenApi Task";
-    private static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
-    private static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
     private static final String PARAM_META_PARAM_RESOLVER_TYPE = "ParamResolverType";
     private static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
     private static final String MODEL_PARAMETER = "ModelParameter";
 
-    private static final String VAR_INPUT_MODEL = "inputModel";
     private static final String METHOD_GET_PARAM = "getParameter";
     private static final NameExpr workItemNameExpr = new NameExpr("workItem");
 

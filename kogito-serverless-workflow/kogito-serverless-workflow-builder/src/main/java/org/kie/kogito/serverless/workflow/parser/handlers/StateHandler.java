@@ -41,6 +41,8 @@ import org.kie.kogito.serverless.workflow.suppliers.CompensationActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.MergeActionSupplier;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.error.Error;
 import io.serverlessworkflow.api.events.EventDefinition;
@@ -318,7 +320,7 @@ public abstract class StateHandler<S extends State> {
     protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String name, String fromStateExpr, String resultExpr, String toStateExpr,
             FilterableNodeSupplier nodeSupplier) {
         String actionVarName = "var_" + name;
-        embeddedSubProcess.variable(actionVarName, new ObjectDataType());
+        embeddedSubProcess.variable(actionVarName, new ObjectDataType(JsonNode.class.getCanonicalName()));
 
         NodeFactory<?, ?> startNode, currentNode;
 
@@ -339,8 +341,9 @@ public abstract class StateHandler<S extends State> {
         if (toStateExpr != null) {
             currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
                     .action(new CollectorActionSupplier(workflow.getExpressionLang(), toStateExpr, DEFAULT_WORKFLOW_VAR, actionVarName)));
+        } else {
+            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
         }
-        currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
         currentNode.done();
         return new MakeNodeResult(startNode, currentNode);
     }

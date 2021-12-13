@@ -96,6 +96,12 @@ public class MergeUtilsTest {
         assertEquals(dummyCustomer, merged.get(1));
     }
 
+    @Test
+    void testNullMerge() {
+        JsonNode srcNode = ObjectMapperFactory.get().createObjectNode().put("name", "javierito");
+        assertEquals(srcNode, MergeUtils.merge(srcNode, null));
+    }
+
     private static ObjectNode getCustomer(String name, int age, double salary, boolean hasJob, String city, Iterable<String> addresses) {
         ArrayNode addressesArray = ObjectMapperFactory.get().createArrayNode();
         for (String address : addresses) {
