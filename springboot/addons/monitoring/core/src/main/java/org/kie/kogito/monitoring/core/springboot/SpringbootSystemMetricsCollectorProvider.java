@@ -18,7 +18,8 @@ package org.kie.kogito.monitoring.core.springboot;
 import javax.annotation.PostConstruct;
 
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.conf.ConfigBean;import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollector;
 import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollectorProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
