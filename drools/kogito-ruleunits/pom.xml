@@ -54,13 +54,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-compiler</artifactId>
-      <!-- only for InterpretedRuleUnit -->
-      <optional>true</optional>
+      <artifactId>kogito-drools</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
