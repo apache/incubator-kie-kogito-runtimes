@@ -179,7 +179,7 @@ public class DecisionCodegen extends AbstractGenerator {
                 }
             }
             String relativePath = CodegenStringUtil.escapeIdentifier(model.getNamespace()).replace(".", "/") + "/" + CodegenStringUtil.escapeIdentifier(model.getName()) + ".dmn_nologic";
-            storeFile(GeneratedFileType.RESOURCE, relativePath, marshaller.marshal(definitions));
+            storeFile(GeneratedFileType.INTERNAL_RESOURCE, relativePath, marshaller.marshal(definitions));
         }
 
         if (context().getAddonsConfig().useCloudEvents()) {

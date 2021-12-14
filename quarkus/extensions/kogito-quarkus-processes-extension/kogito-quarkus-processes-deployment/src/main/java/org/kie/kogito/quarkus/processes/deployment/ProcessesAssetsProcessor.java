@@ -201,7 +201,7 @@ public class ProcessesAssetsProcessor {
 
         Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, runTimeConfiguration, resourcePatterns);
 
-        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
+        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.INTERNAL_RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
 
         Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
         compileGeneratedSources(context, dependencies, persistenceGeneratedFiles, useDebugSymbols)

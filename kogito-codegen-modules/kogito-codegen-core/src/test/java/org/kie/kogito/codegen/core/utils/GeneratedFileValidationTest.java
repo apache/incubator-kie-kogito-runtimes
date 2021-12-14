@@ -31,13 +31,13 @@ class GeneratedFileValidationTest {
     public void validateGeneratedFileTypes() {
         List<GeneratedFile> generatedFiles = Arrays.asList(
                 new GeneratedFile(GeneratedFileType.SOURCE, "myPath1", ""),
-                new GeneratedFile(GeneratedFileType.RESOURCE, "myPath2", ""),
+                new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, "myPath2", ""),
                 new GeneratedFile(GeneratedFileType.COMPILED_CLASS, "myPath3", ""),
                 new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/myPath4", ""));
 
         GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
                 GeneratedFileType.Category.SOURCE,
-                GeneratedFileType.Category.RESOURCE,
+                GeneratedFileType.Category.INTERNAL_RESOURCE,
                 GeneratedFileType.Category.STATIC_HTTP_RESOURCE,
                 GeneratedFileType.Category.COMPILED_CLASS));
         Set<GeneratedFileType.Category> categories = Collections.singleton(GeneratedFileType.Category.SOURCE);
@@ -52,11 +52,11 @@ class GeneratedFileValidationTest {
     public void validateGeneratedFileWithMetaInfResource() {
         List<GeneratedFile> generatedFiles = Arrays.asList(
                 new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "myPath1", ""), // STATIC_HTTP_RESOURCE without META-INF/resources
-                new GeneratedFile(GeneratedFileType.RESOURCE, GeneratedFile.META_INF_RESOURCES + "/myPath2", "")); // RESOURCE with META-INF/resources
+                new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/myPath2", "")); // RESOURCE with META-INF/resources
 
         // validation is okay even if WARN is logged
         GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
-                GeneratedFileType.Category.RESOURCE,
+                GeneratedFileType.Category.INTERNAL_RESOURCE,
                 GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
     }
 }

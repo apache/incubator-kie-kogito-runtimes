@@ -137,8 +137,8 @@ class PredictionCodegenTest {
 
         int expectedReflectResource = assertReflect ? 1 : 0;
         assertEquals(expectedReflectResource, generatedFiles.stream()
-                .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.RESOURCE) &&
-                        generatedFile.type().name().equals(GeneratedFileType.RESOURCE.name()) &&
+                .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.INTERNAL_RESOURCE) &&
+                        generatedFile.type().name().equals(GeneratedFileType.INTERNAL_RESOURCE.name()) &&
                         generatedFile.relativePath().endsWith(REFLECT_JSON))
                 .count());
 

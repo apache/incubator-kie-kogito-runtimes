@@ -164,7 +164,7 @@ public class PredictionCodegen extends AbstractGenerator {
             if (!pojoClasses.isEmpty()) {
                 org.drools.modelcompiler.builder.GeneratedFile reflectConfigFile =
                         getReflectConfigFile(model.getKModulePackageName(), pojoClasses);
-                files.add(new GeneratedFile(GeneratedFileType.RESOURCE, reflectConfigFile.getPath(), new String(reflectConfigFile.getData())));
+                files.add(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, reflectConfigFile.getPath(), new String(reflectConfigFile.getData())));
             }
         }
 
