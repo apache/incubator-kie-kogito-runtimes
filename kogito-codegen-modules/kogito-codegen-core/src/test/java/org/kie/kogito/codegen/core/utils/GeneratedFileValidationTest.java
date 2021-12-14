@@ -48,13 +48,13 @@ class GeneratedFileValidationTest {
                 .hasMessageContaining("myPath4");
     }
 
-        @Test
-        public void validateGeneratedFileWithMetaInfResource() {
-            List<GeneratedFile> generatedFiles = Arrays.asList(
-                    new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "META-INF/resources/myPath1", ""));
+    @Test
+    public void validateGeneratedFileWithMetaInfResource() {
+        List<GeneratedFile> generatedFiles = Arrays.asList(
+                new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "META-INF/resources/myPath1", ""));
 
-            // validation is okay even if WARN is logged
-            GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
-                    GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
-        }
+        // validation is okay even if WARN is logged
+        GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
+                GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
+    }
 }

@@ -112,7 +112,8 @@ public class ProcessClassesMojo extends AbstractKieMojo {
 
                 Collection<GeneratedFile> generatedClasses = persistenceFiles.stream().filter(x -> x.category().equals(GeneratedFileType.Category.SOURCE)).collect(Collectors.toList());
                 Collection<GeneratedFile> generatedResources = persistenceFiles.stream()
-                        .filter(x -> x.category().equals(GeneratedFileType.Category.INTERNAL_RESOURCE) || x.category().equals(GeneratedFileType.Category.STATIC_HTTP_RESOURCE)).collect(Collectors.toList());
+                        .filter(x -> x.category().equals(GeneratedFileType.Category.INTERNAL_RESOURCE) || x.category().equals(GeneratedFileType.Category.STATIC_HTTP_RESOURCE))
+                        .collect(Collectors.toList());
 
                 // Compile and write persistence files
                 compileAndWriteClasses(generatedClasses, cl, settings);
