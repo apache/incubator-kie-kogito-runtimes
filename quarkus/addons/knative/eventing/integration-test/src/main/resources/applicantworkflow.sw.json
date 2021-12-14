@@ -7,12 +7,12 @@
   "events": [
     {
       "name": "NewApplicantEvent",
-      "source": "",
+      "source": "mySourceTest",
       "type": "applicants"
     },
     {
       "name": "ApplicantDecisionEvent",
-      "source": "",
+      "source": "mySourceTest2",
       "type": "decisions"
     }
   ],

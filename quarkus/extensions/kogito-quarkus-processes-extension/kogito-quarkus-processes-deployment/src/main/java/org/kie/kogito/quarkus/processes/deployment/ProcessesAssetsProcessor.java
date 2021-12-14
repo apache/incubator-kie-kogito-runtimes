@@ -44,6 +44,7 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
@@ -145,6 +146,24 @@ public class ProcessesAssetsProcessor {
     @BuildStep
     public AdditionalBeanBuildItem additionalBeans() {
         return AdditionalBeanBuildItem.builder().addBeanClasses(QuarkusStraightThroughProcessService.class, QuarkusProcessIdFactory.class).build();
+    }
+
+    /**
+     * Produces the {@link KogitoProcessContainerGeneratorBuildItem} after generating the Kogito classes
+     */
+    @BuildStep
+    public void processApplicationSection(KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
+            BuildProducer<KogitoProcessContainerGeneratorBuildItem> processContainerProducer,
+            List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
+        final KogitoProcessContainerGeneratorBuildItem buildItem = new KogitoProcessContainerGeneratorBuildItem(
+                kogitoBuildContextBuildItem.getKogitoBuildContext().getApplicationSections()
+                        .stream()
+                        .filter(ProcessContainerGenerator.class::isInstance)
+                        .map(ProcessContainerGenerator.class::cast)
+                        .collect(Collectors.toSet()));
+        if (!buildItem.getProcessContainerGenerators().isEmpty()) {
+            processContainerProducer.produce(buildItem);
+        }
     }
 
     /**

@@ -15,12 +15,20 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.kie.kogito.quarkus.common.deployment.KogitoApplicationSectionBuildItem;
+import org.jbpm.ruleflow.core.Metadata;
+import org.kie.api.definition.process.Node;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
+import org.kie.kogito.event.CloudEventMeta;
+import org.kie.kogito.event.EventKind;
+import org.kie.kogito.quarkus.processes.deployment.KogitoProcessContainerGeneratorBuildItem;
 
-import io.quarkus.deployment.Capabilities;
-import io.quarkus.deployment.Capability;
+import io.fabric8.knative.eventing.v1.Trigger;
+import io.fabric8.knative.sources.v1.SinkBinding;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -35,31 +43,60 @@ public class KogitoAddOnKnativeEventingProcessor {
 
     @BuildStep
     FeatureBuildItem feature() {
-        System.out.println("***************** feature ************");
         return new FeatureBuildItem(FEATURE);
     }
 
     @BuildStep
-    void buildKnativeResources(List<GeneratedKubernetesResourceBuildItem> generatedKubernetesManifests,
-            BuildProducer<GeneratedFileSystemResourceBuildItem> generatedCSVs,
-            List<KogitoApplicationSectionBuildItem> applicationSections) {
-        generatedKubernetesManifests.size();
-        System.out.println("***************** buildKnativeResources ************");
+    void buildProcessKnativeResources(List<GeneratedKubernetesResourceBuildItem> generatedKubernetesManifests,
+            BuildProducer<GeneratedFileSystemResourceBuildItem> generatedKogitoK8sRes,
+            KogitoProcessContainerGeneratorBuildItem processContainerBuildItem) {
+        final Set<CloudEventMeta> cloudEvents = this.extractCloudEvents(processContainerBuildItem.getProcessContainerGenerators());
+        // generate knative resources
     }
 
-    @BuildStep
-    void doSomeCoolStuff(Capabilities capabilities) {
-        System.out.println("***************** doSomeCoolStuff ************" + capabilities.getCapabilities());
-        if (capabilities.isPresent(Capability.TRANSACTIONS)) {
-            // do something only if JTA transactions are in...
+    private List<SinkBinding> generateSinkBindings(Set<CloudEventMeta> cloudEvents) {
+        return null;
+    }
+
+    private List<Trigger> generateTriggers(Set<CloudEventMeta> cloudEvents) {
+        return null;
+    }
+
+    private Set<CloudEventMeta> extractCloudEvents(final Set<ProcessContainerGenerator> containers) {
+        return containers.stream().flatMap(container -> container
+                .getProcesses()
+                .stream()
+                .flatMap(processor -> processor.getProcessExecutable().process().getNodesRecursively().stream()))
+                .filter(node -> node.getMetaData().get(Metadata.TRIGGER_TYPE) != null)
+                .map(this::buildCloudEventMetaFromNode)
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private CloudEventMeta buildCloudEventMetaFromNode(final Node node) {
+        final CloudEventMeta cloudEventMeta = new CloudEventMeta();
+        cloudEventMeta.setType((String) node.getMetaData().get(Metadata.TRIGGER_REF));
+        if (Metadata.PRODUCE_MESSAGE.equals(node.getMetaData().get(Metadata.TRIGGER_TYPE))) {
+            cloudEventMeta.setKind(EventKind.PRODUCED);
+        } else if (Metadata.CONSUME_MESSAGE.equals(node.getMetaData().get(Metadata.TRIGGER_TYPE))) {
+            cloudEventMeta.setKind(EventKind.CONSUMED);
         }
+        return cloudEventMeta;
     }
 
-    // gets the vanilla
-
-    // gets the openshift ones
-
-    // generate the KogitoSource or SinkBindings
-
-    // generate the Knative Triggers
+    /*
+     * apiVersion: eventing.knative.dev/v1
+     * kind: Trigger
+     * metadata:
+     * name: shipping-international-trigger
+     * spec:
+     * broker: default
+     * filter:
+     * attributes:
+     * type: internationalShipping
+     * subscriber:
+     * ref:
+     * apiVersion: serving.knative.dev/v1
+     * kind: Service
+     * name: shipping-international
+     */
 }
