@@ -145,7 +145,7 @@ public class KogitoQuarkusResourceUtils {
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
             }
             if (f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
-                String resoucePath = f.relativePath().substring(GeneratedFile.META_INF_RESOURCES.length());
+                String resoucePath = f.relativePath().substring(GeneratedFile.META_INF_RESOURCES.length() - 1); // keep '/' at the beginning
                 staticResProducer.produce(new AdditionalStaticResourceBuildItem(resoucePath, false));
             }
         }

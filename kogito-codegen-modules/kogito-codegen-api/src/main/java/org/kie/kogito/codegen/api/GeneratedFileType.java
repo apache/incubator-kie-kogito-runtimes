@@ -52,7 +52,8 @@ public interface GeneratedFileType {
          */
         INTERNAL_RESOURCE,
         /**
-         * a resource file to be published as a static file to a web server. It will be placed under META-INF/resources.
+         * a resource file to be published as a static file to a web server. It will be automatically placed under META-INF/resources/
+         * so you don't need to prefix its path with "META-INF/resources/"
          * For Quarkus it will be subject of GeneratedResourceBuildItem, NativeImageResourceBuildItem and AdditionalStaticResourceBuildItem
          * so it could be served without Servlet dependency
          */

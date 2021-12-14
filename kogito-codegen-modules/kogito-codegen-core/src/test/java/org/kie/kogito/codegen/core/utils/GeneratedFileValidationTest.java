@@ -33,7 +33,7 @@ class GeneratedFileValidationTest {
                 new GeneratedFile(GeneratedFileType.SOURCE, "myPath1", ""),
                 new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, "myPath2", ""),
                 new GeneratedFile(GeneratedFileType.COMPILED_CLASS, "myPath3", ""),
-                new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/myPath4", ""));
+                new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "myPath4", ""));
 
         GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
                 GeneratedFileType.Category.SOURCE,
@@ -48,15 +48,13 @@ class GeneratedFileValidationTest {
                 .hasMessageContaining("myPath4");
     }
 
-    @Test
-    public void validateGeneratedFileWithMetaInfResource() {
-        List<GeneratedFile> generatedFiles = Arrays.asList(
-                new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "myPath1", ""), // STATIC_HTTP_RESOURCE without META-INF/resources
-                new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, GeneratedFile.META_INF_RESOURCES + "/myPath2", "")); // RESOURCE with META-INF/resources
+        @Test
+        public void validateGeneratedFileWithMetaInfResource() {
+            List<GeneratedFile> generatedFiles = Arrays.asList(
+                    new GeneratedFile(GeneratedFileType.STATIC_HTTP_RESOURCE, "META-INF/resources/myPath1", ""));
 
-        // validation is okay even if WARN is logged
-        GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
-                GeneratedFileType.Category.INTERNAL_RESOURCE,
-                GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
-    }
+            // validation is okay even if WARN is logged
+            GeneratedFileValidation.validateGeneratedFileTypes(generatedFiles, Arrays.asList(
+                    GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
+        }
 }
