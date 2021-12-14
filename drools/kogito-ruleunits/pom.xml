@@ -31,7 +31,7 @@
   <packaging>jar</packaging>
   
   <properties>
-    <java.module.name>org.kie.kogito.kogito.ruleunits</java.module.name>
+    <java.module.name>org.kie.kogito.rules.units</java.module.name>
   </properties>
 
   <dependencyManagement>
