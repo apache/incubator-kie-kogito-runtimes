@@ -19,12 +19,12 @@ public class MissingDecisionTableDependencyError extends Error {
 
     public MissingDecisionTableDependencyError() {
         super("A Decision Table resource was found, but a necessary dependency is missing. \n" +
-                "Verify that you have the kogito bom in your dependencyManagement:\n" +
+                "Verify that you have the drools bom in your dependencyManagement:\n" +
                 "\n" +
                 "<dependencyManagement>" +
                 "    <dependency>\n" +
-                "        <groupId>org.kie.kogito</groupId>\n" +
-                "        <artifactId>kogito-kie-bom</artifactId>\n" +
+                "        <groupId>org.drools</groupId>\n" +
+                "        <artifactId>drools-bom</artifactId>\n" +
                 "        <type>pom</type>\n" +
                 "        <scope>import</scope>\n" +
                 "    </dependency>\n" +
