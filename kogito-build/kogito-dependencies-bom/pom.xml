@@ -16,8 +16,8 @@
 
   <properties>
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>2.6.0.CR1</version.io.quarkus>
-    <version.io.quarkus.quarkus-test-maven>2.6.0.CR1</version.io.quarkus.quarkus-test-maven>
+    <version.io.quarkus>2.6.0.Final</version.io.quarkus>
+    <version.io.quarkus.quarkus-test-maven>2.6.0.Final</version.io.quarkus.quarkus-test-maven>
     <version.org.springframework.boot>2.3.10.RELEASE</version.org.springframework.boot>
 
     <!-- dependencies versions -->
@@ -51,12 +51,12 @@
 
     <version.io.cloudevents>2.2.0</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>5.8.0</version.io.fabric8.kubernetes-client>
-    <version.io.micrometer>1.8.0</version.io.micrometer>
+    <version.io.micrometer>1.8.1</version.io.micrometer>
     <version.io.serverlessworkflow>2.0.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.1.16</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>2.16.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
-    <version.io.vertx>4.2.1</version.io.vertx>
+    <version.io.vertx>4.2.2</version.io.vertx>
 
     <version.io.swagger.parser.v3>2.0.24</version.io.swagger.parser.v3>
 
@@ -94,7 +94,7 @@
     <version.org.reflections>0.9.11</version.org.reflections>
     <version.org.slf4j>1.7.30</version.org.slf4j>
 
-    <version.maven>3.6.2</version.maven>
+    <version.maven>3.6.3</version.maven>
     <version.maven.plugin>3.6.0</version.maven.plugin>
 
     <version.plexus>1.6</version.plexus>
