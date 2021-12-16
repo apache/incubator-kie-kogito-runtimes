@@ -16,13 +16,19 @@
 package org.kie.kogito.jackson.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class ObjectMapperFactory {
 
     private ObjectMapperFactory() {
     }
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = initObjectMapper();
+
+    private static ObjectMapper initObjectMapper() {
+        TypeFactory typeFactory = TypeFactory.defaultInstance().withClassLoader(Thread.currentThread().getContextClassLoader());
+        return new ObjectMapper().setTypeFactory(typeFactory);
+    }
 
     public static ObjectMapper get() {
         return objectMapper;

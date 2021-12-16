@@ -24,16 +24,16 @@ import com.github.javaparser.ast.expr.Expression;
 
 public class SysoutActionSupplier extends SysoutAction implements Supplier<Expression> {
 
-    private final String[] varArgs;
+    private final Expression expression;
 
-    public SysoutActionSupplier(String lang, String expr, String... addVars) {
-        super(lang, expr, addVars);
-        this.varArgs = SWFSupplierUtils.getVarArgs(lang, expr, addVars);
+    public SysoutActionSupplier(String lang, String expr, String inputVar, String... addVars) {
+        super(lang, expr, inputVar, addVars);
+        this.expression = SupplierUtils.getExpression(SysoutAction.class, SWFSupplierUtils.getVarArgs(lang, expr, inputVar, addVars));
     }
 
     @Override
     public Expression get() {
-        return SupplierUtils.getExpression(SysoutAction.class, varArgs);
+        return expression;
     }
 
 }
