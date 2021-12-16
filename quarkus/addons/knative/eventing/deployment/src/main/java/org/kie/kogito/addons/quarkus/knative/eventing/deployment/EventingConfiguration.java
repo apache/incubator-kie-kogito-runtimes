@@ -31,5 +31,15 @@ public class EventingConfiguration {
     @ConfigItem(defaultValue = "default")
     String broker;
 
-    SinkConfig sink;
+    /**
+     * Whether the extension should generate a default Knative Broker in memory to sink and dispatch the messages.
+     * <p>
+     * Turn this property to `false` in case you already have a broker installed in your namespace rather than the default one.
+     * Note that you can use `org.kie.kogito.addons.knative.eventing.sink.*` to configure your custom Sink.
+     * If not defined, this auto generated Broker will work as the Sink.
+     */
+    @ConfigItem(defaultValue = "true")
+    Boolean autoGenerateBroker;
+
+    SinkConfiguration sink;
 }

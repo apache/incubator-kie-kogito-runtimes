@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jbpm.ruleflow.core.Metadata;
+import org.kie.api.definition.process.Node;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
+import org.kie.kogito.event.CloudEventMeta;
+import org.kie.kogito.event.EventKind;
+import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.processes.deployment.KogitoProcessContainerGeneratorBuildItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.fabric8.knative.eventing.v1.Broker;
+import io.fabric8.knative.eventing.v1.BrokerBuilder;
 import io.fabric8.knative.eventing.v1.Trigger;
 import io.fabric8.knative.eventing.v1.TriggerBuilder;
 import io.fabric8.knative.sources.v1.SinkBinding;
@@ -30,19 +43,19 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedFileSystemResourceBuildItem;
+import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.kubernetes.deployment.SelectedKubernetesDeploymentTargetBuildItem;
-import io.quarkus.kubernetes.spi.GeneratedKubernetesResourceBuildItem;
 import io.quarkus.kubernetes.spi.KubernetesResourceMetadataBuildItem;
-import org.jbpm.ruleflow.core.Metadata;
-import org.kie.api.definition.process.Node;
-import org.kie.kogito.codegen.process.ProcessContainerGenerator;
-import org.kie.kogito.event.CloudEventMeta;
-import org.kie.kogito.event.EventKind;
-import org.kie.kogito.quarkus.processes.deployment.KogitoProcessContainerGeneratorBuildItem;
 
-public class KogitoAddOnKnativeEventingProcessor {
+import static io.quarkus.kubernetes.deployment.Constants.KUBERNETES;
+
+public class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-knative-eventing-extension";
+
+    private static final String FILE_NAME = "kogito.yml";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoAddOnKnativeEventingProcessor.class);
 
     EventingConfiguration config;
 
@@ -53,9 +66,9 @@ public class KogitoAddOnKnativeEventingProcessor {
 
     @BuildStep
     void buildMetadata(KogitoProcessContainerGeneratorBuildItem processContainerBuildItem,
-                       SelectedKubernetesDeploymentTargetBuildItem selectedDeployment,
-                       List<KubernetesResourceMetadataBuildItem> kubernetesResourceMetadataBuildItems,
-                       BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
+            SelectedKubernetesDeploymentTargetBuildItem selectedDeployment,
+            List<KubernetesResourceMetadataBuildItem> kubernetesResourceMetadataBuildItems,
+            BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
         final Set<CloudEventMeta> cloudEvents = this.extractCloudEvents(processContainerBuildItem.getProcessContainerGenerators());
         if (cloudEvents != null && !cloudEvents.isEmpty()) {
             final Optional<KogitoServiceDeploymentTarget> target =
@@ -72,32 +85,54 @@ public class KogitoAddOnKnativeEventingProcessor {
     }
 
     @BuildStep
-    void buildKnativeResources(KogitoKnativeResourcesMetadataBuildItem resourcesMetadata,
-                               List<GeneratedKubernetesResourceBuildItem> generatedKubernetesManifests,
-                               BuildProducer<GeneratedFileSystemResourceBuildItem> generatedResources) {
-        final Optional<SinkBinding> sinkBinding = this.generateSinkBindings(resourcesMetadata);
+    void generate(OutputTargetBuildItem outputTarget,
+            KogitoKnativeResourcesMetadataBuildItem resourcesMetadata,
+            BuildProducer<GeneratedFileSystemResourceBuildItem> generatedResources) {
+        final Optional<SinkBinding> sinkBinding = this.generateSinkBinding(resourcesMetadata);
         final List<Trigger> triggers = this.generateTriggers(resourcesMetadata);
+        final Optional<Broker> broker = this.generateBroker(resourcesMetadata);
 
-        // generate the resources in kogito.yml
+        final Path outputDir = outputTarget.getOutputDirectory().resolve(KUBERNETES);
+        final byte[] resourcesBytes =
+                new KogitoKnativeGenerator()
+                        .addResources(triggers)
+                        .addOptionalResource(sinkBinding)
+                        .addOptionalResource(broker)
+                        .getResourcesBytes();
+        if (resourcesBytes == null || resourcesBytes.length == 0) {
+            LOGGER.info("Couldn't generate Kogito Knative resources for service {}", resourcesMetadata.getDeployment().getName());
+        } else {
+            generatedResources.produce(new GeneratedFileSystemResourceBuildItem(Path.of(KUBERNETES, FILE_NAME).toString(), resourcesBytes));
+            LOGGER.info("Generated Knative resources for Kogito Service {} in {}", resourcesMetadata.getDeployment().getName(), outputDir.resolve(FILE_NAME));
+        }
     }
 
-    private Optional<SinkBinding> generateSinkBindings(KogitoKnativeResourcesMetadataBuildItem metadata) {
+    private Optional<Broker> generateBroker(KogitoKnativeResourcesMetadataBuildItem resourcesMetadata) {
+        if (config.autoGenerateBroker) {
+            return Optional.of(new BrokerBuilder().withNewMetadata()
+                    .withName(SinkConfiguration.DEFAULT_SINK_NAME)
+                    .endMetadata().build());
+        }
+        return Optional.empty();
+    }
+
+    private Optional<SinkBinding> generateSinkBinding(KogitoKnativeResourcesMetadataBuildItem metadata) {
         if (metadata.getCloudEvents().stream().anyMatch(ce -> ce.getKind() == EventKind.PRODUCED)) {
             return Optional.of(new SinkBindingBuilder()
-                                       .withNewMetadata().withName(KnativeResourcesUtil.generateSinkBindingName(metadata.getDeployment().getName())).endMetadata()
-                                       .withNewSpec()
-                                       .withNewSubject()
-                                       .withName(metadata.getDeployment().getName())
-                                       .withKind(metadata.getDeployment().getKind())
-                                       .withApiVersion(metadata.getDeployment().getApiVersion())
-                                       .endSubject()
-                                       .withNewSink().withNewRef()
-                                       .withName(config.sink.name) // from properties
-                                       .withApiVersion(config.sink.apiVersion)
-                                       .withKind(config.sink.kind)
-                                       .withNamespace(config.sink.namespace.orElse(""))
-                                       .endRef().endSink().endSpec()
-                                       .build());
+                    .withNewMetadata().withName(KnativeResourcesUtil.generateSinkBindingName(metadata.getDeployment().getName())).endMetadata()
+                    .withNewSpec()
+                    .withNewSubject()
+                    .withName(metadata.getDeployment().getName())
+                    .withKind(metadata.getDeployment().getKind())
+                    .withApiVersion(metadata.getDeployment().getApiVersion())
+                    .endSubject()
+                    .withNewSink().withNewRef()
+                    .withName(config.sink.name) // from properties
+                    .withApiVersion(config.sink.apiVersion)
+                    .withKind(config.sink.kind)
+                    .withNamespace(config.sink.namespace.orElse(""))
+                    .endRef().endSink().endSpec()
+                    .build());
         }
         return Optional.empty();
     }
@@ -126,9 +161,9 @@ public class KogitoAddOnKnativeEventingProcessor {
 
     private Set<CloudEventMeta> extractCloudEvents(final Set<ProcessContainerGenerator> containers) {
         return containers.stream().flatMap(container -> container
-                        .getProcesses()
-                        .stream()
-                        .flatMap(processor -> processor.getProcessExecutable().process().getNodesRecursively().stream()))
+                .getProcesses()
+                .stream()
+                .flatMap(processor -> processor.getProcessExecutable().process().getNodesRecursively().stream()))
                 .filter(node -> node.getMetaData().get(Metadata.TRIGGER_TYPE) != null)
                 .map(this::buildCloudEventMetaFromNode)
                 .collect(Collectors.toCollection(HashSet::new));

@@ -21,7 +21,11 @@ import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 
 @ConfigGroup
-public class SinkConfig {
+public class SinkConfiguration {
+
+    public static final String DEFAULT_SINK_API_VERSION = "eventing.knative.dev/v1";
+    public static final String DEFAULT_SINK_NAME = "default";
+    public static final String DEFAULT_SINK_KIND = "Broker";
 
     /**
      * Namespace where the given Knative Sink is deployed.
@@ -35,7 +39,7 @@ public class SinkConfig {
      * <p>
      * This sink is used to configure the "sink" property in the generated Knative SinkBinding for this Kogito service.
      */
-    @ConfigItem(defaultValue = "eventing.knative.dev/v1")
+    @ConfigItem(defaultValue = DEFAULT_SINK_API_VERSION)
     String apiVersion;
 
     /**
@@ -43,7 +47,7 @@ public class SinkConfig {
      * <p>
      * This sink is used to configure the "sink" property in the generated Knative SinkBinding for this Kogito service.
      */
-    @ConfigItem(defaultValue = "default")
+    @ConfigItem(defaultValue = DEFAULT_SINK_NAME)
     String name;
 
     /**
@@ -51,6 +55,6 @@ public class SinkConfig {
      * <p>
      * This sink is used to configure the "sink" property in the generated Knative SinkBinding for this Kogito service.
      */
-    @ConfigItem(defaultValue = "Broker")
+    @ConfigItem(defaultValue = DEFAULT_SINK_KIND)
     String kind;
 }
