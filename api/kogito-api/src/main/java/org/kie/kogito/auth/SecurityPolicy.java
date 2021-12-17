@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.auth;
 
-import org.kie.kogito.process.workitem.Policy;
-
 import java.util.Collection;
 import java.util.Objects;
+
+import org.kie.kogito.process.workitem.Policy;
 
 /**
  * Security policy that delivers <code>IdentityProvider</code> to allow to security
@@ -28,7 +28,6 @@ import java.util.Objects;
 public class SecurityPolicy implements Policy<IdentityProvider> {
 
     private IdentityProvider identity;
-
 
     /**
      * Creates new SecurityPolicy for given name, roles
