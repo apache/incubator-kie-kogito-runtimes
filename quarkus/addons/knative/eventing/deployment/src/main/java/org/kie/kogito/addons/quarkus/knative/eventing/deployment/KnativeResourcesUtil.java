@@ -15,10 +15,7 @@
  */
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
-import io.fabric8.knative.serving.v1.Service;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.utils.KubernetesResourceUtil;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 
 public final class KnativeResourcesUtil {
 
@@ -36,21 +33,5 @@ public final class KnativeResourcesUtil {
     public static String generateSinkBindingName(final String appName) {
         final String sinkBindingName = String.format("%s-%s", SINK_BINDING_SUFFIX, appName);
         return KubernetesResourceUtil.sanitizeName(sinkBindingName);
-    }
-
-    public static String getApiVersionViaKind(final String kind) {
-        final Deployment deployment = new Deployment();
-        if (deployment.getKind().equals(kind)) {
-            return deployment.getApiVersion();
-        }
-        final DeploymentConfig deploymentConfig = new DeploymentConfig();
-        if (deploymentConfig.getKind().equals(kind)) {
-            return deploymentConfig.getApiVersion();
-        }
-        final Service ksvc = new Service();
-        if (ksvc.getKind().equals(kind)) {
-            return ksvc.getApiVersion();
-        }
-        return "";
     }
 }

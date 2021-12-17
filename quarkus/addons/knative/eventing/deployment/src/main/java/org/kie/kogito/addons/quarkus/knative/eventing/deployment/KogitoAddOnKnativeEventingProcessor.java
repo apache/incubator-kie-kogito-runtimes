@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.definition.process.Node;
+import org.kie.kogito.addons.quarkus.knative.eventing.deployment.resources.KogitoSource;
+import org.kie.kogito.addons.quarkus.knative.eventing.deployment.resources.KogitoSourceSpec;
 import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
@@ -37,8 +39,11 @@ import io.fabric8.knative.eventing.v1.Broker;
 import io.fabric8.knative.eventing.v1.BrokerBuilder;
 import io.fabric8.knative.eventing.v1.Trigger;
 import io.fabric8.knative.eventing.v1.TriggerBuilder;
+import io.fabric8.knative.internal.pkg.apis.duck.v1.DestinationBuilder;
+import io.fabric8.knative.internal.pkg.tracker.ReferenceBuilder;
 import io.fabric8.knative.sources.v1.SinkBinding;
 import io.fabric8.knative.sources.v1.SinkBindingBuilder;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -67,20 +72,28 @@ public class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnPro
     @BuildStep
     void buildMetadata(KogitoProcessContainerGeneratorBuildItem processContainerBuildItem,
             SelectedKubernetesDeploymentTargetBuildItem selectedDeployment,
-            List<KubernetesResourceMetadataBuildItem> kubernetesResourceMetadataBuildItems,
+            List<KubernetesResourceMetadataBuildItem> kubernetesMetaBuildItems,
             BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
         final Set<CloudEventMeta> cloudEvents = this.extractCloudEvents(processContainerBuildItem.getProcessContainerGenerators());
         if (cloudEvents != null && !cloudEvents.isEmpty()) {
-            final Optional<KogitoServiceDeploymentTarget> target =
-                    kubernetesResourceMetadataBuildItems.stream()
-                            .filter(r -> selectedDeployment.getEntry().getKind().equals(r.getKind()) && selectedDeployment.getEntry().getName().equals(r.getTarget()))
-                            .map(r -> new KogitoServiceDeploymentTarget(r.getGroup(), r.getVersion(), r.getKind(), r.getName()))
-                            .findFirst();
-            if (target.isEmpty()) {
-                throw new IllegalStateException("Impossible to get the Kubernetes deployment target for this Kogito service. Target: " + selectedDeployment.getEntry().getName());
+            Optional<KogitoServiceDeploymentTarget> target = Optional.empty();
+            if (selectedDeployment == null && kubernetesMetaBuildItems != null && !kubernetesMetaBuildItems.isEmpty()) {
+                target = Optional.of(new KogitoServiceDeploymentTarget(kubernetesMetaBuildItems.get(0).getGroup(),
+                        kubernetesMetaBuildItems.get(0).getVersion(),
+                        kubernetesMetaBuildItems.get(0).getKind(),
+                        kubernetesMetaBuildItems.get(0).getName()));
+            } else if (selectedDeployment != null) {
+                target = kubernetesMetaBuildItems.stream()
+                        .filter(r -> selectedDeployment.getEntry().getKind().equals(r.getKind()) && selectedDeployment.getEntry().getName().equals(r.getTarget()))
+                        .map(r -> new KogitoServiceDeploymentTarget(r.getGroup(), r.getVersion(), r.getKind(), r.getName()))
+                        .findFirst();
             }
 
-            metadataProducer.produce(new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target.get()));
+            if (target.isEmpty()) {
+                LOGGER.warn("Impossible to get the Kubernetes deployment target for this Kogito service. Skipping generation.");
+            } else {
+                metadataProducer.produce(new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target.get()));
+            }
         }
     }
 
@@ -88,30 +101,63 @@ public class KogitoAddOnKnativeEventingProcessor extends AnyEngineKogitoAddOnPro
     void generate(OutputTargetBuildItem outputTarget,
             KogitoKnativeResourcesMetadataBuildItem resourcesMetadata,
             BuildProducer<GeneratedFileSystemResourceBuildItem> generatedResources) {
-        final Optional<SinkBinding> sinkBinding = this.generateSinkBinding(resourcesMetadata);
-        final List<Trigger> triggers = this.generateTriggers(resourcesMetadata);
-        final Optional<Broker> broker = this.generateBroker(resourcesMetadata);
+        if (resourcesMetadata != null) {
+            final List<Trigger> triggers = this.generateTriggers(resourcesMetadata);
+            final Optional<KogitoSource> kogitoSource = this.generateKogitoSource(resourcesMetadata);
+            Optional<SinkBinding> sinkBinding = Optional.empty();
+            if (kogitoSource.isEmpty()) {
+                sinkBinding = this.generateSinkBinding(resourcesMetadata);
+            }
 
-        final Path outputDir = outputTarget.getOutputDirectory().resolve(KUBERNETES);
-        final byte[] resourcesBytes =
-                new KogitoKnativeGenerator()
-                        .addResources(triggers)
-                        .addOptionalResource(sinkBinding)
-                        .addOptionalResource(broker)
-                        .getResourcesBytes();
-        if (resourcesBytes == null || resourcesBytes.length == 0) {
-            LOGGER.info("Couldn't generate Kogito Knative resources for service {}", resourcesMetadata.getDeployment().getName());
-        } else {
-            generatedResources.produce(new GeneratedFileSystemResourceBuildItem(Path.of(KUBERNETES, FILE_NAME).toString(), resourcesBytes));
-            LOGGER.info("Generated Knative resources for Kogito Service {} in {}", resourcesMetadata.getDeployment().getName(), outputDir.resolve(FILE_NAME));
+            if (sinkBinding.isPresent() || kogitoSource.isPresent() || !triggers.isEmpty()) {
+                final Optional<Broker> broker = this.generateBroker();
+                final Path outputDir = outputTarget.getOutputDirectory().resolve(KUBERNETES);
+                final byte[] resourcesBytes =
+                        new KogitoKnativeGenerator()
+                                .addResources(triggers)
+                                .addOptionalResource(kogitoSource)
+                                .addOptionalResource(sinkBinding)
+                                .addOptionalResource(broker)
+                                .getResourcesBytes();
+                if (resourcesBytes == null || resourcesBytes.length == 0) {
+                    LOGGER.info("Couldn't generate Kogito Knative resources for service {}", resourcesMetadata.getDeployment().getName());
+                } else {
+                    generatedResources.produce(new GeneratedFileSystemResourceBuildItem(Path.of(KUBERNETES, FILE_NAME).toString(), resourcesBytes));
+                    LOGGER.info("Generated Knative resources for Kogito Service {} in {}", resourcesMetadata.getDeployment().getName(), outputDir.resolve(FILE_NAME));
+                }
+            } else {
+                LOGGER.info("No events found in the Kogito resources defined in the project. Skipping Kogito Knative resources generation.");
+            }
         }
     }
 
-    private Optional<Broker> generateBroker(KogitoKnativeResourcesMetadataBuildItem resourcesMetadata) {
+    private Optional<Broker> generateBroker() {
         if (config.autoGenerateBroker) {
             return Optional.of(new BrokerBuilder().withNewMetadata()
                     .withName(SinkConfiguration.DEFAULT_SINK_NAME)
                     .endMetadata().build());
+        }
+        return Optional.empty();
+    }
+
+    private Optional<KogitoSource> generateKogitoSource(KogitoKnativeResourcesMetadataBuildItem metadata) {
+        if (config.generateKogitoSource) {
+            final KogitoSource kogitoSource = new KogitoSource();
+            final KogitoSourceSpec spec = new KogitoSourceSpec();
+            final ObjectMeta objectMeta = new ObjectMeta();
+            objectMeta.setName(metadata.getDeployment().getName());
+            spec.setSink(new DestinationBuilder().withNewRef()
+                    .withName(config.sink.name)
+                    .withApiVersion(config.sink.apiVersion)
+                    .withKind(config.sink.kind)
+                    .withNamespace(config.sink.namespace.orElse("")).endRef().build());
+            spec.setSubject(new ReferenceBuilder()
+                    .withName(metadata.getDeployment().getName())
+                    .withKind(metadata.getDeployment().getKind())
+                    .withApiVersion(metadata.getDeployment().getApiVersion()).build());
+            kogitoSource.setMetadata(objectMeta);
+            kogitoSource.setSpec(spec);
+            return Optional.of(kogitoSource);
         }
         return Optional.empty();
     }

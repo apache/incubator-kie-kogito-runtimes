@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.kie.kogito</groupId>
@@ -10,10 +10,6 @@
   <artifactId>kogito-addons-quarkus-knative-eventing-deployment</artifactId>
   <name>Kogito Add-On Knative Eventing - Deployment</name>
   <dependencies>
-    <dependency>
-      <groupId>io.quarkiverse.reactivemessaging.http</groupId>
-      <artifactId>quarkus-reactive-messaging-http-deployment</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-quarkus-knative-eventing</artifactId>
@@ -34,12 +30,13 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-reactive-messaging-http-deployment</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-kubernetes-deployment</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkiverse.reactivemessaging.http</groupId>
+      <artifactId>quarkus-reactive-messaging-http-deployment</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-processes-deployment</artifactId>
@@ -49,6 +46,12 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-common-deployment</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
