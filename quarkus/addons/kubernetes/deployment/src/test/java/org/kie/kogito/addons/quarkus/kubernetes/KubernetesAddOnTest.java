@@ -27,6 +27,7 @@ import org.kie.kogito.addons.k8s.workitems.AbstractDiscoveredEndpointCaller;
 import io.quarkus.test.QuarkusUnitTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class KubernetesAddOnTest {
 
@@ -42,7 +43,7 @@ public class KubernetesAddOnTest {
 
     @Test
     void verifyBeanProcessorsAreInjected() {
-        assertNotNull(endpointCaller);
+        assertNull(endpointCaller);
         assertNotNull(endpointDiscovery);
     }
 
