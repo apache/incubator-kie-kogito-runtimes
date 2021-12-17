@@ -38,7 +38,11 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.process.WorkItem;
-import org.kie.kogito.process.workitem.*;
+import org.kie.kogito.process.workitem.HumanTaskWorkItem;
+import org.kie.kogito.process.workitem.Policy;
+import org.kie.kogito.process.workitem.Comment;
+import org.kie.kogito.process.workitem.Attachment;
+import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
 public class ProcessServiceImpl implements ProcessService {
@@ -165,7 +169,7 @@ public class ProcessServiceImpl implements ProcessService {
                 .instances()
                 .findById(id)
                 .map(pi -> pi.updateWorkItem(taskId, wi -> HumanTaskHelper.updateContent(wi, model), policy)))
-                .map(mapper::apply);
+                .map(mapper);
     }
 
     @Override
@@ -177,7 +181,8 @@ public class ProcessServiceImpl implements ProcessService {
             SecurityPolicy policy,
             MapOutput model) {
         HumanTaskTransition transition =
-                (model == null) ? HumanTaskTransition.withoutModel(phase, policy)
+                model == null ?
+                        HumanTaskTransition.withoutModel(phase, policy)
                         : HumanTaskTransition.withModel(phase, model, policy);
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> process
                 .instances()
@@ -197,7 +202,7 @@ public class ProcessServiceImpl implements ProcessService {
         return process.instances()
                 .findById(id, ProcessInstanceReadMode.READ_ONLY)
                 .map(pi -> pi.workItem(taskId, policy))
-                .map(mapper::apply);
+                .map(mapper);
     }
 
     @Override

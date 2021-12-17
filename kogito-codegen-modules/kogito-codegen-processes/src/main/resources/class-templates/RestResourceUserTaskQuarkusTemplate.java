@@ -56,7 +56,7 @@ public class $Type$Resource {
                                      @QueryParam("user") final String user,
                                      @QueryParam("group") final List<String> groups,
                                      final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(IdentityProviders.of(user, groups)), model)
+        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -68,7 +68,7 @@ public class $Type$Resource {
                                  @QueryParam("user") final String user,
                                  @QueryParam("group") final List<String> groups,
                                  final $TaskOutput$ model) {
-        return processService.saveTask(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)), model, $TaskOutput$::fromMap)
+        return processService.saveTask(process, id, taskId, SecurityPolicy.of(user, groups), model, $TaskOutput$::fromMap)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -83,7 +83,7 @@ public class $Type$Resource {
             @QueryParam("user") final String user,
             @QueryParam("group") final List<String> groups,
             final $TaskOutput$ model) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(IdentityProviders.of(user, groups)), model)
+        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), model)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -94,7 +94,7 @@ public class $Type$Resource {
                                @PathParam("taskId") String taskId,
                                @QueryParam("user") final String user,
                                @QueryParam("group") final List<String> groups) {
-        return processService.getTask(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)), $TaskModel$::from)
+        return processService.getTask(process, id, taskId, SecurityPolicy.of(user, groups), $TaskModel$::from)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -106,7 +106,7 @@ public class $Type$Resource {
                                   @QueryParam("phase") @DefaultValue("abort") final String phase,
                                   @QueryParam("user") final String user,
                                   @QueryParam("group") final List<String> groups) {
-        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(IdentityProviders.of(user, groups)), null)
+        return processService.taskTransition(process, id, taskId, phase, SecurityPolicy.of(user, groups), null)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -124,7 +124,7 @@ public class $Type$Resource {
                                                   @PathParam("taskId") final String taskId,
                                                   @QueryParam("user") final String user,
                                                   @QueryParam("group") final List<String> groups) {
-        return processService.getSchemaAndPhases(process, id, taskId, "$taskName$", SecurityPolicy.of(IdentityProviders.of(user, groups)));
+        return processService.getSchemaAndPhases(process, id, taskId, "$taskName$", SecurityPolicy.of(user, groups));
     }
 
     @POST
@@ -137,7 +137,7 @@ public class $Type$Resource {
                                @QueryParam("group") final List<String> groups,
                                String commentInfo,
                                @Context UriInfo uriInfo) {
-        return processService.addComment(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)), commentInfo)
+        return processService.addComment(process, id, taskId, SecurityPolicy.of(user, groups), commentInfo)
                 .map(comment -> Response.created(uriInfo.getAbsolutePathBuilder().path(comment.getId().toString()).build())
                         .entity(comment).build())
                 .orElseThrow(NotFoundException::new);
@@ -153,7 +153,7 @@ public class $Type$Resource {
                                  @QueryParam("user") final String user,
                                  @QueryParam("group") final List<String> groups,
                                  String comment) {
-        return processService.updateComment(process, id, taskId, commentId, SecurityPolicy.of(IdentityProviders.of(user, groups)), comment)
+        return processService.updateComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups), comment)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -164,7 +164,7 @@ public class $Type$Resource {
                                   @PathParam("commentId") final String commentId,
                                   @QueryParam("user") final String user,
                                   @QueryParam("group") final List<String> groups) {
-        return processService.deleteComment(process, id, taskId, commentId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.deleteComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
                 .map(removed -> (removed ? Response.ok() : Response.status(Status.NOT_FOUND)).build())
                 .orElseThrow(NotFoundException::new);
     }
@@ -179,7 +179,7 @@ public class $Type$Resource {
                                   @QueryParam("group") final List<String> groups,
                                   AttachmentInfo attachmentInfo,
                                   @Context UriInfo uriInfo) {
-        return processService.addAttachment(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)), attachmentInfo)
+        return processService.addAttachment(process, id, taskId, SecurityPolicy.of(user, groups), attachmentInfo)
                 .map(attachment -> Response
                         .created(uriInfo.getAbsolutePathBuilder().path(attachment.getId().toString()).build())
                         .entity(attachment).build())
@@ -196,7 +196,7 @@ public class $Type$Resource {
                                        @QueryParam("user") final String user,
                                        @QueryParam("group") final List<String> groups,
                                        AttachmentInfo attachment) {
-        return processService.updateAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(IdentityProviders.of(user, groups)), attachment)
+        return processService.updateAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups), attachment)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -207,7 +207,7 @@ public class $Type$Resource {
                                      @PathParam("attachmentId") final String attachmentId,
                                      @QueryParam("user") final String user,
                                      @QueryParam("group") final List<String> groups) {
-        return processService.deleteAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.deleteAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
                 .map(removed -> (removed ? Response.ok() : Response.status(Status.NOT_FOUND)).build())
                 .orElseThrow(NotFoundException::new);
     }
@@ -220,7 +220,7 @@ public class $Type$Resource {
                                     @PathParam("attachmentId") final String attachmentId,
                                     @QueryParam("user") final String user,
                                     @QueryParam("group") final List<String> groups) {
-        return processService.getAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.getAttachment(process, id, taskId, attachmentId, SecurityPolicy.of(user, groups))
                 .orElseThrow(() -> new NotFoundException("Attachment " + attachmentId + " not found"));
     }
 
@@ -231,7 +231,7 @@ public class $Type$Resource {
                                                  @PathParam("taskId") final String taskId,
                                                  @QueryParam("user") final String user,
                                                  @QueryParam("group") final List<String> groups) {
-        return processService.getAttachments(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.getAttachments(process, id, taskId, SecurityPolicy.of(user, groups))
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -243,7 +243,7 @@ public class $Type$Resource {
                               @PathParam("commentId") final String commentId,
                               @QueryParam("user") final String user,
                               @QueryParam("group") final List<String> groups) {
-        return processService.getComment(process, id, taskId, commentId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.getComment(process, id, taskId, commentId, SecurityPolicy.of(user, groups))
                 .orElseThrow(() -> new NotFoundException("Comment " + commentId + " not found"));
     }
 
@@ -254,7 +254,7 @@ public class $Type$Resource {
                                            @PathParam("taskId") final String taskId,
                                            @QueryParam("user") final String user,
                                            @QueryParam("group") final List<String> groups) {
-        return processService.getComments(process, id, taskId, SecurityPolicy.of(IdentityProviders.of(user, groups)))
+        return processService.getComments(process, id, taskId, SecurityPolicy.of(user, groups))
                 .orElseThrow(NotFoundException::new);
     }
 }
