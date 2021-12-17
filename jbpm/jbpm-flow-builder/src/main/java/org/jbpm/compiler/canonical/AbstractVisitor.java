@@ -93,13 +93,15 @@ public abstract class AbstractVisitor {
                     continue;
                 }
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
+                String defaultValue = (String) variable.getMetaData(Variable.DEFAULT_VALUE);
                 ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
                 MethodCallExpr classLoaderMethodCallExpr = new MethodCallExpr()
                         .setScope(new ClassExpr(new ClassOrInterfaceType(null, contextClass)))
                         .setName("getClassLoader");
                 ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType()), classLoaderMethodCallExpr));
                 body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS),
-                        tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
+                        tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr(), new StringLiteralExpr(Variable.DEFAULT_VALUE),
+                        defaultValue != null ? new StringLiteralExpr(defaultValue) : new NullLiteralExpr()));
             }
         }
     }
