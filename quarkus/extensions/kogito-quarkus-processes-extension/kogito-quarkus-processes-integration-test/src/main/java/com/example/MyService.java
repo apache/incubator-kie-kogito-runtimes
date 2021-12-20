@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.example;
 
-package org.kie.kogito.incubation.common;
-
-public interface MetaDataContext extends DataContext {
+public class MyService {
 }
