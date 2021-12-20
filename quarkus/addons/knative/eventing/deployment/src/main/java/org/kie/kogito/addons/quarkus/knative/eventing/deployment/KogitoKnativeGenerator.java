@@ -19,17 +19,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KogitoKnativeGenerator {
 
@@ -40,8 +39,8 @@ public class KogitoKnativeGenerator {
 
     static {
         YAML_MAPPER = new ObjectMapper((new YAMLFactory()).enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-                .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
+                                               .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                                               .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
         YAML_MAPPER.configure(SerializationFeature.INDENT_OUTPUT, true);
         YAML_MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         YAML_MAPPER.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
@@ -68,16 +67,15 @@ public class KogitoKnativeGenerator {
      */
     public byte[] getResourcesBytes() {
         return this.resources.stream()
-                .map(r -> {
+                .flatMap(r -> {
                     try {
                         LOGGER.info("About to generate Kogito Knative resource {} named {}", r.getKind(), r.getMetadata().getName());
-                        return YAML_MAPPER.writeValueAsString(r);
+                        return Stream.of(YAML_MAPPER.writeValueAsString(r));
                     } catch (JsonProcessingException e) {
                         LOGGER.error("Impossible to generate resource {} named {}", r.getKind(), r.getMetadata().getName(), e);
                     }
-                    return "";
+                    return Stream.empty();
                 })
-                .filter(r -> !r.isEmpty())
                 .map(YAML_SEPARATOR::concat)
                 .reduce("", String::concat).getBytes(StandardCharsets.UTF_8);
     }

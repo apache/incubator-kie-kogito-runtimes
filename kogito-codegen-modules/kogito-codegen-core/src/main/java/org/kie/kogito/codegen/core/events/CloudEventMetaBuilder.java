@@ -15,25 +15,22 @@
  */
 package org.kie.kogito.codegen.core.events;
 
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
+import java.util.Set;
 
-public abstract class AbstractEventResourceGenerator {
+import org.kie.kogito.event.CloudEventMeta;
 
-    public static final String TEMPLATE_EVENT_FOLDER = "/class-templates/events/";
-    protected TemplatedGenerator generator;
+/**
+ * {@link CloudEventMeta} builder
+ *
+ * @param <C> the {@link CloudEventMeta} DTO for the given context
+ * @param <S> the source to extract the {@link CloudEventMeta} information
+ */
+public interface CloudEventMetaBuilder<C extends CloudEventMeta, S> {
 
-    protected AbstractEventResourceGenerator(TemplatedGenerator generator) {
-        this.generator = generator;
-    }
-
-    public final String getClassName() {
-        return generator.targetTypeName();
-    }
-
-    public final String generatedFilePath() {
-        return generator.generatedFilePath();
-    }
-
-    public abstract String generate();
-
+    /**
+     * Generates a {@link Set} of {@link CloudEventMeta} objects based on the given engine model
+     *
+     * @param sourceModel the given executor model
+     */
+    Set<C> build(S sourceModel);
 }

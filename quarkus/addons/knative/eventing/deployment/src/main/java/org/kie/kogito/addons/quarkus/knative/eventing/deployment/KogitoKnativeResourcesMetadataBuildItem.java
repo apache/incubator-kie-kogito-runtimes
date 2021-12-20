@@ -18,19 +18,18 @@ package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 import java.util.Collections;
 import java.util.Set;
 
-import org.kie.kogito.event.CloudEventMeta;
-
 import io.quarkus.builder.item.SimpleBuildItem;
+import org.kie.kogito.event.CloudEventMeta;
 
 /**
  * Build Item to hold information about the project to generate Knative resources
  */
 public final class KogitoKnativeResourcesMetadataBuildItem extends SimpleBuildItem {
 
-    private final Set<CloudEventMeta> cloudEvents;
+    private final Set<? extends CloudEventMeta> cloudEvents;
     private final KogitoServiceDeploymentTarget deployment;
 
-    public KogitoKnativeResourcesMetadataBuildItem(final Set<CloudEventMeta> cloudEvents, final KogitoServiceDeploymentTarget deployment) {
+    public KogitoKnativeResourcesMetadataBuildItem(final Set<? extends CloudEventMeta> cloudEvents, final KogitoServiceDeploymentTarget deployment) {
         this.cloudEvents = cloudEvents;
         this.deployment = deployment;
     }

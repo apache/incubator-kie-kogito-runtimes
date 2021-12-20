@@ -18,6 +18,7 @@ package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,11 +30,17 @@ import org.kie.kogito.quarkus.processes.deployment.KogitoProcessContainerGenerat
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedFileSystemResourceBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
+import io.quarkus.kubernetes.deployment.DeploymentTargetEntry;
+import io.quarkus.kubernetes.deployment.SelectedKubernetesDeploymentTargetBuildItem;
+import io.quarkus.kubernetes.spi.KubernetesResourceMetadataBuildItem;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class KogitoAddOnKnativeEventingProcessorTest {
 
@@ -138,17 +145,6 @@ class KogitoAddOnKnativeEventingProcessorTest {
         assertNull(producer.getItem());
     }
 
-    @Test
-    void checkNotBuiltMetadataIfNoCEs() {
-        final KogitoProcessContainerGeneratorBuildItem containerGeneratorBuildItem = new KogitoProcessContainerGeneratorBuildItem(Collections.emptySet());
-        final KogitoAddOnKnativeEventingProcessor processor = new KogitoAddOnKnativeEventingProcessor();
-        final MockKogitoKnativeMetadataProducer metadata = new MockKogitoKnativeMetadataProducer();
-
-        processor.buildMetadata(containerGeneratorBuildItem, null, null, metadata);
-        // not produced
-        assertNull(metadata.getItem());
-    }
-
     private KogitoAddOnKnativeEventingProcessor buildTestProcessorWithDefaultConfig() {
         final KogitoAddOnKnativeEventingProcessor eventingProcessor = new KogitoAddOnKnativeEventingProcessor();
         final SinkConfiguration sinkConfiguration = new SinkConfiguration();
@@ -164,20 +160,6 @@ class KogitoAddOnKnativeEventingProcessorTest {
         eventingProcessor.config.sink = sinkConfiguration;
 
         return eventingProcessor;
-    }
-
-    private static final class MockKogitoKnativeMetadataProducer implements BuildProducer<KogitoKnativeResourcesMetadataBuildItem> {
-
-        private KogitoKnativeResourcesMetadataBuildItem item;
-
-        @Override
-        public void produce(KogitoKnativeResourcesMetadataBuildItem item) {
-            this.item = item;
-        }
-
-        public KogitoKnativeResourcesMetadataBuildItem getItem() {
-            return item;
-        }
     }
 
     private static final class MockGeneratedFSProducer implements BuildProducer<GeneratedFileSystemResourceBuildItem> {

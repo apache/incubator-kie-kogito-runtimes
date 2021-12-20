@@ -90,7 +90,7 @@ public interface KogitoBuildContext {
      * It's possible that the context won't hold any application sections before the code-gen state.
      * 
      */
-    void setApplicationSections(Set<ApplicationSection> applicationSections);
+    void addAllApplicationSections(Set<ApplicationSection> applicationSections);
 
     /**
      * Adds an application section to the inner collection

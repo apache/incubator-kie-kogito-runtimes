@@ -18,12 +18,11 @@ package org.kie.kogito.codegen.core.events;
 
 import java.util.List;
 
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
-
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 
 public abstract class AbstractCloudEventMetaFactoryGenerator extends AbstractEventResourceGenerator {
 
@@ -33,6 +32,8 @@ public abstract class AbstractCloudEventMetaFactoryGenerator extends AbstractEve
         super(generator);
         this.context = context;
     }
+
+    protected abstract CloudEventMetaBuilder<?, ?> getCloudEventMetaBuilder();
 
     public static TemplatedGenerator buildTemplatedGenerator(KogitoBuildContext context, String className) {
         return TemplatedGenerator.builder()
