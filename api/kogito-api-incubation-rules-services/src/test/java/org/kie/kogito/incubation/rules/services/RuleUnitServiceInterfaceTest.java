@@ -26,6 +26,7 @@ import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
+import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -70,5 +71,12 @@ public class RuleUnitServiceInterfaceTest {
                 "/queries/someQuery",
                 someQuery.toLocalId().asLocalUri().path());
 
+    }
+
+    @Test
+    public void ruleUnitInstances() {
+        ReflectiveAppRoot appRoot = new ReflectiveAppRoot();
+        RuleUnitInstanceId instance = appRoot.get(RuleUnitIds.class).get("my-rule-unit").instances().get("my-instance-id");
+        assertEquals("/rule-units/my-rule-unit/instances/my-instance-id", instance.asLocalUri().path());
     }
 }
