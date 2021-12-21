@@ -30,7 +30,7 @@ public class RuleUnitInstanceId extends LocalUriId implements LocalId {
         return ruleUnitId;
     }
 
-    public String processInstanceId() {
+    public String ruleUnitInstanceId() {
         return ruleUnitInstanceId;
     }
 
