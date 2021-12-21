@@ -30,6 +30,8 @@ public class RuleUnitInstanceId extends LocalUriId implements LocalId {
         return ruleUnitId;
     }
 
+    public InstanceQueryIds queries() { return new InstanceQueryIds(this); }
+
     public String ruleUnitInstanceId() {
         return ruleUnitInstanceId;
     }
