@@ -18,8 +18,9 @@ package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 import java.util.Collections;
 import java.util.Set;
 
-import io.quarkus.builder.item.SimpleBuildItem;
 import org.kie.kogito.event.CloudEventMeta;
+
+import io.quarkus.builder.item.SimpleBuildItem;
 
 /**
  * Build Item to hold information about the project to generate Knative resources

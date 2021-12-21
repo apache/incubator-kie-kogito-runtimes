@@ -51,6 +51,7 @@ import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThr
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
+import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.serialization.process.ObjectMarshallerStrategy;
 import org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf;

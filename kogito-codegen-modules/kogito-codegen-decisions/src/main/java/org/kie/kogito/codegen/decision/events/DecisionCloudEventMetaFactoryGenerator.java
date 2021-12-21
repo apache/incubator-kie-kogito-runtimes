@@ -21,6 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kie.dmn.api.core.DMNModel;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.template.InvalidTemplateException;
+import org.kie.kogito.codegen.core.CodegenUtils;
+import org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator;
+import org.kie.kogito.event.EventKind;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -31,12 +38,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import org.kie.dmn.api.core.DMNModel;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.template.InvalidTemplateException;
-import org.kie.kogito.codegen.core.CodegenUtils;
-import org.kie.kogito.codegen.core.events.AbstractCloudEventMetaFactoryGenerator;
-import org.kie.kogito.event.EventKind;
 
 public class DecisionCloudEventMetaFactoryGenerator extends AbstractCloudEventMetaFactoryGenerator {
 

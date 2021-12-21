@@ -33,8 +33,8 @@ public class ProcessCloudEventMetaBuilder implements CloudEventMetaBuilder<Proce
 
     public Set<ProcessCloudEventMeta> build(Set<ProcessContainerGenerator> sourceModel) {
         return this.build(sourceModel.stream().flatMap(
-                        p -> p.getProcesses().stream().map(ProcessGenerator::getProcessExecutable))
-                                  .collect(Collectors.toSet()));
+                p -> p.getProcesses().stream().map(ProcessGenerator::getProcessExecutable))
+                .collect(Collectors.toSet()));
     }
 
     @Override

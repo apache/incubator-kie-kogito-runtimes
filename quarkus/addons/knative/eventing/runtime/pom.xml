@@ -26,12 +26,9 @@
       <groupId>io.quarkiverse.reactivemessaging.http</groupId>
       <artifactId>quarkus-reactive-messaging-http</artifactId>
     </dependency>
-
-    <!-- we don't force the Kubernetes dependency -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-kubernetes</artifactId>
-      <scope>provided</scope>
+      <artifactId>quarkus-undertow</artifactId>
     </dependency>
   </dependencies>
 

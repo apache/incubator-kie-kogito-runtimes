@@ -19,15 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -38,6 +29,16 @@ import org.kie.kogito.codegen.process.ProcessExecutableModelGenerator;
 import org.kie.kogito.codegen.process.ProcessGenerationUtils;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -86,7 +87,7 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
 
         if (!optObjectCreationExprExpr.isPresent()) {
             fail("Templated build method declaration return statement must be an ObjectCreationExpr of type CloudEventMeta" +
-                         " with three placeholder arguments ($type$, $source$, $kind$)");
+                    " with three placeholder arguments ($type$, $source$, $kind$)");
         }
     }
 
@@ -108,11 +109,11 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
         String templatedBuildMethodName = "buildCloudEventMeta_$methodName$";
 
         assertEquals("buildCloudEventMeta_PRODUCED_first",
-                     getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "PRODUCED_first"));
+                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "PRODUCED_first"));
         assertEquals("buildCloudEventMeta_CONSUMED_first_1",
-                     getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_first"));
+                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_first"));
         assertEquals("buildCloudEventMeta_CONSUMED_third",
-                     getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_third"));
+                getBuilderMethodName(testClassDefinition, templatedBuildMethodName, "CONSUMED_third"));
     }
 
     @Test

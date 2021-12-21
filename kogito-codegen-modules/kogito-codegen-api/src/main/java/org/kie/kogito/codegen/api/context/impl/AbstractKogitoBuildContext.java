@@ -64,9 +64,9 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected RestAnnotator restAnnotator;
 
     protected AbstractKogitoBuildContext(AbstractBuilder builder,
-                                         DependencyInjectionAnnotator dependencyInjectionAnnotator,
-                                         RestAnnotator restAnnotator,
-                                         String contextName) {
+            DependencyInjectionAnnotator dependencyInjectionAnnotator,
+            RestAnnotator restAnnotator,
+            String contextName) {
         this.packageName = builder.packageName;
         this.classAvailabilityResolver = builder.classAvailabilityResolver;
         this.dependencyInjectionAnnotator = dependencyInjectionAnnotator;

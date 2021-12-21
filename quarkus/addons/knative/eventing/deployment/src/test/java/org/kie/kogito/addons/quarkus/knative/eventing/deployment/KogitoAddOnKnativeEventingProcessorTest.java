@@ -16,31 +16,22 @@
 package org.kie.kogito.addons.quarkus.knative.eventing.deployment;
 
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.CloudEventMeta;
 import org.kie.kogito.event.EventKind;
-import org.kie.kogito.quarkus.processes.deployment.KogitoProcessContainerGeneratorBuildItem;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedFileSystemResourceBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
-import io.quarkus.kubernetes.deployment.DeploymentTargetEntry;
-import io.quarkus.kubernetes.deployment.SelectedKubernetesDeploymentTargetBuildItem;
-import io.quarkus.kubernetes.spi.KubernetesResourceMetadataBuildItem;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class KogitoAddOnKnativeEventingProcessorTest {
 

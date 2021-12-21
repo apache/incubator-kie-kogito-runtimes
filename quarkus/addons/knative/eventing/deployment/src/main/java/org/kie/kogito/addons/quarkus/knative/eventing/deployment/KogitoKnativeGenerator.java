@@ -21,14 +21,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KogitoKnativeGenerator {
 
@@ -39,8 +41,8 @@ public class KogitoKnativeGenerator {
 
     static {
         YAML_MAPPER = new ObjectMapper((new YAMLFactory()).enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
-                                               .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
-                                               .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
+                .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS)
+                .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
         YAML_MAPPER.configure(SerializationFeature.INDENT_OUTPUT, true);
         YAML_MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         YAML_MAPPER.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
