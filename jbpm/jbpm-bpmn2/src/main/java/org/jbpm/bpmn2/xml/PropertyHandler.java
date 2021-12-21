@@ -84,6 +84,7 @@ public class PropertyHandler extends BaseAbstractHandler implements Handler {
             }
             variable.setMetaData("ItemSubjectRef", itemSubjectRef);
             variable.setMetaData(id, variable.getName());
+            //TODO
             variables.add(variable);
 
             ((ProcessBuildData) parser.getData()).setMetaData("Variable", variable);

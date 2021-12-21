@@ -63,8 +63,9 @@ public class MetaValueHandler extends BaseAbstractHandler implements Handler {
                 text = null;
             }
         }
-        Object value = restoreValue(text, valueObject.getType(), parser);
-        valueObject.setValue(value);
+        Object value = restoreValue(text, valueObject.getType(), parser);        
+        valueObject.setValue(value); 
+        //TODO
         return null;
     }
 
