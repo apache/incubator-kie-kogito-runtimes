@@ -165,32 +165,29 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         return variable(name, new ObjectDataType(clazz.getName()), null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type) {
         return variable(name, type, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value) {
-        return variable(name, type, value, null, null, null, null);
+        return variable(name, type, value, null, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, String metaDataName, Object metaDataValue) {
-        return variable(name, type, null, metaDataName, metaDataValue, null, null);
+        return variable(name, type, null, metaDataName, metaDataValue);
     }
 
-    public RuleFlowProcessFactory variable(String name, DataType type, String metaDataName, Object metaDataValue, String defaultName, Object defaultValue) {
-        return variable(name, type, null, metaDataName, metaDataValue, defaultName, defaultValue);
-    }
-
-    public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue, String defaultName, Object defaultValue) {
+    @Override
+    public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
         variable.setValue(value);
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
-        }
-        if (defaultName != null && defaultValue != null) {
-            variable.setMetaData(defaultName, defaultValue);
         }
         getRuleFlowProcess().getVariableScope().getVariables().add(variable);
         return this;

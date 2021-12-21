@@ -43,15 +43,13 @@ import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.RestBodyBuilderSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
-import org.kie.kogito.serverless.workflow.utils.WorkflowAppContext;
-import org.kogito.workitem.openapi.JsonNodeResultHandler;
-import org.kogito.workitem.openapi.suppliers.JsonNodeResultHandlerExprSupplier;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.actions.Action;
+import io.serverlessworkflow.api.filters.ActionDataFilter;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import io.serverlessworkflow.api.functions.FunctionRef;
@@ -77,8 +75,6 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private static final String SERVICE_OPERATION_KEY = "operation";
     private static final String SERVICE_IMPL_KEY = "implementation";
 
-    protected final WorkflowAppContext workflowAppContext = WorkflowAppContext.ofAppResources();
-
     protected CompositeContextNodeHandler(S state, Workflow workflow, ParserContext parserContext) {
         super(state, workflow, parserContext);
     }
@@ -95,31 +91,39 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         if (actions != null && !actions.isEmpty()) {
             NodeFactory<?, ?> startNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
             NodeFactory<?, ?> currentNode = startNode;
-
             for (Action action : actions) {
-                currentNode = getActionNode(embeddedSubProcess, action, outputVar, extraVariables);
-                embeddedSubProcess.connection(startNode.getNode().getId(), currentNode.getNode().getId());
-                startNode = currentNode;
+                currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar, extraVariables));
             }
-            long endId = parserContext.newId();
-            embeddedSubProcess.endNode(endId).name("EmbeddedEnd").terminate(true).done().connection(currentNode
-                    .getNode().getId(), endId);
+            connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         } else {
-            long startId = parserContext.newId();
-            long endId = parserContext.newId();
-            embeddedSubProcess.startNode(startId).name("EmbeddedStart").done().endNode(endId).name("EmbeddedEnd")
-                    .terminate(true).done().connection(startId, endId);
+            connect(embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart"), embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         }
         return embeddedSubProcess;
     }
 
-    protected final NodeFactory<?, ?> getActionNode(AbstractCompositeNodeFactory<?, ?> embeddedSubProcess,
+    protected final MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             Action action) {
         return getActionNode(embeddedSubProcess, action, null);
     }
 
-    private NodeFactory<?, ?> getActionNode(AbstractCompositeNodeFactory<?, ?> embeddedSubProcess,
-            Action action, String outputVar, String... extraVariables) {
+    public MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+            Action action, String collectVar, String... extraVariables) {
+        ActionDataFilter actionFilter = action.getActionDataFilter();
+        String fromExpr = null;
+        String resultExpr = null;
+        String toExpr = null;
+        if (actionFilter != null) {
+            fromExpr = actionFilter.getFromStateData();
+            resultExpr = actionFilter.getResults();
+            toExpr = actionFilter.getToStateData();
+        }
+        return filterAndMergeNode(embeddedSubProcess, action.getName(), fromExpr, resultExpr, toExpr,
+                (factory, inputVar, outputVar) -> getActionNode(factory, action, inputVar, outputVar, collectVar, extraVariables));
+    }
+
+    private NodeFactory<?, ?> getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+            Action action, String inputVar, String outputVar, String collectVar, String... extraVariables) {
+
         FunctionRef functionRef = action.getFunctionRef();
         JsonNode functionArgs = functionRef.getArguments();
         String actionName = functionRef.getRefName();
@@ -144,12 +148,13 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 return embeddedSubProcess
                         .actionNode(parserContext.newId())
                         .name(actionName)
-                        .action(new ExpressionActionSupplier(workflow.getExpressionLang(), actionFunction.getOperation(), outputVar, extraVariables));
+                        .action(ExpressionActionSupplier.of(workflow.getExpressionLang(), actionFunction.getOperation()).withVarNames(inputVar, outputVar).withCollectVar(collectVar)
+                                .withAddInputVars(extraVariables).build());
             case SYSOUT:
                 return embeddedSubProcess
                         .actionNode(parserContext.newId())
                         .name(actionName)
-                        .action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), extraVariables));
+                        .action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), inputVar, extraVariables));
             case SERVICE:
                 WorkItemNodeFactory<?> serviceFactory = embeddedSubProcess
                         .workItemNode(parserContext.newId())
@@ -157,22 +162,22 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, SERVICE_TASK_TYPE)
                         .workName(SERVICE_TASK_TYPE)
                         .workParameter(WORKITEM_INTERFACE, ServerlessWorkflowUtils.resolveFunctionMetadata(
-                                actionFunction, SERVICE_INTERFACE_KEY, workflowAppContext))
+                                actionFunction, SERVICE_INTERFACE_KEY, parserContext.getContext()))
                         .workParameter(WORKITEM_OPERATION, ServerlessWorkflowUtils.resolveFunctionMetadata(
-                                actionFunction, SERVICE_OPERATION_KEY, workflowAppContext))
+                                actionFunction, SERVICE_OPERATION_KEY, parserContext.getContext()))
                         .workParameter(WORKITEM_INTERFACE_IMPL, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, SERVICE_INTERFACE_KEY,
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(WORKITEM_OPERATION_IMPL, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, SERVICE_OPERATION_KEY,
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(SERVICE_IMPL_KEY, ServerlessWorkflowUtils.resolveFunctionMetadata(
-                                actionFunction, SERVICE_IMPL_KEY, workflowAppContext, "Java"))
-                        .inMapping(WORKITEM_PARAM, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+                                actionFunction, SERVICE_IMPL_KEY, parserContext.getContext(), "Java"))
+                        .inMapping(WORKITEM_PARAM, inputVar);
 
                 if (functionArgs == null || functionArgs.isEmpty()) {
                     serviceFactory.workParameter(WORKITEM_PARAM_TYPE, ServerlessWorkflowParser.JSON_NODE)
-                            .outMapping(WORKITEM_PARAM, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+                            .outMapping(WORKITEM_PARAM, outputVar);
                 } else {
                     processArgs(serviceFactory, functionArgs, WORKITEM_PARAM, ObjectResolver.class);
                 }
@@ -187,24 +192,22 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .workParameter(RestWorkItemHandler.URL, actionFunction.getOperation())
                         .workParameter(RestWorkItemHandler.METHOD, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, "method",
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(RestWorkItemHandler.USER, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, "user",
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(RestWorkItemHandler.PASSWORD, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, "password",
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(RestWorkItemHandler.HOST, ServerlessWorkflowUtils
                                 .resolveFunctionMetadata(actionFunction, "host",
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(RestWorkItemHandler.PORT, ServerlessWorkflowUtils
                                 .resolveFunctionMetadataAsInt(actionFunction, "port",
-                                        workflowAppContext))
+                                        parserContext.getContext()))
                         .workParameter(RestWorkItemHandler.BODY_BUILDER, new RestBodyBuilderSupplier())
-                        .inMapping(RestWorkItemHandler.CONTENT_DATA,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
-                        .outMapping(RestWorkItemHandler.RESULT,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+                        .inMapping(RestWorkItemHandler.CONTENT_DATA, inputVar)
+                        .outMapping(RestWorkItemHandler.RESULT, outputVar);
                 if (functionArgs != null && !functionArgs.isEmpty()) {
                     processArgs(workItemFactory, functionArgs, RestWorkItemHandler.CONTENT_DATA, ObjectResolver.class);
                 }
@@ -216,14 +219,9 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .withExprLang(workflow.getExpressionLang())
                         .withModelParameter(WORKITEM_PARAM)
                         .withArgs(functionsToMap(functionArgs), JsonNodeResolver.class, JsonNode.class, s -> true)
-                        .withResultHandler(new JsonNodeResultHandlerExprSupplier(), JsonNodeResultHandler.class)
                         .build(embeddedSubProcess.workItemNode(parserContext.newId())).name(functionRef.getRefName())
-                        .inMapping(WORKITEM_PARAM,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR)
-                        .outMapping(
-                                WORKITEM_RESULT,
-                                ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
-
+                        .inMapping(WORKITEM_PARAM, inputVar)
+                        .outMapping(WORKITEM_RESULT, outputVar);
             default:
                 return emptyNode(embeddedSubProcess, actionName);
         }
@@ -247,7 +245,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         Map<String, Object> map = functionsToMap(functionArgs);
         map.entrySet().forEach(
                 entry -> workItemFactory
-                        .workParameter(entry.getKey(), AbstractServiceTaskDescriptor.processWorkItemValue(workflow.getExpressionLang(), entry.getValue(), paramName, clazz, expressionHandler::isExpr))
+                        .workParameter(entry.getKey(),
+                                AbstractServiceTaskDescriptor.processWorkItemValue(workflow.getExpressionLang(), entry.getValue(), paramName, clazz, expressionHandler::isExpr))
                         .workParameterDefinition(entry.getKey(),
                                 DataTypeResolver.fromObject(entry.getValue(), expressionHandler::isExpr)));
     }
@@ -285,7 +284,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         }
     }
 
-    private NodeFactory<?, ?> emptyNode(AbstractCompositeNodeFactory<?, ?> embeddedSubProcess, String actionName) {
+    private NodeFactory<?, ?> emptyNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionName) {
         return embeddedSubProcess
                 .actionNode(parserContext.newId())
                 .name(actionName)

@@ -34,18 +34,18 @@
       <artifactId>kogito-addons-quarkus-messaging-deployment</artifactId>
       <version>${project.version}</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>io.quarkiverse.jackson-jq</groupId>
       <artifactId>quarkus-jackson-jq-deployment</artifactId>
     </dependency>
-    
+
     <!-- Quarkus Deployment Extensions Dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-deployment</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
+      <groupId>io.quarkiverse.reactivemessaging.http</groupId>
       <artifactId>quarkus-reactive-messaging-http-deployment</artifactId>
     </dependency>
     <dependency>
@@ -63,4 +63,21 @@
       <artifactId>kogito-codegen-openapi</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-extension-processor</artifactId>
+              <version>${version.io.quarkus}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

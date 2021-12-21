@@ -22,7 +22,6 @@ import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -93,15 +92,14 @@ public abstract class AbstractVisitor {
                     continue;
                 }
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
-                String defaultValue = (String) variable.getMetaData(Variable.DEFAULT_VALUE);
-                ClassOrInterfaceType variableType = new ClassOrInterfaceType(null, ObjectDataType.class.getSimpleName());
-                MethodCallExpr classLoaderMethodCallExpr = new MethodCallExpr()
-                        .setScope(new ClassExpr(new ClassOrInterfaceType(null, contextClass)))
-                        .setName("getClassLoader");
-                ObjectCreationExpr variableValue = new ObjectCreationExpr(null, variableType, new NodeList<>(new StringLiteralExpr(variable.getType().getStringType()), classLoaderMethodCallExpr));
-                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableValue, new StringLiteralExpr(Variable.VARIABLE_TAGS),
-                        tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr(), new StringLiteralExpr(Variable.DEFAULT_VALUE),
-                        defaultValue != null ? new StringLiteralExpr(defaultValue) : new NullLiteralExpr()));
+                ObjectCreationExpr variableType = new ObjectCreationExpr();
+                body.tryAddImportToParentCompilationUnit(variable.getType().getClass());
+                variableType.setType(variable.getType().getClass());
+                if (variable.getType().getClass().equals(ObjectDataType.class)) {
+                    variableType.addArgument(new ClassExpr(new ClassOrInterfaceType(null, variable.getType().getStringType())));
+                }
+                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableType, new StringLiteralExpr(Variable.VARIABLE_TAGS),
+                        tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
             }
         }
     }

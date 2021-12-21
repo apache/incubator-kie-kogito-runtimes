@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.drools.core.spi.KogitoProcessContextImpl;
 import org.drools.core.util.StringUtils;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
@@ -36,12 +35,14 @@ import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.process.instance.impl.ProcessInstanceImpl;
 import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.SubProcessFactory;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.jbpm.workflow.instance.impl.NodeInstanceResolverFactory;
+import org.kie.kogito.drools.core.spi.KogitoProcessContextImpl;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
@@ -80,8 +81,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
                     "A SubProcess node only accepts default incoming connections!");
         }
 
-        KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
-        context.setNodeInstance(this);
+        KogitoProcessContextImpl context = ContextFactory.fromNode(this);
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
         Object o = subProcessFactory.bind(context);
         org.kie.kogito.process.ProcessInstance<?> processInstance = subProcessFactory.createInstance(o);
@@ -146,6 +146,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         this.processInstanceId = processInstanceId;
     }
 
+    @Override
     public void addEventListeners() {
         super.addEventListeners();
         addProcessListener();
@@ -155,6 +156,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         getProcessInstance().addEventListener("processInstanceCompleted:" + processInstanceId, this, true);
     }
 
+    @Override
     public void removeEventListeners() {
         super.removeEventListeners();
         getProcessInstance().removeEventListener("processInstanceCompleted:" + processInstanceId, this, true);
@@ -207,14 +209,13 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
     private void handleOutMappings(ProcessInstance processInstance) {
 
         SubProcessFactory subProcessFactory = getSubProcessNode().getSubProcessFactory();
-        KogitoProcessContextImpl context = new KogitoProcessContextImpl(getProcessInstance().getKnowledgeRuntime());
-        context.setNodeInstance(this);
         org.kie.kogito.process.ProcessInstance<?> pi = ((org.kie.kogito.process.ProcessInstance<?>) processInstance.getMetaData().get("KogitoProcessInstance"));
         if (pi != null) {
-            subProcessFactory.unbind(context, pi.variables());
+            subProcessFactory.unbind(ContextFactory.fromNode(this), pi.variables());
         }
     }
 
+    @Override
     public String getNodeName() {
         org.kie.api.definition.process.Node node = getNode();
         if (node == null) {
@@ -265,7 +266,7 @@ public class LambdaSubProcessNodeInstance extends StateBasedNodeInstance impleme
         if (conf == null) {
             throw new IllegalArgumentException("Illegal context type (registry not found): " + context.getClass());
         }
-        ContextInstance contextInstance = (ContextInstance) conf.getContextInstance(context, this, (ProcessInstance) getProcessInstance());
+        ContextInstance contextInstance = conf.getContextInstance(context, this, getProcessInstance());
         if (contextInstance == null) {
             throw new IllegalArgumentException("Illegal context type (instance not found): " + context.getClass());
         }

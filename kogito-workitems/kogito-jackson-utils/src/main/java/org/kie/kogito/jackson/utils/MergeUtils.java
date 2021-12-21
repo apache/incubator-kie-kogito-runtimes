@@ -15,30 +15,88 @@
  */
 package org.kie.kogito.jackson.utils;
 
-import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class MergeUtils {
+    /**
+     * Merge two JSON documents.
+     *
+     * @param src JsonNode to be merged
+     * @param target JsonNode to merge to
+     */
+    public static JsonNode merge(JsonNode src, JsonNode target) {
+        return merge(src, target, false);
+    }
 
-    public static Object merge(JsonNode src, JsonNode dest) {
-        if (dest.isArray()) {
-            return ((ArrayNode) dest).add(src);
-        }
-        final ObjectReader reader = ObjectMapperFactory.get().readerForUpdating(dest);
-        try {
+    public static JsonNode merge(JsonNode src, JsonNode target, boolean skipDuplicates) {
+        if (target == null || target.isNull()) {
+            return src;
+        } else if (target.isArray()) {
+            return mergeArray(src, (ArrayNode) target, skipDuplicates);
+        } else if (target.isObject()) {
+            return mergeObject(src, (ObjectNode) target, skipDuplicates);
+        } else {
             if (src.isArray()) {
-                ObjectNode node = (ObjectNode) reader.createObjectNode();
-                node.set("response", src);
-                return reader.readValue(node);
+                ArrayNode srcArray = (ArrayNode) src;
+                insert(srcArray, target, getExistingNodes(srcArray, skipDuplicates));
             }
-            return reader.readValue(src);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Failed to merge input model and JSON response: " + src, e);
+            return src;
         }
+    }
+
+    private static ObjectNode mergeObject(JsonNode src, ObjectNode target, boolean skipDuplicates) {
+        if (src.isObject()) {
+            Iterator<Map.Entry<String, JsonNode>> mergedIterator = src.fields();
+            while (mergedIterator.hasNext()) {
+                Map.Entry<String, JsonNode> entry = mergedIterator.next();
+                JsonNode found = target.get(entry.getKey());
+                target.set(entry.getKey(), found != null ? merge(entry.getValue(), found, skipDuplicates) : entry.getValue());
+            }
+        } else {
+            target.set("response", src);
+        }
+        return target;
+    }
+
+    private static JsonNode mergeArray(JsonNode src, ArrayNode target, boolean skipDuplicates) {
+        if (src != target) {
+            Set<JsonNode> existingNodes = getExistingNodes(target, skipDuplicates);
+            if (src.isArray()) {
+                ((ArrayNode) src).forEach(node -> add(target, node, existingNodes));
+            } else {
+                add(target, src, existingNodes);
+            }
+        }
+        return target;
+    }
+
+    private static void add(ArrayNode array, JsonNode node, Set<JsonNode> existingNodes) {
+        if (!existingNodes.contains(node)) {
+            array.add(node);
+        }
+    }
+
+    private static void insert(ArrayNode array, JsonNode node, Set<JsonNode> existingNodes) {
+        if (!existingNodes.contains(node)) {
+            array.insert(0, node);
+        }
+    }
+
+    private static Set<JsonNode> getExistingNodes(ArrayNode arrayNode, boolean skipDuplicates) {
+        Set<JsonNode> existingNodes = Collections.emptySet();
+        if (skipDuplicates) {
+            existingNodes = new HashSet<>();
+            arrayNode.forEach(existingNodes::add);
+        }
+        return existingNodes;
     }
 
     private MergeUtils() {
