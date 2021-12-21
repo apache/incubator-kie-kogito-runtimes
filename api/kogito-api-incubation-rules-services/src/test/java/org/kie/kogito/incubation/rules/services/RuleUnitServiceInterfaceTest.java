@@ -24,6 +24,7 @@ import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.DefaultCastable;
 import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
@@ -78,5 +79,12 @@ public class RuleUnitServiceInterfaceTest {
         ReflectiveAppRoot appRoot = new ReflectiveAppRoot();
         RuleUnitInstanceId instance = appRoot.get(RuleUnitIds.class).get("my-rule-unit").instances().get("my-instance-id");
         assertEquals("/rule-units/my-rule-unit/instances/my-instance-id", instance.asLocalUri().path());
+    }
+
+    @Test
+    public void ruleUnitInstanceQuery() {
+        ReflectiveAppRoot appRoot = new ReflectiveAppRoot();
+        InstanceQueryId query = appRoot.get(RuleUnitIds.class).get("my-rule-unit").instances().get("my-instance-id").queries().get("my-query");
+        assertEquals("/rule-units/my-rule-unit/instances/my-instance-id/queries/my-query", query.asLocalUri().path());
     }
 }

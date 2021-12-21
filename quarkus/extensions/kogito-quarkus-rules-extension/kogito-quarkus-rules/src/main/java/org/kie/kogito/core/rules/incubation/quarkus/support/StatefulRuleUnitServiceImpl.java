@@ -18,9 +18,7 @@ package org.kie.kogito.core.rules.incubation.quarkus.support;
 
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
-import org.kie.kogito.incubation.rules.QueryId;
-import org.kie.kogito.incubation.rules.RuleUnitId;
-import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
+import org.kie.kogito.incubation.rules.*;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
@@ -40,28 +38,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         this.ruleUnits = ruleUnits;
     }
 
-    public Stream<DataContext> evaluate(Id id, DataContext inputContext) {
-        RuleUnitId ruleUnitId;
-        QueryId queryId;
-        if (id instanceof QueryId) {
-            queryId = (QueryId) id;
-            ruleUnitId = queryId.ruleUnitId();
-        } else {
-            // LocalDecisionId.parse(decisionId);
-            throw new IllegalArgumentException(
-                    "Not a valid query id " + id.toLocalId());
-        }
-
-        Map<String, Object> payload = inputContext.as(MapDataContext.class).toMap();
-        RuleUnitData ruleUnitData = this.convertValue(payload, ruleUnitId);
-        RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create((Class<RuleUnitData>) ruleUnitData.getClass());
-        RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);
-        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
-
-        return results.stream().map(MapDataContext::of);
-
-    }
-
     private RuleUnitData convertValue(Map<String, Object> payload, RuleUnitId ruleUnitId) {
         try {
             // converts the identifier into a Class object for conversion
@@ -79,10 +55,8 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
             ruleUnitId = (RuleUnitId) localId;
         } else throw new IllegalArgumentException("cannot parse rule unit id");
 
-        DataContext inputContext = extendedDataContext.data();
 
-        Map<String, Object> payload = inputContext.as(MapDataContext.class).toMap();
-        RuleUnitData ruleUnitData = this.convertValue(payload, ruleUnitId);
+        RuleUnitData ruleUnitData = (RuleUnitData) extendedDataContext.data();
         RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create((Class<RuleUnitData>) ruleUnitData.getClass());
         RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);
         String instanceId = UUID.randomUUID().toString();
@@ -118,24 +92,22 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
     public Stream<ExtendedDataContext> query(LocalId localId, ExtendedDataContext params) {
         RuleUnitInstanceId ruleUnitInstanceId;
         // must add a QueryId for instances!
-//        QueryId queryId;
-//        if (localId instanceof QueryId) {
-//            queryId = (QueryId) localId;
-//            ruleUnitId = queryId.ruleUnitId();
-//        } else {
-//            // LocalDecisionId.parse(decisionId);
-//            throw new IllegalArgumentException(
-//                    "Not a valid query id " + id.toLocalId());
-//        }
-//
-//        Map<String, Object> payload = inputContext.as(MapDataContext.class).toMap();
-//        RuleUnitData ruleUnitData = this.convertValue(payload, ruleUnitId);
-//        RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create((Class<RuleUnitData>) ruleUnitData.getClass());
-//        RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);
-//        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
-//
-//        return results.stream().map(MapDataContext::of);
-        throw new UnsupportedOperationException();
+        InstanceQueryId queryId;
+        if (localId instanceof InstanceQueryId) {
+            queryId = (InstanceQueryId) localId;
+            ruleUnitInstanceId = queryId.ruleUnitInstanceId();
+        } else {
+            // LocalDecisionId.parse(decisionId);
+            throw new IllegalArgumentException(
+                    "Not a valid instance query id " + localId);
+        }
+
+        RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
+        if (instance == null) throw new IllegalArgumentException("Unknown instance " + localId);
+        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
+
+        return results.stream().map(r ->
+                ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
 
     }
 

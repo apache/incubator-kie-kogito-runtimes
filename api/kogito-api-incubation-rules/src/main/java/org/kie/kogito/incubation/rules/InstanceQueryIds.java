@@ -11,7 +11,7 @@ public class InstanceQueryIds {
         return ruleUnitInstanceId;
     }
 
-    public QueryInstanceId get(String queryId) {
-        return new QueryInstanceId(ruleUnitInstanceId, queryId);
+    public InstanceQueryId get(String queryId) {
+        return new InstanceQueryId(ruleUnitInstanceId, queryId);
     }
 }
