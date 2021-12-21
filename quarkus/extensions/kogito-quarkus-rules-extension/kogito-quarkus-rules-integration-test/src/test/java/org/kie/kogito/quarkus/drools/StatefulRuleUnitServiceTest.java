@@ -8,11 +8,12 @@ import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.common.MetaDataContext;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
+import org.kie.kogito.incubation.rules.RuleUnitIdParser;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
+import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 
 import javax.inject.Inject;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,9 +33,10 @@ public class StatefulRuleUnitServiceTest {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
         MetaDataContext result = ruleUnitService.create(id, ExtendedDataContext.ofData(new AnotherService()));
 
-        String instanceId = MapDataContext.from(result).get("id").toString();
-        assertEquals("/rule-units/org.kie.kogito.quarkus.drools.AnotherService/instances",
-                instanceId.substring(0, instanceId.lastIndexOf('/')));
+        RuleUnitInstanceId instanceId = RuleUnitIdParser.parse(
+                MapDataContext.from(result).get("id", String.class), RuleUnitInstanceId.class);
+        assertEquals("/rule-units/org.kie.kogito.quarkus.drools.AnotherService",
+                instanceId.ruleUnitId().asLocalUri().path());
     }
 
     @Test
@@ -42,10 +44,9 @@ public class StatefulRuleUnitServiceTest {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
         var ruleUnitData = new AnotherService();
         MetaDataContext created = ruleUnitService.create(id, ExtendedDataContext.ofData(ruleUnitData));
-        String instanceId = MapDataContext.from(created).get("id").toString();
-        String prefix = instanceId.substring(0, instanceId.lastIndexOf('/'));
-        String ruid = instanceId.substring(instanceId.lastIndexOf('/')+1);
-        InstanceQueryId queryId = id.instances().get(ruid).queries().get("Strings");
+        RuleUnitInstanceId ruid = RuleUnitIdParser.parse(
+                MapDataContext.from(created).get("id", String.class), RuleUnitInstanceId.class);
+        InstanceQueryId queryId = ruid.queries().get("Strings");
 
         ruleUnitData.getStrings().add(new StringHolder("hello folks"));
         ruleUnitData.getStrings().add(new StringHolder("hello people"));
