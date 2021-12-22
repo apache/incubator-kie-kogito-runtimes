@@ -26,7 +26,6 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
-import org.kie.api.definition.process.Process;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.process.VariableViolationException;
@@ -140,20 +139,6 @@ public class VariableScopeInstance extends AbstractContextInstance {
         for (Variable variable : variableScope.getVariables()) {
             if (variableScope.isRequired(variable.getName()) && !variables.containsKey(variable.getName())) {
                 throw new VariableViolationException(getProcessInstance().getStringId(), variable.getName(), "Variable '" + variable.getName() + "' is required but not set");
-            }
-        }
-    }
-
-    public void setDefaultValue(Process process, VariableScope variableScope, VariableScopeInstance variableScopeInstance) {
-        if (variableScope != null) {
-            for (Variable variable : variableScope.getVariables()) {
-                String name = variable.getName();
-                Object defaultValue = variable.getMetaData("defaultValue");
-                if (variableScopeInstance.getVariable(name) == null && defaultValue != null) {
-                    variableScope.validateVariable(process.getName(), name, defaultValue);
-                    variableScopeInstance.setVariable(name, defaultValue);
-
-                }
             }
         }
     }

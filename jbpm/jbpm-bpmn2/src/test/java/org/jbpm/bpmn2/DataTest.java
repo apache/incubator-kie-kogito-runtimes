@@ -482,19 +482,19 @@ public class DataTest extends JbpmBpmn2TestCase {
 
     }
     
-//    @Test
-//    public void testDefaultProcessVariableValue() throws Exception {
-//
-//        kruntime = createKogitoProcessRuntime("BPMN2-CorrelationKey.bpmn2");
-//
-//        Map<String, Object> parameters = new HashMap<String, Object>();
-//
-//        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("org.jbpm.test.functional.CorrelationKey",
-//                parameters);
-//
-//        assertEquals("defaultProc", processInstance.getVariables());
-//        assertEquals("1", processInstance.getVariable("secondVar"));
-//
-//    }    
+    @Test
+    public void testDefaultProcessVariableValue() throws Exception {
+
+        kruntime = createKogitoProcessRuntime("BPMN2-CorrelationKey.bpmn2");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+
+        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("org.jbpm.test.functional.CorrelationKey",
+                parameters);
+
+        assertEquals("defaultProc", processInstance.getVariable("procVar"));
+        assertEquals(1, processInstance.getVariable("intVar"));
+
+    }    
 
 }
