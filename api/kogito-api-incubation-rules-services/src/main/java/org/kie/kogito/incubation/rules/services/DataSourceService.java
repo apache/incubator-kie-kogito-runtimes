@@ -17,6 +17,7 @@ package org.kie.kogito.incubation.rules.services;
 
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.rules.data.DataId;
 
 public interface DataSourceService {
     /**
@@ -24,7 +25,7 @@ public interface DataSourceService {
      * @param ctx data that should be inserted into the data source
      * @return FactHandleId
      */
-    LocalId add(LocalId id, DataContext ctx);
-    LocalId update(LocalId id, DataContext ctx);
-    LocalId remove(LocalId id);
+    DataId add(LocalId id, DataContext ctx);
+    DataId update(LocalId id, DataContext ctx);
+    DataId remove(LocalId id);
 }
