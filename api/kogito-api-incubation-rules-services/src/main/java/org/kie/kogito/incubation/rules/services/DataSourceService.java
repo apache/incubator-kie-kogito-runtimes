@@ -25,4 +25,6 @@ public interface DataSourceService {
      * @return FactHandleId
      */
     LocalId add(LocalId id, DataContext ctx);
+    LocalId update(LocalId id, DataContext ctx);
+    LocalId remove(LocalId id);
 }
