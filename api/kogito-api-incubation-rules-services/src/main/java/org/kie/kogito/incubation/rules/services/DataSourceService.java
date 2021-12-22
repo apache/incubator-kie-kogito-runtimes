@@ -18,14 +18,33 @@ package org.kie.kogito.incubation.rules.services;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.data.DataId;
+import org.kie.kogito.incubation.rules.data.DataSourceId;
 
+/**
+ * this may also act internally as a registry (?)
+ */
 public interface DataSourceService {
     /**
      * @param id identifier of the data source
      * @param ctx data that should be inserted into the data source
      * @return FactHandleId
      */
-    DataId add(LocalId id, DataContext ctx);
-    DataId update(LocalId id, DataContext ctx);
-    DataId remove(LocalId id);
+    // "/data-sources/my-data-source", val
+    DataId add(DataSourceId id, DataContext ctx);
+
+    // "/data-sources/7574598375943/data/7525792847584395"
+    DataId update(DataId id, DataContext ctx);
+    DataId remove(DataId id);
+}
+
+
+interface TypedDataSourceService<T> {
+
+    // "/data-sources/my-data-source", val
+    DataId add(DataSourceId id, T ctx);
+
+    // "/data-sources/7574598375943/data/7525792847584395"
+    DataId update(DataId id, T ctx);
+    DataId remove(DataId id);
+
 }

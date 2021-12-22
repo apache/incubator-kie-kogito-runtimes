@@ -9,13 +9,13 @@ public class DataStoreFactory {
     public static <T extends DataContext> DataStore<T> of(DataSourceService svc, LocalId localId, Class<T> type) {
         return new DataStore<>() {
             @Override
-            public DataId add(T value) {
-                return svc.add(localId, value);
+            public MutableDataHandle add(T value) {
+                return DataHandle.of(svc, svc.add(localId, value));
             }
 
             @Override
-            public DataId remove(LocalId id) {
-                return svc.remove(id);
+            public DataHandle remove(LocalId id) {
+                return DataHandle.of(svc, svc.remove(id));
             }
 
         };
