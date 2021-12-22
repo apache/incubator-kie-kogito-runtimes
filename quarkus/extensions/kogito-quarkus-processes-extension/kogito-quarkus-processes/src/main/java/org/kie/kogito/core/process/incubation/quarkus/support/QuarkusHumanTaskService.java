@@ -26,21 +26,21 @@ import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MetaDataContext;
-import org.kie.kogito.incubation.processes.services.UserTaskService;
+import org.kie.kogito.incubation.processes.services.humantask.HumanTaskService;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.ProcessServiceImpl;
 
 @ApplicationScoped
-public class QuarkusUserTaskService implements UserTaskService {
+public class QuarkusHumanTaskService implements HumanTaskService {
     @Inject
     Instance<Processes> processesInstance;
     @Inject
     Application application;
-    UserTaskServiceImpl delegate;
+    HumanTaskServiceImpl delegate;
 
     @PostConstruct
     void startup() {
-        this.delegate = new UserTaskServiceImpl(application, new ProcessServiceImpl(application), processesInstance.get());
+        this.delegate = new HumanTaskServiceImpl(application, new ProcessServiceImpl(application), processesInstance.get());
     }
 
     @Override

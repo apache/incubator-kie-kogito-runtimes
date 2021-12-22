@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.processes.services;
+package org.kie.kogito.incubation.processes.services.humantask;
 
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.MetaDataContext;
 
-public interface UserTaskService {
-    ExtendedDataContext get(LocalId id, MetaDataContext meta);
+public interface HumanTaskAttachmentService {
+    ExtendedDataContext get(LocalId id);
 
-    ExtendedDataContext create(LocalId taskId);
+    ExtendedDataContext add(LocalId taskId, DataContext dataContext);
 
-    ExtendedDataContext abort(LocalId taskId, MetaDataContext meta);
+    ExtendedDataContext update(LocalId commentId, DataContext dataContext);
 
-    ExtendedDataContext complete(LocalId processId, DataContext dataContext);
-
-    ExtendedDataContext update(LocalId processId, DataContext dataContext);
-
-    ExtendedDataContext transition(LocalId processId, DataContext dataContext);
-
+    ExtendedDataContext delete(LocalId commentId, DataContext dataContext);
 }

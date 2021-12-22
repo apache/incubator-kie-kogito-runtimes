@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.processes.services;
+package org.kie.kogito.incubation.processes.services.humantask;
 
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.LocalId;
 
-public interface ProcessCommentService {
+public interface HumanTaskCommentService {
     ExtendedDataContext get(LocalId id);
 
     ExtendedDataContext add(LocalId taskId, DataContext dataContext);

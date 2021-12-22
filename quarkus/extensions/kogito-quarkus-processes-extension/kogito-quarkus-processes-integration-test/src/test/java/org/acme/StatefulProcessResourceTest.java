@@ -26,11 +26,11 @@ import org.kie.kogito.incubation.application.AppRoot;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.processes.*;
 import org.kie.kogito.incubation.processes.services.StatefulProcessService;
-import org.kie.kogito.incubation.processes.services.UserTaskService;
 import org.kie.kogito.incubation.processes.services.contexts.Policy;
 import org.kie.kogito.incubation.processes.services.contexts.ProcessMetaDataContext;
 import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
 import org.kie.kogito.incubation.processes.services.contexts.TaskWorkItemDataContext;
+import org.kie.kogito.incubation.processes.services.humantask.HumanTaskService;
 
 import com.example.Payload;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,7 +65,7 @@ public class StatefulProcessResourceTest {
     @Inject
     StatefulProcessService processSvc;
     @Inject
-    UserTaskService taskSvc;
+    HumanTaskService taskSvc;
     @Inject
     ObjectMapper mapper;
 

@@ -45,10 +45,10 @@ import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusHumanTaskService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStatefulProcessService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
-import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusUserTaskService;
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
 import org.kie.kogito.serialization.process.ObjectMarshallerStrategy;
@@ -148,7 +148,7 @@ public class ProcessesAssetsProcessor {
                 .addBeanClasses(
                         QuarkusStraightThroughProcessService.class,
                         QuarkusStatefulProcessService.class,
-                        QuarkusUserTaskService.class,
+                        QuarkusHumanTaskService.class,
                         QuarkusProcessIdFactory.class)
                 .build();
     }

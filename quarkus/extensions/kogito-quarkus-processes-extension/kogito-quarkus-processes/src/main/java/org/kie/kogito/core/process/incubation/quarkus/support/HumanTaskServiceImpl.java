@@ -32,21 +32,21 @@ import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.processes.*;
-import org.kie.kogito.incubation.processes.services.UserTaskService;
 import org.kie.kogito.incubation.processes.services.contexts.Policy;
 import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
+import org.kie.kogito.incubation.processes.services.humantask.HumanTaskService;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.process.*;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
 
-class UserTaskServiceImpl implements UserTaskService {
+class HumanTaskServiceImpl implements HumanTaskService {
 
     private final Application application;
     private final ProcessService svc;
     private final Processes processes;
 
-    UserTaskServiceImpl(Application application, ProcessService svc, Processes processes) {
+    HumanTaskServiceImpl(Application application, ProcessService svc, Processes processes) {
         this.application = application;
         this.svc = svc;
         this.processes = processes;
