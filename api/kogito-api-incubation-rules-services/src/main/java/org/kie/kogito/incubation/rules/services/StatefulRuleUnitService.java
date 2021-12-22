@@ -16,13 +16,15 @@
 
 package org.kie.kogito.incubation.rules.services;
 
-import org.kie.kogito.incubation.common.*;
-
 import java.util.stream.Stream;
 
+import org.kie.kogito.incubation.common.*;
+
 public interface StatefulRuleUnitService {
-    MetaDataContext create(LocalId ruleUnitId, ExtendedDataContext extendedDataContext);
+    MetaDataContext create(LocalId ruleUnitId, ExtendedReferenceContext extendedDataContext);
+
     MetaDataContext dispose(LocalId ruleUnitInstanceId);
+
     MetaDataContext fire(LocalId ruleUnitInstanceId);
 
     /**
@@ -30,6 +32,6 @@ public interface StatefulRuleUnitService {
      * @param params params + meta-data for the query
      * @return a stream of results (data + meta)
      */
-    Stream<ExtendedDataContext> query(LocalId queryId, ExtendedDataContext params);
+    Stream<ExtendedDataContext> query(LocalId queryId, ExtendedReferenceContext params);
 
 }

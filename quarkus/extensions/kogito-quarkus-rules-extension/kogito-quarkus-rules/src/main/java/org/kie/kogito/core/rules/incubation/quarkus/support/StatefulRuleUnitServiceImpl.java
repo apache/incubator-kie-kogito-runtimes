@@ -16,6 +16,11 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 import org.kie.kogito.incubation.rules.*;
@@ -24,11 +29,6 @@ import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnits;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
@@ -49,12 +49,12 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
     }
 
     @Override
-    public MetaDataContext create(LocalId localId, ExtendedDataContext extendedDataContext) {
+    public MetaDataContext create(LocalId localId, ExtendedReferenceContext extendedDataContext) {
         RuleUnitId ruleUnitId;
         if (localId instanceof RuleUnitId) {
             ruleUnitId = (RuleUnitId) localId;
-        } else throw new IllegalArgumentException("cannot parse rule unit id");
-
+        } else
+            throw new IllegalArgumentException("cannot parse rule unit id");
 
         RuleUnitData ruleUnitData = (RuleUnitData) extendedDataContext.data();
         RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create((Class<RuleUnitData>) ruleUnitData.getClass());
@@ -70,9 +70,11 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstanceId ruleUnitInstanceId;
         if (localId instanceof RuleUnitInstanceId) {
             ruleUnitInstanceId = (RuleUnitInstanceId) localId;
-        } else throw new IllegalArgumentException("cannot parse rule unit id");
+        } else
+            throw new IllegalArgumentException("cannot parse rule unit id");
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
-        if (instance == null) throw new IllegalArgumentException("Unknown instance " + localId);
+        if (instance == null)
+            throw new IllegalArgumentException("Unknown instance " + localId);
         instance.dispose();
         return EmptyMetaDataContext.Instance;
     }
@@ -82,14 +84,15 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstanceId ruleUnitInstanceId;
         if (localId instanceof RuleUnitInstanceId) {
             ruleUnitInstanceId = (RuleUnitInstanceId) localId;
-        } else throw new IllegalArgumentException("cannot parse rule unit id");
+        } else
+            throw new IllegalArgumentException("cannot parse rule unit id");
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
         instance.fire();
         return EmptyMetaDataContext.Instance;
     }
 
     @Override
-    public Stream<ExtendedDataContext> query(LocalId localId, ExtendedDataContext params) {
+    public Stream<ExtendedDataContext> query(LocalId localId, ExtendedReferenceContext params) {
         RuleUnitInstanceId ruleUnitInstanceId;
         // must add a QueryId for instances!
         InstanceQueryId queryId;
@@ -103,11 +106,11 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         }
 
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
-        if (instance == null) throw new IllegalArgumentException("Unknown instance " + localId);
+        if (instance == null)
+            throw new IllegalArgumentException("Unknown instance " + localId);
         List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
 
-        return results.stream().map(r ->
-                ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
+        return results.stream().map(r -> ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
 
     }
 

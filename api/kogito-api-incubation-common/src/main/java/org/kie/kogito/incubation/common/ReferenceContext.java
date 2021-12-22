@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.incubation.rules.services;
+package org.kie.kogito.incubation.common;
 
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.LocalId;
-
-public interface DataSourceService {
-    /**
-     * @param id identifier of the data source
-     * @param ctx data that should be inserted into the data source
-     * @return FactHandleId
-     */
-    LocalId add(LocalId id, DataContext ctx);
+/**
+ * This represents a computational context.
+ * It may not converted to other computational contexts.
+ * For that, use DataContext
+ *
+ * FIXME this will become the "real" data context: DataContext will be renamed.
+ *
+ */
+public interface ReferenceContext {
 }

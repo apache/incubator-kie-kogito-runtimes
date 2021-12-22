@@ -3,10 +3,7 @@ package org.kie.kogito.quarkus.drools;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.application.AppRoot;
-import org.kie.kogito.incubation.common.EmptyDataContext;
-import org.kie.kogito.incubation.common.ExtendedDataContext;
-import org.kie.kogito.incubation.common.MapDataContext;
-import org.kie.kogito.incubation.common.MetaDataContext;
+import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIdParser;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
@@ -31,7 +28,7 @@ public class StatefulRuleUnitServiceTest {
     @Test
     void testCreate() {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
-        MetaDataContext result = ruleUnitService.create(id, ExtendedDataContext.ofData(new AnotherService()));
+        MetaDataContext result = ruleUnitService.create(id, ExtendedReferenceContext.ofData(new AnotherService()));
 
         RuleUnitInstanceId instanceId = RuleUnitIdParser.parse(
                 MapDataContext.from(result).get("id", String.class), RuleUnitInstanceId.class);
@@ -43,7 +40,7 @@ public class StatefulRuleUnitServiceTest {
     void testQuery() {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
         var ruleUnitData = new AnotherService();
-        MetaDataContext created = ruleUnitService.create(id, ExtendedDataContext.ofData(ruleUnitData));
+        MetaDataContext created = ruleUnitService.create(id, ExtendedReferenceContext.ofData(ruleUnitData));
         RuleUnitInstanceId ruid = RuleUnitIdParser.parse(
                 MapDataContext.from(created).get("id", String.class), RuleUnitInstanceId.class);
         InstanceQueryId queryId = ruid.queries().get("Strings");
@@ -53,7 +50,7 @@ public class StatefulRuleUnitServiceTest {
         ruleUnitData.getStrings().add(new StringHolder("hello Mario"));
         ruleUnitData.getStrings().add(new StringHolder("helicopter"));
 
-        Stream<ExtendedDataContext> result = ruleUnitService.query(queryId, ExtendedDataContext.ofData(EmptyDataContext.Instance));
+        Stream<ExtendedDataContext> result = ruleUnitService.query(queryId, ExtendedReferenceContext.ofData(EmptyDataContext.Instance));
         List<String> strings = result
                 .map(e -> e.data().as(MapDataContext.class).get("results", StringHolder.class).getValue())
                 .collect(Collectors.toList());
