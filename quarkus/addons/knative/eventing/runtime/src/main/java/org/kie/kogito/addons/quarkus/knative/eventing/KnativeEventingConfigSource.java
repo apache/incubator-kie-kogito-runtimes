@@ -41,7 +41,6 @@ public class KnativeEventingConfigSource implements ConfigSource {
     static {
         configuration.put("mp.messaging.outgoing." + KogitoEventStreams.OUTGOING + ".connector", "quarkus-http");
         configuration.put(URL_CONFIG, "${K_SINK}");
-        // TODO: disable protobuf: https://issues.redhat.com/browse/KOGITO-6453
     }
 
     /**

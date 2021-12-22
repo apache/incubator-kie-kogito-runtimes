@@ -21,7 +21,6 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-extension-spi</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
