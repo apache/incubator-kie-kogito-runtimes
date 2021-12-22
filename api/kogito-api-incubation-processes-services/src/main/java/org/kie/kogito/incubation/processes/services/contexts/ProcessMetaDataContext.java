@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.core.process.incubation.quarkus.support;
+package org.kie.kogito.incubation.processes.services.contexts;
 
 import org.kie.kogito.incubation.common.DefaultCastable;
 import org.kie.kogito.incubation.common.LocalId;

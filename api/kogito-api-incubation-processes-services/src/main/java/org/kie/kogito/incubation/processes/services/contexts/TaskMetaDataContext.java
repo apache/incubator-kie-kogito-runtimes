@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.core.process.incubation.quarkus.support;
+package org.kie.kogito.incubation.processes.services.contexts;
 
 public final class TaskMetaDataContext extends ProcessMetaDataContext {
     public static TaskMetaDataContext of(Policy policy) {

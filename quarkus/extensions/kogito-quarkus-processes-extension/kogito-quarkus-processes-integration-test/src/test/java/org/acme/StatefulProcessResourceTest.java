@@ -22,15 +22,15 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.core.process.incubation.quarkus.support.Policy;
-import org.kie.kogito.core.process.incubation.quarkus.support.ProcessMetaDataContext;
-import org.kie.kogito.core.process.incubation.quarkus.support.TaskMetaDataContext;
-import org.kie.kogito.core.process.incubation.quarkus.support.TaskWorkItemDataContext;
 import org.kie.kogito.incubation.application.AppRoot;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.processes.*;
 import org.kie.kogito.incubation.processes.services.StatefulProcessService;
 import org.kie.kogito.incubation.processes.services.UserTaskService;
+import org.kie.kogito.incubation.processes.services.contexts.Policy;
+import org.kie.kogito.incubation.processes.services.contexts.ProcessMetaDataContext;
+import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
+import org.kie.kogito.incubation.processes.services.contexts.TaskWorkItemDataContext;
 
 import com.example.Payload;
 import com.fasterxml.jackson.core.JsonProcessingException;

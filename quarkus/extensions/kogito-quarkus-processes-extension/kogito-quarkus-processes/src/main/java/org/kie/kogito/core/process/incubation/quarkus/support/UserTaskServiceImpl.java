@@ -33,6 +33,8 @@ import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.processes.*;
 import org.kie.kogito.incubation.processes.services.UserTaskService;
+import org.kie.kogito.incubation.processes.services.contexts.Policy;
+import org.kie.kogito.incubation.processes.services.contexts.TaskMetaDataContext;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.process.*;
 import org.kie.kogito.process.Process;
@@ -107,8 +109,8 @@ class UserTaskServiceImpl implements UserTaskService {
 
     @Override
     public ExtendedDataContext abort(LocalId id, MetaDataContext metaDataContext) {
-        TaskMetaDataContext mdc = metaDataContext.as(TaskMetaDataContext.class);
-        mdc.setPhase("abort");
+        MapDataContext mdc = metaDataContext.as(MapDataContext.class);
+        mdc.set("phase", "abort");
 
         return transition(id, ExtendedDataContext.of(mdc, EmptyDataContext.Instance));
     }
@@ -116,8 +118,8 @@ class UserTaskServiceImpl implements UserTaskService {
     @Override
     public ExtendedDataContext complete(LocalId processId, DataContext dataContext) {
         ExtendedDataContext edc = dataContext.as(ExtendedDataContext.class);
-        TaskMetaDataContext mdc = edc.meta().as(TaskMetaDataContext.class);
-        mdc.setPhase("complete");
+        MapDataContext mdc = edc.meta().as(MapDataContext.class);
+        mdc.set("phase", "complete");
 
         return transition(processId, ExtendedDataContext.of(mdc, edc.data()));
     }
@@ -194,7 +196,7 @@ class UserTaskServiceImpl implements UserTaskService {
         return ExtendedDataContext.ofData(MapDataContext.of(result));
     }
 
-    private SecurityPolicy convertPolicyObject(org.kie.kogito.core.process.incubation.quarkus.support.Policy policy) {
+    private SecurityPolicy convertPolicyObject(Policy policy) {
         return SecurityPolicy.of(IdentityProviders.of(policy.user(), policy.groups()));
     }
 }

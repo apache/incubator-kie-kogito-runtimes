@@ -28,6 +28,7 @@ import org.kie.kogito.incubation.processes.ProcessIdParser;
 import org.kie.kogito.incubation.processes.ProcessInstanceId;
 import org.kie.kogito.incubation.processes.SignalId;
 import org.kie.kogito.incubation.processes.services.StatefulProcessService;
+import org.kie.kogito.incubation.processes.services.contexts.ProcessMetaDataContext;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
@@ -60,8 +61,7 @@ class StatefulProcessServiceImpl implements StatefulProcessService {
                         process, businessKey, model, startFromNodeId);
         MapDataContext data = MapDataContext.from(instance.variables().toMap());
 
-        ProcessMetaDataContext meta = new ProcessMetaDataContext();
-        meta.setId(processId.instances().get(instance.id()));
+        ProcessMetaDataContext meta = ProcessMetaDataContext.of(processId.instances().get(instance.id()));
 
         return ExtendedDataContext.of(meta, data);
     }
@@ -76,8 +76,7 @@ class StatefulProcessServiceImpl implements StatefulProcessService {
                 dataContext,
                 signalId.signalId()).orElseThrow();
         MapDataContext data = MapDataContext.from(m.toMap());
-        ProcessMetaDataContext meta = new ProcessMetaDataContext();
-        meta.setId(signalId.processInstanceId());
+        ProcessMetaDataContext meta = ProcessMetaDataContext.of(signalId.processInstanceId());
 
         return ExtendedDataContext.of(meta, data);
     }
@@ -109,8 +108,7 @@ class StatefulProcessServiceImpl implements StatefulProcessService {
         ProcessInstanceId processInstanceId = ProcessIdParser.select(localId, ProcessInstanceId.class);
         Process<MappableToModel<Model>> process = parseProcess(processInstanceId.processId());
         Model m = svc.findById(process, processInstanceId.processInstanceId()).orElseThrow();
-        ProcessMetaDataContext meta = new ProcessMetaDataContext();
-        meta.setId(localId);
+        ProcessMetaDataContext meta = ProcessMetaDataContext.of(localId);
         MapDataContext data = MapDataContext.of(m.toMap());
         return ExtendedDataContext.of(meta, data);
     }
