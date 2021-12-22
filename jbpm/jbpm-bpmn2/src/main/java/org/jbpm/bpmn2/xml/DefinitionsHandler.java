@@ -175,7 +175,7 @@ public class DefinitionsHandler extends BaseAbstractHandler implements Handler {
             }
             variable.setType(dataType);
             if(defaultValue != null) {               
-                variable.setValue(dataType.readValue((String) defaultValue));
+                variable.setValue(dataType.verifyDataType(defaultValue) ? defaultValue : dataType.readValue((String)defaultValue));                
             }
         }
     }

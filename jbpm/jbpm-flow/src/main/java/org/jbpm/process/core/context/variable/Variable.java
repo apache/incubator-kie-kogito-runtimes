@@ -48,7 +48,6 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     public static final String OUTPUT_TAG = "output";
     public static final String BUSINESS_RELEVANT = "business-relevant";
     public static final String TRACKED = "tracked";
-    public static final String DEFAULT_VALUE = "defaultValue";
 
     private String id;
     private String name;
