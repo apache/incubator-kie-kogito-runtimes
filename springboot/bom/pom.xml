@@ -25,6 +25,7 @@
     <version.org.springframework.cloud.kubernetes>1.1.10.RELEASE</version.org.springframework.cloud.kubernetes>
     <!-- Fabric8 aligned with Spring Cloud. See: https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-kubernetes-core/1.1.10.RELEASE -->
     <version.io.fabric8>4.13.2</version.io.fabric8>
+    <version.org.jboss.logmanager>2.1.18.Final</version.org.jboss.logmanager>
   </properties>
 
   <dependencyManagement>
@@ -72,6 +73,12 @@
         <artifactId>knative-client</artifactId>
         <version>${version.io.fabric8}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.logmanager</groupId>
+        <artifactId>jboss-logmanager</artifactId>
+        <version>${version.org.jboss.logmanager}</version>
+      </dependency>
+
       <dependency>
         <groupId>io.fabric8</groupId>
         <artifactId>kubernetes-server-mock</artifactId>
