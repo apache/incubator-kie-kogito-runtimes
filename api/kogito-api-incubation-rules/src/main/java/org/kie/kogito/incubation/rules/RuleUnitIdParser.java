@@ -65,11 +65,11 @@ public class RuleUnitIdParser {
         throw newError(id, "instances or queries");
     }
 
-    public static <T extends LocalId> T extract(LocalId id, Class<T> expected) {
+    public static <T extends LocalId> T select(LocalId id, Class<T> expected) {
         return parse(id.asLocalUri().path(), expected);
     }
 
-    private static IllegalArgumentException newError(String id, String prefix) {
-        return new IllegalArgumentException("cannot parse " + id + ", expected " + prefix);
+    private static IllegalArgumentException newError(String id, String expected) {
+        return new IllegalArgumentException("Invalid id " + id + "; expected " + expected);
     }
 }

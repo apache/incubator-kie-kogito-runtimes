@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.application.AppRoot;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
-import org.kie.kogito.incubation.rules.RuleUnitIdParser;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
+import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -45,10 +45,9 @@ public class StatefulRuleUnitServiceTest {
     @Test
     void testCreate() {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
-        MetaDataContext result = ruleUnitService.create(id, ExtendedReferenceContext.ofData(new AnotherService()));
-
-        RuleUnitInstanceId instanceId = RuleUnitIdParser.parse(
-                MapDataContext.from(result).get("id", String.class), RuleUnitInstanceId.class);
+        var result = ruleUnitService.create(id, ExtendedReferenceContext.ofData(new AnotherService()));
+        var meta = result.as(RuleUnitMetaDataContext.class);
+        var instanceId = meta.id(RuleUnitInstanceId.class);
         assertEquals("/rule-units/org.kie.kogito.quarkus.drools.AnotherService",
                 instanceId.ruleUnitId().asLocalUri().path());
     }
@@ -58,8 +57,8 @@ public class StatefulRuleUnitServiceTest {
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
         var ruleUnitData = new AnotherService();
         MetaDataContext created = ruleUnitService.create(id, ExtendedReferenceContext.ofData(ruleUnitData));
-        RuleUnitInstanceId ruid = RuleUnitIdParser.parse(
-                MapDataContext.from(created).get("id", String.class), RuleUnitInstanceId.class);
+        var meta = created.as(RuleUnitMetaDataContext.class);
+        var ruid = meta.id(RuleUnitInstanceId.class);
         InstanceQueryId queryId = ruid.queries().get("Strings");
 
         ruleUnitData.getStrings().add(new StringHolder("hello folks"));
