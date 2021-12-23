@@ -17,12 +17,16 @@ package org.kie.kogito.incubation.processes.services.contexts;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public final class Policy {
     public static Policy of(String user, List<String> groups) {
         return new Policy(user, groups);
     }
 
+    @JsonProperty
     private String user;
+    @JsonProperty
     private List<String> groups;
 
     protected Policy() {

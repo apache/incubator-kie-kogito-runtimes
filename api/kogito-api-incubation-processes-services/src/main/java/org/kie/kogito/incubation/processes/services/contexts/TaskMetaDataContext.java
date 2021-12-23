@@ -15,12 +15,16 @@
  */
 package org.kie.kogito.incubation.processes.services.contexts;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public final class TaskMetaDataContext extends ProcessMetaDataContext {
     public static TaskMetaDataContext of(Policy policy) {
         return new TaskMetaDataContext(policy);
     }
 
+    @JsonProperty
     private Policy policy;
+    @JsonProperty
     private String phase;
 
     protected TaskMetaDataContext(Policy policy) {
