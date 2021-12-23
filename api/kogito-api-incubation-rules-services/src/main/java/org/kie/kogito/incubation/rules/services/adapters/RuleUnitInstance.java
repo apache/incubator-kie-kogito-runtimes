@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 public interface RuleUnitInstance<T> {
     RuleUnitInstanceId id();
+    T context();
+
     MetaDataContext fire();
     MetaDataContext dispose();
 

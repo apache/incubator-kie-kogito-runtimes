@@ -20,26 +20,25 @@ import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
-import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnits;
+import org.kie.kogito.incubation.rules.data.DataId;
+import org.kie.kogito.incubation.rules.data.DataSourceId;
+import org.kie.kogito.incubation.rules.services.DataSourceService;
+import org.kie.kogito.rules.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
+class DataSourceServiceImpl implements DataSourceService {
 
     private final RuleUnits ruleUnits;
 
-    public StatefulRuleUnitServiceImpl(RuleUnits ruleUnits) {
+    public DataSourceServiceImpl(RuleUnits ruleUnits) {
         this.ruleUnits = ruleUnits;
     }
 
-    @Override
     public MetaDataContext create(LocalId localId, ExtendedReferenceContext extendedDataContext) {
         RuleUnitId ruleUnitId;
         if (localId instanceof RuleUnitId) {
@@ -66,8 +65,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         }
     }
 
-
-    @Override
     public MetaDataContext dispose(LocalId localId) {
         RuleUnitInstanceId ruleUnitInstanceId;
         if (localId instanceof RuleUnitInstanceId) {
@@ -81,7 +78,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         return EmptyMetaDataContext.Instance;
     }
 
-    @Override
     public MetaDataContext fire(LocalId localId) {
         RuleUnitInstanceId ruleUnitInstanceId;
         if (localId instanceof RuleUnitInstanceId) {
@@ -93,7 +89,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         return EmptyMetaDataContext.Instance;
     }
 
-    @Override
     public Stream<ExtendedDataContext> query(LocalId localId, ExtendedReferenceContext params) {
         RuleUnitInstanceId ruleUnitInstanceId;
         // must add a QueryId for instances!
@@ -116,4 +111,35 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
     }
 
+    @Override
+    public DataId add(DataSourceId id, DataContext ctx) {
+        RuleUnitId ruleUnitId = id.ruleUnitInstanceId().ruleUnitId();
+        Class<RuleUnitData> ruleUnitDataClass = toClass(ruleUnitId);
+        getDataSource(id, ruleUnitDataClass);
+        return null;
+    }
+
+    private DataSource<DataContext> getDataSource(DataSourceId id, Class<RuleUnitData> ruleUnitDataClass) {
+//        try {
+//            return null;//.=;ruleUnitDataClass.getDeclaredField(id.dataSourceId());
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        }
+        return null;
+    }
+
+    @Override
+    public DataContext get(DataId id) {
+        return null;
+    }
+
+    @Override
+    public void update(DataId id, DataContext ctx) {
+
+    }
+
+    @Override
+    public void remove(DataId id) {
+
+    }
 }

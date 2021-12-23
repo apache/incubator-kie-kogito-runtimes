@@ -11,7 +11,6 @@ import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.incubation.rules.services.adapters.RuleUnitInstance;
 import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
-import org.kie.kogito.rules.RuleUnitData;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -23,7 +22,7 @@ public class RuleUnitInstanceProvider {
     <T extends ReferenceContext> RuleUnitInstance<T> createRuleUnitInstance(
             RuleUnitIds componentRoot,
             StatefulRuleUnitService svc,
-            T ctx) {
+            ReferenceContext ctx) {
 
         Class<?> aClass = ctx.getClass();
         while (aClass.isSynthetic() && null != aClass.getSuperclass()) {
