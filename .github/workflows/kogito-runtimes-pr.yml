@@ -1,6 +1,9 @@
 name: Kogito Runtimes Build
 
 on:
+  push:
+    branches-ignore:
+      - 'main'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
@@ -20,7 +23,7 @@ jobs:
     timeout-minutes: 120
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
         java-version: [11]
         include:
           - os: ubuntu-latest
@@ -72,6 +75,7 @@ jobs:
         uses: kiegroup/github-action-build-chain@v2.6.18
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
+          flow-type: "branch"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: Publish Test Report
