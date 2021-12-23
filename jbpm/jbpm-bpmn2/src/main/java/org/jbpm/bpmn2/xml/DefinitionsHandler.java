@@ -174,9 +174,7 @@ public class DefinitionsHandler extends BaseAbstractHandler implements Handler {
                 dataType = DataTypeResolver.fromType(itemDefinition.getStructureRef(), cl);
             }
             variable.setType(dataType);
-            if(defaultValue != null) {               
-                variable.setValue(dataType.verifyDataType(defaultValue) ? defaultValue : dataType.readValue((String)defaultValue));                
-            }
+            variable.setValue(dataType.verifyDataType(defaultValue) ? defaultValue : dataType.readValue((String) defaultValue));
         }
     }
 

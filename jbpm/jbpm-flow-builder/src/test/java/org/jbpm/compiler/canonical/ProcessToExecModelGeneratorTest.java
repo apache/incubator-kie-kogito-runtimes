@@ -291,15 +291,15 @@ public class ProcessToExecModelGeneratorTest {
                 })
                 .withStackTraceContaining("Unknown variable 'unexisting'");
     }
-    
+
     @Test
     public void testScriptVariablewithDefaultValue() {
 
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess("demo.orders");
         factory
                 .variable("order", new ObjectDataType("com.myspace.demo.Order"))
-                .variable("approver", new StringDataType(),"john","customTags",null)
-                .variable("age", new IntegerDataType(),"1","customTags",null)
+                .variable("approver", new StringDataType(), "john", "customTags", null)
+                .variable("age", new IntegerDataType(), "1", "customTags", null)
                 .name("orders")
                 .packageName("com.myspace.demo")
                 .dynamic(false)

@@ -90,8 +90,8 @@ public abstract class AbstractVisitor {
             for (Variable variable : variableScope.getVariables()) {
                 if (!visitedVariables.add(variable.getName())) {
                     continue;
-                }                
-                String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS); 
+                }
+                String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 Object defaultValue = variable.getValue();
                 ObjectCreationExpr variableType = new ObjectCreationExpr();
                 body.tryAddImportToParentCompilationUnit(variable.getType().getClass());
@@ -99,9 +99,10 @@ public abstract class AbstractVisitor {
                 if (variable.getType().getClass().equals(ObjectDataType.class)) {
                     variableType.addArgument(new ClassExpr(new ClassOrInterfaceType(null, variable.getType().getStringType())));
                 }
-                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()),variableType,defaultValue != null ? new StringLiteralExpr(defaultValue.toString()) : new NullLiteralExpr(),new StringLiteralExpr(Variable.VARIABLE_TAGS),
+                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableType,
+                        defaultValue != null ? new StringLiteralExpr(defaultValue.toString()) : new NullLiteralExpr(), new StringLiteralExpr(Variable.VARIABLE_TAGS),
                         tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
-          }
+            }
         }
     }
 }

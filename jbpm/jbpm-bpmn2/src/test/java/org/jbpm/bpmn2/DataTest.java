@@ -481,7 +481,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                 .startProcess("process");
 
     }
-    
+
     @Test
     public void testDefaultProcessVariableValue() throws Exception {
 
@@ -495,6 +495,6 @@ public class DataTest extends JbpmBpmn2TestCase {
         assertEquals("defaultProc", processInstance.getVariable("procVar"));
         assertEquals(1, processInstance.getVariable("intVar"));
 
-    }    
+    }
 
 }
