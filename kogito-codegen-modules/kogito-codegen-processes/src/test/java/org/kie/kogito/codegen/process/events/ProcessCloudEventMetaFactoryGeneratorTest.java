@@ -137,8 +137,13 @@ class ProcessCloudEventMetaFactoryGeneratorTest {
 
         assertThat(clazz).isNotNull();
         assertEquals(2, clazz.getMethods().size());
-        assertReturnExpressionContains(clazz.getMethods().get(0), "customers", EventKind.CONSUMED);
-        assertReturnExpressionContains(clazz.getMethods().get(1), "process.messagestartevent.processedcustomers", EventKind.PRODUCED);
+
+        MethodDeclaration customersMethod = clazz.getMethods().stream().filter(m -> m.getNameAsString().endsWith("CONSUMED_customers")).findFirst()
+                .orElseGet(() -> fail("Cannot find CONSUMED_customers method"));
+        MethodDeclaration processedcustomersMethod = clazz.getMethods().stream().filter(m -> m.getNameAsString().endsWith("PRODUCED_processedcustomers")).findFirst()
+                .orElseGet(() -> fail("Cannot find PRODUCED_processedcustomers method"));
+        assertReturnExpressionContains(customersMethod, "customers", EventKind.CONSUMED);
+        assertReturnExpressionContains(processedcustomersMethod, "process.messagestartevent.processedcustomers", EventKind.PRODUCED);
     }
 
     @Test

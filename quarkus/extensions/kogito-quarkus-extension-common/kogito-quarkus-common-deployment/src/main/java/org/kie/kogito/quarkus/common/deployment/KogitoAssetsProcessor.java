@@ -60,6 +60,7 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getHotReloadSupportSource;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
+import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.toClassName;
 
 /**
  * Main class of the Kogito extension
