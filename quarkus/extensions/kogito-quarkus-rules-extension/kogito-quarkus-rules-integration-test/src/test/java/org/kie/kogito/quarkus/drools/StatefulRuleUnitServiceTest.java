@@ -31,6 +31,7 @@ import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.kie.kogito.rules.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,8 +45,13 @@ public class StatefulRuleUnitServiceTest {
 
     @Test
     void testCreate() {
+        AnotherService ruleUnitData =
+                new AnotherService(
+                        DataSource.createStore(),
+                        DataSource.createStore());
+
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
-        var result = ruleUnitService.create(id, ExtendedReferenceContext.ofData(new AnotherService()));
+        var result = ruleUnitService.create(id, ExtendedReferenceContext.ofData(ruleUnitData));
         var meta = result.as(RuleUnitMetaDataContext.class);
         var instanceId = meta.id(RuleUnitInstanceId.class);
         assertEquals("/rule-units/org.kie.kogito.quarkus.drools.AnotherService",
@@ -54,8 +60,12 @@ public class StatefulRuleUnitServiceTest {
 
     @Test
     void testQuery() {
+        AnotherService ruleUnitData =
+                new AnotherService(
+                        DataSource.createStore(),
+                        DataSource.createStore());
+
         var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
-        var ruleUnitData = new AnotherService();
         MetaDataContext created = ruleUnitService.create(id, ExtendedReferenceContext.ofData(ruleUnitData));
         var meta = created.as(RuleUnitMetaDataContext.class);
         var ruid = meta.id(RuleUnitInstanceId.class);

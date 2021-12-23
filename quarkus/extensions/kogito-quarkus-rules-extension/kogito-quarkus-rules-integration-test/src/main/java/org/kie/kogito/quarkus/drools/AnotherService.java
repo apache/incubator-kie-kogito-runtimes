@@ -15,14 +15,27 @@
  */
 package org.kie.kogito.quarkus.drools;
 
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 
-public class AnotherService implements RuleUnitData, DataContext {
-    DataStore<StringHolder> strings = DataSource.createStore();
-    DataStore<StringHolder> greetings = DataSource.createStore();
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+@ApplicationScoped
+public class AnotherService implements RuleUnitData, ReferenceContext {
+    @Inject
+    DataStore<StringHolder> strings;
+    @Inject
+    DataStore<StringHolder> greetings;
+
+    protected AnotherService() {
+    }
+
+    public AnotherService(DataStore<StringHolder> strings, DataStore<StringHolder> greetings) {
+        this.strings = strings;
+        this.greetings = greetings;
+    }
 
     public DataStore<StringHolder> getStrings() {
         return strings;
@@ -32,8 +45,4 @@ public class AnotherService implements RuleUnitData, DataContext {
         return greetings;
     }
 
-    @Override
-    public <T extends DataContext> T as(Class<T> type) {
-        throw new UnsupportedOperationException();
-    }
 }

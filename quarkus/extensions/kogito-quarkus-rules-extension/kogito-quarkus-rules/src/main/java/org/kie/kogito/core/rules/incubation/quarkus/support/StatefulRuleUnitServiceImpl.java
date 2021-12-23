@@ -48,7 +48,12 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
             throw new IllegalArgumentException("cannot parse rule unit id");
 
         RuleUnitData ruleUnitData = (RuleUnitData) extendedDataContext.data();
-        RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create((Class<RuleUnitData>) ruleUnitData.getClass());
+
+        Class<RuleUnitData> aClass = (Class<RuleUnitData>) ruleUnitData.getClass();
+        while (aClass.isSynthetic() && null != aClass.getSuperclass()) {
+            aClass = (Class<RuleUnitData>) aClass.getSuperclass();
+        }
+        RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create(aClass);
         RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);
         String instanceId = UUID.randomUUID().toString();
         ruleUnits.register(instanceId, instance);
