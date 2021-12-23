@@ -15,21 +15,19 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
-import java.util.Iterator;
-
 import org.jbpm.process.instance.impl.Action;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.jackson.utils.MergeUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getWorkflowData;
 
 public class InjectAction implements Action {
 
     protected JsonNode node;
-
-    protected static final ObjectMapper mapper = new ObjectMapper();
 
     public InjectAction(String json) {
         this(readObject(json));
@@ -41,7 +39,7 @@ public class InjectAction implements Action {
 
     private static JsonNode readObject(String json) {
         try {
-            return mapper.readTree(json);
+            return ObjectMapperFactory.get().readTree(json);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
@@ -49,12 +47,6 @@ public class InjectAction implements Action {
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        ObjectNode mainNode = (ObjectNode) context.getVariable("workflowdata");
-        Iterator<String> fieldNames = node.fieldNames();
-        while (fieldNames.hasNext()) {
-            String fieldName = fieldNames.next();
-            mainNode.set(fieldName, node.get(fieldName));
-        }
-        context.setVariable("workflowdata", mainNode);
+        MergeUtils.merge(node, getWorkflowData(context));
     }
 }

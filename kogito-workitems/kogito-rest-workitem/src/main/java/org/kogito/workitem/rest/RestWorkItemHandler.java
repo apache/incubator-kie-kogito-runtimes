@@ -25,13 +25,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.UnaryOperator;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.jbpm.workflow.instance.impl.WorkItemHandlerParamResolver;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -69,23 +67,6 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
     private static final Map<String, RestWorkItemHandlerBodyBuilder> BODY_BUILDERS = new ConcurrentHashMap<>();
 
-    // package scoped to allow unit test
-    static class RestUnaryOperator implements UnaryOperator<Object> {
-
-        private Object inputModel;
-
-        public RestUnaryOperator(Object inputModel) {
-            this.inputModel = inputModel;
-        }
-
-        @Override
-        public Object apply(Object value) {
-            return value instanceof WorkItemHandlerParamResolver
-                    ? ((WorkItemHandlerParamResolver) value).apply(inputModel)
-                    : value;
-        }
-    }
-
     private WebClient client;
 
     public RestWorkItemHandler(WebClient client) {
@@ -94,7 +75,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-        RestWorkItemTargetInfo targetInfo = getTargetInfo(workItem);
+        Class<?> targetInfo = getTargetInfo(workItem);
         logger.debug("Using target {}", targetInfo);
         //retrieving parameters
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
@@ -118,8 +99,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
         logger.debug("Filtered parameters are {}", parameters);
         // create request
-        UnaryOperator<Object> resolver = new RestUnaryOperator(inputModel);
-        endPoint = resolvePathParams(endPoint, parameters, resolver);
+        endPoint = resolvePathParams(endPoint, parameters);
         Optional<URL> url = getUrl(endPoint);
         String host = url.map(java.net.URL::getHost).orElse(hostProp);
         int port = url.map(java.net.URL::getPort).orElse(portProp);
@@ -129,14 +109,13 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
-        HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters, resolver)) : request.sendAndAwait();
-        manager.completeWorkItem(workItem.getStringId(), targetInfo != null ? Collections.singletonMap(RESULT,
-                resultHandler.apply(targetInfo, response)) : Collections.emptyMap());
+        HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
+        manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
 
     }
 
     public RestWorkItemHandlerBodyBuilder getBodyBuilder(Map<String, Object> parameters) {
-        Object param = parameters.get(BODY_BUILDER);
+        Object param = parameters.remove(BODY_BUILDER);
         //in case the body builder is not set as an input, just use the default
         if (Objects.isNull(param)) {
             return DEFAULT_BODY_BUILDER;
@@ -175,16 +154,11 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
                 });
     }
 
-    private RestWorkItemTargetInfo getTargetInfo(KogitoWorkItem workItem) {
+    private Class<?> getTargetInfo(KogitoWorkItem workItem) {
         String varName = ((WorkItemNode) ((WorkItemNodeInstance) workItem.getNodeInstance()).getNode()).getOutMapping(
                 RESULT);
         if (varName != null) {
-            KogitoProcessInstance pi = workItem.getProcessInstance();
-            Object instance = pi.getVariables().get(varName);
-            Class<?> type = getType(pi, varName);
-            if (instance != null || type != null) {
-                return new RestWorkItemTargetInfo(instance, type);
-            }
+            return getType(workItem.getProcessInstance(), varName);
         }
         logger.warn("no out mapping for {}", RESULT);
         return null;
@@ -195,15 +169,11 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
                 VariableScope.VARIABLE_SCOPE);
         Variable variable = variableScope.findVariable(varName);
         if (variable != null) {
-            try {
-                return getClassLoader().loadClass(variable.getType().getStringType());
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Problem loading type " + variable.getType().getStringType(), e);
-            }
+            return variable.getType().getObjectClass();
         } else {
             logger.warn("Cannot find definition for variable {}", varName);
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -212,7 +182,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     }
 
     //  package scoped to allow unit test
-    static String resolvePathParams(String endPoint, Map<String, Object> parameters, UnaryOperator<Object> resolver) {
+    static String resolvePathParams(String endPoint, Map<String, Object> parameters) {
         Set<String> toRemove = new HashSet<>();
         int start = endPoint.indexOf('{');
         if (start == -1) {
@@ -224,13 +194,13 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
             if (end == -1) {
                 throw new IllegalArgumentException("malformed endpoint should contain enclosing '}' " + endPoint);
             }
-            String key = sb.substring(start + 1, end);
-            Object value = resolver.apply(parameters.get(key));
+            final String key = sb.substring(start + 1, end);
+            final Object value = parameters.get(key);
             if (value == null) {
                 throw new IllegalArgumentException("missing parameter " + key);
             }
             toRemove.add(key);
-            sb.replace(start, end + 1, resolver.apply(parameters.get(key)).toString());
+            sb.replace(start, end + 1, value.toString());
             start = sb.indexOf("{", end);
         }
         parameters.keySet().removeAll(toRemove);

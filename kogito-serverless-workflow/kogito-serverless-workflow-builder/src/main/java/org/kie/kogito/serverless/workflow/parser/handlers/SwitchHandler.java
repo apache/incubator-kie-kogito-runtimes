@@ -15,43 +15,49 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.node.Split;
-import org.kie.kogito.serverless.workflow.parser.NodeIdGenerator;
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.parser.util.ServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
-import io.serverlessworkflow.api.events.EventDefinition;
+import io.serverlessworkflow.api.filters.EventDataFilter;
 import io.serverlessworkflow.api.produce.ProduceEvent;
 import io.serverlessworkflow.api.states.SwitchState;
 import io.serverlessworkflow.api.switchconditions.DataCondition;
 import io.serverlessworkflow.api.switchconditions.EventCondition;
 import io.serverlessworkflow.api.transitions.Transition;
 
-public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
-        StateHandler<SwitchState, SplitFactory<P>, P> {
+import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
+
+public class SwitchHandler extends StateHandler<SwitchState> {
 
     private static final String XORSPLITDEFAULT = "Default";
 
-    protected SwitchHandler(SwitchState state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory,
-            NodeIdGenerator idGenerator) {
-        super(state, workflow, factory, idGenerator);
+    private List<Runnable> targetHandlers = new ArrayList<>();
 
+    protected SwitchHandler(SwitchState state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
     @Override
-    public SplitFactory<P> makeNode() {
-        long id = idGenerator.getId();
-        SplitFactory<P> splitFactory = factory.splitNode(id).name(state
-                .getName());
+    public boolean usedForCompensation() {
+        return state.isUsedForCompensation();
+    }
+
+    @Override
+    public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+        long id = parserContext.newId();
+        SplitFactory<?> splitFactory = factory.splitNode(id).name(state.getName());
         // check if data-based or event-based switch state
         if (!state.getDataConditions().isEmpty()) {
             splitFactory.type(Split.TYPE_XOR);
@@ -60,46 +66,53 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
             splitFactory.metaData("UniqueId", Long.toString(id));
             splitFactory.metaData("EventBased", "true");
         }
-        return splitFactory;
+        return new MakeNodeResult(splitFactory);
     }
 
     @Override
-    public void handleTransitions(Map<String, StateHandler<?, ?, ?>> stateConnection) {
-        super.handleTransitions(stateConnection);
-        StateHandler<?, ?, ?> connInfo = stateConnection.get(state.getName());
-        if (connInfo == null) {
-            throw new IllegalStateException("unable to get split node for switch state }" + state.getName());
-        }
+    protected void handleTransitions(RuleFlowNodeContainerFactory<?, ?> factory,
+            Transition transition,
+            long sourceId) {
+        super.handleTransitions(factory, transition, sourceId);
         if (!state.getDataConditions().isEmpty()) {
-            finalizeDataBasedSwitchState(connInfo.getNode(), stateConnection);
+            finalizeDataBasedSwitchState(factory, getNode());
         } else {
-            finalizeEventBasedSwitchState(connInfo.getNode(), stateConnection);
+            finalizeEventBasedSwitchState(factory, getNode());
         }
     }
 
-    private void finalizeEventBasedSwitchState(NodeFactory<?, ?> startNode, Map<String, StateHandler<?, ?, ?>> stateConnection) {
+    private void finalizeEventBasedSwitchState(RuleFlowNodeContainerFactory<?, ?> factory, NodeFactory<?, ?> startNode) {
         List<EventCondition> conditions = state.getEventConditions();
         for (EventCondition eventCondition : conditions) {
-            EventDefinition eventDefinition = ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
-                    eventCondition.getEventRef());
-            long targetId = stateConnection.get(eventCondition.getTransition().getNextState()).getNode().getNode()
-                    .getId();
-            long eventId = idGenerator.getId();
-            ServerlessWorkflowParser.consumeEventNode(factory.eventNode(eventId), eventDefinition).done().connection(
-                    startNode.getNode().getId(), eventId).connection(eventId, targetId);
+            StateHandler<?> targetState = parserContext.getStateHandler(eventCondition.getTransition());
+
+            EventDataFilter eventFilter = eventCondition.getEventDataFilter();
+            String dataExpr = null;
+            String toExpr = null;
+            if (eventFilter != null) {
+                dataExpr = eventFilter.getData();
+                toExpr = eventFilter.getToStateData();
+
+            }
+            // TODO MakeNodeResult filteredNode =
+            //        filterAndMergeNode(factory, eventCondition.getName(), dataExpr, toExpr, (f, inputVar, outputVar) -> consumeEventNode(f, eventCondition.getEventRef(), inputVar, outputVar));
+
+            NodeFactory<?, ?> eventNode = consumeEventNode(factory, eventCondition.getEventRef(), DEFAULT_WORKFLOW_VAR, DEFAULT_WORKFLOW_VAR);
+            eventNode.done().connection(startNode.getNode().getId(), eventNode.getNode().getId());
+            targetState.connect(factory, eventNode.getNode().getId());
         }
     }
 
-    private void finalizeDataBasedSwitchState(NodeFactory<?, ?> startNode, Map<String, StateHandler<?, ?, ?>> stateConnection) {
-        long splitId = startNode.getNode().getId();
+    private void finalizeDataBasedSwitchState(RuleFlowNodeContainerFactory<?, ?> factory, NodeFactory<?, ?> startNode) {
+        final long splitId = startNode.getNode().getId();
         // set default connection
         if (state.getDefault() != null) {
             Transition transition = state.getDefault().getTransition();
-            if (transition != null && transition.getNextState() != null) {
-                startNode.metaData(XORSPLITDEFAULT, concatId(splitId, stateConnection.get(transition
-                        .getNextState()).getNode().getNode().getId()));
+            StateHandler<?> stateHandler = parserContext.getStateHandler(transition);
+            if (stateHandler != null) {
+                startNode.metaData(XORSPLITDEFAULT, concatId(splitId, stateHandler.getNode().getNode().getId()));
             } else if (state.getDefault().getEnd() != null) {
-                EndNodeFactory<P> endNodeFactory = endNodeFactory(state.getDefault().getEnd().getProduceEvents());
+                EndNodeFactory<?> endNodeFactory = endNodeFactory(factory, state.getDefault().getEnd().getProduceEvents());
                 endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
                 startNode.metaData(XORSPLITDEFAULT, concatId(splitId, endNodeFactory.getNode().getId()));
             }
@@ -107,29 +120,47 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
 
         List<DataCondition> conditions = state.getDataConditions();
         for (DataCondition condition : conditions) {
-            Optional<Long> targetId = handleTransition(condition.getTransition(), splitId, stateConnection);
-            if (!targetId.isPresent() && condition.getEnd() != null) {
-                EndNodeFactory<P> endNodeFactory = endNodeFactory(condition.getEnd().getProduceEvents());
-                endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
-                targetId = Optional.of(endNodeFactory.getNode().getId());
-            }
-            if (targetId.isPresent()) {
-                ((SplitFactory<?>) startNode).constraint(targetId.get(), concatId(splitId, targetId.get()),
-                        "DROOLS_DEFAULT", "java", ServerlessWorkflowUtils.conditionScript(condition.getCondition()), 0,
-                        isDefaultCondition(state, condition));
-            } else {
-                throw new IllegalArgumentException("Invalid condition, not transition not end");
-            }
+            handleTransition(factory, condition.getTransition(), splitId, Optional.of(new StateHandler.HandleTransitionCallBack() {
+                @Override
+                public void onStateTarget(StateHandler<?> targetState) {
+                    targetHandlers.add(() -> addConstraint(factory, startNode, targetState, condition));
+                }
+
+                @Override
+                public void onIdTarget(long targetId) {
+                    addConstraint(startNode, targetId, condition);
+                }
+
+                @Override
+                public void onEmptyTarget() {
+                    if (condition.getEnd() != null) {
+                        EndNodeFactory<?> endNodeFactory = endNodeFactory(factory, condition.getEnd().getProduceEvents());
+                        endNodeFactory.done().connection(splitId, endNodeFactory.getNode().getId());
+                        addConstraint(startNode, endNodeFactory.getNode().getId(), condition);
+                    } else {
+                        throw new IllegalArgumentException("Invalid condition, not transition not end");
+                    }
+                }
+            }));
         }
     }
 
-    private EndNodeFactory<P> endNodeFactory(List<ProduceEvent> produceEvents) {
-        EndNodeFactory<P> endNodeFactory = factory.endNode(idGenerator.getId());
+    private void addConstraint(RuleFlowNodeContainerFactory<?, ?> factory, NodeFactory<?, ?> startNode, StateHandler<?> stateHandler, DataCondition condition) {
+        addConstraint(startNode, stateHandler.getIncomingNode(factory).getNode().getId(), condition);
+    }
+
+    private void addConstraint(NodeFactory<?, ?> startNode, long targetId, DataCondition condition) {
+        ((SplitFactory<?>) startNode).constraintBuilder(targetId, concatId(startNode.getNode().getId(), targetId),
+                "DROOLS_DEFAULT", workflow.getExpressionLang(), ServerlessWorkflowUtils.conditionScript(condition.getCondition())).withDefault(isDefaultCondition(state, condition))
+                .metadata(Metadata.VARIABLE, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
+    }
+
+    private EndNodeFactory<?> endNodeFactory(RuleFlowNodeContainerFactory<?, ?> factory, List<ProduceEvent> produceEvents) {
+        EndNodeFactory<?> endNodeFactory = factory.endNode(parserContext.newId());
         if (produceEvents == null || produceEvents.isEmpty()) {
             endNodeFactory.terminate(true);
         } else {
-            ServerlessWorkflowParser.sendEventNode(endNodeFactory, ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
-                    produceEvents.get(0).getEventRef()));
+            ServerlessWorkflowParser.sendEventNode(endNodeFactory, eventDefinition(produceEvents.get(0).getEventRef()));
         }
         return endNodeFactory;
     }
@@ -147,4 +178,13 @@ public class SwitchHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends
                         || switchState.getDefault().getEnd() != null && condition.getEnd() != null);
     }
 
+    @Override
+    public void connect(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {
+        factory.connection(sourceId, getNode().getNode().getId());
+    }
+
+    @Override
+    public void handleConnections() {
+        targetHandlers.forEach(Runnable::run);
+    }
 }

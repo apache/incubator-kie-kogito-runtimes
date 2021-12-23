@@ -29,12 +29,6 @@ public final class UndefinedDataType implements DataType {
     private static final long serialVersionUID = 510l;
     private static UndefinedDataType instance;
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-    }
-
-    public void writeExternal(ObjectOutput out) throws IOException {
-    }
-
     public static UndefinedDataType getInstance() {
         if (instance == null) {
             instance = new UndefinedDataType();
@@ -42,22 +36,32 @@ public final class UndefinedDataType implements DataType {
         return instance;
     }
 
-    public boolean verifyDataType(final Object value) {
-        if (value == null) {
-            return true;
-        }
-        return false;
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+    }
+
+    @Override
+    public boolean verifyDataType(final Object value) {
+        return value == null;
+    }
+
+    @Override
     public Object readValue(String value) {
         throw new IllegalArgumentException("Undefined datatype");
     }
 
+    @Override
     public String writeValue(Object value) {
         throw new IllegalArgumentException("Undefined datatype");
     }
 
+    @Override
     public String getStringType() {
         return "java.lang.Object";
     }
+
 }

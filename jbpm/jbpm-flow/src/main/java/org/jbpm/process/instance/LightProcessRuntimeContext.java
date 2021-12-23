@@ -16,7 +16,6 @@
 package org.jbpm.process.instance;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,9 +30,9 @@ import org.kie.internal.process.CorrelationKey;
 
 public class LightProcessRuntimeContext implements ProcessRuntimeContext {
 
-    private final List<Process> processes;
+    private Collection<Process> processes;
 
-    public LightProcessRuntimeContext(List<Process> processes) {
+    public LightProcessRuntimeContext(Collection<Process> processes) {
         this.processes = processes;
     }
 
@@ -44,7 +43,7 @@ public class LightProcessRuntimeContext implements ProcessRuntimeContext {
 
     @Override
     public Optional<Process> findProcess(String id) {
-        return processes.stream().filter(p -> p.getId().equals(id)).findFirst();
+        return processes.stream().filter(p -> p.getId().equals(id)).findAny();
     }
 
     @Override

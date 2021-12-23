@@ -16,6 +16,7 @@
 package org.jbpm.bpmn2.xml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -318,6 +319,7 @@ public class TaskHandler extends AbstractNodeHandler {
                 forEachNode.addNode(node);
                 forEachNode.linkIncomingConnections(NodeImpl.CONNECTION_DEFAULT_TYPE, node.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE);
                 forEachNode.linkOutgoingConnections(node.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE, NodeImpl.CONNECTION_DEFAULT_TYPE);
+                forEachNode.setSequential(Boolean.parseBoolean(((Element) xmlNode).getAttribute("isSequential")));
 
                 Node orignalNode = node;
                 node = forEachNode;
@@ -342,7 +344,7 @@ public class TaskHandler extends AbstractNodeHandler {
             milestoneNode.setCondition(milestoneCondition);
             milestoneNode.setName(workItemNode.getName());
             milestoneNode.setParentContainer(workItemNode.getParentContainer());
-
+            Arrays.stream(workItemNode.getActionTypes()).forEach(action -> milestoneNode.setActions(action, workItemNode.getActions(action)));
             node = milestoneNode;
         }
 

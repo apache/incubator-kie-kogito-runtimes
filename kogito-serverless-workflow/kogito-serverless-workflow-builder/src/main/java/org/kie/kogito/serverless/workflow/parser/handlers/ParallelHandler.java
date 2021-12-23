@@ -19,41 +19,36 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.node.Split;
-import org.kie.kogito.serverless.workflow.parser.NodeIdGenerator;
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.branches.Branch;
 import io.serverlessworkflow.api.states.ParallelState;
 
-public class ParallelHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends StateHandler<ParallelState, SplitFactory<P>, P> {
+public class ParallelHandler extends StateHandler<ParallelState> {
 
-    private JoinFactory<P> connectionNode;
-
-    protected ParallelHandler(ParallelState state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory,
-            NodeIdGenerator idGenerator) {
-        super(state, workflow, factory, idGenerator);
-
+    protected ParallelHandler(ParallelState state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
     @Override
-    public SplitFactory<P> makeNode() {
-        SplitFactory<P> nodeFactory = factory.splitNode(idGenerator.getId()).name(state.getName() + ServerlessWorkflowParser.NODE_START_NAME).type(Split.TYPE_AND);
-        connectionNode = factory.joinNode(idGenerator.getId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME).type(Split.TYPE_AND);
+    public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+        SplitFactory<?> nodeFactory = factory.splitNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_START_NAME).type(Split.TYPE_AND);
+        JoinFactory<?> connectionNode = factory.joinNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME).type(Split.TYPE_AND);
         for (Branch branch : state.getBranches()) {
-            long branchId = idGenerator.getId();
+            long branchId = parserContext.newId();
             if (branch.getWorkflowId() == null || branch.getWorkflowId().isEmpty()) {
                 throw new IllegalStateException("Currently  supporting only branches with workflowid. Check branch " + branch.getName());
             }
             ServerlessWorkflowParser.subprocessNode(factory.subProcessNode(branchId).name(branch.getName()).processId(branch
                     .getWorkflowId()).waitForCompletion(true)).done().connection(nodeFactory.getNode().getId(), branchId).connection(branchId, connectionNode.getNode().getId());
         }
-        return nodeFactory;
+        return new MakeNodeResult(nodeFactory, connectionNode);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public JoinFactory<P> getConnectionNode() {
-        return connectionNode;
+    public boolean usedForCompensation() {
+        return state.isUsedForCompensation();
     }
 }

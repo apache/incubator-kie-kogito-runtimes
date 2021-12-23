@@ -53,8 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-serverless-workflow-runtime</artifactId>
-      <scope>test</scope>
+      <artifactId>kogito-jackson-utils</artifactId>
     </dependency>
   </dependencies>
 </project>

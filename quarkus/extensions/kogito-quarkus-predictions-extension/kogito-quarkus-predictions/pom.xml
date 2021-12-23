@@ -24,6 +24,10 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-pmml</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-api-incubation-predictions-services</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -47,11 +51,17 @@
                         </goals>
                         <phase>compile</phase>
                         <configuration>
-                            <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}
-                            </deployment>
+                            <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
+                            <capabilities>
+                                <provides>kogito-predictions</provides>
+                            </capabilities>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jboss.jandex</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -24,7 +24,7 @@ import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 
 @SuppressWarnings("unchecked")
-abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends RuleFlowNodeContainerFactory<T, P> {
+public abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends RuleFlowNodeContainerFactory<T, P> {
 
     private long linkedIncomingNodeId = -1;
     private long linkedOutgoingNodeId = -1;
@@ -37,18 +37,22 @@ abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFacto
         return (CompositeContextNode) node;
     }
 
+    @Override
     public T variable(String name, DataType type) {
         return variable(name, type, null);
     }
 
+    @Override
     public T variable(String name, DataType type, Object value) {
         return variable(name, type, value, null, null);
     }
 
+    @Override
     public T variable(String name, DataType type, String metaDataName, Object metaDataValue) {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
 
+    @Override
     public T variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
         Variable variable = new Variable();
         variable.setName(name);

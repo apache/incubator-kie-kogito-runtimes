@@ -16,16 +16,32 @@
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-jsonpath-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-jq-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-runtime</artifactId>
     </dependency>
-    <!-- Out of the box CE support -->
+    
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-messaging</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-springboot-events-kafka</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
     </dependency>
   </dependencies>
 

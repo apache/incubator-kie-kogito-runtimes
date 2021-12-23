@@ -1,6 +1,7 @@
 {
   "id": "function",
   "name": "test-wf",
+  "expressionLang": "jsonpath",
   "start": "HelloWorld",
   "functions": [
     {
@@ -43,10 +44,6 @@
       "name": "UpdateArg",
       "type": "operation",
       "actionMode": "sequential",
-      "stateDataFilter": {
-        "input": "{{ $.trace }}",
-        "output": "{{ $.trace }}"
-      },
       "actions": [
         {
           "functionRef": {

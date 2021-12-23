@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -37,28 +38,32 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Type;
 import org.kie.kogito.Model;
+import org.kie.kogito.ProcessInput;
 import org.kie.kogito.UserTask;
-import org.kie.kogito.codegen.Generated;
-import org.kie.kogito.codegen.VariableInfo;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
+import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
+import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
+import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.serialization.process.ObjectMarshallerStrategy;
 import org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoTypesProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf;
 
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
-import io.quarkus.bootstrap.model.AppDependency;
+import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
-import io.quarkus.deployment.builditem.CapabilityBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
@@ -72,6 +77,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveHierarchyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
+import io.quarkus.maven.dependency.ResolvedDependency;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -81,7 +87,6 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.generateAggregatedIndex;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getTargetClassesPath;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
 
 /**
@@ -91,6 +96,7 @@ public class ProcessesAssetsProcessor {
 
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
     private static final String PROCESS_SVG_SERVICE = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
+    private static final String PERSISTENCE_CAPABILITY = "org.kie.kogito.addons.persistence";
 
     private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
 
@@ -102,11 +108,6 @@ public class ProcessesAssetsProcessor {
     CurateOutcomeBuildItem curateOutcomeBuildItem;
 
     @BuildStep
-    CapabilityBuildItem capability() {
-        return new CapabilityBuildItem("kogito-processes");
-    }
-
-    @BuildStep
     FeatureBuildItem featureBuildItem() {
         return new FeatureBuildItem("kogito-processes");
     }
@@ -116,11 +117,11 @@ public class ProcessesAssetsProcessor {
             BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-            BuildProducer<ServiceProviderBuildItem> serviceProviderBuildItemBuildProducer) {
+            BuildProducer<ServiceProviderBuildItem> serviceProviderBuildItemBuildProducer,
+            Capabilities capabilities) {
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), null, curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
-        if (context.getAddonsConfig().usePersistence()) {
+        if (capabilities.isCapabilityWithPrefixPresent(PERSISTENCE_CAPABILITY)) {
             indexDependency.produce(new IndexDependencyBuildItem("com.google.protobuf", "protobuf-java"));
             resource.produce(new NativeImageResourceBuildItem("kogito-types.proto"));
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.persistence.ProtostreamObjectMarshaller"));
@@ -134,8 +135,36 @@ public class ProcessesAssetsProcessor {
     }
 
     @BuildStep
-    public ReflectiveClassBuildItem reflectionRestWorkItemHandler() {
-        return new ReflectiveClassBuildItem(true, true, "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder");
+    public ReflectiveClassBuildItem reflectionProcess() {
+        return new ReflectiveClassBuildItem(true, true,
+                "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder",
+                "org.kie.kogito.process.impl.BaseWorkItem",
+                "org.kie.kogito.event.Topic",
+                "org.kie.kogito.event.CloudEventMeta",
+                "org.kie.kogito.jobs.api.Job");
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem additionalBeans() {
+        return AdditionalBeanBuildItem.builder().addBeanClasses(QuarkusStraightThroughProcessService.class, QuarkusProcessIdFactory.class).build();
+    }
+
+    /**
+     * Produces the {@link KogitoProcessContainerGeneratorBuildItem} after generating the Kogito classes
+     */
+    @BuildStep
+    public void processApplicationSection(KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
+            BuildProducer<KogitoProcessContainerGeneratorBuildItem> processContainerProducer,
+            List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
+        final KogitoProcessContainerGeneratorBuildItem buildItem = new KogitoProcessContainerGeneratorBuildItem(
+                kogitoBuildContextBuildItem.getKogitoBuildContext().getApplicationSections()
+                        .stream()
+                        .filter(ProcessContainerGenerator.class::isInstance)
+                        .map(ProcessContainerGenerator.class::cast)
+                        .collect(Collectors.toSet()));
+        if (!buildItem.getProcessContainerGenerators().isEmpty()) {
+            processContainerProducer.produce(buildItem);
+        }
     }
 
     /**
@@ -149,21 +178,27 @@ public class ProcessesAssetsProcessor {
             BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
             BuildProducer<GeneratedResourceBuildItem> genResBI,
             BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration,
-            CombinedIndexBuildItem combinedIndexBuildItem) throws IOException {
+            CombinedIndexBuildItem combinedIndexBuildItem,
+            KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
+            Capabilities capabilities) throws IOException {
 
         // merge project index with classes generated by Kogito
-        IndexView aggregatedIndex = generateAggregatedIndex(combinedIndexBuildItem.getIndex(), generatedKogitoClasses);
+        IndexView aggregatedIndex = generateAggregatedIndex(combinedIndexBuildItem.getComputingIndex(), generatedKogitoClasses);
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), aggregatedIndex, curateOutcomeBuildItem.getEffectiveModel().getAppArtifact());
+        KogitoBuildContext context = kogitoBuildContextBuildItem.getKogitoBuildContext();
 
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>(generatePersistenceInfo(
-                context,
-                aggregatedIndex,
-                generatedBeans,
-                resourcePatterns,
-                runTimeConfiguration,
-                liveReload.isLiveReload()));
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        if (capabilities.isCapabilityWithPrefixPresent(PERSISTENCE_CAPABILITY)) {
+            generatedFiles.addAll(generatePersistenceInfo(
+                    context,
+                    aggregatedIndex,
+                    generatedBeans,
+                    resourcePatterns,
+                    runTimeConfiguration,
+                    liveReload.isLiveReload()));
+        }
 
         Map<String, byte[]> classes = new HashMap<>();
         for (KogitoGeneratedClassesBuildItem generatedKogitoClass : generatedKogitoClasses) {
@@ -194,7 +229,7 @@ public class ProcessesAssetsProcessor {
 
         validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE));
 
-        List<AppDependency> dependencies = curateOutcomeBuildItem.getEffectiveModel().getUserDependencies();
+        Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
         compileGeneratedSources(context, dependencies, persistenceGeneratedFiles, useDebugSymbols)
                 .forEach(generatedBeans::produce);
 
@@ -211,9 +246,7 @@ public class ProcessesAssetsProcessor {
         Collection<ClassInfo> modelClasses = index
                 .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
         JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(
-                index,
-                DotName.createSimple(Generated.class.getCanonicalName()),
-                DotName.createSimple(VariableInfo.class.getCanonicalName()))
+                index)
                 .withPersistenceClass(persistenceClass)
                 .build(modelClasses);
 
@@ -262,17 +295,19 @@ public class ProcessesAssetsProcessor {
     private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, IndexView index, Map<String, byte[]> generatedClasses) throws IOException {
         ClassLoader cl = new InMemoryClassLoader(context.getClassLoader(), generatedClasses);
 
-        Collection<AnnotationInstance> annotations =
-                index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName()));
+        List<AnnotationInstance> annotations = new ArrayList<>();
 
-        Stream<Class<?>> stream = annotations.stream()
+        annotations.addAll(index.getAnnotations(DotName.createSimple(ProcessInput.class.getCanonicalName())));
+        annotations.addAll(index.getAnnotations(DotName.createSimple(UserTask.class.getCanonicalName())));
+
+        List<Class<?>> annotatedClasses = annotations.stream()
                 .map(ann -> loadClassFromAnnotation(ann, cl))
                 .filter(Optional::isPresent)
-                .map(Optional::get);
+                .map(Optional::get).collect(Collectors.toList());
 
-        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(stream)
-                .withGenSchemaPredicate(x -> true)
-                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version")).build();
+        JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator.ClassBuilder(annotatedClasses.stream())
+                .withSchemaVersion(System.getProperty("kogito.jsonSchema.version"))
+                .build();
 
         return jsonSchemaGenerator.generate();
     }

@@ -23,9 +23,12 @@ import org.jbpm.process.core.context.AbstractContext;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.instance.impl.Action;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
+import org.kie.kogito.process.workitems.impl.expr.Expression;
+import org.kie.kogito.process.workitems.impl.expr.ExpressionHandlerFactory;
 
 /**
  * A for each node.
@@ -44,7 +47,11 @@ public class ForEachNode extends CompositeContextNode {
     private String collectionExpression;
     private String outputCollectionExpression;
     private String completionConditionExpression;
+    private String exprLanguage;
+    private Action finishAction;
     private boolean waitForCompletion = true;
+    private boolean sequential = true;
+    private Expression evaluateExpression;
 
     public ForEachNode() {
         // Split
@@ -52,7 +59,7 @@ public class ForEachNode extends CompositeContextNode {
         split.setName("ForEachSplit");
         split.setMetaData("hidden", true);
         split.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:split");
-        super.addNode(split);
+        super.addNode(split);//Node ID 1
         super.linkIncomingConnections(
                 Node.CONNECTION_DEFAULT_TYPE,
                 new CompositeNode.NodeAndType(split, Node.CONNECTION_DEFAULT_TYPE));
@@ -61,7 +68,7 @@ public class ForEachNode extends CompositeContextNode {
         compositeNode.setName("ForEachComposite");
         compositeNode.setMetaData("hidden", true);
         compositeNode.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:composite");
-        super.addNode(compositeNode);
+        super.addNode(compositeNode);//Node ID 2
         VariableScope variableScope = new VariableScope();
         compositeNode.addContext(variableScope);
         compositeNode.setDefaultContext(variableScope);
@@ -70,18 +77,19 @@ public class ForEachNode extends CompositeContextNode {
         join.setName("ForEachJoin");
         join.setMetaData("hidden", true);
         join.setMetaData("UniqueId", getMetaData("Uniqueid") + ":foreach:join");
-        super.addNode(join);
+        super.addNode(join);//Node ID 3
         super.linkOutgoingConnections(
                 new CompositeNode.NodeAndType(join, Node.CONNECTION_DEFAULT_TYPE),
                 Node.CONNECTION_DEFAULT_TYPE);
         new ConnectionImpl(
-                super.getNode(1), Node.CONNECTION_DEFAULT_TYPE,
+                super.getNode(ForEachSplitNode.NODE_ID), Node.CONNECTION_DEFAULT_TYPE,
                 getCompositeNode(), Node.CONNECTION_DEFAULT_TYPE);
         new ConnectionImpl(
                 getCompositeNode(), Node.CONNECTION_DEFAULT_TYPE,
-                super.getNode(3), Node.CONNECTION_DEFAULT_TYPE);
+                super.getNode(ForEachJoinNode.NODE_ID), Node.CONNECTION_DEFAULT_TYPE);
     }
 
+    @Override
     public String getVariableName() {
         return variableName;
     }
@@ -96,6 +104,29 @@ public class ForEachNode extends CompositeContextNode {
             }
         }
         return null;
+    }
+
+    public void setExpressionLanguage(String exprLanguage) {
+        this.exprLanguage = exprLanguage;
+    }
+
+    public String getExpressionLanguage() {
+        return exprLanguage;
+    }
+
+    public Action getCompletionAction() {
+        return finishAction;
+    }
+
+    public void setCompletionAction(Action finishAction) {
+        this.finishAction = finishAction;
+    }
+
+    public Expression getEvaluateExpression() {
+        if (evaluateExpression == null && ExpressionHandlerFactory.isSupported(exprLanguage)) {
+            evaluateExpression = ExpressionHandlerFactory.get(exprLanguage, collectionExpression);
+        }
+        return evaluateExpression;
     }
 
     public String getOutputVariableName() {
@@ -126,58 +157,72 @@ public class ForEachNode extends CompositeContextNode {
         return (ForEachJoinNode) super.getNode(3);
     }
 
+    @Override
     public void addNode(org.kie.api.definition.process.Node node) {
         getCompositeNode().addNode(node);
     }
 
+    @Override
     protected void internalAddNode(org.kie.api.definition.process.Node node) {
         super.addNode(node);
     }
 
+    @Override
     public org.kie.api.definition.process.Node getNode(long id) {
         return getCompositeNode().getNode(id);
     }
 
+    @Override
     public org.kie.api.definition.process.Node internalGetNode(long id) {
         return super.getNode(id);
     }
 
+    @Override
     public org.kie.api.definition.process.Node[] getNodes() {
         return getCompositeNode().getNodes();
     }
 
+    @Override
     public org.kie.api.definition.process.Node[] internalGetNodes() {
         return super.getNodes();
     }
 
+    @Override
     public void removeNode(org.kie.api.definition.process.Node node) {
         getCompositeNode().removeNode(node);
     }
 
+    @Override
     protected void internalRemoveNode(org.kie.api.definition.process.Node node) {
         super.removeNode(node);
     }
 
+    @Override
     public void linkIncomingConnections(String inType, long inNodeId, String inNodeType) {
         getCompositeNode().linkIncomingConnections(inType, inNodeId, inNodeType);
     }
 
+    @Override
     public void linkOutgoingConnections(long outNodeId, String outNodeType, String outType) {
         getCompositeNode().linkOutgoingConnections(outNodeId, outNodeType, outType);
     }
 
+    @Override
     public CompositeNode.NodeAndType getLinkedIncomingNode(String inType) {
         return getCompositeNode().getLinkedIncomingNode(inType);
     }
 
+    @Override
     public CompositeNode.NodeAndType internalGetLinkedIncomingNode(String inType) {
         return super.getLinkedIncomingNode(inType);
     }
 
+    @Override
     public CompositeNode.NodeAndType getLinkedOutgoingNode(String inType) {
         return getCompositeNode().getLinkedOutgoingNode(inType);
     }
 
+    @Override
     public CompositeNode.NodeAndType internalGetLinkedOutgoingNode(String inType) {
         return super.getLinkedOutgoingNode(inType);
     }
@@ -244,10 +289,12 @@ public class ForEachNode extends CompositeContextNode {
 
     public static class ForEachSplitNode extends ExtendedNodeImpl {
         private static final long serialVersionUID = 510l;
+        public static long NODE_ID = 1;
     }
 
     public static class ForEachJoinNode extends ExtendedNodeImpl {
         private static final long serialVersionUID = 510l;
+        public static long NODE_ID = 3;
     }
 
     @Override
@@ -298,5 +345,13 @@ public class ForEachNode extends CompositeContextNode {
     public void setCompletionConditionExpression(
             String completionConditionExpression) {
         this.completionConditionExpression = completionConditionExpression;
+    }
+
+    public boolean isSequential() {
+        return sequential;
+    }
+
+    public void setSequential(boolean sequential) {
+        this.sequential = sequential;
     }
 }

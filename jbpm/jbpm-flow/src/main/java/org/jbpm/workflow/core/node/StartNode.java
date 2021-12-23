@@ -35,8 +35,7 @@ import org.kie.api.definition.process.Connection;
  */
 public class StartNode extends ExtendedNodeImpl implements Mappable {
 
-    private static final String[] EVENT_TYPES =
-            new String[] { EVENT_NODE_EXIT };
+    private static final String[] EVENT_TYPES = new String[] { EVENT_NODE_EXIT };
 
     private static final long serialVersionUID = 510l;
 
@@ -140,7 +139,7 @@ public class StartNode extends ExtendedNodeImpl implements Mappable {
     }
 
     public void setOutMappings(Map<String, String> outMapping) {
-        this.outMapping = new LinkedList<DataAssociation>();
+        this.outMapping = new LinkedList<>();
         for (Map.Entry<String, String> entry : outMapping.entrySet()) {
             addOutMapping(entry.getKey(), entry.getValue());
         }

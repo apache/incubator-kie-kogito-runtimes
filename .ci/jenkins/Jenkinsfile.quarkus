@@ -1,0 +1,280 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+import org.kie.jenkins.MavenCommand
+
+pipeline {
+    agent {
+        label 'kie-rhel7 && kie-mem16g'
+    }
+    environment {
+        // QUARKUS_BRANCH should be defined directly into the job environment
+
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
+
+        MAVEN_OPTS = '-Xms1024m -Xmx4g'
+    }
+    tools {
+        maven 'kie-maven-3.6.3'
+        jdk 'kie-jdk11'
+    }
+    options {
+        timestamps()
+        timeout(time: 360, unit: 'MINUTES')
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    checkoutQuarkusRepo()
+                    checkoutDroolsRepo()
+                    checkoutRepo('kogito-runtimes')
+                    checkoutRepo('kogito-runtimes', 'integration-tests')
+                    checkoutOptaplannerRepo()
+                    checkoutRepo('kogito-apps')
+                    checkoutRepo('kogito-examples')
+                    checkoutRepo('kogito-examples', 'kogito-examples-persistence')
+                    checkoutRepo('kogito-examples', 'kogito-examples-events')
+                }
+            }
+        }
+        stage('Build quarkus') {
+            steps {
+                script {
+                    getMavenCommand('quarkus', false)
+                        .withProperty('quickly')
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+
+        stage('Build Drools') {
+            steps {
+                script {
+                    getMavenCommand('drools')
+                        .withProperty('quickly')
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+
+        stage('Build kogito-runtimes') {
+            steps {
+                script {
+                    getMavenCommand('kogito-runtimes')
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Check Runtimes integration-tests with persistence') {
+            steps {
+                script {
+                    getMavenCommand('integration-tests')
+                        .withProfiles(['persistence'])
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build optaplanner') {
+            steps {
+                script {
+                    getMavenCommand('optaplanner')
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build kogito-apps') {
+            steps {
+                script {
+                    getMavenCommand('kogito-apps')
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build kogito-examples') {
+            steps {
+                script {
+                    getMavenCommand('kogito-examples')
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build kogito-examples with persistence') {
+            steps {
+                script {
+                    getMavenCommand('kogito-examples-persistence')
+                            .withProfiles(['persistence'])
+                            .withProperty('maven.test.failure.ignore', true)
+                            .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+        stage('Build kogito-examples with events') {
+            steps {
+                script {
+                    getMavenCommand('kogito-examples-events')
+                            .withProfiles(['events'])
+                            .withProperty('maven.test.failure.ignore', true)
+                            .run('clean verify')
+                }
+            }
+            post {
+                always {
+                    script {
+                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                        util.archiveConsoleLog()
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        unsuccessful {
+            sendNotification()
+        }
+        cleanup {
+            script {
+                util.cleanNode('docker')
+            }
+        }
+    }
+}
+
+void sendNotification() {
+    mailer.sendMarkdownTestSummaryNotification("Quarkus ${getQuarkusBranch()}", "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+}
+
+void checkoutRepo(String repoName, String dirName=repoName) {
+    dir(dirName) {
+        checkout(githubscm.resolveRepository(repoName, params.GIT_AUTHOR, params.BUILD_BRANCH_NAME, false))
+    }
+}
+
+void checkoutQuarkusRepo() {
+    dir('quarkus') {
+        checkout(githubscm.resolveRepository('quarkus', 'quarkusio', getQuarkusBranch(), false))
+    }
+}
+
+void checkoutOptaplannerRepo() {
+    String targetBranch = params.BUILD_BRANCH_NAME
+    String [] versionSplit = targetBranch.split("\\.")
+    if (versionSplit.length == 3
+        && versionSplit[0].isNumber()
+        && versionSplit[1].isNumber()
+       && versionSplit[2] == 'x') {
+        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
+    } else {
+        echo "Cannot parse branch as release branch so going further with current value: ${targetBranch}"
+    }
+    dir('optaplanner') {
+        checkout(githubscm.resolveRepository('optaplanner', params.GIT_AUTHOR, targetBranch, false))
+    }
+}
+
+void checkoutDroolsRepo() {
+    String targetBranch = params.BUILD_BRANCH_NAME
+    String [] versionSplit = targetBranch.split("\\.")
+    if (versionSplit.length == 3
+        && versionSplit[0].isNumber()
+        && versionSplit[1].isNumber()
+       && versionSplit[2] == 'x') {
+        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
+    } else {
+        echo "Cannot parse branch as release branch so going further with current value: ${targetBranch}"
+    }
+    dir('drools') {
+        checkout(githubscm.resolveRepository('drools', params.GIT_AUTHOR, targetBranch, false))
+    }
+}
+
+MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true) {
+    def mvnCmd = new MavenCommand(this, ['-fae', '-ntp'])
+                .withSettingsXmlId('kogito_release_settings')
+                .inDirectory(directory)
+    if (addQuarkusVersion) {
+        mvnCmd.withProperty('version.io.quarkus', '999-SNAPSHOT')
+    }
+    return mvnCmd
+}
+
+String getQuarkusBranch() {
+    return env['QUARKUS_BRANCH'] ?: 'main'
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('docker')
+}

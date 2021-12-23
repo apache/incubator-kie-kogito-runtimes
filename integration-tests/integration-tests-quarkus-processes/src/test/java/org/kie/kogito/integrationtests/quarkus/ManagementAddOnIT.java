@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasEntry;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 class ManagementAddOnIT {
 
     private static final String HELLO1_NODE = "_3CDC6E61-DCC5-4831-8BBB-417CFF517CB0";
@@ -74,7 +74,7 @@ class ManagementAddOnIT {
                 .get("/management/processes/{processId}/instances/{processInstanceId}/nodeInstances", GREETINGS, pid)
                 .then()
                 .statusCode(200)
-                .body("$.size", is(2))
+                .body("$.size()", is(2))
                 .body("$", hasItems(hasEntry("name", "Hello1"), hasEntry("name", "Hello2")))
                 .body("[0].state", is(0))
                 .body("[1].state", is(0));
@@ -87,7 +87,7 @@ class ManagementAddOnIT {
                 .get("/management/processes/{processId}/nodes", GREETINGS)
                 .then()
                 .statusCode(200)
-                .body("$.size", is(10))
+                .body("$.size()", is(10))
                 .body("[0].id", is(1))
                 .body("[0].name", is("End"))
                 .body("[0].type", is("EndNode"))

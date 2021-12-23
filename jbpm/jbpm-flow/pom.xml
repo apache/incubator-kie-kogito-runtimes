@@ -24,7 +24,7 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie7-bom</artifactId>
+        <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -51,11 +51,15 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core</artifactId>
+      <artifactId>kogito-drools</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-dmn</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-symbol-solver-core</artifactId>
     </dependency>
 
     <dependency>
@@ -64,7 +68,7 @@
       <exclusions>
         <exclusion>
           <groupId>org.drools</groupId>
-          <artifactId>drools-core</artifactId>
+          <artifactId>drools-wiring-dynamic</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -87,10 +91,11 @@
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
     </dependency>
+
     <!-- test -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core-dynamic</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-wiring-dynamic</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

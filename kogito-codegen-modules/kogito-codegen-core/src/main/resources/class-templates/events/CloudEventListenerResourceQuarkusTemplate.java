@@ -17,7 +17,7 @@ package org.kie.kogito.app;
 
 import javax.ws.rs.Path;
 
-import org.kie.kogito.addon.cloudevents.quarkus.http.AbstractQuarkusCloudEventResource;
+import org.kie.kogito.addon.quarkus.messaging.common.http.AbstractQuarkusCloudEventResource;
 
 @Path("/")
 public class CloudEventListenerResource extends AbstractQuarkusCloudEventResource {

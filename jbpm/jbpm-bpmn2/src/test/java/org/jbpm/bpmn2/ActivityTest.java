@@ -22,9 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.script.ScriptEngineManager;
-
-import org.assertj.core.api.Assumptions;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
@@ -201,33 +198,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("BPMN2-ScriptTask.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("ScriptTask");
         assertProcessInstanceCompleted(processInstance);
-    }
-
-    @Test
-    public void testScriptTaskJS() throws Exception {
-        Assumptions.assumeThat(
-                new ScriptEngineManager().getEngineByName("JavaScript")
-                        .getClass().getSimpleName())
-                .describedAs("GraalJS is not supported.")
-                .isNotEqualTo("GraalJSScriptEngine");
-
-        kruntime = createKogitoProcessRuntime("BPMN2-ScriptTaskJS.bpmn2");
-
-        TestWorkItemHandler handler = new TestWorkItemHandler();
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", handler);
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", "krisv");
-        Person person = new Person();
-        person.setName("krisv");
-        params.put("person", person);
-
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("ScriptTask", params);
-        assertEquals("Entry", processInstance.getVariable("x"));
-        assertNull(processInstance.getVariable("y"));
-
-        kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertEquals("Exit", getProcessVarValue(processInstance, "y"));
-        assertEquals("tester", processInstance.getVariable("surname"));
     }
 
     @Test
@@ -455,6 +425,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testSubProcessWithEntryExitScripts() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/BPMN2-SubProcessWithEntryExitScripts.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
@@ -782,20 +753,6 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("ServiceProcess", params);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertEquals("Hello john!", processInstance.getVariable("s"));
-    }
-
-    @Test
-    @Disabled("Transfomer has been disabled")
-    public void testServiceTaskWithTransformation() throws Exception {
-        kruntime = createKogitoProcessRuntime("BPMN2-ServiceProcessWithTransformation.bpmn2");
-
-        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task",
-                new ServiceTaskHandler());
-        Map<String, Object> params = new HashMap<>();
-        params.put("s", "JoHn");
-        KogitoWorkflowProcessInstance processInstance = (KogitoWorkflowProcessInstance) kruntime.startProcess("ServiceProcess", params);
-        assertProcessInstanceFinished(processInstance, kruntime);
-        assertEquals("hello john!", processInstance.getVariable("s"));
     }
 
     @Test
@@ -1180,7 +1137,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Disabled("Transfomer has been disabled")
+    @Disabled("Transformer has been disabled")
     public void testCallActivityWithTransformation() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-CallActivityWithTransformation.bpmn2", "BPMN2-CallActivitySubProcess.bpmn2");
 
@@ -1558,8 +1515,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(((WorkflowProcessInstanceImpl) processInstance).getErrorMessage()).contains("Fire rule limit reached 5");
     }
 
-    @Disabled
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testScriptTaskFEEL() throws Exception {
         kruntime = createKogitoProcessRuntime("BPMN2-ScriptTaskFEEL.bpmn2");
 
@@ -1581,6 +1538,41 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertEquals("tester", ((org.jbpm.workflow.instance.WorkflowProcessInstance) processInstance).getVariable("surname"));
 
         assertNodeTriggered(processInstance.getStringId(), "Script1");
+    }
+
+    @Test
+    public void testGatewayFEEL() throws Exception {
+        kruntime = createKogitoProcessRuntime("BPMN2-GatewayFEEL.bpmn2");
+
+        Map<String, Object> params1 = new HashMap<String, Object>();
+        params1.put("VA", Boolean.TRUE);
+        params1.put("VB", Boolean.FALSE);
+        org.jbpm.workflow.instance.WorkflowProcessInstance procInstance1 = (org.jbpm.workflow.instance.WorkflowProcessInstance) kruntime.startProcess("BPMN2-GatewayFEEL", params1);
+        assertEquals("ok", procInstance1.getVariable("Task1"));
+        assertEquals("ok", procInstance1.getVariable("Task2"));
+        assertNull(procInstance1.getVariable("Task3"));
+        assertNodeTriggered(procInstance1.getStringId(), "Task2", "VA and not(VB)");
+
+        Map<String, Object> params2 = new HashMap<String, Object>();
+        params2.put("VA", Boolean.FALSE);
+        params2.put("VB", Boolean.TRUE);
+        org.jbpm.workflow.instance.WorkflowProcessInstance procInstance2 = (org.jbpm.workflow.instance.WorkflowProcessInstance) kruntime.startProcess("BPMN2-GatewayFEEL", params2);
+        assertEquals("ok", procInstance2.getVariable("Task1"));
+        assertNull(procInstance2.getVariable("Task2"));
+        assertEquals("ok", procInstance2.getVariable("Task3"));
+        assertNodeTriggered(procInstance2.getStringId(), "Task3", "VB or not(VA)");
+    }
+
+    @Test
+    public void testGatewayFEELWrong() throws Exception {
+        kruntime = createKogitoProcessRuntime("BPMN2-GatewayFEEL-wrong.bpmn2");
+
+        Map<String, Object> params1 = new HashMap<String, Object>();
+        params1.put("VA", Boolean.TRUE);
+        params1.put("VB", Boolean.FALSE);
+        KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-GatewayFEEL", params1);
+        // changed to comply with Kogito-style assertions:
+        assertThat(((WorkflowProcessInstanceImpl) processInstance).getErrorMessage()).contains("offending symbol: 'Not'");
     }
 
     @Test

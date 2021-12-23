@@ -24,11 +24,15 @@ public interface RuleUnitInstance<T extends RuleUnitData> {
 
     RuleUnit<T> unit();
 
+    T ruleUnitData();
+
     int fire();
 
-    List<Map<String, Object>> executeQuery(String query);
+    List<Map<String, Object>> executeQuery(String query, Object... arguments);
 
     <Q> Q executeQuery(Class<? extends RuleUnitQuery<Q>> query);
 
     <T extends SessionClock> T getClock();
+
+    void dispose();
 }

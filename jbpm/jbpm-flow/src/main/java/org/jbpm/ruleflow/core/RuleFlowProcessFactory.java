@@ -20,13 +20,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.jbpm.process.core.ContextContainer;
+import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
-import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.swimlane.Swimlane;
 import org.jbpm.process.core.context.variable.Variable;
@@ -51,6 +50,7 @@ import org.jbpm.workflow.core.node.StateBasedNode;
 import org.jbpm.workflow.core.node.Trigger;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
 
 import static org.jbpm.process.core.context.exception.ExceptionScope.EXCEPTION_SCOPE;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
@@ -165,18 +165,22 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         return variable(name, new ObjectDataType(clazz.getName()), null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type) {
         return variable(name, type, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value) {
         return variable(name, type, value, null, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, String metaDataName, Object metaDataValue) {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
         Variable variable = new Variable();
         variable.setName(name);
@@ -201,34 +205,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         compensationScope.setContextContainerId(contextId);
         getRuleFlowProcess().addContext(compensationScope);
         getRuleFlowProcess().setDefaultContext(compensationScope);
-        return this;
-    }
-
-    @Override
-    public RuleFlowProcessFactory exceptionHandler(String exception, ExceptionHandler exceptionHandler) {
-        getRuleFlowProcess().getExceptionScope().setExceptionHandler(exception, exceptionHandler);
-        return this;
-    }
-
-    @Override
-    public RuleFlowProcessFactory exceptionHandler(String exception, String dialect, String action) {
-        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
-        exceptionHandler.setAction(new DroolsConsequenceAction(dialect, action));
-        return exceptionHandler(exception, exceptionHandler);
-    }
-
-    public RuleFlowProcessFactory errorExceptionHandler(String signalType, String faultCode, String faultVariable) {
-        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
-        DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
-        action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
-        exceptionHandler.setAction(action);
-        exceptionHandler.setFaultVariable(faultVariable);
-
-        if (Objects.isNull(getRuleFlowProcess().getExceptionScope())) {
-            getRuleFlowProcess().addContext(new ExceptionScope());
-        }
-
-        getRuleFlowProcess().getExceptionScope().setExceptionHandler(faultCode, exceptionHandler);
         return this;
     }
 
@@ -337,18 +313,16 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
 
     protected void linkBoundaryErrorEvent(Node node, String attachedTo, Node attachedNode) {
         //same logic from ProcessHandler.linkBoundaryErrorEvent
-        final ContextContainer compositeNode = (ContextContainer) attachedNode;
-        final ExceptionScope exceptionScope =
-                Optional.ofNullable(compositeNode.getDefaultContext(EXCEPTION_SCOPE))
-                        .map(ExceptionScope.class::cast)
-                        .orElseGet(() -> {
-                            ExceptionScope scope = new ExceptionScope();
-                            compositeNode.addContext(scope);
-                            compositeNode.setDefaultContext(scope);
-                            return scope;
-                        });
-        final Boolean hasErrorCode = (Boolean) node.getMetaData().get(HAS_ERROR_EVENT);
         final String errorCode = (String) node.getMetaData().get(ERROR_EVENT);
+        final ContextResolver compositeNode = (ContextResolver) attachedNode;
+        ExceptionScope exceptionScope = (ExceptionScope) compositeNode.resolveContext(EXCEPTION_SCOPE, errorCode);
+        if (exceptionScope == null) {
+            ContextContainer contextContainer = (ContextContainer) (node instanceof ContextContainer ? node : ((KogitoNode) node).getParentContainer());
+            exceptionScope = new ExceptionScope();
+            contextContainer.addContext(exceptionScope);
+            contextContainer.setDefaultContext(exceptionScope);
+        }
+        final Boolean hasErrorCode = (Boolean) node.getMetaData().get(HAS_ERROR_EVENT);
         final String errorStructureRef = (String) node.getMetaData().get(ERROR_STRUCTURE_REF);
         final ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         final EventNode eventNode = (EventNode) node;

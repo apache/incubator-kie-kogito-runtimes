@@ -20,10 +20,14 @@ import java.util.Collections;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.Application;
+import org.kie.kogito.process.Processes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class LightProcessRuntimeTest {
+class LightProcessRuntimeTest {
 
     static class MyProcess {
         String result;
@@ -45,15 +49,16 @@ public class LightProcessRuntimeTest {
     }
 
     @Test
-    public void testInstantiation() {
+    void testInstantiation() {
         LightProcessRuntimeServiceProvider services =
                 new LightProcessRuntimeServiceProvider();
 
         MyProcess myProcess = new MyProcess();
-        LightProcessRuntimeContext rtc = new LightProcessRuntimeContext(
-                Collections.singletonList(myProcess.process));
+        LightProcessRuntimeContext rtc = new LightProcessRuntimeContext(Collections.singletonList(myProcess.process));
 
-        LightProcessRuntime rt = new LightProcessRuntime(rtc, services);
+        Application application = mock(Application.class);
+        when(application.get(Processes.class)).thenReturn(mock(Processes.class));
+        LightProcessRuntime rt = new LightProcessRuntime(rtc, services, application);
 
         rt.startProcess(myProcess.process.getId());
 

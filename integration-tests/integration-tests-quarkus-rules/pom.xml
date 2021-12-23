@@ -10,6 +10,10 @@
   <artifactId>integration-tests-quarkus-rules</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Rules</name>
 
+  <properties>
+    <quarkus.test.list.include>true</quarkus.test.list.include>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -19,9 +23,15 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-kie-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
-  
 
   <dependencies>
     <dependency>
@@ -29,7 +39,7 @@
       <artifactId>kogito-quarkus-rules</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
+      <groupId>org.drools</groupId>
       <artifactId>drools-decisiontables</artifactId>
     </dependency>
 

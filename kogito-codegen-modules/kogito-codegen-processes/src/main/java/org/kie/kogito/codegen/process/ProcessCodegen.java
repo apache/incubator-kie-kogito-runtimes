@@ -46,7 +46,6 @@ import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.compiler.canonical.TriggerMetaData.TriggerType;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
 import org.jbpm.compiler.xml.XmlProcessReader;
-import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -57,6 +56,7 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
@@ -141,7 +141,7 @@ public class ProcessCodegen extends AbstractGenerator {
                         return SUPPORTED_SW_EXTENSIONS.entrySet()
                                 .stream()
                                 .filter(e -> resource.getSourcePath().endsWith(e.getKey()))
-                                .map(e -> parseWorkflowFile(resource, e.getValue()));
+                                .map(e -> parseWorkflowFile(resource, e.getValue(), context));
                     }
                 })
                 //Validate parsed processes
@@ -165,16 +165,24 @@ public class ProcessCodegen extends AbstractGenerator {
                     .of(validationContext)
                     .decorate();
             Optional<Exception> cause = validationContext.exception();
-            validationContext.clear();
             //rethrow exception to break the flow after decoration
-            throw new ProcessCodegenException(decorator.simpleMessage(), cause);
+            try {
+                throw new ProcessCodegenException(decorator.simpleMessage(), cause);
+            } finally {
+                validationContext.clear();
+            }
         }
     }
 
     private static Process validate(Process process) {
-        ProcessValidationError[] errors = ProcessValidatorRegistry.getInstance().getValidator(process, process.getResource()).validateProcess(process);
-        //TODO: use the validation context in the ProcessValidator itself
-        Arrays.stream(errors).forEach(e -> ValidationContext.get().add(process.getId(), e));
+        try {
+            ProcessValidatorRegistry.getInstance().getValidator(process, process.getResource()).validate(process);
+        } catch (ValidationException e) {
+            //TODO: add all errors during parsing phase in the ValidationContext itself
+            ValidationContext.get()
+                    .add(process.getId(), e.getErrors())
+                    .putException(e);
+        }
         return process;
     }
 
@@ -226,7 +234,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     SUPPORTED_SW_EXTENSIONS.entrySet()
                             .stream()
                             .filter(e -> processSourceFile.getPath().endsWith(e.getKey()))
-                            .forEach(e -> processes.add(parseWorkflowFile(r, e.getValue())));
+                            .forEach(e -> processes.add(parseWorkflowFile(r, e.getValue(), JavaKogitoBuildContext.builder().build())));
                 }
                 if (processes.isEmpty()) {
                     throw new IllegalArgumentException("Unable to process file with unsupported extension: " + processSourceFile);
@@ -238,9 +246,9 @@ public class ProcessCodegen extends AbstractGenerator {
         return processes;
     }
 
-    private static Process parseWorkflowFile(Resource r, String parser) {
+    private static Process parseWorkflowFile(Resource r, String parser, KogitoBuildContext context) {
         try (Reader reader = r.getReader()) {
-            ServerlessWorkflowParser workflowParser = ServerlessWorkflowParser.of(reader, parser);
+            ServerlessWorkflowParser workflowParser = ServerlessWorkflowParser.of(reader, parser, context);
             return workflowParser.getProcess();
         } catch (IOException e) {
             throw new ProcessParsingException("Could not parse file " + r.getSourcePath(), e);
@@ -544,14 +552,24 @@ public class ProcessCodegen extends AbstractGenerator {
 
         // generate Grafana dashboards
         if (context().getAddonsConfig().usePrometheusMonitoring()) {
-            String globalDbName = buildDashboardName(context().getGAV(), "Global");
-            String globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE, globalDbName, "Global", context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
-            generatedFiles.addAll(DashboardGeneratedFileUtils.operational(globalDbJson, globalDbName + ".json"));
 
+            Optional<String> globalDbJson = generateOperationalDashboard(GLOBAL_OPERATIONAL_DASHBOARD_TEMPLATE,
+                    "Global",
+                    context().getPropertiesMap(),
+                    "Global",
+                    context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
+                    false);
+            String globalDbName = buildDashboardName(context().getGAV(), "Global");
+            globalDbJson.ifPresent(dashboard -> generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, globalDbName + ".json")));
             for (KogitoWorkflowProcess process : processes.values()) {
                 String dbName = buildDashboardName(context().getGAV(), process.getId());
-                String dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE, dbName, process.getId(), context().getGAV().orElse(KogitoGAV.EMPTY_GAV), false);
-                generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dbJson, dbName + ".json"));
+                Optional<String> dbJson = generateOperationalDashboard(PROCESS_OPERATIONAL_DASHBOARD_TEMPLATE,
+                        process.getId(),
+                        context().getPropertiesMap(),
+                        process.getId(),
+                        context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
+                        false);
+                dbJson.ifPresent(dashboard -> generatedFiles.addAll(DashboardGeneratedFileUtils.operational(dashboard, dbName + ".json")));
             }
         }
 

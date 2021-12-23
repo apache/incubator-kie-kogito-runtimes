@@ -25,6 +25,8 @@ public final class CloudEventExtensionConstants {
 
     // whenever a new extension is added, please add to the CloudEventExtensionConstantsTest to verify the CE spec requirements
 
+    public static final String PMML_FULL_RESULT = "kogitopmmlfullresult";
+    public static final String PMML_MODEL_NAME = "kogitopmmlmodelname";
     public static final String PROCESS_INSTANCE_ID = "kogitoprocinstanceid";
     public static final String PROCESS_REFERENCE_ID = "kogitoprocrefid";
     public static final String PROCESS_INSTANCE_STATE = "kogitoprocist";
@@ -35,6 +37,8 @@ public final class CloudEventExtensionConstants {
     public static final String PROCESS_START_FROM_NODE = "kogitoprocstartfrom";
     public static final String PROCESS_USER_TASK_INSTANCE_ID = "kogitousertaskiid";
     public static final String PROCESS_USER_TASK_INSTANCE_STATE = "kogitousertaskist";
+    public static final String RULE_UNIT_ID = "kogitoruleunitid";
+    public static final String RULE_UNIT_QUERY = "kogitoruleunitquery";
     public static final String ADDONS = "kogitoaddons";
 
     private CloudEventExtensionConstants() {

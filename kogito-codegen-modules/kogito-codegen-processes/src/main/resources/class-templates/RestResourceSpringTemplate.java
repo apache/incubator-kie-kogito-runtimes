@@ -33,6 +33,8 @@ import org.kie.kogito.process.workitem.Comment;
 import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
 import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.auth.IdentityProviders;
+import org.kie.kogito.auth.SecurityPolicy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -82,6 +84,11 @@ public class $Type$Resource {
         return processService.getProcessInstanceOutput(process);
     }
 
+    @GetMapping(value = "/schema", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getResourceSchema_$name$() {
+        return JsonSchemaUtil.load(this.getClass().getClassLoader(), process.id());
+    }
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public $Type$Output getResource_$name$(@PathVariable("id") String id) {
         return processService.findById(process, id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -102,7 +109,7 @@ public class $Type$Resource {
     public List<TaskModel> getTasks_$name$(@PathVariable("id") String id,
                                            @RequestParam(value = "user", required = false) final String user,
                                            @RequestParam(value = "group", required = false) final List<String> groups) {
-        return processService.getTasks(process, id, user, groups)
+        return processService.getTasks(process, id, SecurityPolicy.of(IdentityProviders.of(user, groups)))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                 .stream()
                 .map($TaskModelFactory$::from)

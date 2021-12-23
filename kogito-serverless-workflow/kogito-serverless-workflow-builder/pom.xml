@@ -18,24 +18,21 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>jbpm-flow-builder</artifactId>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-rest-workitem</artifactId>
+      <artifactId>kogito-codegen-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-openapi-workitem</artifactId>
-      <!-- These dependencies is meant to be used only in the end user project -->
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.resteasy</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>kogito-rest-workitem</artifactId>
+    </dependency>
+     <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-utils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -79,6 +76,14 @@
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path-assert</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-jsonpath-expression</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-jq-expression</artifactId>
     </dependency>
   </dependencies>
 

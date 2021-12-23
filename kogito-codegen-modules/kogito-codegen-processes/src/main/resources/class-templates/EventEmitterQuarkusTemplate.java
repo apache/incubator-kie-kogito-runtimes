@@ -24,7 +24,7 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Message;
 
-import org.kie.kogito.addon.cloudevents.quarkus.AbstractQuarkusCloudEventEmitter;
+import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventEmitter;
 
 import io.quarkus.runtime.Startup;
 

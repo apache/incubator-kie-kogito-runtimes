@@ -63,9 +63,9 @@ def addonsToArtifactsIds(String addons) {
             [id: "persistence-mongodb", addon: "kogito-addons-persistence-mongodb"],
             [id: "persistence-postgresql", addon: "kogito-addons-persistence-postgresql"],
             [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
-            [id: "cloudevents", addon: "kogito-addons-springboot-cloudevents"],
+            [id: "messaging", addon: "kogito-addons-springboot-messaging"],
             [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],
-            [id: "events-kafka", addon: "kogito-addons-springboot-events-kafka"],
+            [id: "events-process-kafka", addon: "kogito-addons-springboot-events-process-kafka"],
             [id: "explainability", addon: "kogito-addons-springboot-explainability"],
             [id: "jobs-management", addon: "kogito-addons-springboot-jobs-management"],
             [id: "mail", addon: "kogito-addons-springboot-mail"],
@@ -125,9 +125,9 @@ def removeUnneededResources(String starters, String appPackage) {
         Files.deleteIfExists(projectPath.resolve("src/main/resources/test-process.bpmn2"))
         Files.deleteIfExists(projectPath.resolve("src/test/java/" + packagePath + "/GreetingsTest.java"))
     }
-    if (!starters.contains("decisions") || !starters.contains("predictions") || !starters.contains("processes")) {
+    if (!starters.contains("decisions") && !starters.contains("predictions")) {
         // no need to keep DMN files
-        Files.deleteIfExists(projectPath.resolve("src/main/resources/Traffic Violation.dmn"))
+        Files.deleteIfExists(projectPath.resolve("src/main/resources/TrafficViolation.dmn"))
         Files.deleteIfExists(projectPath.resolve("src/test/java/" + packagePath + "/TrafficViolationTest.java"))
     }
 }

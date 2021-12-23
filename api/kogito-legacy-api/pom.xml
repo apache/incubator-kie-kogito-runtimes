@@ -23,7 +23,7 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie7-bom</artifactId>
+        <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -48,9 +48,13 @@
       <exclusions>
         <exclusion>
           <groupId>org.drools</groupId>
-          <artifactId>drools-core-dynamic</artifactId>
+          <artifactId>drools-wiring-dynamic</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-kiesession</artifactId>
     </dependency>
   </dependencies>
 </project>

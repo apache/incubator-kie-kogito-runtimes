@@ -12,12 +12,41 @@
     <artifactId>kogito-quarkus-decisions-integration-test</artifactId>
     <name>Kogito :: Quarkus Decisions Extension :: Integration Tests</name>
 
+    <properties>
+        <quarkus.test.list.include>true</quarkus.test.list.include>
+    </properties>
+    
+    <dependencyManagement>
+        <!-- see https://github.com/quarkusio/quarkus/pull/20933 -->
+        <dependencies>
+          <dependency>
+              <groupId>org.apache.maven.resolver</groupId>
+              <artifactId>maven-resolver-api</artifactId>
+              <version>1.6.2</version>
+              <scope>test</scope>
+          </dependency>
+          <dependency>
+              <groupId>org.apache.maven.resolver</groupId>
+              <artifactId>maven-resolver-util</artifactId>
+              <version>1.6.2</version>
+              <scope>test</scope>
+          </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-decisions</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -26,6 +55,22 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-internal</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-devtools-testing</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- see https://github.com/quarkusio/quarkus/pull/20933 -->
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-util</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -51,6 +96,16 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/filtered-resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -107,6 +162,10 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jboss.jandex</groupId>
+                        <artifactId>jandex-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

@@ -16,20 +16,24 @@
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
-import org.kie.kogito.serverless.workflow.parser.NodeIdGenerator;
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.OperationState;
 
-public class OperationHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends CompositeContextNodeHandler<OperationState, P> {
+public class OperationHandler extends CompositeContextNodeHandler<OperationState> {
 
-    protected OperationHandler(OperationState state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory, NodeIdGenerator idGenerator) {
-        super(state, workflow, factory, idGenerator);
+    protected OperationHandler(OperationState state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
     @Override
-    public CompositeContextNodeFactory<P> makeNode() {
-        return handleActions(factory.compositeContextNode(idGenerator.getId()).name(state.getName()).autoComplete(true), workflow.getFunctions(), state.getActions());
+    public boolean usedForCompensation() {
+        return state.isUsedForCompensation();
+    }
+
+    @Override
+    public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+        return new MakeNodeResult(handleActions(makeCompositeNode(factory), state.getActions()));
     }
 }

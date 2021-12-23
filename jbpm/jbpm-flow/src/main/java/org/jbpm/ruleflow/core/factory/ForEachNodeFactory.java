@@ -16,6 +16,7 @@
 package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.instance.impl.Action;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.node.ForEachNode;
@@ -25,6 +26,7 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
     public static final String METHOD_COLLECTION_EXPRESSION = "collectionExpression";
     public static final String METHOD_OUTPUT_COLLECTION_EXPRESSION = "outputCollectionExpression";
     public static final String METHOD_OUTPUT_VARIABLE = "outputVariable";
+    public static final String METHOD_SEQUENTIAL = "sequential";
 
     public ForEachNodeFactory(T nodeContainerFactory, NodeContainer nodeContainer, long id) {
         super(nodeContainerFactory, nodeContainer, new ForEachNode(), id);
@@ -50,6 +52,16 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
         return this;
     }
 
+    public ForEachNodeFactory<T> expressionLanguage(String exprLanguage) {
+        getForEachNode().setExpressionLanguage(exprLanguage);
+        return this;
+    }
+
+    public ForEachNodeFactory<T> completionAction(Action completionAction) {
+        getForEachNode().setCompletionAction(completionAction);
+        return this;
+    }
+
     public ForEachNodeFactory<T> outputVariable(String variableName, DataType dataType) {
         getForEachNode().setOutputVariable(variableName, dataType);
         return this;
@@ -57,6 +69,11 @@ public class ForEachNodeFactory<T extends RuleFlowNodeContainerFactory<T, ?>> ex
 
     public ForEachNodeFactory<T> waitForCompletion(boolean waitForCompletion) {
         getForEachNode().setWaitForCompletion(waitForCompletion);
+        return this;
+    }
+
+    public ForEachNodeFactory<T> sequential(boolean sequential) {
+        getForEachNode().setSequential(sequential);
         return this;
     }
 }

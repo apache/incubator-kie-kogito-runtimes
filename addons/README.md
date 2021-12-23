@@ -9,11 +9,6 @@ The following table lists all the add-ons, independent of runtime implementation
 
 | Add-On Description     | Artifact ID                          | Since               |
 |------------------------|--------------------------------------|---------------------|
-| Persistence FileSystem | kogito-addons-persistence-filesystem | 0.10.0              |
-| Persistence Infinispan | kogito-addons-persistence-infinispan | 0.3.0               |
-| Persistence JDBC       | kogito-addons-persistence-jdbc       | 1.8.0               |
-| Persistence MongoDB    | kogito-addons-persistence-mongodb    | 0.15.0              |
-| Persistence Postgresql | kogito-addons-persistence-postgresql | 1.6.0               |
 | Human Task Predictions | kogito-addons-human-task-prediction-api | 0.7.0            |
 
 ### Quarkus Implementation
@@ -93,7 +88,7 @@ In this case, you will have to create a new capability from the scratch. To do t
 knowledge of the Kogito engine internals. Then follow these steps:
 
 1. Create a new sub-module under `common` with a meaningful name. This module can be a parent module if you foresee a
-   complex scenario for your new add-on. See [`cloudevents`](common/cloudevents) as an example.
+   complex scenario for your new add-on. See [`messaging`](common/messaging) as an example.
 2. Do not use any dependencies from Quarkus or Spring Boot in `common` module. Your add-on must only have code to support
    your capability. New dependencies must be added to the [kogito-build](../kogito-build/kogito-build-parent) BOM.
 3. Create the same capability under the `addons` module in the runtime module you wish to add support (

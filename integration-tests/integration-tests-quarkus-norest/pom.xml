@@ -10,6 +10,11 @@
   <artifactId>integration-tests-quarkus-norest</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Without REST</name>
 
+  <properties>
+    <!-- excluded because of https://issues.redhat.com/browse/KOGITO-5338 -->
+    <quarkus.test.list.include>false</quarkus.test.list.include>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -39,10 +44,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
     </dependency>
 
     <dependency>
@@ -119,9 +120,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <includes>
-            <include>org/kie/kogito/integrationtests/quarkus/*</include>
-          </includes>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <container.image.infinispan>${container.image.infinispan}</container.image.infinispan>
@@ -142,27 +140,6 @@
       <properties>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <systemProperties>
-                    <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>

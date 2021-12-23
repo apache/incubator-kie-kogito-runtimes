@@ -12,10 +12,26 @@
     <artifactId>kogito-quarkus-predictions-integration-test</artifactId>
     <name>Kogito :: Quarkus Predictions Extension :: Integration Tests</name>
 
+    <properties>
+        <quarkus.test.list.include>true</quarkus.test.list.include>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-predictions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-api-incubation-predictions-services</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
         </dependency>
 
         <dependency>

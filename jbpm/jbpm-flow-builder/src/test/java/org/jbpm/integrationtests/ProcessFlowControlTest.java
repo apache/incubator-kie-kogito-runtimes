@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.drools.core.common.InternalAgenda;
+import org.drools.core.common.InternalAgendaGroup;
 import org.drools.core.event.DefaultAgendaEventListener;
-import org.drools.core.impl.KnowledgeBaseFactory;
 import org.jbpm.test.util.AbstractBaseTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.runtime.rule.FactHandle;
@@ -42,11 +41,8 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessFlowControlTest.class);
 
-    protected KieBase getRuleBase(final KieBaseConfiguration config) throws Exception {
-        return KnowledgeBaseFactory.newKnowledgeBase(config);
-    }
-
     @Test
+    @Disabled("MVEL not supported in ScriptTask")
     public void testRuleFlowConstraintDialects() throws Exception {
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("test_ConstraintDialects.rfm")));
 
@@ -220,7 +216,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
         // Check they aren't in the Agenda
         assertEquals(0,
-                agenda.getAgendaGroup("MAIN").size());
+                ((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size());
 
         // Check we have 0 activation cancellation events
         assertEquals(0,
@@ -230,7 +226,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
         // Check the AgendaGroup and RuleFlowGroup  are now empty
         assertEquals(0,
-                agenda.getAgendaGroup("MAIN").size());
+                ((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size());
         assertEquals(0,
                 agenda.sizeOfRuleFlowGroup("flowgroup-1"));
 
@@ -290,6 +286,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
     }
 
     @Test
+    @Disabled("MVEL not supported in ScriptTask")
     public void testRuleFlowActionDialects() throws Exception {
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("test_ActionDialects.rfm")));
 
@@ -309,7 +306,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
     }
 
     @Test
-    public void testLoadingRuleFlowNoPackageName() throws Exception {
+    public void testLoadingRuleFlowNoPackageName() {
         // loading a ruleflow with errors (null package name cause 3 errors)
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("error_ruleflow.rfm")));
         assertEquals(3,

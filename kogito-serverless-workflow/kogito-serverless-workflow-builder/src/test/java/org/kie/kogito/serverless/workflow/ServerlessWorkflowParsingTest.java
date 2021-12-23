@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 
@@ -38,10 +39,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.utils.WorkflowTestUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
@@ -88,13 +87,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -122,13 +123,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         TimerNode timerNode = (TimerNode) process.getNodes()[3];
@@ -157,13 +160,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof WorkItemNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         WorkItemNode workItemNode = (WorkItemNode) compositeNode.getNodes()[1];
@@ -222,13 +227,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -258,13 +265,15 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[1];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
     }
 
@@ -290,7 +299,7 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(4, compositeNode.getNodes().length);
+        assertEquals(6, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
@@ -299,6 +308,10 @@ public class ServerlessWorkflowParsingTest {
         node = compositeNode.getNodes()[2];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[3];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[4];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[5];
         assertTrue(node instanceof EndNode);
     }
 
@@ -328,36 +341,43 @@ public class ServerlessWorkflowParsingTest {
         // now check the composite one to see what nodes it has
         CompositeContextNode compositeNode = (CompositeContextNode) process.getNodes()[2];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         compositeNode = (CompositeContextNode) process.getNodes()[3];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
         assertTrue(node instanceof ActionNode);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
 
         compositeNode = (CompositeContextNode) process.getNodes()[4];
 
-        assertEquals(3, compositeNode.getNodes().length);
+        assertEquals(4, compositeNode.getNodes().length);
 
         node = compositeNode.getNodes()[0];
         assertTrue(node instanceof StartNode);
         node = compositeNode.getNodes()[1];
-        assertTrue(node instanceof ActionNode);
+        assertTrue(node instanceof Node);
         node = compositeNode.getNodes()[2];
+        assertTrue(node instanceof ActionNode);
+        node = compositeNode.getNodes()[3];
         assertTrue(node instanceof EndNode);
+
     }
 
     @ParameterizedTest
@@ -672,8 +692,9 @@ public class ServerlessWorkflowParsingTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "/examples/applicantworkflow.sw.json" })
-    public void testSpecExamplesParsing(String workflowLocation) throws JsonProcessingException {
+    @ValueSource(strings = { "/examples/applicantworkflow.sw.json", "/exec/error.sw.json", "/exec/callback.sw.json", "/exec/compensation.sw.json", "/exec/compensation.end.sw.json",
+            "/exec/foreach.sw.json" })
+    public void testSpecExamplesParsing(String workflowLocation) throws IOException {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 
         assertNotNull(workflow);
@@ -689,7 +710,7 @@ public class ServerlessWorkflowParsingTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "/exec/openapi-greeting-operation.sw.json" })
-    public void testSpecOpenApiFunctionParsing(String workflowLocation) throws JsonProcessingException {
+    public void testSpecOpenApiFunctionParsing(String workflowLocation) throws IOException {
         Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
 
         assertNotNull(workflow);
@@ -705,7 +726,7 @@ public class ServerlessWorkflowParsingTest {
     }
 
     @Test
-    public void testMinimunWorkflow() {
+    public void testMinimumWorkflow() {
         Workflow workflow = new Workflow();
         workflow.setId("javierito");
         Start start = new Start();
@@ -719,7 +740,7 @@ public class ServerlessWorkflowParsingTest {
         startState.setEnd(end);
         workflow.setStates(Collections.singletonList(startState));
         workflow.setStart(start);
-        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow);
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcess();
         assertSame(process, parser.getProcess());
         assertEquals(ServerlessWorkflowParser.DEFAULT_NAME, process.getName());
@@ -727,9 +748,12 @@ public class ServerlessWorkflowParsingTest {
         assertEquals(ServerlessWorkflowParser.DEFAULT_PACKAGE, process.getPackageName());
     }
 
-    private Process getWorkflowParser(String workflowLocation) throws JsonProcessingException {
+    private Process getWorkflowParser(String workflowLocation) throws IOException {
         String format = workflowLocation.endsWith(".sw.json") ? "json" : "yml";
-        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(new InputStreamReader(this.getClass().getResourceAsStream(workflowLocation)), format);
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(
+                new InputStreamReader(this.getClass().getResourceAsStream(workflowLocation)),
+                format,
+                JavaKogitoBuildContext.builder().build());
         return parser.getProcess();
     }
 }

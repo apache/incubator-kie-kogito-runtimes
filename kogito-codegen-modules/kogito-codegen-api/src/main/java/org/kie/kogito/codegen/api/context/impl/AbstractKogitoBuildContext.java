@@ -22,16 +22,20 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.lang.model.SourceVersion;
 
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
+import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.context.KogitoApplicationPropertyProvider;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.api.rest.RestAnnotator;
@@ -46,7 +50,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractKogitoBuildContext.class);
 
     protected final Predicate<String> classAvailabilityResolver;
-    protected final Properties applicationProperties;
+    protected final KogitoApplicationPropertyProvider applicationProperties;
     protected final String packageName;
     protected final AddonsConfig addonsConfig;
     protected final ClassLoader classLoader;
@@ -54,6 +58,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected final String contextName;
     protected final Map<String, Object> contextAttributes;
     protected final KogitoGAV gav;
+    protected Set<ApplicationSection> applicationSections;
 
     protected DependencyInjectionAnnotator dependencyInjectionAnnotator;
     protected RestAnnotator restAnnotator;
@@ -73,6 +78,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.gav = builder.gav;
         this.contextName = contextName;
         this.contextAttributes = new HashMap<>();
+        this.applicationSections = new HashSet<>();
     }
 
     protected static Properties load(File... resourcePaths) {
@@ -116,17 +122,17 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
 
     @Override
     public Optional<String> getApplicationProperty(String property) {
-        return Optional.ofNullable(applicationProperties.getProperty(property));
+        return applicationProperties.getApplicationProperty(property);
     }
 
     @Override
     public Collection<String> getApplicationProperties() {
-        return applicationProperties.stringPropertyNames();
+        return applicationProperties.getApplicationProperties();
     }
 
     @Override
-    public void setApplicationProperty(String key, Object value) {
-        applicationProperties.put(key, value);
+    public void setApplicationProperty(String key, String value) {
+        applicationProperties.setApplicationProperty(key, value);
     }
 
     @Override
@@ -181,10 +187,35 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.contextAttributes.put(key, value);
     }
 
+    @Override
+    public Set<ApplicationSection> getApplicationSections() {
+        return Collections.unmodifiableSet(applicationSections);
+    }
+
+    @Override
+    public void addAllApplicationSections(Set<ApplicationSection> applicationSections) {
+        this.applicationSections.addAll(applicationSections);
+    }
+
+    @Override
+    public void addApplicationSection(ApplicationSection applicationSection) {
+        this.applicationSections.add(applicationSection);
+    }
+
+    @Override
+    public String toString() {
+        return "KogitoBuildContext{" +
+                "contextName='" + contextName + '\'' +
+                ", applicationProperties=" + applicationProperties +
+                ", packageName='" + packageName + '\'' +
+                ", addonsConfig=" + addonsConfig +
+                '}';
+    }
+
     protected abstract static class AbstractBuilder implements Builder {
 
         protected String packageName = DEFAULT_PACKAGE_NAME;
-        protected Properties applicationProperties = new Properties();
+        protected KogitoApplicationPropertyProvider applicationProperties = KogitoApplicationPropertyProvider.of(new Properties());
         protected AddonsConfig addonsConfig;
         protected ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         protected Predicate<String> classAvailabilityResolver = this::hasClass;
@@ -214,15 +245,22 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         }
 
         @Override
-        public Builder withApplicationProperties(Properties applicationProperties) {
-            Objects.requireNonNull(applicationProperties, "applicationProperties cannot be null");
+        public Builder withApplicationPropertyProvider(KogitoApplicationPropertyProvider applicationProperties) {
+            Objects.requireNonNull(applicationProperties, "applicationPropertiesProvider cannot be null");
             this.applicationProperties = applicationProperties;
             return this;
         }
 
         @Override
+        public Builder withApplicationProperties(Properties applicationProperties) {
+            Objects.requireNonNull(applicationProperties, "applicationProperties cannot be null");
+            this.applicationProperties = KogitoApplicationPropertyProvider.of(applicationProperties);
+            return this;
+        }
+
+        @Override
         public Builder withApplicationProperties(File... files) {
-            this.applicationProperties = load(files);
+            this.applicationProperties = KogitoApplicationPropertyProvider.of(load(files));
             return this;
         }
 
@@ -268,6 +306,5 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
                 return false;
             }
         }
-
     }
 }

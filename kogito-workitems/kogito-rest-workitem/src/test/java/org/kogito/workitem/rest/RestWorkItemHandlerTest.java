@@ -31,9 +31,9 @@ import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.serverless.workflow.functions.JsonPathResolver;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
@@ -48,7 +48,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
@@ -84,8 +83,7 @@ public class RestWorkItemHandlerTest {
     @Mock
     private HttpRequest<Buffer> request;
 
-    @Mock
-    private KogitoWorkItem workItem;
+    private KogitoWorkItemImpl workItem;
 
     @Mock
     private VariableScope variableScope;
@@ -115,22 +113,22 @@ public class RestWorkItemHandlerTest {
 
         when(request.sendJsonAndAwait(any())).thenReturn(response);
         when(request.sendAndAwait()).thenReturn(response);
-        when(response.bodyAsJsonObject()).thenReturn(JsonObject.mapFrom(Collections.singletonMap("num", 1)));
+        when(response.bodyAsJson(ObjectNode.class)).thenReturn(ObjectMapperFactory.get().createObjectNode().put("num", 1));
 
-        parameters = new HashMap<>();
+        workItem = new KogitoWorkItemImpl();
+        workItem.setId("2");
+        parameters = workItem.getParameters();
         parameters.put(RestWorkItemHandler.HOST, "localhost");
         parameters.put(RestWorkItemHandler.PORT, 8080);
         parameters.put(RestWorkItemHandler.URL, "/results/sum");
-
-        when(workItem.getStringId()).thenReturn("2");
-        when(workItem.getParameters()).thenReturn(parameters);
+        parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
 
         Process process = mock(Process.class);
         ProcessInstance processInstance = mock(ProcessInstance.class);
+        workItem.setProcessInstance(processInstance);
 
         workflowData = mapper.createObjectNode().put("id", 26).put("name", "pepe");
 
-        when(workItem.getProcessInstance()).thenReturn(processInstance);
         when(processInstance.getProcess()).thenReturn(process);
         when(processInstance.getVariables()).thenReturn(Collections.singletonMap(DEFAULT_WORKFLOW_VAR, workflowData));
 
@@ -142,7 +140,7 @@ public class RestWorkItemHandlerTest {
         when(process.getDefaultContext(VariableScope.VARIABLE_SCOPE)).thenReturn(variableScope);
         when(variableScope.findVariable(DEFAULT_WORKFLOW_VAR)).thenReturn(variable);
 
-        when(workItem.getNodeInstance()).thenReturn(nodeInstance);
+        workItem.setNodeInstance(nodeInstance);
         when(nodeInstance.getNode()).thenReturn(node);
         when(node.getOutMapping(RestWorkItemHandler.RESULT)).thenReturn(DEFAULT_WORKFLOW_VAR);
 
@@ -155,7 +153,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/id/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/id/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters, e -> e));
+                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
     }
 
     @Test
@@ -166,7 +164,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/{id}/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/pepe/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters, e -> e));
+                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
     }
 
     @Test
@@ -177,7 +175,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/{id}/names/{name}/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/26/names/pepe/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters, e -> e));
+                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
     }
 
     @Test
@@ -188,13 +186,13 @@ public class RestWorkItemHandlerTest {
         assertTrue(
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters, e -> e))
+                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters))
                                 .getMessage()
                                 .contains("name"));
     }
 
     @Test
-    public void testReplaceTemplateBadEnpoint() {
+    public void testReplaceTemplateBadEndpoint() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id", 26);
         parameters.put("name", "pepe");
@@ -202,7 +200,7 @@ public class RestWorkItemHandlerTest {
         assertTrue(
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters, e -> e))
+                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters))
                                 .getMessage()
                                 .contains("}"));
     }
@@ -214,15 +212,13 @@ public class RestWorkItemHandlerTest {
         RestWorkItemHandlerResult resultHandler = new DefaultRestWorkItemHandlerResult();
         HttpResponse<Buffer> response = mock(HttpResponse.class);
         when(response.bodyAsJson(ObjectNode.class)).thenReturn(objectNode);
-        RestWorkItemTargetInfo targetInfo = new RestWorkItemTargetInfo(null, ObjectNode.class);
-        assertSame(objectNode, resultHandler.apply(targetInfo, response));
+        assertSame(objectNode, resultHandler.apply(response, ObjectNode.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testGetRestTaskHandler() {
-        parameters.put("id", new JsonPathResolver("$.id"));
-        parameters.put("name", new JsonPathResolver("$.name"));
+        parameters.put("id", 26);
+        parameters.put("name", "pepe");
         parameters.put(RestWorkItemHandler.URL, "http://localhost:8080/results/{id}/names/{name}");
         parameters.put(RestWorkItemHandler.METHOD, "GET");
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
@@ -232,27 +228,10 @@ public class RestWorkItemHandlerTest {
         assertResult(manager, argCaptor);
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testEmptyGet() {
-        parameters.put("id", 25);
-        parameters.put(RestWorkItemHandler.URL, "http://localhost:8080/results/{id}");
-        parameters.put(RestWorkItemHandler.METHOD, "GET");
-
-        when(node.getOutMapping(RestWorkItemHandler.RESULT)).thenReturn(null);
-
-        handler.executeWorkItem(workItem, manager);
-
-        verify(manager).completeWorkItem(anyString(), argCaptor.capture());
-        Map<String, Object> results = argCaptor.getValue();
-        assertEquals(0, results.size());
-    }
-
-    @SuppressWarnings("unchecked")
     @Test
     public void testParametersPostRestTaskHandler() {
-        parameters.put("id", new JsonPathResolver("$.id"));
-        parameters.put("name", new JsonPathResolver("$.name"));
+        parameters.put("id", 26);
+        parameters.put("name", "pepe");
         parameters.put(RestWorkItemHandler.METHOD, "POST");
         parameters.put(BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder());
         parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
@@ -263,6 +242,23 @@ public class RestWorkItemHandlerTest {
         Map<String, Object> bodyMap = bodyCaptor.getValue();
         assertEquals(26, bodyMap.get("id"));
         assertEquals("pepe", bodyMap.get("name"));
+
+        assertResult(manager, argCaptor);
+    }
+
+    @Test
+    public void testContentDataPostRestTaskHandler() {
+        parameters.put(RestWorkItemHandler.METHOD, "POST");
+        parameters.put(BODY_BUILDER, new ParamsRestWorkItemHandlerBodyBuilder());
+        parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
+
+        handler.executeWorkItem(workItem, manager);
+
+        ArgumentCaptor<ObjectNode> bodyCaptor = ArgumentCaptor.forClass(ObjectNode.class);
+        verify(request).sendJsonAndAwait(bodyCaptor.capture());
+        ObjectNode bodyMap = bodyCaptor.getValue();
+        assertEquals(26, bodyMap.get("id").asInt());
+        assertEquals("pepe", bodyMap.get("name").asText());
 
         assertResult(manager, argCaptor);
     }
@@ -303,7 +299,6 @@ public class RestWorkItemHandlerTest {
         assertResult(manager, argCaptor);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testContentPostRestTaskHandler() {
         parameters.put(RestWorkItemHandler.METHOD, "POST");

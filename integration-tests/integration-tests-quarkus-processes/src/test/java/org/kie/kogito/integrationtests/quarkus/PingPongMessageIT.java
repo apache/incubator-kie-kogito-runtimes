@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -30,7 +30,7 @@ import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
 public class PingPongMessageIT {
 
@@ -82,7 +82,7 @@ public class PingPongMessageIT {
                         .get("/pong_message/")
                         .then()
                         .statusCode(200)
-                        .body("$.size", equalTo(1)));
+                        .body("$.size()", equalTo(1)));
 
         String pId = given()
                 .contentType(ContentType.JSON)
@@ -90,7 +90,7 @@ public class PingPongMessageIT {
                 .get("/pong_message/")
                 .then()
                 .statusCode(200)
-                .body("$.size", equalTo(1))
+                .body("$.size()", equalTo(1))
                 .extract().body().path("[0].id");
 
         given()

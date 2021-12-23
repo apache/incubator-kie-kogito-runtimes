@@ -20,13 +20,12 @@ import java.util.Collections;
 
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,14 +33,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenApiTaskDescriptorTest {
 
+    private static class DummyWorkItemHandlerResolver extends ExpressionWorkItemResolver {
+
+        protected DummyWorkItemHandlerResolver(String lang, String expression, String paramName) {
+            super(lang, expression, paramName);
+        }
+
+        @Override
+        protected Object evalExpression(Object inputModel) {
+            return null;
+        }
+    }
+
     @Test
     void addParametersToServiceCall() {
         final BlockStmt execWorkItem = new BlockStmt();
         final MethodCallExpr serviceCallMethod = new MethodCallExpr("doCall");
+
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .addParamResolver("body", () -> null)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor taskDescriptor = new OpenApiTaskDescriptor(workItemNode);
         taskDescriptor.handleParametersForServiceCall(execWorkItem, serviceCallMethod);
@@ -50,44 +61,22 @@ class OpenApiTaskDescriptorTest {
     }
 
     @Test
-    void handleResultHandler() {
-        final BlockStmt execWorkItem = new BlockStmt();
-        final MethodCallExpr serviceCallMethod = new MethodCallExpr("doCall");
-        final WorkItemNode workItemNode =
-                OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
-                        .addParamResolver("body", () -> null)
-                        .build();
-        final OpenApiTaskDescriptor taskDescriptor = new OpenApiTaskDescriptor(workItemNode);
-        taskDescriptor.handleParametersForServiceCall(execWorkItem, serviceCallMethod);
-        final Expression decoratedServiceCall = taskDescriptor.handleServiceCallResult(execWorkItem, serviceCallMethod);
-        assertNotNull(decoratedServiceCall);
-        assertTrue(decoratedServiceCall instanceof MethodCallExpr);
-        assertEquals(2, ((MethodCallExpr) decoratedServiceCall).getArguments().size());
-    }
-
-    @Test
     void verifyModifierWithSingleParameter() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
-                        .addParamResolver("bodyRequest", () -> null)
+                        .withArgs(Collections.singletonMap("bodyRequest", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         modifier.modify(this.getClass().getCanonicalName(), "add", Collections.singletonList("body"));
-        assertNotNull(workItemNode.getWork().getParameter(OpenApiTaskDescriptor.PARAM_PREFIX + "bodyRequest"));
-        assertNull(workItemNode.getWork().getParameter(OpenApiTaskDescriptor.PARAM_PREFIX + "body"));
+        assertNotNull(workItemNode.getWork().getParameter("bodyRequest"));
+        assertNull(workItemNode.getWork().getParameter("body"));
     }
 
     @Test
     void verifyModifierWithSingleParameterSpecNone() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
-                        .addParamResolver("body", () -> null)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         assertThrows(IllegalArgumentException.class, () -> {
@@ -101,42 +90,21 @@ class OpenApiTaskDescriptorTest {
         // spec has none, process has none
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         modifier.modify(this.getClass().getCanonicalName(), "add", Collections.emptyList());
-        assertFalse(workItemNode.getWork().getParameters().entrySet().stream().anyMatch(p -> p.getKey().startsWith(OpenApiTaskDescriptor.PARAM_PREFIX)));
-    }
-
-    @Test
-    void verifyModifierWithManyParameters() {
-        final WorkItemNode workItemNode =
-                OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
-                        .addParamResolver("body", () -> null)
-                        .addParamResolver("id", () -> null)
-                        .build();
-        final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
-        modifier.modify(this.getClass().getCanonicalName(), "add", Arrays.asList("id", "body"));
-        assertNotNull(workItemNode.getWork().getParameter(OpenApiTaskDescriptor.PARAM_PREFIX + "body"));
-        assertNotNull(workItemNode.getWork().getParameter(OpenApiTaskDescriptor.PARAM_PREFIX + "id"));
+        assertTrue(workItemNode.getWork().getParameterDefinitions().isEmpty());
     }
 
     @Test
     void verifyModifierWithManyParametersDiffNames() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withParamResolverType("org.jbpm.serverless.workflow.function.JsonNodeParameterResolver")
-                        .withResultHandlerType("org.jbpm.serverless.workflow.function.JsonNodeResultHandler")
-                        .addParamResolver("body", () -> null)
-                        .addParamResolver("id", () -> null)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         assertThrows(IllegalArgumentException.class, () -> {
-            // spec has more than one, process has more than one, but different names. we can't possibly know how to map
-            modifier.modify(this.getClass().getCanonicalName(), "add", Arrays.asList("email", "body", "tag"));
+            modifier.modify(this.getClass().getCanonicalName(), "add", Arrays.asList("email", "tag"));
         });
     }
 

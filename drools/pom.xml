@@ -24,19 +24,14 @@
   </properties>
 
   <modules>
-    <module>drools-core-static</module>
-    <module>drools-core-dynamic</module>
-    <module>drools-core</module>
-    <module>drools-compiler</module>
-    <module>kogito-drools-model</module>
+    <module>kogito-drools-wiring-static</module>
+    <module>kogito-drools</module>
     <module>kogito-ruleunits</module>
     <module>kogito-pmml-api-dependencies</module>
     <module>kogito-pmml-dependencies</module>
     <module>kogito-pmml-openapi</module>
     <module>kogito-pmml</module>
     <module>kogito-dmn</module>
-    <module>drools-decisiontables</module>
-    <module>kogito-drools</module>
     <module>kogito-scenario-simulation</module>
   </modules>
 

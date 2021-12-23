@@ -16,25 +16,27 @@
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
-import org.kie.kogito.serverless.workflow.parser.NodeIdGenerator;
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.SubflowState;
 
-public class SubflowHandler<P extends RuleFlowNodeContainerFactory<P, ?>> extends StateHandler<SubflowState, SubProcessNodeFactory<P>, P> {
+public class SubflowHandler extends StateHandler<SubflowState> {
 
-    protected SubflowHandler(SubflowState state, Workflow workflow, RuleFlowNodeContainerFactory<P, ?> factory,
-            NodeIdGenerator idGenerator) {
-        super(state, workflow, factory, idGenerator);
+    protected SubflowHandler(SubflowState state, Workflow workflow, ParserContext parserContext) {
+        super(state, workflow, parserContext);
     }
 
     @Override
-    public SubProcessNodeFactory<P> makeNode() {
-        return ServerlessWorkflowParser.subprocessNode(factory.subProcessNode(idGenerator.getId()).name(state.getName()).processId(state
-                .getWorkflowId()).waitForCompletion(state.isWaitForCompletion()));
+    public boolean usedForCompensation() {
+        return state.isUsedForCompensation();
+    }
 
+    @Override
+    public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+        return new MakeNodeResult(ServerlessWorkflowParser.subprocessNode(factory.subProcessNode(parserContext.newId()).name(state.getName()).processId(state
+                .getWorkflowId()).waitForCompletion(state.isWaitForCompletion())));
     }
 
 }

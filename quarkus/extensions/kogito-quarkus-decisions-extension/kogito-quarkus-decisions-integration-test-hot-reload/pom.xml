@@ -12,12 +12,24 @@
     <artifactId>kogito-quarkus-decisions-integration-test-hot-reload</artifactId>
     <name>Kogito :: Quarkus Decicions Extension :: Integration Tests (Hot Reload)</name>
 
+    <properties>
+        <!-- excluded because of https://issues.redhat.com/browse/KOGITO-5341 -->
+        <quarkus.test.list.include>false</quarkus.test.list.include>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-decisions</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
         <!-- this is used implicitly by hot reload tests so let's make Maven aware of it -->
         <dependency>
             <groupId>org.kie.kogito</groupId>

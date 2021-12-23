@@ -22,12 +22,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
+import org.jbpm.process.instance.impl.Action;
+import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.util.ContextFactory;
 import org.jbpm.workflow.core.Node;
+import org.jbpm.workflow.core.node.AsyncEventNodeInstance;
 import org.jbpm.workflow.core.node.ForEachNode;
 import org.jbpm.workflow.core.node.ForEachNode.ForEachJoinNode;
 import org.jbpm.workflow.core.node.ForEachNode.ForEachSplitNode;
@@ -47,15 +52,43 @@ import org.mvel2.integration.impl.SimpleValueResolver;
 public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
+    public static final String TEMP_OUTPUT_VAR = "foreach_output";
 
-    private static final String TEMP_OUTPUT_VAR = "foreach_output";
+    private int totalInstances;
+    private int executedInstances;
+    boolean hasAsyncInstances;
 
     public ForEachNode getForEachNode() {
         return (ForEachNode) getNode();
     }
 
+    public int getExecutedInstances() {
+        return this.executedInstances;
+    }
+
+    public void setExecutedInstances(int executedInstances) {
+        this.executedInstances = executedInstances;
+    }
+
+    public int getTotalInstances() {
+        return this.totalInstances;
+    }
+
+    public void setTotalInstances(int totalInstances) {
+        this.totalInstances = totalInstances;
+    }
+
+    public boolean getHasAsyncInstances() {
+        return hasAsyncInstances;
+    }
+
+    public void setHasAsyncInstances(boolean hasAsyncInstances) {
+        this.hasAsyncInstances = hasAsyncInstances;
+    }
+
     @Override
-    public NodeInstance getNodeInstance(final org.kie.api.definition.process.Node node) {
+    public NodeInstance getNodeInstance(final org.kie.api.definition.process.Node currentNode) {
+        org.kie.api.definition.process.Node node = resolveAsync(currentNode);
         if (node instanceof ForEachSplitNode) {
             ForEachSplitNodeInstance nodeInstance = new ForEachSplitNodeInstance();
             nodeInstance.setNodeId(node.getId());
@@ -68,10 +101,14 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             int level = this.getLevelForNode(uniqueID);
             nodeInstance.setLevel(level);
             return nodeInstance;
-        } else if (node instanceof ForEachJoinNode) {
-            ForEachJoinNodeInstance nodeInstance = (ForEachJoinNodeInstance) getFirstNodeInstance(node.getId());
-            if (nodeInstance == null) {
-                nodeInstance = new ForEachJoinNodeInstance();
+
+        } else if (node instanceof ForEachJoinNode || currentNode instanceof ForEachJoinNode) {
+            Optional<NodeInstance> existingNodeInstance = Optional.ofNullable(getFirstNodeInstance(node.getId()));
+            if (existingNodeInstance.isPresent()) {
+                return existingNodeInstance.get();
+            }
+            if (node instanceof ForEachJoinNode) {
+                ForEachJoinNodeInstance nodeInstance = new ForEachJoinNodeInstance();
                 nodeInstance.setNodeId(node.getId());
                 nodeInstance.setNodeInstanceContainer(this);
                 nodeInstance.setProcessInstance(getProcessInstance());
@@ -81,10 +118,10 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                 }
                 int level = this.getLevelForNode(uniqueID);
                 nodeInstance.setLevel(level);
+                return nodeInstance;
             }
-            return nodeInstance;
         }
-        return super.getNodeInstance(node);
+        return super.getNodeInstance(currentNode);
     }
 
     @Override
@@ -92,32 +129,8 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         return getForEachNode().getCompositeNode();
     }
 
-    private Collection<?> evaluateCollectionExpression(String collectionExpression) {
-        Object collection;
-        VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, collectionExpression);
-        if (variableScopeInstance != null) {
-            collection = variableScopeInstance.getVariable(collectionExpression);
-        } else {
-            try {
-                collection = MVELProcessHelper.evaluator().eval(collectionExpression, new NodeInstanceResolverFactory(this));
-            } catch (Throwable t) {
-                throw new IllegalArgumentException(
-                        "Could not find collection " + collectionExpression);
-            }
-        }
-        if (collection == null) {
-            return Collections.emptyList();
-        }
-        if (collection instanceof Collection<?>) {
-            return (Collection<?>) collection;
-        }
-        if (collection.getClass().isArray()) {
-            List<Object> list = new ArrayList<>();
-            Collections.addAll(list, (Object[]) collection);
-            return list;
-        }
-        throw new IllegalArgumentException(
-                "Unexpected collection type: " + collection.getClass());
+    private boolean isSequential() {
+        return getForEachNode().isSequential() || hasAsyncInstances;
     }
 
     public class ForEachSplitNodeInstance extends NodeInstanceImpl {
@@ -129,10 +142,11 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         }
 
         @Override
-        public void internalTrigger(KogitoNodeInstance fromm, String type) {
+        public void internalTrigger(KogitoNodeInstance from, String type) {
             triggerTime = new Date();
-            String collectionExpression = getForEachNode().getCollectionExpression();
-            Collection<?> collection = evaluateCollectionExpression(collectionExpression);
+            Collection<?> collection = evaluateCollectionExpression();
+            setTotalInstances(collection.size());
+
             ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
             if (collection.isEmpty()) {
                 ForEachNodeInstance.this.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
@@ -142,18 +156,67 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
                     String variableName = getForEachNode().getVariableName();
                     NodeInstance nodeInstance = ((NodeInstanceContainer) getNodeInstanceContainer()).getNodeInstance(getForEachSplitNode().getTo().getTo());
                     VariableScopeInstance variableScopeInstance = (VariableScopeInstance) nodeInstance.resolveContextInstance(VariableScope.VARIABLE_SCOPE, variableName);
-                    variableScopeInstance.setVariable(this, variableName, o);
+                    variableScopeInstance.setVariable(nodeInstance, variableName, o);
                     nodeInstances.add(nodeInstance);
                 }
+
                 for (NodeInstance nodeInstance : nodeInstances) {
                     logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
                     nodeInstance.trigger(this, getForEachSplitNode().getTo().getToType());
+
+                    //this is required because Parallel instances execution does not work with async, so it fallbacks to sequential
+                    hasAsyncInstances = checkAsyncInstance(nodeInstance);
+                    if (isSequential()) {
+                        // for sequential mode trigger only first item from the list
+                        break;
+                    }
                 }
+
                 if (!getForEachNode().isWaitForCompletion()) {
                     ForEachNodeInstance.this.triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, false);
                 }
             }
         }
+
+        private Collection<?> evaluateCollectionExpression() {
+            Object collection;
+            String collectionExpression = getForEachNode().getCollectionExpression();
+            VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(
+                    VariableScope.VARIABLE_SCOPE, collectionExpression);
+            if (variableScopeInstance != null) {
+                collection = variableScopeInstance.getVariable(collectionExpression);
+            } else if (getForEachNode().getEvaluateExpression() != null) {
+                collection = getForEachNode().getEvaluateExpression().eval(getVariable((String) getForEachNode().getMetaData(Metadata.VARIABLE)), Collection.class);
+            } else {
+                try {
+                    collection = MVELProcessHelper.evaluator().eval(collectionExpression, new NodeInstanceResolverFactory(
+                            this));
+                } catch (Throwable t) {
+                    throw new IllegalArgumentException(
+                            "Could not find collection " + collectionExpression);
+                }
+            }
+            if (collection == null) {
+                return Collections.emptyList();
+            }
+            if (collection instanceof Collection<?>) {
+                return (Collection<?>) collection;
+            }
+            if (collection.getClass().isArray()) {
+                List<Object> list = new ArrayList<>();
+                Collections.addAll(list, (Object[]) collection);
+                return list;
+            }
+            throw new IllegalArgumentException(
+                    "Unexpected collection type: " + collection.getClass());
+        }
+
+    }
+
+    private boolean checkAsyncInstance(NodeInstance nodeInstance) {
+        return ((CompositeContextNodeInstance) nodeInstance).getNodeInstances().stream()
+                .anyMatch(i -> i instanceof AsyncEventNodeInstance
+                        || (i instanceof LambdaSubProcessNodeInstance && ((LambdaSubProcessNodeInstance) i).isAsyncWaitingNodeInstance()));
     }
 
     public class ForEachJoinNodeInstance extends NodeInstanceImpl {
@@ -168,51 +231,69 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public void internalTrigger(KogitoNodeInstance from, String type) {
             triggerTime = new Date();
-            Map<String, Object> tempVariables = new HashMap<>();
-            VariableScopeInstance subprocessVariableScopeInstance = null;
-            if (getForEachNode().getOutputVariableName() != null) {
-                subprocessVariableScopeInstance = (VariableScopeInstance) getContextInstance(VariableScope.VARIABLE_SCOPE);
+            setExecutedInstances(getExecutedInstances() + 1);
 
-                Collection<Object> outputCollection = (Collection<Object>) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR);
+            Map<String, Object> tempVariables = new HashMap<>();
+            if (getForEachNode().getOutputVariableName() != null) {
+
+                Collection<Object> outputCollection = (Collection<Object>) this.getVariable(TEMP_OUTPUT_VAR);
                 if (outputCollection == null) {
                     outputCollection = new ArrayList<>();
+
+                }
+                Object outputVariable = from.getVariable(getForEachNode().getOutputVariableName());
+                if (outputVariable != null) {
+                    outputCollection.add(outputVariable);
                 }
 
-                VariableScopeInstance variableScopeInstance =
-                        (VariableScopeInstance) ((NodeInstanceImpl) from).resolveContextInstance(VariableScope.VARIABLE_SCOPE, getForEachNode().getOutputVariableName());
-                Object outputVariable = null;
-                if (variableScopeInstance != null) {
-                    outputVariable = variableScopeInstance.getVariable(getForEachNode().getOutputVariableName());
+                setVariable(TEMP_OUTPUT_VAR, outputCollection);
+                if (getForEachNode().getOutputVariableName() != null) {
+                    //  add temp collection under actual output name for completion condition evaluation
+                    tempVariables.put(getForEachNode().getOutputVariableName(), outputVariable);
                 }
-                outputCollection.add(outputVariable);
-
-                subprocessVariableScopeInstance.setVariable(this, TEMP_OUTPUT_VAR, outputCollection);
-                // add temp collection under actual mi output name for completion condition evaluation
-                tempVariables.put(getForEachNode().getOutputVariableName(), outputVariable);
                 String outputCollectionName = getForEachNode().getOutputCollectionExpression();
-                tempVariables.put(outputCollectionName, outputCollection);
-            }
-            boolean isCompletionConditionMet = evaluateCompletionCondition(getForEachNode().getCompletionConditionExpression(), tempVariables);
-            if (getNodeInstanceContainer().getNodeInstances().size() == 1 || isCompletionConditionMet) {
-                String outputCollection = getForEachNode().getOutputCollectionExpression();
-                if (outputCollection != null) {
-                    VariableScopeInstance variableScopeInstance = (VariableScopeInstance) resolveContextInstance(VariableScope.VARIABLE_SCOPE, outputCollection);
-                    Collection<?> outputVariable = (Collection<?>) variableScopeInstance.getVariable(outputCollection);
-                    if (outputVariable != null) {
-                        outputVariable.addAll((Collection) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR));
-                    } else {
-                        outputVariable = (Collection<Object>) subprocessVariableScopeInstance.getVariable(TEMP_OUTPUT_VAR);
-                    }
-                    variableScopeInstance.setVariable(this, outputCollection, outputVariable);
+                if (outputCollectionName != null) {
+                    tempVariables.put(outputCollectionName, outputCollection);
                 }
+
+            }
+
+            boolean isCompletionConditionMet = evaluateCompletionCondition(getForEachNode().getCompletionConditionExpression(), tempVariables);
+            if (isSequential() && !isCompletionConditionMet && !areNodeInstancesCompleted()) {
+                getFirstCompositeNodeInstance()
+                        .ifPresent(nodeInstance -> {
+                            logger.debug("Triggering [{}] in multi-instance loop.", nodeInstance.getNodeId());
+                            nodeInstance.trigger(null, getForEachNode().getForEachSplitNode().getTo().getToType());
+                        });
+            }
+
+            if (areNodeInstancesCompleted() || isCompletionConditionMet) {
+                String outputCollection = getForEachNode().getOutputCollectionExpression();
+                Action outputAction = getForEachNode().getCompletionAction();
+
+                if (outputCollection != null) {
+                    Collection<?> outputVariable = (Collection<?>) getVariable(outputCollection);
+                    Collection collectedValues = (Collection) getVariable(TEMP_OUTPUT_VAR);
+                    if (outputVariable != null) {
+                        outputVariable.addAll(collectedValues);
+                    } else {
+                        outputVariable = collectedValues;
+                    }
+                    setVariable(outputCollection, outputVariable);
+                } else if (outputAction != null) {
+                    try {
+                        outputAction.execute(ContextFactory.fromNode(this));
+                    } catch (Exception e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+
                 ((NodeInstanceContainer) getNodeInstanceContainer()).removeNodeInstance(this);
+
                 if (getForEachNode().isWaitForCompletion()) {
-
                     if (!"true".equals(System.getProperty("jbpm.enable.multi.con"))) {
-
                         triggerConnection(getForEachJoinNode().getTo());
                     } else {
-
                         List<Connection> connections = getForEachJoinNode().getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
                         for (Connection connection : connections) {
                             triggerConnection(connection);
@@ -222,19 +303,33 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
             }
         }
 
+        private Optional<NodeInstance> getFirstCompositeNodeInstance() {
+            return ((CompositeNodeInstance) getNodeInstanceContainer()).getNodeInstances(false).stream()
+                    .filter(CompositeContextNodeInstance.class::isInstance)
+                    .filter(NodeInstance.class::isInstance)
+                    .map(NodeInstance.class::cast)
+                    .findFirst();
+        }
+
+        private boolean areNodeInstancesCompleted() {
+            return getNodeInstanceContainer().getNodeInstances().size() == 1;
+        }
+
         private boolean evaluateCompletionCondition(String expression, Map<String, Object> tempVariables) {
             if (expression == null || expression.isEmpty()) {
                 return false;
-            }
-            try {
-                Object result = MVELProcessHelper.evaluator().eval(expression, new ForEachNodeInstanceResolverFactory(this, tempVariables));
-                if (!(result instanceof Boolean)) {
-                    throw new RuntimeException("Completion condition expression must return boolean values: " + result
-                            + " for expression " + expression);
+            } else {
+                try {
+                    Object result = MVELProcessHelper.evaluator().eval(expression,
+                            new ForEachNodeInstanceResolverFactory(this, tempVariables));
+                    if (!(result instanceof Boolean)) {
+                        throw new IllegalArgumentException("Completion condition expression must return boolean values: " +
+                                result + " for expression " + expression);
+                    }
+                    return ((Boolean) result).booleanValue();
+                } catch (Throwable t) {
+                    throw new IllegalArgumentException("Could not evaluate completion condition  " + expression, t);
                 }
-                return ((Boolean) result).booleanValue();
-            } catch (Throwable t) {
-                throw new IllegalArgumentException("Could not evaluate completion condition  " + expression, t);
             }
         }
     }
@@ -243,7 +338,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     public ContextInstance getContextInstance(String contextId) {
         ContextInstance contextInstance = super.getContextInstance(contextId);
         if (contextInstance == null) {
-            contextInstance = resolveContextInstance(contextId, TEMP_OUTPUT_VAR);
+            contextInstance = resolveContextInstance(contextId, null);
             setContextInstance(contextId, contextInstance);
         }
 

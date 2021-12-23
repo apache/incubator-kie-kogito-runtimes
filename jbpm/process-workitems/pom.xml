@@ -26,8 +26,17 @@
       <artifactId>kogito-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core</artifactId>
+      <artifactId>kogito-drools</artifactId>
+    </dependency>
+     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

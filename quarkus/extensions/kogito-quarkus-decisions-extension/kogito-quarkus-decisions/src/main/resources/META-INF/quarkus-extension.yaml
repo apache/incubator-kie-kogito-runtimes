@@ -6,6 +6,11 @@ metadata:
   - "drools"
   - "decisions"
   - "DMN"
-  guide: "https://quarkus.io/guides/kogito"
+  guide: "https://quarkus.io/guides/kogito-dmn"
   categories:
   - "business-automation"
+  codestart:
+    name: "kogito-dmn-codestart"
+    languages:
+      - "java"
+    artifact: "org.kie.kogito:kogito-quarkus-decisions:codestarts:jar:${project.version}"

@@ -59,7 +59,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
                         "    <forEach id=\"2\" name=\"ForEach\" variableName=\"item\" collectionExpression=\"collection\" >\n" +
                         "      <nodes>\n" +
                         "    <actionNode id=\"1\" name=\"Action\" >\n" +
-                        "        <action type=\"expression\" dialect=\"mvel\" >myList.add(item);</action>\n" +
+                        "        <action type=\"expression\" dialect=\"java\" >myList.add(item);</action>\n" +
                         "    </actionNode>\n" +
                         "      </nodes>\n" +
                         "      <connections>\n" +
@@ -113,7 +113,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
                         "  </header>\n" +
                         "\n" +
                         "  <nodes>\n" +
-                        "    <forEach id=\"2\" name=\"ForEach\" variableName=\"item\" collectionExpression=\"collection\" >\n" +
+                        "    <forEach id=\"2\" name=\"ForEach\" variableName=\"item\" collectionExpression=\"collection\" isSequential=\"false\">\n" +
                         "      <nodes>\n" +
                         "        <workItem id=\"1\" name=\"Log\" >\n" +
                         "          <work name=\"Log\" >\n" +
@@ -189,7 +189,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
                         "    <forEach id=\"2\" name=\"ForEach\" variableName=\"item\" collectionExpression=\"collection\" >\n" +
                         "      <nodes>\n" +
                         "    <actionNode id=\"1\" name=\"Action\" >\n" +
-                        "        <action type=\"expression\" dialect=\"mvel\" >myList.add(item);</action>\n" +
+                        "        <action type=\"expression\" dialect=\"java\" >myList.add(item);</action>\n" +
                         "    </actionNode>\n" +
                         "      </nodes>\n" +
                         "      <connections>\n" +
@@ -244,7 +244,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
                         "    <forEach id=\"2\" name=\"ForEach\" variableName=\"item\" collectionExpression=\"collection\" >\n" +
                         "      <nodes>\n" +
                         "    <actionNode id=\"1\" name=\"Action\" >\n" +
-                        "        <action type=\"expression\" dialect=\"mvel\" >myList.add(item);</action>\n" +
+                        "        <action type=\"expression\" dialect=\"java\" >myList.add(item);</action>\n" +
                         "    </actionNode>\n" +
                         "      </nodes>\n" +
                         "      <connections>\n" +

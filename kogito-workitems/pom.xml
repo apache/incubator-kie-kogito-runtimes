@@ -14,7 +14,7 @@
 
   <modules>
     <module>kogito-rest-workitem</module>
-    <module>kogito-openapi-workitem</module>
+    <module>kogito-jackson-utils</module>
   </modules>
 
 </project>

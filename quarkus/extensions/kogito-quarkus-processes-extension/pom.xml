@@ -27,6 +27,7 @@
         </property>
       </activation>
       <modules>
+        <module>kogito-quarkus-processes-integration-test</module>
         <module>kogito-quarkus-processes-integration-test-hot-reload</module>
       </modules>
     </profile>

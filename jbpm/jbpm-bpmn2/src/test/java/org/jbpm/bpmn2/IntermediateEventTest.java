@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.drools.core.command.runtime.process.KogitoSetProcessInstanceVariablesCommand;
 import org.jbpm.bpmn2.handler.ReceiveTaskHandler;
 import org.jbpm.bpmn2.handler.SendTaskHandler;
 import org.jbpm.bpmn2.objects.Person;
@@ -2445,6 +2444,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testDynamicCatchEventSignal() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
@@ -2485,6 +2485,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testDynamicCatchEventSignalWithVariableUpdated() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();
@@ -2538,6 +2539,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
     @RequirePersistence
     @Test
+    @Disabled("On Exit not supported, see https://issues.redhat.com/browse/KOGITO-2067")
     public void testDynamicCatchEventSignalWithVariableUpdatedBroadcastSignal() throws Exception {
         kruntime = createKogitoProcessRuntime("subprocess/dynamic-signal-parent.bpmn2", "subprocess/dynamic-signal-child.bpmn2");
         TestWorkItemHandler handler = new TestWorkItemHandler();

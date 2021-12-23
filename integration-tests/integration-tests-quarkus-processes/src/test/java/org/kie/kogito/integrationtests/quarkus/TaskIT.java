@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.workitem.AttachmentInfo;
 import org.kie.kogito.task.management.service.TaskInfo;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
@@ -47,7 +47,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 class TaskIT {
 
     static {
@@ -113,7 +113,7 @@ class TaskIT {
 
     @Test
     void testJsonSchemaFiles() {
-        long expectedJsonSchemas = 9;
+        long expectedJsonSchemas = 25;
         Path jsonDir = Paths.get("target", "classes").resolve(JsonSchemaUtil.getJsonDir());
         try (Stream<Path> paths = Files.walk(jsonDir)) {
             long generatedJsonSchemas = paths

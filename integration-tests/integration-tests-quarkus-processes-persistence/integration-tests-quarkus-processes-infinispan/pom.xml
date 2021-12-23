@@ -12,6 +12,10 @@
   <artifactId>integration-tests-quarkus-processes-infinispan</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Processes :: Persistence :: Infinispan</name>
 
+  <properties>
+    <quarkus.test.list.include>true</quarkus.test.list.include>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -19,7 +23,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-persistence-infinispan</artifactId>
+      <artifactId>kogito-addons-quarkus-persistence-infinispan</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

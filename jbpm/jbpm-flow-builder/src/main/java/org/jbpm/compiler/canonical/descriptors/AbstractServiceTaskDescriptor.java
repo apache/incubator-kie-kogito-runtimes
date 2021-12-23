@@ -25,6 +25,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
+import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.Modifier;
@@ -39,7 +40,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -112,26 +112,29 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
                         .collect(NodeList.toNodeList()));
     }
 
+    protected boolean isEmptyResult() {
+        return false;
+    }
+
     protected MethodCallExpr completeWorkItem(BlockStmt executeWorkItemBody, MethodCallExpr callService, Collection<Class<?>> exceptions) {
         Expression results;
 
         List<DataAssociation> outAssociations = workItemNode.getOutAssociations();
-        if (outAssociations.isEmpty()) {
+        if (outAssociations.isEmpty() || isEmptyResult()) {
             executeWorkItemBody.addStatement(tryStmt(callService, exceptions));
-            results = new NullLiteralExpr();
+            results = new MethodCallExpr(new NameExpr("java.util.Collections"), "emptyMap");
         } else {
             VariableDeclarationExpr resultField = new VariableDeclarationExpr()
                     .addVariable(new VariableDeclarator(
                             new ClassOrInterfaceType(null, Object.class.getCanonicalName()),
                             RESULT_NAME));
-            final Expression callServiceResult = this.handleServiceCallResult(executeWorkItemBody, callService);
             executeWorkItemBody.addStatement(resultField);
             executeWorkItemBody
                     .addStatement(
                             tryStmt(
                                     new AssignExpr(
                                             new NameExpr(RESULT_NAME),
-                                            callServiceResult,
+                                            callService,
                                             AssignExpr.Operator.ASSIGN),
                                     exceptions));
             results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
@@ -215,4 +218,11 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
 
         return cls;
     }
+
+    public static Object processWorkItemValue(String exprLang, Object object, String paramName, Class<? extends ExpressionWorkItemResolver> clazz, boolean isExpression) {
+        return isExpression
+                ? new WorkItemParamResolverSupplier(clazz, () -> new StringLiteralExpr(exprLang), () -> new StringLiteralExpr(object.toString()), () -> new StringLiteralExpr(paramName))
+                : object;
+    }
+
 }

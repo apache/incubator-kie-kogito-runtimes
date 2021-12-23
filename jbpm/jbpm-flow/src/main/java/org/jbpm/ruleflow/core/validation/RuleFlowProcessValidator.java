@@ -23,12 +23,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import org.drools.core.time.impl.CronExpression;
+import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.CompensationScope;
+import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.process.core.context.variable.Variable;
+import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.DateTimeUtils;
@@ -37,9 +42,11 @@ import org.jbpm.process.core.validation.ProcessValidationError;
 import org.jbpm.process.core.validation.ProcessValidator;
 import org.jbpm.process.core.validation.impl.ProcessValidationErrorImpl;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
+import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
 import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
@@ -47,6 +54,7 @@ import org.jbpm.workflow.core.node.CatchLinkNode;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.CompositeNode.CompositeNodeEnd;
 import org.jbpm.workflow.core.node.CompositeNode.NodeAndType;
+import org.jbpm.workflow.core.node.DataAssociation;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.EventNode;
@@ -65,12 +73,40 @@ import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.core.node.ThrowLinkNode;
 import org.jbpm.workflow.core.node.TimerNode;
 import org.jbpm.workflow.core.node.WorkItemNode;
-import org.jbpm.workflow.instance.impl.MVELProcessHelper;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.definition.process.Process;
 import org.kie.api.io.Resource;
-import org.mvel2.ErrorDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.printer.DefaultPrettyPrinterVisitor;
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toSet;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
+import static org.jbpm.ruleflow.core.Metadata.MAPPING_VARIABLE;
+import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.SIGNAL_TYPE;
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
 
 /**
  * Default implementation of a RuleFlow validator.
@@ -78,17 +114,18 @@ import org.mvel2.ErrorDetail;
 public class RuleFlowProcessValidator implements ProcessValidator {
 
     public static final String ASSOCIATIONS = "BPMN.Associations";
-
-    private static RuleFlowProcessValidator instance;
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuleFlowProcessValidator.class);
+    private static final String KCONTEXT = "kcontext";
+    private static RuleFlowProcessValidator INSTANCE;
 
     private RuleFlowProcessValidator() {
     }
 
     public static RuleFlowProcessValidator getInstance() {
-        if (instance == null) {
-            instance = new RuleFlowProcessValidator();
+        if (INSTANCE == null) {
+            INSTANCE = new RuleFlowProcessValidator();
         }
-        return instance;
+        return INSTANCE;
     }
 
     public ProcessValidationError[] validateProcess(final RuleFlowProcess process) {
@@ -116,12 +153,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                     "Process has no end node."));
         }
 
-        validateNodes(process.getNodes(),
-                errors,
-                process);
+        validateNodes(process.getNodes(), errors, process);
 
-        validateVariables(errors,
-                process);
+        validateVariables(errors, process);
+
+        validateDataAssignments(errors, process);
 
         checkAllNodesConnectedToStart(process,
                 process.isDynamic(),
@@ -131,7 +167,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         return errors.toArray(new ProcessValidationError[errors.size()]);
     }
 
-    private void validateNodes(org.kie.api.definition.process.Node[] nodes,
+    protected void validateNodes(org.kie.api.definition.process.Node[] nodes,
             List<ProcessValidationError> errors,
             RuleFlowProcess process) {
         String isForCompensation = "isForCompensation";
@@ -164,6 +200,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                         errors);
             } else if (node instanceof RuleSetNode) {
                 final RuleSetNode ruleSetNode = (RuleSetNode) node;
+                validateOnEntryOnExitScripts(ruleSetNode, errors, process);
                 if (ruleSetNode.getFrom() == null && !acceptsNoIncomingConnections(node)) {
                     addErrorMessage(process,
                             node,
@@ -294,6 +331,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 }
             } else if (node instanceof MilestoneNode) {
                 final MilestoneNode milestone = (MilestoneNode) node;
+                validateOnEntryOnExitScripts(milestone, errors, process);
                 if (milestone.getFrom() == null && !acceptsNoIncomingConnections(node)) {
                     addErrorMessage(process,
                             node,
@@ -325,6 +363,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 }
             } else if (node instanceof SubProcessNode) {
                 final SubProcessNode subProcess = (SubProcessNode) node;
+                validateOnEntryOnExitScripts(subProcess, errors, process);
                 if (subProcess.getFrom() == null && !acceptsNoIncomingConnections(node)) {
                     addErrorMessage(process,
                             node,
@@ -390,31 +429,72 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                                 node,
                                 errors,
                                 "Action has empty action.");
-                    } else if ("mvel".equals(droolsAction.getDialect())) {
-                        try {
-                            List<ErrorDetail> mvelErrors = MVELProcessHelper.validateExpression(actionString);
-                            if (mvelErrors != null) {
-                                for (Iterator<ErrorDetail> iterator = mvelErrors.iterator(); iterator.hasNext();) {
-                                    ErrorDetail error = iterator.next();
-                                    addErrorMessage(process,
-                                            node,
-                                            errors,
-                                            "Action has invalid action: " + error.getMessage() + ".");
-                                }
+                    }
+                    if (!"java".equals(droolsAction.getDialect())) {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                droolsAction.getDialect() + " script language is not supported in Kogito.");
+                    }
+
+                    TypeSolver typeSolver = new ReflectionTypeSolver();
+                    JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
+                    JavaParser parser = new JavaParser(new ParserConfiguration().setSymbolResolver(symbolSolver));
+
+                    ParseResult<CompilationUnit> parse = parser.parse("import org.kie.kogito.internal.process.runtime.KogitoProcessContext;\n" +
+                            "import org.jbpm.process.instance.impl.Action;\n" +
+                            " class Test {\n" +
+                            "    Action action = kcontext -> {" + actionString + "};\n" +
+                            "}");
+
+                    if (parse.isSuccessful()) {
+                        CompilationUnit unit = parse.getResult().get();
+
+                        //Check local variables declaration
+                        Set<String> knownVariables = unit.findAll(VariableDeclarationExpr.class).stream().flatMap(v -> v.getVariables().stream()).map(v -> v.getNameAsString()).collect(toSet());
+
+                        knownVariables.add(KCONTEXT);
+                        knownVariables.addAll(Arrays.stream(process.getVariableScope().getVariableNames()).collect(toSet()));
+                        knownVariables.addAll(Arrays.asList(process.getGlobalNames()));
+
+                        if (actionNode.getParentContainer() instanceof ContextContainer) {
+                            ContextContainer contextContainer = (ContextContainer) actionNode.getParentContainer();
+                            VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
+                            if (variableScope != null) {
+                                knownVariables.addAll(Arrays.stream(variableScope.getVariableNames()).collect(toSet()));
                             }
-                        } catch (Throwable t) {
+                        }
+
+                        BlockStmt blockStmt = unit.findFirst(BlockStmt.class).get();
+                        try {
+                            resolveVariablesType(unit, knownVariables);
+                        } catch (UnsolvedSymbolException ex) {
+                            DefaultPrettyPrinterVisitor v1 = new DefaultPrettyPrinterVisitor(new DefaultPrinterConfiguration());
+                            blockStmt.accept(v1, null);
+                            LOGGER.error("\n" + v1);
+                            //Small hack to extract the variable name causing the issue
+                            //Name comes as "Solving x" where x is the variable name
+                            final String[] solving = ex.getName().split(" ");
+                            final String var = solving.length == 2 ? solving[1] : solving[0];
                             addErrorMessage(process,
                                     node,
                                     errors,
-                                    "Action has invalid action: " + t.getMessage() + ".");
+                                    format("uses unknown variable in the script: %s", var));
                         }
+                    } else {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                format("unable to parse Java content: %s", parse.getProblems().get(0).getMessage()));
                     }
+
                     validateCompensationIntermediateOrEndEvent(actionNode,
                             process,
                             errors);
                 }
             } else if (node instanceof WorkItemNode) {
                 final WorkItemNode workItemNode = (WorkItemNode) node;
+                validateOnEntryOnExitScripts(workItemNode, errors, process);
                 if (workItemNode.getFrom() == null && !acceptsNoIncomingConnections(node)) {
                     addErrorMessage(process,
                             node,
@@ -454,6 +534,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 }
             } else if (node instanceof ForEachNode) {
                 final ForEachNode forEachNode = (ForEachNode) node;
+                validateOnEntryOnExitScripts(forEachNode, errors, process);
                 String variableName = forEachNode.getVariableName();
                 if (variableName == null || "".equals(variableName)) {
                     addErrorMessage(process,
@@ -497,6 +578,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                         process);
             } else if (node instanceof DynamicNode) {
                 final DynamicNode dynamicNode = (DynamicNode) node;
+                validateOnEntryOnExitScripts(dynamicNode, errors, process);
 
                 if (dynamicNode.getDefaultIncomingConnections().isEmpty() && !acceptsNoIncomingConnections(dynamicNode)) {
                     addErrorMessage(process,
@@ -523,6 +605,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                         process);
             } else if (node instanceof CompositeNode) {
                 final CompositeNode compositeNode = (CompositeNode) node;
+                validateOnEntryOnExitScripts(compositeNode, errors, process);
                 for (Map.Entry<String, NodeAndType> inType : compositeNode.getLinkedIncomingNodes().entrySet()) {
                     if (compositeNode.getIncomingConnections(inType.getKey()).isEmpty() && !acceptsNoIncomingConnections(node)) {
                         addErrorMessage(process,
@@ -648,6 +731,28 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                             errors,
                             "Event should specify an event type");
                 }
+                if (eventNode instanceof BoundaryEventNode && EVENT_TYPE_MESSAGE.equals(eventNode.getMetaData(EVENT_TYPE))) {
+                    if (eventNode.getMetaData(TRIGGER_REF) == null) {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                "Boundary event missing message name");
+                    }
+
+                    if (eventNode.getVariableName() == null) {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                "Boundary event missing variable in data assignment");
+                    }
+
+                    if (eventNode.getMetaData(MESSAGE_TYPE) == null) {
+                        addErrorMessage(process,
+                                node,
+                                errors,
+                                "Boundary event missing message type");
+                    }
+                }
                 if (eventNode.getDefaultOutgoingConnections().isEmpty()) {
                     addErrorMessage(process,
                             node,
@@ -728,6 +833,55 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
     }
 
+    private void resolveVariablesType(com.github.javaparser.ast.Node node, Set<String> knownVariables) {
+        node.findAll(MethodCallExpr.class).stream()
+                .filter(m -> m.getScope().isPresent())
+                .forEach(m -> {
+                    Expression expression = m.getScope().get();
+                    if (expression.isNameExpr() && !knownVariables.contains(expression.asNameExpr().getNameAsString())) {
+                        expression.calculateResolvedType();
+                    }
+                });
+        node.findAll(AssignExpr.class).stream()
+                .forEach(m -> {
+                    Expression expression = m.getTarget();
+                    if (expression.isNameExpr() && !knownVariables.contains(expression.asNameExpr().getNameAsString())) {
+                        expression.calculateResolvedType();
+                    }
+                });
+        resolveVariablesTypes(node, knownVariables);
+    }
+
+    private void resolveVariablesTypes(com.github.javaparser.ast.Node node, Set<String> knownVariables) {
+        node.findAll(MethodCallExpr.class).stream()
+                .flatMap(m -> m.getArguments().stream())
+                .forEach(arg -> {
+                    if (arg.isMethodCallExpr() || arg.isBinaryExpr()) {
+                        resolveVariablesTypes(arg, knownVariables);
+                    } else {
+                        arg.findAll(NameExpr.class).stream().filter(ex -> !knownVariables.contains(ex.getNameAsString())).forEach(ex -> ex.calculateResolvedType());
+                    }
+                });
+        node.findAll(BinaryExpr.class).stream()
+                .map(bex -> bex.asBinaryExpr())
+                .forEach(bex -> {
+                    if (bex.getLeft().isNameExpr()) {
+                        if (!knownVariables.contains(bex.getLeft().asNameExpr().getNameAsString())) {
+                            bex.getLeft().calculateResolvedType();
+                        }
+                    } else {
+                        resolveVariablesTypes(bex.getLeft(), knownVariables);
+                    }
+                    if (bex.getRight().isNameExpr()) {
+                        if (!knownVariables.contains(bex.getRight().asNameExpr().getNameAsString())) {
+                            bex.getRight().calculateResolvedType();
+                        }
+                    } else {
+                        resolveVariablesTypes(bex.getRight(), knownVariables);
+                    }
+                });
+    }
+
     private void checkAllNodesConnectedToStart(final NodeContainer container,
             boolean isDynamic,
             final List<ProcessValidationError> errors,
@@ -775,8 +929,7 @@ public class RuleFlowProcessValidator implements ProcessValidator {
             }
         }
         for (org.kie.api.definition.process.Node eventNode : eventNodes) {
-            processNode(eventNode,
-                    processNodes);
+            processNode(eventNode, processNodes);
         }
         for (CompositeNode compositeNode : compositeNodes) {
             checkAllNodesConnectedToStart(
@@ -801,13 +954,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         if (!nodes.containsKey(node) && !((node instanceof CompositeNodeEnd) || (node instanceof ForEachSplitNode) || (node instanceof ForEachJoinNode))) {
             throw new IllegalStateException("A process node is connected with a node that does not belong to the process: " + node.getName());
         }
-        final Boolean prevValue = nodes.put(node,
-                Boolean.TRUE);
+        final Boolean prevValue = nodes.put(node, Boolean.TRUE);
         if (prevValue == null || Boolean.FALSE.equals(prevValue)) {
             for (final List<Connection> list : node.getOutgoingConnections().values()) {
                 for (final Connection connection : list) {
-                    processNode(connection.getTo(),
-                            nodes);
+                    processNode(connection.getTo(), nodes);
                 }
             }
         }
@@ -893,8 +1044,21 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         return validateProcess((RuleFlowProcess) process);
     }
 
-    private void validateVariables(List<ProcessValidationError> errors,
-            RuleFlowProcess process) {
+    //TODO To be removed once https://issues.redhat.com/browse/KOGITO-2067 is fixed
+    private void validateOnEntryOnExitScripts(Node node, List<ProcessValidationError> errors, RuleFlowProcess process) {
+        if (node instanceof ExtendedNodeImpl) {
+            List<DroolsAction> actions = ((ExtendedNodeImpl) node).getActions(ExtendedNodeImpl.EVENT_NODE_ENTER);
+            if (actions != null && !actions.isEmpty()) {
+                addErrorMessage(process, node, errors, "On Entry Action is not yet supported in Kogito");
+            }
+            actions = ((ExtendedNodeImpl) node).getActions(ExtendedNodeImpl.EVENT_NODE_EXIT);
+            if (actions != null && !actions.isEmpty()) {
+                addErrorMessage(process, node, errors, "On Exit Action is not yet supported in Kogito");
+            }
+        }
+    }
+
+    private void validateVariables(List<ProcessValidationError> errors, RuleFlowProcess process) {
 
         List<Variable> variables = process.getVariableScope().getVariables();
 
@@ -909,9 +1073,65 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
     }
 
+    private void validateDataAssignments(List<ProcessValidationError> errors, RuleFlowProcess process) {
+        Arrays.stream(process.getNodes())
+                .filter(node -> node instanceof Mappable)
+                .forEach(node -> {
+                    Mappable m = (Mappable) node;
+                    m.getInAssociations().forEach(da -> {
+                        validateDataAssignmentsIn(errors, process, node, da);
+                    });
+                    m.getOutAssociations().forEach(da -> {
+                        validateDataAssignmentsOut(errors, process, node, da);
+                    });
+                });
+    }
+
+    private void validateDataAssignmentsOut(List<ProcessValidationError> errors, RuleFlowProcess process, org.kie.api.definition.process.Node node, DataAssociation da) {
+        if (node instanceof StartNode || node instanceof EventNode) {
+            String type = getEventVariableType(node);
+            if (type == null || type.trim().isEmpty()) {
+                return;
+            }
+            String var = da.getSources().get(0);
+            Variable variable = process.getVariableScope().findVariable(var);
+            DataType dataType = DataTypeResolver.fromType(type, Thread.currentThread().getContextClassLoader());
+            if (!variable.getType().equals(dataType)) {
+                addErrorMessage(process, node, errors,
+                        format("Target variable '%s':'%s' has different data type from '%s':'%s' in data output assignment", var, variable.getType().getStringType(), da.getTarget(),
+                                dataType.getStringType()));
+            }
+        }
+    }
+
+    private void validateDataAssignmentsIn(List<ProcessValidationError> errors, RuleFlowProcess process, org.kie.api.definition.process.Node node, DataAssociation da) {
+        if (node instanceof EndNode || node instanceof ActionNode) {
+            String type = getEventVariableType(node);
+            if (type == null || type.trim().isEmpty()) {
+                return;
+            }
+            String var = (String) node.getMetaData().get(MAPPING_VARIABLE);
+            Variable variable = process.getVariableScope().findVariable(var);
+            DataType dataType = DataTypeResolver.fromType(type, Thread.currentThread().getContextClassLoader());
+            if (!variable.getType().equals(dataType)) {
+                addErrorMessage(process, node, errors,
+                        format("Source variable '%s':'%s' has different data type from '%s':'%s' in data input assignment", var, variable.getType().getStringType(), da.getSources().get(0),
+                                dataType.getStringType()));
+            }
+        }
+    }
+
+    private String getEventVariableType(org.kie.api.definition.process.Node node) {
+        if (EVENT_TYPE_SIGNAL.equals(node.getMetaData().get(EVENT_TYPE))) {
+            return (String) node.getMetaData().get(SIGNAL_TYPE);
+        } else if (EVENT_TYPE_MESSAGE.equals(node.getMetaData().get(EVENT_TYPE))) {
+            return (String) node.getMetaData().get(MESSAGE_TYPE);
+        }
+        return null;
+    }
+
     @Override
-    public boolean accept(Process process,
-            Resource resource) {
+    public boolean accept(Process process, Resource resource) {
         return RuleFlowProcess.RULEFLOW_TYPE.equals(process.getType());
     }
 

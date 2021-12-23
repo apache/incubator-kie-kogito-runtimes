@@ -18,8 +18,8 @@ package org.jbpm.process.builder.dialect;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.jbpm.process.builder.dialect.feel.FeelProcessDialect;
 import org.jbpm.process.builder.dialect.java.JavaProcessDialect;
-import org.jbpm.process.builder.dialect.javascript.JavaScriptProcessDialect;
 import org.jbpm.process.builder.dialect.mvel.MVELProcessDialect;
 
 public class ProcessDialectRegistry {
@@ -30,7 +30,7 @@ public class ProcessDialectRegistry {
         dialects = new ConcurrentHashMap<String, ProcessDialect>();
         dialects.put("java", new JavaProcessDialect());
         dialects.put("mvel", new MVELProcessDialect());
-        dialects.put("JavaScript", new JavaScriptProcessDialect());
+        dialects.put("FEEL", new FeelProcessDialect());
     }
 
     public static ProcessDialect getDialect(String dialect) {

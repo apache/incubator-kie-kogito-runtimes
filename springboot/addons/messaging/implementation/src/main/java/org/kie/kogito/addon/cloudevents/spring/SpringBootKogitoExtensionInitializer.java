@@ -18,7 +18,9 @@ package org.kie.kogito.addon.cloudevents.spring;
 import javax.annotation.PostConstruct;
 
 import org.kie.kogito.cloudevents.extension.KogitoExtension;
+import org.kie.kogito.cloudevents.extension.KogitoPredictionsExtension;
 import org.kie.kogito.cloudevents.extension.KogitoProcessExtension;
+import org.kie.kogito.cloudevents.extension.KogitoRulesExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,9 @@ public class SpringBootKogitoExtensionInitializer {
     private void onPostConstruct() {
         mapper.registerModule(JsonFormat.getCloudEventJacksonModule());
         KogitoExtension.register();
+        KogitoPredictionsExtension.register();
         KogitoProcessExtension.register();
+        KogitoRulesExtension.register();
         LOG.info("Registered Kogito CloudEvent extension");
     }
 }
