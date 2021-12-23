@@ -76,6 +76,7 @@ jobs:
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP:kiegroup}/kogito-pipelines/${BRANCH:main}/.ci/pull-request-config.yaml
           flow-type: "branch"
+          logger-level: "trace"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: Publish Test Report
