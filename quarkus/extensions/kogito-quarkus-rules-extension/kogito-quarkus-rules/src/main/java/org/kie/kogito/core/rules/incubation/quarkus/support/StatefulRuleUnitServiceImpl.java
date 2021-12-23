@@ -16,19 +16,20 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
-
 import org.kie.kogito.incubation.common.*;
-import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
-import org.kie.kogito.incubation.rules.*;
+import org.kie.kogito.incubation.rules.InstanceQueryId;
+import org.kie.kogito.incubation.rules.RuleUnitId;
+import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnits;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
@@ -36,16 +37,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
     public StatefulRuleUnitServiceImpl(RuleUnits ruleUnits) {
         this.ruleUnits = ruleUnits;
-    }
-
-    private RuleUnitData convertValue(Map<String, Object> payload, RuleUnitId ruleUnitId) {
-        try {
-            // converts the identifier into a Class object for conversion
-            Class<RuleUnitData> type = (Class<RuleUnitData>) Thread.currentThread().getContextClassLoader().loadClass(ruleUnitId.ruleUnitId());
-            return InternalObjectMapper.objectMapper().convertValue(payload, type);
-        } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Cannot load class " + ruleUnitId.ruleUnitId(), e);
-        }
     }
 
     @Override

@@ -17,4 +17,17 @@ public class DataHandle {
         this.svc = svc;
         this.id = id;
     }
+
+    public void update() {
+        // notify update to svc
+        svc.update(id, ctx);
+    }
+
+    public void remove() {
+        svc.remove(id);
+    }
+
+    public DataId id() {
+        return id;
+    }
 }
