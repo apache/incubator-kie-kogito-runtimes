@@ -52,10 +52,6 @@
       <groupId>io.quarkiverse.reactivemessaging.http</groupId>
       <artifactId>quarkus-reactive-messaging-http-deployment</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-undertow-deployment</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
