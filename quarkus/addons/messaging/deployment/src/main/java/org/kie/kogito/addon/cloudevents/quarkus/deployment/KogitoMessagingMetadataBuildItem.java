@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.process;
+package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import java.util.Collection;
 
-public class EventEmitterGenerator extends EventGenerator {
+import io.quarkus.builder.item.SimpleBuildItem;
 
-    public EventEmitterGenerator(KogitoBuildContext context, String trigger) {
-        super(context, trigger, "EventEmitter");
+public final class KogitoMessagingMetadataBuildItem extends SimpleBuildItem {
+
+    private final Collection<EventGenerator> generators;
+
+    public KogitoMessagingMetadataBuildItem(Collection<EventGenerator> generators) {
+        this.generators = generators;
     }
 
+    public Collection<EventGenerator> generators() {
+        return generators;
+    }
 }

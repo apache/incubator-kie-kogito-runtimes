@@ -15,23 +15,56 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
-import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.common.deployment.KogitoAddonsGeneratedSourcesBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
+
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 
-class KogitoAddOnMessagingProcessor extends RequireCapabilityKogitoAddOnProcessor {
+public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-messaging-extension";
 
-    KogitoAddOnMessagingProcessor() {
-        super(KogitoCapability.PROCESSES);
-    }
+    @Inject
+    CurateOutcomeBuildItem curateOutcomeBuildItem;
 
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
 
+    @BuildStep
+    KogitoAddonsGeneratedSourcesBuildItem generate(BuildProducer<KogitoMessagingMetadataBuildItem> metadataProducer, KogitoBuildContextBuildItem kogitoContext) {
+        Collection<EventGenerator> generators =
+                ChannelMappingStrategy.getChannelMapping().stream().map(channelInfo -> buildEventGenerator(kogitoContext.getKogitoBuildContext(), channelInfo)).collect(Collectors.toList());
+        metadataProducer.produce(new KogitoMessagingMetadataBuildItem(generators));
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+        for (EventGenerator generator : generators) {
+            generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, generator.getPath(), generator.getCode()));
+            Optional<String> annotationName = generator.getAnnotationName();
+            if (annotationName.isPresent()) {
+                AnnotationGenerator annotationGen = new AnnotationGenerator(kogitoContext.getKogitoBuildContext(), annotationName.get());
+                generatedFiles.add(new GeneratedFile(GeneratedFileType.SOURCE, annotationGen.getPath(), annotationGen.getCode()));
+            }
+        }
+        return new KogitoAddonsGeneratedSourcesBuildItem(generatedFiles);
+    }
+
+    private EventGenerator buildEventGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
+        return channelInfo.isInput() ? new EventGenerator(context, channelInfo, "EventReceiver") : new EventGenerator(context, channelInfo, "EventEmitter");
+    }
 }

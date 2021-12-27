@@ -13,27 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.cloudevents;
+package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
+public class ChannelInfo {
+    private final String channelName;
+    private final String className;
+    private final boolean isInput;
 
-import org.kie.kogito.event.SubscriptionInfo;
-
-public class Subscription<T> {
-    private final Function<T, CompletionStage<?>> consumer;
-    private final SubscriptionInfo<Object, T> info;
-
-    public Subscription(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<Object, T> info) {
-        this.consumer = consumer;
-        this.info = info;
+    public ChannelInfo(String channelName, String className, boolean isInput) {
+        this.className = className;
+        this.channelName = channelName;
+        this.isInput = isInput;
     }
 
-    public Function<T, CompletionStage<?>> getConsumer() {
-        return consumer;
+    public String getChannelName() {
+        return channelName;
     }
 
-    public SubscriptionInfo<Object, T> getInfo() {
-        return info;
+    public String getClassName() {
+        return className;
     }
+
+    public boolean isInput() {
+        return isInput;
+    }
+
+    public boolean isOutput() {
+        return !isInput;
+    }
+
 }
