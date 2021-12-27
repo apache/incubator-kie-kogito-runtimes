@@ -16,6 +16,11 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
@@ -24,12 +29,6 @@ import org.kie.kogito.incubation.rules.data.DataId;
 import org.kie.kogito.incubation.rules.data.DataSourceId;
 import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.rules.*;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 class DataSourceServiceImpl implements DataSourceService {
 
@@ -57,7 +56,7 @@ class DataSourceServiceImpl implements DataSourceService {
         return MapDataContext.of(Map.of("id", ruleUnitInstanceId.asLocalUri().path()));
     }
 
-    private Class<RuleUnitData> toClass(RuleUnitId ruleUnitId)  {
+    private Class<RuleUnitData> toClass(RuleUnitId ruleUnitId) {
         try {
             return (Class<RuleUnitData>) Thread.currentThread().getContextClassLoader().loadClass(ruleUnitId.ruleUnitId());
         } catch (ClassNotFoundException e) {
@@ -120,11 +119,11 @@ class DataSourceServiceImpl implements DataSourceService {
     }
 
     private DataSource<DataContext> getDataSource(DataSourceId id, Class<RuleUnitData> ruleUnitDataClass) {
-//        try {
-//            return null;//.=;ruleUnitDataClass.getDeclaredField(id.dataSourceId());
-//        } catch (NoSuchFieldException e) {
-//            e.printStackTrace();
-//        }
+        //        try {
+        //            return null;//.=;ruleUnitDataClass.getDeclaredField(id.dataSourceId());
+        //        } catch (NoSuchFieldException e) {
+        //            e.printStackTrace();
+        //        }
         return null;
     }
 

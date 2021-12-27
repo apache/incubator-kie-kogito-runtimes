@@ -15,6 +15,15 @@
  */
 package org.kie.kogito.core.rules.incubation.quarkus.support.adapters;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.inject.spi.InjectionPoint;
+
 import org.kie.kogito.incubation.common.ExtendedReferenceContext;
 import org.kie.kogito.incubation.common.MetaDataContext;
 import org.kie.kogito.incubation.common.ReferenceContext;
@@ -25,14 +34,6 @@ import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.incubation.rules.services.adapters.RuleUnitInstance;
 import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.CDI;
-import javax.enterprise.inject.spi.InjectionPoint;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 @ApplicationScoped
 public class RuleUnitInstanceProvider {
     /**
@@ -41,7 +42,7 @@ public class RuleUnitInstanceProvider {
      * e.g.
      *
      * <code><pre>
-     *      @Inject RuleUnitInstance<MyContext> instance;
+     *      &#64;Inject RuleUnitInstance<MyContext> instance;
      * </pre></code>
      */
     @Produces

@@ -15,16 +15,17 @@
  */
 package org.kie.kogito.quarkus.drools;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.incubation.common.*;
-import org.kie.kogito.incubation.rules.InstanceQueryId;
-import org.kie.kogito.incubation.rules.services.adapters.RuleUnitInstance;
-
-import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.incubation.common.*;
+import org.kie.kogito.incubation.rules.services.adapters.RuleUnitInstance;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

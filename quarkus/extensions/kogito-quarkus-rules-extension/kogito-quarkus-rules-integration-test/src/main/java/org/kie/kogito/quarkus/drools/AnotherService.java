@@ -15,12 +15,12 @@
  */
 package org.kie.kogito.quarkus.drools;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class AnotherService implements RuleUnitData, ReferenceContext {

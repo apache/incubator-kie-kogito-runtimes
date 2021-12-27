@@ -27,11 +27,11 @@ import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
-import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
+import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
+import org.kie.kogito.rules.DataSource;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.kie.kogito.rules.DataSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

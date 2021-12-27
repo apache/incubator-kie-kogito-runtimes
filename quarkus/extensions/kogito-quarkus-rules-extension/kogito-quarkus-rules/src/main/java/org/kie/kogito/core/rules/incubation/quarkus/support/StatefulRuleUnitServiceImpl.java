@@ -16,6 +16,11 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
@@ -25,11 +30,6 @@ import org.kie.kogito.rules.RuleUnit;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.RuleUnits;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
@@ -58,14 +58,13 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         return MapDataContext.of(Map.of("id", ruleUnitInstanceId.asLocalUri().path()));
     }
 
-    private Class<RuleUnitData> toClass(RuleUnitId ruleUnitId)  {
+    private Class<RuleUnitData> toClass(RuleUnitId ruleUnitId) {
         try {
             return (Class<RuleUnitData>) Thread.currentThread().getContextClassLoader().loadClass(ruleUnitId.ruleUnitId());
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
-
 
     @Override
     public MetaDataContext dispose(LocalId localId) {

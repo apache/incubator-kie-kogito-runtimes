@@ -16,11 +16,11 @@
 /**
  * Adapters that wrap a service of the form:
  *
- *      service.action(id, data) -> returns id
+ * service.action(id, data) -> returns id
  *
  * and turn them into:
  *
- *      object.action(data)
+ * object.action(data)
  *
  *
  *
