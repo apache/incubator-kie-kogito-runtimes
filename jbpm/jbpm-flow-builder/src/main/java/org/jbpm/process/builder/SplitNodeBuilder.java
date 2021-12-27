@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.drools.compiler.compiler.ReturnValueDescr;
-import org.drools.compiler.lang.descr.ProcessDescr;
+import org.drools.drl.ast.descr.ProcessDescr;
 import org.jbpm.process.builder.dialect.ProcessDialect;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
 import org.jbpm.process.instance.impl.ReturnValueConstraintEvaluator;

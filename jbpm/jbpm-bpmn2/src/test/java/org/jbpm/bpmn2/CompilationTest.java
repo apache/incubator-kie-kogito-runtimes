@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.drools.compiler.compiler.AnalysisResult;
 import org.drools.compiler.compiler.ReturnValueDescr;
-import org.drools.compiler.lang.descr.ActionDescr;
-import org.drools.compiler.lang.descr.BaseDescr;
 import org.drools.compiler.rule.builder.PackageBuildContext;
+import org.drools.drl.ast.descr.ActionDescr;
+import org.drools.drl.ast.descr.BaseDescr;
 import org.jbpm.process.builder.ActionBuilder;
 import org.jbpm.process.builder.ReturnValueEvaluatorBuilder;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
