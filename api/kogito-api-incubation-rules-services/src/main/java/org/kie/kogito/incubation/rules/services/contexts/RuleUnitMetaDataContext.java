@@ -15,12 +15,14 @@
  */
 package org.kie.kogito.incubation.rules.services.contexts;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kie.kogito.incubation.common.DefaultCastable;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MetaDataContext;
 import org.kie.kogito.incubation.rules.RuleUnitIdParser;
 
 public class RuleUnitMetaDataContext implements DefaultCastable, MetaDataContext {
+    @JsonProperty
     private String id;
 
     protected RuleUnitMetaDataContext() {

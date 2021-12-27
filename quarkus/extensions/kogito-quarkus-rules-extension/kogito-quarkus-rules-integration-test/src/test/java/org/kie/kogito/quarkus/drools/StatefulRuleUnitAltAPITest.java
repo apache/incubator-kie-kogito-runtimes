@@ -32,8 +32,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 public class StatefulRuleUnitAltAPITest {
     @Inject
-    AnotherService ctx;
-    @Inject
     RuleUnitInstance<AnotherService> instance;
 
     @Test
@@ -44,14 +42,14 @@ public class StatefulRuleUnitAltAPITest {
 
     @Test
     void testQuery() {
-        InstanceQueryId queryId = instance.id().queries().get("Strings");
+        AnotherService ctx = instance.context();
 
         ctx.getStrings().add(new StringHolder("hello folks"));
         ctx.getStrings().add(new StringHolder("hello people"));
         ctx.getStrings().add(new StringHolder("hello Mario"));
         ctx.getStrings().add(new StringHolder("helicopter"));
 
-        Stream<ExtendedDataContext> result = instance.query(queryId, ExtendedReferenceContext.ofData(EmptyDataContext.Instance));
+        Stream<ExtendedDataContext> result = instance.query("Strings", ExtendedReferenceContext.ofData(EmptyDataContext.Instance));
         List<String> strings = result
                 .map(e -> e.data().as(MapDataContext.class).get("results", StringHolder.class).getValue())
                 .collect(Collectors.toList());

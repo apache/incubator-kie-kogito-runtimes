@@ -30,5 +30,5 @@ public interface RuleUnitInstance<T> {
     MetaDataContext fire();
     MetaDataContext dispose();
 
-    Stream<ExtendedDataContext> query(InstanceQueryId queryId, ExtendedReferenceContext ctx);
+    Stream<ExtendedDataContext> query(String queryId, ExtendedReferenceContext ctx);
 }
