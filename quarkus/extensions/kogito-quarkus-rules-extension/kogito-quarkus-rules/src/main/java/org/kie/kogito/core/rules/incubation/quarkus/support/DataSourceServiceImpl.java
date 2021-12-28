@@ -16,20 +16,22 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
-
-import org.kie.kogito.incubation.common.*;
-import org.kie.kogito.incubation.rules.InstanceQueryId;
+import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.data.DataId;
 import org.kie.kogito.incubation.rules.data.DataSourceId;
 import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.rules.*;
+import org.kie.kogito.rules.units.ListDataStore;
+import org.kie.kogito.rules.units.impl.DataHandleImpl;
 
+import java.util.UUID;
+
+/**
+ * A very rough implementation that goes straight to the DataStore
+ */
 class DataSourceServiceImpl implements DataSourceService {
 
     private final RuleUnits ruleUnits;
@@ -38,22 +40,78 @@ class DataSourceServiceImpl implements DataSourceService {
         this.ruleUnits = ruleUnits;
     }
 
-    public MetaDataContext create(LocalId localId, ExtendedReferenceContext extendedDataContext) {
-        RuleUnitId ruleUnitId;
-        if (localId instanceof RuleUnitId) {
-            ruleUnitId = (RuleUnitId) localId;
-        } else
-            throw new IllegalArgumentException("cannot parse rule unit id");
+    @Override
+    public DataContext get(DataId id) {
+        DataSource<DataContext> dataSource = getDataSource(id);
+        if (dataSource instanceof DataStore) {
+            ListDataStore ds = (ListDataStore) dataSource;
+            DataHandle handle = ds.findHandle(Long.parseLong(id.dataId()));
+            return (DataContext) handle.getObject();
+        }
+        throw new UnsupportedOperationException("Unsupported operation for the given data source type (not a data store)");
+    }
 
-        RuleUnitData ruleUnitData = (RuleUnitData) extendedDataContext.data();
+    @Override
+    public DataId add(LocalId dataSourceId, DataContext ctx) {
+        if (dataSourceId instanceof DataSourceId) {
+            DataSourceId dsId = (DataSourceId) dataSourceId;
+            DataSource<DataContext> dataSource = getDataSource(dsId);
+            if (dataSource instanceof DataStore) {
+                ListDataStore ds = (ListDataStore) dataSource;
+                DataHandleImpl hdl = (DataHandleImpl) ds.add(ctx);
+                long handleId = hdl.getId();
+                return dsId.data().get(String.valueOf(handleId));
+            } else if (dataSource instanceof DataStream) {
+                DataStream ds = (DataStream) dataSource;
+                ds.append(ctx);
+                // for this impl, might as well be always random, we can't retrieve anything anyway
+                return dsId.data().get(UUID.randomUUID().toString());
+            }
+        }
+        throw new IllegalArgumentException("Invalid type " + dataSourceId);
+    }
 
-        Class<RuleUnitData> aClass = toClass(ruleUnitId);
-        RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create(aClass);
-        RuleUnitInstance<RuleUnitData> instance = ruleUnit.createInstance(ruleUnitData);
-        String instanceId = UUID.randomUUID().toString();
-        ruleUnits.register(instanceId, instance);
-        RuleUnitInstanceId ruleUnitInstanceId = ruleUnitId.instances().get(instanceId);
-        return MapDataContext.of(Map.of("id", ruleUnitInstanceId.asLocalUri().path()));
+    @Override
+    public void update(DataId dataId, DataContext ctx) {
+        DataSource<DataContext> dataSource = getDataSource(dataId);
+        if (dataSource instanceof DataStore) {
+            ListDataStore ds = (ListDataStore) dataSource;
+            DataHandle handle = ds.findHandle(Long.parseLong(dataId.dataId()));
+            ds.update(handle, ctx);
+        }
+        throw new UnsupportedOperationException("Unsupported operation for the given data source type (not a data store)");
+    }
+
+    @Override
+    public void remove(DataId dataId) {
+        DataSource<DataContext> dataSource = getDataSource(dataId);
+        if (dataSource instanceof DataStore) {
+            ListDataStore ds = (ListDataStore) dataSource;
+            DataHandle handle = ds.findHandle(Long.parseLong(dataId.dataId()));
+            ds.remove(handle);
+        }
+        throw new UnsupportedOperationException("Unsupported operation for the given data source type (not a data store)");
+    }
+
+    private DataSource<DataContext> getDataSource(DataSourceId dataSourceId) {
+        try {
+            RuleUnitInstanceId instanceId = dataSourceId.ruleUnitInstanceId();
+            RuleUnitId ruleUnitId = instanceId.ruleUnitId();
+            Class<RuleUnitData> ruleUnitDataClass = toClass(ruleUnitId);
+            RuleUnitInstance<?> registeredInstance = ruleUnits.getRegisteredInstance(instanceId.ruleUnitInstanceId());
+            RuleUnitData data = registeredInstance.ruleUnitData();
+            // this may not be necessary at all if we define an actual registry of data sources
+            // CDI may also be used for this purpose, when available
+            String expectedFieldName = dataSourceId.dataSourceId();
+            return (DataSource<DataContext>) ruleUnitDataClass.getDeclaredField(expectedFieldName).get(data);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private DataSource<DataContext> getDataSource(DataId dataId) {
+        DataSourceId dataSourceId = dataId.dataSourceId();
+        return getDataSource(dataSourceId);
     }
 
     private Class<RuleUnitData> toClass(RuleUnitId ruleUnitId) {
@@ -64,81 +122,4 @@ class DataSourceServiceImpl implements DataSourceService {
         }
     }
 
-    public MetaDataContext dispose(LocalId localId) {
-        RuleUnitInstanceId ruleUnitInstanceId;
-        if (localId instanceof RuleUnitInstanceId) {
-            ruleUnitInstanceId = (RuleUnitInstanceId) localId;
-        } else
-            throw new IllegalArgumentException("cannot parse rule unit id");
-        RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
-        if (instance == null)
-            throw new IllegalArgumentException("Unknown instance " + localId);
-        instance.dispose();
-        return EmptyMetaDataContext.Instance;
-    }
-
-    public MetaDataContext fire(LocalId localId) {
-        RuleUnitInstanceId ruleUnitInstanceId;
-        if (localId instanceof RuleUnitInstanceId) {
-            ruleUnitInstanceId = (RuleUnitInstanceId) localId;
-        } else
-            throw new IllegalArgumentException("cannot parse rule unit id");
-        RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
-        instance.fire();
-        return EmptyMetaDataContext.Instance;
-    }
-
-    public Stream<ExtendedDataContext> query(LocalId localId, ExtendedReferenceContext params) {
-        RuleUnitInstanceId ruleUnitInstanceId;
-        // must add a QueryId for instances!
-        InstanceQueryId queryId;
-        if (localId instanceof InstanceQueryId) {
-            queryId = (InstanceQueryId) localId;
-            ruleUnitInstanceId = queryId.ruleUnitInstanceId();
-        } else {
-            // LocalDecisionId.parse(decisionId);
-            throw new IllegalArgumentException(
-                    "Not a valid instance query id " + localId);
-        }
-
-        RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
-        if (instance == null)
-            throw new IllegalArgumentException("Unknown instance " + localId);
-        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
-
-        return results.stream().map(r -> ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
-
-    }
-
-    @Override
-    public DataId add(DataSourceId id, DataContext ctx) {
-        RuleUnitId ruleUnitId = id.ruleUnitInstanceId().ruleUnitId();
-        Class<RuleUnitData> ruleUnitDataClass = toClass(ruleUnitId);
-        getDataSource(id, ruleUnitDataClass);
-        return null;
-    }
-
-    private DataSource<DataContext> getDataSource(DataSourceId id, Class<RuleUnitData> ruleUnitDataClass) {
-        //        try {
-        //            return null;//.=;ruleUnitDataClass.getDeclaredField(id.dataSourceId());
-        //        } catch (NoSuchFieldException e) {
-        //            e.printStackTrace();
-        //        }
-        return null;
-    }
-
-    @Override
-    public DataContext get(DataId id) {
-        return null;
-    }
-
-    @Override
-    public void update(DataId id, DataContext ctx) {
-
-    }
-
-    @Override
-    public void remove(DataId id) {
-
-    }
 }

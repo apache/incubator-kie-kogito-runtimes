@@ -1,48 +1,11 @@
-/*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kie.kogito.incubation.rules.services.adapters;
 
-import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.rules.data.DataId;
-import org.kie.kogito.incubation.rules.services.DataSourceService;
 
-public class DataHandle {
-    public static DataHandle of(DataSourceService svc, DataId id) {
-        return new DataHandle(svc, id);
-    }
+public interface DataHandle {
+    void update();
 
-    DataSourceService svc;
-    DataId id;
-    DataContext ctx;
+    void remove();
 
-    public DataHandle(DataSourceService svc, DataId id) {
-        this.svc = svc;
-        this.id = id;
-    }
-
-    public void update() {
-        // notify update to svc
-        svc.update(id, ctx);
-    }
-
-    public void remove() {
-        svc.remove(id);
-    }
-
-    public DataId id() {
-        return id;
-    }
+    DataId id();
 }

@@ -15,16 +15,21 @@
  */
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
+import org.kie.kogito.rules.DataStream;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
 
 @ApplicationScoped
 public class DataSourceProvider {
     @Produces
-    <T> DataStore<T> makeDataSource() {
+    <T> DataStore<T> makeDataStore() {
         return DataSource.createStore();
+    }
+    @Produces
+    <T> DataStream<T> makeDataStream() {
+        return DataSource.createStream();
     }
 }

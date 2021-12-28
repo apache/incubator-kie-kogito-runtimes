@@ -16,8 +16,8 @@
 package org.kie.kogito.incubation.rules.services;
 
 import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.data.DataId;
-import org.kie.kogito.incubation.rules.data.DataSourceId;
 
 /**
  * this may also act internally as a registry (?)
@@ -29,7 +29,7 @@ public interface DataSourceService {
      * @return id of the inserted fact
      */
     // "/data-sources/my-data-source", val
-    DataId add(DataSourceId id, DataContext ctx);
+    DataId add(LocalId id, DataContext ctx);
 
     // "/data-sources/7574598375943/data/7525792847584395"
     DataContext get(DataId id);

@@ -13,21 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.incubation.rules.services.adapters;
+package org.kie.kogito.core.rules.incubation.quarkus.support.adapters;
 
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.rules.data.DataSourceId;
+import org.kie.kogito.incubation.rules.data.DataId;
 import org.kie.kogito.incubation.rules.services.DataSourceService;
+import org.kie.kogito.incubation.rules.services.adapters.DataHandle;
 
-public class DataStoreFactory {
-    public static <T extends DataContext> DataStore<T> of(DataSourceService svc, DataSourceId localId, Class<T> type) {
-        return new DataStore<>() {
-            @Override
-            public DataHandle add(T value) {
-                return DataHandle.of(svc, svc.add(localId, value));
-            }
+public class DataHandleImpl implements DataHandle {
+    DataSourceService svc;
+    DataId id;
+    DataContext ctx;
 
-        };
+    public DataHandleImpl(DataSourceService svc, DataId id) {
+        this.svc = svc;
+        this.id = id;
     }
 
+    @Override
+    public void update() {
+        // notify update to svc
+        svc.update(id, ctx);
+    }
+
+    @Override
+    public void remove() {
+        svc.remove(id);
+    }
+
+    @Override
+    public DataId id() {
+        return id;
+    }
 }

@@ -39,4 +39,8 @@ public class DataSourceId extends LocalUriId implements LocalId {
         return dataSourceId;
     }
 
+    public DataIds data() {
+        return new DataIds(this);
+    }
+
 }
