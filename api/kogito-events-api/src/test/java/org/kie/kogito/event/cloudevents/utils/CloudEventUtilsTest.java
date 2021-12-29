@@ -20,11 +20,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
-import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,6 +35,7 @@ import io.cloudevents.core.provider.ExtensionProvider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -124,7 +123,7 @@ class CloudEventUtilsTest {
     void testBuildWithExtensionSuccess() {
         Optional<CloudEvent> optCE = CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA_CLASS.getSimpleName(), TEST_SUBJECT, TEST_DATA, TEST_EXTENSION);
         assertTrue(optCE.isPresent());
-        Assertions.assertEquals(TEST_EXTENSION, ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, optCE.get()));
+        assertEquals(TEST_EXTENSION, ExtensionProvider.getInstance().parseExtension(KogitoExtension.class, optCE.get()));
     }
 
     @Test
@@ -174,7 +173,7 @@ class CloudEventUtilsTest {
     @Test
     void testUrlEncodedStringFromFailure() throws Exception {
         try (MockedStatic<URLEncoder> mockedStaticURLEncoder = mockStatic(URLEncoder.class)) {
-            mockedStaticURLEncoder.when(() -> URLEncoder.encode(ArgumentMatchers.any(String.class), ArgumentMatchers.any(String.class))).thenThrow(new UnsupportedEncodingException());
+            mockedStaticURLEncoder.when(() -> URLEncoder.encode(any(String.class), any(String.class))).thenThrow(new UnsupportedEncodingException());
             assertFalse(CloudEventUtils.urlEncodedStringFrom(TEST_URI_STRING).isPresent());
         }
     }
@@ -187,16 +186,16 @@ class CloudEventUtilsTest {
     @Test
     void testUrlEncodedURIFromFailure() {
         try (MockedStatic<URI> mockedStaticURLEncoder = mockStatic(URI.class)) {
-            mockedStaticURLEncoder.when(() -> URI.create(ArgumentMatchers.any(String.class))).thenThrow(new IllegalArgumentException());
+            mockedStaticURLEncoder.when(() -> URI.create(any(String.class))).thenThrow(new IllegalArgumentException());
             assertFalse(CloudEventUtils.urlEncodedURIFrom(TEST_URI_STRING).isPresent());
         }
     }
 
     private static ObjectMapper getFailingMockedObjectMapper() throws Exception {
         ObjectMapper mockedMapper = mock(ObjectMapper.class);
-        when(mockedMapper.writeValueAsBytes(ArgumentMatchers.any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
+        when(mockedMapper.writeValueAsBytes(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
         });
-        when(mockedMapper.writeValueAsString(ArgumentMatchers.any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
+        when(mockedMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException(TEST_EXCEPTION_MESSAGE) {
         });
         return mockedMapper;
     }

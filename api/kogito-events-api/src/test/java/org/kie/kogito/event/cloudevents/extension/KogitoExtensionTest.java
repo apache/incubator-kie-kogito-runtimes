@@ -17,7 +17,6 @@ package org.kie.kogito.event.cloudevents.extension;
 
 import java.net.URI;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
@@ -227,12 +226,12 @@ public class KogitoExtensionTest {
 
     private void assertCloudEvent(CloudEvent event, String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
         assertNotNull(event);
-        Assertions.assertEquals(TEST_DMN_MODEL_NAME, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAME));
-        Assertions.assertEquals(TEST_DMN_MODEL_NAMESPACE, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE));
-        Assertions.assertEquals(dmnEvaluateDecision, event.getExtension(KogitoExtension.KOGITO_DMN_EVALUATE_DECISION));
-        Assertions.assertEquals(executionId, event.getExtension(KogitoExtension.KOGITO_EXECUTION_ID));
-        Assertions.assertEquals(dmnFullResult, event.getExtension(KogitoExtension.KOGITO_DMN_FULL_RESULT));
-        Assertions.assertEquals(dmnFilteredCtx, event.getExtension(KogitoExtension.KOGITO_DMN_FILTERED_CTX));
+        assertEquals(TEST_DMN_MODEL_NAME, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAME));
+        assertEquals(TEST_DMN_MODEL_NAMESPACE, event.getExtension(KogitoExtension.KOGITO_DMN_MODEL_NAMESPACE));
+        assertEquals(dmnEvaluateDecision, event.getExtension(KogitoExtension.KOGITO_DMN_EVALUATE_DECISION));
+        assertEquals(executionId, event.getExtension(KogitoExtension.KOGITO_EXECUTION_ID));
+        assertEquals(dmnFullResult, event.getExtension(KogitoExtension.KOGITO_DMN_FULL_RESULT));
+        assertEquals(dmnFilteredCtx, event.getExtension(KogitoExtension.KOGITO_DMN_FILTERED_CTX));
     }
 
     private KogitoExtension extensionObjectFromCloudEvent(String dmnEvaluateDecision, String executionId, Boolean dmnFullResult, Boolean dmnFilteredCtx) {
