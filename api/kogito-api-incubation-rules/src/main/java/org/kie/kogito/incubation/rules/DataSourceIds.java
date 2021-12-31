@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.drools;
+package org.kie.kogito.incubation.rules;
 
-import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.DefaultCastable;
+import org.kie.kogito.incubation.rules.data.DataSourceId;
 
-public class StringHolder implements DataContext, DefaultCastable {
-    private String value;
+public class DataSourceIds {
+    private final RuleUnitInstanceId ruleUnitInstanceId;
 
-    public StringHolder(String value) {
-        this.value = value;
+    public DataSourceIds(RuleUnitInstanceId ruleUnitInstanceId) {
+        this.ruleUnitInstanceId = ruleUnitInstanceId;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public DataSourceId get(String dataSourceId) {
+        return new DataSourceId(ruleUnitInstanceId, dataSourceId);
     }
 }

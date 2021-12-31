@@ -27,6 +27,7 @@ import org.kie.kogito.rules.*;
 import org.kie.kogito.rules.units.ListDataStore;
 import org.kie.kogito.rules.units.impl.DataHandleImpl;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 /**
@@ -103,7 +104,9 @@ class DataSourceServiceImpl implements DataSourceService {
             // this may not be necessary at all if we define an actual registry of data sources
             // CDI may also be used for this purpose, when available
             String expectedFieldName = dataSourceId.dataSourceId();
-            return (DataSource<DataContext>) ruleUnitDataClass.getDeclaredField(expectedFieldName).get(data);
+            Field declaredField = ruleUnitDataClass.getDeclaredField(expectedFieldName);
+            declaredField.setAccessible(true);
+            return (DataSource<DataContext>) declaredField.get(data);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalArgumentException(e);
         }

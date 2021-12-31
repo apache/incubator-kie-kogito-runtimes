@@ -27,14 +27,15 @@ import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
+import org.kie.kogito.incubation.rules.data.DataSourceId;
+import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
 import org.kie.kogito.rules.DataSource;
 
 import io.quarkus.test.junit.QuarkusTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class StatefulRuleUnitServiceTest {
@@ -42,6 +43,8 @@ public class StatefulRuleUnitServiceTest {
     AppRoot appRoot;
     @Inject
     StatefulRuleUnitService ruleUnitService;
+    @Inject
+    DataSourceService dataSourceService;
 
     @Test
     void testCreate() {
@@ -59,7 +62,39 @@ public class StatefulRuleUnitServiceTest {
     }
 
     @Test
-    void testQuery() {
+    void testQueryDsService() {
+        AnotherService ruleUnitData =
+                new AnotherService(
+                        DataSource.createStore(),
+                        DataSource.createStore());
+
+        var id = appRoot.get(RuleUnitIds.class).get(AnotherService.class);
+        MetaDataContext created = ruleUnitService.create(id, ExtendedReferenceContext.ofData(ruleUnitData));
+        var meta = created.as(RuleUnitMetaDataContext.class);
+        var ruid = meta.id(RuleUnitInstanceId.class);
+        InstanceQueryId queryId = ruid.queries().get("Strings");
+
+        DataSourceId dataSourceId = ruid.dataSources().get("strings");
+
+        dataSourceService.add(dataSourceId, new StringHolder("hello folks"));
+        dataSourceService.add(dataSourceId, new StringHolder("hello people"));
+        dataSourceService.add(dataSourceId, new StringHolder("hello Mario"));
+        dataSourceService.add(dataSourceId, new StringHolder("helicopter"));
+
+        Stream<ExtendedDataContext> result = ruleUnitService.query(queryId, ExtendedReferenceContext.ofData(EmptyDataContext.Instance));
+        List<String> strings = result
+                .map(e -> e.data().as(MapDataContext.class).get("results", StringHolder.class).getValue())
+                .collect(Collectors.toList());
+
+        assertFalse(strings.isEmpty());
+
+        strings.removeAll(List.of("hello folks", "hello people", "hello Mario"));
+        assertTrue(strings.isEmpty());
+
+    }
+
+    @Test
+    void testQueryDirectDs() {
         AnotherService ruleUnitData =
                 new AnotherService(
                         DataSource.createStore(),
@@ -80,6 +115,8 @@ public class StatefulRuleUnitServiceTest {
         List<String> strings = result
                 .map(e -> e.data().as(MapDataContext.class).get("results", StringHolder.class).getValue())
                 .collect(Collectors.toList());
+
+        assertFalse(strings.isEmpty());
 
         strings.removeAll(List.of("hello folks", "hello people", "hello Mario"));
         assertTrue(strings.isEmpty());
