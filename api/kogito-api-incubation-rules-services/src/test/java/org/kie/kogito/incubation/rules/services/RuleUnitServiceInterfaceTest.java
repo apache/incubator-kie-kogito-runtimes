@@ -16,8 +16,6 @@
 
 package org.kie.kogito.incubation.rules.services;
 
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.application.ReflectiveAppRoot;
 import org.kie.kogito.incubation.common.DataContext;
@@ -28,6 +26,8 @@ import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.QueryId;
 import org.kie.kogito.incubation.rules.RuleUnitIds;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

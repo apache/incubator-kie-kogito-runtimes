@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.kie.kogito.incubation.common.ExtendedDataContext;
@@ -31,12 +32,12 @@ import org.kie.kogito.rules.RuleUnits;
 @ApplicationScoped
 public class QuarkusStatefulRuleUnitService implements StatefulRuleUnitService {
     @Inject
-    RuleUnits ruleUnits;
+    Instance<RuleUnits> ruleUnits;
     StatefulRuleUnitServiceImpl delegate;
 
     @PostConstruct
     void startup() {
-        delegate = new StatefulRuleUnitServiceImpl(ruleUnits);
+        delegate = new StatefulRuleUnitServiceImpl(ruleUnits.get());
     }
 
     @Override
