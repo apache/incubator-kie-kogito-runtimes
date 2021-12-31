@@ -22,7 +22,11 @@ import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 
+import io.quarkus.arc.Unremovable;
+
 @ApplicationScoped
+@Unremovable // temporary workaround to allow injecting RuleUnitInstance<AnotherService>
+             // without injecting AnotherService directly (otherwise Quarkus ArC will ignore this)
 public class AnotherService implements RuleUnitData, ReferenceContext {
     @Inject
     DataStore<StringHolder> strings;
