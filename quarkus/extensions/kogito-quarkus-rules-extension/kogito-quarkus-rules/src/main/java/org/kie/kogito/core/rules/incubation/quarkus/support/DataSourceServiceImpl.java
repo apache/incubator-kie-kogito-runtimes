@@ -16,6 +16,9 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.lang.reflect.Field;
+import java.util.UUID;
+
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
@@ -26,9 +29,6 @@ import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.rules.*;
 import org.kie.kogito.rules.units.ListDataStore;
 import org.kie.kogito.rules.units.impl.DataHandleImpl;
-
-import java.lang.reflect.Field;
-import java.util.UUID;
 
 /**
  * A very rough implementation that goes straight to the DataStore

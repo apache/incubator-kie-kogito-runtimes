@@ -49,7 +49,9 @@ public class RuleUnitInstanceId extends LocalUriId implements LocalId {
         return new InstanceQueryIds(this);
     }
 
-    public DataSourceIds dataSources() { return new DataSourceIds(this); }
+    public DataSourceIds dataSources() {
+        return new DataSourceIds(this);
+    }
 
     public String ruleUnitInstanceId() {
         return ruleUnitInstanceId;
