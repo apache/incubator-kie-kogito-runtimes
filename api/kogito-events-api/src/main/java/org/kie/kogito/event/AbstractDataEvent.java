@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @param <T> the payload
  */
+// TODO: to be migrated to actual CE https://issues.redhat.com/browse/KOGITO-6476
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 

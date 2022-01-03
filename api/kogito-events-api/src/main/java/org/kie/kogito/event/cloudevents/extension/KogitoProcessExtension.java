@@ -16,6 +16,7 @@
 package org.kie.kogito.event.cloudevents.extension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class KogitoProcessExtension implements CloudEventExtension {
                     CloudEventExtensionConstants.PROCESS_REFERENCE_ID,
                     CloudEventExtensionConstants.PROCESS_START_FROM_NODE));
 
-    private final Map<String, Object> innerValues;
+    private final Map<String, String> innerValues;
     private String kogitoProcessInstanceId;
     private String kogitoRootProcessInstanceId;
     private String kogitoProcessId;
@@ -145,6 +146,13 @@ public class KogitoProcessExtension implements CloudEventExtension {
     public void setKogitoStartFromNode(String kogitoStartFromNode) {
         this.kogitoStartFromNode = kogitoStartFromNode;
         this.innerValues.put(CloudEventExtensionConstants.PROCESS_START_FROM_NODE, this.kogitoStartFromNode);
+    }
+
+    /**
+     * @return every extension attribute as a map populated accordingly
+     */
+    public Map<String, String> asMap() {
+        return Collections.unmodifiableMap(this.innerValues);
     }
 
     @Override
