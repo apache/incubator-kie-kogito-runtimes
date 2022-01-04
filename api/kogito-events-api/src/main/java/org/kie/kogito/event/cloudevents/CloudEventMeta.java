@@ -17,12 +17,13 @@ package org.kie.kogito.event.cloudevents;
 
 import java.util.Objects;
 
-import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.ChannelType;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.EventMeta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import static org.kie.kogito.event.AbstractDataEvent.SPEC_VERSION;
 
 /**
  * Represents the metadata definition for an event emitted or listened in the engine.
@@ -48,7 +49,7 @@ public class CloudEventMeta implements EventMeta {
     @Override
     @JsonIgnore
     public String getSpecVersion() {
-        return AbstractDataEvent.SPEC_VERSION;
+        return SPEC_VERSION;
     }
 
     /**
