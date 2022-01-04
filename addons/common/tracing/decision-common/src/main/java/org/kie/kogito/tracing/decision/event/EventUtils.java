@@ -45,10 +45,12 @@ import org.kie.kogito.tracing.typedvalue.UnitValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class EventUtils {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    // See https://issues.redhat.com/browse/KOGITO-6492. We should avoid instantiating ObjectMapper ourselves.
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
 
     public static JsonNode jsonNodeFrom(Object object) {
         return Optional.ofNullable(object).<JsonNode> map(OBJECT_MAPPER::valueToTree).orElse(null);
