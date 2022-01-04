@@ -30,6 +30,7 @@ import org.kie.dmn.api.core.DMNType;
 import org.kie.dmn.api.feel.runtime.events.FEELEvent;
 import org.kie.dmn.feel.lang.Type;
 import org.kie.dmn.feel.lang.types.BuiltInType;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.tracing.decision.event.message.InternalMessageType;
 import org.kie.kogito.tracing.decision.event.message.Message;
 import org.kie.kogito.tracing.decision.event.message.MessageCategory;
@@ -44,16 +45,11 @@ import org.kie.kogito.tracing.typedvalue.TypedValue;
 import org.kie.kogito.tracing.typedvalue.UnitValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class EventUtils {
 
-    // See https://issues.redhat.com/browse/KOGITO-6492. We should avoid instantiating ObjectMapper ourselves.
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModule(new JavaTimeModule());
-
     public static JsonNode jsonNodeFrom(Object object) {
-        return Optional.ofNullable(object).<JsonNode> map(OBJECT_MAPPER::valueToTree).orElse(null);
+        return Optional.ofNullable(object).<JsonNode> map(CloudEventUtils.Mapper.mapper()::valueToTree).orElse(null);
     }
 
     public static <I, O> List<O> map(List<I> input, Function<I, O> mapper) {

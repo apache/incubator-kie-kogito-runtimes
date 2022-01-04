@@ -19,23 +19,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
-import java.util.HashMap;
 import java.util.Map;
 
 public class QuarkusDecisionTracingOneOfEachTypeTest extends BaseQuarkusDecisionTracingTest {
 
-    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<>() {
-        {
-            put("InputBoolean", true);
-            put("InputDate", LocalDate.of(2020, 1, 4));
-            put("InputDTDuration", Period.ofDays(1));
-            put("InputDateAndTime", LocalDateTime.of(2020, 1, 4, 16, 30));
-            put("InputNumber", 1);
-            put("InputString", "John Doe");
-            put("InputTime", LocalTime.of(16, 30));
-            put("InputYMDuration", Period.ofMonths(1));
-        }
-    };
+    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = Map.of(
+            "InputBoolean", true,
+            "InputDate", LocalDate.of(2020, 1, 4),
+            "InputDTDuration", Period.ofDays(1),
+            "InputDateAndTime", LocalDateTime.of(2020, 1, 4, 16, 30),
+            "InputNumber", 1,
+            "InputString", "John Doe",
+            "InputTime", LocalTime.of(16, 30),
+            "InputYMDuration", Period.ofMonths(1));
 
     @Override
     protected String getTestModelName() {

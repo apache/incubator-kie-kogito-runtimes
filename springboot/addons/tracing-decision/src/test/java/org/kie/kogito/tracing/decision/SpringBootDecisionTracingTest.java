@@ -15,28 +15,18 @@
  */
 package org.kie.kogito.tracing.decision;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class SpringBootDecisionTracingTest extends BaseSpringBootDecisionTracingTest {
 
-    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = new HashMap<>() {
-        {
-            put("Driver", new HashMap<String, Object>() {
-                {
-                    put("Age", 25);
-                    put("Points", 10);
-                }
-            });
-            put("Violation", new HashMap<String, Object>() {
-                {
-                    put("Type", "speed");
-                    put("Actual Speed", 105);
-                    put("Speed Limit", 100);
-                }
-            });
-        }
-    };
+    private static final Map<String, Object> TEST_CONTEXT_VARIABLES = Map.of(
+            "Driver", Map.of(
+                    "Age", 25,
+                    "Points", 10),
+            "Violation", Map.of(
+                    "Type", "speed",
+                    "Actual Speed", 105,
+                    "Speed Limit", 100));
 
     @Override
     protected String getTestModelName() {
