@@ -16,5 +16,5 @@
 
 package org.kie.kogito.incubation.common;
 
-public interface MetaDataContext {
+public interface MetaDataContext extends DataContext {
 }

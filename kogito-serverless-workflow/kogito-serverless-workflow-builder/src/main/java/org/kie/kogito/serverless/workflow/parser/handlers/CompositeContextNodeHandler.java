@@ -116,7 +116,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             resultExpr = actionFilter.getResults();
             toExpr = actionFilter.getToStateData();
         }
-        return filterAndMergeNode(embeddedSubProcess, action.getName(), fromExpr, resultExpr, toExpr,
+        return filterAndMergeNode(embeddedSubProcess, fromExpr, resultExpr, toExpr,
                 (factory, inputVar, outputVar) -> getActionNode(factory, action, inputVar, outputVar, collectVar, extraVariables));
     }
 
@@ -212,7 +212,6 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 }
                 return workItemFactory;
             case OPENAPI:
-
                 return OpenApiTaskDescriptor.builderFor(ServerlessWorkflowUtils.getOpenApiURI(actionFunction),
                         ServerlessWorkflowUtils.getOpenApiOperationId(actionFunction))
                         .withExprLang(workflow.getExpressionLang())
@@ -228,12 +227,13 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     private static Map<String, Object> functionsToMap(JsonNode jsonNode) {
-
         Map<String, Object> map = new HashMap<>();
-        Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
-        while (iter.hasNext()) {
-            Entry<String, JsonNode> entry = iter.next();
-            map.put(entry.getKey(), JsonObjectUtils.toJavaValue(entry.getValue()));
+        if (jsonNode != null) {
+            Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
+            while (iter.hasNext()) {
+                Entry<String, JsonNode> entry = iter.next();
+                map.put(entry.getKey(), JsonObjectUtils.toJavaValue(entry.getValue()));
+            }
         }
         return map;
     }

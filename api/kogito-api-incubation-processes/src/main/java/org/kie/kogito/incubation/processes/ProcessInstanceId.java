@@ -26,7 +26,7 @@ public class ProcessInstanceId extends LocalUriId implements LocalId {
     private final String processInstanceId;
 
     public ProcessInstanceId(LocalProcessId processId, String processInstanceId) {
-        super(processId.asLocalUri().append(processInstanceId));
+        super(processId.asLocalUri().append(PREFIX).append(processInstanceId));
         LocalId localDecisionId = processId.toLocalId();
         if (!localDecisionId.asLocalUri().startsWith(LocalProcessId.PREFIX)) {
             throw new IllegalArgumentException("Not a valid process path"); // fixme use typed exception
@@ -47,6 +47,14 @@ public class ProcessInstanceId extends LocalUriId implements LocalId {
 
     public String processInstanceId() {
         return processInstanceId;
+    }
+
+    public TaskIds tasks() {
+        return new TaskIds(this);
+    }
+
+    public SignalIds signals() {
+        return new SignalIds(this);
     }
 
 }
