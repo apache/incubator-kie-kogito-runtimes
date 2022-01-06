@@ -129,10 +129,10 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
     protected void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callServiceMethod) {
         VariableDeclarationExpr processMeta = new VariableDeclarationExpr()
                 .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, ProcessMeta.class.getName()), "processMeta")
-                        .setInitializer("ProcessMeta.fromKogitoWorkItem(workItem)"));
+                        .setInitializer(new MethodCallExpr(new NameExpr(ProcessMeta.class.getCanonicalName()), "fromKogitoWorkItem").addArgument(workItemNameExpr)));
         executeWorkItemBody.addStatement(processMeta);
         ClassOrInterfaceType type = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_PARAM_RESOLVER_TYPE));
-        callServiceMethod.addArgument("processMeta.asMap()");
+        callServiceMethod.addArgument(new MethodCallExpr(new NameExpr("processMeta"), "asMap"));
         getParameters(workItemNode)
                 .forEach(p -> callServiceMethod.addArgument(new CastExpr(type, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
     }
