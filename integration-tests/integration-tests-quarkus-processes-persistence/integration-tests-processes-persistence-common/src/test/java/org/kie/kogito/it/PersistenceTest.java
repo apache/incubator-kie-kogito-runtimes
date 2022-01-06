@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.it;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -28,6 +22,12 @@ import org.kie.kogito.Person;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class PersistenceTest {
 
