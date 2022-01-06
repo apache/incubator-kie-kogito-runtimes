@@ -46,7 +46,7 @@ public class DevServicesConfigProcessor {
 
         final DevServicesConfig devServicesConfig = new DevServicesConfig();
 
-        LOGGER.info("Extracting Quarkus DevService configurations...");
+        LOGGER.debug("Extracting Quarkus DevService configurations...");
         final Map<String, String> quarkusConfig = configurationItems.getConfig();
         devServicesConfig.setDataSourceKind(quarkusConfig.get(QuarkusDataSourceDbKind.getPropertyName()));
         devServicesConfig.setDataSourceUserName(quarkusConfig.get(QuarkusDataSourceUserName.getPropertyName()));
@@ -55,12 +55,12 @@ public class DevServicesConfigProcessor {
         devServicesConfig.setKafkaBootstrapServer(quarkusConfig.get(KafkaBootstrapServers.getPropertyName()));
         devServicesConfig.setHibernateOrmDatabaseGeneration(quarkusConfig.get(HibernateOrmDatabaseGeneration.getPropertyName()));
 
-        LOGGER.info(String.format("DevServices default DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
-        LOGGER.info(String.format("DevServices default DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
-        LOGGER.info(String.format("DevServices default DataSource Password: %s", devServicesConfig.getDataSourcePassword()));
-        LOGGER.info(String.format("DevServices default DataSource URL: %s", devServicesConfig.getDataSourceUrl()));
-        LOGGER.info(String.format("DevServices Kafka Bootstrap Server: %s", devServicesConfig.getKafkaBootstrapServer()));
-        LOGGER.info(String.format("DevServices Hibernate ORM Database Generation: %s", devServicesConfig.getHibernateOrmDatabaseGeneration()));
+        LOGGER.debug(String.format("DevServices default DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
+        LOGGER.debug(String.format("DevServices default DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
+        LOGGER.debug(String.format("DevServices default DataSource Password: %s", devServicesConfig.getDataSourcePassword()));
+        LOGGER.debug(String.format("DevServices default DataSource URL: %s", devServicesConfig.getDataSourceUrl()));
+        LOGGER.debug(String.format("DevServices Kafka Bootstrap Server: %s", devServicesConfig.getKafkaBootstrapServer()));
+        LOGGER.debug(String.format("DevServices Hibernate ORM Database Generation: %s", devServicesConfig.getHibernateOrmDatabaseGeneration()));
 
         devServicesPostgreSQLConfigBuilder.produce(devServicesConfig);
     }

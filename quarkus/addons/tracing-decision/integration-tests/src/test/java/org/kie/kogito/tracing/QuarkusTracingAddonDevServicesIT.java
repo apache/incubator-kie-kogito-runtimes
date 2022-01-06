@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.kie.kogito.tracing.decision.TrustyConstants;
 
 import io.quarkus.test.QuarkusDevModeTest;
 import io.restassured.http.ContentType;
@@ -69,7 +70,7 @@ public class QuarkusTracingAddonDevServicesIT {
         executionIds.add(executeAndGetExecutionId());
         executionIds.add(executeAndGetExecutionId());
 
-        final String trustyServiceEndpoint = System.getProperty("kogito.trusty.http.url");
+        final String trustyServiceEndpoint = System.getProperty(TrustyConstants.KOGITO_TRUSTY_SERVICE);
 
         await()
                 .atMost(30, TimeUnit.SECONDS)

@@ -121,8 +121,8 @@ public class KogitoDevServicesProcessor {
                                 .filter(Objects::nonNull)
                                 .findFirst();
                     }
-                    LOGGER.info(String.format("[PostgreSQL] Private Port: %s", port.orElse(0)));
-                    LOGGER.info(String.format("[PostgreSQL] IP Address: %s", ipAddress.orElse("<None>")));
+                    LOGGER.debug(String.format("[PostgreSQL] Private Port: %s", port.orElse(0)));
+                    LOGGER.debug(String.format("[PostgreSQL] IP Address: %s", ipAddress.orElse("<None>")));
                     if (ipAddress.isPresent() && port.isPresent()) {
                         final String jdbcUrl = String.format("jdbc:postgresql://%s:%d/default?loggerLevel=OFF", ipAddress.get(), port.get());
                         devServicesConfig.setDataSourceUrl(jdbcUrl);
@@ -144,7 +144,7 @@ public class KogitoDevServicesProcessor {
                                 .filter(Objects::nonNull)
                                 .findFirst();
                     }
-                    LOGGER.info(String.format("[Kafka] IP Address: %s", ipAddress.orElse("<None>")));
+                    LOGGER.debug(String.format("[Kafka] IP Address: %s", ipAddress.orElse("<None>")));
                     if (ipAddress.isPresent()) {
                         final String kafkaBootstrapServer = String.format("PLAINTEXT://%s:29092", ipAddress.get());
                         devServicesConfig.setKafkaBootstrapServer(kafkaBootstrapServer);
@@ -204,11 +204,11 @@ public class KogitoDevServicesProcessor {
                                 .filter(Objects::nonNull)
                                 .findFirst();
                     }
-                    LOGGER.info(String.format("[TrustyService] Private Port: %s", port.orElse(0)));
-                    LOGGER.info(String.format("[TrustyService] IP Address: %s", ipAddress.orElse("<None>")));
+                    LOGGER.debug(String.format("[TrustyService] Private Port: %s", port.orElse(0)));
+                    LOGGER.debug(String.format("[TrustyService] IP Address: %s", ipAddress.orElse("<None>")));
                     if (ipAddress.isPresent() && port.isPresent()) {
                         final String trustyServiceServer = String.format("http://%s:%s", ipAddress.get(), port.get());
-                        LOGGER.info(String.format("Setting System Property '%s' to '%s'", KOGITO_TRUSTY_SERVICE, trustyServiceServer));
+                        LOGGER.debug(String.format("Setting System Property '%s' to '%s'", KOGITO_TRUSTY_SERVICE, trustyServiceServer));
                         systemProperties.produce(new SystemPropertyBuildItem(KOGITO_TRUSTY_SERVICE, trustyServiceServer));
                     }
                 });
@@ -275,12 +275,12 @@ public class KogitoDevServicesProcessor {
                         launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT ? config.serviceName : null,
                         useSharedNetwork);
 
-                LOGGER.info(String.format("TrustyService DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
-                LOGGER.info(String.format("TrustyService DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
-                LOGGER.info(String.format("TrustyService DataSource Password: %s", devServicesConfig.getDataSourcePassword()));
-                LOGGER.info(String.format("TrustyService DataSource URL: %s", devServicesConfig.getDataSourceUrl()));
-                LOGGER.info(String.format("TrustyService Kafka Bootstrap Server: %s", devServicesConfig.getKafkaBootstrapServer()));
-                LOGGER.info(String.format("TrustyService Hibernate ORM Database Generation: %s", devServicesConfig.getHibernateOrmDatabaseGeneration()));
+                LOGGER.debug(String.format("TrustyService DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
+                LOGGER.debug(String.format("TrustyService DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
+                LOGGER.debug(String.format("TrustyService DataSource Password: %s", devServicesConfig.getDataSourcePassword()));
+                LOGGER.debug(String.format("TrustyService DataSource URL: %s", devServicesConfig.getDataSourceUrl()));
+                LOGGER.debug(String.format("TrustyService Kafka Bootstrap Server: %s", devServicesConfig.getKafkaBootstrapServer()));
+                LOGGER.debug(String.format("TrustyService Hibernate ORM Database Generation: %s", devServicesConfig.getHibernateOrmDatabaseGeneration()));
 
                 //Environment variables used by kogito-images when launching the TrustyService container
                 container.addEnv("SCRIPT_DEBUG", "false");

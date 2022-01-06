@@ -40,9 +40,9 @@ public class DevServicesSetupEnvironmentProcessor {
     public void extractDevServicesDefaultDataSourceConfiguration(final BuildProducer<DevServicesConfigResultBuildItem> devServicesConfigResultBuilder,
             final BuildProducer<DevServicesSharedNetworkBuildItem> devServicesSharedNetworkBuildItemBuildProducer) {
 
-        LOGGER.info("Checking DevService configuration...");
+        LOGGER.debug("Checking DevService configuration...");
         if (!ConfigUtils.isPropertyPresent(HibernateOrmDatabaseGeneration.getPropertyName())) {
-            LOGGER.info(String.format("Setting %s=%s to initialize DevServices managed database",
+            LOGGER.debug(String.format("Setting %s=%s to initialize DevServices managed database",
                     HibernateOrmDatabaseGeneration.getPropertyName(),
                     HIBERNATE_ORM_DATABASE_GENERATION_STRATEGY));
             devServicesConfigResultBuilder.produce(new DevServicesConfigResultBuildItem(
@@ -50,7 +50,7 @@ public class DevServicesSetupEnvironmentProcessor {
                     HIBERNATE_ORM_DATABASE_GENERATION_STRATEGY));
         }
 
-        LOGGER.info("Enabling use of TestContainers 'Shared Network' for all containers started by Quarkus.");
+        LOGGER.debug("Enabling use of TestContainers 'Shared Network' for all containers started by Quarkus.");
         devServicesSharedNetworkBuildItemBuildProducer.produce(new DevServicesSharedNetworkBuildItem());
     }
 }

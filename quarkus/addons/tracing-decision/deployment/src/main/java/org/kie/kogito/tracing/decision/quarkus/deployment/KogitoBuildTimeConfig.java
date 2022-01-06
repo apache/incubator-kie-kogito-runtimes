@@ -24,7 +24,7 @@ import io.quarkus.runtime.annotations.ConfigRoot;
 public class KogitoBuildTimeConfig {
 
     /**
-     * Configuration for DevServices. DevServices allows Quarkus to automatically start Data Index in dev and test mode.
+     * Configuration for DevServices. DevServices allows Quarkus to automatically start TrustyService in dev and test mode.
      */
     @ConfigItem
     public KogitoDevServicesBuildTimeConfig devservicesTrusty;
