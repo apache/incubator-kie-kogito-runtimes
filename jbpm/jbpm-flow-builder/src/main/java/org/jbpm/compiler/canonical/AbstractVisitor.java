@@ -15,10 +15,6 @@
  */
 package org.jbpm.compiler.canonical;
 
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
-import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
-import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +39,10 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.utils.StringEscapeUtils;
+
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
+import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
 
 public abstract class AbstractVisitor {
 
