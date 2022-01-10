@@ -307,7 +307,7 @@ public class KogitoDevServicesProcessor {
     }
 
     private TrustyServiceDevServiceConfig getConfiguration(final KogitoBuildTimeConfig cfg) {
-        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devservicesTrusty;
+        KogitoDevServicesBuildTimeConfig devServicesConfig = cfg.devServicesTrusty;
         return new TrustyServiceDevServiceConfig(devServicesConfig);
     }
 

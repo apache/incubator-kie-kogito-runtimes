@@ -27,5 +27,5 @@ public class KogitoBuildTimeConfig {
      * Configuration for DevServices. DevServices allows Quarkus to automatically start TrustyService in dev and test mode.
      */
     @ConfigItem
-    public KogitoDevServicesBuildTimeConfig devservicesTrusty;
+    public KogitoDevServicesBuildTimeConfig devServicesTrusty;
 }
