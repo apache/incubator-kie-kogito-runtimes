@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report! 
-        Please note that our official bug tracker is [here](https://issues.redhat.com/projects/KOGITO). But if for any reason you can not use it, feel free to fill out this form.
+        The preferred method to file a bug is [our JIRA board](https://issues.redhat.com/projects/KOGITO). You are still allowed to submit a GitHub issue, but you may experience delays in the feedback.
   - type: textarea
     validations:
       required: true
