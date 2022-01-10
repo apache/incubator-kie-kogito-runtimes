@@ -9,6 +9,11 @@
   </parent>
   <artifactId>kogito-addons-quarkus-tracing-decision-deployment</artifactId>
   <name>Kogito Add-On Tracing Decision - Deployment</name>
+
+  <properties>
+    <version.kogito.trusty.postgresql.image>1.15.0</version.kogito.trusty.postgresql.image>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -50,6 +55,12 @@
     </dependency>
   </dependencies>
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

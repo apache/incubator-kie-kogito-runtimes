@@ -42,7 +42,7 @@ public class KogitoDevServicesBuildTimeConfig {
     /**
      * The TrustyService image to use.
      */
-    @ConfigItem(defaultValue = "quay.io/kiegroup/kogito-trusty-postgresql:1.14.0")
+    @ConfigItem
     public String imageName;
 
     /**
