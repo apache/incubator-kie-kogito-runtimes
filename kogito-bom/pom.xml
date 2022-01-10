@@ -721,12 +721,6 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-addons-monitoring-core</artifactId>
         <version>${project.version}</version>
-        <classifier>tests</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-monitoring-core</artifactId>
-        <version>${project.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
