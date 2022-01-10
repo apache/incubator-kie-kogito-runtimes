@@ -15,7 +15,7 @@
   <version>2.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Kogito Runtimes</name>
+  <name>Kogito Runtimes test</name>
   <description>Kogito Runtimes</description>
 
   <url>http://kogito.kie.org</url>
