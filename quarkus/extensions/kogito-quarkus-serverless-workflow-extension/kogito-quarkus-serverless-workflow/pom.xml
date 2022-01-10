@@ -28,12 +28,25 @@
       <artifactId>svm</artifactId>
       <scope>provided</scope>
     </dependency>
-
-    <!-- OpenApi Client -->
+    
+     <!--  open api libraries -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-openapi-workitem</artifactId>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-multipart-provider</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson2-provider</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>
@@ -42,6 +55,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client-jackson</artifactId>
     </dependency>
+        
 
     <!-- Support CloudEvents OotB -->
     <dependency>
@@ -53,14 +67,14 @@
       <artifactId>quarkus-smallrye-reactive-messaging</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
+      <groupId>io.quarkiverse.reactivemessaging.http</groupId>
       <artifactId>quarkus-reactive-messaging-http</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-runtime</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-jsonpath-expression</artifactId>
     </dependency>
@@ -74,12 +88,30 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <plugins>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+        <version>${version.io.quarkus}</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>extension-descriptor</goal>
+            </goals>
+            <configuration>
+              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
+              <capabilities>
+                <provides>org.kie.kogito.serverless-workflow</provides>
+              </capabilities>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
             <path>
@@ -89,20 +121,6 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>extension-descriptor</goal>
-            </goals>
-            <phase>compile</phase>
-            <configuration>
-              <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
-              <capabilities>
-                <provides>kogito-serverless-workflow</provides>
-              </capabilities>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

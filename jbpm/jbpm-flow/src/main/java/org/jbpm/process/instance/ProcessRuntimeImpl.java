@@ -25,7 +25,6 @@ import org.drools.core.common.InternalWorkingMemory;
 import org.drools.core.common.ReteEvaluator;
 import org.drools.core.common.WorkingMemoryAction;
 import org.drools.core.definitions.rule.impl.RuleImpl;
-import org.drools.core.event.KogitoProcessEventSupportImpl;
 import org.drools.core.phreak.PropagationEntry;
 import org.drools.core.time.TimeUtils;
 import org.drools.core.time.TimerService;
@@ -33,7 +32,6 @@ import org.drools.core.time.impl.CommandServiceTimerJobFactoryManager;
 import org.drools.core.time.impl.ThreadSafeTrackableTimeJobFactoryManager;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.jbpm.process.core.event.EventFilter;
-import org.jbpm.process.core.event.EventTransformer;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
@@ -41,6 +39,8 @@ import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
+import org.jbpm.workflow.core.impl.DataAssociation;
+import org.jbpm.workflow.core.impl.NodeIoHelper;
 import org.jbpm.workflow.core.node.EventTrigger;
 import org.jbpm.workflow.core.node.StartNode;
 import org.jbpm.workflow.core.node.Trigger;
@@ -62,6 +62,7 @@ import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.utils.CompositeClassLoader;
 import org.kie.kogito.Application;
+import org.kie.kogito.drools.core.event.KogitoProcessEventSupportImpl;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
@@ -74,8 +75,14 @@ import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.kie.services.jobs.impl.LegacyInMemoryJobService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class ProcessRuntimeImpl extends AbstractProcessRuntime {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRuntimeImpl.class);
 
     private InternalKnowledgeRuntime kruntime;
     private ProcessInstanceManager processInstanceManager;
@@ -338,10 +345,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
                                             type = ((EventTypeFilter) filter).getType();
                                         }
                                     }
-                                    StartProcessEventListener listener = new StartProcessEventListener(process.getId(),
-                                            filters,
-                                            trigger.getInMappings(),
-                                            startNode.getEventTransformer());
+                                    StartProcessEventListener listener = new StartProcessEventListener(startNode, trigger, process.getId(), filters);
                                     signalManager.addEventListener(type, listener);
                                     ((RuleFlowProcess) process).getRuntimeMetaData().put("StartProcessEventType", type);
                                     ((RuleFlowProcess) process).getRuntimeMetaData().put("StartProcessEventListener", listener);
@@ -516,17 +520,14 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
 
         private String processId;
         private List<EventFilter> eventFilters;
-        private Map<String, String> inMappings;
-        private EventTransformer eventTransformer;
+        private StartNode startNode;
+        private Trigger trigger;
 
-        public StartProcessEventListener(String processId,
-                List<EventFilter> eventFilters,
-                Map<String, String> inMappings,
-                EventTransformer eventTransformer) {
+        public StartProcessEventListener(StartNode startNode, Trigger trigger, String processId, List<EventFilter> eventFilters) {
             this.processId = processId;
             this.eventFilters = eventFilters;
-            this.inMappings = inMappings;
-            this.eventTransformer = eventTransformer;
+            this.trigger = trigger;
+            this.startNode = startNode;
         }
 
         @Override
@@ -535,36 +536,35 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
         }
 
         @Override
-        public void signalEvent(final String type,
-                Object event) {
+        public void signalEvent(final String type, Object event) {
             for (EventFilter filter : eventFilters) {
-                if (!filter.acceptsEvent(type,
-                        event)) {
+                if (!filter.acceptsEvent(type, event, varName -> null)) {
                     return;
                 }
             }
-            if (eventTransformer != null) {
-                event = eventTransformer.transformEvent(event);
+            Map<String, Object> outputSet = new HashMap<>();
+            for (Map.Entry<String, String> entry : trigger.getInMappings().entrySet()) {
+                outputSet.put(entry.getKey(), entry.getKey());
             }
-            Map<String, Object> params = null;
-            if (inMappings != null && !inMappings.isEmpty()) {
-                params = new HashMap<String, Object>();
 
-                if (inMappings.size() == 1) {
-                    params.put(inMappings.keySet().iterator().next(), event);
-                } else {
-                    for (Map.Entry<String, String> entry : inMappings.entrySet()) {
-                        if ("event".equals(entry.getValue())) {
-                            params.put(entry.getKey(),
-                                    event);
-                        } else {
-                            params.put(entry.getKey(),
-                                    entry.getValue());
-                        }
-                    }
+            // data association needs to be corrected as it is not input mapping but output mapping
+            boolean eventFound = false;
+            for (DataAssociation dataAssociation : trigger.getInAssociations()) {
+                if ("event".equals(dataAssociation.getSources().get(0).getLabel())) {
+                    eventFound = true;
                 }
             }
-            startProcessWithParamsAndTrigger(processId, params, type, false);
+
+            if (!eventFound && !trigger.getInAssociations().isEmpty()) {
+                String inputLabel = (String) startNode.getMetaData(TRIGGER_MAPPING_INPUT);
+                outputSet.put(inputLabel, event);
+            } else {
+                outputSet.put("event", event);
+            }
+
+            Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
+            startProcessWithParamsAndTrigger(processId, parameters, type, false);
+
         }
     }
 

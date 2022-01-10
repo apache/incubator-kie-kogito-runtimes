@@ -16,10 +16,10 @@
 package org.kie.kogito.expr.jq;
 
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
+import org.kie.kogito.process.workitems.impl.expr.Expression;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionHandler;
-import org.kie.kogito.process.workitems.impl.expr.ParsedExpression;
+import org.slf4j.LoggerFactory;
 
 import net.thisptr.jackson.jq.BuiltinFunctionLoader;
 import net.thisptr.jackson.jq.Scope;
@@ -27,33 +27,35 @@ import net.thisptr.jackson.jq.Versions;
 
 public class JqExpressionHandler implements ExpressionHandler {
 
-    private static final Pattern jqRegExpr = Pattern.compile("^((\\$\\[).*|(\\.).*)");
-
-    private static Supplier<Scope> scopeSupplier = JqExpressionHandler::getDefaultScope;
-
-    private final Scope scope;
+    private static Supplier<Scope> scopeSupplier = new DefaultScopeSupplier();
 
     public static void setScopeSupplier(Supplier<Scope> scopeSupplier) {
         JqExpressionHandler.scopeSupplier = scopeSupplier;
     }
 
-    private static Scope getDefaultScope() {
-        Scope scope = Scope.newEmptyScope();
-        BuiltinFunctionLoader.getInstance().loadFunctions(Versions.JQ_1_6, scope);
-        return scope;
-    }
+    private static class DefaultScopeSupplier implements Supplier<Scope> {
+        private static class DefaultScope {
+            private static Scope scope;
+            static {
+                LoggerFactory.getLogger(JqExpressionHandler.class).info("Using default scope");
+                scope = Scope.newEmptyScope();
+                BuiltinFunctionLoader.getInstance().loadFunctions(Versions.JQ_1_6, scope);
+            }
+        }
 
-    public JqExpressionHandler() {
-        this.scope = scopeSupplier.get();
+        @Override
+        public Scope get() {
+            return DefaultScope.scope;
+        }
     }
 
     @Override
-    public boolean isExpr(String expr) {
-        return jqRegExpr.matcher(expr).matches();
+    public Expression get(String expr) {
+        return new JqExpression(scopeSupplier, expr);
     }
 
     @Override
-    public ParsedExpression parse(String expr) {
-        return new JqParsedExpression(scope, expr);
+    public String lang() {
+        return "jq";
     }
 }

@@ -17,10 +17,9 @@ package org.jbpm.compiler.canonical.descriptors;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.jbpm.compiler.canonical.NodeValidator;
-import org.jbpm.workflow.core.node.DataAssociation;
+import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
@@ -129,18 +128,17 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
                     .addVariable(new VariableDeclarator(
                             new ClassOrInterfaceType(null, Object.class.getCanonicalName()),
                             RESULT_NAME));
-            final Expression callServiceResult = this.handleServiceCallResult(executeWorkItemBody, callService);
             executeWorkItemBody.addStatement(resultField);
             executeWorkItemBody
                     .addStatement(
                             tryStmt(
                                     new AssignExpr(
                                             new NameExpr(RESULT_NAME),
-                                            callServiceResult,
+                                            callService,
                                             AssignExpr.Operator.ASSIGN),
                                     exceptions));
             results = new MethodCallExpr(new NameExpr("java.util.Collections"), "singletonMap")
-                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0)))
+                    .addArgument(new StringLiteralExpr(outAssociations.get(0).getSources().get(0).getLabel()))
                     .addArgument(new NameExpr(RESULT_NAME));
         }
 
@@ -221,8 +219,8 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
         return cls;
     }
 
-    public static Object processWorkItemValue(String exprLang, Object object, String paramName, Class<? extends ExpressionWorkItemResolver> clazz, Predicate<String> isExpression) {
-        return object instanceof CharSequence && isExpression.test(object.toString())
+    public static Object processWorkItemValue(String exprLang, Object object, String paramName, Class<? extends ExpressionWorkItemResolver> clazz, boolean isExpression) {
+        return isExpression
                 ? new WorkItemParamResolverSupplier(clazz, () -> new StringLiteralExpr(exprLang), () -> new StringLiteralExpr(object.toString()), () -> new StringLiteralExpr(paramName))
                 : object;
     }

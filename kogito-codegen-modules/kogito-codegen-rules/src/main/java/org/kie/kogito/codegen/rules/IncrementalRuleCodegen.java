@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 
-import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
@@ -238,7 +237,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
             org.drools.modelcompiler.builder.GeneratedFile reflectConfigSource = pkgSources.getReflectConfigSource();
             if (reflectConfigSource != null) {
-                modelFiles.add(new GeneratedFile(GeneratedFileType.RESOURCE,
+                modelFiles.add(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE,
                         reflectConfigSource.getPath(),
                         reflectConfigSource.getData()));
             }

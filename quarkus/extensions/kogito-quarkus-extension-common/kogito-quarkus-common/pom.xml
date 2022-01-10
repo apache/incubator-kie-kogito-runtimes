@@ -70,13 +70,6 @@
             <artifactId>arc-processor</artifactId>
         </dependency>
 
-        <!-- Undertow is needed so that the static resource serving can correctly locate CP resources from `META-INF/resources` of the application, as it would be normally expected.
-             See https://issues.redhat.com/browse/KOGITO-3477 -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-undertow</artifactId>
-        </dependency>
-
         <!-- kogito -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
@@ -94,8 +87,10 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
+                <version>${version.io.quarkus}</version>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <annotationProcessorPaths>

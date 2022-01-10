@@ -17,15 +17,11 @@ package org.jbpm.compiler.canonical.descriptors;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.Supplier;
 
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.process.workitems.impl.OpenApiResultHandler;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
@@ -49,25 +45,6 @@ class OpenApiTaskDescriptorTest {
         }
     }
 
-    private static class DummyResultHandler implements OpenApiResultHandler {
-
-        @Override
-        public Object apply(Object t, JsonNode u) {
-            return t;
-        }
-
-    }
-
-    private static class DummyResultHandlerSuplier implements Supplier<Expression> {
-
-        @Override
-        public Expression get() {
-
-            return null;
-        }
-
-    }
-
     @Test
     void addParametersToServiceCall() {
         final BlockStmt execWorkItem = new BlockStmt();
@@ -75,36 +52,19 @@ class OpenApiTaskDescriptorTest {
 
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class, s -> true)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor taskDescriptor = new OpenApiTaskDescriptor(workItemNode);
         taskDescriptor.handleParametersForServiceCall(execWorkItem, serviceCallMethod);
         assertNotNull(serviceCallMethod);
-        assertEquals(1, serviceCallMethod.getArguments().size());
-    }
-
-    @Test
-    void handleResultHandler() {
-        final BlockStmt execWorkItem = new BlockStmt();
-        final MethodCallExpr serviceCallMethod = new MethodCallExpr("doCall");
-        final WorkItemNode workItemNode =
-                OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class, s -> true)
-                        .withResultHandler(new DummyResultHandlerSuplier(), DummyResultHandler.class)
-                        .build();
-        final OpenApiTaskDescriptor taskDescriptor = new OpenApiTaskDescriptor(workItemNode);
-        taskDescriptor.handleParametersForServiceCall(execWorkItem, serviceCallMethod);
-        final Expression decoratedServiceCall = taskDescriptor.handleServiceCallResult(execWorkItem, serviceCallMethod);
-        assertNotNull(decoratedServiceCall);
-        assertTrue(decoratedServiceCall instanceof MethodCallExpr);
-        assertEquals(2, ((MethodCallExpr) decoratedServiceCall).getArguments().size());
+        assertEquals(2, serviceCallMethod.getArguments().size());
     }
 
     @Test
     void verifyModifierWithSingleParameter() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withArgs(Collections.singletonMap("bodyRequest", "jeje"), DummyWorkItemHandlerResolver.class, Object.class, s -> true)
+                        .withArgs(Collections.singletonMap("bodyRequest", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         modifier.modify(this.getClass().getCanonicalName(), "add", Collections.singletonList("body"));
@@ -116,7 +76,7 @@ class OpenApiTaskDescriptorTest {
     void verifyModifierWithSingleParameterSpecNone() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class, s -> true)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         assertThrows(IllegalArgumentException.class, () -> {
@@ -140,7 +100,7 @@ class OpenApiTaskDescriptorTest {
     void verifyModifierWithManyParametersDiffNames() {
         final WorkItemNode workItemNode =
                 OpenApiTaskDescriptor.builderFor("http://myspec.com", "add")
-                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class, s -> true)
+                        .withArgs(Collections.singletonMap("body", "jeje"), DummyWorkItemHandlerResolver.class, Object.class)
                         .build();
         final OpenApiTaskDescriptor.WorkItemModifier modifier = OpenApiTaskDescriptor.modifierFor(workItemNode);
         assertThrows(IllegalArgumentException.class, () -> {

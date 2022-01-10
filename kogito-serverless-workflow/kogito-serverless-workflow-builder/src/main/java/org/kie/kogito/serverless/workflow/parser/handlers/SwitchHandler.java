@@ -30,7 +30,6 @@ import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
-import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.produce.ProduceEvent;
 import io.serverlessworkflow.api.states.SwitchState;
 import io.serverlessworkflow.api.switchconditions.DataCondition;
@@ -82,13 +81,11 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     private void finalizeEventBasedSwitchState(RuleFlowNodeContainerFactory<?, ?> factory, NodeFactory<?, ?> startNode) {
         List<EventCondition> conditions = state.getEventConditions();
         for (EventCondition eventCondition : conditions) {
-            EventDefinition eventDefinition = ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
-                    eventCondition.getEventRef());
             StateHandler<?> targetState = parserContext.getStateHandler(eventCondition.getTransition());
-            long eventId = parserContext.newId();
-            ServerlessWorkflowParser.consumeEventNode(factory.eventNode(eventId), eventDefinition).done().connection(
-                    startNode.getNode().getId(), eventId);
-            targetState.connect(factory, eventId);
+            MakeNodeResult eventNode =
+                    filterAndMergeNode(factory, eventCondition.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, eventCondition.getEventRef(), inputVar, outputVar));
+            factory.connection(startNode.getNode().getId(), eventNode.getIncomingNode().getNode().getId());
+            targetState.connect(factory, eventNode.getOutgoingNode().getNode().getId());
         }
     }
 
@@ -149,8 +146,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
         if (produceEvents == null || produceEvents.isEmpty()) {
             endNodeFactory.terminate(true);
         } else {
-            ServerlessWorkflowParser.sendEventNode(endNodeFactory, ServerlessWorkflowUtils.getWorkflowEventFor(workflow,
-                    produceEvents.get(0).getEventRef()));
+            ServerlessWorkflowParser.sendEventNode(endNodeFactory, eventDefinition(produceEvents.get(0).getEventRef()));
         }
         return endNodeFactory;
     }
