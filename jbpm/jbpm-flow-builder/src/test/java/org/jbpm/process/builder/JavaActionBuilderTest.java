@@ -21,11 +21,10 @@ import java.util.List;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.compiler.compiler.DialectCompiletimeRegistry;
-import org.drools.compiler.lang.descr.ActionDescr;
-import org.drools.compiler.lang.descr.ProcessDescr;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.impl.KnowledgePackageImpl;
-import org.drools.core.spi.KogitoProcessContextImpl;
+import org.drools.drl.ast.descr.ActionDescr;
+import org.drools.drl.ast.descr.ProcessDescr;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.process.builder.dialect.ProcessDialect;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
@@ -36,6 +35,7 @@ import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.ActionNode;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.drools.core.spi.KogitoProcessContextImpl;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 

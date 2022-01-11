@@ -15,12 +15,16 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.kie.kogito.expr.jq.JqExpressionHandler;
+import org.kie.kogito.expr.jsonpath.JsonPathExpressionHandler;
+import org.kie.kogito.process.workitems.impl.expr.ExpressionHandler;
 
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
+import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
 
 /**
  * Main class of the Kogito Serverless Workflow extension
@@ -32,11 +36,11 @@ public class ServerlessWorkflowAssetsProcessor {
         return new FeatureBuildItem("kogito-serverless-workflow");
     }
 
-    @BuildStep
-    public List<ReflectiveClassBuildItem> reflectiveClassBuildItems() {
-        List<ReflectiveClassBuildItem> result = new ArrayList<>();
-        result.add(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.expr.jq.JqExpressionHandler"));
-        result.add(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.expr.jsonpath.JsonPathExpressionHandler"));
-        return result;
+    @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
+    void addExpressionHandlers(BuildProducer<ReflectiveClassBuildItem> reflectiveClass, BuildProducer<ServiceProviderBuildItem> serviceProvider) {
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, JsonPathExpressionHandler.class));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, JqExpressionHandler.class));
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath(ExpressionHandler.class.getCanonicalName()));
     }
+
 }

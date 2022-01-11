@@ -47,6 +47,7 @@ import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.maven.dependency.Dependency;
 import io.quarkus.maven.dependency.ResolvedDependency;
+import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 import static java.util.stream.Collectors.toList;
 
@@ -135,12 +136,17 @@ public class KogitoQuarkusResourceUtils {
     }
 
     public static void registerResources(Collection<GeneratedFile> generatedFiles,
+            BuildProducer<AdditionalStaticResourceBuildItem> staticResProducer,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
-            if (f.category() == GeneratedFileType.Category.RESOURCE) {
+            if (f.category() == GeneratedFileType.Category.INTERNAL_RESOURCE || f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
                 genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents()));
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
+            }
+            if (f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
+                String resoucePath = f.relativePath().substring(GeneratedFile.META_INF_RESOURCES.length() - 1); // keep '/' at the beginning
+                staticResProducer.produce(new AdditionalStaticResourceBuildItem(resoucePath, false));
             }
         }
     }
@@ -188,8 +194,6 @@ public class KogitoQuarkusResourceUtils {
     private static Collection<GeneratedBeanBuildItem> makeBuildItems(AppPaths appPaths, ResourceReader resources) throws IOException {
 
         Collection<GeneratedBeanBuildItem> buildItems = new ArrayList<>();
-        Path location = generatedFileWriterBuilder.build(appPaths.getFirstProjectPath()).getClassesDir();
-
         for (KiePath path : resources.getFilePaths()) {
             byte[] data = resources.getBytes(path);
             String className = toClassName(path.asString());
@@ -208,11 +212,6 @@ public class KogitoQuarkusResourceUtils {
             }
 
             buildItems.add(new GeneratedBeanBuildItem(className, data));
-
-            String sourceFile = location.toString().replaceFirst("\\.class", ".java");
-            if (sourceFile.contains("$")) {
-                sourceFile = sourceFile.substring(0, sourceFile.indexOf("$")) + ".java";
-            }
         }
 
         return buildItems;

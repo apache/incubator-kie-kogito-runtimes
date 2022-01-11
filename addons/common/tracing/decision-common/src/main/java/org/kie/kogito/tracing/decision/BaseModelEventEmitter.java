@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.tracing.decision;
 
-import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.decision.DecisionModelResourcesProvider;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.tracing.EventEmitter;
 import org.kie.kogito.tracing.event.model.ModelEvent;
 import org.kie.kogito.tracing.event.model.models.DecisionModelEvent;

@@ -36,6 +36,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-kie-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -55,6 +62,10 @@
         <exclusion>
           <groupId>org.eclipse.sisu</groupId>
           <artifactId>org.eclipse.sisu.plexus</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -107,15 +118,15 @@
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-core</artifactId>
+      <artifactId>kogito-drools</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-drools-wiring-static</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-drools-model</artifactId>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-model-compiler</artifactId>
     </dependency>
 
     <dependency>
@@ -138,7 +149,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kie.kogito</groupId>
+      <groupId>org.drools</groupId>
       <artifactId>drools-decisiontables</artifactId>
     </dependency>
     <dependency>

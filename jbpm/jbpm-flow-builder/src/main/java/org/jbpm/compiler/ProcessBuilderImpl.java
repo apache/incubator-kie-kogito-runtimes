@@ -35,12 +35,12 @@ import org.drools.compiler.compiler.DuplicateProcess;
 import org.drools.compiler.compiler.PackageRegistry;
 import org.drools.compiler.compiler.ParserError;
 import org.drools.compiler.compiler.ProcessLoadError;
-import org.drools.compiler.lang.descr.ActionDescr;
-import org.drools.compiler.lang.descr.PackageDescr;
-import org.drools.compiler.lang.descr.ProcessDescr;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.definitions.ProcessPackage;
 import org.drools.core.definitions.ResourceTypePackageRegistry;
+import org.drools.drl.ast.descr.ActionDescr;
+import org.drools.drl.ast.descr.PackageDescr;
+import org.drools.drl.ast.descr.ProcessDescr;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.compiler.xml.ProcessSemanticModule;
 import org.jbpm.compiler.xml.XmlProcessReader;
@@ -491,7 +491,7 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
         if (inMappings != null && !inMappings.isEmpty()) {
             result += "        java.util.Map params = new java.util.HashMap();\n";
             for (Map.Entry<String, String> entry : inMappings.entrySet()) {
-                result += "        params.put(\"" + entry.getKey() + "\", " + entry.getValue() + ");\n";
+                result += "        params.put(\"" + entry.getValue() + "\", " + entry.getKey() + ");\n";
             }
             result += "        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\""
                     + process.getId() + "\", params, \"conditional\");\n" + "end\n\n";

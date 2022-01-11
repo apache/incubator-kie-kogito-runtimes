@@ -45,8 +45,6 @@ import org.kie.api.definition.process.Connection;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.mvel2.integration.VariableResolver;
 import org.mvel2.integration.impl.SimpleValueResolver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Runtime counterpart of a for each node.
@@ -55,7 +53,6 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 510L;
     public static final String TEMP_OUTPUT_VAR = "foreach_output";
-    private static final Logger logger = LoggerFactory.getLogger(ForEachNodeInstance.class);
 
     private int totalInstances;
     private int executedInstances;
@@ -341,7 +338,7 @@ public class ForEachNodeInstance extends CompositeContextNodeInstance {
     public ContextInstance getContextInstance(String contextId) {
         ContextInstance contextInstance = super.getContextInstance(contextId);
         if (contextInstance == null) {
-            contextInstance = resolveContextInstance(contextId, null);
+            contextInstance = resolveContextInstance(contextId, TEMP_OUTPUT_VAR);
             setContextInstance(contextId, contextInstance);
         }
 

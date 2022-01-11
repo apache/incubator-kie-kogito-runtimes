@@ -16,7 +16,6 @@
 package org.jbpm.compiler.canonical;
 
 import java.text.MessageFormat;
-import java.util.Map;
 
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -30,10 +29,8 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_MESSAGE;
 import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_SIGNAL;
-import static org.jbpm.ruleflow.core.Metadata.MESSAGE_TYPE;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_REF;
-import static org.jbpm.ruleflow.core.Metadata.TRIGGER_TYPE;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_EVENT_TYPE;
+import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_INPUT_VARIABLE_NAME;
 import static org.jbpm.ruleflow.core.factory.EventNodeFactory.METHOD_VARIABLE_NAME;
 
 public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
@@ -54,17 +51,15 @@ public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
             body.addStatement(getFactoryMethod(getNodeId(node), METHOD_VARIABLE_NAME, new StringLiteralExpr(node.getVariableName())));
             variable = variableScope.findVariable(node.getVariableName());
         }
+        if (node.getInputVariableName() != null) {
+            body.addStatement(getFactoryMethod(getNodeId(node), METHOD_INPUT_VARIABLE_NAME, new StringLiteralExpr(node.getInputVariableName())));
+        }
+
         if (EVENT_TYPE_SIGNAL.equals(node.getMetaData(EVENT_TYPE))) {
             metadata.addSignal(node.getType(), variable != null ? variable.getType().getStringType() : null);
         } else if (EVENT_TYPE_MESSAGE.equals(node.getMetaData(EVENT_TYPE))) {
-            Map<String, Object> nodeMetaData = node.getMetaData();
             try {
-                TriggerMetaData triggerMetaData = new TriggerMetaData((String) nodeMetaData.get(TRIGGER_REF),
-                        (String) nodeMetaData.get(TRIGGER_TYPE),
-                        (String) nodeMetaData.get(MESSAGE_TYPE),
-                        node.getVariableName(),
-                        String.valueOf(node.getId())).validate();
-                metadata.addTrigger(triggerMetaData);
+                metadata.addTrigger(TriggerMetaData.of(node, node.getVariableName()));
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(
                         MessageFormat.format(
@@ -74,6 +69,7 @@ public class EventNodeVisitor extends AbstractNodeVisitor<EventNode> {
                         e);
             }
         }
+        addNodeMappings(node, body, getNodeId(node));
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
     }

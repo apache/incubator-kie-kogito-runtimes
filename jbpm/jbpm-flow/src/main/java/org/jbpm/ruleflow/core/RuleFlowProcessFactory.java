@@ -25,12 +25,11 @@ import java.util.Optional;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
-import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.swimlane.Swimlane;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.datatype.DataType;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.process.core.timer.Timer;
@@ -162,26 +161,31 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     }
 
     public RuleFlowProcessFactory variable(String name, Class<?> clazz) {
-        return variable(name, new ObjectDataType(clazz.getName()), null);
+        return variable(name, DataTypeResolver.fromType(clazz.getName(), clazz.getClassLoader()), null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type) {
         return variable(name, type, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value) {
         return variable(name, type, value, null, null);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, String metaDataName, Object metaDataValue) {
         return variable(name, type, null, metaDataName, metaDataValue);
     }
 
+    @Override
     public RuleFlowProcessFactory variable(String name, DataType type, Object value, String metaDataName, Object metaDataValue) {
+
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
-        variable.setValue(value);
+        variable.setValue(type.verifyDataType(value) ? value : type.readValue((String) value));
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
         }
@@ -193,14 +197,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         Swimlane swimlane = new Swimlane();
         swimlane.setName(name);
         getRuleFlowProcess().getSwimlaneContext().addSwimlane(swimlane);
-        return this;
-    }
-
-    public RuleFlowProcessFactory addCompensationContext(String contextId) {
-        CompensationScope compensationScope = new CompensationScope();
-        compensationScope.setContextContainerId(contextId);
-        getRuleFlowProcess().addContext(compensationScope);
-        getRuleFlowProcess().setDefaultContext(compensationScope);
         return this;
     }
 
@@ -323,9 +319,11 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         final ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         final EventNode eventNode = (EventNode) node;
         final String variable = eventNode.getVariableName();
+        final String inputVariable = eventNode.getInputVariableName();
 
         final DroolsConsequenceAction signalAction = new DroolsConsequenceAction("java", null);
-        signalAction.setMetaData(ACTION, new SignalProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
+        signalAction.setMetaData(ACTION,
+                new SignalProcessInstanceAction(ERROR_TYPE_PREFIX + attachedTo + "-" + errorCode, variable, inputVariable, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(signalAction);
         exceptionHandler.setFaultVariable(variable);
         final String code = Optional.ofNullable(hasErrorCode)

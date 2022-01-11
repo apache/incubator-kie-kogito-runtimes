@@ -19,8 +19,6 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.CallbackState;
@@ -39,19 +37,13 @@ public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> 
     @Override
     public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
         CompositeContextNodeFactory<?> embeddedSubProcess = factory.compositeContextNode(parserContext.newId()).name(state.getName()).autoComplete(true);
-        NodeFactory<?, ?> startNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
-        NodeFactory<?, ?> currentNode;
+        NodeFactory<?, ?> currentNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
         if (state.getAction() != null) {
-            currentNode = getActionNode(embeddedSubProcess, state.getAction());
-            embeddedSubProcess.connection(startNode.getNode().getId(), currentNode.getNode().getId());
-            startNode = currentNode;
+            currentNode = connect(currentNode, getActionNode(embeddedSubProcess, state.getAction()));
         }
-        currentNode = ServerlessWorkflowParser.messageEventNode(embeddedSubProcess.eventNode(parserContext.newId()), ServerlessWorkflowUtils
-                .getWorkflowEventFor(workflow, state.getEventRef()));
-        embeddedSubProcess.connection(startNode.getNode().getId(), currentNode.getNode().getId());
-        long endId = parserContext.newId();
-        embeddedSubProcess.endNode(endId).name("EmbeddedEnd").terminate(true).done().connection(currentNode
-                .getNode().getId(), endId);
+        currentNode = connect(currentNode,
+                filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)));
+        connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         return new MakeNodeResult(embeddedSubProcess);
     }
 }

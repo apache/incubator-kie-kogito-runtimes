@@ -44,11 +44,17 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.json.JsonSchemaGenerator;
+import org.kie.kogito.codegen.process.ProcessContainerGenerator;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
+import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusHumanTaskService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
+import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStatefulProcessService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
+import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedSourcesBuildItem;
+import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.serialization.process.ObjectMarshallerStrategy;
 import org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf;
 import org.kie.kogito.serialization.process.protobuf.KogitoProcessInstanceProtobuf;
@@ -57,6 +63,7 @@ import org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
@@ -74,6 +81,7 @@ import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.pkg.builditem.CurateOutcomeBuildItem;
 import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
 import io.quarkus.maven.dependency.ResolvedDependency;
+import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
@@ -83,7 +91,6 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.generateAggregatedIndex;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getTargetClassesPath;
-import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.kogitoBuildContext;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.registerResources;
 
 /**
@@ -93,6 +100,7 @@ public class ProcessesAssetsProcessor {
 
     private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
     private static final String PROCESS_SVG_SERVICE = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
+    private static final String PERSISTENCE_CAPABILITY = "org.kie.kogito.addons.persistence";
 
     private static final PathMatcher svgFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.svg");
 
@@ -113,11 +121,11 @@ public class ProcessesAssetsProcessor {
             BuildProducer<ReflectiveHierarchyBuildItem> reflectiveHierarchyClass,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-            BuildProducer<ServiceProviderBuildItem> serviceProviderBuildItemBuildProducer) {
+            BuildProducer<ServiceProviderBuildItem> serviceProviderBuildItemBuildProducer,
+            Capabilities capabilities) {
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), null, curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
-        if (context.getAddonsConfig().usePersistence()) {
+        if (capabilities.isCapabilityWithPrefixPresent(PERSISTENCE_CAPABILITY)) {
             indexDependency.produce(new IndexDependencyBuildItem("com.google.protobuf", "protobuf-java"));
             resource.produce(new NativeImageResourceBuildItem("kogito-types.proto"));
             reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.persistence.ProtostreamObjectMarshaller"));
@@ -136,13 +144,37 @@ public class ProcessesAssetsProcessor {
                 "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder",
                 "org.kie.kogito.process.impl.BaseWorkItem",
                 "org.kie.kogito.event.Topic",
-                "org.kie.kogito.event.CloudEventMeta",
+                "org.kie.kogito.event.cloudevents.CloudEventMeta",
                 "org.kie.kogito.jobs.api.Job");
     }
 
     @BuildStep
     public AdditionalBeanBuildItem additionalBeans() {
-        return AdditionalBeanBuildItem.builder().addBeanClasses(QuarkusStraightThroughProcessService.class, QuarkusProcessIdFactory.class).build();
+        return AdditionalBeanBuildItem.builder()
+                .addBeanClasses(
+                        QuarkusStraightThroughProcessService.class,
+                        QuarkusStatefulProcessService.class,
+                        QuarkusHumanTaskService.class,
+                        QuarkusProcessIdFactory.class)
+                .build();
+    }
+
+    /**
+     * Produces the {@link KogitoProcessContainerGeneratorBuildItem} after generating the Kogito classes
+     */
+    @BuildStep
+    public void processApplicationSection(KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
+            BuildProducer<KogitoProcessContainerGeneratorBuildItem> processContainerProducer,
+            KogitoGeneratedSourcesBuildItem generatedKogitoClasses) {
+        final KogitoProcessContainerGeneratorBuildItem buildItem = new KogitoProcessContainerGeneratorBuildItem(
+                kogitoBuildContextBuildItem.getKogitoBuildContext().getApplicationSections()
+                        .stream()
+                        .filter(ProcessContainerGenerator.class::isInstance)
+                        .map(ProcessContainerGenerator.class::cast)
+                        .collect(Collectors.toSet()));
+        if (!buildItem.getProcessContainerGenerators().isEmpty()) {
+            processContainerProducer.produce(buildItem);
+        }
     }
 
     /**
@@ -152,25 +184,32 @@ public class ProcessesAssetsProcessor {
     public void postGenerationProcessing(
             List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<AdditionalStaticResourceBuildItem> staticResProducer,
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
             BuildProducer<GeneratedResourceBuildItem> genResBI,
             BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration,
-            CombinedIndexBuildItem combinedIndexBuildItem) throws IOException {
+            CombinedIndexBuildItem combinedIndexBuildItem,
+            KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
+            Capabilities capabilities) throws IOException {
 
         // merge project index with classes generated by Kogito
         IndexView aggregatedIndex = generateAggregatedIndex(combinedIndexBuildItem.getComputingIndex(), generatedKogitoClasses);
 
         // configure the application generator
-        KogitoBuildContext context = kogitoBuildContext(root.getPaths(), aggregatedIndex, curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
+        KogitoBuildContext context = kogitoBuildContextBuildItem.getKogitoBuildContext();
 
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>(generatePersistenceInfo(
-                context,
-                aggregatedIndex,
-                generatedBeans,
-                resourcePatterns,
-                runTimeConfiguration,
-                liveReload.isLiveReload()));
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        if (capabilities.isCapabilityWithPrefixPresent(PERSISTENCE_CAPABILITY)) {
+            generatedFiles.addAll(generatePersistenceInfo(
+                    context,
+                    aggregatedIndex,
+                    generatedBeans,
+                    resourcePatterns,
+                    runTimeConfiguration,
+                    liveReload.isLiveReload()));
+        }
 
         Map<String, byte[]> classes = new HashMap<>();
         for (KogitoGeneratedClassesBuildItem generatedKogitoClass : generatedKogitoClasses) {
@@ -184,7 +223,7 @@ public class ProcessesAssetsProcessor {
         dumpFilesToDisk(context.getAppPaths(), generatedFiles);
 
         // register resources to the Quarkus environment
-        registerResources(generatedFiles, resource, genResBI);
+        registerResources(generatedFiles, staticResProducer, resource, genResBI);
 
         registerProcessSVG(context, resource);
     }
@@ -199,7 +238,7 @@ public class ProcessesAssetsProcessor {
 
         Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, runTimeConfiguration, resourcePatterns);
 
-        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.RESOURCE));
+        validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.INTERNAL_RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
 
         Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
         compileGeneratedSources(context, dependencies, persistenceGeneratedFiles, useDebugSymbols)

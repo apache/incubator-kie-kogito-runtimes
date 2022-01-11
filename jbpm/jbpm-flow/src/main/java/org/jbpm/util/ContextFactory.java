@@ -15,8 +15,8 @@
  */
 package org.jbpm.util;
 
-import org.drools.core.spi.KogitoProcessContextImpl;
 import org.jbpm.process.instance.ProcessInstance;
+import org.kie.kogito.drools.core.spi.KogitoProcessContextImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
@@ -32,6 +32,7 @@ public class ContextFactory {
     public static KogitoProcessContextImpl fromNode(KogitoNodeInstance instance) {
         KogitoProcessContextImpl context = new KogitoProcessContextImpl(((ProcessInstance) instance.getProcessInstance()).getKnowledgeRuntime());
         context.setNodeInstance(instance);
+        context.setProcessInstance(instance.getProcessInstance());
         return context;
     }
 

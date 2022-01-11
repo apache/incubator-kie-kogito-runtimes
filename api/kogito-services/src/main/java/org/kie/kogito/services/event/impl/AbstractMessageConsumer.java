@@ -18,11 +18,12 @@ package org.kie.kogito.services.event.impl;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
-import org.kie.kogito.event.EventConverter;
 import org.kie.kogito.event.EventReceiver;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
@@ -40,8 +41,6 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
     private Application application;
     private String trigger;
     private EventConsumer<M> eventConsumer;
-    private Class<?> outputClass;
-    private EventConverter<String> eventConverter;
 
     // in general we should favor the non-empty constructor
     // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
@@ -59,8 +58,8 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
-            EventConverter<String> eventConverter) {
-        init(application, process, trigger, eventConsumerFactory, eventReceiver, dataEventConverter, cloudEventConverter, useCloudEvents, processService, executorService, eventConverter);
+            EventUnmarshaller<Object> eventUnmarshaller) {
+        init(application, process, trigger, eventConsumerFactory, eventReceiver, dataEventConverter, cloudEventConverter, useCloudEvents, processService, executorService, eventUnmarshaller);
     }
 
     public void init(Application application,
@@ -73,18 +72,15 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
-            EventConverter<String> eventConverter) {
+            EventUnmarshaller<Object> eventUnmarshaller) {
         this.process = process;
         this.application = application;
         this.trigger = trigger;
-        this.eventConverter = eventConverter;
-        this.eventConsumer = eventConsumerFactory.get(processService, executorService, this::eventToModel, useCloudEvents);
+        this.eventConsumer = eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents);
         if (useCloudEvents) {
-            this.outputClass = cloudEventClass;
-            eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(eventConverter, cloudEventClass, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(eventUnmarshaller, cloudEventClass, Optional.of(trigger)));
         } else {
-            this.outputClass = dataEventClass;
-            eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventConverter, dataEventClass, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, Optional.of(trigger)));
         }
         logger.info("Consumer for {} started", trigger);
     }
@@ -107,5 +103,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
         return result;
     }
 
-    protected abstract M eventToModel(D event);
+    protected Optional<Function<D, M>> getModelConverter() {
+        return Optional.empty();
+    }
 }

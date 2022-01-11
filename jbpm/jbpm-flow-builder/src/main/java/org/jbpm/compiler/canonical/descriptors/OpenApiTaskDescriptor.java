@@ -20,9 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jbpm.process.core.ParameterDefinition;
@@ -35,14 +34,13 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Node;
+import org.kie.kogito.process.meta.ProcessMeta;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
-import org.kie.kogito.process.workitems.impl.OpenApiResultHandler;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionWorkItemResolver;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.CastExpr;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -55,13 +53,10 @@ import static java.util.Objects.requireNonNull;
 public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
     public static final String TYPE = "OpenApi Task";
-    private static final String PARAM_META_RESULT_HANDLER = "ResultHandler";
-    private static final String PARAM_META_RESULT_HANDLER_TYPE = "ResultHandlerType";
     private static final String PARAM_META_PARAM_RESOLVER_TYPE = "ParamResolverType";
     private static final String PARAM_META_SPEC_PARAMETERS = "SpecParameters";
     private static final String MODEL_PARAMETER = "ModelParameter";
 
-    private static final String VAR_INPUT_MODEL = "inputModel";
     private static final String METHOD_GET_PARAM = "getParameter";
     private static final NameExpr workItemNameExpr = new NameExpr("workItem");
 
@@ -111,6 +106,7 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         CompilationUnit compilationUnit = new CompilationUnit("org.kie.kogito.handlers");
         compilationUnit.getTypes().add(classDeclaration());
         compilationUnit.addImport(WorkItemExecutionException.class);
+        compilationUnit.addImport(ProcessMeta.class);
         return compilationUnit;
     }
 
@@ -123,32 +119,22 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         return workItemNode.getWork().getParameterDefinitions().stream().map(ParameterDefinition::getName).collect(Collectors.toList());
     }
 
+    /**
+     * Adds the parameter to the actual openapi generated method execution
+     *
+     * @param executeWorkItemBody body of the method to execute the workItem
+     * @param callServiceMethod method to the actual service call
+     */
     @Override
     protected void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callServiceMethod) {
+        VariableDeclarationExpr processMeta = new VariableDeclarationExpr()
+                .addVariable(new VariableDeclarator(new ClassOrInterfaceType(null, ProcessMeta.class.getName()), "processMeta")
+                        .setInitializer(new MethodCallExpr(new NameExpr(ProcessMeta.class.getCanonicalName()), "fromKogitoWorkItem").addArgument(workItemNameExpr)));
+        executeWorkItemBody.addStatement(processMeta);
         ClassOrInterfaceType type = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_PARAM_RESOLVER_TYPE));
+        callServiceMethod.addArgument(new MethodCallExpr(new NameExpr("processMeta"), "asMap"));
         getParameters(workItemNode)
                 .forEach(p -> callServiceMethod.addArgument(new CastExpr(type, new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(p)))));
-    }
-
-    @Override
-    protected Expression handleServiceCallResult(final BlockStmt executeWorkItemBody, final MethodCallExpr callService) {
-        final MethodCallExpr getInputModel = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr((String) workItemNode.getMetaData(MODEL_PARAMETER)));
-        final VariableDeclarationExpr inputModel =
-                new VariableDeclarationExpr(new VariableDeclarator(new ClassOrInterfaceType(null, Object.class.getCanonicalName()), VAR_INPUT_MODEL, getInputModel));
-        executeWorkItemBody.addStatement(inputModel);
-        // fetch the handler type
-        final ClassOrInterfaceType resultHandlerType = new ClassOrInterfaceType(null, (String) workItemNode.getMetaData(PARAM_META_RESULT_HANDLER_TYPE));
-        // get the handler
-        final MethodCallExpr getResultHandler = new MethodCallExpr(workItemNameExpr, METHOD_GET_PARAM).addArgument(new StringLiteralExpr(PARAM_META_RESULT_HANDLER));
-        // convert the result into the given type
-        final CastExpr castToHandler = new CastExpr(resultHandlerType, getResultHandler);
-        // temp to hold the result handler with the correct cast
-        final VariableDeclarationExpr resultHandler =
-                new VariableDeclarationExpr(new VariableDeclarator(castToHandler.getType(), "resultHandler", castToHandler));
-        executeWorkItemBody.addStatement(resultHandler);
-        return new MethodCallExpr(resultHandler.getVariable(0).getNameAsExpression(), "apply")
-                .addArgument(new NameExpr(VAR_INPUT_MODEL))
-                .addArgument(callService);
     }
 
     /**
@@ -162,40 +148,24 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         private String exprLang = "jq";
         private Class<? extends ExpressionWorkItemResolver> paramResolverClass;
         private Class<?> paramResolverOutputType;
-        private Class<? extends OpenApiResultHandler> resultHandlerType;
-        private Supplier<Expression> resultHandlerExpression;
         private String modelParameter = "Parameter";
         private Map<String, Object> functionArgs;
-        private Predicate<String> exprTest;
 
         private WorkItemBuilder(final String interfaceResource, final String operation) {
             this.operation = operation;
             this.interfaceResource = interfaceResource;
         }
 
-        public WorkItemBuilder withArgs(Map<String, Object> map, Class<? extends ExpressionWorkItemResolver> resolverClass, Class<?> outputClass, Predicate<String> exprTest) {
+        public WorkItemBuilder withArgs(Map<String, Object> map, Class<? extends ExpressionWorkItemResolver> resolverClass, Class<?> outputClass) {
             this.functionArgs = map;
             this.paramResolverClass = resolverClass;
             this.paramResolverOutputType = outputClass;
-            this.exprTest = exprTest;
-            return this;
-        }
-
-        /**
-         * 
-         * @param resultHandler
-         * @param resultHandlerType
-         * @return
-         */
-        public WorkItemBuilder withResultHandler(final Supplier<Expression> resultHandler, final Class<? extends OpenApiResultHandler> resultHandlerType) {
-            this.resultHandlerType = resultHandlerType;
-            this.resultHandlerExpression = resultHandler;
             return this;
         }
 
         /**
          * Set expression language
-         * 
+         *
          * @param exprLang
          * @return
          */
@@ -205,7 +175,6 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
         }
 
         /**
-         * 
          * @param modelParameter
          * @return
          */
@@ -220,21 +189,17 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
             factory.workParameter(KEY_SERVICE_IMPL, DEFAULT_SERVICE_IMPL);
             factory.workParameter(KEY_WORKITEM_INTERFACE, this.interfaceResource);
             factory.workParameter(KEY_WORKITEM_OPERATION, this.operation);
-            if (this.resultHandlerExpression != null) {
-                factory.workParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-                factory.metaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
-            }
             if (functionArgs != null) {
                 factory.metaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverOutputType.getCanonicalName());
-                functionArgs.entrySet().forEach(
-                        entry -> factory.workParameter(entry.getKey(), processWorkItemValue(exprLang, entry.getValue(), modelParameter, this.paramResolverClass, this.exprTest))
-                                .workParameterDefinition(
-                                        entry.getKey(),
-                                        DataTypeResolver.fromObject(entry.getValue(), this.exprTest)));
+                functionArgs.entrySet().forEach(entry -> build(entry, factory));
             }
-
             factory.metaData(MODEL_PARAMETER, modelParameter);
             return factory;
+        }
+
+        private <T extends RuleFlowNodeContainerFactory<T, ?>> void build(Entry<String, Object> entry, WorkItemNodeFactory<T> factory) {
+            factory.workParameter(entry.getKey(), processWorkItemValue(exprLang, entry.getValue(), this.modelParameter, this.paramResolverClass, true))
+                    .workParameterDefinition(entry.getKey(), DataTypeResolver.fromObject(entry.getValue(), true));
         }
 
         protected WorkItemNode build() {
@@ -249,19 +214,17 @@ public class OpenApiTaskDescriptor extends AbstractServiceTaskDescriptor {
 
             if (functionArgs != null) {
                 workItemNode.setMetaData(PARAM_META_PARAM_RESOLVER_TYPE, this.paramResolverOutputType.getCanonicalName());
-                functionArgs.entrySet().forEach(entry -> {
-                    work.setParameter(entry.getKey(), processWorkItemValue(exprLang, entry.getValue(), modelParameter, this.paramResolverClass, this.exprTest));
-                    work.addParameterDefinition(new ParameterDefinitionImpl(entry.getKey(), DataTypeResolver.fromObject(entry.getValue(), this.exprTest)));
-                });
-            }
-            if (this.resultHandlerExpression != null) {
-                work.setParameter(PARAM_META_RESULT_HANDLER, this.resultHandlerExpression);
-                workItemNode.setMetaData(PARAM_META_RESULT_HANDLER_TYPE, this.resultHandlerType.getCanonicalName());
+                functionArgs.entrySet().forEach(entry -> build(entry, work));
             }
             workItemNode.setMetaData(MODEL_PARAMETER, modelParameter);
 
             workItemNode.setWork(work);
             return workItemNode;
+        }
+
+        private <T extends RuleFlowNodeContainerFactory<T, ?>> void build(Entry<String, Object> entry, Work work) {
+            work.setParameter(entry.getKey(), processWorkItemValue(exprLang, entry.getValue(), modelParameter, this.paramResolverClass, true));
+            work.addParameterDefinition(new ParameterDefinitionImpl(entry.getKey(), DataTypeResolver.fromObject(entry.getValue(), true)));
         }
 
     }
