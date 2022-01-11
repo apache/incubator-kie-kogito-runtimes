@@ -15,7 +15,10 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
+import java.util.Objects;
+
 public class ChannelInfo {
+
     private final String channelName;
     private final String className;
     private final boolean isInput;
@@ -42,4 +45,19 @@ public class ChannelInfo {
         return !isInput;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(channelName, className, isInput);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ChannelInfo))
+            return false;
+        ChannelInfo other = (ChannelInfo) obj;
+        return Objects.equals(channelName, other.channelName) && Objects.equals(className, other.className) &&
+                isInput == other.isInput;
+    }
 }

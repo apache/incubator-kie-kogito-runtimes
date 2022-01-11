@@ -16,11 +16,8 @@
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -33,29 +30,23 @@ public class ChannelMappingStrategy {
     private static final String OUTGOING_PREFIX = "mp.messaging.outgoing.";
     private static final String INCOMING_PREFIX = "mp.messaging.incoming.";
 
-    private static final Set<String> reservedChannelNames = new HashSet<>(Arrays.asList("kogito-processinstances-events", "kogito-usertaskinstances-events", "kogito-variables-events"));
-
     private static Config config = ConfigProvider.getConfig();
 
     public static Collection<ChannelInfo> getChannelMapping() {
-
         Collection<ChannelInfo> result = new ArrayList<>();
         for (String property : config.getPropertyNames()) {
-            Optional<ChannelInfo> channelInfo = Optional.empty();
             if (property.startsWith(INCOMING_PREFIX) && property.endsWith(".connector")) {
-                channelInfo = getChannelInfo(property, INCOMING_PREFIX, true);
+                result.add(getChannelInfo(property, INCOMING_PREFIX, true));
             } else if (property.startsWith(OUTGOING_PREFIX) && property.endsWith(".connector")) {
-                channelInfo = getChannelInfo(property, OUTGOING_PREFIX, false);
+                result.add(getChannelInfo(property, OUTGOING_PREFIX, false));
             }
-            channelInfo.ifPresent(result::add);
         }
         return result;
     }
 
-    private static Optional<ChannelInfo> getChannelInfo(String property, String prefix, boolean isInput) {
+    private static ChannelInfo getChannelInfo(String property, String prefix, boolean isInput) {
         String name = extractChannelName(prefix, property);
-        return reservedChannelNames.contains(name) ? Optional.empty()
-                : Optional.of(new ChannelInfo(name, getClassName(config.getOptionalValue(getPropertyName(prefix, name, "value." + (isInput ? "deserializer" : "serializer")), String.class)), isInput));
+        return new ChannelInfo(name, getClassName(config.getOptionalValue(getPropertyName(prefix, name, "value." + (isInput ? "deserializer" : "serializer")), String.class)), isInput);
     }
 
     private static String extractChannelName(String prefix, String property) {

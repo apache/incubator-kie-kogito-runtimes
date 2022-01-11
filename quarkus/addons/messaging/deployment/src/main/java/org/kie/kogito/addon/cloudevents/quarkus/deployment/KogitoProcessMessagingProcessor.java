@@ -15,28 +15,19 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget.Kind;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.FieldInfo;
 import org.jboss.jandex.Type;
-import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
 import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
-import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
-
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 
 import io.quarkus.arc.deployment.AnnotationsTransformerBuildItem;
 import io.quarkus.arc.processor.AnnotationsTransformer;
@@ -50,14 +41,11 @@ public class KogitoProcessMessagingProcessor extends RequireCapabilityKogitoAddO
     }
 
     private static class MessagingAnnotationTransfomer implements AnnotationsTransformer {
-        private Map<DotName, DotName> consumerMapping;
-        private Map<DotName, DotName> producerMapping;
+        private Map<DotName, DotName> fieldMapping;
         private Map<DotName, DotName> classMapping;
 
-        public MessagingAnnotationTransfomer(Map<DotName, DotName> consumerMapping,
-                Map<DotName, DotName> producerMapping, Map<DotName, DotName> classMapping) {
-            this.consumerMapping = consumerMapping;
-            this.producerMapping = producerMapping;
+        public MessagingAnnotationTransfomer(Map<DotName, DotName> fieldMapping, Map<DotName, DotName> classMapping) {
+            this.fieldMapping = fieldMapping;
             this.classMapping = classMapping;
         }
 
@@ -80,19 +68,13 @@ public class KogitoProcessMessagingProcessor extends RequireCapabilityKogitoAddO
                 Type type = field.type();
                 if (found && type.kind() == Type.Kind.CLASS) {
                     String className = type.name().toString();
-                    if (className.equals(EventEmitter.class.getName())) {
-                        addAnnotation(producerMapping, field, ctx);
-                    } else if (className.equals(EventReceiver.class.getName())) {
-                        addAnnotation(consumerMapping, field, ctx);
+                    if (className.equals(EventEmitter.class.getName()) || className.equals(EventReceiver.class.getName())) {
+                        addAnnotation(fieldMapping, field.declaringClass().name(), ctx);
                     }
                 }
             } else if (ctx.isClass()) {
                 addAnnotation(classMapping, ctx.getTarget().asClass().name(), ctx);
             }
-        }
-
-        private static void addAnnotation(Map<DotName, DotName> mapping, FieldInfo field, TransformationContext ctx) {
-            addAnnotation(mapping, field.declaringClass().name(), ctx);
         }
 
         private static void addAnnotation(Map<DotName, DotName> mapping, DotName name, TransformationContext ctx) {
@@ -104,41 +86,15 @@ public class KogitoProcessMessagingProcessor extends RequireCapabilityKogitoAddO
     }
 
     @BuildStep
-    AnnotationsTransformerBuildItem annotate(Optional<KogitoProcessContainerGeneratorBuildItem> processBuildItem, KogitoMessagingMetadataBuildItem messagingMetadata) {
-        Map<DotName, DotName> consumerMapping = new HashMap<>();
-        Map<DotName, DotName> producerMapping = new HashMap<>();
-        if (processBuildItem.isPresent()) {
-            processBuildItem.get().getProcessContainerGenerators()
-                    .forEach(containerGenerator -> containerGenerator.getProcesses().forEach(process -> collect(process, consumerMapping, producerMapping, messagingMetadata.generators())));
+    AnnotationsTransformerBuildItem annotate(KogitoMessagingMetadataBuildItem messagingMetadata) {
+
+        Map<DotName, DotName> fieldMapping = new HashMap<>();
+        Map<DotName, DotName> classMapping = new HashMap<>();
+        for (Entry<DotName, EventGenerator> entry : messagingMetadata.generators().entrySet()) {
+            DotName annotationName = DotNamesHelper.createAnnotationName(entry.getValue());
+            fieldMapping.put(entry.getKey(), annotationName);
+            classMapping.put(DotNamesHelper.createClassName(entry.getValue()), annotationName);
         }
-        return new AnnotationsTransformerBuildItem(new MessagingAnnotationTransfomer(consumerMapping, producerMapping,
-                messagingMetadata.generators().stream().filter(generator -> generator.getFullAnnotationName().isPresent())
-                        .collect(Collectors.toMap(DotNamesHelper::createClassName, DotNamesHelper::createAnnotationName))));
+        return new AnnotationsTransformerBuildItem(new MessagingAnnotationTransfomer(fieldMapping, classMapping));
     }
-
-    private void collect(ProcessGenerator process, Map<DotName, DotName> consumerMapping, Map<DotName, DotName> producerMapping, Collection<EventGenerator> generators) {
-        ProcessMetaData processMetadata = process.getProcessExecutable().generate();
-        collect(processMetadata.getConsumers(), consumerMapping, generators);
-        collect(processMetadata.getProducers(), producerMapping, generators);
-
-    }
-
-    private void collect(Map<String, CompilationUnit> trigger2CU,
-            Map<DotName, DotName> className2Annotation,
-            Collection<EventGenerator> generators) {
-        for (EventGenerator generator : generators) {
-            if (generator.getFullAnnotationName().isPresent()) {
-                CompilationUnit cu = trigger2CU.get(generator.getChannelInfo().getChannelName());
-                if (cu != null) {
-                    className2Annotation.put(getName(cu), DotNamesHelper.createAnnotationName(generator));
-                }
-            }
-        }
-    }
-
-    private DotName getName(CompilationUnit cu) {
-        return DotNamesHelper.createDotName(cu.getPackageDeclaration().map(PackageDeclaration::getNameAsString).orElse("") + "."
-                + cu.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new IllegalStateException("cannnot find class")).getNameAsString());
-    }
-
 }

@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.drools.core.util.StringUtils;
@@ -95,4 +96,18 @@ public class EventGenerator implements ClassGenerator {
         return channelInfo.getChannelName().replaceAll("[\\s-]", "") + suffix;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(channelInfo);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof EventGenerator))
+            return false;
+        EventGenerator other = (EventGenerator) obj;
+        return Objects.equals(channelInfo, other.channelInfo);
+    }
 }

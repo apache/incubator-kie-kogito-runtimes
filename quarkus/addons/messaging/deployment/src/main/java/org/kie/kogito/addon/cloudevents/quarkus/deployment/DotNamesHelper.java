@@ -17,6 +17,10 @@ package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
 import org.jboss.jandex.DotName;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+
 import io.quarkus.arc.impl.ComputingCache;
 
 public class DotNamesHelper {
@@ -43,6 +47,11 @@ public class DotNamesHelper {
 
     public static DotName createClassName(EventGenerator generator) {
         return createDotName(generator.getPackageName() + '.' + generator.getClassName());
+    }
+
+    public static DotName createDotName(CompilationUnit cu) {
+        return DotNamesHelper.createDotName(cu.getPackageDeclaration().map(PackageDeclaration::getNameAsString).orElse("") + "."
+                + cu.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new IllegalStateException("cannnot find class")).getNameAsString());
     }
 
 }
