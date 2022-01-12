@@ -53,6 +53,7 @@ import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThr
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.kie.kogito.serialization.process.ObjectMarshallerStrategy;
 import org.kie.kogito.serialization.process.protobuf.KogitoNodeInstanceContentsProtobuf;
@@ -143,7 +144,7 @@ public class ProcessesAssetsProcessor {
                 "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder",
                 "org.kie.kogito.process.impl.BaseWorkItem",
                 "org.kie.kogito.event.Topic",
-                "org.kie.kogito.event.CloudEventMeta",
+                "org.kie.kogito.event.cloudevents.CloudEventMeta",
                 "org.kie.kogito.jobs.api.Job");
     }
 
@@ -164,7 +165,7 @@ public class ProcessesAssetsProcessor {
     @BuildStep
     public void processApplicationSection(KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
             BuildProducer<KogitoProcessContainerGeneratorBuildItem> processContainerProducer,
-            List<KogitoGeneratedClassesBuildItem> generatedKogitoClasses) {
+            KogitoGeneratedSourcesBuildItem generatedKogitoClasses) {
         final KogitoProcessContainerGeneratorBuildItem buildItem = new KogitoProcessContainerGeneratorBuildItem(
                 kogitoBuildContextBuildItem.getKogitoBuildContext().getApplicationSections()
                         .stream()

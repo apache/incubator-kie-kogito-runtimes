@@ -15,12 +15,12 @@
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-cloudevents-utils</artifactId>
+      <artifactId>kogito-events-api</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-tracing-decision-api</artifactId>
+      <artifactId>kogito-addons-tracing-api</artifactId>
     </dependency>
 
     <dependency>
@@ -53,11 +53,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -25,8 +25,6 @@ import java.util.concurrent.CompletionStage;
 
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNResult;
-import org.kie.kogito.cloudevents.CloudEventUtils;
-import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionExecutionIdUtils;
 import org.kie.kogito.decision.DecisionModel;
@@ -36,7 +34,9 @@ import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
-import org.kie.kogito.services.event.impl.JsonStringToObject;
+import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.services.event.impl.DefaultEventUnmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,7 @@ public class EventDrivenDecisionController {
     }
 
     protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo<>(new JsonStringToObject(CloudEventUtils.Mapper.mapper()),
+        eventReceiver.subscribe(this::handleRequest, new SubscriptionInfo<>(new DefaultEventUnmarshaller(CloudEventUtils.Mapper.mapper()),
                 CloudEvent.class));
     }
 

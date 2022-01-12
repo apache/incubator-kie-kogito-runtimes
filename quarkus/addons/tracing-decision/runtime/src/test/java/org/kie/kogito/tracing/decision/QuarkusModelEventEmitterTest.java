@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.cloudevents.CloudEventUtils;
 import org.kie.kogito.decision.DecisionModelMetadata;
 import org.kie.kogito.decision.DecisionModelResource;
 import org.kie.kogito.decision.DecisionModelResourcesProvider;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
 import io.cloudevents.CloudEvent;
 import io.smallrye.mutiny.helpers.test.AssertSubscriber;
@@ -64,7 +64,6 @@ public class QuarkusModelEventEmitterTest {
         when(model.getNamespace()).thenReturn("namespace");
         when(model.getModelMetadata()).thenReturn(
                 new DecisionModelMetadata(
-                        DecisionModelMetadata.Type.DMN,
                         "http://www.omg.org/spec/DMN/20151101/dmn.xsd"));
         when(model.get()).thenReturn("model");
         return model;

@@ -18,10 +18,15 @@ package org.jbpm.compiler.canonical;
 import java.util.Map;
 import java.util.Set;
 
+import org.jbpm.process.core.Context;
+import org.jbpm.process.core.ContextContainer;
+import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNode;
 
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
@@ -30,12 +35,12 @@ import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.NullLiteralExpr;
-import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.utils.StringEscapeUtils;
 
+import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_ADD_COMPENSATION_CONTEXT;
 import static org.jbpm.ruleflow.core.RuleFlowProcessFactory.METHOD_VARIABLE;
 import static org.jbpm.ruleflow.core.factory.NodeFactory.METHOD_METADATA;
 
@@ -91,18 +96,39 @@ public abstract class AbstractVisitor {
                 if (!visitedVariables.add(variable.getName())) {
                     continue;
                 }
+
                 String tags = (String) variable.getMetaData(Variable.VARIABLE_TAGS);
                 Object defaultValue = variable.getValue();
-                ObjectCreationExpr variableType = new ObjectCreationExpr();
                 body.tryAddImportToParentCompilationUnit(variable.getType().getClass());
-                variableType.setType(variable.getType().getClass());
-                if (variable.getType().getClass().equals(ObjectDataType.class)) {
-                    variableType.addArgument(new ClassExpr(new ClassOrInterfaceType(null, variable.getType().getStringType())));
-                }
-                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), variableType,
+                MethodCallExpr classLoaderMethodCallExpr = new MethodCallExpr()
+                        .setScope(new ClassExpr(new ClassOrInterfaceType(null, contextClass)))
+                        .setName("getClassLoader");
+                MethodCallExpr dataResolver = new MethodCallExpr(null, "org.jbpm.process.core.datatype.DataTypeResolver.fromType",
+                        new NodeList<>(new StringLiteralExpr(variable.getType().getStringType()), classLoaderMethodCallExpr));
+
+                body.addStatement(getFactoryMethod(field, METHOD_VARIABLE, new StringLiteralExpr(variable.getName()), dataResolver,
                         defaultValue != null ? new StringLiteralExpr(defaultValue.toString()) : new NullLiteralExpr(), new StringLiteralExpr(Variable.VARIABLE_TAGS),
                         tags != null ? new StringLiteralExpr(tags) : new NullLiteralExpr()));
             }
         }
+    }
+
+    protected final void visitCompensationScope(ContextContainer contextContainer, BlockStmt body, String factoryField) {
+        Context context = getContext(contextContainer);
+        if (context != null && context instanceof CompensationScope) {
+            String contextId = ((CompensationScope) context).getContextContainerId();
+            body.addStatement(getFactoryMethod(factoryField, METHOD_ADD_COMPENSATION_CONTEXT, new StringLiteralExpr(contextId)));
+        }
+    }
+
+    private Context getContext(ContextContainer contextContainer) {
+        Context context = contextContainer.getDefaultContext(CompensationScope.COMPENSATION_SCOPE);
+        if (context == null && contextContainer instanceof KogitoNode) {
+            NodeContainer parentContainer = ((KogitoNode) contextContainer).getParentContainer();
+            if (parentContainer instanceof ContextContainer) {
+                return getContext((ContextContainer) parentContainer);
+            }
+        }
+        return context;
     }
 }

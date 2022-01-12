@@ -29,8 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.addon.cloudevents.Subscription;
-import org.kie.kogito.cloudevents.CloudEventUtils;
-import org.kie.kogito.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
@@ -39,6 +37,8 @@ import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
+import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -450,7 +450,7 @@ class EventDrivenDecisionControllerTest {
 
         public void accept(String message) {
             try {
-                subscription.getConsumer().apply(subscription.getInfo().getConverter().apply(message, subscription.getInfo().getOutputClass()));
+                subscription.getConsumer().apply(subscription.getInfo().getConverter().unmarshall(message, subscription.getInfo().getOutputClass()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -458,7 +458,7 @@ class EventDrivenDecisionControllerTest {
 
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        public <T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<String, T> info) {
+        public <T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<Object, T> info) {
             subscription = new Subscription(consumer, info);
         }
     }

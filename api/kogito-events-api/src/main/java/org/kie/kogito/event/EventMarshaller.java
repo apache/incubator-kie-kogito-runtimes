@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.event;
 
-public interface EventMarshaller {
+public interface EventMarshaller<R> {
 
-    <T> String marshall(T dataEvent);
+    <T> R marshall(T dataEvent);
 }
