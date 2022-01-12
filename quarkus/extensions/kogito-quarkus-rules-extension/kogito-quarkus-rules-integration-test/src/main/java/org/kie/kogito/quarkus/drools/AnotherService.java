@@ -27,6 +27,7 @@ import io.quarkus.arc.Unremovable;
 @ApplicationScoped
 @Unremovable // temporary workaround to allow injecting RuleUnitInstance<AnotherService>
              // without injecting AnotherService directly (otherwise Quarkus ArC will ignore this)
+             // KOGITO-6529 Quarkus extension should make RuleUnitData/DataContext @Unremovable
 public class AnotherService implements RuleUnitData, ReferenceContext {
     @Inject
     DataStore<StringHolder> strings;

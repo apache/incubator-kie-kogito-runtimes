@@ -57,8 +57,8 @@ public class RuleUnitInstanceProvider {
         ParameterizedType pt = (ParameterizedType) t;
 
         Type[] actualTypeArguments = pt.getActualTypeArguments();
-        if (actualTypeArguments.length < 1)
-            throw new IllegalArgumentException(t + " must have at least a type parameter");
+        if (actualTypeArguments.length != 1)
+            throw new IllegalArgumentException(t + " must have exactly one type parameter");
 
         Class<?> ctxType = (Class<?>) actualTypeArguments[0];
 

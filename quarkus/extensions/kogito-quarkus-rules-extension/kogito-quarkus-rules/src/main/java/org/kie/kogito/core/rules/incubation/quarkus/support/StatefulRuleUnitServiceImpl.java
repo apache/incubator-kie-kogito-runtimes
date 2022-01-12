@@ -47,7 +47,11 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         } else
             throw new IllegalArgumentException("cannot parse rule unit id");
 
-        RuleUnitData ruleUnitData = (RuleUnitData) extendedDataContext.data();
+        ReferenceContext refCtx = extendedDataContext.data();
+        if (!(refCtx instanceof RuleUnitData)) {
+            throw new IllegalArgumentException("ExtendedReferenceContext#data must be a RuleUnitData");
+        }
+        RuleUnitData ruleUnitData = (RuleUnitData) refCtx;
 
         Class<RuleUnitData> aClass = toClass(ruleUnitId);
         RuleUnit<RuleUnitData> ruleUnit = ruleUnits.create(aClass);
