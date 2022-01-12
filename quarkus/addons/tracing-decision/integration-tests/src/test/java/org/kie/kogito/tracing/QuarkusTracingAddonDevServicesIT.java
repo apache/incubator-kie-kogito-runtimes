@@ -110,14 +110,15 @@ public class QuarkusTracingAddonDevServicesIT {
     }
 
     private static String loadResource(final String name) {
+        String resource = null;
         try {
             final URL url = QuarkusTracingAddonDevServicesIT.class.getResource(name);
             if (Objects.nonNull(url)) {
-                return Files.readString(Paths.get(url.toURI()), StandardCharsets.UTF_8);
+                resource = Files.readString(Paths.get(url.toURI()), StandardCharsets.UTF_8);
             }
         } catch (IOException | URISyntaxException e) {
-            // Swallow as we through an exception if the resource cannot be read
+            throw new IllegalStateException(String.format("Unable to load '%s'", name));
         }
-        throw new IllegalStateException(String.format("Unable to load '%s'", name));
+        return resource;
     }
 }
