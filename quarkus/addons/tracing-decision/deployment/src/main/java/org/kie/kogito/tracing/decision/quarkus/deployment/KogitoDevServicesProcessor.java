@@ -18,7 +18,6 @@ package org.kie.kogito.tracing.decision.quarkus.deployment;
 import java.io.Closeable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -30,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.utility.DockerImageName;
 
+import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerNetwork;
 import com.github.dockerjava.api.model.ContainerNetworkSettings;
 import com.github.dockerjava.api.model.ContainerPort;
@@ -67,6 +67,9 @@ public class KogitoDevServicesProcessor {
     private static final ContainerLocator LOCATOR = new ContainerLocator(TrustyServiceInMemoryContainer.DEV_SERVICE_LABEL,
             TrustyServiceInMemoryContainer.PORT);
 
+    private static final String IMAGE_NAME_POSTGRESQL = "postgres";
+    private static final String IMAGE_NAME_KAFKA = "vectorized/redpanda";
+
     static volatile Closeable closeable;
     static volatile TrustyServiceDevServiceConfig cfg;
     static volatile boolean first = true;
@@ -102,7 +105,7 @@ public class KogitoDevServicesProcessor {
         //Discover PostgreSQL container
         LOGGER.info("Discovering DevServices PostgreSQL instance...");
         DockerClientFactory.lazyClient().listContainersCmd().exec()
-                .stream().filter(container -> container.getImage().contains("postgres"))
+                .stream().filter(this::isPostgresImage)
                 .findFirst()
                 .ifPresent(container -> {
                     Optional<Integer> port = Optional.empty();
@@ -132,7 +135,7 @@ public class KogitoDevServicesProcessor {
         //Discover Kafaka Broker container
         LOGGER.info("Discovering DevServices Redpanda (Kafka) instance...");
         DockerClientFactory.lazyClient().listContainersCmd().exec()
-                .stream().filter(container -> container.getImage().contains("vectorized/redpanda"))
+                .stream().filter(this::isKafkaImage)
                 .findFirst()
                 .ifPresent(container -> {
                     Optional<String> ipAddress = Optional.empty();
@@ -185,7 +188,7 @@ public class KogitoDevServicesProcessor {
         //Discover TrustyService container
         LOGGER.info("Discovering TrustyService instance...");
         DockerClientFactory.lazyClient().listContainersCmd().exec()
-                .stream().filter(container -> container.getImage().toLowerCase(Locale.ROOT).contains("trusty"))
+                .stream().filter(container -> isTrustyServiceImage(container, configuration))
                 .findFirst()
                 .ifPresent(container -> {
                     Optional<Integer> port = Optional.empty();
@@ -233,6 +236,22 @@ public class KogitoDevServicesProcessor {
                     "DevServices for Kogito TrustyService started at {}",
                     trustyService.getUrl());
         }
+    }
+
+    private boolean isPostgresImage(final Container container) {
+        final String name = container.getImage();
+        return IMAGE_NAME_POSTGRESQL.equals(name);
+    }
+
+    private boolean isKafkaImage(final Container container) {
+        final String name = container.getImage();
+        return IMAGE_NAME_KAFKA.equals(name);
+    }
+
+    private boolean isTrustyServiceImage(final Container container,
+            final TrustyServiceDevServiceConfig trustyServiceDevServiceConfig) {
+        final String name = container.getImage();
+        return Objects.equals(trustyServiceDevServiceConfig.imageName, name);
     }
 
     private void shutdownTrustyService() {
