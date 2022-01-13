@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.images.PullPolicy;
 import org.testcontainers.utility.Base58;
 import org.testcontainers.utility.DockerImageName;
 
@@ -57,6 +58,7 @@ public class DataIndexInMemoryContainer extends GenericContainer<DataIndexInMemo
             withLabel(DEV_SERVICE_LABEL, serviceName);
         }
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
+        withImagePullPolicy("latest".equalsIgnoreCase(dockerImageName.getVersionPart()) ? PullPolicy.alwaysPull() : PullPolicy.defaultPolicy());
     }
 
     @Override
