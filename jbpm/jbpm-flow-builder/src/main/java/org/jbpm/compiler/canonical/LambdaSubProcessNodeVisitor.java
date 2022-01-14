@@ -82,6 +82,10 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_WAIT_FOR_COMPLETION, new BooleanLiteralExpr(node.isWaitForCompletion())))
                 .addStatement(getFactoryMethod(getNodeId(node), METHOD_INDEPENDENT, new BooleanLiteralExpr(node.isIndependent())));
 
+        System.out.println("node name = " + node.getName());
+        System.out.println("node.getId() = " + node.getId());
+        System.out.println("node.getUniqueId() = " + node.getUniqueId());
+        System.out.println("node.getMetaData() = " + node.getMetaData());
         Map<String, String> inputTypes = node.getIoSpecification().getInputTypes();
 
         String subProcessModelClassName = ProcessToExecModelGenerator.extractModelClassName(subProcessId);

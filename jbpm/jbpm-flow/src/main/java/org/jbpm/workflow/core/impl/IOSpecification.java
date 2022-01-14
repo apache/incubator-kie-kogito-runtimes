@@ -40,6 +40,10 @@ public class IOSpecification implements Serializable {
     }
 
     public Map<String, String> getInputTypes() {
+        System.out.println("\n\n\n\n>>>>>>> getInputTypes");
+        getDataInputs().stream().forEach(dd -> {
+            System.out.println("dd = " + dd);
+        });
         return getDataInputs().stream().collect(Collectors.toMap(DataDefinition::getLabel, DataDefinition::getType));
     }
 
@@ -110,6 +114,8 @@ public class IOSpecification implements Serializable {
     }
 
     public void addInputMapping(String source, String target) {
+        System.out.println("addInputMapping source = " + source);
+        System.out.println("addInputMapping target = " + target);
         DataDefinition defSource = DataDefinition.toSimpleDefinition(source);
         DataDefinition defTarget = DataDefinition.toSimpleDefinition(target);
         dataInputs.add(defTarget);
