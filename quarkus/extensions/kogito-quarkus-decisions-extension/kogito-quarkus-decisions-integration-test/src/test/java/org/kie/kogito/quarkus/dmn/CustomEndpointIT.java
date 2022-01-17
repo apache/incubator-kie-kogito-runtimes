@@ -36,7 +36,7 @@ public class CustomEndpointIT {
                 .post("/dmnModel")
                 .then()
                 .statusCode(200)
-                .body("d.Hello", Matchers.is("Hello Luca"));
+                .body("d.Hello", Matchers.is("Certidão Hello Luca"));
     }
 
 }
