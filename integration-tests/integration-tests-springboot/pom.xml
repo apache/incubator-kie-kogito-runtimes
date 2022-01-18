@@ -8,6 +8,25 @@
   <artifactId>integration-tests-springboot</artifactId>
   <name>Kogito :: Integration Tests :: Spring Boot</name>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-spring-boot-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-kie7-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <!-- All the dependency of this module are here just to make Maven reactor aware that invoker tests need them -->
     <!-- NOTE: don't change their scope because otherwise maven-invoker-plugin is not going to install them in localRepositoryPath  -->
