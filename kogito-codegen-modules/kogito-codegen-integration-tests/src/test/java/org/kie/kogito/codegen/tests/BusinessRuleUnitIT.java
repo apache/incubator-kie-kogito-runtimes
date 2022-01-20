@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.drools.core.event.DefaultAgendaEventListener;
+import org.drools.ruleunits.impl.UndefinedGeneratedRuleUnitVariable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,7 +44,6 @@ import org.kie.kogito.process.ProcessConfig;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.rules.RuleConfig;
-import org.kie.kogito.rules.units.UndefinedGeneratedRuleUnitVariable;
 import org.kie.kogito.uow.UnitOfWork;
 
 import static java.util.Arrays.asList;

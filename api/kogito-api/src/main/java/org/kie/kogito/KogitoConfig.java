@@ -15,8 +15,10 @@
  */
 package org.kie.kogito;
 
+import org.kie.kogito.rules.KieConfig;
+
 /**
  * Marker interface to identify a KogitoConfig (i.e. ProcessConfig, ...)
  */
-public interface KogitoConfig {
+public interface KogitoConfig extends KieConfig {
 }

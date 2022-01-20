@@ -16,13 +16,11 @@
 package org.kie.kogito.codegen.unit;
 
 import org.kie.kogito.codegen.data.Person;
-import org.kie.kogito.conf.DefaultEntryPoint;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
 
 public class PersonsUnit implements RuleUnitData {
 
-    @DefaultEntryPoint
     private DataStore<Person> persons;
 
     public PersonsUnit(DataStore<Person> persons) {

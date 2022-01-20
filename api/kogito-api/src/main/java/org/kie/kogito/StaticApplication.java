@@ -20,12 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kie.kogito.process.ProcessConfig;
+import org.kie.kogito.rules.KieEngine;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 public class StaticApplication implements Application {
 
     protected Config config;
-    private final Map<Class<? extends KogitoEngine>, KogitoEngine> engineMap = new HashMap<>();
+    private final Map<Class<? extends KieEngine>, KieEngine> engineMap = new HashMap<>();
 
     public StaticApplication() {
 
@@ -51,7 +52,7 @@ public class StaticApplication implements Application {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends KogitoEngine> T get(Class<T> clazz) {
+    public <T extends KieEngine> T get(Class<T> clazz) {
         return (T) engineMap.entrySet().stream()
                 .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
                 .map(Map.Entry::getValue)
@@ -59,11 +60,11 @@ public class StaticApplication implements Application {
                 .orElse(null);
     }
 
-    protected void loadEngines(KogitoEngine... engines) {
+    protected void loadEngines(KieEngine... engines) {
         Arrays.stream(engines).forEach(this::loadEngine);
     }
 
-    protected void loadEngine(KogitoEngine engine) {
+    protected void loadEngine(KieEngine engine) {
         if (engine != null) {
             engineMap.put(engine.getClass(), engine);
         }

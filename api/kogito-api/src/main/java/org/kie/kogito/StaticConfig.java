@@ -19,25 +19,27 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kie.kogito.rules.KieConfig;
+
 public class StaticConfig implements Config {
 
     private final Addons addons;
-    private final Map<Class<? extends KogitoConfig>, KogitoConfig> configMap = new HashMap<>();
+    private final Map<Class<? extends KieConfig>, KieConfig> configMap = new HashMap<>();
 
     public StaticConfig(Addons addons,
-            KogitoConfig... configs) {
+            KieConfig... configs) {
         this(addons, Arrays.asList(configs));
     }
 
     protected StaticConfig(Addons addons,
-            Iterable<KogitoConfig> configs) {
+            Iterable<KieConfig> configs) {
         this.addons = addons;
         configs.forEach(this::loadConfig);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends KogitoConfig> T get(Class<T> clazz) {
+    public <T extends KieConfig> T get(Class<T> clazz) {
         return (T) configMap.entrySet().stream()
                 .filter(entry -> clazz.isAssignableFrom(entry.getKey()))
                 .map(Map.Entry::getValue)
@@ -50,7 +52,7 @@ public class StaticConfig implements Config {
         return addons;
     }
 
-    private void loadConfig(KogitoConfig config) {
+    private void loadConfig(KieConfig config) {
         if (config != null) {
             configMap.put(config.getClass(), config);
         }

@@ -22,7 +22,7 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
 
     @org.springframework.beans.factory.annotation.Autowired
     public ApplicationConfig(
-            Collection<org.kie.kogito.KogitoConfig> configs) {
+            Collection<org.kie.kogito.rules.KieConfig> configs) {
         super($Addons$, configs);
     }
 }

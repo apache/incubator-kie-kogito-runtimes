@@ -15,6 +15,8 @@
  */
 package org.kie.kogito;
 
+import org.kie.kogito.rules.KieConfig;
+
 /**
  * Provides general configuration of Kogito application
  */
@@ -26,7 +28,7 @@ public interface Config {
      * @param clazz clazz of the desired KogitoConfig
      * @return
      */
-    <T extends KogitoConfig> T get(Class<T> clazz);
+    <T extends KieConfig> T get(Class<T> clazz);
 
     /**
      * Provides access to addons in the application.

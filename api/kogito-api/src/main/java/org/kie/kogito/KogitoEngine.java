@@ -15,8 +15,10 @@
  */
 package org.kie.kogito;
 
+import org.kie.kogito.rules.KieEngine;
+
 /**
  * Marker interface to identify a KogitoEngine (i.e. Processes, RuleUnits, ...)
  */
-public interface KogitoEngine {
+public interface KogitoEngine extends KieEngine {
 }

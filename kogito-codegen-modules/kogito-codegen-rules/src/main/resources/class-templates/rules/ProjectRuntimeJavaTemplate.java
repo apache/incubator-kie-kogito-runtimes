@@ -17,11 +17,11 @@ package org.drools.project.model;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
-import org.kie.kogito.drools.core.config.DefaultRuleEventListenerConfig;
-import org.kie.kogito.drools.core.config.StaticRuleConfig;
+import org.drools.modelcompiler.builder.KieBaseBuilder;
+import org.drools.ruleunits.impl.config.DefaultRuleEventListenerConfig;
+import org.drools.ruleunits.impl.config.StaticRuleConfig;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 import org.kie.kogito.legacy.rules.impl.KieBaseImpl;
 
