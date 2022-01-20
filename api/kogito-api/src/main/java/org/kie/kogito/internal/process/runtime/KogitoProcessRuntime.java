@@ -35,7 +35,13 @@ public interface KogitoProcessRuntime {
     }
 
     static KogitoProcessRuntime asKogitoProcessRuntime(ProcessRuntime kogitoProcessRuntimeProvider) {
-        return kogitoProcessRuntimeProvider instanceof KogitoProcessRuntime ? (KogitoProcessRuntime) kogitoProcessRuntimeProvider : ((Provider) kogitoProcessRuntimeProvider).getKogitoProcessRuntime();
+        if (kogitoProcessRuntimeProvider instanceof KogitoProcessRuntime) {
+            return (KogitoProcessRuntime) kogitoProcessRuntimeProvider;
+        }
+        if (kogitoProcessRuntimeProvider instanceof Provider) {
+            return ((Provider) kogitoProcessRuntimeProvider).getKogitoProcessRuntime();
+        }
+        return ((Provider) ((KieRuntime) kogitoProcessRuntimeProvider).getProcessRuntime()).getKogitoProcessRuntime();
     }
 
     /**

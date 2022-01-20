@@ -417,7 +417,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10000)
+    @Timeout(10)
     public void testInclusiveSplitAndJoinWithTimer() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 2);
         kruntime = createKogitoProcessRuntime("BPMN2-InclusiveSplitAndJoinWithTimer.bpmn2");
