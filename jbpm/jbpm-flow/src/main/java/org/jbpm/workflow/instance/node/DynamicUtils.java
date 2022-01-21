@@ -53,7 +53,7 @@ import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.kie.kogito.internal.process.runtime.KogitoProcessRuntime.asKogitoProcessRuntime;
+import static org.jbpm.process.instance.InternalProcessRuntime.asKogitoProcessRuntime;
 
 public class DynamicUtils {
 

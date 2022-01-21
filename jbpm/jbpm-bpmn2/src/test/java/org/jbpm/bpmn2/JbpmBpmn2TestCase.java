@@ -33,6 +33,7 @@ import org.drools.mvel.MVELSafeHelper;
 import org.jbpm.audit.KogitoWorkingMemoryInMemoryLogger;
 import org.jbpm.audit.event.KogitoRuleFlowLogEvent;
 import org.jbpm.audit.event.KogitoRuleFlowNodeLogEvent;
+import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
 import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
@@ -115,11 +116,11 @@ public abstract class JbpmBpmn2TestCase {
     }
 
     protected KogitoProcessRuntime createKogitoProcessRuntime(String... process) throws Exception {
-        return KogitoProcessRuntime.asKogitoProcessRuntime(createKnowledgeSession(process));
+        return InternalProcessRuntime.asKogitoProcessRuntime(createKnowledgeSession(process));
     }
 
     protected KogitoProcessRuntime createKogitoProcessRuntime(Resource... process) throws Exception {
-        return KogitoProcessRuntime.asKogitoProcessRuntime(createKnowledgeSession(createKnowledgeBaseFromResources(process)));
+        return InternalProcessRuntime.asKogitoProcessRuntime(createKnowledgeSession(createKnowledgeBaseFromResources(process)));
     }
 
     private KieBase createKnowledgeBaseWithoutDumper(String... process) throws Exception {
