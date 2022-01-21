@@ -32,7 +32,6 @@ import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.transformation.JsonResolver;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
-import org.jbpm.process.instance.KogitoProcessContextImpl;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
