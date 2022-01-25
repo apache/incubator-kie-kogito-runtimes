@@ -20,10 +20,10 @@ import java.io.InputStreamReader;
 import org.kie.dmn.api.core.DMNRuntime;
 import org.kie.kogito.Application;
 import org.kie.kogito.Config;
+import org.kie.kogito.KogitoEngine;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DMNKogito;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.rules.KieEngine;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 public class ApplicationMock implements Application {
@@ -56,7 +56,7 @@ public class ApplicationMock implements Application {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends KieEngine> T get(Class<T> clazz) {
+    public <T extends KogitoEngine> T get(Class<T> clazz) {
         return (T) decisionModels;
     }
 }

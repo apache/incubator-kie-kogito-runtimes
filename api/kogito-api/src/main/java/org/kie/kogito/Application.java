@@ -15,7 +15,6 @@
  */
 package org.kie.kogito;
 
-import org.kie.kogito.rules.KieEngine;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 /**
@@ -41,7 +40,7 @@ public interface Application {
      * @return
      */
 
-    <T extends KieEngine> T get(Class<T> clazz);
+    <T extends KogitoEngine> T get(Class<T> clazz);
 
     /**
      * Returns unit of work manager that allows to control execution within the application

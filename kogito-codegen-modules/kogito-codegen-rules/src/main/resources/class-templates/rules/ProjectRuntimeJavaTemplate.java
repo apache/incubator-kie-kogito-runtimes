@@ -21,7 +21,7 @@ import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.drools.modelcompiler.builder.KieBaseBuilder;
 import org.drools.ruleunits.impl.config.DefaultRuleEventListenerConfig;
-import org.drools.ruleunits.impl.config.StaticRuleConfig;
+import org.kie.kogito.drools.core.config.StaticRuleConfig;
 import org.kie.kogito.legacy.rules.KieRuntimeBuilder;
 import org.kie.kogito.legacy.rules.impl.KieBaseImpl;
 

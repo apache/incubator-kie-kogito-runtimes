@@ -22,7 +22,7 @@ public class ApplicationConfig extends org.kie.kogito.StaticConfig {
 
     @javax.inject.Inject
     public ApplicationConfig(
-            Instance<org.kie.kogito.rules.KieConfig> configs) {
+            Instance<org.kie.kogito.KogitoConfig> configs) {
         super($Addons$, configs);
     }
 }
