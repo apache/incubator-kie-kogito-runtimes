@@ -20,9 +20,9 @@ import org.drools.core.SessionConfigurationImpl;
 import org.drools.core.impl.EnvironmentImpl;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.ruleunits.impl.sessions.RuleUnitStatefulKnowledgeSessionImpl;
-import org.drools.ruleunits.impl.factory.AbstractRuleUnit;
 
 import org.kie.api.runtime.KieSession;
+import org.kie.kogito.drools.core.unit.AbstractRuleUnit;
 import org.kie.kogito.rules.RuleUnits;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 

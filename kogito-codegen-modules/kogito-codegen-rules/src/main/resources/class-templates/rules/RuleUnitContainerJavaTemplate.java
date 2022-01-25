@@ -15,7 +15,7 @@
  */
 package $Package$;
 
-public class RuleUnits extends org.drools.ruleunits.impl.factory.AbstractRuleUnits implements org.kie.kogito.rules.RuleUnits {
+public class RuleUnits extends org.kie.kogito.drools.core.unit.AbstractRuleUnits implements org.kie.kogito.rules.RuleUnits {
 
     private final Application application;
 

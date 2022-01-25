@@ -29,6 +29,7 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.rules.DataSource;
+import org.kie.kogito.rules.RuleUnitInstance;
 import org.kie.kogito.rules.conf.DefaultEntryPoint;
 import org.kie.kogito.rules.conf.EntryPoint;
 
@@ -210,6 +211,9 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
         classDecl
                 .addExtendedType(
                         new ClassOrInterfaceType(null, unitInstanceAbstractClass.getCanonicalName())
+                                .setTypeArguments(new ClassOrInterfaceType(null, canonicalName)))
+                .addImplementedType(
+                        new ClassOrInterfaceType(null, RuleUnitInstance.class.getCanonicalName())
                                 .setTypeArguments(new ClassOrInterfaceType(null, canonicalName)))
                 .addConstructor(Modifier.Keyword.PUBLIC)
                 .addParameter(RuleUnitGenerator.ruleUnitType(canonicalName), "unit")

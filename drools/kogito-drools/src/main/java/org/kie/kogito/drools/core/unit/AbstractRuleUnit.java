@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.rules;
+package org.kie.kogito.drools.core.unit;
 
-import org.kie.kogito.KogitoEngine;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnits;
+import org.kie.kogito.rules.RuleUnit;
+import org.kie.kogito.rules.RuleUnitInstance;
 
-public interface RuleUnits extends org.drools.ruleunits.api.RuleUnits, KogitoEngine {
+public abstract class AbstractRuleUnit<T extends RuleUnitData> extends org.drools.ruleunits.impl.factory.AbstractRuleUnit<T> implements RuleUnit<T> {
 
-    <T extends org.drools.ruleunits.api.RuleUnitData> RuleUnit<T> create(Class<T> clazz);
-
-    void register(String name, RuleUnitInstance<?> unitInstance);
-
-    default void register(String name, org.drools.ruleunits.api.RuleUnitInstance<?> unitInstance) {
-        register(name, (RuleUnitInstance) unitInstance);
+    public AbstractRuleUnit(String id, RuleUnits ruleUnits) {
+        super(id, ruleUnits);
     }
 
-    RuleUnitInstance<?> getRegisteredInstance(String name);
-
+    public RuleUnitInstance<T> createInstance(T data, String name) {
+        return (RuleUnitInstance<T>) super.createInstance(data, name);
+    }
 }

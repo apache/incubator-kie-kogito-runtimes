@@ -106,7 +106,7 @@ class DataSourceServiceImpl implements DataSourceService {
             RuleUnitId ruleUnitId = instanceId.ruleUnitId();
             Class<RuleUnitData> ruleUnitDataClass = toClass(ruleUnitId);
             RuleUnitInstance<?> registeredInstance = ruleUnits.getRegisteredInstance(instanceId.ruleUnitInstanceId());
-            RuleUnitData data = registeredInstance.ruleUnitData();
+            org.drools.ruleunits.api.RuleUnitData data = registeredInstance.ruleUnitData();
             // KOGITO-6530 Provide a registry of DataSources
             // this may not be necessary at all if we define an actual registry of data sources
             // CDI may also be used for this purpose, when available
