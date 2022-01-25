@@ -13,17 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.wiring.statics;
+package org.kie.kogito.rules;
 
-import org.drools.wiring.statics.StaticServiceRegistry;
-
-public class KogitoStaticServiceRegistry extends StaticServiceRegistry {
-
-    static final KogitoStaticServiceRegistry INSTANCE = new KogitoStaticServiceRegistry();
-
-    protected void wireServices() {
-        super.wireServices();
-
-        registerService("org.drools.ruleunits.api.DataSource$Factory", "org.kie.kogito.drools.core.data.DataSourceFactoryImpl", false);
-    }
+public interface DataStream<T> extends org.drools.ruleunits.api.DataStream<T> {
 }

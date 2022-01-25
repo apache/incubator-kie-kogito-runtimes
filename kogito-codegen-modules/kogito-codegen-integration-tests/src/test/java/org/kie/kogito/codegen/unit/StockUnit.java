@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.codegen.unit;
 
-import org.drools.ruleunits.impl.EventListDataStream;
 import org.kie.kogito.codegen.data.StockTick;
 import org.kie.kogito.codegen.data.ValueDrop;
+import org.kie.kogito.drools.core.data.EventListDataStream;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.DataStream;

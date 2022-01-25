@@ -19,8 +19,8 @@ package org.kie.kogito.core.rules.incubation.quarkus.support;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import org.drools.ruleunits.impl.ListDataStore;
-import org.drools.ruleunits.impl.factory.DataHandleImpl;
+import org.kie.kogito.drools.core.data.DataHandleImpl;
+import org.kie.kogito.drools.core.data.ListDataStore;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.RuleUnitId;

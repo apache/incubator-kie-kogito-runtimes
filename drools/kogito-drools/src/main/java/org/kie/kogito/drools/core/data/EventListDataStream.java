@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.wiring.statics;
+package org.kie.kogito.drools.core.data;
 
-import org.drools.wiring.statics.StaticServiceRegistry;
+import org.kie.kogito.rules.DataStream;
 
-public class KogitoStaticServiceRegistry extends StaticServiceRegistry {
+public class EventListDataStream<T> extends org.drools.ruleunits.impl.EventListDataStream<T> implements DataStream<T> {
 
-    static final KogitoStaticServiceRegistry INSTANCE = new KogitoStaticServiceRegistry();
-
-    protected void wireServices() {
-        super.wireServices();
-
-        registerService("org.drools.ruleunits.api.DataSource$Factory", "org.kie.kogito.drools.core.data.DataSourceFactoryImpl", false);
+    @SafeVarargs
+    public static <T> EventListDataStream<T> create(T... ts) {
+        EventListDataStream<T> stream = new EventListDataStream<>();
+        for (T t : ts) {
+            stream.append(t);
+        }
+        return stream;
     }
 }
