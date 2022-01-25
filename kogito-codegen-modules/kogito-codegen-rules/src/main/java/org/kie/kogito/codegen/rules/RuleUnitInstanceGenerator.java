@@ -170,7 +170,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
                 .addAnnotation("Override")
                 .addModifier(Modifier.Keyword.PROTECTED)
                 .addTypeParameter("Q")
-                .addParameter("Class<? extends org.kie.kogito.rules.RuleUnitQuery<Q>>", "query")
+                .addParameter("Class<? extends org.drools.ruleunits.api.RuleUnitQuery<Q>>", "query")
                 .setType("org.kie.kogito.rules.RuleUnitQuery<Q>")
                 .setBody(methodBlock);
 
