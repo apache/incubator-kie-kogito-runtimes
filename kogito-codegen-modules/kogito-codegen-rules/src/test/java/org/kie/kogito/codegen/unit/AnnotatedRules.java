@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.codegen.unit;
 
-import org.drools.ruleunits.impl.annotations.When;
+import org.drools.ruleunits.api.annotation.When;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;

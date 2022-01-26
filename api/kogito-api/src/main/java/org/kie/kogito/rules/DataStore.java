@@ -15,6 +15,6 @@
  */
 package org.kie.kogito.rules;
 
-public interface DataStore<T> extends org.drools.ruleunits.api.DataStore<T> {
+public interface DataStore<T> extends org.drools.ruleunits.api.DataStore<T>, DataSource<T> {
     DataHandle add(T object);
 }

@@ -18,8 +18,8 @@ package org.kie.kogito.rules;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import org.kie.kogito.rules.conf.ClockType;
-import org.kie.kogito.rules.conf.EventProcessingType;
+import org.drools.ruleunits.api.conf.ClockType;
+import org.drools.ruleunits.api.conf.EventProcessingType;
 
 public class RuleUnitConfig extends org.drools.ruleunits.api.RuleUnitConfig {
 

@@ -15,14 +15,14 @@
  */
 package org.kie.kogito.codegen.unit;
 
+import org.drools.ruleunits.api.conf.Clock;
+import org.drools.ruleunits.api.conf.ClockType;
+import org.drools.ruleunits.api.conf.SessionsPool;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.codegen.data.Results;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.conf.Clock;
-import org.kie.kogito.rules.conf.ClockType;
-import org.kie.kogito.rules.conf.SessionsPool;
 
 @SessionsPool(1)
 @Clock(ClockType.PSEUDO)

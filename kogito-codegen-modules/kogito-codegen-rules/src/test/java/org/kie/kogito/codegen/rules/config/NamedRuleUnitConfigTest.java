@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.drools.ruleunits.api.conf.ClockType;
+import org.drools.ruleunits.api.conf.EventProcessingType;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.rules.RuleUnitConfig;
-import org.kie.kogito.rules.conf.ClockType;
-import org.kie.kogito.rules.conf.EventProcessingType;
 
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;

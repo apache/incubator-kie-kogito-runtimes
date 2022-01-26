@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.codegen.unit;
 
+import org.drools.ruleunits.api.conf.DefaultEntryPoint;
 import org.kie.kogito.codegen.data.Person;
 import org.kie.kogito.rules.DataStore;
 import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.conf.DefaultEntryPoint;
 
 public class PersonsUnit implements RuleUnitData {
 

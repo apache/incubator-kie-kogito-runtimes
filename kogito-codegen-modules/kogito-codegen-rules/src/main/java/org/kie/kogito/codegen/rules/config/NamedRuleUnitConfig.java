@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import org.drools.ruleunits.api.conf.ClockType;
+import org.drools.ruleunits.api.conf.EventProcessingType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.rules.RuleUnitConfig;
-import org.kie.kogito.rules.conf.ClockType;
-import org.kie.kogito.rules.conf.EventProcessingType;
 
 public final class NamedRuleUnitConfig {
 

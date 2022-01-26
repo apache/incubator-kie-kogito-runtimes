@@ -19,6 +19,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.drools.core.common.ReteEvaluator;
+import org.drools.ruleunits.api.conf.DefaultEntryPoint;
+import org.drools.ruleunits.api.conf.EntryPoint;
 import org.drools.ruleunits.impl.EntryPointDataProcessor;
 import org.drools.ruleunits.impl.KieSessionBasedRuleUnitInstance;
 import org.drools.ruleunits.impl.ReteEvaluatorBasedRuleUnitInstance;
@@ -30,8 +32,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.rules.DataSource;
 import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.conf.DefaultEntryPoint;
-import org.kie.kogito.rules.conf.EntryPoint;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
