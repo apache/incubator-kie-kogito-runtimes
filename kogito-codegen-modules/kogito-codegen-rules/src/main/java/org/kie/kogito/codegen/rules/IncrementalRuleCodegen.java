@@ -392,7 +392,7 @@ public class IncrementalRuleCodegen extends AbstractGenerator {
 
         // merge config from the descriptor with configs from application.conf
         // application.conf overrides any other config
-        RuleUnitConfig config =
+        org.drools.ruleunits.api.RuleUnitConfig config =
                 ((AbstractRuleUnitDescription) ruleUnitDescription).getConfig()
                         .merged(configs.get(ruleUnitDescription.getCanonicalName()));
 

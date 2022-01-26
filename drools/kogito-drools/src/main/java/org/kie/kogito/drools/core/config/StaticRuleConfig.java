@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.drools.core.config;
 
-import org.drools.ruleunits.impl.config.DefaultRuleEventListenerConfig;
 import org.kie.kogito.rules.RuleConfig;
 import org.kie.kogito.rules.RuleEventListenerConfig;
 

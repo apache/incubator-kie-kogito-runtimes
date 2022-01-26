@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.drools.modelcompiler.builder.QueryModel;
+import org.drools.ruleunits.api.RuleUnitConfig;
 import org.drools.ruleunits.impl.AbstractRuleUnitDescription;
 import org.drools.ruleunits.impl.GeneratedRuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitDescription;
@@ -30,7 +31,6 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.drools.core.unit.AbstractRuleUnit;
 import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.conf.ClockType;
 import org.kie.kogito.rules.conf.EventProcessingType;
 

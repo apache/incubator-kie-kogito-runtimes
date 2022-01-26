@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.rules;
+package org.kie.kogito.drools.core.config;
 
-import org.kie.kogito.KogitoConfig;
+import org.kie.kogito.rules.RuleEventListenerConfig;
 
-public interface RuleConfig extends org.drools.ruleunits.api.RuleConfig, KogitoConfig {
-
-    RuleEventListenerConfig ruleEventListeners();
+public class DefaultRuleEventListenerConfig extends org.drools.ruleunits.impl.config.DefaultRuleEventListenerConfig implements RuleEventListenerConfig {
 }

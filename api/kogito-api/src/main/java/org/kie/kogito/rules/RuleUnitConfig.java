@@ -15,9 +15,19 @@
  */
 package org.kie.kogito.rules;
 
-import org.kie.kogito.KogitoConfig;
+import java.util.Optional;
+import java.util.OptionalInt;
 
-public interface RuleConfig extends org.drools.ruleunits.api.RuleConfig, KogitoConfig {
+import org.kie.kogito.rules.conf.ClockType;
+import org.kie.kogito.rules.conf.EventProcessingType;
 
-    RuleEventListenerConfig ruleEventListeners();
+public class RuleUnitConfig extends org.drools.ruleunits.api.RuleUnitConfig {
+
+    public RuleUnitConfig(EventProcessingType eventProcessingType, ClockType clockType, Integer sessionPool) {
+        super(eventProcessingType, clockType, sessionPool);
+    }
+
+    public RuleUnitConfig(Optional<EventProcessingType> eventProcessingType, Optional<ClockType> clockType, OptionalInt sessionPool) {
+        super(eventProcessingType, clockType, sessionPool);
+    }
 }
