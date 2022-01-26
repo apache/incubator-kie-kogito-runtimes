@@ -15,11 +15,9 @@
  */
 package org.kie.kogito.codegen.openapi.client;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.api.utils.AppPaths;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,17 +26,15 @@ public final class OpenApiUtils {
     private OpenApiUtils() {
     }
 
-    public static String getEndUserTargetDir(final KogitoBuildContext context) {
-        if (context.getAppPaths().hasClassesPaths()) {
-            final Path classesPath = context.getAppPaths().getFirstClassesPath();
-            if (classesPath.endsWith(Paths.get(AppPaths.TARGET_DIR))) {
-                return classesPath.toString();
-            }
+    /**
+     * Creates a temporary location in the file system and return its string form
+     */
+    public static String getTempDirLocation() {
+        try {
+            return Files.createTempDirectory("kogito-openapi-").toFile().getAbsolutePath();
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to create temporary directory: ", e);
         }
-        if (context.getAppPaths().hasProjectPaths()) {
-            return context.getAppPaths().getFirstProjectPath().resolve(AppPaths.TARGET_DIR).toString();
-        }
-        throw new IllegalStateException("No valid paths found in the current application path: " + context.getAppPaths());
     }
 
     public static void requireValidSpecURI(final OpenApiSpecDescriptor resource) {
