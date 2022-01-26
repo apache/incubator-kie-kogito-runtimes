@@ -15,9 +15,7 @@
  */
 package org.kie.kogito.codegen.openapi.client;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,14 +25,10 @@ public final class OpenApiUtils {
     }
 
     /**
-     * Creates a temporary location in the file system and return its string form
+     * Abstraction of the user's project temporary location
      */
-    public static String getTempDirLocation() {
-        try {
-            return Files.createTempDirectory("kogito-openapi-").toFile().getAbsolutePath();
-        } catch (IOException e) {
-            throw new UncheckedIOException("Unable to create temporary directory: ", e);
-        }
+    public static String getTempDirLocation(KogitoBuildContext context) {
+        return context.getAppPaths().getOutputTarget().toString();
     }
 
     public static void requireValidSpecURI(final OpenApiSpecDescriptor resource) {

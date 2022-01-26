@@ -43,7 +43,7 @@ public abstract class AbstractPathResolver implements PathResolver {
     }
 
     private String getOutputPath() {
-        final Path outputPath = Paths.get(OpenApiUtils.getTempDirLocation(), BASE_PATH);
+        final Path outputPath = Paths.get(OpenApiUtils.getTempDirLocation(this.context), BASE_PATH);
         if (Files.notExists(outputPath)) {
             try {
                 Files.createDirectories(outputPath);
