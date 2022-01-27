@@ -60,7 +60,7 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
                 object = subscription.getInfo().getConverter().unmarshall(message, subscription.getInfo().getOutputClass());
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException e) {
-                LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
+                LOGGER.error("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
                         subscription.getInfo().getType(), e.getMessage());
             }
         }
