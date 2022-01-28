@@ -1,4 +1,26 @@
+/*
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.kie.kogito.codegen.rules;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
@@ -15,13 +37,6 @@ import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.util.maven.support.ReleaseIdImpl;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
@@ -40,7 +55,6 @@ public class KieModuleThing {
         return new KieModuleThing(context, lookupKieModuleModel(context.getAppPaths().getResourcePaths()));
     }
 
-
     private static KieModuleModel lookupKieModuleModel(Path[] resourcePaths) {
         for (Path resourcePath : resourcePaths) {
             Path moduleXmlPath = resourcePath.resolve(KieModuleModelImpl.KMODULE_JAR_PATH.asString());
@@ -55,7 +69,6 @@ public class KieModuleThing {
 
         return new KieModuleModelImpl();
     }
-
 
     void generateProject(ReleaseIdImpl dummyReleaseId, ModelBuilderImpl<KogitoPackageSources> modelBuilder, List<GeneratedFile> generatedFiles) {
         ModelSourceClass modelSourceClass = createModelSourceClass(dummyReleaseId, modelBuilder);
@@ -84,11 +97,9 @@ public class KieModuleThing {
         return modelsByKBase;
     }
 
-
     private String ruleUnit2KieBaseName(String ruleUnit) {
         return ruleUnit.replace('.', '$') + "KieBase";
     }
-
 
     private String ruleUnit2KieSessionName(String ruleUnit) {
         return ruleUnit.replace('.', '$') + "KieSession";
@@ -102,12 +113,10 @@ public class KieModuleThing {
         return modelsByPackage;
     }
 
-
     void addRuleUnitConfig(RuleUnitDescription ruleUnitDescription, org.drools.ruleunits.api.RuleUnitConfig config) {
         KieBaseModel unitKieBaseModel = kieModuleModel.newKieBaseModel(ruleUnit2KieBaseName(ruleUnitDescription.getCanonicalName()));
         unitKieBaseModel.setEventProcessingMode(org.kie.api.conf.EventProcessingOption.CLOUD);
         unitKieBaseModel.addPackage(ruleUnitDescription.getPackageName());
-
 
         OptionalInt sessionsPool = config.getSessionPool();
         if (sessionsPool.isPresent()) {

@@ -36,7 +36,6 @@ public class RuleUnitHelper {
         this.defaultChecker = AssignableChecker.create(cl, hotReloadMode);
     }
 
-
     public RuleUnitHelper(AssignableChecker assignableChecker) {
         this.assignableChecker = assignableChecker;
     }
