@@ -15,29 +15,18 @@
  */
 package org.kie.kogito.event;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.event.cloudevents.SpecVersionDeserializer;
 import org.kie.kogito.event.cloudevents.SpecVersionSerializer;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,7 +35,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.cloudevents.SpecVersion;
-import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
 /**
  * This is an abstract implementation of the {@link DataEvent} that contains basic common attributes referring to
@@ -234,7 +222,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     @Override
     public Object getAttribute(String name) throws IllegalArgumentException {
-       return CloudEventUtils.getAttribute(name, this);
+        return CloudEventUtils.getAttribute(name, this);
     }
 
     //TODO: missing additional attributes as extensions for CloudEvent API.

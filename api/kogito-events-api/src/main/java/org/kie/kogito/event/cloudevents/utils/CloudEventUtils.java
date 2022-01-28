@@ -243,7 +243,7 @@ public final class CloudEventUtils {
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
-        }catch (IntrospectionException | RuntimeException e){
+        } catch (IntrospectionException | RuntimeException e) {
             throw new IllegalArgumentException("Error getting attribute " + name, e);
         }
     }
