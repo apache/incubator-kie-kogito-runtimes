@@ -162,8 +162,13 @@ public class RuleCodegen extends AbstractGenerator {
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
         if (hasRuleUnits) {
-            generateRuleUnits(errors, generatedFiles);
-            generateRuleUnitREST(generatedFiles);
+            generatedFiles.addAll(generateRuleUnits(errors));
+
+            if (context().hasRESTForGenerator(this)) {
+                generatedFiles.addAll(generateRuleUnitsREST());
+                generatedFiles.addAll(generateRuleUnitsDashboards());
+                generateRESTObjectMapper().ifPresent(generatedFiles::add);
+            }
 
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             ModelSourceClass modelSourceClass = kieModuleThing.createModelSourceClass(dummyReleaseId, modelBuilder);
@@ -255,13 +260,16 @@ public class RuleCodegen extends AbstractGenerator {
                 .collect(toList());
     }
 
-    private void generateRuleUnits(List<DroolsError> errors, List<GeneratedFile> generatedFiles) {
+    private List<GeneratedFile> generateRuleUnits(List<DroolsError> errors) {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
         RuleUnitHelper ruleUnitHelper = new RuleUnitHelper(context().getClassLoader(), hotReloadMode);
 
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             ruleUnitHelper.initRuleUnitHelper(ruleUnit.getRuleUnitDescription());
 
             // fixme: verify why this is broken?
+            // excluding this does not break any test: remove?
             //            if (!context().hasDI()) {
             //                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
             //            }
@@ -272,22 +280,59 @@ public class RuleCodegen extends AbstractGenerator {
             generatedFiles.add(ruleUnitInstance.generate());
             ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
 
-            // web/rest
+            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+                if (!queryEndpoint.validate()) {
+                    errors.add(queryEndpoint.getError());
+                    continue;
+                }
+                generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+            }
+
+        }
+
+        return generatedFiles;
+    }
+
+    private List<GeneratedFile> generateRuleUnitsREST() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
+
             generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
+
+            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+                if (!queryEndpoint.validate()) {
+                    // we added this in the previous phase(s)
+                    // errors.add(queryEndpoint.getError());
+                    continue;
+                }
+
+                generatedFiles.add(queryEndpoint.generate());
+            }
+
+        }
+
+        return generatedFiles;
+    }
+
+    private List<GeneratedFile> generateRuleUnitsDashboards() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
 
             for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
                 if (!queryEndpoint.validate()) {
-                    errors.add(queryEndpoint.getError());
+                    // we added this in the previous phase(s)
+                    // errors.add(queryEndpoint.getError());
+                    continue;
                 }
-                generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
 
-                // web/rest
-                generatedFiles.add(queryEndpoint.generate());
                 generatedFiles.addAll(generateQueryDashboard(queryEndpoint));
             }
-
         }
+
+        return generatedFiles;
     }
 
     private List<GeneratedFile> generatedQueryEventDriven(RuleUnitGenerator ruleUnit) {
@@ -299,16 +344,18 @@ public class RuleCodegen extends AbstractGenerator {
         return Collections.emptyList();
     }
 
-    private void generateRuleUnitREST(List<GeneratedFile> generatedFiles) {
+    private Optional<GeneratedFile> generateRESTObjectMapper() {
         if (context().hasRESTForGenerator(this)) {
             TemplatedGenerator generator = TemplatedGenerator.builder()
                     .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                     .build(context(), "KogitoObjectMapper");
 
-            generatedFiles.add(new GeneratedFile(REST_TYPE,
+            return Optional.of(new GeneratedFile(REST_TYPE,
                     generator.generatedFilePath(),
                     generator.compilationUnitOrThrow().toString()));
         }
+
+        return Optional.empty();
     }
 
     private List<GeneratedFile> generateRuleUnitDashboard(RuleUnitGenerator ruleUnit) {

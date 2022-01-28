@@ -67,7 +67,8 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     private final String targetCanonicalName;
     private final String targetTypeName;
     private RuleUnitConfig config;
-    private Collection<QueryModel> queries;
+    private List<QueryEndpointGenerator> queryEndpointGenerators;
+    private List<QueryEventDrivenExecutorGenerator> queryEventDrivenExecutorGenerators;
 
     public RuleUnitGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
@@ -103,17 +104,11 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public List<QueryEndpointGenerator> queries() {
-        return queries.stream()
-                .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEndpointGenerator(ruleUnit, query, context))
-                .collect(toList());
+        return queryEndpointGenerators;
     }
 
     public List<QueryEventDrivenExecutorGenerator> queryEventDrivenExecutors() {
-        return queries.stream()
-                .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEventDrivenExecutorGenerator(ruleUnit, query, context))
-                .collect(toList());
+        return queryEventDrivenExecutorGenerators;
     }
 
     @Override
@@ -225,7 +220,16 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public RuleUnitGenerator withQueries(Collection<QueryModel> queries) {
-        this.queries = queries;
+        this.queryEndpointGenerators = queries.stream()
+                .filter(query -> !query.hasParameters())
+                .map(query -> new QueryEndpointGenerator(ruleUnit, query, context))
+                .collect(toList());
+
+        this.queryEventDrivenExecutorGenerators = queries.stream()
+                .filter(query -> !query.hasParameters())
+                .map(query -> new QueryEventDrivenExecutorGenerator(ruleUnit, query, context))
+                .collect(toList());
+
         return this;
     }
 
