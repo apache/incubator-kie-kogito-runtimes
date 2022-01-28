@@ -21,8 +21,10 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.mockito.MockedStatic;
 
@@ -33,10 +35,12 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.provider.ExtensionProvider;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -215,5 +219,15 @@ class CloudEventUtilsTest {
             mockedStaticMapper.when(CloudEventUtils.Mapper::mapper).thenReturn(mockedMapper);
             runnable.run();
         }
+    }
+
+    @Test
+    void testGetAttribute() {
+        AbstractDataEvent event = new AbstractDataEvent("TestType", "source", null, "kogitoProcessinstanceId", "kogitoRootProcessId", "kogitoProcessId", "kogitoRootProcessId", "kogitoAddons") {
+        };
+        assertThat(CloudEventUtils.getAttribute("type", event)).isEqualTo("TestType");
+        assertThat(CloudEventUtils.getAttribute("source", event)).isInstanceOf(URI.class);
+        assertThat(CloudEventUtils.getAttribute("data", event)).isNull();
+        assertThat(CloudEventUtils.getAttribute("wrongValue", event)).isNull();
     }
 }
