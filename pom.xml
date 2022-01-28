@@ -16,7 +16,7 @@
   <packaging>pom</packaging>
 
   <name>Kogito Runtimes</name>
-  <description>Kogito Runtimes test</description>
+  <description>Kogito Runtimes</description>
 
 
   <url>http://kogito.kie.org</url>
