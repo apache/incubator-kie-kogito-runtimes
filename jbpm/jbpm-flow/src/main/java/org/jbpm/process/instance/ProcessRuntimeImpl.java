@@ -37,6 +37,7 @@ import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.instance.event.DefaultSignalManagerFactory;
+import org.jbpm.process.instance.event.KogitoProcessEventSupportImpl;
 import org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.impl.DataAssociation;
@@ -62,7 +63,6 @@ import org.kie.internal.process.CorrelationKey;
 import org.kie.internal.runtime.StatefulKnowledgeSession;
 import org.kie.internal.utils.CompositeClassLoader;
 import org.kie.kogito.Application;
-import org.kie.kogito.drools.core.event.KogitoProcessEventSupportImpl;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
@@ -208,7 +208,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
     }
 
     @Override
-    public ProcessInstance startProcessInstance(long l) {
+    public ProcessInstance startProcessInstance(String l) {
         throw new UnsupportedOperationException();
     }
 
@@ -280,17 +280,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
     }
 
     @Override
-    public ProcessInstance getProcessInstance(long l) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ProcessInstance getProcessInstance(long l, boolean b) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void abortProcessInstance(long l) {
+    public void abortProcessInstance(String l) {
         throw new UnsupportedOperationException();
     }
 
@@ -428,7 +418,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
     }
 
     @Override
-    public void signalEvent(String s, Object o, long l) {
+    public void signalEvent(String s, Object o, String l) {
         throw new UnsupportedOperationException();
     }
 

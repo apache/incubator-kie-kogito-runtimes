@@ -36,6 +36,8 @@ import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
+import org.jbpm.process.instance.InternalProcessRuntime;
+import org.jbpm.process.instance.KogitoProcessContextImpl;
 import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.context.exception.ExceptionScopeInstance;
 import org.jbpm.process.instance.context.variable.VariableScopeInstance;
@@ -52,7 +54,6 @@ import org.kie.api.runtime.KieRuntime;
 import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
 import org.kie.kogito.Model;
-import org.kie.kogito.drools.core.spi.KogitoProcessContextImpl;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.process.EventDescription;
@@ -150,7 +151,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
         workItem.setNodeId(getNodeId());
         workItem.setNodeInstance(this);
         workItem.setProcessInstance(getProcessInstance());
-        processWorkItemHandler(() -> ((InternalKogitoWorkItemManager) KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager())
+        processWorkItemHandler(() -> ((InternalKogitoWorkItemManager) InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager())
                 .internalExecuteWorkItem(workItem));
         if (!workItemNode.isWaitForCompletion()) {
             triggerCompleted();
@@ -217,7 +218,13 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             if (!metaParameters.contains(e.getKey()) && e.getValue() != null) {
                 resolvedParameters.put(e.getKey(), e.getValue());
                 if (e.getValue() instanceof String) {
-                    resolvedParameters.put(e.getKey(), resolveValue(e.getValue()));
+                    // we try first is a variable
+                    Object value = this.getVariable((String) e.getValue());
+                    if (value != null) {
+                        resolvedParameters.put(e.getKey(), value);
+                    } else {
+                        resolvedParameters.put(e.getKey(), resolveValue(e.getValue()));
+                    }
                 }
             }
         }
@@ -486,7 +493,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
             handlerException = (ProcessWorkItemHandlerException) errorVariable;
         }
         InternalKogitoWorkItemManager kogitoWorkItemManager =
-                (InternalKogitoWorkItemManager) KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager();
+                (InternalKogitoWorkItemManager) InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime()).getKogitoWorkItemManager();
         switch (handlerException.getStrategy()) {
             case ABORT:
                 kogitoWorkItemManager.abortWorkItem(getWorkItem().getStringId());
@@ -537,7 +544,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     protected KogitoProcessRuntime getKieRuntimeForSubprocess() {
-        return KogitoProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
+        return InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime());
     }
 
     @Override
