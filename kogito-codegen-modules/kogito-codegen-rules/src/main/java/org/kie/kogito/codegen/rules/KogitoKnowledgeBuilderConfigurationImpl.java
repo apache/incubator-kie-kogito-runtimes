@@ -16,8 +16,21 @@
 package org.kie.kogito.codegen.rules;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 public class KogitoKnowledgeBuilderConfigurationImpl extends KnowledgeBuilderConfigurationImpl {
+
+    public static KogitoKnowledgeBuilderConfigurationImpl fromContext(KogitoBuildContext buildContext) {
+        KogitoKnowledgeBuilderConfigurationImpl conf = new KogitoKnowledgeBuilderConfigurationImpl(buildContext.getClassLoader());
+        for (String prop : buildContext.getApplicationProperties()) {
+            if (prop.startsWith("drools")) {
+                conf.setProperty(prop, buildContext.getApplicationProperty(prop).get());
+            }
+        }
+        return conf;
+
+    }
+
 
     public KogitoKnowledgeBuilderConfigurationImpl() {
     }
