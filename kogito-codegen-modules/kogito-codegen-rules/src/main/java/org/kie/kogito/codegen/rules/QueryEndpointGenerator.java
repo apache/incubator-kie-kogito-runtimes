@@ -62,7 +62,8 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
         this.endpointName = toKebabCase(queryName);
     }
 
-    @Deprecated
+    @Deprecated // this should not be embedded in the _endpoint_ generator;
+                // the endpoint generator should _decorate_ this one, as it is not REST-specific
     public QueryGenerator getQueryGenerator() {
         return new QueryGenerator(context, ruleUnit, query, queryName);
     }

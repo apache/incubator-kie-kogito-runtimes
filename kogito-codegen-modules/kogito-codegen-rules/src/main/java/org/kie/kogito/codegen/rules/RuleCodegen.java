@@ -261,21 +261,6 @@ public class RuleCodegen extends AbstractGenerator {
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             ruleUnitHelper.initRuleUnitHelper(ruleUnit.getRuleUnitDescription());
 
-            for (QueryEndpointGenerator query : ruleUnit.queries()) {
-                GeneratedFile generatedQuerySource = query.getQueryGenerator().generate();
-                generatedFiles.add(generatedQuerySource);
-            }
-
-            for (QueryEndpointGenerator query : ruleUnit.queries()) {
-                if (!query.validate()) {
-                    errors.add(query.getError());
-                }
-
-                List<GeneratedFile> queryDashboard = generateQueryDashboard(query);
-                generatedFiles.addAll(queryDashboard);
-                generatedFiles.add(query.generate());
-            }
-
             if (!context().hasDI()) {
                 generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
             }
@@ -287,6 +272,17 @@ public class RuleCodegen extends AbstractGenerator {
             generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
             generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
             ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
+
+
+            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+                if (!queryEndpoint.validate()) {
+                    errors.add(queryEndpoint.getError());
+                }
+                generatedFiles.add(queryEndpoint.generate());
+                generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+                generatedFiles.addAll(generateQueryDashboard(queryEndpoint));
+            }
+
         }
     }
 
