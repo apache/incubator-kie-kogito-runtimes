@@ -261,25 +261,29 @@ public class RuleCodegen extends AbstractGenerator {
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             ruleUnitHelper.initRuleUnitHelper(ruleUnit.getRuleUnitDescription());
 
-            if (!context().hasDI()) {
-                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
-            }
+            // fixme: verify why this is broken?
+            //            if (!context().hasDI()) {
+            //                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
+            //            }
 
             RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper);
 
             generatedFiles.add(ruleUnit.generate());
             generatedFiles.add(ruleUnitInstance.generate());
-            generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
-            generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
             ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
 
+            // web/rest
+            generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
+            generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
 
             for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
                 if (!queryEndpoint.validate()) {
                     errors.add(queryEndpoint.getError());
                 }
-                generatedFiles.add(queryEndpoint.generate());
                 generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+
+                // web/rest
+                generatedFiles.add(queryEndpoint.generate());
                 generatedFiles.addAll(generateQueryDashboard(queryEndpoint));
             }
 
