@@ -163,12 +163,13 @@ public class RuleCodegen extends AbstractGenerator {
 
         if (hasRuleUnits) {
             generatedFiles.addAll(generateRuleUnits(errors));
-
-            //            if (context().hasRESTForGenerator(this)) {
-            generatedFiles.addAll(generateRuleUnitsREST());
             generatedFiles.addAll(generateRuleUnitsDashboards());
-            generateRESTObjectMapper().ifPresent(generatedFiles::add);
-            //            }
+
+            if (context().hasRESTForGenerator(this)) {
+                generatedFiles.addAll(generateRuleUnitsREST());
+                generateRESTObjectMapper().ifPresent(generatedFiles::add);
+                generatedFiles.addAll(generateQueryDashboards());
+            }
 
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             ModelSourceClass modelSourceClass = kieModuleThing.createModelSourceClass(dummyReleaseId, modelBuilder);
@@ -320,7 +321,15 @@ public class RuleCodegen extends AbstractGenerator {
 
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
+        }
 
+        return generatedFiles;
+    }
+
+    private List<GeneratedFile> generateQueryDashboards() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
             for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
                 if (!queryEndpoint.validate()) {
                     // we added this in the previous phase(s)
@@ -334,6 +343,7 @@ public class RuleCodegen extends AbstractGenerator {
 
         return generatedFiles;
     }
+
 
     private List<GeneratedFile> generatedQueryEventDriven(RuleUnitGenerator ruleUnit) {
         if (context().getAddonsConfig().useEventDrivenRules()) {
