@@ -164,11 +164,11 @@ public class RuleCodegen extends AbstractGenerator {
         if (hasRuleUnits) {
             generatedFiles.addAll(generateRuleUnits(errors));
 
-            if (context().hasRESTForGenerator(this)) {
-                generatedFiles.addAll(generateRuleUnitsREST());
-                generatedFiles.addAll(generateRuleUnitsDashboards());
-                generateRESTObjectMapper().ifPresent(generatedFiles::add);
-            }
+            //            if (context().hasRESTForGenerator(this)) {
+            generatedFiles.addAll(generateRuleUnitsREST());
+            generatedFiles.addAll(generateRuleUnitsDashboards());
+            generateRESTObjectMapper().ifPresent(generatedFiles::add);
+            //            }
 
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             ModelSourceClass modelSourceClass = kieModuleThing.createModelSourceClass(dummyReleaseId, modelBuilder);
