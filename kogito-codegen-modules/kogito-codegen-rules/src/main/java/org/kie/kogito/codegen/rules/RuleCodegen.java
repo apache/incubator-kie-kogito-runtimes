@@ -19,12 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
@@ -42,7 +40,6 @@ import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
@@ -153,25 +150,25 @@ public class RuleCodegen extends AbstractGenerator {
 
         List<GeneratedFile> generatedFiles = new ArrayList<>(generateModels(modelBuilder));
 
-        List<DroolsError> errors = new ArrayList<>();
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
         if (hasRuleUnits) {
-            List<QueryEndpointGenerator> validQueries = validateQueries(errors);
-            RuleDashboardCodegen dashboards = new RuleDashboardCodegen(context(), ruleUnitGenerators);
+            RuleUnitMainCodegen ruleUnitCodegen = new RuleUnitMainCodegen(context(), ruleUnitGenerators, hotReloadMode);
+            generatedFiles.addAll(ruleUnitCodegen.generate());
 
-            generatedFiles.addAll(generateRuleUnits());
-            generatedFiles.addAll(generateRuleUnitQueries(validQueries));
+            RuleUnitDashboardCodegen dashboardCodegen = new RuleUnitDashboardCodegen(context(), ruleUnitGenerators);
+            generatedFiles.addAll(dashboardCodegen.generate());
 
-            generatedFiles.addAll(dashboards.generateForRuleUnits());
+            Collection<QueryEndpointGenerator> validQueries = ruleUnitCodegen.validQueries();
 
+            RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), ruleUnitGenerators, validQueries);
             if (context().hasRESTForGenerator(this)) {
-                generatedFiles.addAll(generateRuleUnitsQueriesEventDriven(/* should use validQueries */));
-                generatedFiles.addAll(generateRuleUnitQueriesREST(validQueries));
-                generatedFiles.addAll(dashboards.generateForQueries(validQueries));
-                generateRESTObjectMapper().ifPresent(generatedFiles::add);
+                generatedFiles.addAll(ruleUnitExtendedCodegen.generate());
             }
 
+            if (!ruleUnitCodegen.errors().isEmpty()) {
+                throw new RuleCodegenError(ruleUnitCodegen.errors());
+            }
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             ModelSourceClass modelSourceClass = kieModuleThing.createModelSourceClass(dummyReleaseId, modelBuilder);
             ProjectRuntimeGenerator projectRuntimeGenerator = kieModuleThing.createProjectRuntimeGenerator(modelSourceClass);
@@ -183,25 +180,7 @@ public class RuleCodegen extends AbstractGenerator {
             throw new IllegalStateException("Found DRL files using legacy API, add org.kie.kogito:kogito-legacy-api dependency to enable it");
         }
 
-        if (!errors.isEmpty()) {
-            throw new RuleCodegenError(errors);
-        }
-
         return generatedFiles;
-    }
-
-    private List<QueryEndpointGenerator> validateQueries(List<DroolsError> errors) {
-        List<QueryEndpointGenerator> validQueries = new ArrayList<>();
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
-                if (queryEndpoint.validate()) {
-                    validQueries.add(queryEndpoint);
-                } else {
-                    errors.add(queryEndpoint.getError());
-                }
-            }
-        }
-        return validQueries;
     }
 
     private void addResource(CompositeKnowledgeBuilder batch, Resource resource) {
@@ -276,81 +255,7 @@ public class RuleCodegen extends AbstractGenerator {
                 .collect(toList());
     }
 
-    private List<GeneratedFile> generateRuleUnits() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        RuleUnitHelper ruleUnitHelper = new RuleUnitHelper(context().getClassLoader(), hotReloadMode);
-
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            ruleUnitHelper.initRuleUnitHelper(ruleUnit.getRuleUnitDescription());
-
-            // fixme: verify why this is broken?
-            // excluding this does not break any test: remove?
-            //            if (!context().hasDI()) {
-            //                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
-            //            }
-
-            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper);
-
-            generatedFiles.add(ruleUnit.generate());
-            generatedFiles.add(ruleUnitInstance.generate());
-            ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
-
-        }
-
-        return generatedFiles;
-    }
-
-    private Collection<GeneratedFile> generateRuleUnitQueries(Collection<QueryEndpointGenerator> validQueries) {
-        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
-        for (QueryEndpointGenerator queryEndpoint : validQueries) {
-            generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
-        }
-        return generatedFiles;
-    }
-
-    private Collection<? extends GeneratedFile> generateRuleUnitQueriesREST(Collection<QueryEndpointGenerator> validQueries) {
-        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
-        for (QueryEndpointGenerator queryEndpoint : validQueries) {
-            generatedFiles.add(queryEndpoint.generate());
-        }
-        return generatedFiles;
-    }
-
-    private List<GeneratedFile> generateRuleUnitsQueriesEventDriven() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
-        }
-
-        return generatedFiles;
-    }
-
-    private List<GeneratedFile> generatedQueryEventDriven(RuleUnitGenerator ruleUnit) {
-        if (context().getAddonsConfig().useEventDrivenRules()) {
-            return ruleUnit.queryEventDrivenExecutors().stream()
-                    .map(QueryEventDrivenExecutorGenerator::generate)
-                    .collect(Collectors.toUnmodifiableList());
-        }
-        return Collections.emptyList();
-    }
-
-    private Optional<GeneratedFile> generateRESTObjectMapper() {
-        if (context().hasRESTForGenerator(this)) {
-            TemplatedGenerator generator = TemplatedGenerator.builder()
-                    .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
-                    .build(context(), "KogitoObjectMapper");
-
-            return Optional.of(new GeneratedFile(REST_TYPE,
-                    generator.generatedFilePath(),
-                    generator.compilationUnitOrThrow().toString()));
-        }
-
-        return Optional.empty();
-    }
-
-    public RuleCodegen withHotReloadMode() {
+    public RuleCodegen withHotReloadMode() { // fixme this is currently only used in test cases. Drop?
         this.hotReloadMode = true;
         return this;
     }

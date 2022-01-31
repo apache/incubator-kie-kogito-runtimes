@@ -1,0 +1,90 @@
+/*
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kie.kogito.codegen.rules;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.drools.compiler.compiler.DroolsError;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
+public class RuleUnitMainCodegen {
+    private final KogitoBuildContext context;
+    private final Collection<RuleUnitGenerator> ruleUnitGenerators;
+    private final boolean hotReloadMode;
+    private final List<QueryEndpointGenerator> validQueries;
+    private List<DroolsError> errors = new ArrayList<>();
+
+    public RuleUnitMainCodegen(KogitoBuildContext context, Collection<RuleUnitGenerator> ruleUnitGenerators, boolean hotReloadMode) {
+        this.context = context;
+        this.ruleUnitGenerators = ruleUnitGenerators;
+        this.hotReloadMode = hotReloadMode;
+        this.validQueries = validateQueries();
+    }
+
+    Collection<QueryEndpointGenerator> validQueries() {
+        return validQueries;
+    }
+
+    Collection<DroolsError> errors() {
+        return errors;
+    }
+
+    Collection<GeneratedFile> generate() {
+        List<GeneratedFile> generatedFiles = new ArrayList<>();
+
+        RuleUnitHelper ruleUnitHelper = new RuleUnitHelper(context.getClassLoader(), hotReloadMode);
+
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
+            ruleUnitHelper.initRuleUnitHelper(ruleUnit.getRuleUnitDescription());
+
+            // fixme: verify why this is broken?
+            // excluding this does not break any test: remove?
+            //            if (!context().hasDI()) {
+            //                generatedFiles.add(new RuleUnitDTOSourceClass(ruleUnit.getRuleUnitDescription(), ruleUnitHelper).generate());
+            //            }
+
+            RuleUnitInstanceGenerator ruleUnitInstance = ruleUnit.instance(ruleUnitHelper);
+
+            generatedFiles.add(ruleUnit.generate());
+            generatedFiles.add(ruleUnitInstance.generate());
+            ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
+
+        }
+
+        for (QueryEndpointGenerator queryEndpoint : validQueries) {
+            generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+        }
+        return generatedFiles;
+    }
+
+    private List<QueryEndpointGenerator> validateQueries() {
+        List<QueryEndpointGenerator> validQueries = new ArrayList<>();
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
+            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+                if (queryEndpoint.validate()) {
+                    validQueries.add(queryEndpoint);
+                } else {
+                    errors.add(queryEndpoint.getError());
+                }
+            }
+        }
+        return validQueries;
+    }
+
+}

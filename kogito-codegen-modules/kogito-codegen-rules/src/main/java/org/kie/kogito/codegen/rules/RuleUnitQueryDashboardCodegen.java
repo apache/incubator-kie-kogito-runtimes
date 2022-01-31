@@ -16,38 +16,28 @@
 package org.kie.kogito.codegen.rules;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 
-import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
-import org.kie.kogito.grafana.GrafanaConfigurationWriter;
+import org.kie.kogito.*;
+import org.kie.kogito.codegen.api.*;
+import org.kie.kogito.codegen.api.context.*;
+import org.kie.kogito.codegen.core.*;
+import org.kie.kogito.grafana.*;
 
-public class RuleDashboardCodegen {
+public class RuleUnitQueryDashboardCodegen {
 
     private static final String operationalDashboardDrlTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
 
     private final KogitoBuildContext context;
-    private final List<RuleUnitGenerator> ruleUnitGenerators;
+    private final Collection<RuleUnitGenerator> ruleUnitGenerators;
 
-    public RuleDashboardCodegen(KogitoBuildContext context, List<RuleUnitGenerator> ruleUnitGenerators) {
+    public RuleUnitQueryDashboardCodegen(KogitoBuildContext context, Collection<RuleUnitGenerator> ruleUnitGenerators) {
         this.context = context;
         this.ruleUnitGenerators = ruleUnitGenerators;
     }
 
-    Collection<GeneratedFile> generateForRuleUnits() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
-        }
-
-        return generatedFiles;
-    }
-
-    Collection<GeneratedFile> generateForQueries(Collection<QueryEndpointGenerator> validQueries) {
+    Collection<GeneratedFile> generate(Collection<QueryEndpointGenerator> validQueries) {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
         for (QueryEndpointGenerator queryEndpoint : validQueries) {
@@ -55,20 +45,6 @@ public class RuleDashboardCodegen {
         }
 
         return generatedFiles;
-    }
-
-    private List<GeneratedFile> generateRuleUnitDashboard(RuleUnitGenerator ruleUnit) {
-        Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
-                domainDashboardDrlTemplate,
-                ruleUnit.typeName(),
-                context.getPropertiesMap(),
-                ruleUnit.typeName(),
-                context.getGAV().orElse(KogitoGAV.EMPTY_GAV),
-                context.getAddonsConfig().useTracing());
-        String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context.getGAV(), ruleUnit.typeName());
-        return domainDashboard.stream()
-                .flatMap(dashboard -> DashboardGeneratedFileUtils.domain(dashboard, dashboardName + ".json").stream())
-                .collect(Collectors.toUnmodifiableList());
     }
 
     private List<GeneratedFile> generateQueryDashboard(QueryEndpointGenerator query) {
