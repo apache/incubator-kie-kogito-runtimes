@@ -37,7 +37,6 @@ import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.CompositeKnowledgeBuilder;
 import org.kie.internal.builder.DecisionTableConfiguration;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -45,10 +44,8 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.AbstractGenerator;
-import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.rules.config.NamedRuleUnitConfig;
 import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
-import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.util.maven.support.ReleaseIdImpl;
 import org.slf4j.Logger;
@@ -88,8 +85,6 @@ public class RuleCodegen extends AbstractGenerator {
         return new RuleCodegen(context, resources);
     }
 
-    private static final String operationalDashboardDrlTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
-    private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
     private final Collection<Resource> resources;
     private final List<RuleUnitGenerator> ruleUnitGenerators = new ArrayList<>();
 
@@ -162,13 +157,19 @@ public class RuleCodegen extends AbstractGenerator {
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
         if (hasRuleUnits) {
-            generatedFiles.addAll(generateRuleUnits(errors));
-            generatedFiles.addAll(generateRuleUnitsDashboards());
+            List<QueryEndpointGenerator> validQueries = validateQueries(errors);
+            RuleDashboardCodegen dashboards = new RuleDashboardCodegen(context(), ruleUnitGenerators);
+
+            generatedFiles.addAll(generateRuleUnits());
+            generatedFiles.addAll(generateRuleUnitQueries(validQueries));
+
+            generatedFiles.addAll(dashboards.generateForRuleUnits());
 
             if (context().hasRESTForGenerator(this)) {
-                generatedFiles.addAll(generateRuleUnitsREST());
+                generatedFiles.addAll(generateRuleUnitsQueriesEventDriven(/* should use validQueries */));
+                generatedFiles.addAll(generateRuleUnitQueriesREST(validQueries));
+                generatedFiles.addAll(dashboards.generateForQueries(validQueries));
                 generateRESTObjectMapper().ifPresent(generatedFiles::add);
-                generatedFiles.addAll(generateQueryDashboards());
             }
 
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
@@ -187,6 +188,20 @@ public class RuleCodegen extends AbstractGenerator {
         }
 
         return generatedFiles;
+    }
+
+    private List<QueryEndpointGenerator> validateQueries(List<DroolsError> errors) {
+        List<QueryEndpointGenerator> validQueries = new ArrayList<>();
+        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
+            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+                if (queryEndpoint.validate()) {
+                    validQueries.add(queryEndpoint);
+                } else {
+                    errors.add(queryEndpoint.getError());
+                }
+            }
+        }
+        return validQueries;
     }
 
     private void addResource(CompositeKnowledgeBuilder batch, Resource resource) {
@@ -261,7 +276,7 @@ public class RuleCodegen extends AbstractGenerator {
                 .collect(toList());
     }
 
-    private List<GeneratedFile> generateRuleUnits(List<DroolsError> errors) {
+    private List<GeneratedFile> generateRuleUnits() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
         RuleUnitHelper ruleUnitHelper = new RuleUnitHelper(context().getClassLoader(), hotReloadMode);
@@ -281,64 +296,32 @@ public class RuleCodegen extends AbstractGenerator {
             generatedFiles.add(ruleUnitInstance.generate());
             ruleUnit.pojo(ruleUnitHelper).ifPresent(p -> generatedFiles.add(p.generate()));
 
-            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
-                if (!queryEndpoint.validate()) {
-                    errors.add(queryEndpoint.getError());
-                    continue;
-                }
-                generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
-            }
-
         }
 
         return generatedFiles;
     }
 
-    private List<GeneratedFile> generateRuleUnitsREST() {
+    private Collection<GeneratedFile> generateRuleUnitQueries(Collection<QueryEndpointGenerator> validQueries) {
+        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
+        for (QueryEndpointGenerator queryEndpoint : validQueries) {
+            generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+        }
+        return generatedFiles;
+    }
+
+    private Collection<? extends GeneratedFile> generateRuleUnitQueriesREST(Collection<QueryEndpointGenerator> validQueries) {
+        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
+        for (QueryEndpointGenerator queryEndpoint : validQueries) {
+            generatedFiles.add(queryEndpoint.generate());
+        }
+        return generatedFiles;
+    }
+
+    private List<GeneratedFile> generateRuleUnitsQueriesEventDriven() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-
             generatedFiles.addAll(generatedQueryEventDriven(ruleUnit));
-
-            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
-                if (!queryEndpoint.validate()) {
-                    // we added this in the previous phase(s)
-                    // errors.add(queryEndpoint.getError());
-                    continue;
-                }
-
-                generatedFiles.add(queryEndpoint.generate());
-            }
-
-        }
-
-        return generatedFiles;
-    }
-
-    private List<GeneratedFile> generateRuleUnitsDashboards() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            generatedFiles.addAll(generateRuleUnitDashboard(ruleUnit));
-        }
-
-        return generatedFiles;
-    }
-
-    private List<GeneratedFile> generateQueryDashboards() {
-        List<GeneratedFile> generatedFiles = new ArrayList<>();
-
-        for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
-                if (!queryEndpoint.validate()) {
-                    // we added this in the previous phase(s)
-                    // errors.add(queryEndpoint.getError());
-                    continue;
-                }
-
-                generatedFiles.addAll(generateQueryDashboard(queryEndpoint));
-            }
         }
 
         return generatedFiles;
@@ -365,38 +348,6 @@ public class RuleCodegen extends AbstractGenerator {
         }
 
         return Optional.empty();
-    }
-
-    private List<GeneratedFile> generateRuleUnitDashboard(RuleUnitGenerator ruleUnit) {
-        Optional<String> domainDashboard = GrafanaConfigurationWriter.generateDomainSpecificDrlDashboard(
-                domainDashboardDrlTemplate,
-                ruleUnit.typeName(),
-                context().getPropertiesMap(),
-                ruleUnit.typeName(),
-                context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
-                context().getAddonsConfig().useTracing());
-        String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), ruleUnit.typeName());
-        return domainDashboard.stream().flatMap(dashboard -> DashboardGeneratedFileUtils.domain(dashboard, dashboardName + ".json").stream()).collect(Collectors.toUnmodifiableList());
-    }
-
-    private List<GeneratedFile> generateQueryDashboard(QueryEndpointGenerator query) {
-        if (context().hasRESTForGenerator(this)) {
-            if (context().getAddonsConfig().usePrometheusMonitoring()) {
-                String dashboardName = GrafanaConfigurationWriter.buildDashboardName(context().getGAV(), query.getEndpointName());
-                Optional<String> operationalDashboard = GrafanaConfigurationWriter.generateOperationalDashboard(
-                        operationalDashboardDrlTemplate,
-                        query.getEndpointName(),
-                        context().getPropertiesMap(),
-                        query.getEndpointName(),
-                        context().getGAV().orElse(KogitoGAV.EMPTY_GAV),
-                        context().getAddonsConfig().useTracing());
-                return operationalDashboard.stream()
-                        .flatMap(dashboard -> DashboardGeneratedFileUtils.operational(dashboard, dashboardName + ".json").stream())
-                        .collect(Collectors.toUnmodifiableList());
-            }
-        }
-
-        return Collections.emptyList();
     }
 
     public RuleCodegen withHotReloadMode() {
