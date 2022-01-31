@@ -61,7 +61,7 @@ The sections below describe in detail the current status of the supported featur
 | asyncapi      | :construction: | |
 | graphql       | :construction: | |
 | odata         | :construction: | |
-| custom        | :construction: | |
+| custom        | :full_moon: | |
 
 Additionally, even though they are not defined in the specification, Kogito also supports `sysout` and `java` functions.
 
