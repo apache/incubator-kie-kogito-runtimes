@@ -344,7 +344,6 @@ public class RuleCodegen extends AbstractGenerator {
         return generatedFiles;
     }
 
-
     private List<GeneratedFile> generatedQueryEventDriven(RuleUnitGenerator ruleUnit) {
         if (context().getAddonsConfig().useEventDrivenRules()) {
             return ruleUnit.queryEventDrivenExecutors().stream()
