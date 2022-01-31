@@ -21,7 +21,7 @@ import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class AbstractProcessDataEvent<T> extends AbstractDataEvent<T> {
+public class AbstractProcessDataEvent<T> extends AbstractDataEvent<T> {
 
     @JsonProperty(CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)

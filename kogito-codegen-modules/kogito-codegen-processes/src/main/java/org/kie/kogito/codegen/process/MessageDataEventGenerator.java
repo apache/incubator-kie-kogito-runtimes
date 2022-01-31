@@ -33,8 +33,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public class MessageDataEventGenerator {
 
-    private final KogitoBuildContext context;
-    private final WorkflowProcess process;
     private final String resourceClazzName;
     private final String processId;
     private final String processName;
@@ -45,14 +43,13 @@ public class MessageDataEventGenerator {
             KogitoBuildContext context,
             WorkflowProcess process,
             TriggerMetaData trigger) {
-        this.context = context;
-        this.process = process;
         this.trigger = trigger;
         String messageDataPackageName = process.getPackageName();
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
         String classPrefix = StringUtils.ucFirst(processName);
-        this.resourceClazzName = classPrefix + "MessageDataEvent_" + trigger.getOwnerId();
+        //this.resourceClazzName = classPrefix + "MessageDataEvent_" + trigger.getOwnerId();
+        this.resourceClazzName = "Blah";
         this.generator = TemplatedGenerator.builder()
                 .withPackageName(messageDataPackageName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)

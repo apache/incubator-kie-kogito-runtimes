@@ -33,7 +33,7 @@ import org.kie.kogito.services.event.EventConsumerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMessageConsumer<M extends Model, D, T extends AbstractProcessDataEvent<D>> {
+public abstract class AbstractMessageConsumer<M extends Model, D> {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
@@ -54,7 +54,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataEventConverter,
-            Class<T> cloudEventConverter,
+            Class<?> cloudEventConverter,
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
@@ -68,7 +68,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
             EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataEventClass,
-            Class<T> cloudEventClass,
+            Class<?> cloudEventClass,
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
@@ -78,14 +78,15 @@ public abstract class AbstractMessageConsumer<M extends Model, D, T extends Abst
         this.trigger = trigger;
         this.eventConsumer = eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents);
         if (useCloudEvents) {
-            eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(eventUnmarshaller, cloudEventClass, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeCloud,
+                    new SubscriptionInfo<>(eventUnmarshaller, new AbstractProcessDataEvent<D>().getClass(), Optional.of(trigger)));
         } else {
             eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, Optional.of(trigger)));
         }
         logger.info("Consumer for {} started", trigger);
     }
 
-    protected CompletionStage<?> consumeCloud(T payload) {
+    protected CompletionStage<?> consumeCloud(AbstractProcessDataEvent<D> payload) {
         return consume(payload);
     }
 

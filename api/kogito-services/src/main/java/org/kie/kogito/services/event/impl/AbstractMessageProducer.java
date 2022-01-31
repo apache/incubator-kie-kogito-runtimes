@@ -23,7 +23,7 @@ import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEvent<D>> {
+public abstract class AbstractMessageProducer<D> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractMessageProducer.class);
 
@@ -57,5 +57,17 @@ public abstract class AbstractMessageProducer<D, T extends AbstractProcessDataEv
                 });
     }
 
-    protected abstract T dataEventTypeConstructor(D e, KogitoProcessInstance pi, String trigger);
+    public AbstractProcessDataEvent<D> dataEventTypeConstructor(D eventPayload, KogitoProcessInstance pi, String trigger) {
+        return new AbstractProcessDataEvent<>(trigger,
+                "",
+                eventPayload,
+                pi.getStringId(),
+                pi.getParentProcessInstanceStringId(),
+                pi.getRootProcessInstanceId(),
+                pi.getProcessId(),
+                pi.getRootProcessId(),
+                String.valueOf(pi.getState()),
+                null,
+                pi.getReferenceId());
+    }
 }

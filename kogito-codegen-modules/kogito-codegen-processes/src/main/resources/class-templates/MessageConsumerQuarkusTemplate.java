@@ -27,11 +27,12 @@ import org.kie.kogito.event.KogitoEventExecutor;
 import org.kie.kogito.event.impl.DefaultEventConsumerFactory;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 
 
 @io.quarkus.runtime.Startup
-public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $DataType$, $DataEventType$> {
+public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $DataType$> {
 
     @Inject
     Application application;
@@ -59,17 +60,16 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     @javax.annotation.PostConstruct
     void init() {
         init(application,
-                process,
-                "$Trigger$",
-                new DefaultEventConsumerFactory(),
-                eventReceiver,
-                $DataType$.class,
-                $DataEventType$.class,
-                configBean.useCloudEvents(),
-                processService,
-                executorService,
-                eventUnmarshaller);
+             process,
+             "$Trigger$",
+             new DefaultEventConsumerFactory(),
+             eventReceiver,
+             $DataType$.class,
+             AbstractProcessDataEvent.class, // AbstractProcessDataEvent.class
+             configBean.useCloudEvents(),
+             processService,
+             executorService,
+             eventUnmarshaller);
 
     }
-
 }
