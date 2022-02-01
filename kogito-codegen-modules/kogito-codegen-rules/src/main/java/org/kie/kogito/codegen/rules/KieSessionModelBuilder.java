@@ -35,9 +35,9 @@ public class KieSessionModelBuilder {
     private final Map<String, List<String>> modelByKBase;
     private KogitoBuildContext context;
 
-    public KieSessionModelBuilder(KogitoBuildContext context, Map<String, KieBaseModel> kieBaseModels, Collection<KogitoPackageSources> packageSources) {
+    public KieSessionModelBuilder(KogitoBuildContext context, Collection<KogitoPackageSources> packageSources) {
         this.context = context;
-        this.kieBaseModels = kieBaseModels;
+        this.kieBaseModels = KieModuleModelWrapper.fromResourcePaths(context.getAppPaths().getResourcePaths()).kieBaseModels();
         this.modelByKBase = getModelByKBase(packageSources, this.kieBaseModels);
 
     }

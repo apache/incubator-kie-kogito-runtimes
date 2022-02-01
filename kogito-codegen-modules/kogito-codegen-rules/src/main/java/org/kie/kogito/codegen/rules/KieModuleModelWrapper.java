@@ -15,13 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.ruleunits.api.conf.ClockType;
 import org.drools.ruleunits.api.conf.EventProcessingType;
@@ -33,23 +26,28 @@ import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.conf.SessionsPoolOption;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.rules.RuleUnitConfig;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.OptionalInt;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
-public class KieModuleThing {
+public class KieModuleModelWrapper {
     private KieModuleModel kieModuleModel;
-    private final KogitoBuildContext context;
 
-    public KieModuleThing(KogitoBuildContext context, KieModuleModel kieModuleModel) {
-        this.context = context;
+    public KieModuleModelWrapper(KieModuleModel kieModuleModel) {
         this.kieModuleModel = kieModuleModel;
         setDefaultsforEmptyKieModule(kieModuleModel);
     }
 
-    static KieModuleThing fromContext(KogitoBuildContext context) {
-        return new KieModuleThing(context, lookupKieModuleModel(context.getAppPaths().getResourcePaths()));
+    static KieModuleModelWrapper fromResourcePaths(Path[] resourcePaths) {
+        return new KieModuleModelWrapper(lookupKieModuleModel(resourcePaths));
     }
 
     private static KieModuleModel lookupKieModuleModel(Path[] resourcePaths) {
@@ -67,15 +65,7 @@ public class KieModuleThing {
         return new KieModuleModelImpl();
     }
 
-    private String ruleUnit2KieBaseName(String ruleUnit) {
-        return ruleUnit.replace('.', '$') + "KieBase";
-    }
-
-    private String ruleUnit2KieSessionName(String ruleUnit) {
-        return ruleUnit.replace('.', '$') + "KieSession";
-    }
-
-    public Map<String, KieBaseModel> kieBaseModels() {
+    Map<String, KieBaseModel> kieBaseModels() {
         return kieModuleModel.getKieBaseModels();
     }
 
@@ -106,6 +96,14 @@ public class KieModuleThing {
         if (clockType == ClockType.PSEUDO) {
             unitKieSessionModel.setClockType(ClockTypeOption.PSEUDO);
         }
+    }
+
+    private String ruleUnit2KieBaseName(String ruleUnit) {
+        return ruleUnit.replace('.', '$') + "KieBase";
+    }
+
+    private String ruleUnit2KieSessionName(String ruleUnit) {
+        return ruleUnit.replace('.', '$') + "KieSession";
     }
 
 }

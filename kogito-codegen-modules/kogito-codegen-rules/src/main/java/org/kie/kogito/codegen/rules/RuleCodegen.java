@@ -101,7 +101,6 @@ public class RuleCodegen extends AbstractGenerator {
 
     @Override
     protected Collection<GeneratedFile> internalGenerate() {
-        KieModuleThing kieModuleThing = KieModuleThing.fromContext(context());
 
         DroolsModelBuilder droolsModelBuilder =
                 new DroolsModelBuilder(
@@ -114,11 +113,12 @@ public class RuleCodegen extends AbstractGenerator {
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
         if (hasRuleUnits) {
+            KieModuleModelWrapper kieModuleModelWrapper = KieModuleModelWrapper.fromResourcePaths(context().getAppPaths().getResourcePaths());
             // fixme it looks like this config is never really propagated (i.e. written anywhere)
             droolsModelBuilder.packageSources()
                     .stream()
                     .flatMap(pkgSrc -> pkgSrc.getRuleUnits().stream())
-                    .forEach(ru -> kieModuleThing.addRuleUnitConfig(ru, configs.get(ru.getCanonicalName())));
+                    .forEach(ru -> kieModuleModelWrapper.addRuleUnitConfig(ru, configs.get(ru.getCanonicalName())));
 
             RuleUnitMainCodegen ruleUnitCodegen = new RuleUnitMainCodegen(context(), ruleUnitGenerators, hotReloadMode);
             generatedFiles.addAll(ruleUnitCodegen.generate());
@@ -138,7 +138,7 @@ public class RuleCodegen extends AbstractGenerator {
             }
         } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
             KieSessionModelBuilder kieSessionModelBuilder =
-                    new KieSessionModelBuilder(context(), kieModuleThing.kieBaseModels(), droolsModelBuilder.packageSources());
+                    new KieSessionModelBuilder(context(), droolsModelBuilder.packageSources());
             generatedFiles.addAll(kieSessionModelBuilder.generate());
 
         } else if (hasRuleFiles()) { // this additional check is necessary because also properties or java files can be loaded
