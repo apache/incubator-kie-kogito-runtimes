@@ -17,12 +17,13 @@ package org.kie.kogito.expr.jsonpath;
 
 import org.kie.kogito.process.workitems.impl.expr.Expression;
 import org.kie.kogito.process.workitems.impl.expr.ExpressionHandler;
+import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 
 public class JsonPathExpressionHandler implements ExpressionHandler {
 
     @Override
     public Expression get(String expr) {
-        return new JsonPathExpression(expr);
+        return new JsonPathExpression(ExpressionHandlerUtils.trimExpr(expr));
     }
 
     @Override

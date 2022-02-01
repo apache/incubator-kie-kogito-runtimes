@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.wiring.statics;
+package org.kie.kogito.secret;
 
-import java.util.function.Supplier;
+import javax.annotation.PostConstruct;
 
-import org.kie.api.internal.utils.ServiceRegistry;
+import org.kie.kogito.serverless.workflow.utils.SecretResolverFactory;
 
-public class KogitoStaticServiceRegistrySupplier implements Supplier<ServiceRegistry> {
+import io.quarkus.runtime.Startup;
 
-    @Override
-    public ServiceRegistry get() {
-        return KogitoStaticServiceRegistry.INSTANCE;
+@Startup
+public class QuarkusSecretResolverRegister {
+
+    @PostConstruct
+    void init() {
+        SecretResolverFactory.setSecretResolver(new QuarkusSecretResolver());
     }
+
 }

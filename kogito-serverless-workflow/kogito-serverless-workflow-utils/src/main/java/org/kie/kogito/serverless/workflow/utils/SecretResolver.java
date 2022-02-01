@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.wiring.statics;
+package org.kie.kogito.serverless.workflow.utils;
 
-import org.drools.wiring.statics.StaticServiceRegistry;
+import java.util.function.Function;
 
-public class KogitoStaticServiceRegistry extends StaticServiceRegistry {
-
-    static final KogitoStaticServiceRegistry INSTANCE = new KogitoStaticServiceRegistry();
-
-    protected void wireServices() {
-        super.wireServices();
-
-        registerService("org.drools.ruleunits.api.DataSource$Factory", "org.kie.kogito.drools.core.data.DataSourceFactoryImpl", false);
-    }
+public interface SecretResolver extends Function<String, String> {
 }

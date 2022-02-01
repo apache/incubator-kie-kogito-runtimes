@@ -7,7 +7,7 @@ pipeline {
         label 'kie-rhel7 && kie-mem16g'
     }
     tools {
-        maven 'kie-maven-3.6.3'
+        maven 'kie-maven-3.8.1'
         jdk 'kie-jdk11'
     }
     options {
@@ -34,6 +34,9 @@ pipeline {
                 script {
                     getMavenCommand()
                         .withProfiles(['run-code-coverage'])
+                        // `-Dquarkus.bootstrap.effective-model-builder` is a temporary fix due to quarkus resolver on tests
+                        // https://github.com/quarkusio/quarkus/issues/23205
+                        .withProperty('quarkus.bootstrap.effective-model-builder', true)
                         .run('clean install')
                 }
             }
