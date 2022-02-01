@@ -67,8 +67,6 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     private final String targetCanonicalName;
     private final String targetTypeName;
     private RuleUnitConfig config;
-    private List<QueryEndpointGenerator> queryEndpointGenerators;
-    private List<QueryEventDrivenExecutorGenerator> queryEventDrivenExecutorGenerators;
     private List<QueryGenerator> queryGenerators;
 
     public RuleUnitGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, String generatedSourceFile) {
@@ -220,14 +218,6 @@ public class RuleUnitGenerator implements RuleFileGenerator {
         this.queryGenerators = queries.stream()
                 .filter(query -> !query.hasParameters())
                 .map(query -> new QueryGenerator(context, ruleUnit, query))
-                .collect(toList());
-
-        this.queryEndpointGenerators = queryGenerators.stream()
-                .map(QueryEndpointGenerator::new)
-                .collect(toList());
-
-        this.queryEventDrivenExecutorGenerators = queryGenerators.stream()
-                .map(QueryEventDrivenExecutorGenerator::new)
                 .collect(toList());
 
         return this;
