@@ -65,11 +65,9 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
              new DefaultEventConsumerFactory(),
              eventReceiver,
              $DataType$.class,
-             AbstractProcessDataEvent.class, // AbstractProcessDataEvent.class
              configBean.useCloudEvents(),
              processService,
              executorService,
              eventUnmarshaller);
-
     }
 }

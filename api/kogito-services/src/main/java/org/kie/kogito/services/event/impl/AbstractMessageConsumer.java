@@ -54,12 +54,11 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataEventConverter,
-            Class<?> cloudEventConverter,
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
             EventUnmarshaller<Object> eventUnmarshaller) {
-        init(application, process, trigger, eventConsumerFactory, eventReceiver, dataEventConverter, cloudEventConverter, useCloudEvents, processService, executorService, eventUnmarshaller);
+        init(application, process, trigger, eventConsumerFactory, eventReceiver, dataEventConverter, useCloudEvents, processService, executorService, eventUnmarshaller);
     }
 
     public void init(Application application,
@@ -68,7 +67,6 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataEventClass,
-            Class<?> cloudEventClass,
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
@@ -78,8 +76,10 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         this.trigger = trigger;
         this.eventConsumer = eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents);
         if (useCloudEvents) {
+            AbstractProcessDataEvent<D> cloudEventType = new AbstractProcessDataEvent<D>() {
+            };
             eventReceiver.subscribe(this::consumeCloud,
-                    new SubscriptionInfo<>(eventUnmarshaller, new AbstractProcessDataEvent<D>().getClass(), Optional.of(trigger)));
+                    new SubscriptionInfo<>(eventUnmarshaller, cloudEventType.getClass(), Optional.of(trigger)));
         } else {
             eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, Optional.of(trigger)));
         }
