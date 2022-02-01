@@ -25,12 +25,11 @@ import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import static org.kie.kogito.codegen.rules.RuleCodegen.TEMPLATE_RULE_FOLDER;
-import static org.kie.kogito.codegen.rules.RuleCodegenUtils.toCamelCase;
 
 public abstract class AbstractQueryEntrypointGenerator implements RuleFileGenerator {
 
     protected final RuleUnitDescription ruleUnit;
-    protected final QueryModel query;
+    protected final QueryGenerator query;
     protected final KogitoBuildContext context;
 
     protected final String queryName;
@@ -39,21 +38,19 @@ public abstract class AbstractQueryEntrypointGenerator implements RuleFileGenera
     protected final TemplatedGenerator generator;
 
     protected AbstractQueryEntrypointGenerator(
-            RuleUnitDescription ruleUnit,
-            QueryModel query,
-            KogitoBuildContext context,
+            QueryGenerator query,
             String targetClassNameSuffix,
             String templateName) {
-        this.ruleUnit = ruleUnit;
+        this.ruleUnit = query.ruleUnit();
         this.query = query;
-        this.context = context;
+        this.context = query.context();
 
-        this.queryName = toCamelCase(query.getName());
+        this.queryName = query.name();
         this.queryClassName = ruleUnit.getSimpleName() + "Query" + queryName;
         this.targetClassName = queryClassName + targetClassNameSuffix;
 
         this.generator = TemplatedGenerator.builder()
-                .withPackageName(query.getNamespace())
+                .withPackageName(query.model().getNamespace())
                 .withTemplateBasePath(TEMPLATE_RULE_FOLDER)
                 .withTargetTypeName(targetClassName)
                 .withFallbackContext(JavaKogitoBuildContext.CONTEXT_NAME)
@@ -67,13 +64,13 @@ public abstract class AbstractQueryEntrypointGenerator implements RuleFileGenera
 
     @Override
     public boolean validate() {
-        return !query.getBindings().isEmpty();
+        return !query.model().getBindings().isEmpty();
     }
 
     @Override
     public DroolsError getError() {
-        if (query.getBindings().isEmpty()) {
-            return new NoBindingQuery(query);
+        if (query.model().getBindings().isEmpty()) {
+            return new NoBindingQuery(query.model());
         }
         return null;
     }

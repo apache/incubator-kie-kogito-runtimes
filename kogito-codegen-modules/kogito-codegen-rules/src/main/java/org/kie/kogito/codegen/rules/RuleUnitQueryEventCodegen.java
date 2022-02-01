@@ -15,20 +15,19 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 public class RuleUnitQueryEventCodegen {
 
     private final KogitoBuildContext context;
-    private final Iterable<RuleUnitGenerator> ruleUnitGenerators;
+    private final Iterable<QueryGenerator> ruleUnitGenerators;
 
-    public RuleUnitQueryEventCodegen(KogitoBuildContext context, Iterable<RuleUnitGenerator> ruleUnitGenerators) {
+    public RuleUnitQueryEventCodegen(KogitoBuildContext context, Iterable<QueryGenerator> ruleUnitGenerators) {
         this.context = context;
         this.ruleUnitGenerators = ruleUnitGenerators;
     }
@@ -36,12 +35,8 @@ public class RuleUnitQueryEventCodegen {
     Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
         if (context.getAddonsConfig().useEventDrivenRules()) {
-            for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-                List<GeneratedFile> eventDrivenQueries =
-                        ruleUnit.queryEventDrivenExecutors().stream()
-                                .map(QueryEventDrivenExecutorGenerator::generate)
-                                .collect(Collectors.toUnmodifiableList());
-                generatedFiles.addAll(eventDrivenQueries);
+            for (QueryGenerator queryGenerator : ruleUnitGenerators) {
+                generatedFiles.add(new QueryEventDrivenExecutorGenerator(queryGenerator).generate());
             }
         }
         return generatedFiles;

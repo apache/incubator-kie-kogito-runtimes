@@ -15,18 +15,29 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.kie.kogito.codegen.api.GeneratedFile;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class RuleUnitQueryRestCodegen {
 
-    Collection<GeneratedFile> generate(Collection<QueryEndpointGenerator> validQueries) {
-        ArrayList<GeneratedFile> generatedFiles = new ArrayList<>();
-        for (QueryEndpointGenerator queryEndpoint : validQueries) {
-            generatedFiles.add(queryEndpoint.generate());
-        }
-        return generatedFiles;
+    private final Collection<QueryEndpointGenerator> endpointGenerators;
+
+    public RuleUnitQueryRestCodegen(Collection<QueryGenerator> validQueries) {
+        this.endpointGenerators =
+                validQueries.stream().map(QueryEndpointGenerator::new)
+                        .collect(Collectors.toUnmodifiableList());
     }
+
+    Collection<QueryEndpointGenerator> endpointGenerators() {
+        return endpointGenerators;
+    }
+
+    Collection<GeneratedFile> generate() {
+        return endpointGenerators.stream()
+                .map(QueryEndpointGenerator::generate)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
 }

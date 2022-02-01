@@ -15,14 +15,18 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.*;
-import java.util.stream.*;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
-import org.kie.kogito.*;
-import org.kie.kogito.codegen.api.*;
-import org.kie.kogito.codegen.api.context.*;
-import org.kie.kogito.codegen.core.*;
-import org.kie.kogito.grafana.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RuleUnitQueryDashboardCodegen {
 
@@ -30,14 +34,14 @@ public class RuleUnitQueryDashboardCodegen {
     private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
 
     private final KogitoBuildContext context;
-    private final Collection<RuleUnitGenerator> ruleUnitGenerators;
+    private final Collection<QueryEndpointGenerator> validQueries;
 
-    public RuleUnitQueryDashboardCodegen(KogitoBuildContext context, Collection<RuleUnitGenerator> ruleUnitGenerators) {
+    public RuleUnitQueryDashboardCodegen(KogitoBuildContext context, Collection<QueryEndpointGenerator> validQueries) {
         this.context = context;
-        this.ruleUnitGenerators = ruleUnitGenerators;
+        this.validQueries = validQueries;
     }
 
-    Collection<GeneratedFile> generate(Collection<QueryEndpointGenerator> validQueries) {
+    Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
         for (QueryEndpointGenerator queryEndpoint : validQueries) {

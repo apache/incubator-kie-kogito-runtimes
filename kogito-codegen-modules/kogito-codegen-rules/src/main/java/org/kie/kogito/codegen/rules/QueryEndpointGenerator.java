@@ -15,16 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.drools.modelcompiler.builder.QueryModel;
-import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
@@ -46,6 +36,12 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
@@ -57,21 +53,15 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
 
     private final String endpointName;
 
-    public QueryEndpointGenerator(RuleUnitDescription ruleUnit, QueryModel query, KogitoBuildContext context) {
-        super(ruleUnit, query, context, "Endpoint", "RestQuery");
+    public QueryEndpointGenerator(QueryGenerator queryGenerator) {
+        super(queryGenerator, "Endpoint", "RestQuery");
         this.endpointName = toKebabCase(queryName);
-    }
-
-    @Deprecated // this should not be embedded in the _endpoint_ generator;
-                // the endpoint generator should _decorate_ this one, as it is not REST-specific
-    public QueryGenerator getQueryGenerator() {
-        return new QueryGenerator(context, ruleUnit, query, queryName);
     }
 
     @Override
     public GeneratedFile generate() {
         CompilationUnit cu = generator.compilationUnitOrThrow("Could not create CompilationUnit");
-        cu.setPackageDeclaration(query.getNamespace());
+        cu.setPackageDeclaration(query.model().getNamespace());
 
         ClassOrInterfaceDeclaration clazz = cu
                 .findFirst(ClassOrInterfaceDeclaration.class)
@@ -193,8 +183,8 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
     }
 
     private String getReturnType(ClassOrInterfaceDeclaration clazz) {
-        if (query.getBindings().size() == 1) {
-            Map.Entry<String, Class<?>> binding = query.getBindings().entrySet().iterator().next();
+        if (query.model().getBindings().size() == 1) {
+            Map.Entry<String, Class<?>> binding = query.model().getBindings().entrySet().iterator().next();
             return binding.getValue().getCanonicalName();
         }
         return queryClassName + ".Result";
@@ -204,7 +194,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
         String interpolated = vv.getValue()
                 .replace("$name$", queryName)
                 .replace("$endpointName$", endpointName)
-                .replace("$queryName$", query.getName())
+                .replace("$queryName$", query.model().getName())
                 .replace("$prometheusName$", endpointName);
         vv.setString(interpolated);
     }

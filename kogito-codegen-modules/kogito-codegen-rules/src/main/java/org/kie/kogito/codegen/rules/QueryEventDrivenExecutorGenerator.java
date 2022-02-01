@@ -33,12 +33,12 @@ public class QueryEventDrivenExecutorGenerator extends AbstractQueryEntrypointGe
     private final String dataType;
     private final String returnType;
 
-    public QueryEventDrivenExecutorGenerator(RuleUnitDescription ruleUnit, QueryModel query, KogitoBuildContext context) {
-        super(ruleUnit, query, context, "EventDrivenExecutor", "EventDrivenExecutor");
+    public QueryEventDrivenExecutorGenerator(QueryGenerator queryGenerator) {
+        super(queryGenerator, "EventDrivenExecutor", "EventDrivenExecutor");
         this.dataType = ruleUnit.getCanonicalName() + (context.hasDI() ? "" : "DTO");
-        this.returnType = String.format("java.util.List<%s>", query.getBindings().size() != 1
+        this.returnType = String.format("java.util.List<%s>", query.model().getBindings().size() != 1
                 ? queryClassName + ".Result"
-                : query.getBindings().values().iterator().next().getCanonicalName());
+                : query.model().getBindings().values().iterator().next().getCanonicalName());
     }
 
     @Override

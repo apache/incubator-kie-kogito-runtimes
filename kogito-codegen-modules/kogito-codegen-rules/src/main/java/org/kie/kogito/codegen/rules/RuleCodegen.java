@@ -15,14 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -37,6 +29,14 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -58,10 +58,10 @@ public class RuleCodegen extends AbstractGenerator {
     public static RuleCodegen ofJavaResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Resource> generatedRules =
                 AnnotatedClassPostProcessor.scan(
-                        resources.stream()
-                                .filter(r -> r.resource().getResourceType() == ResourceType.JAVA)
-                                .map(r -> new File(r.resource().getSourcePath()))
-                                .map(File::toPath))
+                                resources.stream()
+                                        .filter(r -> r.resource().getResourceType() == ResourceType.JAVA)
+                                        .map(r -> new File(r.resource().getSourcePath()))
+                                        .map(File::toPath))
                         .generate();
         return ofResources(context, generatedRules);
     }
@@ -126,9 +126,9 @@ public class RuleCodegen extends AbstractGenerator {
             RuleUnitDashboardCodegen dashboardCodegen = new RuleUnitDashboardCodegen(context(), ruleUnitGenerators);
             generatedFiles.addAll(dashboardCodegen.generate());
 
-            Collection<QueryEndpointGenerator> validQueries = ruleUnitCodegen.validQueries();
+            Collection<QueryGenerator> validQueries = ruleUnitCodegen.validQueries();
 
-            RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), ruleUnitGenerators, validQueries);
+            RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), validQueries);
             if (context().hasRESTForGenerator(this)) {
                 generatedFiles.addAll(ruleUnitExtendedCodegen.generate());
             }

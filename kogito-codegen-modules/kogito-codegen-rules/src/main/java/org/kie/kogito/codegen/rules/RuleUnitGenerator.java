@@ -69,6 +69,7 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     private RuleUnitConfig config;
     private List<QueryEndpointGenerator> queryEndpointGenerators;
     private List<QueryEventDrivenExecutorGenerator> queryEventDrivenExecutorGenerators;
+    private List<QueryGenerator> queryGenerators;
 
     public RuleUnitGenerator(KogitoBuildContext context, RuleUnitDescription ruleUnit, String generatedSourceFile) {
         this.ruleUnit = ruleUnit;
@@ -100,15 +101,11 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public RuleUnitInstanceGenerator instance(RuleUnitHelper ruleUnitHelper) {
-        return new RuleUnitInstanceGenerator(context, ruleUnit, ruleUnitHelper, queries().stream().map(q -> q.getQueryGenerator().getQueryClassName()).collect(Collectors.toUnmodifiableList()));
+        return new RuleUnitInstanceGenerator(context, ruleUnit, ruleUnitHelper, queryGenerators().stream().map(QueryGenerator::className).collect(Collectors.toUnmodifiableList()));
     }
 
-    public List<QueryEndpointGenerator> queries() {
-        return queryEndpointGenerators;
-    }
-
-    public List<QueryEventDrivenExecutorGenerator> queryEventDrivenExecutors() {
-        return queryEventDrivenExecutorGenerators;
+    public List<QueryGenerator> queryGenerators() {
+        return this.queryGenerators;
     }
 
     @Override
@@ -220,15 +217,19 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public RuleUnitGenerator withQueries(Collection<QueryModel> queries) {
-        this.queryEndpointGenerators = queries.stream()
+        this.queryGenerators = queries.stream()
                 .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEndpointGenerator(ruleUnit, query, context))
+                .map(query -> new QueryGenerator(context, ruleUnit, query))
                 .collect(toList());
 
-        this.queryEventDrivenExecutorGenerators = queries.stream()
-                .filter(query -> !query.hasParameters())
-                .map(query -> new QueryEventDrivenExecutorGenerator(ruleUnit, query, context))
+        this.queryEndpointGenerators = queryGenerators.stream()
+                .map(QueryEndpointGenerator::new)
                 .collect(toList());
+
+        this.queryEventDrivenExecutorGenerators = queryGenerators.stream()
+                .map(QueryEventDrivenExecutorGenerator::new)
+                .collect(toList());
+
 
         return this;
     }

@@ -15,15 +15,14 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.*;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-import org.kie.kogito.codegen.api.*;
-import org.kie.kogito.codegen.api.context.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class RuleUnitExtendedCodegen {
-    private final Collection<QueryEndpointGenerator> validQueries;
-
-    // phases
     private final RuleUnitQueryDashboardCodegen dashboards;
     private final RuleUnitQueryEventCodegen events;
     private final RuleUnitQueryRestCodegen rest;
@@ -31,21 +30,19 @@ public class RuleUnitExtendedCodegen {
 
     public RuleUnitExtendedCodegen(
             KogitoBuildContext context,
-            Collection<RuleUnitGenerator> ruleUnitGenerators,
-            Collection<QueryEndpointGenerator> validQueries) {
-        this.validQueries = validQueries;
-        this.dashboards = new RuleUnitQueryDashboardCodegen(context, ruleUnitGenerators);
-        this.events = new RuleUnitQueryEventCodegen(context, ruleUnitGenerators);
-        this.rest = new RuleUnitQueryRestCodegen();
+            Collection<QueryGenerator> validQueries) {
+        this.rest = new RuleUnitQueryRestCodegen(validQueries);
+        this.events = new RuleUnitQueryEventCodegen(context, validQueries);
+        this.dashboards = new RuleUnitQueryDashboardCodegen(context, rest.endpointGenerators());
         this.objectMapper = new RuleObjectMapperCodegen(context);
     }
 
     Collection<GeneratedFile> generate() {
         List<GeneratedFile> generatedFiles = new ArrayList<>();
 
-        generatedFiles.addAll(events.generate(/* should use validQueries */));
-        generatedFiles.addAll(rest.generate(validQueries));
-        generatedFiles.addAll(dashboards.generate(validQueries));
+        generatedFiles.addAll(events.generate());
+        generatedFiles.addAll(rest.generate());
+        generatedFiles.addAll(dashboards.generate());
         generatedFiles.add(objectMapper.generate());
 
         return generatedFiles;

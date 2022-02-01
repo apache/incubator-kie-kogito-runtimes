@@ -27,7 +27,7 @@ public class RuleUnitMainCodegen {
     private final KogitoBuildContext context;
     private final Collection<RuleUnitGenerator> ruleUnitGenerators;
     private final boolean hotReloadMode;
-    private final List<QueryEndpointGenerator> validQueries;
+    private final List<QueryGenerator> validQueries;
     private List<DroolsError> errors = new ArrayList<>();
 
     public RuleUnitMainCodegen(KogitoBuildContext context, Collection<RuleUnitGenerator> ruleUnitGenerators, boolean hotReloadMode) {
@@ -37,7 +37,7 @@ public class RuleUnitMainCodegen {
         this.validQueries = validateQueries();
     }
 
-    Collection<QueryEndpointGenerator> validQueries() {
+    Collection<QueryGenerator> validQueries() {
         return validQueries;
     }
 
@@ -67,16 +67,16 @@ public class RuleUnitMainCodegen {
 
         }
 
-        for (QueryEndpointGenerator queryEndpoint : validQueries) {
-            generatedFiles.add(queryEndpoint.getQueryGenerator().generate());
+        for (QueryGenerator queryEndpoint : validQueries) {
+            generatedFiles.add(queryEndpoint.generate());
         }
         return generatedFiles;
     }
 
-    private List<QueryEndpointGenerator> validateQueries() {
-        List<QueryEndpointGenerator> validQueries = new ArrayList<>();
+    private List<QueryGenerator> validateQueries() {
+        List<QueryGenerator> validQueries = new ArrayList<>();
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            for (QueryEndpointGenerator queryEndpoint : ruleUnit.queries()) {
+            for (QueryGenerator queryEndpoint : ruleUnit.queryGenerators()) {
                 if (queryEndpoint.validate()) {
                     validQueries.add(queryEndpoint);
                 } else {
