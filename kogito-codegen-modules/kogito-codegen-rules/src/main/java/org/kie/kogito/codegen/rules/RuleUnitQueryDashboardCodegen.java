@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
-import org.kie.kogito.grafana.GrafanaConfigurationWriter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,10 +22,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
+import org.kie.kogito.grafana.GrafanaConfigurationWriter;
+
 public class RuleUnitQueryDashboardCodegen {
 
     private static final String operationalDashboardDrlTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
-    private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
 
     private final KogitoBuildContext context;
     private final Collection<QueryEndpointGenerator> validQueries;

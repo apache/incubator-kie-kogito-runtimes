@@ -15,6 +15,13 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.NodeList;
@@ -36,12 +43,6 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.Type;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static com.github.javaparser.StaticJavaParser.parseStatement;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;

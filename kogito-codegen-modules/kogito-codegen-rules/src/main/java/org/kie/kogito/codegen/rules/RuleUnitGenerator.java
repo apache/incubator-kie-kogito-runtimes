@@ -101,10 +101,10 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     public RuleUnitInstanceGenerator instance(RuleUnitHelper ruleUnitHelper) {
-        return new RuleUnitInstanceGenerator(context, ruleUnit, ruleUnitHelper, queryGenerators().stream().map(QueryGenerator::className).collect(Collectors.toUnmodifiableList()));
+        return new RuleUnitInstanceGenerator(context, ruleUnit, ruleUnitHelper, queries().stream().map(QueryGenerator::className).collect(Collectors.toUnmodifiableList()));
     }
 
-    public List<QueryGenerator> queryGenerators() {
+    public Collection<QueryGenerator> queries() {
         return this.queryGenerators;
     }
 
@@ -229,7 +229,6 @@ public class RuleUnitGenerator implements RuleFileGenerator {
         this.queryEventDrivenExecutorGenerators = queryGenerators.stream()
                 .map(QueryEventDrivenExecutorGenerator::new)
                 .collect(toList());
-
 
         return this;
     }

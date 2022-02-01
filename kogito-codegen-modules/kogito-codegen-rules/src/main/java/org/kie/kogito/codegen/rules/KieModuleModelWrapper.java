@@ -15,6 +15,14 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.OptionalInt;
+
 import org.drools.compiler.kproject.models.KieModuleModelImpl;
 import org.drools.ruleunits.api.conf.ClockType;
 import org.drools.ruleunits.api.conf.EventProcessingType;
@@ -27,14 +35,6 @@ import org.kie.api.conf.SessionsPoolOption;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.RuleUnitConfig;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.OptionalInt;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 

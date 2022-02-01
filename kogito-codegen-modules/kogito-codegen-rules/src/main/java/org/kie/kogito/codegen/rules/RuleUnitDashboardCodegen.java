@@ -26,7 +26,6 @@ import org.kie.kogito.grafana.GrafanaConfigurationWriter;
 
 public class RuleUnitDashboardCodegen {
 
-    private static final String operationalDashboardDrlTemplate = "/grafana-dashboard-template/operational-dashboard-template.json";
     private static final String domainDashboardDrlTemplate = "/grafana-dashboard-template/domain-dashboard-template.json";
 
     private final KogitoBuildContext context;

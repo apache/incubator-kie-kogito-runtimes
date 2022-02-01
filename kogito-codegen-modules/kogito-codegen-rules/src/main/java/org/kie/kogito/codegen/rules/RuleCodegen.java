@@ -15,6 +15,14 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -29,14 +37,6 @@ import org.kie.kogito.codegen.rules.config.RuleConfigGenerator;
 import org.kie.kogito.rules.RuleUnitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -58,10 +58,10 @@ public class RuleCodegen extends AbstractGenerator {
     public static RuleCodegen ofJavaResources(KogitoBuildContext context, Collection<CollectedResource> resources) {
         List<Resource> generatedRules =
                 AnnotatedClassPostProcessor.scan(
-                                resources.stream()
-                                        .filter(r -> r.resource().getResourceType() == ResourceType.JAVA)
-                                        .map(r -> new File(r.resource().getSourcePath()))
-                                        .map(File::toPath))
+                        resources.stream()
+                                .filter(r -> r.resource().getResourceType() == ResourceType.JAVA)
+                                .map(r -> new File(r.resource().getSourcePath()))
+                                .map(File::toPath))
                         .generate();
         return ofResources(context, generatedRules);
     }
@@ -120,16 +120,18 @@ public class RuleCodegen extends AbstractGenerator {
                     .flatMap(pkgSrc -> pkgSrc.getRuleUnits().stream())
                     .forEach(ru -> kieModuleModelWrapper.addRuleUnitConfig(ru, configs.get(ru.getCanonicalName())));
 
+            // main codegen procedure (rule units, rule unit instances, queries, generated pojos)
             RuleUnitMainCodegen ruleUnitCodegen = new RuleUnitMainCodegen(context(), ruleUnitGenerators, hotReloadMode);
             generatedFiles.addAll(ruleUnitCodegen.generate());
 
+            // dashboard for rule unit
             RuleUnitDashboardCodegen dashboardCodegen = new RuleUnitDashboardCodegen(context(), ruleUnitGenerators);
             generatedFiles.addAll(dashboardCodegen.generate());
 
-            Collection<QueryGenerator> validQueries = ruleUnitCodegen.validQueries();
-
-            RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), validQueries);
+            // "extended" procedure: REST + Event handlers + query dashboards
             if (context().hasRESTForGenerator(this)) {
+                Collection<QueryGenerator> validQueries = ruleUnitCodegen.validQueries();
+                RuleUnitExtendedCodegen ruleUnitExtendedCodegen = new RuleUnitExtendedCodegen(context(), validQueries);
                 generatedFiles.addAll(ruleUnitExtendedCodegen.generate());
             }
 

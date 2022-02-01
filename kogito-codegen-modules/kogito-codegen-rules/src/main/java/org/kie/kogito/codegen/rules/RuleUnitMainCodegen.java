@@ -23,6 +23,9 @@ import org.drools.compiler.compiler.DroolsError;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
+/**
+ * Generates rule units, rule unit instances, pojos, queries
+ */
 public class RuleUnitMainCodegen {
     private final KogitoBuildContext context;
     private final Collection<RuleUnitGenerator> ruleUnitGenerators;
@@ -76,7 +79,7 @@ public class RuleUnitMainCodegen {
     private List<QueryGenerator> validateQueries() {
         List<QueryGenerator> validQueries = new ArrayList<>();
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            for (QueryGenerator queryEndpoint : ruleUnit.queryGenerators()) {
+            for (QueryGenerator queryEndpoint : ruleUnit.queries()) {
                 if (queryEndpoint.validate()) {
                     validQueries.add(queryEndpoint);
                 } else {

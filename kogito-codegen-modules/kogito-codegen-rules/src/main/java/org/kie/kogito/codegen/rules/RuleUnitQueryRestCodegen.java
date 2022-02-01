@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import org.kie.kogito.codegen.api.GeneratedFile;
 
 public class RuleUnitQueryRestCodegen {
 
