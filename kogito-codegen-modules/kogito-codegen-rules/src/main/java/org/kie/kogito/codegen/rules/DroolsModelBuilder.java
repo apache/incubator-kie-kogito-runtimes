@@ -41,15 +41,18 @@ import static java.util.stream.Collectors.toList;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.addDTableToCompiler;
 import static org.drools.compiler.kie.builder.impl.AbstractKieModule.loadResourceConfiguration;
 
+/**
+ * Utility class to wrap ModelBuilderImpl + KnowledgeBuilder and extract the generated source code or metadata
+ */
 public class DroolsModelBuilder {
     public static final ReleaseIdImpl DUMMY_RELEASE_ID = new ReleaseIdImpl("dummy:dummy:0.0.0");
     private static final Logger LOGGER = LoggerFactory.getLogger(DroolsModelBuilder.class);
     private final ModelBuilderImpl<KogitoPackageSources> modelBuilder;
 
-    KogitoBuildContext context;
+    private final KogitoBuildContext context;
     private final Collection<Resource> resources;
-    boolean decisionTableSupported;
-    boolean hotReloadMode;
+    private final boolean decisionTableSupported;
+    private final boolean hotReloadMode;
 
     public DroolsModelBuilder(KogitoBuildContext context, Collection<Resource> resources, boolean decisionTableSupported, boolean hotReloadMode) {
         this.context = context;
@@ -122,13 +125,11 @@ public class DroolsModelBuilder {
             throw new MissingDecisionTableDependencyError();
         }
 
-        ModelBuilderImpl<KogitoPackageSources> modelBuilder =
-                new ModelBuilderImpl<>(
-                        KogitoPackageSources::dumpSources,
-                        KogitoKnowledgeBuilderConfigurationImpl.fromContext(context),
-                        DUMMY_RELEASE_ID,
-                        hotReloadMode);
-        return modelBuilder;
+        return new ModelBuilderImpl<>(
+                KogitoPackageSources::dumpSources,
+                KogitoKnowledgeBuilderConfigurationImpl.fromContext(context),
+                DUMMY_RELEASE_ID,
+                hotReloadMode);
     }
 
     private List<GeneratedFile> generateInternalResource(KogitoPackageSources pkgSources) {

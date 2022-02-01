@@ -24,7 +24,7 @@ public class KogitoKnowledgeBuilderConfigurationImpl extends KnowledgeBuilderCon
         KogitoKnowledgeBuilderConfigurationImpl conf = new KogitoKnowledgeBuilderConfigurationImpl(buildContext.getClassLoader());
         for (String prop : buildContext.getApplicationProperties()) {
             if (prop.startsWith("drools")) {
-                conf.setProperty(prop, buildContext.getApplicationProperty(prop).get());
+                conf.setProperty(prop, buildContext.getApplicationProperty(prop).orElseThrow());
             }
         }
         return conf;

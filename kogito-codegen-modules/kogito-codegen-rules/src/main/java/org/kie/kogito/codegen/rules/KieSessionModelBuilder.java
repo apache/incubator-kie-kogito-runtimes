@@ -29,6 +29,9 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Generates metadata for "classic" kmodule.xml
+ */
 public class KieSessionModelBuilder {
 
     private final Map<String, KieBaseModel> kieBaseModels;
@@ -39,7 +42,6 @@ public class KieSessionModelBuilder {
         this.context = context;
         this.kieBaseModels = KieModuleModelWrapper.fromResourcePaths(context.getAppPaths().getResourcePaths()).kieBaseModels();
         this.modelByKBase = getModelByKBase(packageSources, this.kieBaseModels);
-
     }
 
     List<GeneratedFile> generate() {

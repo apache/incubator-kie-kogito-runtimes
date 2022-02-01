@@ -38,6 +38,10 @@ import org.kie.kogito.rules.RuleUnitConfig;
 
 import static org.drools.compiler.kie.builder.impl.KieBuilderImpl.setDefaultsforEmptyKieModule;
 
+/**
+ * Utility class to discover/interact with KieModuleModel.
+ *
+ */
 public class KieModuleModelWrapper {
     private KieModuleModel kieModuleModel;
 
