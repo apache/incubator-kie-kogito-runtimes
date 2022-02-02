@@ -76,8 +76,7 @@ public class EventDrivenPredictionsController {
     }
 
     protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest,
-                new SubscriptionInfo<>(eventUnmarshaller, CloudEvent.class));
+        eventReceiver.subscribe(this::handleRequest, SubscriptionInfo.builder().converter(eventUnmarshaller).outputClass(CloudEvent.class).createSubscriptionInfo());
     }
 
     private CompletionStage<Void> handleRequest(CloudEvent event) {

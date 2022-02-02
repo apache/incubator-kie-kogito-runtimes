@@ -27,9 +27,9 @@ import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.EventConsumerFactory;
+import org.kie.kogito.services.event.ProcessDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,14 +76,15 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         this.trigger = trigger;
         this.eventConsumer = eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents);
         if (useCloudEvents) {
-            eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(eventUnmarshaller, AbstractProcessDataEvent.class, new Class[] { dataEventClass }, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeCloud,
+                    SubscriptionInfo.builder().converter(eventUnmarshaller).outputClass(ProcessDataEvent.class).parametrizedClasses(dataEventClass).type(trigger).createSubscriptionInfo());
         } else {
-            eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, null, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeNotCloud, SubscriptionInfo.builder().converter(eventUnmarshaller).outputClass(dataEventClass).type(trigger).createSubscriptionInfo());
         }
         logger.info("Consumer for {} started", trigger);
     }
 
-    protected CompletionStage<?> consumeCloud(AbstractProcessDataEvent<D> payload) {
+    protected CompletionStage<?> consumeCloud(ProcessDataEvent<D> payload) {
         return consume(payload);
     }
 

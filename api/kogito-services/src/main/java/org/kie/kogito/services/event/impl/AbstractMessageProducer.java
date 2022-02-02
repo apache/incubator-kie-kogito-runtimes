@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.services.event.AbstractProcessDataEvent;
+import org.kie.kogito.services.event.ProcessDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +57,8 @@ public abstract class AbstractMessageProducer<D> {
                 });
     }
 
-    public AbstractProcessDataEvent<D> dataEventTypeConstructor(D eventPayload, KogitoProcessInstance pi, String trigger) {
-        return new AbstractProcessDataEvent<>(trigger,
+    public ProcessDataEvent<D> dataEventTypeConstructor(D eventPayload, KogitoProcessInstance pi, String trigger) {
+        return new ProcessDataEvent<>(trigger,
                 "",
                 eventPayload,
                 pi.getStringId(),

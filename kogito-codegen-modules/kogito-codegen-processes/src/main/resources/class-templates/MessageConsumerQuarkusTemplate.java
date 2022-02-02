@@ -27,7 +27,6 @@ import org.kie.kogito.event.KogitoEventExecutor;
 import org.kie.kogito.event.impl.DefaultEventConsumerFactory;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.AbstractProcessDataEvent;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 
 
