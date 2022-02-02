@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
@@ -46,6 +48,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.error.Error;
+import io.serverlessworkflow.api.error.ErrorDefinition;
 import io.serverlessworkflow.api.events.EventDefinition;
 import io.serverlessworkflow.api.filters.EventDataFilter;
 import io.serverlessworkflow.api.filters.StateDataFilter;
@@ -174,7 +177,6 @@ public abstract class StateHandler<S extends State> {
         StateDataFilter stateFilter = state.getStateDataFilter();
         if (stateFilter != null) {
             String input = stateFilter.getInput();
-
             if (input != null) {
                 ActionNodeFactory<?> actionNode = handleStateFilter(factory, input);
                 factory.connection(actionNode.getNode().getId(), node.getNode().getId());
@@ -218,19 +220,37 @@ public abstract class StateHandler<S extends State> {
         handleErrors(parserContext.factory());
     }
 
+    protected final Iterable<ErrorDefinition> getErrorDefinitions(Error error) {
+        Predicate<? super ErrorDefinition> pred;
+        if (error.getErrorRef() != null) {
+            pred = e -> error.getErrorRef().equals(e.getName());
+        } else if (error.getErrorRefs() != null) {
+            pred = e -> error.getErrorRefs().contains(e.getName());
+        } else {
+            throw new IllegalStateException("errorRef or errorRefs should be defined in list of error definitions");
+        }
+        return workflow.getErrors().getErrorDefs().stream().filter(pred).collect(Collectors.toList());
+    }
+
     protected void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory) {
         for (Error error : state.getOnErrors()) {
-            String eventType = "Error-" + node.getNode().getMetaData().get("UniqueId");
-            BoundaryEventNodeFactory<?> boundaryNode =
-                    factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId()).metaData(
-                            "EventType", Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
-            if (error.getCode() != null) {
-                boundaryNode.metaData("ErrorEvent", error.getCode());
-                eventType += "-" + error.getCode();
+            for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
+                String eventType = "Error-" + node.getNode().getMetaData().get("UniqueId");
+                BoundaryEventNodeFactory<?> boundaryNode =
+                        factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId()).metaData(
+                                "EventType", Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
+                if (errorDef.getCode() != null) {
+                    boundaryNode.metaData("ErrorEvent", errorDef.getCode());
+                    eventType += "-" + errorDef.getCode();
+                }
+                boundaryNode.eventType(eventType).name("Error-" + node.getNode().getName() + "-" + errorDef.getCode());
+                factory.exceptionHandler(eventType, errorDef.getCode());
+                if (error.getEnd() != null) {
+                    connect(boundaryNode, endNodeFactory(factory, error.getEnd().getProduceEvents()));
+                } else {
+                    handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
+                }
             }
-            boundaryNode.eventType(eventType).name("Error-" + node.getNode().getName() + "-" + error.getCode());
-            factory.exceptionHandler(eventType, error.getCode());
-            handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
         }
     }
 
@@ -405,6 +425,16 @@ public abstract class StateHandler<S extends State> {
         return workflow.getEvents().getEventDefs().stream()
                 .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("No event for " + eventName));
+    }
+
+    protected EndNodeFactory<?> endNodeFactory(RuleFlowNodeContainerFactory<?, ?> factory, List<ProduceEvent> produceEvents) {
+        EndNodeFactory<?> nodeFactory = factory.endNode(parserContext.newId());
+        if (produceEvents == null || produceEvents.isEmpty()) {
+            nodeFactory.terminate(true);
+        } else {
+            sendEventNode(nodeFactory, produceEvents.get(0));
+        }
+        return nodeFactory;
     }
 
     private long compensationEvent(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {

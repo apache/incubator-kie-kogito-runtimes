@@ -15,8 +15,10 @@
  */
 package org.kie.kogito.workflows.services;
 
-public class Person {
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
+public class Person {
     private String name;
 
     public Person() {

@@ -38,6 +38,10 @@ public class RuleUnitId extends LocalUriId implements LocalId {
         return this;
     }
 
+    public RuleUnitInstanceIds instances() {
+        return new RuleUnitInstanceIds(this);
+    }
+
     public QueryIds queries() {
         return new QueryIds(this);
     }
