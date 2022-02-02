@@ -18,7 +18,6 @@ package org.kie.kogito.quarkus.it.openapi.client;
 
 import java.util.Collections;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.quarkus.it.openapi.client.mocks.AuthSecurityMockService;
@@ -42,9 +41,6 @@ class ApiWithSecurityContextIT {
     // injected by quarkus
     WireMockServer authWithApiKeyServer;
 
-    @ConfigProperty(name = "org.kogito.openapi.client.openapi20security.api_key")
-    String apiKey;
-
     @BeforeAll
     static void init() {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
@@ -67,7 +63,8 @@ class ApiWithSecurityContextIT {
         // verify if the headers were correctly sent
         authWithApiKeyServer
                 .verify(postRequestedFor(urlEqualTo(AuthSecurityMockService.CONFIG.getPath()))
-                        .withHeader("X-Client-Id", matching("12345")));
+                        .withHeader("X-Client-Id", matching("12345"))
+                        .withHeader("Authorization", matching("Bearer mytoken")));
     }
 
 }
