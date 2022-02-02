@@ -76,12 +76,9 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         this.trigger = trigger;
         this.eventConsumer = eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents);
         if (useCloudEvents) {
-            AbstractProcessDataEvent<D> cloudEventType = new AbstractProcessDataEvent<D>() {
-            };
-            eventReceiver.subscribe(this::consumeCloud,
-                    new SubscriptionInfo<>(eventUnmarshaller, cloudEventType.getClass(), Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeCloud, new SubscriptionInfo<>(eventUnmarshaller, AbstractProcessDataEvent.class, new Class[] { dataEventClass }, Optional.of(trigger)));
         } else {
-            eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, Optional.of(trigger)));
+            eventReceiver.subscribe(this::consumeNotCloud, new SubscriptionInfo<>(eventUnmarshaller, dataEventClass, null, Optional.of(trigger)));
         }
         logger.info("Consumer for {} started", trigger);
     }

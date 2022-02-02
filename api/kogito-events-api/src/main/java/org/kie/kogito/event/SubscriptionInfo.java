@@ -25,15 +25,17 @@ public class SubscriptionInfo<S, T> {
 
     private EventUnmarshaller<S> converter;
     private Class<T> outputClass;
+    private Class<?>[] parametrizedClasses;
     private Optional<String> type;
 
     public SubscriptionInfo(EventUnmarshaller<S> converter, Class<T> outputClass) {
-        this(converter, outputClass, Optional.empty());
+        this(converter, outputClass, null, Optional.empty());
     }
 
-    public SubscriptionInfo(EventUnmarshaller<S> converter, Class<T> outputClass, Optional<String> type) {
+    public SubscriptionInfo(EventUnmarshaller<S> converter, Class<T> outputClass, Class<?>[] parametrizedClasses, Optional<String> type) {
         this.converter = converter;
         this.outputClass = outputClass;
+        this.parametrizedClasses = parametrizedClasses;
         this.type = type;
     }
 
@@ -47,6 +49,10 @@ public class SubscriptionInfo<S, T> {
 
     public Class<T> getOutputClass() {
         return outputClass;
+    }
+
+    public Class<?>[] getParametrizedClasses() {
+        return parametrizedClasses;
     }
 
     @Override
