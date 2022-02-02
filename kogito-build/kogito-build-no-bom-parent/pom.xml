@@ -15,7 +15,7 @@
   <artifactId>kogito-build-no-bom-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Kogito :: Runtimes Build Parent</name>
+  <name>Kogito :: Runtimes Build No BOM Parent</name>
   <description>Kogito Runtimes Build No BOM Parent</description>
 
   <!--
