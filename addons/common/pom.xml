@@ -37,17 +37,6 @@
         <module>persistence</module>
         <module>tracing</module>
         <module>knative</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>integration-test-modules</id>
-      <activation>
-        <property>
-          <name>!excludeITModules</name>
-        </property>
-      </activation>
-      <modules>
         <module>task-management</module>
         <module>process-svg</module>
         <module>rest-exception-handler</module>
