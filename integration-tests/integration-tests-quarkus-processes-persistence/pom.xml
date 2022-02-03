@@ -2,7 +2,7 @@
   <parent>
     <artifactId>integration-tests</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>1.16.1.Final</version>
+    <version>1.16.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
