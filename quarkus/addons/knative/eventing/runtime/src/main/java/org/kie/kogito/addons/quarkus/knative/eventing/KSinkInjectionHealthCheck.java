@@ -1,0 +1,82 @@
+/*
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.kie.kogito.addons.quarkus.knative.eventing;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
+import org.eclipse.microprofile.health.Readiness;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.kie.kogito.addons.quarkus.knative.eventing.KnativeEventingConfigSource.K_SINK;
+
+/**
+ * Checks if the K_SINK variable is injected in the environment.
+ * In the cloud this is relevant for the underlying HTTP connector to send events to a Knative Sink.
+ * Having a health check, would hold the pod to start until the Sink is injected, avoiding the application to produce events to nowhere.
+ *
+ * @see <a href="https://knative.dev/docs/eventing/sinks/">Kative - About Sinks</a>
+ */
+@Readiness
+@ApplicationScoped
+public class KSinkInjectionHealthCheck implements HealthCheck {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KSinkInjectionHealthCheck.class);
+
+    @Override
+    public HealthCheckResponse call() {
+        final HealthCheckResponseBuilder responseBuilder = HealthCheckResponse.named("K_SINK environment variable injection check");
+        final String sinkURL = System.getenv(K_SINK);
+        if ("".equals(sinkURL) || sinkURL == null) {
+            LOGGER.warn(K_SINK + " variable not set in this environment. Returning not healthy.");
+        } else {
+            String hostAddress = "";
+            try {
+                final URI uri = new URI(sinkURL);
+                final InetAddress address = InetAddress.getByName(uri.getHost());
+                if (address != null && address.isReachable(10000)) {
+                    responseBuilder.up();
+                    return responseBuilder.build();
+                } else {
+                    if (address != null) {
+                        hostAddress = address.getHostAddress();
+                    }
+                    LOGGER.warn("Impossible to resolve host for URL " + sinkURL + ". Check if this host can resolve from this environment. Returning not healthy.");
+                }
+            } catch (UnknownHostException e) {
+                LOGGER.warn("Failed to lookup address " + sinkURL + ". Returning not healthy.");
+            } catch (URISyntaxException e) {
+                LOGGER.warn("The " + K_SINK + " URL syntax is invalid: " + sinkURL + ". Returning not healthy.", e);
+            } catch (IOException e) {
+                LOGGER.warn(K_SINK + " URL " + sinkURL + " can be resolved to address " + hostAddress + ", but is unreachable.");
+            }
+        }
+
+        responseBuilder.down();
+        return responseBuilder.build();
+    }
+
+}
