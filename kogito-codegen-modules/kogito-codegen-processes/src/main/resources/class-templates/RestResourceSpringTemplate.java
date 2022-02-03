@@ -15,34 +15,46 @@
  */
 package com.myspace.demo;
 
+import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jbpm.util.JsonSchemaUtil;
-import org.kie.kogito.auth.IdentityProviders;
-import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
+import org.kie.kogito.process.WorkItem;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.process.workitem.Attachment;
+import org.kie.kogito.process.workitem.AttachmentInfo;
+import org.kie.kogito.process.workitem.Comment;
+import org.kie.kogito.process.workitem.Policies;
 import org.kie.kogito.process.workitem.TaskModel;
+import org.kie.kogito.auth.IdentityProvider;
+import org.kie.kogito.auth.IdentityProviders;
+import org.kie.kogito.auth.SecurityPolicy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.swagger.v3.oas.annotations.Operation;
