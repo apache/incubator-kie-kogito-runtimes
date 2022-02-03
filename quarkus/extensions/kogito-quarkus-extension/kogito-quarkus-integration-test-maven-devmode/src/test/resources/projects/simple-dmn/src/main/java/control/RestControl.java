@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.expr.jsonpath;
+package control;
 
-import org.kie.kogito.process.expr.Expression;
-import org.kie.kogito.process.expr.ExpressionHandler;
-import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.UUID;
 
-public class JsonPathExpressionHandler implements ExpressionHandler {
+@Path("/control")
+public class RestControl {
 
-    @Override
-    public Expression get(String expr) {
-        return new JsonPathExpression(ExpressionHandlerUtils.trimExpr(expr));
-    }
-
-    @Override
-    public String lang() {
-        return "jsonpath";
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String hello() {
+        return "Hello, "+ "v1";
     }
 }
