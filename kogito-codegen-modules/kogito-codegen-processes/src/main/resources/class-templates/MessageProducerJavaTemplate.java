@@ -41,14 +41,17 @@ public class MessageProducer extends org.kie.kogito.services.event.impl.Abstract
     }
 
     private String marshall(KogitoProcessInstance pi, $Type$ eventData) {
-        return marshaller.marshall(useCloudEvents.orElse(true) ? new ProcessDataEvent<$Type$>("",
-                                                                                              eventData,
-                                                                                              pi.getStringId(),
-                                                                                              pi.getParentProcessInstanceStringId(),
-                                                                                              pi.getRootProcessInstanceId(),
-                                                                                              pi.getProcessId(),
-                                                                                              pi.getRootProcessId(),
-                                                                                              String.valueOf(pi.getState()),
-                                                                                              pi.getReferenceId() == null || pi.getReferenceId().trim().isEmpty() ? null : pi.getReferenceId()): eventData);
+        return marshaller.marshall(useCloudEvents.orElse(true) ? new ProcessDataEvent<>(
+                "",
+                "",
+                eventPayload,
+                pi.getStringId(),
+                pi.getParentProcessInstanceStringId(),
+                pi.getRootProcessInstanceId(),
+                pi.getProcessId(),
+                pi.getRootProcessId(),
+                String.valueOf(pi.getState()),
+                null,
+                pi.getReferenceId() == null || pi.getReferenceId().trim().isEmpty() ? null : pi.getReferenceId()) : eventData);
     }
 }
