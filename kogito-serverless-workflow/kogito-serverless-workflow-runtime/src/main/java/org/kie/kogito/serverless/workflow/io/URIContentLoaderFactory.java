@@ -21,25 +21,28 @@ import java.util.Optional;
 
 public class URIContentLoaderFactory {
 
-    public static URIContentLoader loader(String uriStr) {
+    public static URIContentLoader runtimeLoader(String uriStr) {
         URI uri = URI.create(uriStr);
-        return loader(URIContentLoaderType.from(uri), uri);
+        return loader(uri, URIContentLoaderType.from(uri), Optional.empty(), Optional.of(new ClassPathContentLoader(uri, Optional.empty())));
     }
 
-    public static URIContentLoader loader(URIContentLoaderType type, URI uri) {
-        return loader(type, uri, Optional.empty());
+    public static URIContentLoader buildLoader(URI uri, ClassLoader cl) {
+        return loader(uri, URIContentLoaderType.from(uri), Optional.of(cl), Optional.empty());
     }
 
-    public static URIContentLoader loader(URIContentLoaderType type, URI uri, Optional<ClassLoader> cl) {
+    private static URIContentLoader loader(URI uri, URIContentLoaderType type, Optional<ClassLoader> cl, Optional<URIContentLoader> fallback) {
         switch (type) {
             case FILE:
-                return new FileContentLoader(Path.of(uri));
+                return new FileContentLoader(Path.of(uri), fallback);
             case HTTP:
-                return new HttpContentLoader(uri);
+                return new HttpContentLoader(uri, fallback);
             default:
             case CLASSPATH:
-                return new ClassPathContentLoader(uri.getPath(), cl.orElse(Thread.currentThread().getContextClassLoader()));
+                return new ClassPathContentLoader(uri, cl);
         }
+    }
+
+    private URIContentLoaderFactory() {
     }
 
 }

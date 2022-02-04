@@ -17,20 +17,34 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Optional;
 
-class HttpContentLoader implements URIContentLoader {
+class HttpContentLoader extends FallbackContentLoader {
 
     private URI uri;
 
-    public HttpContentLoader(URI uri) {
+    public HttpContentLoader(URI uri, Optional<URIContentLoader> fallback) {
+        super(fallback);
         this.uri = uri;
     }
 
     @Override
-    public byte[] toBytes() throws IOException {
-        try (InputStream is = uri.toURL().openStream()) {
-            return is.readAllBytes();
+    protected byte[] internalToBytes() throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+        // some http servers required specific accept header (*/* is specified for those we do not care about accept) 
+        conn.setRequestProperty("Accept", "application/json,application/yaml,application/yml,application/text,text/*,*/*");
+        int code = conn.getResponseCode();
+        if (code == HttpURLConnection.HTTP_OK) {
+            try (InputStream is = conn.getInputStream()) {
+                return is.readAllBytes();
+            }
+        } else {
+            try (InputStream is = conn.getErrorStream()) {
+                throw new IllegalArgumentException(String.format(
+                        "Failed to fetch remote file: %s. Status code is %d and response: %n %s", uri.toString(), code, new String(is.readAllBytes())));
+            }
         }
     }
 }

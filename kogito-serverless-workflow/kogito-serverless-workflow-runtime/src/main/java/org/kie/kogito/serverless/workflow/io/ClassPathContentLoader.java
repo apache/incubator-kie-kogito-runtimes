@@ -17,20 +17,32 @@ package org.kie.kogito.serverless.workflow.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.util.Objects;
+import java.util.Optional;
 
 public class ClassPathContentLoader implements URIContentLoader {
 
     private String path;
-    private ClassLoader cl;
+    private Optional<ClassLoader> cl;
 
-    public ClassPathContentLoader(String path, ClassLoader cl) {
-        this.path = path;
+    public ClassPathContentLoader(URI uri, Optional<ClassLoader> cl) {
+        this.path = getPath(uri);
         this.cl = cl;
+    }
+
+    private static String getPath(URI uri) {
+        String path = uri.getPath();
+        Objects.requireNonNull(path, "classpath cannot be null");
+        while (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        return path;
     }
 
     @Override
     public byte[] toBytes() throws IOException {
-        try (InputStream is = cl.getResourceAsStream(path)) {
+        try (InputStream is = cl.orElse(Thread.currentThread().getContextClassLoader()).getResourceAsStream(path)) {
             if (is == null) {
                 throw new IOException("Cannot find resource " + path + " in classpath");
             }

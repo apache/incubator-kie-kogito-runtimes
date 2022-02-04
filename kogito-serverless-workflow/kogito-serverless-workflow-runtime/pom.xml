@@ -22,11 +22,14 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-jackson-utils</artifactId>
     </dependency>
-     <dependency>
-        <groupId>com.github.java-json-tools</groupId>
-        <artifactId>json-schema-validator</artifactId>
-        <scope>compile</scope>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-json-org</artifactId>
      </dependency>
+    <dependency>
+       <groupId>org.everit.json</groupId>
+       <artifactId>org.everit.json.schema</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>

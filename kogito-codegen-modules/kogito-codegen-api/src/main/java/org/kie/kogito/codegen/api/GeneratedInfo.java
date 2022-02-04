@@ -18,6 +18,12 @@ package org.kie.kogito.codegen.api;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * A wrapper that allows a generator to return a core information structure, like process, plus an additional
+ * set of files to be generated
+ * 
+ * @param <T> the type of the object returned by info
+ */
 public class GeneratedInfo<T> {
     private T info;
     private Collection<GeneratedFile> files;

@@ -96,9 +96,10 @@ public abstract class StateHandler<S extends State> {
             startNodeFactory = parserContext.factory().startNode(parserContext.newId()).name(ServerlessWorkflowParser.NODE_START_NAME);
             DataInputSchema inputSchema = workflow.getDataInputSchema();
             if (inputSchema != null) {
+                processResourceFile(URI.create(inputSchema.getSchema()), parserContext);
                 startNodeFactory =
                         connect(startNodeFactory, factory.actionNode(parserContext.newId())
-                                .action(new DataInputSchemaActionSupplier(processResourceFile(URI.create(inputSchema.getSchema()), parserContext), inputSchema.isFailOnValidationErrors())));
+                                .action(new DataInputSchemaActionSupplier(inputSchema.getSchema(), inputSchema.isFailOnValidationErrors())));
             }
             startNodeFactory.done();
         }

@@ -532,6 +532,10 @@ public class ProcessCodegen extends AbstractGenerator {
         return processes.isEmpty();
     }
 
+    public Collection<Process> processes() {
+        return Collections.unmodifiableCollection(processes.values());
+    }
+
     @Override
     public Optional<ApplicationSection> section() {
         ProcessContainerGenerator moduleGenerator = new ProcessContainerGenerator(context());

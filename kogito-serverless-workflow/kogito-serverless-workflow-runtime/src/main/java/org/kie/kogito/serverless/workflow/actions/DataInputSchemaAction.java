@@ -15,22 +15,22 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
+import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaLoader;
 import org.jbpm.process.instance.impl.Action;
+import org.json.JSONObject;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.github.fge.jsonschema.core.report.ProcessingReport;
-import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.kie.kogito.serverless.workflow.actions.ActionUtils.getWorkflowData;
 
 public class DataInputSchemaAction implements Action {
 
-    private static JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
     private static final Logger logger = LoggerFactory.getLogger(DataInputSchemaAction.class);
 
     protected String schema;
@@ -43,11 +43,17 @@ public class DataInputSchemaAction implements Action {
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-
-        ProcessingReport report = factory.getJsonSchema(ObjectMapperFactory.get().readValue(URIContentLoaderFactory.loader(schema).toBytes(), JsonNode.class)).validate(getWorkflowData(context), true);
-        logger.info("Validation report {}", report);
-        if (!report.isSuccess() && failOnValidationErrors) {
-            throw new IllegalArgumentException(report.toString());
+        ObjectMapper mapper = ObjectMapperFactory.get();
+        try {
+            SchemaLoader.load(mapper.readValue(URIContentLoaderFactory.runtimeLoader(schema).toBytes(), JSONObject.class))
+                    .validate(mapper.convertValue(getWorkflowData(context), JSONObject.class));
+        } catch (ValidationException ex) {
+            if (failOnValidationErrors) {
+                throw ex;
+            } else {
+                logger.warn("There are validation errors {}", ex.getCausingExceptions());
+            }
         }
+
     }
 }

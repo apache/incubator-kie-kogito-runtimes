@@ -18,17 +18,19 @@ package org.kie.kogito.serverless.workflow.io;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
-public class FileContentLoader implements URIContentLoader {
+public class FileContentLoader extends FallbackContentLoader {
 
     private Path path;
 
-    public FileContentLoader(Path path) {
+    public FileContentLoader(Path path, Optional<URIContentLoader> fallbackLoader) {
+        super(fallbackLoader);
         this.path = path;
     }
 
     @Override
-    public byte[] toBytes() throws IOException {
+    protected byte[] internalToBytes() throws IOException {
         return Files.readAllBytes(path);
     }
 }
