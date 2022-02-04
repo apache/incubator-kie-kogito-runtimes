@@ -16,7 +16,6 @@
 
 package org.kie.kogito.addons.quarkus.knative.eventing;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,7 +26,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
-import org.eclipse.microprofile.health.Readiness;
+import org.eclipse.microprofile.health.Liveness;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ import static org.kie.kogito.addons.quarkus.knative.eventing.KnativeEventingConf
  *
  * @see <a href="https://knative.dev/docs/eventing/sinks/">Kative - About Sinks</a>
  */
-@Readiness
+@Liveness
 @ApplicationScoped
 public class KSinkInjectionHealthCheck implements HealthCheck {
 
@@ -53,25 +52,19 @@ public class KSinkInjectionHealthCheck implements HealthCheck {
         if ("".equals(sinkURL) || sinkURL == null) {
             LOGGER.warn(K_SINK + " variable not set in this environment. Returning not healthy.");
         } else {
-            String hostAddress = "";
             try {
                 final URI uri = new URI(sinkURL);
                 final InetAddress address = InetAddress.getByName(uri.getHost());
-                if (address != null && address.isReachable(10000)) {
+                if (address != null) {
                     responseBuilder.up();
                     return responseBuilder.build();
                 } else {
-                    if (address != null) {
-                        hostAddress = address.getHostAddress();
-                    }
-                    LOGGER.warn("Impossible to resolve host for URL " + sinkURL + ". Check if this host can resolve from this environment. Returning not healthy.");
+                    LOGGER.warn("Impossible to resolve host " + uri.getHost() + " for URL " + sinkURL + ". Check if this host can resolve from this environment. Returning not healthy.");
                 }
             } catch (UnknownHostException e) {
                 LOGGER.warn("Failed to lookup address " + sinkURL + ". Returning not healthy.");
             } catch (URISyntaxException e) {
                 LOGGER.warn("The " + K_SINK + " URL syntax is invalid: " + sinkURL + ". Returning not healthy.", e);
-            } catch (IOException e) {
-                LOGGER.warn(K_SINK + " URL " + sinkURL + " can be resolved to address " + hostAddress + ", but is unreachable.");
             }
         }
 
