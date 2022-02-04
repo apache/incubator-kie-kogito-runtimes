@@ -15,9 +15,17 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
 import java.util.Optional;
 
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderType;
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,5 +120,25 @@ public class ServerlessWorkflowUtils {
      */
     public static boolean isOpenApiOperation(FunctionDefinition function) {
         return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(OPENAPI_OPERATION_SEPARATOR);
+    }
+
+    public static String processResourceFile(URI uri, ParserContext context) {
+        URIContentLoaderType type = URIContentLoaderType.from(uri);
+        if (type == URIContentLoaderType.FILE) {
+            return addGeneratedFile(type, uri, Path.of(uri).getFileName().toString(), context);
+        } else {
+            return uri.toString();
+        }
+    }
+
+    private static String addGeneratedFile(URIContentLoaderType type, URI uri, String path, ParserContext context) {
+        try {
+            context.addGeneratedFile(
+                    new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, path, URIContentLoaderFactory.loader(type, uri, Optional.of(context.getContext().getClassLoader())).toBytes()));
+        } catch (IOException io) {
+            throw new IllegalArgumentException(io);
+        }
+        return path;
+
     }
 }

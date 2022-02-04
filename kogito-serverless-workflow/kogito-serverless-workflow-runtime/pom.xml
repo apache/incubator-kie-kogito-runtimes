@@ -22,6 +22,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-jackson-utils</artifactId>
     </dependency>
+     <dependency>
+        <groupId>com.github.java-json-tools</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <scope>compile</scope>
+     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>

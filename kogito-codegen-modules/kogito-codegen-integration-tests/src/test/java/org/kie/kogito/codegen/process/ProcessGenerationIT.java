@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
+import org.drools.core.io.impl.FileSystemResource;
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -63,9 +64,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.Process;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.AbstractCodegenIT;
+import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
 
@@ -118,12 +121,35 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
                 .filter(p -> ignoredFiles.stream().noneMatch(ignored -> p.contains(ignored)));
     }
 
+    private static List<Process> parseProcesses(Collection<File> processFiles) {
+        List<Process> processes = new ArrayList<>();
+        for (File processSourceFile : processFiles) {
+            try {
+                FileSystemResource r = new FileSystemResource(processSourceFile);
+                if (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(processSourceFile.getPath()::endsWith)) {
+                    processes.addAll(ProcessCodegen.parseProcessFile(r));
+                } else {
+                    ProcessCodegen.SUPPORTED_SW_EXTENSIONS.entrySet()
+                            .stream()
+                            .filter(e -> processSourceFile.getPath().endsWith(e.getKey()))
+                            .forEach(e -> processes.add(ProcessCodegen.parseWorkflowFile(r, e.getValue(), JavaKogitoBuildContext.builder().build()).info()));
+                }
+                if (processes.isEmpty()) {
+                    throw new IllegalArgumentException("Unable to process file with unsupported extension: " + processSourceFile);
+                }
+            } catch (RuntimeException e) {
+                throw new ProcessCodegenException(processSourceFile.getAbsolutePath(), e);
+            }
+        }
+        return processes;
+    }
+
     @ParameterizedTest
     @MethodSource("processesProvider")
     public void testProcessGeneration(String processFile) throws Exception {
         // for some tests this needs to be set to true
         System.setProperty("jbpm.enable.multi.con", "true");
-        List<org.kie.api.definition.process.Process> processes = ProcessCodegen.parseProcesses(Stream.of(processFile)
+        List<org.kie.api.definition.process.Process> processes = parseProcesses(Stream.of(processFile)
                 .map(resource -> new File(BASE_PATH.toString(), resource))
                 .collect(Collectors.toList()));
         RuleFlowProcess expected = (RuleFlowProcess) processes.get(0);
