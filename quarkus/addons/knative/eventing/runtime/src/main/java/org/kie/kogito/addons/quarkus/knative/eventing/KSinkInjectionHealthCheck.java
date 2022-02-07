@@ -37,7 +37,7 @@ import static org.kie.kogito.addons.quarkus.knative.eventing.KnativeEventingConf
  * In the cloud this is relevant for the underlying HTTP connector to send events to a Knative Sink.
  * Having a health check, would hold the pod to start until the Sink is injected, avoiding the application to produce events to nowhere.
  *
- * @see <a href="https://knative.dev/docs/eventing/sinks/">Kative - About Sinks</a>
+ * @see <a href="https://knative.dev/docs/eventing/sinks/">Knative - About Sinks</a>
  */
 @Liveness
 @ApplicationScoped
