@@ -37,7 +37,7 @@ import org.springframework.boot.test.autoconfigure.actuate.metrics.AutoConfigure
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = KogitoSpringbootApplication.class)
 @AutoConfigureMetrics
-public class MonitoringIT extends BaseRestTest {
+public class MonitoringTest extends BaseRestTest {
 
     @Autowired
     ConfigBean configBean;
