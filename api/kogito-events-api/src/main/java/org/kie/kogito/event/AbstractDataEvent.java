@@ -28,6 +28,7 @@ import org.kie.kogito.event.cloudevents.SpecVersionDeserializer;
 import org.kie.kogito.event.cloudevents.SpecVersionSerializer;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -63,6 +64,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     @JsonDeserialize(using = SpecVersionDeserializer.class)
     @JsonSerialize(using = SpecVersionSerializer.class)
+    @JsonProperty("specversion")
     private SpecVersion specVersion;
 
     private String id;
@@ -231,6 +233,13 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return null;
     }
 
+    @JsonIgnore
+    @Override
+    public Set<String> getAttributeNames() {
+        return DataEvent.super.getAttributeNames();
+    }
+
+    @JsonIgnore
     @Override
     public Set<String> getExtensionNames() {
         return Collections.emptySet();
