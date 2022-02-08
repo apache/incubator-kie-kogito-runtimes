@@ -20,6 +20,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
+import org.kie.kogito.quarkus.it.openapi.client.mocks.OperationsMockService;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 
@@ -39,6 +40,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 @QuarkusTestResource(OperationsMockService.class)
 class ConversationFlowIT {
 
+    // injected by OperationsMockService class
     WireMockServer subtractionService;
     WireMockServer multiplicationService;
 

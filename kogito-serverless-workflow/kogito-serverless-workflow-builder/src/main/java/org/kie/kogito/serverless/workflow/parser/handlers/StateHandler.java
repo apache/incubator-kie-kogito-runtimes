@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,19 +28,20 @@ import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
+import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
-import org.jbpm.ruleflow.core.factory.StartNodeFactory;
 import org.jbpm.ruleflow.core.factory.SupportsAction;
 import org.jbpm.workflow.core.node.Join;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.suppliers.CollectorActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CompensationActionSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.DataInputSchemaActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.MergeActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
@@ -47,6 +49,7 @@ import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.datainputschema.DataInputSchema;
 import io.serverlessworkflow.api.error.Error;
 import io.serverlessworkflow.api.error.ErrorDefinition;
 import io.serverlessworkflow.api.events.EventDefinition;
@@ -57,6 +60,7 @@ import io.serverlessworkflow.api.produce.ProduceEvent;
 import io.serverlessworkflow.api.transitions.Transition;
 
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
 
 public abstract class StateHandler<S extends State> {
 
@@ -64,7 +68,7 @@ public abstract class StateHandler<S extends State> {
     protected final Workflow workflow;
     protected final ParserContext parserContext;
 
-    private StartNodeFactory<?> startNodeFactory;
+    private NodeFactory<?, ?> startNodeFactory;
     private EndNodeFactory<?> endNodeFactory;
 
     private NodeFactory<?, ?> node;
@@ -88,7 +92,15 @@ public abstract class StateHandler<S extends State> {
 
     public void handleStart() {
         if (isStartState) {
+            RuleFlowProcessFactory factory = parserContext.factory();
             startNodeFactory = parserContext.factory().startNode(parserContext.newId()).name(ServerlessWorkflowParser.NODE_START_NAME);
+            DataInputSchema inputSchema = workflow.getDataInputSchema();
+            if (inputSchema != null) {
+                processResourceFile(URI.create(inputSchema.getSchema()), parserContext);
+                startNodeFactory =
+                        connect(startNodeFactory, factory.actionNode(parserContext.newId())
+                                .action(new DataInputSchemaActionSupplier(inputSchema.getSchema(), inputSchema.isFailOnValidationErrors())));
+            }
             startNodeFactory.done();
         }
     }
@@ -138,7 +150,8 @@ public abstract class StateHandler<S extends State> {
         compensation = parserContext.getStateHandler(compensation);
         while (compensation != null) {
             if (!compensation.usedForCompensation()) {
-                throw new IllegalArgumentException("compesation node can only have transition to other compensation node. Node " + compensation.getState().getName() + " is not used for compensation");
+                throw new IllegalArgumentException(
+                        "compensation node can only have transition to other compensation node. Node " + compensation.getState().getName() + " is not used for compensation");
             }
             lastNodeId = handleCompensation(embeddedSubProcess, compensation);
             compensation = parserContext.getStateHandler(compensation);
@@ -360,19 +373,22 @@ public abstract class StateHandler<S extends State> {
             FilterableNodeSupplier nodeSupplier) {
         String dataExpr = null;
         String toExpr = null;
+        boolean useData = true;
         if (eventFilter != null) {
             dataExpr = eventFilter.getData();
             toExpr = eventFilter.getToStateData();
+            useData = eventFilter.isUseData();
         }
-        return filterAndMergeNode(embeddedSubProcess, varName, null, dataExpr, toExpr, nodeSupplier);
+        return filterAndMergeNode(embeddedSubProcess, varName, null, dataExpr, toExpr, useData, nodeSupplier);
     }
 
-    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String fromStateExpr, String resultExpr, String toStateExpr,
+    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String fromStateExpr, String resultExpr, String toStateExpr, boolean shouldMerge,
             FilterableNodeSupplier nodeSupplier) {
-        return filterAndMergeNode(embeddedSubProcess, getVarName(), fromStateExpr, resultExpr, toStateExpr, nodeSupplier);
+        return filterAndMergeNode(embeddedSubProcess, getVarName(), fromStateExpr, resultExpr, toStateExpr, shouldMerge, nodeSupplier);
     }
 
     private final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionVarName, String fromStateExpr, String resultExpr, String toStateExpr,
+            boolean shouldMerge,
             FilterableNodeSupplier nodeSupplier) {
         embeddedSubProcess.variable(actionVarName, new ObjectDataType(JsonNode.class.getCanonicalName()));
 
@@ -387,16 +403,17 @@ public abstract class StateHandler<S extends State> {
             startNode = currentNode = nodeSupplier.apply(embeddedSubProcess, DEFAULT_WORKFLOW_VAR, actionVarName);
         }
 
-        if (resultExpr != null) {
-            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow.getExpressionLang(), resultExpr)
-                    .withVarNames(actionVarName, actionVarName).build()));
-        }
-
-        if (toStateExpr != null) {
-            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
-                    .action(new CollectorActionSupplier(workflow.getExpressionLang(), toStateExpr, DEFAULT_WORKFLOW_VAR, actionVarName)));
-        } else {
-            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
+        if (shouldMerge) {
+            if (resultExpr != null) {
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow.getExpressionLang(), resultExpr)
+                        .withVarNames(actionVarName, actionVarName).build()));
+            }
+            if (toStateExpr != null) {
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
+                        .action(new CollectorActionSupplier(workflow.getExpressionLang(), toStateExpr, DEFAULT_WORKFLOW_VAR, actionVarName)));
+            } else {
+                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
+            }
         }
         currentNode.done();
         return new MakeNodeResult(startNode, currentNode);
