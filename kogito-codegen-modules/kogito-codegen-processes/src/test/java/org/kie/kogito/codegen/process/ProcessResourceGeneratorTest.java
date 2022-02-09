@@ -16,11 +16,12 @@
 package org.kie.kogito.codegen.process;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.drools.core.io.impl.FileSystemResource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.definition.process.Process;
@@ -121,10 +122,11 @@ class ProcessResourceGeneratorTest {
     }
 
     private KogitoWorkflowProcess parseProcess(String fileName) {
-        List<Process> processes = ProcessCodegen.parseProcesses(Collections.singletonList(new File(fileName)));
+        Collection<Process> processes = ProcessCodegen.parseProcessFile(new FileSystemResource(new File(fileName)));
         assertThat(processes).hasSize(1);
-        assertThat(processes.get(0)).isInstanceOf(KogitoWorkflowProcess.class);
-        return (KogitoWorkflowProcess) processes.get(0);
+        Process process = processes.stream().findAny().orElseThrow();
+        assertThat(process).isInstanceOf(KogitoWorkflowProcess.class);
+        return (KogitoWorkflowProcess) process;
     }
 
     private KogitoBuildContext createContext(KogitoBuildContext.Builder contextBuilder) {
