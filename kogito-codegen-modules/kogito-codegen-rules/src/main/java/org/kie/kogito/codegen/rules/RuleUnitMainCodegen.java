@@ -70,8 +70,8 @@ public class RuleUnitMainCodegen {
 
         }
 
-        for (QueryGenerator queryEndpoint : validQueries) {
-            generatedFiles.add(queryEndpoint.generate());
+        for (QueryGenerator query : validQueries) {
+            generatedFiles.add(query.generate());
         }
         return generatedFiles;
     }
