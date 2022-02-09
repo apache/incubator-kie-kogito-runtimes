@@ -44,7 +44,7 @@ public class MessageProducer extends org.kie.kogito.services.event.impl.Abstract
         return marshaller.marshall(useCloudEvents.orElse(true) ? new ProcessDataEvent<>(
                 "",
                 "",
-                eventPayload,
+                eventData,
                 pi.getStringId(),
                 pi.getParentProcessInstanceStringId(),
                 pi.getRootProcessInstanceId(),
