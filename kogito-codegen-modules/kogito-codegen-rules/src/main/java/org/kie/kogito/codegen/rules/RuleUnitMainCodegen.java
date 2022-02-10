@@ -79,11 +79,11 @@ public class RuleUnitMainCodegen {
     private List<QueryGenerator> validateQueries() {
         List<QueryGenerator> validQueries = new ArrayList<>();
         for (RuleUnitGenerator ruleUnit : ruleUnitGenerators) {
-            for (QueryGenerator queryEndpoint : ruleUnit.queries()) {
-                if (queryEndpoint.validate()) {
-                    validQueries.add(queryEndpoint);
+            for (QueryGenerator queryGenerator : ruleUnit.queries()) {
+                if (queryGenerator.validate()) {
+                    validQueries.add(queryGenerator);
                 } else {
-                    errors.add(queryEndpoint.getError());
+                    errors.add(queryGenerator.getError());
                 }
             }
         }

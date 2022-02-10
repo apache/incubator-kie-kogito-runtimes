@@ -17,8 +17,10 @@ package org.kie.kogito.codegen.rules;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import org.drools.modelcompiler.builder.QueryModel;
+import org.drools.compiler.compiler.DroolsError;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -95,6 +97,19 @@ public class QueryGenerator implements RuleFileGenerator {
 
     public String className() {
         return generator.targetTypeName();
+    }
+
+    @Override
+    public boolean validate() {
+        return !queryModel.getBindings().isEmpty();
+    }
+
+    @Override
+    public DroolsError getError() {
+        if (queryModel.getBindings().isEmpty()) {
+            return new NoBindingQuery(queryModel);
+        }
+        return null;
     }
 
     @Override
@@ -199,5 +214,46 @@ public class QueryGenerator implements RuleFileGenerator {
     private void interpolateStrings(StringLiteralExpr vv) {
         String interpolated = vv.getValue().replace("$queryName$", queryModel.getName());
         vv.setString(interpolated);
+    }
+
+    public static class NoBindingQuery extends DroolsError {
+
+        private static final int[] ERROR_LINES = new int[0];
+
+        private final QueryModel query;
+
+        public NoBindingQuery(QueryModel query) {
+            this.query = query;
+        }
+
+        @Override
+        public String getMessage() {
+            return "Query " + query.getName() + " has no bound variable. At least one binding is required to determine the value returned by this query";
+        }
+
+        @Override
+        public int[] getLines() {
+            return ERROR_LINES;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if (!super.equals(o)) {
+                return false;
+            }
+            NoBindingQuery that = (NoBindingQuery) o;
+            return Objects.equals(query, that.query);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), query);
+        }
     }
 }
