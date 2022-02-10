@@ -15,10 +15,6 @@
  */
 package org.kie.kogito.codegen.rules;
 
-import java.util.Objects;
-
-import org.drools.compiler.compiler.DroolsError;
-import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
