@@ -762,8 +762,25 @@ limitations under the License.
         </property>
       </activation>
       <properties>
+        <enforcer.skip>false</enforcer.skip>
+        <license.skip>false</license.skip>
         <formatter.skip>false</formatter.skip>
         <formatter.goal>validate</formatter.goal>
+        <impsort.goal>check</impsort.goal>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>skip-validation</id>
+      <activation>
+        <property>
+          <name>skip-validation</name>
+        </property>
+      </activation>
+      <properties>
+        <formatter.skip>true</formatter.skip>
+        <license.skip>true</license.skip>
+        <enforcer.skip>true</enforcer.skip>
         <impsort.goal>check</impsort.goal>
       </properties>
     </profile>
@@ -777,6 +794,8 @@ limitations under the License.
         </property>
       </activation>
       <properties>
+        <enforcer.skip>true</enforcer.skip>
+        <license.skip>true</license.skip>
         <formatter.skip>true</formatter.skip>
         <skipITs>true</skipITs>
         <skipTests>true</skipTests>

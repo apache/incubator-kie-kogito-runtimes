@@ -28,11 +28,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: Maven Build
     steps:
-      - name: Clean Disk Space
-        uses: kiegroup/kogito-pipelines/.ci/actions/ubuntu-disk-space@main
-        if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Java and Maven Setup
-        uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
+        uses: actions/setup-java@v2
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
