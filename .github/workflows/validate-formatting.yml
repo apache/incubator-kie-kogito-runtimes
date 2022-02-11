@@ -29,7 +29,7 @@ jobs:
     name: Maven Build
     steps:
       - name: Java and Maven Setup
-        uses: actions/setup-java@v2
+        uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
