@@ -15,6 +15,11 @@
       "name": "quietEvent",
       "source": "",
       "type": "quiet"
+    },
+    {
+      "name": "neverArrivingEvent",
+      "source": "",
+      "type": "never"
     }
   ],
   "functions": [
@@ -48,8 +53,23 @@
        "onEvents": [
         {
           "eventRefs": [
-            "moveEvent",
             "quietEvent"
+          ],
+          "actions": [ 
+          {
+            "name": "printAfterEvent",
+            "functionRef": {
+              "refName": "printMessage",
+              "arguments": {
+                 "message": "$[*]"
+              }
+            }
+          }
+          ]
+        },
+         {
+          "eventRefs": [
+            "neverArrivingEvent"
           ],
           "eventDataFilter" : {
              "useData": false
@@ -66,7 +86,8 @@
           }
           ]
         }
-       ], 
+       ],
+      "exclusive": false, 
       "end": {
         "terminate": "true"
       }
