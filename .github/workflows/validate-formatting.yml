@@ -28,6 +28,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: Maven Build
     steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v2
       - name: Java and Maven Setup
         uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
         with:
