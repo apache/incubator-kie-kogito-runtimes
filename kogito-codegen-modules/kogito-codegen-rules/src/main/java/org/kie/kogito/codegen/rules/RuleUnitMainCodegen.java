@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import org.drools.drl.parser.DroolsError;
+import org.kie.kogito.codegen.api.GeneratedFile;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.drools.compiler.compiler.DroolsError;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 /**
  * Generates rule units, rule unit instances, pojos, queries
