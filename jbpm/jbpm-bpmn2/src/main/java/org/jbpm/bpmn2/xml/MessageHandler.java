@@ -22,8 +22,14 @@ import java.util.Map;
 import org.drools.core.xml.BaseAbstractHandler;
 import org.drools.core.xml.ExtensibleXmlParser;
 import org.drools.core.xml.Handler;
-import org.jbpm.bpmn2.core.*;
+import org.jbpm.bpmn2.core.DataStore;
+import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.core.Error;
+import org.jbpm.bpmn2.core.Escalation;
+import org.jbpm.bpmn2.core.Interface;
+import org.jbpm.bpmn2.core.ItemDefinition;
+import org.jbpm.bpmn2.core.Message;
+import org.jbpm.bpmn2.core.Signal;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.xml.sax.Attributes;
@@ -52,6 +58,7 @@ public class MessageHandler extends BaseAbstractHandler implements Handler {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
             final Attributes attrs, final ExtensibleXmlParser parser)
@@ -81,21 +88,20 @@ public class MessageHandler extends BaseAbstractHandler implements Handler {
             buildData.setMetaData("Messages", messages);
         }
         Message message = new Message(id);
-        message.setType(itemDefinition.getStructureRef());
+        message.setType(itemDefinition.getStructureRef() == null || itemDefinition.getStructureRef().isEmpty() ? "Object" : itemDefinition.getStructureRef());
         message.setName(name);
-
-        if (message.getType() != null && !message.getType().isEmpty()) {
-            messages.put(id, message);
-        }
+        messages.put(id, message);
         return message;
     }
 
+    @Override
     public Object end(final String uri, final String localName,
             final ExtensibleXmlParser parser) throws SAXException {
         parser.endElementBuilder();
         return parser.getCurrent();
     }
 
+    @Override
     public Class<?> generateNodeFor() {
         return Message.class;
     }

@@ -14,23 +14,11 @@
   <bpmn2:itemDefinition id="_ageItem"
     structureRef="Integer" />
   <bpmn2:itemDefinition
-    id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_InMessageType"
-    structureRef="" />
-  <bpmn2:itemDefinition
-    id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_OutMessageType"
-    structureRef="" />
-  <bpmn2:itemDefinition
     id="__750337AF-3A39-4B58-9CA6-947FCE6E61DB_nameInputXItem"
     structureRef="String" />
   <bpmn2:itemDefinition
     id="__750337AF-3A39-4B58-9CA6-947FCE6E61DB_ageInputXItem"
     structureRef="Integer" />
-  <bpmn2:message
-    id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_InMessage"
-    itemRef="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_InMessageType" />
-  <bpmn2:message
-    id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_OutMessage"
-    itemRef="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_OutMessageType" />
   <bpmn2:interface
     id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_ServiceInterface"
     name="org.kie.kogito.codegen.data.HelloService"
@@ -38,8 +26,6 @@
     <bpmn2:operation
       id="_750337AF-3A39-4B58-9CA6-947FCE6E61DB_ServiceOperation"
       name="helloNoOutput" implementationRef="helloNoOutput">
-      <bpmn2:inMessageRef>_750337AF-3A39-4B58-9CA6-947FCE6E61DB_InMessage</bpmn2:inMessageRef>
-      <bpmn2:outMessageRef>_750337AF-3A39-4B58-9CA6-947FCE6E61DB_OutMessage</bpmn2:outMessageRef>
     </bpmn2:operation>
   </bpmn2:interface>
   <bpmn2:process id="MultiParamServiceProcessNoOutput" drools:version="1.0"

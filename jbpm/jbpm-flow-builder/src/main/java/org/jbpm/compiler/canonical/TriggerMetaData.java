@@ -99,17 +99,26 @@ public class TriggerMetaData {
     }
 
     private TriggerMetaData validate() {
+        StringBuilder errorMsg = new StringBuilder();
         if (TriggerType.ConsumeMessage.equals(type) || TriggerType.ProduceMessage.equals(type)) {
 
-            if (StringUtils.isEmpty(name) ||
-                    StringUtils.isEmpty(dataType) ||
-                    StringUtils.isEmpty(modelRef)) {
-                throw new IllegalArgumentException("Message Trigger information is not complete " + this);
+            if (StringUtils.isEmpty(name)) {
+                errorMsg.append(" It does not contain name.");
+            }
+
+            if (StringUtils.isEmpty(dataType)) {
+                errorMsg.append(" It does not contain dataType.");
+            }
+
+            if (StringUtils.isEmpty(modelRef)) {
+                errorMsg.append(" It does not contain modelRef.");
             }
         } else if (TriggerType.Signal.equals(type) && StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException("Signal Trigger information is not complete " + this);
+            errorMsg.append(" Signal should contain a name.");
         }
-
+        if (errorMsg.length() > 0) {
+            throw new IllegalArgumentException("Error validating metadata trigger " + this + errorMsg);
+        }
         return this;
     }
 

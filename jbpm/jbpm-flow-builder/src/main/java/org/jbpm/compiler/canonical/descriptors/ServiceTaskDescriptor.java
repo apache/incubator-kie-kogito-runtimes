@@ -73,7 +73,6 @@ public class ServiceTaskDescriptor extends AbstractServiceTaskDescriptor {
     protected ServiceTaskDescriptor(WorkItemNode workItemNode, ClassLoader contextClassLoader) {
         super(workItemNode);
         mangledName = mangledHandlerName(interfaceName, operationName, String.valueOf(workItemNode.getId()));
-        this.parameters = extractTaskParameters();
         try {
             cls = contextClassLoader.loadClass(interfaceName);
         } catch (ClassNotFoundException e) {
@@ -84,6 +83,7 @@ public class ServiceTaskDescriptor extends AbstractServiceTaskDescriptor {
                                     workItemNode.getName(),
                                     interfaceName));
         }
+        this.parameters = extractTaskParameters();
         try {
             method = ReflectionUtils.getMethod(contextClassLoader, cls, operationName, parameters.stream().map(Argument::getType).collect(Collectors.toList()));
         } catch (ReflectiveOperationException ex) {
