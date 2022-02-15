@@ -22,6 +22,7 @@ import org.kie.api.pmml.PMML4Result;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
+import org.kie.pmml.evaluator.core.service.PMMLRuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +52,33 @@ public class PredictionsAssetsProcessor {
         logger.debug("pmmlEvaluators {}", pmmlEvaluators.size());
         final List<ReflectiveClassBuildItem> toReturn = new ArrayList<>();
         toReturn.add(new ReflectiveClassBuildItem(true, true, PMML4Result.class));
-        pmmlEvaluators.forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true, pmmlModelEvaluator.getClass())));
+        pmmlEvaluators.forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true,
+                pmmlModelEvaluator.getClass())));
         logger.debug("toReturn {}", toReturn.size());
         return toReturn;
     }
 
     @BuildStep
-    public NativeImageResourceBuildItem predictionSPI() {
-        logger.debug("predictionSPI()");
+    public NativeImageResourceBuildItem predictionSPIEvaluator() {
+        logger.debug("predictionSPIEvaluator()");
         return new NativeImageResourceBuildItem("META-INF/services/org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator");
+    }
+
+    @BuildStep
+    public NativeImageResourceBuildItem predictionSPIRuntimeService() {
+        logger.debug("predictionSPIRuntimeService()");
+        return new NativeImageResourceBuildItem("META-INF/services/org.kie.api.internal.runtime.KieRuntimeService");
+    }
+
+    @BuildStep
+    public NativeImageResourceBuildItem predictionSPIRuntime() {
+        logger.debug("predictionSPIRuntime()");
+        return new NativeImageResourceBuildItem("META-INF/services/org.kie.pmml.api.runtime.PMMLRuntime");
+    }
+
+    @BuildStep
+    public ReflectiveClassBuildItem commonSPIReflectiveClassRuntimeService() {
+        logger.debug("commonSPIReflectiveClassRuntimeService()");
+        return new ReflectiveClassBuildItem(true, true, PMMLRuntimeService.class);
     }
 }
