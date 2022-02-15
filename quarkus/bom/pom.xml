@@ -52,9 +52,9 @@
         <version>${version.io.quarkiverse.reactivemessaging.http}</version>
       </dependency>
       <dependency>
-        <groupId>io.smallrye</groupId>
-        <artifactId>smallrye-open-api-core</artifactId>
-        <version>${version.io.smallrye-open-api-core}</version>
+        <groupId>org.eclipse.microprofile.openapi</groupId>
+        <artifactId>microprofile-openapi-api</artifactId>
+        <version>${version.org.eclipse.microprofile-openapi-api}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
