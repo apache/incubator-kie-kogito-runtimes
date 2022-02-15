@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-processes-extension</artifactId>
-        <version>1.17.0.Final</version>
+        <version>1.17.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>kogito-quarkus-processes-integration-test</artifactId>
