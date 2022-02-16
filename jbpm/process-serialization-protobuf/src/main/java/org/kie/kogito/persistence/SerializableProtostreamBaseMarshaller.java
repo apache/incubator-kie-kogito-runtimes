@@ -48,6 +48,8 @@ public class SerializableProtostreamBaseMarshaller implements MessageMarshaller<
     public void writeTo(ProtoStreamWriter writer, Serializable serializable) throws IOException {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream(); ObjectOutputStream out = new ObjectOutputStream(stream)) {
             out.writeObject(serializable);
+            out.flush();
+            out.close();
             writer.writeBytes("data", stream.toByteArray());
         } catch (IOException e) {
             throw new ProcessInstanceMarshallerException("Not possible to marshall value: " + serializable, e);

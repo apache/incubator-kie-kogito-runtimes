@@ -16,11 +16,15 @@
 package org.kie.kogito.quarkus.processes.deployment;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +54,7 @@ import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusHumanTaskSe
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStatefulProcessService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
+import org.kie.kogito.persistence.SerializableProtostreamBaseMarshaller;
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
@@ -136,6 +141,18 @@ public class ProcessesAssetsProcessor {
             addInnerClasses(KogitoNodeInstanceContentsProtobuf.class, reflectiveHierarchyClass);
             addInnerClasses(KogitoWorkItemsProtobuf.class, reflectiveHierarchyClass);
         }
+    }
+
+    /**
+     * Declaration of classes used by java serialization, currently in process proto marshaller for persistence, see ({@link SerializableProtostreamBaseMarshaller}.
+     */
+    @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
+    public ReflectiveClassBuildItem reflectionForJavaSerialization() {
+        return ReflectiveClassBuildItem.serializationClass(Number.class.getCanonicalName(),
+                                                           BigDecimal.class.getCanonicalName(),
+                                                           BigInteger.class.getCanonicalName(),
+                                                           ZonedDateTime.class.getCanonicalName(),
+                                                           Instant.class.getCanonicalName());
     }
 
     @BuildStep
