@@ -245,17 +245,15 @@ public class ModelMetaData {
      */
     private void applyOpenApiSchemaForJsonNodeModel(final FieldDeclaration modelFieldDeclaration) {
         if (this.supportsOpenApiGeneration && JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
-            modelFieldDeclaration.addAnnotation(
-                    new NormalAnnotationExpr(new Name(Schema.class.getCanonicalName()),
-                            NodeList.nodeList(new MemberValuePair("implementation", new ClassExpr().setType(Object.class.getCanonicalName())))));
+            modelFieldDeclaration.addAndGetAnnotation(Schema.class).addPair("implementation", new ClassExpr().setType(Object.class.getCanonicalName()));
         }
     }
 
     private FieldDeclaration declareField(String name, String type) {
         return new FieldDeclaration().addVariable(
-                        new VariableDeclarator()
-                                .setType(type)
-                                .setName(name))
+                new VariableDeclarator()
+                        .setType(type
+                        .setName(name))
                 .addModifier(Modifier.Keyword.PRIVATE);
     }
 
