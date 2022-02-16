@@ -64,6 +64,7 @@
     <dependency>
       <groupId>org.eclipse.microprofile.openapi</groupId>
       <artifactId>microprofile-openapi-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- code generation for executable model -->

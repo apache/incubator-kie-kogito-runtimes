@@ -75,6 +75,7 @@ public class ModelMetaData {
     private Consumer<CompilationUnit>[] customGenerator;
 
     private boolean supportsValidation;
+    private boolean supportsOpenApiGeneration;
 
     public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden) {
         this(processId, packageName, modelClassSimpleName, visibility, variableScope, hidden, "/class-templates/ModelTemplate.java");
@@ -243,7 +244,7 @@ public class ModelMetaData {
      * @see <a href="https://github.com/smallrye/smallrye-open-api/issues/1048">Jackson's JsonNode class is being incorrectly rendered in the spec file</a>
      */
     private void applyOpenApiSchemaForJsonNodeModel(final FieldDeclaration modelFieldDeclaration) {
-        if (JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
+        if (this.supportsOpenApiGeneration && JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
             modelFieldDeclaration.addAnnotation(
                     new NormalAnnotationExpr(new Name(Schema.class.getCanonicalName()),
                             NodeList.nodeList(new MemberValuePair("implementation", new ClassExpr().setType(Object.class.getCanonicalName())))));
@@ -272,6 +273,14 @@ public class ModelMetaData {
 
     public void setSupportsValidation(boolean supportsValidation) {
         this.supportsValidation = supportsValidation;
+    }
+
+    public boolean isSupportsOpenApiGeneration() {
+        return supportsOpenApiGeneration;
+    }
+
+    public void setSupportsOpenApiGeneration(boolean supportsOpenApiGeneration) {
+        this.supportsOpenApiGeneration = supportsOpenApiGeneration;
     }
 
     @Override
