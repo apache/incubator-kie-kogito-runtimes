@@ -149,10 +149,10 @@ public class ProcessesAssetsProcessor {
     @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
     public ReflectiveClassBuildItem reflectionForJavaSerialization() {
         return ReflectiveClassBuildItem.serializationClass(Number.class.getCanonicalName(),
-                                                           BigDecimal.class.getCanonicalName(),
-                                                           BigInteger.class.getCanonicalName(),
-                                                           ZonedDateTime.class.getCanonicalName(),
-                                                           Instant.class.getCanonicalName());
+                BigDecimal.class.getCanonicalName(),
+                BigInteger.class.getCanonicalName(),
+                ZonedDateTime.class.getCanonicalName(),
+                Instant.class.getCanonicalName());
     }
 
     @BuildStep
