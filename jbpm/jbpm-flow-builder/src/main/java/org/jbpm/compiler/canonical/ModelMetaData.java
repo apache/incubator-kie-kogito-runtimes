@@ -252,7 +252,7 @@ public class ModelMetaData {
     private FieldDeclaration declareField(String name, String type) {
         return new FieldDeclaration().addVariable(
                 new VariableDeclarator()
-                        .setType(type
+                        .setType(type)
                         .setName(name))
                 .addModifier(Modifier.Keyword.PRIVATE);
     }
