@@ -20,14 +20,16 @@ import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
+import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.CallbackState;
 
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.eventBasedExclusiveSplitNode;
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.joinExclusiveNode;
+import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.timerNode;
+import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.resolveEventTimeout;
 
 public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> {
 
@@ -47,8 +49,8 @@ public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> 
         if (state.getAction() != null) {
             currentNode = connect(currentNode, getActionNode(embeddedSubProcess, state.getAction()));
         }
-        String eventTimeout = getEventTimeout();
-        if (eventTimeout != null && !eventTimeout.isEmpty()) {
+        String eventTimeout = resolveEventTimeout(state, workflow);
+        if (eventTimeout != null) {
             // Create the event based exclusive split node.
             SplitFactory<?> splitNode = eventBasedExclusiveSplitNode(embeddedSubProcess, parserContext.newId());
             // Create the join node for joining the event fired and the timer fired branches.
@@ -61,11 +63,10 @@ public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> 
             // Connect the event fired branch last node with the join node.
             connect(eventFiredBranchLastNode, joinNode);
             // Create the timer fired branch
-            org.jbpm.ruleflow.core.factory.TimerNodeFactory<?> eventTimeoutTimerNode = ServerlessWorkflowParser.timerNode(embeddedSubProcess, parserContext.newId(), eventTimeout);
+            TimerNodeFactory<?> eventTimeoutTimerNode = timerNode(embeddedSubProcess, parserContext.newId(), eventTimeout);
             connect(splitNode, eventTimeoutTimerNode);
             // Connect the timer fired branch last node with the join node
-            connect(eventTimeoutTimerNode, joinNode);
-            currentNode = joinNode;
+            currentNode = connect(eventTimeoutTimerNode, joinNode);
         } else {
             // No timeouts, standard case.
             currentNode = connect(currentNode,

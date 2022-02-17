@@ -25,7 +25,7 @@ import io.serverlessworkflow.api.timeouts.TimeoutsDefinition;
 
 public class TimeoutsConfigResolver {
 
-    private static final String NON_NEGATIVE_DURATION_MUST_BE_PROVIDED = "A positive ISO 8601 duration must be provided when it is configured.";
+    private static final String NON_NEGATIVE_DURATION_MUST_BE_PROVIDED = "When configured, it must be set with a greater than zero ISO 8601 time duration. For example PT30S.";
 
     private static final String INVALID_EVENT_TIMEOUT_FOR_STATE_ERROR = "An invalid \"eventTimeout\": \"%s\" configuration was provided for the state \"%s\" in the serverless workflow: \"%s\". " +
             NON_NEGATIVE_DURATION_MUST_BE_PROVIDED;
@@ -39,40 +39,30 @@ public class TimeoutsConfigResolver {
     public static String resolveEventTimeout(State state, Workflow workflow) {
         TimeoutsDefinition timeouts = state.getTimeouts();
         if (timeouts != null && timeouts.getEventTimeout() != null) {
-            validateStateTimeoutValue(state, workflow, timeouts.getEventTimeout());
+            validateDuration(timeouts.getEventTimeout(),
+                    String.format(INVALID_EVENT_TIMEOUT_FOR_STATE_ERROR,
+                            timeouts.getEventTimeout(),
+                            state.getName(),
+                            workflow.getName()));
             return timeouts.getEventTimeout();
         } else {
             timeouts = workflow.getTimeouts();
             if (timeouts != null && timeouts.getEventTimeout() != null) {
-                validateWorkflowTimeoutValue(workflow, timeouts.getEventTimeout());
+                validateDuration(timeouts.getEventTimeout(),
+                        String.format(INVALID_EVENT_TIMEOUT_FOR_WORKFLOW_ERROR,
+                                timeouts.getEventTimeout(),
+                                workflow.getName()));
                 return timeouts.getEventTimeout();
             }
         }
         return null;
     }
 
-    private static void validateStateTimeoutValue(State state, Workflow workflow, String timeoutValue) {
-        if (isInvalidDuration(timeoutValue)) {
-            throw new IllegalArgumentException(String.format(INVALID_EVENT_TIMEOUT_FOR_STATE_ERROR, timeoutValue, state.getName(), workflow.getName()));
-        }
-    }
-
-    private static void validateWorkflowTimeoutValue(Workflow workflow, String timeoutValue) {
-        if (isInvalidDuration(timeoutValue)) {
-            throw new IllegalArgumentException(String.format(INVALID_EVENT_TIMEOUT_FOR_WORKFLOW_ERROR, timeoutValue, workflow.getName()));
-        }
-    }
-
-    private static boolean isInvalidDuration(String value) {
-        Duration duration = parseOrIgnoreException(value);
-        return duration == null || duration.isNegative() || duration.isZero();
-    }
-
-    private static Duration parseOrIgnoreException(String duration) {
+    private static void validateDuration(String value, String message) {
         try {
-            return Duration.parse(duration);
-        } catch (DateTimeParseException ignored) {
-            return null;
+            Duration.parse(value);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(message, e);
         }
     }
 }
