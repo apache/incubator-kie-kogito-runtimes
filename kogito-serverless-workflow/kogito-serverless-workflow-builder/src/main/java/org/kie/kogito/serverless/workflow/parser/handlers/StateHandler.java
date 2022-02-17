@@ -61,6 +61,7 @@ import io.serverlessworkflow.api.transitions.Transition;
 
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
+import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.resolveEventTimeout;
 
 public abstract class StateHandler<S extends State> {
 
@@ -467,5 +468,9 @@ public abstract class StateHandler<S extends State> {
         void onIdTarget(long targetId);
 
         void onEmptyTarget();
+    }
+
+    protected String getEventTimeout() {
+        return resolveEventTimeout(state, workflow);
     }
 }

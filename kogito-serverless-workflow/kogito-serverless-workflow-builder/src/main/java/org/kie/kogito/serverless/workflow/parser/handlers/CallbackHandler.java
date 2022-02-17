@@ -17,11 +17,17 @@ package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
+import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.states.CallbackState;
+
+import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.eventBasedExclusiveSplitNode;
+import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.joinExclusiveNode;
 
 public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> {
 
@@ -41,8 +47,32 @@ public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> 
         if (state.getAction() != null) {
             currentNode = connect(currentNode, getActionNode(embeddedSubProcess, state.getAction()));
         }
-        currentNode = connect(currentNode,
-                filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)));
+        String eventTimeout = getEventTimeout();
+        if (eventTimeout != null && !eventTimeout.isEmpty()) {
+            // Create the event based exclusive split node.
+            SplitFactory<?> splitNode = eventBasedExclusiveSplitNode(embeddedSubProcess, parserContext.newId());
+            // Create the join node for joining the event fired and the timer fired branches.
+            JoinFactory<?> joinNode = joinExclusiveNode(embeddedSubProcess, parserContext.newId());
+            // Connect the currentNode with the split
+            connect(currentNode, splitNode);
+            // Create the event fired branch, normal path if the event arrives in time.
+            NodeFactory<?, ?> eventFiredBranchLastNode = connect(splitNode,
+                    filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)));
+            // Connect the event fired branch last node with the join node.
+            connect(eventFiredBranchLastNode, joinNode);
+            // Create the timer fired branch
+            org.jbpm.ruleflow.core.factory.TimerNodeFactory<?> eventTimeoutTimerNode = ServerlessWorkflowParser.timerNode(embeddedSubProcess, parserContext.newId(), eventTimeout);
+            connect(splitNode, eventTimeoutTimerNode);
+            // Connect the timer fired branch last node with the join node
+            connect(eventTimeoutTimerNode, joinNode);
+            currentNode = joinNode;
+        } else {
+            // No timeouts, standard case.
+            currentNode = connect(currentNode,
+                    filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)));
+
+        }
+        // Finally, connect with the End event
         connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         return new MakeNodeResult(embeddedSubProcess);
     }
