@@ -15,15 +15,8 @@
  */
 package org.kie.kogito.quarkus;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
-import org.jboss.jandex.Indexer;
 import org.junit.jupiter.api.BeforeAll;
 import org.kie.kogito.codegen.process.persistence.proto.AbstractProtoGeneratorTest;
 import org.kie.kogito.codegen.process.persistence.proto.ProtoGenerator;
@@ -40,9 +33,7 @@ class JandexProtoGeneratorTest extends AbstractProtoGeneratorTest<ClassInfo> {
 
     @BeforeAll
     protected static void indexOfTestClasses() {
-        Indexer indexer = new Indexer();
-        testClasses.forEach(clazz -> indexClass(indexer, clazz));
-        indexWithAllClass = indexer.complete();
+        indexWithAllClass = JandexTestUtils.createTestIndex();
     }
 
     @Override
@@ -52,21 +43,7 @@ class JandexProtoGeneratorTest extends AbstractProtoGeneratorTest<ClassInfo> {
 
     @Override
     protected ClassInfo convertToType(Class<?> clazz) {
-        return Optional.ofNullable(indexWithAllClass.getClassByName(DotName.createSimple(clazz.getCanonicalName())))
-                .orElseThrow(() -> new IllegalStateException("Class " + clazz.getCanonicalName() + " not found in the index, " +
-                        "add the class to AbstractProtoGeneratorTest.testClasses collection"));
+        return JandexTestUtils.findClassInfo(indexWithAllClass, clazz);
     }
 
-    private static ClassInfo indexClass(Indexer indexer, Class<?> toIndex) {
-        try {
-            return indexer.index(Objects.requireNonNull(JandexProtoGenerator.class.getClassLoader()
-                    .getResourceAsStream(toPath(toIndex))));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private static String toPath(Class<?> clazz) {
-        return clazz.getCanonicalName().replace('.', '/') + ".class";
-    }
 }

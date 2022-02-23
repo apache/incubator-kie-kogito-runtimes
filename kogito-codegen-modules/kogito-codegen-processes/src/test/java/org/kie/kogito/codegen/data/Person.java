@@ -23,17 +23,22 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Person {
 
     private String id;
     private String name;
     private int age;
+    private byte[] bytes;
     private boolean adult;
     private Person parent;
+    private Person[] relatives;
     private Instant instant;
     private LocalDateTime localDateTime;
     private LocalDate localDate;
@@ -42,6 +47,8 @@ public class Person {
     private OffsetDateTime offsetDateTime;
     private Date date;
     private BigDecimal bigDecimal;
+    @JsonIgnore
+    private Money salary;
 
     private transient String ignoreMe;
 
@@ -55,6 +62,7 @@ public class Person {
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
+        salary = Money.of(BigDecimal.valueOf(100));
     }
 
     public String getName() {
@@ -185,6 +193,34 @@ public class Person {
         this.bigDecimal = bigDecimal;
     }
 
+    public Money getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Money salary) {
+        this.salary = salary;
+    }
+
+    public Person[] getRelatives() {
+        return relatives;
+    }
+
+    public void setRelatives(Person[] relatives) {
+        this.relatives = relatives;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
@@ -193,6 +229,7 @@ public class Person {
                 ", age=" + age +
                 ", adult=" + adult +
                 ", parent=" + parent +
+                ", relatives=" + Arrays.toString(relatives) +
                 ", instant=" + instant +
                 ", localDateTime=" + localDateTime +
                 ", localDate=" + localDate +
@@ -201,13 +238,10 @@ public class Person {
                 ", offsetDateTime=" + offsetDateTime +
                 ", date=" + date +
                 ", bigDecimal=" + bigDecimal +
+                ", salary=" + salary +
                 ", ignoreMe='" + ignoreMe + '\'' +
                 ", addresses=" + addresses +
                 '}';
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Override

@@ -145,6 +145,8 @@ public class ProcessesAssetsProcessor {
                 "org.kie.kogito.process.impl.BaseWorkItem",
                 "org.kie.kogito.event.Topic",
                 "org.kie.kogito.event.cloudevents.CloudEventMeta",
+                "org.kie.kogito.event.cloudevents.SpecVersionDeserializer",
+                "org.kie.kogito.event.cloudevents.SpecVersionSerializer",
                 "org.kie.kogito.jobs.api.Job");
     }
 
@@ -263,7 +265,8 @@ public class ProcessesAssetsProcessor {
 
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
-                protoGenerator);
+                protoGenerator,
+                new JandexMarshallerGenerator(context, modelClasses));
 
         if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE) ||
                 persistenceGenerator.persistenceType().equals(PersistenceGenerator.JDBC_PERSISTENCE_TYPE)) {
