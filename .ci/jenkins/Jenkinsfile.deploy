@@ -12,7 +12,7 @@ pipeline {
     }
 
     tools {
-        maven 'kie-maven-3.6.3'
+        maven 'kie-maven-3.8.1'
         jdk 'kie-jdk11'
     }
 
@@ -50,7 +50,6 @@ pipeline {
                     if (isRelease() || isCreatePr()) {
                         // Verify version is set
                         assert getProjectVersion()
-                        assert getDroolsVersion()
 
                         if (isRelease()) {
                             // Verify if on right release branch
@@ -69,7 +68,6 @@ pipeline {
                         setDeployPropertyIfNeeded('git.branch', getBuildBranch())
                         setDeployPropertyIfNeeded('git.author', getGitAuthor())
                         setDeployPropertyIfNeeded('project.version', getProjectVersion())
-                        setDeployPropertyIfNeeded('drools.version', getDroolsVersion())
                         setDeployPropertyIfNeeded('release', isRelease())
                     }
                 }
@@ -94,19 +92,27 @@ pipeline {
             steps {
                 script {
                     maven.mvnVersionsSet(getMavenCommand(), getProjectVersion(), !isRelease())
-                    maven.mvnSetVersionProperty(getMavenCommand(), 'version.org.kie', getDroolsVersion())
                 }
             }
         }
         stage('Build & Test') {
             steps {
                 script {
-                    getMavenCommand().skipTests(params.SKIP_TESTS).run('clean install')
+                    getMavenCommand()
+                        .withProperty('maven.test.failure.ignore', true)
+                        // `-Dquarkus.bootstrap.effective-model-builder` is a temporary fix due to quarkus resolver on tests
+                        // https://github.com/quarkusio/quarkus/issues/23205
+                        .withProperty('quarkus.bootstrap.effective-model-builder', true)
+                        .skipTests(params.SKIP_TESTS)
+                        .run('clean install')
                 }
             }
             post {
                 always {
-                    saveReports(params.SKIP_TESTS)
+                    script {
+                        saveReports()
+                        util.archiveConsoleLog()
+                    }
                 }
             }
         }
@@ -198,8 +204,8 @@ pipeline {
     }
 }
 
-void saveReports(boolean allowEmpty=false) {
-    junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: allowEmpty
+void saveReports() {
+    junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
 }
 
 void checkoutRepo() {
@@ -223,9 +229,7 @@ void commitAndCreatePR() {
 
 void sendNotification() {
     if (params.SEND_NOTIFICATION) {
-        emailext body: "**Deploy job** #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
-             subject: "[${getBuildBranch()}] Kogito Runtimes",
-             to: env.KOGITO_CI_EMAIL_TO
+        mailer.sendMarkdownTestSummaryNotification('Deploy', "[${getBuildBranch()}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
     } else {
         echo 'No notification sent per configuration'
     }
@@ -268,10 +272,6 @@ String getProjectVersion() {
     return params.PROJECT_VERSION
 }
 
-String getDroolsVersion() {
-    return params.DROOLS_VERSION
-}
-
 String getBotBranch() {
     return "${getProjectVersion()}-${env.BOT_BRANCH_HASH}"
 }
@@ -292,7 +292,7 @@ void setDeployPropertyIfNeeded(String key, def value) {
 
 MavenCommand getMavenCommand(String directory = '') {
     directory = directory ?: getRepoName()
-    return new MavenCommand(this, ['-fae'])
+    return new MavenCommand(this, ['-fae', '-ntp'])
                 .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
                 .inDirectory(directory)
                 .withProperty('full')
