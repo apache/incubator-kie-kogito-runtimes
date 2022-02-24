@@ -328,7 +328,8 @@ void runMavenStage() {
 }
 
 MavenStagingHelper getStagingHelper() {
-    return new MavenStagingHelper(this, getMavenCommand())
+    mvnCmd = getMavenCommand().withProperty('keepStagingRepositoryOnFailure', true)
+    return new MavenStagingHelper(this, mvnCmd)
         .withNexusReleaseUrl(env.NEXUS_RELEASE_URL)
         .withNexusReleaseRepositoryId(env.NEXUS_RELEASE_REPOSITORY_ID)
 }
