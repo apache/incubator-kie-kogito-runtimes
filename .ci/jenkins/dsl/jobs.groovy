@@ -23,7 +23,7 @@ def getJobParams(String jobName, String jobFolder, String jenkinsfileName, Strin
     return jobParams
 }
 
-Map getMultijobPRConfig(boolean isNative = false) {
+Map getMultijobPRConfig() {
     return [
         parallel: true,
         buildchain: true,
@@ -43,10 +43,7 @@ Map getMultijobPRConfig(boolean isNative = false) {
             ], [
                 id: 'kogito-apps',
                 dependsOn: 'optaplanner',
-                repository: 'kogito-apps',
-                env : [
-                    ADDITIONAL_TIMEOUT: isNative ? '360' : '210',
-                ]
+                repository: 'kogito-apps'
             ], [
                 id: 'kogito-examples',
                 dependsOn: 'Optaplanner',
@@ -83,7 +80,6 @@ setupMultijobPrLTSChecks()
 
 // Nightly jobs
 if (Utils.isMainBranch(this)) {
-    setupDroolsJob()
     setupQuarkusJob('main')
 }
 setupNativeJob()
@@ -121,28 +117,11 @@ void setupMultijobPrDefaultChecks() {
 }
 
 void setupMultijobPrNativeChecks() {
-    KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig(true)) { return getDefaultJobParams() }
+    KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
 }
 
 void setupMultijobPrLTSChecks() {
     KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
-}
-
-void setupDroolsJob() {
-    def jobParams = getJobParams('kogito-drools-snapshot', FolderUtils.getNightlyFolder(this), "${JENKINSFILE_PATH}/Jenkinsfile.drools", 'Kogito Runtimes Drools Snapshot')
-    jobParams.triggers = [ cron : 'H 2 * * *' ]
-    KogitoJobTemplate.createPipelineJob(this, jobParams).with {
-        parameters {
-            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
-            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
-
-            stringParam('DROOLS_VERSION', '', '(optional) If not set, then it will be guessed from drools repository')
-            stringParam('DROOLS_REPOSITORY', '', '(optional) In case Drools given version is in a specific repository')
-        }
-        environmentVariables {
-            env('JENKINS_EMAIL_CREDS_ID', "${JENKINS_EMAIL_CREDS_ID}")
-        }
-    }
 }
 
 void setupQuarkusJob(String quarkusBranch) {
@@ -229,6 +208,7 @@ void setupDeployJob(String jobFolder, KogitoJobType jobType) {
             // Release information
             booleanParam('CREATE_PR', false, 'Should we create a PR with the changes ?')
             stringParam('PROJECT_VERSION', '', 'Set the project version')
+            stringParam('DROOLS_VERSION', '', 'Drools version to set')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }
@@ -277,6 +257,7 @@ void setupPromoteJob(String jobFolder, KogitoJobType jobType) {
 
             // Release information which can override `deployment.properties`
             stringParam('PROJECT_VERSION', '', 'Override `deployment.properties`. Give the project version.')
+            stringParam('DROOLS_VERSION', '', 'Override `deployment.properties`. Drools version to set')
 
             stringParam('GIT_TAG', '', 'Git tag to set, if different from PROJECT_VERSION')
 

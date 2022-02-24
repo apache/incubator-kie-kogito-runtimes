@@ -7,7 +7,7 @@ pipeline {
         label 'kie-rhel7 && kie-mem16g'
     }
     tools {
-        maven 'kie-maven-3.8.1'
+        maven 'kie-maven-3.6.3'
         jdk 'kie-jdk11'
     }
     options {
@@ -34,9 +34,6 @@ pipeline {
                 script {
                     getMavenCommand()
                         .withProfiles(['run-code-coverage'])
-                        // `-Dquarkus.bootstrap.effective-model-builder` is a temporary fix due to quarkus resolver on tests
-                        // https://github.com/quarkusio/quarkus/issues/23205
-                        .withProperty('quarkus.bootstrap.effective-model-builder', true)
                         .run('clean install')
                 }
             }
@@ -53,15 +50,14 @@ pipeline {
         }
     }
     post {
+        unsuccessful {
+            emailext body: "**SonarCloud job** #${BUILD_NUMBER} was: ${currentBuild.currentResult}\nPlease look here: ${BUILD_URL}",
+                     subject: "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes",
+                     to: env.KOGITO_CI_EMAIL_TO
+        }
         always {
             script {
-                junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
-                util.archiveConsoleLog()
-            }
-        }
-        unsuccessful {
-            script {
-                mailer.sendMarkdownTestSummaryNotification('SonarCloud', "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+                junit '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml'
             }
         }
         cleanup {
@@ -73,6 +69,6 @@ pipeline {
 }
 
 MavenCommand getMavenCommand() {
-    return new MavenCommand(this, ['-fae', '-ntp'])
+    return new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
 }
