@@ -6,13 +6,6 @@ pipeline {
     agent {
         label 'kie-rhel7 && kie-mem16g'
     }
-    environment {
-        // QUARKUS_BRANCH should be defined directly into the job environment
-
-        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
-
-        MAVEN_OPTS = '-Xms1024m -Xmx4g'
-    }
     tools {
         maven 'kie-maven-3.8.1'
         jdk 'kie-jdk11'
@@ -21,11 +14,22 @@ pipeline {
         timestamps()
         timeout(time: 360, unit: 'MINUTES')
     }
+
+    environment {
+        // Some generated env is also defined into ./dsl/jobs.groovy file
+
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
+        MAVEN_OPTS = '-Xms1024m -Xmx4g'
+
+        // Set into 'Initialize' stage
+        // DROOLS_VERSION
+    }
     stages {
         stage('Initialize') {
             steps {
                 script {
-                    checkoutQuarkusRepo()
+                    checkoutDroolsRepo()
+
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
                     checkoutOptaplannerRepo()
@@ -33,51 +37,40 @@ pipeline {
                     checkoutRepo('kogito-examples')
                     checkoutRepo('kogito-examples', 'kogito-examples-persistence')
                     checkoutRepo('kogito-examples', 'kogito-examples-events')
-                }
-            }
-        }
-        stage('Build quarkus') {
-            steps {
-                script {
-                    getMavenCommand('quarkus', false)
-                        .withProperty('quickly')
-                        .run('clean install')
-                }
-            }
-            post {
-                always {
-                    script {
-                        cleanContainers()
+
+                    if (params.DROOLS_VERSION) {
+                        currentBuild.displayName = "Check against ${DROOLS_VERSION}"
+                    } else {
+                        currentBuild.displayName = "Check against Drools snapshot"
                     }
                 }
             }
         }
-
+        stage('Retrieve drools snapshot version') {
+            when { expression { return !params.DROOLS_VERSION } }
+            steps {
+                script {
+                    dir('drools') {
+                        // query mvn to get the latest version
+                        env.DROOLS_VERSION = """${sh (
+                                script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout',
+                                returnStdout: true
+                            ).trim()}"""
+                        assert env.DROOLS_VERSION != ''
+                        echo "Latest kie7 version is: ${env.DROOLS_VERSION}"
+                    }
+                }
+            }
+        }
         stage('Build kogito-runtimes') {
             steps {
                 script {
-                    getMavenCommand('kogito-runtimes')
+                    getMavenCommandWithDroolsVersion('kogito-runtimes')
                         .withProperty('maven.test.failure.ignore', true)
                         // `-Dquarkus.bootstrap.effective-model-builder` is a temporary fix due to quarkus resolver on tests
                         // https://github.com/quarkusio/quarkus/issues/23205
                         .withProperty('quarkus.bootstrap.effective-model-builder', true)
                         .run('clean install')
-                }
-            }
-            post {
-                always {
-                    script {
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        stage('Check Runtimes integration-tests with persistence') {
-            steps {
-                script {
-                    getMavenCommand('integration-tests')
-                        .withProfiles(['persistence'])
-                        .run('clean verify')
                 }
             }
             post {
@@ -93,7 +86,7 @@ pipeline {
         stage('Build optaplanner') {
             steps {
                 script {
-                    getMavenCommand('optaplanner')
+                    getMavenCommandWithDroolsVersion('optaplanner')
                         .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
@@ -111,7 +104,7 @@ pipeline {
         stage('Build kogito-apps') {
             steps {
                 script {
-                    getMavenCommand('kogito-apps')
+                    getMavenCommandWithDroolsVersion('kogito-apps')
                         .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
@@ -129,7 +122,7 @@ pipeline {
         stage('Build kogito-examples') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples')
+                    getMavenCommandWithDroolsVersion('kogito-examples')
                         .withProperty('maven.test.failure.ignore', true)
                         .run('clean install')
                 }
@@ -147,10 +140,10 @@ pipeline {
         stage('Build kogito-examples with persistence') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples-persistence')
-                            .withProfiles(['persistence'])
-                            .withProperty('maven.test.failure.ignore', true)
-                            .run('clean verify')
+                    getMavenCommandWithDroolsVersion('kogito-examples-persistence')
+                        .withProfiles(['persistence'])
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean verify')
                 }
             }
             post {
@@ -166,10 +159,10 @@ pipeline {
         stage('Build kogito-examples with events') {
             steps {
                 script {
-                    getMavenCommand('kogito-examples-events')
-                            .withProfiles(['events'])
-                            .withProperty('maven.test.failure.ignore', true)
-                            .run('clean verify')
+                    getMavenCommandWithDroolsVersion('kogito-examples-events')
+                        .withProfiles(['events'])
+                        .withProperty('maven.test.failure.ignore', true)
+                        .run('clean verify')
                 }
             }
             post {
@@ -196,7 +189,10 @@ pipeline {
 }
 
 void sendNotification() {
-    mailer.sendMarkdownTestSummaryNotification("Quarkus ${getQuarkusBranch()}", "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+    if (!params.DROOLS_VERSION) {
+        mailer.sendMarkdownTestSummaryNotification('Drools snapshot', "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+    }
+    // Do not send a notification in case DROOLS_VERSION was given
 }
 
 void checkoutRepo(String repoName, String dirName=repoName) {
@@ -205,9 +201,9 @@ void checkoutRepo(String repoName, String dirName=repoName) {
     }
 }
 
-void checkoutQuarkusRepo() {
-    dir('quarkus') {
-        checkout(githubscm.resolveRepository('quarkus', 'quarkusio', getQuarkusBranch(), false))
+void checkoutDroolsRepo() {
+    dir('drools') {
+        checkout(githubscm.resolveRepository('drools', 'kiegroup', 'main', false))
     }
 }
 
@@ -227,18 +223,15 @@ void checkoutOptaplannerRepo() {
     }
 }
 
-MavenCommand getMavenCommand(String directory, boolean addQuarkusVersion=true) {
-    def mvnCmd = new MavenCommand(this, ['-fae', '-ntp'])
+MavenCommand getMavenCommandWithDroolsVersion(String directory) {
+    mvnCmd = new MavenCommand(this, ['-fae'])
                 .withSettingsXmlId('kogito_release_settings')
                 .inDirectory(directory)
-    if (addQuarkusVersion) {
-        mvnCmd.withProperty('version.io.quarkus', '999-SNAPSHOT')
+                .withProperty('version.org.kie7', "${DROOLS_VERSION}")
+    if (params.DROOLS_REPOSITORY) {
+        mvnCmd.withDependencyRepositoryInSettings('drools_repo', params.DROOLS_REPOSITORY)
     }
     return mvnCmd
-}
-
-String getQuarkusBranch() {
-    return env['QUARKUS_BRANCH'] ?: 'main'
 }
 
 void cleanContainers() {
