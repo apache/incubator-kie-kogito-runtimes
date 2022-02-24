@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-persistence-postgresql-parent</artifactId>
-    <version>1.18.0-SNAPSHOT</version>
+    <version>1.18.0.Final</version>
   </parent>
   <artifactId>kogito-addons-quarkus-persistence-postgresql-deployment</artifactId>
   <name>Kogito Add-On Persistence PostgreSQL - Deployment</name>
