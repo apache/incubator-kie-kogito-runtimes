@@ -31,10 +31,6 @@
       </activation>
       <modules>
         <module>explainability</module>
-        <module>human-task-prediction</module>
-        <module>jobs</module>
-        <module>mail</module>
-        <module>persistence</module>
         <module>tracing</module>
         <module>knative</module>
       </modules>
@@ -48,6 +44,10 @@
         </property>
       </activation>
       <modules>
+        <module>human-task-prediction</module>
+        <module>jobs</module>
+        <module>mail</module>
+        <module>persistence</module>
         <module>task-management</module>
         <module>process-svg</module>
         <module>rest-exception-handler</module>

@@ -121,16 +121,12 @@
     <module>kogito-bom</module>
     <module>api</module>
     <module>drools</module>
-    <module>jbpm</module>
     <module>kogito-codegen-modules</module>
     <module>kogito-test-utils</module>
     <module>springboot</module>
     <module>kogito-maven-plugin</module>
     <module>quarkus</module>
-    <module>grafana-api</module>
     <module>addons</module>
-    <module>kogito-workitems</module>
-    <module>kogito-serverless-workflow</module>
   </modules>
 
   <profiles>
@@ -142,6 +138,10 @@
         </property>
       </activation>
       <modules>
+        <module>jbpm</module>
+        <module>grafana-api</module>
+        <module>kogito-workitems</module>
+        <module>kogito-serverless-workflow</module>
         <module>kogito-cloud-services</module>
       </modules>
     </profile>
