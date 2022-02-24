@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.pmml;
+package org.kie.kogito.pmml.openapi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -57,28 +56,14 @@ public class CommonTestUtility {
         return source.stream().filter(jsonNode -> toLook.equals(jsonNode.asText())).findFirst().orElse(null);
     }
 
-    public static KiePMMLModel getKiePMMLModelInternal() {
+    public static KiePMMLModel getKiePMMLModelInternal(List<MiningField> miningFields, List<OutputField> outputFields) {
         String modelName = "MODEL_NAME";
-        return getKiePMMLModelInternal(modelName);
-    }
-
-    public static KiePMMLModel getKiePMMLModelInternal(String modelName) {
-        return new KiePMMLModel(modelName, Collections.emptyList()) {
-
+        KiePMMLModel toReturn = new KiePMMLModel(modelName, Collections.emptyList()) {
             @Override
             public Object evaluate(Object o, Map<String, Object> map) {
                 return null;
             }
-
-            @Override
-            protected LinkedHashMap<String, Double> getProbabilityResultMap() {
-                return new LinkedHashMap<>();
-            }
         };
-    }
-
-    public static KiePMMLModel getKiePMMLModelInternal(List<MiningField> miningFields, List<OutputField> outputFields) {
-        KiePMMLModel toReturn = getKiePMMLModelInternal();
         toReturn.setMiningFields(miningFields);
         toReturn.setOutputFields(outputFields);
         return toReturn;

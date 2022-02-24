@@ -108,8 +108,8 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runt
   properties: [ 'version.io.quarkus', 'version.io.quarkus.quarkus-test-maven' ],
 ])
 KogitoJobUtils.createKie7UpdateToolsJob(this, 'kogito-runtimes', 'Kogito Runtimes', [
-  modules: [ 'kogito-kie-bom' ],
-  properties: [ 'version.org.kie' ],
+  modules: [ 'kogito-kie7-bom' ],
+  properties: [ 'version.org.kie7' ],
 ])
 
 /////////////////////////////////////////////////////////////////
