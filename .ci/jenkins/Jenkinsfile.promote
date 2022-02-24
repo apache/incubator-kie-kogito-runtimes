@@ -12,7 +12,7 @@ pipeline {
     }
 
     tools {
-        maven 'kie-maven-3.8.1'
+        maven 'kie-maven-3.6.3'
         jdk 'kie-jdk11'
     }
 
@@ -48,6 +48,7 @@ pipeline {
                     if (isRelease()) {
                         // Verify version is set and if on right release branch
                         assert getProjectVersion()
+                        assert getDroolsVersion()
                         assert getBuildBranch() == util.getReleaseBranchFromVersion(getProjectVersion())
                     }
                 }
@@ -77,6 +78,7 @@ pipeline {
                         prepareForPR()
 
                         maven.mvnVersionsSet(getMavenCommand(), getSnapshotVersion(), true)
+                        maven.mvnSetVersionProperty(getMavenCommand(), 'version.org.kie', getDroolsSnapshotVersion())
 
                         commitAndCreatePR()
                     }
@@ -171,8 +173,16 @@ String getProjectVersion() {
     return getParamOrDeployProperty('PROJECT_VERSION', 'project.version')
 }
 
+String getDroolsVersion() {
+    return getParamOrDeployProperty('DROOLS_VERSION', 'drools.version')
+}
+
 String getSnapshotVersion() {
     return util.getNextVersion(getProjectVersion(), 'micro')
+}
+
+String getDroolsSnapshotVersion() {
+    return util.getNextVersion(getDroolsVersion(), 'micro')
 }
 
 String getGitTag() {
@@ -251,7 +261,7 @@ void commitAndCreatePR() {
 }
 
 MavenCommand getMavenCommand() {
-    mvnCmd = new MavenCommand(this, ['-fae', '-ntp'])
+    mvnCmd = new MavenCommand(this, ['-fae'])
                     .withSettingsXmlId("${env.MAVEN_SETTINGS_CONFIG_FILE_ID}")
     if (env.MAVEN_DEPENDENCIES_REPOSITORY) {
         mvnCmd.withDependencyRepositoryInSettings('deps-repo', env.MAVEN_DEPENDENCIES_REPOSITORY)
