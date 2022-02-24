@@ -48,4 +48,4 @@ jobs:
         java-version: 11
       
     - name: Test DSL
-      run: cd .ci/jenkins/dsl && ./test.sh
+      run: cd .ci/jenkins/dsl && ./test.sh 1.13.x
