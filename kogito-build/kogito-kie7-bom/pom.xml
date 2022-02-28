@@ -27,26 +27,20 @@
             <!-- KIE boms -->
             <dependency>
                 <groupId>org.kie</groupId>
-                <artifactId>kie-core-bom</artifactId>
-                <version>${version.org.kie}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
                 <artifactId>kie-dmn-bom</artifactId>
-                <version>${version.org.kie}</version>
+                <version>${version.org.kie7}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.kie</groupId>
                 <artifactId>kie-pmml-bom</artifactId>
-                <version>${version.org.kie}</version>
+                <version>${version.org.kie7}</version>
                 <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
                 <artifactId>drools-bom</artifactId>
-                <version>${version.org.kie}</version>
+                <version>${version.org.kie7}</version>
                 <type>pom</type>
             </dependency>
 
