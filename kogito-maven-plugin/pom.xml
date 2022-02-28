@@ -4,28 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
- <parent>
+  <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build-parent</artifactId>
     <version>1.13.1-SNAPSHOT</version>
-   <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
+    <relativePath>../kogito-build/kogito-build-parent/pom.xml</relativePath>
   </parent>
 
   <artifactId>kogito-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
 
   <name>Kogito :: Maven Plugin</name>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <configuration>
-          <goalPrefix>kogito</goalPrefix>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -100,10 +89,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-    </dependency>
+
     <!-- Internal dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -141,23 +127,11 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>drools-decisiontables</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-flow-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>jbpm-bpmn2</artifactId>
-    </dependency>
 
     <!-- codegen dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-codegen-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-processes</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -170,10 +144,6 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-codegen-predictions</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-codegen-openapi</artifactId>
     </dependency>
 
     <!-- code generation for executable model -->
@@ -194,4 +164,101 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <configuration>
+          <goalPrefix>kogito</goalPrefix>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${version.antrun.plugin}</version>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <configuration>
+              <target>
+                <replace file="target/classes/META-INF/m2e/lifecycle-mapping-metadata.xml"
+                         token="&lt;goal&gt;process-model-classes&lt;/goal&gt;"
+                         failOnNoReplacements="true"
+                         summary="true"
+                         value=""/>
+                <replace file="target/classes/META-INF/plexus/components.xml"
+                         token="&lt;process-classes&gt;org.kie.kogito:kogito-maven-plugin:process-model-classes&lt;/process-classes&gt;"
+                         failOnNoReplacements="true"
+                         summary="true"
+                         value=""/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>org/kie/kogito/maven/plugin/ProcessClassesMojo.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>${version.antrun.plugin}</version>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration combine.self="override">
+              <excludes></excludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>kogito-codegen-processes</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>kogito-codegen-openapi</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>jbpm-flow-builder</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.kie.kogito</groupId>
+          <artifactId>jbpm-bpmn2</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>com.google.protobuf</groupId>
+          <artifactId>protobuf-java</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+
 </project>
