@@ -36,6 +36,7 @@ import org.drools.compiler.builder.impl.KogitoKieModuleModelImpl;
 import org.drools.compiler.builder.impl.KogitoKnowledgeBuilderConfigurationImpl;
 import org.drools.compiler.compiler.DecisionTableFactory;
 import org.drools.compiler.compiler.DroolsError;
+import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.drools.modelcompiler.builder.ModelSourceClass;
 import org.kie.api.builder.model.KieBaseModel;
@@ -68,7 +69,6 @@ import org.kie.kogito.rules.RuleUnitConfig;
 import org.kie.kogito.rules.units.AbstractRuleUnitDescription;
 import org.kie.kogito.rules.units.AssignableChecker;
 import org.kie.kogito.rules.units.ReflectiveRuleUnitDescription;
-import org.kie.util.maven.support.ReleaseIdImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.kie.api.definition.KiePackage;
+import org.kie.internal.ruleunit.ApplyPmmlModelCommandExecutor;
 import org.kie.internal.ruleunit.RuleUnitComponentFactory;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.rules.DataSource;
@@ -46,6 +47,11 @@ public class RuleUnitComponentFactoryImpl implements RuleUnitComponentFactory {
     }
 
     @Override
+    public ApplyPmmlModelCommandExecutor newApplyPmmlModelCommandExecutor() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isRuleUnitClass(Class<?> ruleUnitClass) {
         return RuleUnitData.class.isAssignableFrom(ruleUnitClass);
     }
@@ -53,5 +59,10 @@ public class RuleUnitComponentFactoryImpl implements RuleUnitComponentFactory {
     @Override
     public boolean isDataSourceClass(Class<?> ruleUnitClass) {
         return DataSource.class.isAssignableFrom(ruleUnitClass);
+    }
+
+    @Override
+    public boolean isLegacyRuleUnit() {
+        return false;
     }
 }

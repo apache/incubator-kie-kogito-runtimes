@@ -39,7 +39,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.kogito.pmml.CommonTestUtility.getKiePMMLModelInternal;
+import static org.kie.kogito.pmml.openapi.CommonTestUtility.getKiePMMLModelInternal;
 
 class PredictionContainerGeneratorTest {
 
@@ -71,7 +71,6 @@ class PredictionContainerGeneratorTest {
                 .stream()
                 .map(pmmlResource -> "\"" + pmmlResource.getModelPath() + "\"")
                 .collect(Collectors.joining(", "));
-        expected = String.format("init(%s);", expected);
         assertTrue(retrievedString.contains(expected));
 
     }

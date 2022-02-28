@@ -52,9 +52,9 @@ public class AbstractRuleUnitInstance<T extends RuleUnitData> implements RuleUni
     }
 
     @Override
-    public List<Map<String, Object>> executeQuery(String query) {
+    public List<Map<String, Object>> executeQuery(String query, Object... arguments) {
         fire();
-        return runtime.getQueryResults(query).toList();
+        return runtime.getQueryResults(query, arguments).toList();
     }
 
     @Override

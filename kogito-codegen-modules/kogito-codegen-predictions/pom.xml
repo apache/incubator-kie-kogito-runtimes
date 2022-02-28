@@ -41,7 +41,7 @@
     <!-- test -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-pmml</artifactId>
+      <artifactId>kogito-pmml-openapi</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

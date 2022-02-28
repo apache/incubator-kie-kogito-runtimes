@@ -29,12 +29,15 @@ import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.data.Address;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.codegen.data.StockTick;
+import org.kie.kogito.codegen.data.ValueDrop;
 import org.kie.kogito.codegen.rules.RuleCodegenError;
 import org.kie.kogito.codegen.rules.multiunit.MultiUnit;
 import org.kie.kogito.codegen.rules.singleton.Datum;
 import org.kie.kogito.codegen.rules.singleton.Singleton;
 import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
+import org.kie.kogito.codegen.unit.StockUnit;
 import org.kie.kogito.rules.DataHandle;
 import org.kie.kogito.rules.DataObserver;
 import org.kie.kogito.rules.DataSource;
@@ -336,5 +339,21 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
         instance.fire();
 
         assertEquals(usePropertyReactivity ? 46 : 50, mario.getAge());
+    }
+
+    @Test
+    public void testCep() throws Exception {
+        Application application = generateCodeRulesOnly("org/kie/kogito/codegen/unit/Stock.drl");
+
+        StockUnit stockUnit = new StockUnit();
+        RuleUnit<StockUnit> unit = application.get(RuleUnits.class).create(StockUnit.class);
+        RuleUnitInstance<StockUnit> instance = unit.createInstance(stockUnit);
+
+        stockUnit.getStockTicks().append(new StockTick("IBM", 2000, 100));
+        stockUnit.getStockTicks().append(new StockTick("IBM", 1700, 170));
+        stockUnit.getStockTicks().append(new StockTick("IBM", 1500, 240));
+
+        ValueDrop valueDrop = (ValueDrop) instance.executeQuery("highestValueDrop", "IBM").get(0).get("$s");
+        assertEquals(300, valueDrop.getDropAmount());
     }
 }

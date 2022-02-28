@@ -50,7 +50,7 @@ import static org.kie.kogito.codegen.prediction.PMMLRestResourceGenerator.SCHEMA
 import static org.kie.kogito.codegen.prediction.PMMLRestResourceGenerator.SPRING_API_RESPONSE;
 import static org.kie.kogito.codegen.prediction.PMMLRestResourceGenerator.SPRING_REQUEST_BODY;
 import static org.kie.kogito.codegen.prediction.PMMLRestResourceGenerator.SPRING_SCHEMA;
-import static org.kie.kogito.pmml.CommonTestUtility.getKiePMMLModelInternal;
+import static org.kie.kogito.pmml.openapi.CommonTestUtility.getKiePMMLModelInternal;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 
 class PMMLRestResourceGeneratorTest {

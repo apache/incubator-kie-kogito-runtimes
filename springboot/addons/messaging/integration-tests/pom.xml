@@ -18,7 +18,7 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-kie-bom</artifactId>
+        <artifactId>kogito-kie7-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
@@ -48,13 +48,8 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-kie-bom</artifactId>
+      <artifactId>kogito-kie7-bom</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-core-bom</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
