@@ -29,7 +29,7 @@ pipeline {
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
                     checkoutOptaplannerRepo()
-                    checkoutRepo('kogito-apps')
+                    // checkoutRepo('kogito-apps')
                     checkoutRepo('kogito-examples')
                     checkoutRepo('kogito-examples', 'kogito-examples-persistence')
                     checkoutRepo('kogito-examples', 'kogito-examples-events')
@@ -108,24 +108,24 @@ pipeline {
                 }
             }
         }
-        stage('Build kogito-apps') {
-            steps {
-                script {
-                    getMavenCommand('kogito-apps')
-                        .withProperty('maven.test.failure.ignore', true)
-                        .run('clean install')
-                }
-            }
-            post {
-                always {
-                    script {
-                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
-                        util.archiveConsoleLog()
-                        cleanContainers()
-                    }
-                }
-            }
-        }
+        // stage('Build kogito-apps') {
+        //     steps {
+        //         script {
+        //             getMavenCommand('kogito-apps')
+        //                 .withProperty('maven.test.failure.ignore', true)
+        //                 .run('clean install')
+        //         }
+        //     }
+        //     post {
+        //         always {
+        //             script {
+        //                 junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+        //                 util.archiveConsoleLog()
+        //                 cleanContainers()
+        //             }
+        //         }
+        //     }
+        // }
         stage('Build kogito-examples') {
             steps {
                 script {

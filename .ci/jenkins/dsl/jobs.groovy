@@ -41,15 +41,15 @@ Map getMultijobPRConfig(boolean isNative = false) {
                 dependsOn: 'kogito-runtimes',
                 repository: 'optaplanner',
             ], [
-                id: 'kogito-apps',
-                dependsOn: 'optaplanner',
-                repository: 'kogito-apps',
-                env : [
-                    ADDITIONAL_TIMEOUT: isNative ? '360' : '210',
-                ]
-            ], [
+            //     id: 'kogito-apps',
+            //     dependsOn: 'optaplanner',
+            //     repository: 'kogito-apps',
+            //     env : [
+            //         ADDITIONAL_TIMEOUT: isNative ? '360' : '210',
+            //     ]
+            // ], [
                 id: 'kogito-examples',
-                dependsOn: 'Optaplanner',
+                dependsOn: 'optaplanner',
                 repository: 'kogito-examples'
             ], [
                 id: 'optaweb-employee-rostering',
