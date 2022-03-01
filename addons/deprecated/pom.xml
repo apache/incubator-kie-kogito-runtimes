@@ -27,27 +27,4 @@
     <module>monitoring-prometheus-springboot-addon</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <property>
-          <name>!productized</name>
-        </property>
-      </activation>
-      <modules>
-        <module>cloudevents-utils</module>
-        <module>cloudevents-common-addon</module>
-        <module>cloudevents-quarkus-addon</module>
-        <module>cloudevents-spring-boot-addon</module>
-        <module>kogito-addons-quarkus-cloudevents</module>
-        <module>kogito-addons-quarkus-cloudevents-multi</module>
-        <module>kogito-addons-quarkus-events-smallrye</module>
-        <module>kogito-addons-springboot-cloudevents</module>
-        <module>kogito-addons-springboot-events-kafka</module>
-        <module>knative-eventing-addon</module>
-      </modules>
-    </profile>
-  </profiles>
-
 </project>

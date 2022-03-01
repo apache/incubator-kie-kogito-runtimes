@@ -24,19 +24,4 @@
     <module>integration-tests-kogito-plugin</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <property>
-          <name>!productized</name>
-        </property>
-      </activation>
-      <modules>
-        <module>integration-tests-quarkus-processes-persistence</module>
-        <module>integration-tests-quarkus-gradle</module>
-      </modules>
-    </profile>
-  </profiles>
-
 </project>

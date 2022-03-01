@@ -21,41 +21,6 @@
     <module>monitoring</module>
   </modules>
 
-  <profiles>
-    <profile>
-      <id>default</id>
-      <activation>
-        <property>
-          <name>!productized</name>
-        </property>
-      </activation>
-      <modules>
-        <module>explainability</module>
-        <module>human-task-prediction</module>
-        <module>jobs</module>
-        <module>mail</module>
-        <module>persistence</module>
-        <module>tracing</module>
-        <module>knative</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>integration-test-modules</id>
-      <activation>
-        <property>
-          <name>!excludeITModules</name>
-        </property>
-      </activation>
-      <modules>
-        <module>task-management</module>
-        <module>process-svg</module>
-        <module>rest-exception-handler</module>
-        <module>process-management</module>
-      </modules>
-    </profile>
-  </profiles>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
