@@ -50,7 +50,7 @@
     <container.image.infinispan>infinispan/server:${version.org.infinispan}</container.image.infinispan>
     <container.image.keycloak>jboss/keycloak:${version.org.keycloak}</container.image.keycloak>
     <container.image.kafka>confluentinc/cp-kafka:${version.org.confluent.kafka}</container.image.kafka>
-    <container.image.mongodb>mongo:${version.org.mongo-image}</container.image.mongodb>
+    <container.image.mongodb>library/mongo:${version.org.mongo-image}</container.image.mongodb>
 
     <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.source>11</maven.compiler.source>

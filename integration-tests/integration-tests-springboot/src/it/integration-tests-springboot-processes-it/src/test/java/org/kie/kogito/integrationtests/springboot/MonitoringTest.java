@@ -17,6 +17,7 @@
 package org.kie.kogito.integrationtests.springboot;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.conf.ConfigBean;
@@ -41,6 +42,7 @@ public class MonitoringTest extends BaseRestTest {
     ConfigBean configBean;
 
     @Test
+    @Disabled
     public void test() {
         String pId = given().contentType(ContentType.JSON)
                 .when()
