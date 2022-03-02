@@ -37,7 +37,7 @@ public class KogitoMongoDBContainer extends MongoDBContainer implements TestReso
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoMongoDBContainer.class);
 
     public KogitoMongoDBContainer() {
-        super(DockerImageName.parse(mongoImage()));
+        super(DockerImageName.parse(mongoImage()).asCompatibleSubstituteFor("mongo"));
         withLogConsumer(f -> System.out.print(f.getUtf8String()));
         withLogConsumer(new Slf4jLogConsumer(LOGGER));
         addFixedExposedPort(MONGODB_INTERNAL_PORT, MONGODB_INTERNAL_PORT);

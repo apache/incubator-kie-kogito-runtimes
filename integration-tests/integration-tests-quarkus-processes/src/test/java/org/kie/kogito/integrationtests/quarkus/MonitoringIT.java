@@ -16,6 +16,7 @@
 
 package org.kie.kogito.integrationtests.quarkus;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
@@ -39,6 +40,7 @@ public class MonitoringIT {
     }
 
     @Test
+    @Disabled
     public void test() {
         String pId = given().contentType(ContentType.JSON)
                 .when()

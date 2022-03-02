@@ -49,7 +49,7 @@ class MongoDBQuarkusTestResourceTest {
     @Test
     void shouldGetDockerImageName() {
         givenResource();
-        assertEquals("library/" + System.getProperty(KogitoMongoDBContainer.MONGODB_PROPERTY), resource.getTestResource().getDockerImageName());
+        assertEquals(System.getProperty(KogitoMongoDBContainer.MONGODB_PROPERTY), resource.getTestResource().getDockerImageName());
     }
 
     private void givenConditionalResource() {
