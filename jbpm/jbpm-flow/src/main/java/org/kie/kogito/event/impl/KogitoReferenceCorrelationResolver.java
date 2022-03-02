@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
 
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
+package org.kie.kogito.event.impl;
 
-import org.kie.kogito.Model;
-import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 
-public interface EventConsumerFactory {
+public class KogitoReferenceCorrelationResolver extends SimpleAttributeCorrelationResolver {
 
-    <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> modelConverter, boolean cloudEvents,
-            Function<DataEvent<D>, D> dataFunction);
+    public KogitoReferenceCorrelationResolver() {
+        super(CloudEventExtensionConstants.PROCESS_REFERENCE_ID);
+    }
 }

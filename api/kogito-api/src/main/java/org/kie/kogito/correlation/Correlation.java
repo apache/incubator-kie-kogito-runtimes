@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2020 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.correlation;
 
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
+public class Correlation {
 
-import org.kie.kogito.Model;
-import org.kie.kogito.process.ProcessService;
+    private String key;
+    private String value;
 
-public interface EventConsumerFactory {
+    public Correlation(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
 
-    <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> modelConverter, boolean cloudEvents,
-            Function<DataEvent<D>, D> dataFunction);
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

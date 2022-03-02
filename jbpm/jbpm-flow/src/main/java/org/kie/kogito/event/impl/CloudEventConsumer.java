@@ -39,6 +39,7 @@ public class CloudEventConsumer<M extends Model, D, E extends ProcessDataEvent<D
     private ProcessService processService;
     private ExecutorService executor;
     private Function<E, D> dataFunction;
+    private KogitoReferenceCorrelationResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
 
     public CloudEventConsumer(ProcessService processService, ExecutorService executor, Optional<Function<D, M>> modelConverter, Function<E, D> dataFunction) {
         this.processService = processService;
@@ -59,9 +60,11 @@ public class CloudEventConsumer<M extends Model, D, E extends ProcessDataEvent<D
                     cloudEvent.getSource());
             return CompletableFuture.completedFuture(null);
         }
-        if (cloudEvent.getKogitoReferenceId() != null && !cloudEvent.getKogitoReferenceId().isEmpty()) {
+        //String kogitoReferenceId = cloudEvent.getKogitoReferenceId();
+        String kogitoReferenceId = kogitoReferenceCorrelationResolver.resolve(cloudEvent).getValue();
+        if (kogitoReferenceId != null && !kogitoReferenceId.isEmpty()) {
             logger.debug("Received message with reference id '{}' going to use it to send signal '{}'",
-                    cloudEvent.getKogitoReferenceId(),
+                    kogitoReferenceId,
                     trigger);
             return CompletableFuture.supplyAsync(() -> {
                 Optional<ProcessInstance<M>> instance = findProcessInstance(process, cloudEvent);
@@ -69,11 +72,11 @@ public class CloudEventConsumer<M extends Model, D, E extends ProcessDataEvent<D
                     return signalProcessInstance(process, trigger, cloudEvent);
                 } else if (modelConverter.isPresent()) {
                     logger.info("Process instance with id '{}' not found for triggering signal '{}', starting a new one",
-                            cloudEvent.getKogitoReferenceId(),
+                            kogitoReferenceId,
                             trigger);
                     return startNewInstance(process, modelConverter.get().apply(dataFunction.apply(cloudEvent)), cloudEvent, trigger);
                 } else {
-                    logger.info("Process instance with id {} not found for triggering signal {}", cloudEvent.getKogitoReferenceId(), trigger);
+                    logger.info("Process instance with id {} not found for triggering signal {}", kogitoReferenceId, trigger);
                     return null;
                 }
             }, executor);
