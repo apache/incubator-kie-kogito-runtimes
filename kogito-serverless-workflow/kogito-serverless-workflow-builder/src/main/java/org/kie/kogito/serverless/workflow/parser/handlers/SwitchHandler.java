@@ -104,7 +104,7 @@ public class SwitchHandler extends StateHandler<SwitchState> {
                 targetState.connect(factory, eventTimeoutTimerNode.getNode().getId());
             } else {
                 // Connect the timer with a process finalization sequence that might produce events.
-                endIt(splitNode.getNode().getId(), factory, state.getDefaultCondition().getEnd().getProduceEvents());
+                endIt(eventTimeoutTimerNode.getNode().getId(), factory, defaultCondition.getEnd().getProduceEvents());
             }
         }
         // Process the event conditions.
@@ -127,12 +127,12 @@ public class SwitchHandler extends StateHandler<SwitchState> {
         // set default connection
         if (defaultCondition != null) {
             validateDefaultCondition(defaultCondition, state, workflow, parserContext);
-            Transition transition = state.getDefaultCondition().getTransition();
-            StateHandler<?> stateHandler = parserContext.getStateHandler(transition);
-            if (stateHandler != null) {
+            Transition transition = defaultCondition.getTransition();
+            if (transition != null) {
+                StateHandler<?> stateHandler = parserContext.getStateHandler(transition);
                 startNode.metaData(XORSPLITDEFAULT, concatId(splitId, stateHandler.getNode().getNode().getId()));
-            } else if (state.getDefaultCondition().getEnd() != null) {
-                EndNodeFactory<?> endNodeFactory = endIt(splitId, factory, state.getDefaultCondition().getEnd().getProduceEvents());
+            } else {
+                EndNodeFactory<?> endNodeFactory = endIt(splitId, factory, defaultCondition.getEnd().getProduceEvents());
                 startNode.metaData(XORSPLITDEFAULT, concatId(splitId, endNodeFactory.getNode().getId()));
             }
         }

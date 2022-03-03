@@ -27,22 +27,22 @@ import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.re
 
 public class SwitchValidator {
 
-    private static final String EVENT_TIMEOUT_REQUIRED_ERROR =
+    static final String EVENT_TIMEOUT_REQUIRED_ERROR =
             "The \"eventTimeout\" configuration is required for the \"eventConditions\" based switch state \"%s\" that belongs to the serverless workflow: \"%s\".";
 
-    private static final String NEXT_STATE_REQUIRED_FOR_DEFAULT_CONDITION_ERROR =
+    static final String NEXT_STATE_REQUIRED_FOR_DEFAULT_CONDITION_ERROR =
             "The \"nextState\" is required for the \"defaultCondition\" transition in the switch state \"%s\" that belongs to the serverless workflow: \"%s\".";
 
-    private static final String NEXT_STATE_NOT_FOUND_FOR_DEFAULT_CONDITION_ERROR =
+    static final String NEXT_STATE_NOT_FOUND_FOR_DEFAULT_CONDITION_ERROR =
             "The \"nextState\" : \"%s\" configured for the \"defaultCondition\" transition in the switch state \"%s\", was not found in the serverless workflow: \"%s\".";
 
-    private static final String TRANSITION_OR_END_MUST_BE_CONFIGURED_FOR_DEFAULT_CONDITION_ERROR =
+    static final String TRANSITION_OR_END_MUST_BE_CONFIGURED_FOR_DEFAULT_CONDITION_ERROR =
             "The \"defaultCondition\" in the switch state \"%s\" that belongs to the serverless workflow: \"%s\", must either have a configured \"transition\" or be set as \"end\" : true.";
 
-    private static final String CONDITIONS_NOT_FOUND_ERROR =
+    static final String CONDITIONS_NOT_FOUND_ERROR =
             "No dataConditions or eventConditions where found for the switch state \"%s\" that belongs to the serverless workflow: \"%s\".";
 
-    private static final String DATA_CONDITIONS_AND_EVENT_CONDITIONS_FOUND_ERROR =
+    static final String DATA_CONDITIONS_AND_EVENT_CONDITIONS_FOUND_ERROR =
             "DataConditions and eventConditions where found at the same time for the switch state \"%s\" that belongs to the serverless workflow: \"%s\".";
 
     private SwitchValidator() {
