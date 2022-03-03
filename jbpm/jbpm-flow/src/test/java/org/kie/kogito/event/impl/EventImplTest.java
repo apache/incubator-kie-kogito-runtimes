@@ -28,13 +28,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.EventConsumer;
+import org.kie.kogito.event.EventConsumerFactory;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.EventConsumer;
-import org.kie.kogito.services.event.EventConsumerFactory;
 import org.kie.kogito.services.event.ProcessDataEvent;
 import org.kie.kogito.services.event.impl.StringEventMarshaller;
 import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
@@ -74,11 +75,11 @@ public class EventImplTest {
     }
 
     private static class DummyModel implements Model {
-        private DummyEvent dummyEvent;
+        private Object dummyEvent;
 
         @Override
         public DummyModel fromMap(Map<String, Object> params) {
-            this.dummyEvent = (DummyEvent) params.get("dummyEvent");
+            this.dummyEvent = params.get("dummyEvent");
             return this;
         }
 
@@ -87,7 +88,7 @@ public class EventImplTest {
             return Collections.singletonMap("dummyEvent", dummyEvent);
         }
 
-        public DummyModel(DummyEvent dummyEvent) {
+        public DummyModel(Object dummyEvent) {
             this.dummyEvent = dummyEvent;
         }
 
@@ -153,13 +154,13 @@ public class EventImplTest {
         executor.shutdown();
     }
 
-    private Optional<Function<DummyEvent, DummyModel>> getConvertedMethod() {
+    private <T> Optional<Function<T, DummyModel>> getConvertedMethod() {
         return Optional.of(DummyModel::new);
     }
 
     @Test
     void testSigCloudEvent() throws Exception {
-        EventConsumer<DummyModel> consumer = factory.get(processService, executor, getConvertedMethod(), true, ProcessDataEvent::getData);
+        EventConsumer<DummyModel, DummyCloudEvent> consumer = factory.get(processService, executor, getConvertedMethod(), true, DataEvent::getData);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyCloudEvent(new DummyEvent("pepe"), "1"), trigger).toCompletableFuture().get();
 
@@ -172,8 +173,8 @@ public class EventImplTest {
 
     @Test
     void testCloudEvent() throws Exception {
-        EventConsumer<DummyModel> consumer =
-                factory.get(processService, executor, getConvertedMethod(), true, ProcessDataEvent::getData);
+        EventConsumer<DummyModel, DummyCloudEvent> consumer =
+                factory.get(processService, executor, getConvertedMethod(), true, DataEvent::getData);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyCloudEvent(new DummyEvent("pepe")), trigger).toCompletableFuture().get();
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -186,8 +187,8 @@ public class EventImplTest {
 
     @Test
     void testDataEvent() throws Exception {
-        EventConsumer<DummyModel> consumer =
-                factory.get(processService, executor, getConvertedMethod(), false, ProcessDataEvent::getData);
+        EventConsumer<DummyModel, DummyEvent> consumer =
+                factory.get(processService, executor, getConvertedMethod(), false, DataEvent::getData);
         final String trigger = "dummyTopic";
         consumer.consume(application, process, new DummyEvent("pepe"), trigger).toCompletableFuture().get();
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -213,7 +214,7 @@ public class EventImplTest {
 
     @Test
     void testEventPayloadException() {
-        EventConsumer<DummyModel> consumer = factory.get(processService, executor, getConvertedMethod(), true, ProcessDataEvent::getData);
+        EventConsumer<DummyModel, String> consumer = factory.get(processService, executor, getConvertedMethod(), true, DataEvent::getData);
         final String trigger = "dummyTopic";
         final String payload = "{ a = b }";
         assertThrows(ClassCastException.class, () -> consumer.consume(application, process, payload, trigger).toCompletableFuture().get());

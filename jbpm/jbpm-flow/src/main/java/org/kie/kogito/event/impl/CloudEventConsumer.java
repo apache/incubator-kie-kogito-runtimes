@@ -23,33 +23,32 @@ import java.util.function.Function;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.event.EventConsumer;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.EventConsumer;
 import org.kie.kogito.services.event.ProcessDataEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CloudEventConsumer<D, M extends Model, T extends ProcessDataEvent<D>> implements EventConsumer<M> {
+public class CloudEventConsumer<M extends Model, D, E extends ProcessDataEvent<D>> implements EventConsumer<M, E> {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudEventConsumer.class);
 
-    private Optional<Function<D, M>> function;
+    private Optional<Function<D, M>> modelConverter;
     private ProcessService processService;
     private ExecutorService executor;
-    private Function<T, D> dataFunction;
+    private Function<E, D> dataFunction;
 
-    public CloudEventConsumer(ProcessService processService, ExecutorService executor, Optional<Function<D, M>> function, Function<T, D> dataFunction) {
+    public CloudEventConsumer(ProcessService processService, ExecutorService executor, Optional<Function<D, M>> modelConverter, Function<E, D> dataFunction) {
         this.processService = processService;
         this.executor = executor;
-        this.function = function;
+        this.modelConverter = modelConverter;
         this.dataFunction = dataFunction;
     }
 
     @Override
-    public CompletionStage<?> consume(Application application, Process<M> process, Object object, String trigger) {
-        T cloudEvent = (T) object;
+    public CompletionStage<?> consume(Application application, Process<M> process, E cloudEvent, String trigger) {
         String simpleName = cloudEvent.getClass().getSimpleName();
         // currently we filter out messages on the receiving end; for strategy see https://issues.redhat.com/browse/KOGITO-3591
         if (ignoredMessageType(cloudEvent, simpleName) && ignoredMessageType(cloudEvent, trigger)) {
@@ -68,39 +67,38 @@ public class CloudEventConsumer<D, M extends Model, T extends ProcessDataEvent<D
                 Optional<ProcessInstance<M>> instance = findProcessInstance(process, cloudEvent);
                 if (instance.isPresent()) {
                     return signalProcessInstance(process, trigger, cloudEvent);
-                } else if (function.isPresent()) {
+                } else if (modelConverter.isPresent()) {
                     logger.info("Process instance with id '{}' not found for triggering signal '{}', starting a new one",
                             cloudEvent.getKogitoReferenceId(),
                             trigger);
-                    return startNewInstance(process, function.get().apply(dataFunction.apply(cloudEvent)), cloudEvent, trigger);
+                    return startNewInstance(process, modelConverter.get().apply(dataFunction.apply(cloudEvent)), cloudEvent, trigger);
                 } else {
                     logger.info("Process instance with id {} not found for triggering signal {}", cloudEvent.getKogitoReferenceId(), trigger);
                     return null;
                 }
             }, executor);
-        } else if (function.isPresent()) {
+        } else if (modelConverter.isPresent()) {
             logger.debug("Received message without reference id, starting new process instance with trigger '{}'", trigger);
-            return CompletableFuture.supplyAsync(() -> startNewInstance(process, function.get().apply(dataFunction.apply(cloudEvent)), cloudEvent, trigger), executor);
+            return CompletableFuture.supplyAsync(() -> startNewInstance(process, modelConverter.get().apply(dataFunction.apply(cloudEvent)), cloudEvent, trigger), executor);
         } else {
             logger.warn("Received not start event without kogito referecence id for trigger {}", trigger);
             return CompletableFuture.completedFuture(null);
         }
     }
 
-    private Optional<M> signalProcessInstance(Process process, String trigger, T cloudEvent) {
+    private Optional<M> signalProcessInstance(Process process, String trigger, E cloudEvent) {
         return processService.signalProcessInstance(process, cloudEvent.getKogitoReferenceId(), dataFunction.apply(cloudEvent), "Message-" + trigger);
     }
 
-    private Optional<ProcessInstance<M>> findProcessInstance(Process<M> process, T cloudEvent) {
+    private Optional<ProcessInstance<M>> findProcessInstance(Process<M> process, E cloudEvent) {
         return process.instances().findById(cloudEvent.getKogitoReferenceId());
     }
 
-    private ProcessInstance<M> startNewInstance(Process<M> process, M model, T cloudEvent, String trigger) {
+    private ProcessInstance<M> startNewInstance(Process<M> process, M model, E cloudEvent, String trigger) {
         return processService.createProcessInstance(process, cloudEvent.getKogitoBusinessKey(), model, cloudEvent.getKogitoStartFromNode(), trigger, cloudEvent.getKogitoProcessinstanceId());
     }
 
-    private boolean ignoredMessageType(T cloudEvent, String type) {
+    private boolean ignoredMessageType(E cloudEvent, String type) {
         return !type.equals(cloudEvent.getType()) && !type.equals(String.valueOf(cloudEvent.getSource()));
     }
-
 }

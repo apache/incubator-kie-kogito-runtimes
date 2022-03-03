@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.addon.cloudevents.converters;
 
-import org.kie.kogito.services.event.ProcessDataEvent;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.services.event.ProcessDataEventConverter;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,7 +30,7 @@ public class ProcessDataJsonNodeConverter implements ProcessDataEventConverter<J
     }
 
     @Override
-    public JsonNode convert(ProcessDataEvent<JsonNode> cloudEvent) {
+    public JsonNode convert(DataEvent<JsonNode> cloudEvent) {
         return objectMapper.convertValue(cloudEvent, JsonNode.class);
     }
 

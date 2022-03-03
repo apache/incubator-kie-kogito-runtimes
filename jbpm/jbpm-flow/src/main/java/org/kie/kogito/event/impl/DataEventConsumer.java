@@ -23,28 +23,28 @@ import java.util.function.Function;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
+import org.kie.kogito.event.EventConsumer;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.EventConsumer;
 
-public class DataEventConsumer<D, M extends Model> implements EventConsumer<M> {
+public class DataEventConsumer<M extends Model, D> implements EventConsumer<M, D> {
 
-    private Optional<Function<D, M>> function;
+    private Optional<Function<D, M>> modelConverter;
 
     private ProcessService processService;
 
     private ExecutorService executorService;
 
-    public DataEventConsumer(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> function) {
+    public DataEventConsumer(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> modelConverter) {
         this.processService = processService;
         this.executorService = executorService;
-        this.function = function;
+        this.modelConverter = modelConverter;
     }
 
     @Override
-    public CompletionStage<Void> consume(Application application, Process<M> process, Object eventData, String trigger) {
+    public CompletionStage<Void> consume(Application application, Process<M> process, D eventData, String trigger) {
         //TODO right now it is only possible to start a new process instance when not using cloudevent
-        return CompletableFuture.runAsync(() -> processService.createProcessInstance(process, null, function.get().apply((D) eventData), null, trigger, null), executorService);
+        return CompletableFuture.runAsync(() -> processService.createProcessInstance(process, null, modelConverter.get().apply((D) eventData), null, trigger, null), executorService);
     }
 
 }

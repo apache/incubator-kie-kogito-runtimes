@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.services.event;
 
+import org.kie.kogito.event.DataEvent;
+
 public interface ProcessDataEventConverter<T> {
-    public T convert(ProcessDataEvent<T> cloudEvent);
+    T convert(DataEvent<T> cloudEvent);
 }

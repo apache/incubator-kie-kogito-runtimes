@@ -27,7 +27,7 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.services.event.ProcessDataEvent;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.services.event.ProcessDataEventConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -164,7 +164,7 @@ public class MessageConsumerGenerator {
         }
         if (!trigger.dataOnly()) {
             ClassOrInterfaceType eventType = new ClassOrInterfaceType(null, trigger.getDataType());
-            ClassOrInterfaceType processEventType = new ClassOrInterfaceType(null, ProcessDataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(eventType));
+            ClassOrInterfaceType processEventType = new ClassOrInterfaceType(null, DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(eventType));
             ClassOrInterfaceType processEventTypeConverter = new ClassOrInterfaceType(null, ProcessDataEventConverter.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(eventType));
             final String fieldName = "processDataEventConverter";
             context.getDependencyInjectionAnnotator()
