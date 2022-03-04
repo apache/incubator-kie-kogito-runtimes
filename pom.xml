@@ -142,7 +142,7 @@
         </property>
       </activation>
       <modules>
-<!--        <module>kogito-cloud-services</module>-->
+        <module>kogito-cloud-services</module>
       </modules>
     </profile>
     <profile>
