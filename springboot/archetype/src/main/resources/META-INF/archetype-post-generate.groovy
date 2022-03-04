@@ -132,6 +132,17 @@ def removeUnneededResources(String starters, String appPackage) {
     }
 }
 
+/**
+ * Replace kogito-maven-plugin to kogito-processes-maven-plugin when using Process artefacts
+ */
+def adjustMavenPluginToUse(String starters) {
+    if (starters == "_UNDEFINED_" || starters == "" || starters == null || starters.contains("processes")) {
+        def pomPath = Paths.get(request.getOutputDirectory(), request.getArtifactId(), "pom.xml")
+        def pomFile = Files.readString(pomPath).replace("kogito-maven-plugin", "kogito-processes-maven-plugin")
+        pomPath.toFile().withWriter("utf-8") { writer -> writer.write(pomFile) }
+    }
+}
+
 Properties properties = request.getProperties()
 String startersProps = properties.get("starters")
 String addonsProps = properties.get("addons")
@@ -139,3 +150,4 @@ String appPackage = properties.get("package")
 
 addDependenciesToPOM(startersProps, addonsProps)
 removeUnneededResources(startersProps, appPackage)
+adjustMavenPluginToUse(startersProps)

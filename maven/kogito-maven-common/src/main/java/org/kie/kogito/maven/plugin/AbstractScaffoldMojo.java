@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,11 @@ package org.kie.kogito.maven.plugin;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
-@Mojo(name = "scaffold",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresProject = true,
-        threadSafe = true)
-public class ScaffoldMojo extends GenerateModelMojo {
+public abstract class AbstractScaffoldMojo extends AbstractGenerateModelMojo {
+
+    protected static final String NAME = "scaffold";
 
     @Parameter(property = "kogito.codegen.ondemand", defaultValue = "true")
     private boolean onDemand;

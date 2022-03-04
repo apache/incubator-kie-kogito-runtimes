@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,6 @@ import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
-import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
 
@@ -66,14 +64,8 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.build.directory}/" + GeneratedFileWriter.DEFAULT_RESOURCE_PATH)
     protected File generatedResources;
 
-    @Parameter(property = "kogito.codegen.persistence", defaultValue = "true")
-    protected boolean persistence;
-
     @Parameter(property = "kogito.codegen.rules", defaultValue = "true")
     protected String generateRules;
-
-    @Parameter(property = "kogito.codegen.processes", defaultValue = "true")
-    protected String generateProcesses;
 
     @Parameter(property = "kogito.codegen.decisions", defaultValue = "true")
     protected String generateDecisions;
@@ -119,7 +111,7 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         return KogitoBuildContext.DEFAULT_PACKAGE_NAME;
     }
 
-    private void additionalProperties(KogitoBuildContext context) {
+    protected void additionalProperties(KogitoBuildContext context) {
 
         classToCheckForREST().ifPresent(restClass -> {
             if (!context.hasClassAvailable(restClass)) {
@@ -135,10 +127,8 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         });
 
         context.setApplicationProperty(Generator.CONFIG_PREFIX + IncrementalRuleCodegen.GENERATOR_NAME, generateRules);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + ProcessCodegen.GENERATOR_NAME, generateProcesses);
         context.setApplicationProperty(Generator.CONFIG_PREFIX + PredictionCodegen.GENERATOR_NAME, generatePredictions);
         context.setApplicationProperty(Generator.CONFIG_PREFIX + DecisionCodegen.GENERATOR_NAME, generateDecisions);
-        context.setApplicationProperty(Generator.CONFIG_PREFIX + PersistenceGenerator.GENERATOR_NAME, persistence);
     }
 
     private KogitoBuildContext.Builder contextBuilder() {

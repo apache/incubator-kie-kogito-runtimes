@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,21 +26,14 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
-@Mojo(name = "generateModel",
-        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-        requiresProject = true,
-        defaultPhase = LifecyclePhase.COMPILE,
-        threadSafe = true)
-public class GenerateModelMojo extends AbstractKieMojo {
+public abstract class AbstractGenerateModelMojo extends AbstractKieMojo {
 
+    protected static final String NAME = "generateModel";
     public static final PathMatcher drlFileMatcher = FileSystems.getDefault().getPathMatcher("glob:**.drl");
 
     @Parameter(property = "kogito.codegen.sources.directory", defaultValue = "${project.build.directory}/generated-sources/kogito")

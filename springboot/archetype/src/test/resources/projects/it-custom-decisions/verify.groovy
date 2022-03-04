@@ -30,6 +30,8 @@ assert Files.exists(projectPath.resolve("src/test/java/it/pkg/TrafficViolationTe
 String pomContent = Files.readString(projectPath.resolve("pom.xml"))
 assert pomContent.contains("kogito-decisions-spring-boot-starter")
 assert !pomContent.contains("kogito-spring-boot-starter")
+// Check Maven plugin in pom.xml
+assert pomContent.contains("kogito-maven-plugin")
 
 // Also no addons were specified
 assert !pomContent.contains("addon")
