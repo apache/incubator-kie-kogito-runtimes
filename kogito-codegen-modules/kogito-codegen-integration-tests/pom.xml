@@ -36,11 +36,6 @@
         </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-codegen-processes</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-rules</artifactId>
             <scope>test</scope>
         </dependency>
@@ -78,13 +73,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- OpenApi Required Libraries for Codegen Test -->
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-openapi-workitem</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

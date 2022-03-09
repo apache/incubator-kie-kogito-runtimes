@@ -114,7 +114,7 @@ def addDependenciesToPOM(String starters, String addons) {
  * Remove the resources that requires a specific starter
  */
 def removeUnneededResources(String starters, String appPackage) {
-    if (starters == "" || starters == null) {
+    if (starters == "_UNDEFINED_" || starters == "" || starters == null) {
         // in this case we will have all starters in the project, let's include everything in the final project
         return
     }
@@ -125,10 +125,21 @@ def removeUnneededResources(String starters, String appPackage) {
         Files.deleteIfExists(projectPath.resolve("src/main/resources/test-process.bpmn2"))
         Files.deleteIfExists(projectPath.resolve("src/test/java/" + packagePath + "/GreetingsTest.java"))
     }
-    if (!starters.contains("decisions") || !starters.contains("predictions") || !starters.contains("processes")) {
+    if (!starters.contains("decisions") && !starters.contains("predictions")) {
         // no need to keep DMN files
-        Files.deleteIfExists(projectPath.resolve("src/main/resources/Traffic Violation.dmn"))
+        Files.deleteIfExists(projectPath.resolve("src/main/resources/TrafficViolation.dmn"))
         Files.deleteIfExists(projectPath.resolve("src/test/java/" + packagePath + "/TrafficViolationTest.java"))
+    }
+}
+
+/**
+ * Replace kogito-maven-plugin to kogito-processes-maven-plugin when using Process artefacts
+ */
+def adjustMavenPluginToUse(String starters) {
+    if (starters == "_UNDEFINED_" || starters == "" || starters == null || starters.contains("processes")) {
+        def pomPath = Paths.get(request.getOutputDirectory(), request.getArtifactId(), "pom.xml")
+        def pomFile = Files.readString(pomPath).replace("kogito-maven-plugin", "kogito-processes-maven-plugin")
+        pomPath.toFile().withWriter("utf-8") { writer -> writer.write(pomFile) }
     }
 }
 
@@ -139,3 +150,4 @@ String appPackage = properties.get("package")
 
 addDependenciesToPOM(startersProps, addonsProps)
 removeUnneededResources(startersProps, appPackage)
+adjustMavenPluginToUse(startersProps)

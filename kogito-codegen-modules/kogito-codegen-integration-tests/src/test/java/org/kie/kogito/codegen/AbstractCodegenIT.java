@@ -41,9 +41,7 @@ import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
-import org.kie.kogito.codegen.openapi.client.OpenApiClientCodegen;
 import org.kie.kogito.codegen.prediction.PredictionCodegen;
-import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.rules.IncrementalRuleCodegen;
 import org.kie.memorycompiler.CompilationResult;
 import org.kie.memorycompiler.JavaCompiler;
@@ -64,12 +62,10 @@ public class AbstractCodegenIT {
      * {@link ApplicationGenerator#registerGeneratorIfEnabled(Generator) }
      */
     protected enum TYPE {
-        PROCESS,
         RULES,
         DECISION,
         JAVA,
-        PREDICTION,
-        OPENAPI
+        PREDICTION
     }
 
     private TestClassLoader classloader;
@@ -81,54 +77,11 @@ public class AbstractCodegenIT {
 
     private static final Map<TYPE, BiFunction<KogitoBuildContext, List<String>, Generator>> generatorTypeMap = new HashMap<>();
 
-    private static final String DUMMY_PROCESS_RUNTIME =
-            "package org.drools.project.model;\n" +
-                    "\n" +
-                    "import org.kie.api.KieBase;\n" +
-                    "import org.kie.api.builder.model.KieBaseModel;\n" +
-                    "import org.kie.api.runtime.KieSession;\n" +
-                    "import org.drools.modelcompiler.builder.KieBaseBuilder;\n" +
-                    "\n" +
-                    "\n" +
-                    "public class ProjectRuntime implements org.kie.kogito.legacy.rules.KieRuntimeBuilder {\n" +
-                    "\n" +
-                    "    public static final ProjectRuntime INSTANCE = new ProjectRuntime();\n" +
-                    "\n" +
-                    "    @Override\n" +
-                    "    public KieBase getKieBase() {\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    @Override\n" +
-                    "    public KieBase getKieBase(String name) {\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    @Override\n" +
-                    "    public KieSession newKieSession() {\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    @Override\n" +
-                    "    public KieSession newKieSession(String sessionName) {\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "    @Override\n" +
-                    "    public KieSession newKieSession(String sessionName, org.kie.kogito.rules.RuleConfig ruleConfig) {\n" +
-                    "        return null;\n" +
-                    "    }\n" +
-                    "\n" +
-                    "}";
-
     static {
-        generatorTypeMap.put(TYPE.PROCESS, (context, strings) -> ProcessCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
         generatorTypeMap.put(TYPE.RULES, (context, strings) -> IncrementalRuleCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
         generatorTypeMap.put(TYPE.DECISION, (context, strings) -> DecisionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
-
         generatorTypeMap.put(TYPE.JAVA, (context, strings) -> IncrementalRuleCodegen.ofJavaResources(context, toCollectedResources(TEST_JAVA, strings)));
         generatorTypeMap.put(TYPE.PREDICTION, (context, strings) -> PredictionCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
-        generatorTypeMap.put(TYPE.OPENAPI, (context, strings) -> OpenApiClientCodegen.ofCollectedResources(context, toCollectedResources(TEST_RESOURCES, strings)));
     }
 
     private static Collection<CollectedResource> toCollectedResources(String basePath, List<String> strings) {
@@ -137,16 +90,6 @@ public class AbstractCodegenIT {
                 .map(resource -> new File(basePath, resource))
                 .toArray(File[]::new);
         return CollectedResourceProducer.fromFiles(Paths.get(basePath), files);
-    }
-
-    public static Collection<CollectedResource> toCollectedResources(List<String> strings) {
-        return toCollectedResources(TEST_RESOURCES, strings);
-    }
-
-    protected Application generateCodeProcessesOnly(String... processes) throws Exception {
-        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
-        resourcesTypeMap.put(TYPE.PROCESS, Arrays.asList(processes));
-        return generateCode(resourcesTypeMap);
     }
 
     protected Application generateCodeRulesOnly(String... rules) throws Exception {
@@ -190,11 +133,6 @@ public class AbstractCodegenIT {
             log(new String(entry.contents()));
         }
 
-        if (resourcesTypeMap.size() == 1 && resourcesTypeMap.containsKey(TYPE.PROCESS)) {
-            sources.add("org/drools/project/model/ProjectRuntime.java");
-            srcMfs.write("org/drools/project/model/ProjectRuntime.java", DUMMY_PROCESS_RUNTIME.getBytes());
-        }
-
         if (LOGGER.isDebugEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
             LOGGER.debug("Dumping generated files in " + temp);
@@ -225,22 +163,8 @@ public class AbstractCodegenIT {
                 .build();
     }
 
-    protected ClassLoader testClassLoader() {
-        return classloader;
-    }
-
     protected void log(String content) {
         LOGGER.debug(content);
-    }
-
-    /**
-     * Use this setter to override AddonsConfig used during the generation
-     * NOTE: this setter has only effect if invoked before any of the generate*() methods
-     * 
-     * @param addonsConfig
-     */
-    protected void setAddonsConfig(AddonsConfig addonsConfig) {
-        this.addonsConfig = addonsConfig;
     }
 
     private static class TestClassLoader extends URLClassLoader {

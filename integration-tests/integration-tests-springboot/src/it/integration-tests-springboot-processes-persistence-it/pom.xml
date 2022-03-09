@@ -105,7 +105,7 @@
         </plugin>
         <plugin>
           <groupId>org.kie.kogito</groupId>
-          <artifactId>kogito-maven-plugin</artifactId>
+          <artifactId>kogito-processes-maven-plugin</artifactId>
           <version>${project.version}</version>
           <extensions>true</extensions>
         </plugin>
