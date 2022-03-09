@@ -73,4 +73,27 @@
     </pluginManagement>
   </build>
 
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.kie.kogito</groupId>
+              <artifactId>kogito-processes-maven-plugin</artifactId>
+              <version>${project.version}</version>
+              <extensions>true</extensions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

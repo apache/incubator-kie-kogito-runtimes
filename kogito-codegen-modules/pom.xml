@@ -18,8 +18,6 @@
   <modules>
     <module>kogito-codegen-core</module>
     <module>kogito-codegen-api</module>
-    <module>kogito-codegen-processes</module>
-    <module>kogito-codegen-openapi</module>
     <module>kogito-codegen-rules</module>
     <module>kogito-codegen-decisions</module>
     <module>kogito-codegen-predictions</module>
@@ -34,7 +32,10 @@
         </property>
       </activation>
       <modules>
+        <module>kogito-codegen-processes</module>
+        <module>kogito-codegen-openapi</module>
         <module>kogito-codegen-sample</module>
+        <module>kogito-codegen-processes-integration-tests</module>
       </modules>
     </profile>
     <profile>
@@ -46,7 +47,6 @@
       </activation>
       <modules>
         <module>kogito-codegen-integration-tests</module>
-        <module>kogito-codegen-processes-integration-tests</module>
       </modules>
     </profile>
   </profiles>
