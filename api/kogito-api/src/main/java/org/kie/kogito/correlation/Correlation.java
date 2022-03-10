@@ -15,12 +15,14 @@
  */
 package org.kie.kogito.correlation;
 
+import java.util.Optional;
+
 public class Correlation {
 
     private String key;
-    private String value;
+    private Object value;
 
-    public Correlation(String key, String value) {
+    public Correlation(String key, Object value) {
         this.key = key;
         this.value = value;
     }
@@ -29,7 +31,11 @@ public class Correlation {
         return key;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
+    }
+
+    public String asString(){
+        return Optional.ofNullable(value).filter(String.class::isInstance).map(String.class::cast).orElse(null);
     }
 }

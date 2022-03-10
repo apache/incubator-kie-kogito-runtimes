@@ -15,8 +15,11 @@
  */
 package $Package$;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.impl.DefaultEventConsumerFactory;
@@ -31,7 +34,10 @@ import org.kie.kogito.event.KogitoEventExecutor;
 @org.springframework.stereotype.Component()
 public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $DataType$> {
 
-    @org.springframework.beans.factory.annotation.Autowired()
+    @org.springframework.beans.factory.annotation.Autowired
+    ObjectMapper objectMapper;
+
+    @org.springframework.beans.factory.annotation.Autowired
     $Type$MessageConsumer(
             Application application,
             @org.springframework.beans.factory.annotation.Qualifier("$ProcessName$") Process<$Type$> process,
@@ -50,5 +56,16 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
               processService,
               executorService,
               eventUnmarshaller);
+    }
+
+    private $Type$ eventToModel(Object event) {
+        $Type$ model = new $Type$();
+        model.$SetModelMethodName$(objectMapper.convertValue(event, $DataType$.class));
+        return model;
+    }
+
+    @Override()
+    protected Optional<Function<Object, $Type$>> getModelConverter() {
+        return Optional.of(this::eventToModel);
     }
 }

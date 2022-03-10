@@ -28,7 +28,7 @@ import org.kie.kogito.process.ProcessService;
 public class DefaultEventConsumerFactory implements EventConsumerFactory {
 
     @Override
-    public <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> modelConverter, boolean cloudEvents,
+    public <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<Object, M>> modelConverter, boolean cloudEvents,
             Function<DataEvent<D>, D> dataFunction) {
         return cloudEvents
                 ? (EventConsumer<M, D>) new CloudEventConsumer<>(processService, executorService, modelConverter, dataFunction.compose(c -> c))

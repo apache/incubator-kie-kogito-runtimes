@@ -16,8 +16,6 @@
 
 package org.kie.kogito.event.impl;
 
-import java.util.Optional;
-
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationKeyResolver;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -37,8 +35,14 @@ public class SimpleAttributeCorrelationResolver implements CorrelationKeyResolve
 
     @Override
     public Correlation resolve(Object data) {
-        JsonNode jsonNode = objectMapper.valueToTree(data).get(referenceKey);
-        String correlationValue = Optional.ofNullable(jsonNode).map(JsonNode::asText).orElse(null);
+        JsonNode correlationValue = objectMapper.valueToTree(data).get(referenceKey);
+        if (correlationValue == null) {
+            return new Correlation(referenceKey, null);
+        }
+
+        if (correlationValue.isTextual()) {
+            return new Correlation(referenceKey, correlationValue.textValue());
+        }
         return new Correlation(referenceKey, correlationValue);
     }
 

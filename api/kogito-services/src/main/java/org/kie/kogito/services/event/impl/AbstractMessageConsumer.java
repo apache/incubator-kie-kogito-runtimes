@@ -87,7 +87,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
                 .thenAccept(v -> logger.trace("Consume completed {} for trigger {}", payload, trigger));
     }
 
-    protected Optional<Function<D, M>> getModelConverter() {
+    protected Optional<Function<Object, M>> getModelConverter() {
         return Optional.empty();
     }
 

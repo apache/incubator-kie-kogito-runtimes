@@ -16,9 +16,13 @@
 package $Package$;
 
 
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventUnmarshaller;
@@ -56,6 +60,9 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     @Inject
     ProcessService processService;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     @javax.annotation.PostConstruct
     void init() {
         init(application,
@@ -68,5 +75,16 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
              processService,
              executorService,
              eventUnmarshaller);
+    }
+
+    private $Type$ eventToModel(Object event) {
+        $Type$ model = new $Type$();
+        model.$SetModelMethodName$(objectMapper.convertValue(event, $DataType$.class));
+        return model;
+    }
+
+    @Override()
+    protected Optional<Function<Object, $Type$>> getModelConverter() {
+        return Optional.of(this::eventToModel);
     }
 }

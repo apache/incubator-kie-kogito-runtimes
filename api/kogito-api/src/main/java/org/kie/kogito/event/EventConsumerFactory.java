@@ -24,6 +24,6 @@ import org.kie.kogito.process.ProcessService;
 
 public interface EventConsumerFactory {
 
-    <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<D, M>> modelConverter, boolean cloudEvents,
+    <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<Object, M>> modelConverter, boolean cloudEvents,
             Function<DataEvent<D>, D> dataFunction);
 }
