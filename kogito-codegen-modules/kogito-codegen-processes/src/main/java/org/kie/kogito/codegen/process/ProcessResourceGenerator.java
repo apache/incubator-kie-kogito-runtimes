@@ -27,12 +27,14 @@ import java.util.stream.Collectors;
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
+import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
+import org.kie.kogito.codegen.process.openapi.OpenApiTagGenerator;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -260,6 +262,11 @@ public class ProcessResourceGenerator {
         typeInterpolations.put("$Type$", dataClazzName);
         template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
+
+        @SuppressWarnings("unchecked")
+        List<String> classTags = (List<String>) process.getMetaData().getOrDefault(Metadata.TAGS, List.of());
+        OpenApiTagGenerator.of(clazz).addTags(classTags);
+
         template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
 
         if (context.hasDI()) {
@@ -318,7 +325,7 @@ public class ProcessResourceGenerator {
                 process.getMetaData()
                         .getOrDefault("Documentation", processName).toString();
         String processInstanceDescription = process.getMetaData()
-                .getOrDefault("customDescription", "")
+                .getOrDefault(Metadata.CUSTOM_DESCRIPTION, "")
                 .toString();
         String interpolated =
                 s.replace("$name$", processName)

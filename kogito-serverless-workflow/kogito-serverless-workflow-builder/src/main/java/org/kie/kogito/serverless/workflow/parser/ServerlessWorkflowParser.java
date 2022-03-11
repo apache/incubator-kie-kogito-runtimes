@@ -119,6 +119,12 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.COMPENSATION, true);
             factory.addCompensationContext(workflow.getId());
         }
+        if (workflow.getAnnotations() != null && !workflow.getAnnotations().isEmpty()) {
+            factory.metaData(Metadata.TAGS, workflow.getAnnotations());
+        }
+        if (workflow.getDescription() != null) {
+            factory.metaData(Metadata.CUSTOM_DESCRIPTION, workflow.getDescription());
+        }
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
     }
 

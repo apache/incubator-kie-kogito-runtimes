@@ -16,7 +16,7 @@
 package org.kie.kogito.serverless.workflow;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
@@ -44,6 +44,7 @@ import io.serverlessworkflow.api.start.Start;
 import io.serverlessworkflow.api.states.DefaultState.Type;
 import io.serverlessworkflow.api.states.SleepState;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -635,6 +636,16 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
 
     @Test
     public void testMinimumWorkflow() {
+        Workflow workflow = createMinimumWorkflow();
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
+        Process process = parser.getProcessInfo().info();
+        assertSame(process, parser.getProcessInfo().info());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_NAME, process.getName());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_VERSION, process.getVersion());
+        assertEquals(ServerlessWorkflowParser.DEFAULT_PACKAGE, process.getPackageName());
+    }
+
+    private static Workflow createMinimumWorkflow() {
         Workflow workflow = new Workflow();
         workflow.setId("javierito");
         Start start = new Start();
@@ -646,13 +657,42 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         startState.setDuration("1s");
         startState.setName("javierito");
         startState.setEnd(end);
-        workflow.setStates(Collections.singletonList(startState));
+        workflow.setStates(List.of(startState));
         workflow.setStart(start);
+
+        return workflow;
+    }
+
+    @Test
+    void testWorkflowWithAnnotations() {
+        Workflow workflow = createMinimumWorkflow()
+                .withAnnotations(List.of("machine learning", "monitoring", "networking"));
+
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcessInfo().info();
-        assertSame(process, parser.getProcessInfo().info());
-        assertEquals(ServerlessWorkflowParser.DEFAULT_NAME, process.getName());
-        assertEquals(ServerlessWorkflowParser.DEFAULT_VERSION, process.getVersion());
-        assertEquals(ServerlessWorkflowParser.DEFAULT_PACKAGE, process.getPackageName());
+
+        assertThat(process.getMetaData()).containsEntry(Metadata.TAGS, List.of("machine learning", "monitoring", "networking"));
+    }
+
+    @Test
+    void workflowWithoutAnnotationsShouldResultInProcessWithoutTags() {
+        Workflow workflow = createMinimumWorkflow();
+
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
+        Process process = parser.getProcessInfo().info();
+
+        assertThat(process.getMetaData()).doesNotContainKey(Metadata.TAGS);
+    }
+
+    @Test
+    void testWorkflowWithDescription() {
+        String description = "This is a description";
+
+        Workflow workflow = createMinimumWorkflow().withDescription(description);
+
+        ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
+        Process process = parser.getProcessInfo().info();
+
+        assertThat(process.getMetaData()).containsEntry(Metadata.CUSTOM_DESCRIPTION, description);
     }
 }
