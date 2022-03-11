@@ -22,10 +22,6 @@
             <artifactId>kogito-quarkus-predictions</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-api-incubation-predictions-services</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy</artifactId>
         </dependency>

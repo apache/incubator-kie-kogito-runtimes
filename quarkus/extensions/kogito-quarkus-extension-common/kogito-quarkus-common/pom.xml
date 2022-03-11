@@ -18,10 +18,6 @@
             <artifactId>svm</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-api-incubation-application</artifactId>
-        </dependency>
 
         <!-- required because of native image substitution  -->
         <dependency>
