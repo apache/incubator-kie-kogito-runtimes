@@ -17,6 +17,7 @@ package org.kie.kogito.codegen.process;
 
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
+import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
@@ -131,7 +132,7 @@ public class MessageConsumerGenerator {
     private void generateModelMethods(ClassOrInterfaceDeclaration template) {
         //generate setter call on eventToModel method
         template.findAll(MethodCallExpr.class)
-                .forEach(t -> t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst(trigger.getModelRef()))));
+                .forEach(t -> t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)))));
 
         if (!trigger.dataOnly()) {
             ClassOrInterfaceType eventType = new ClassOrInterfaceType(null, trigger.getDataType());

@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
+package org.kie.kogito.services.event.impl;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import org.kie.kogito.Model;
 import org.kie.kogito.correlation.CorrelationKeyResolver;
+import org.kie.kogito.event.EventConsumer;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEventDispatcher<M extends Model> {
+public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M> {
 
     private CorrelationKeyResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
     private CorrelationKeyResolver eventTypeResolver = new SimpleAttributeCorrelationResolver("type");
-    private CorrelationKeyResolver dataResolver = new SimpleAttributeCorrelationResolver("data");
+    private CorrelationKeyResolver eventSourceResolver = new SimpleAttributeCorrelationResolver("source");
+    private CorrelationKeyResolver dataResolver = new EventDataCorrelationResolver();
 
     private ProcessService processService;
     private Function<Object, M> modelConverter;
@@ -41,11 +42,11 @@ public class ProcessEventDispatcher<M extends Model> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventDispatcher.class);
     private ExecutorService executor;
 
-    public ProcessEventDispatcher(Process<M> process, Function<Object, M> modelConverter, ProcessService processService) {
+    public ProcessEventDispatcher(Process<M> process, Function<Object, M> modelConverter, ProcessService processService, ExecutorService executor) {
         this.process = process;
         this.modelConverter = modelConverter;
         this.processService = processService;
-        this.executor = Executors.newCachedThreadPool();//todo
+        this.executor = executor;
     }
 
     public CompletableFuture<?> dispatch(String trigger, Object event) {
@@ -56,11 +57,7 @@ public class ProcessEventDispatcher<M extends Model> {
             return CompletableFuture.completedFuture(null);
         }
 
-        if (ignoredMessageType(trigger, event)) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        String kogitoReferenceId = String.valueOf(kogitoReferenceCorrelationResolver.resolve(event).getValue());
+        String kogitoReferenceId = kogitoReferenceCorrelationResolver.resolve(event).asString();
         if (kogitoReferenceId != null && !kogitoReferenceId.isEmpty()) {
             LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
                     kogitoReferenceId,
@@ -102,7 +99,8 @@ public class ProcessEventDispatcher<M extends Model> {
 
     private boolean ignoredMessageType(String trigger, Object event) {
         String eventType = eventTypeResolver.resolve(event).asString();//todo get from event
-        String source = null;//todo get from event
-        return !trigger.equals(eventType) && !event.getClass().getSimpleName().equals(source);
+        String source = Optional.ofNullable(eventSourceResolver.resolve(event).getValue()).map(Object::toString).orElse(null);//todo get from event
+        //return !trigger.equals(eventType) && !event.getClass().getSimpleName().equals(source);
+        return false;
     }
 }

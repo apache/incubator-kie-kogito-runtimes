@@ -36,7 +36,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     private Process<M> process;
     private Application application;
     private String trigger;
-    private EventConsumer<M, Object> eventConsumer;
+    private EventConsumer<M> eventConsumer;
 
     // in general we should favor the non-empty constructor
     // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
@@ -47,20 +47,18 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     public AbstractMessageConsumer(Application application,
             Process<M> process,
             String trigger,
-            EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataClass,
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
             EventUnmarshaller<Object> eventUnmarshaller) {
-        init(application, process, trigger, eventConsumerFactory, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller);
+        init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller);
     }
 
     public void init(Application application,
             Process<M> process,
             String trigger,
-            EventConsumerFactory eventConsumerFactory,
             EventReceiver eventReceiver,
             Class<D> dataClass,
             boolean useCloudEvents,
@@ -70,7 +68,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         this.process = process;
         this.application = application;
         this.trigger = trigger;
-        this.eventConsumer = (EventConsumer<M, Object>) eventConsumerFactory.get(processService, executorService, getModelConverter(), useCloudEvents, this::getData);
+        this.eventConsumer = new ProcessEventDispatcher<>(process, getModelConverter().get(), processService, executorService);
 
         if (useCloudEvents) {
             eventReceiver.subscribe(this::consume,
@@ -83,7 +81,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
 
     private CompletionStage<?> consume(Object payload) {
         logger.trace("Received {} for trigger {}", payload, trigger);
-        return eventConsumer.consume(application, process, payload, trigger)
+        return eventConsumer.dispatch(trigger, payload)
                 .thenAccept(v -> logger.trace("Consume completed {} for trigger {}", payload, trigger));
     }
 

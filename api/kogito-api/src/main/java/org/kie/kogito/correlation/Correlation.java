@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class Correlation {
         return value;
     }
 
-    public String asString(){
+    public String asString() {
         return Optional.ofNullable(value).filter(String.class::isInstance).map(String.class::cast).orElse(null);
     }
 }

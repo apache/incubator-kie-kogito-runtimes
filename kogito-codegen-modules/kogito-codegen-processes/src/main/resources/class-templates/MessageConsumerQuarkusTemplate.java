@@ -28,7 +28,6 @@ import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.KogitoEventExecutor;
-import org.kie.kogito.event.impl.DefaultEventConsumerFactory;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
@@ -68,7 +67,6 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
         init(application,
              process,
              "$Trigger$",
-             new DefaultEventConsumerFactory(),
              eventReceiver,
              $DataType$.class,
              configBean.useCloudEvents(),

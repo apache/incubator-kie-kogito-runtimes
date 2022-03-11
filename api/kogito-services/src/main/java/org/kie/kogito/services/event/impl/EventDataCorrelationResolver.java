@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.services.event.impl;
 
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 
-import org.kie.kogito.Model;
-import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.correlation.Correlation;
 
-public interface EventConsumerFactory {
+public class EventDataCorrelationResolver extends SimpleAttributeCorrelationResolver {
 
-    <M extends Model, D> EventConsumer<M, D> get(ProcessService processService, ExecutorService executorService, Optional<Function<Object, M>> modelConverter, boolean cloudEvents,
-            Function<DataEvent<D>, D> dataFunction);
+    public static final String DATA_REFERENCE_KEY = "data";
+
+    public EventDataCorrelationResolver() {
+        super(DATA_REFERENCE_KEY);
+    }
+
+    @Override
+    public Correlation resolve(Object data) {
+        return Optional.of(super.resolve(data)).filter(c -> Objects.nonNull(c.getValue())).orElse(new Correlation(DATA_REFERENCE_KEY, data));
+    }
 }
