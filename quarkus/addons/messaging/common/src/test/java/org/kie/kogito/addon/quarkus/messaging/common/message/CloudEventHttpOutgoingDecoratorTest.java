@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common.message;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
@@ -37,11 +40,8 @@ class CloudEventHttpOutgoingDecoratorTest {
         message = provider.decorate(message);
         assertThat(message.getMetadata(OutgoingHttpMetadata.class)).isNotEmpty();
 
-        /*
-         * It would be nice to check if the Content-Type header has the value "application/cloudevents+json".
-         * But as far as we know, there's no way to test the actual headers, since OutgoingHttpMetadata#getHeaders is not public.
-         * 
-         * https://quarkusio.zulipchat.com/#narrow/stream/294206-smallrye/topic/OutgoingHttpMetadata.20has.20no.20public.20methods/near/274438268
-         */
+        Map<String, List<String>> headers = message.getMetadata(OutgoingHttpMetadata.class).orElseThrow().getHeaders();
+
+        assertThat(headers).containsEntry("Content-Type", List.of("application/cloudevents+json"));
     }
 }
