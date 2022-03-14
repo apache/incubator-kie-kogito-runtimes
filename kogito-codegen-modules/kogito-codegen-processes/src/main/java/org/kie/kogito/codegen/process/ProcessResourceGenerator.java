@@ -34,7 +34,6 @@ import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.codegen.core.GeneratorConfig;
-import org.kie.kogito.codegen.process.openapi.OpenApiTagGenerator;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.ast.CompilationUnit;
@@ -263,9 +262,7 @@ public class ProcessResourceGenerator {
         template.findAll(StringLiteralExpr.class).forEach(this::interpolateStrings);
         template.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, typeInterpolations));
 
-        @SuppressWarnings("unchecked")
-        List<String> classTags = (List<String>) process.getMetaData().getOrDefault(Metadata.TAGS, List.of());
-        OpenApiTagGenerator.of(clazz).addTags(classTags);
+        TagResourceGenerator.addTags(clazz, process);
 
         template.findAll(MethodDeclaration.class).forEach(this::interpolateMethods);
 

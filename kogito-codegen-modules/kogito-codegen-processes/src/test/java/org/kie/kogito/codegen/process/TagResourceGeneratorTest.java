@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.process.openapi;
+package org.kie.kogito.codegen.process;
 
 import java.io.InputStream;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -33,14 +36,18 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-class OpenApiTagGeneratorTest {
+class TagResourceGeneratorTest {
 
     @Test
     void addTags() {
         CompilationUnit compilationUnit = createCompilationUnit();
 
-        OpenApiTagGenerator.of(compilationUnit).addTags(List.of("knowledge", "is", "everything"));
+        KogitoWorkflowProcess process = mockProcessWithTags("knowledge", "is", "everything");
+
+        TagResourceGenerator.addTags(compilationUnit, process);
 
         ClassOrInterfaceDeclaration classOrInterfaceDeclaration = compilationUnit.findAll(ClassOrInterfaceDeclaration.class).get(0);
 
@@ -53,8 +60,14 @@ class OpenApiTagGeneratorTest {
                 createTagAnnotation("everything"));
     }
 
-    private CompilationUnit createCompilationUnit() {
-        InputStream file = Objects.requireNonNull(getClass().getResourceAsStream("/openapi/SimpleResource.java"));
+    private static KogitoWorkflowProcess mockProcessWithTags(String... tags) {
+        KogitoWorkflowProcess process = mock(KogitoWorkflowProcess.class);
+        when(process.getMetaData()).thenReturn(Collections.singletonMap(Metadata.TAGS, Arrays.asList(tags)));
+        return process;
+    }
+
+    private static CompilationUnit createCompilationUnit() {
+        InputStream file = Objects.requireNonNull(TagResourceGeneratorTest.class.getResourceAsStream("/openapi/SimpleResource.java"));
         return StaticJavaParser.parse(file);
     }
 
@@ -62,7 +75,7 @@ class OpenApiTagGeneratorTest {
     void emptyTagsShouldResultInNoAnnotations() {
         CompilationUnit compilationUnit = createCompilationUnit();
 
-        OpenApiTagGenerator.of(compilationUnit).addTags(List.of());
+        TagResourceGenerator.addTags(compilationUnit, mockProcessWithTags());
 
         ClassOrInterfaceDeclaration classOrInterfaceDeclaration = compilationUnit.findAll(ClassOrInterfaceDeclaration.class).get(0);
 
