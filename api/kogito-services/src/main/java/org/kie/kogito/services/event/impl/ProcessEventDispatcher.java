@@ -29,11 +29,14 @@ import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_INSTANCE_ID;
+
 public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M> {
 
     private CorrelationKeyResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
     private CorrelationKeyResolver eventTypeResolver = new SimpleAttributeCorrelationResolver("type");
     private CorrelationKeyResolver eventSourceResolver = new SimpleAttributeCorrelationResolver("source");
+    private CorrelationKeyResolver referenceIdResolver = new SimpleAttributeCorrelationResolver(PROCESS_INSTANCE_ID);
     private CorrelationKeyResolver dataResolver = new EventDataCorrelationResolver();
 
     private ProcessService processService;
@@ -92,9 +95,9 @@ public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M>
     private ProcessInstance<M> startNewInstance(String trigger, Object event) {
         String businessKey = null;
         String fromNode = null;
-        String referenceId = null; //keep a reference with the caller starting the process instance
+        String referenceId = referenceIdResolver.resolve(event).asString();//keep a reference with the caller starting the process instance
         Object data = dataResolver.resolve(event).getValue();
-        return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId);
+        return processService.createProcessInstance(process, businessKey, modelConverter == null ? null : modelConverter.apply(data), fromNode, trigger, referenceId);
     }
 
     private boolean ignoredMessageType(String trigger, Object event) {

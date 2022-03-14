@@ -68,7 +68,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         this.process = process;
         this.application = application;
         this.trigger = trigger;
-        this.eventConsumer = new ProcessEventDispatcher<>(process, getModelConverter().get(), processService, executorService);
+        this.eventConsumer = new ProcessEventDispatcher<>(process, getModelConverter().orElse(null), processService, executorService);
 
         if (useCloudEvents) {
             eventReceiver.subscribe(this::consume,

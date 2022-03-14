@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.process;
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.workflow.core.node.StartNode;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
@@ -33,6 +34,7 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -133,6 +135,11 @@ public class MessageConsumerGenerator {
         //generate setter call on eventToModel method
         template.findAll(MethodCallExpr.class)
                 .forEach(t -> t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)))));
+        if (!(trigger.getNode() instanceof StartNode)) {
+            MethodDeclaration getModelConverter = template.findAll(MethodDeclaration.class,
+                    m -> m.getName().getIdentifier().equals("getModelConverter")).get(0);
+            template.remove(getModelConverter);
+        }
 
         if (!trigger.dataOnly()) {
             ClassOrInterfaceType eventType = new ClassOrInterfaceType(null, trigger.getDataType());

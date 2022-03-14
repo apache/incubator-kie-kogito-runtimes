@@ -77,7 +77,9 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
 
     private $Type$ eventToModel(Object event) {
         $Type$ model = new $Type$();
-        model.$SetModelMethodName$(objectMapper.convertValue(event, $DataType$.class));
+        if(event != null) {
+            model.$SetModelMethodName$(objectMapper.convertValue(event, $DataType$.class));
+        }
         return model;
     }
 
