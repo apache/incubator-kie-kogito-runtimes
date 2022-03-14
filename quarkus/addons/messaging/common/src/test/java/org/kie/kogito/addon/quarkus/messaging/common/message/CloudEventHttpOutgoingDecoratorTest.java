@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common.message;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -36,12 +36,9 @@ class CloudEventHttpOutgoingDecoratorTest {
 
     @Test
     void verifyOutgoingHttpMetadataIsSet() {
-        Message<String> message = Message.of("pepe");
-        message = provider.decorate(message);
-        assertThat(message.getMetadata(OutgoingHttpMetadata.class)).isNotEmpty();
-
-        Map<String, List<String>> headers = message.getMetadata(OutgoingHttpMetadata.class).orElseThrow().getHeaders();
-
-        assertThat(headers).containsEntry("Content-Type", List.of("application/cloudevents+json"));
+        Message<String> message = provider.decorate(Message.of("pepe"));
+        Optional<OutgoingHttpMetadata> metadata = message.getMetadata(OutgoingHttpMetadata.class);
+        assertThat(metadata).isNotEmpty();
+        assertThat(metadata.orElseThrow().getHeaders()).containsEntry("Content-Type", Collections.singletonList("application/cloudevents+json"));
     }
 }
