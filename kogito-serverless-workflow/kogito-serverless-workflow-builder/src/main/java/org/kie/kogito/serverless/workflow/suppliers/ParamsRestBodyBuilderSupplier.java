@@ -18,16 +18,16 @@ package org.kie.kogito.serverless.workflow.suppliers;
 import java.util.function.Supplier;
 
 import org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder;
+import org.kogito.workitem.rest.bodybuilders.SingletonRestWorkItemHandlerBodyBuilder;
 
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 
-public class RestBodyBuilderSupplier implements Supplier<Expression> {
+public class ParamsRestBodyBuilderSupplier extends SingletonRestWorkItemHandlerBodyBuilder implements Supplier<Expression> {
 
     @Override
     public Expression get() {
         return new ObjectCreationExpr()
                 .setType(ParamsRestWorkItemHandlerBodyBuilder.class.getCanonicalName());
     }
-
 }

@@ -41,6 +41,7 @@ public class ServerlessWorkflowUtils {
     public static final String DEFAULT_WORKFLOW_FORMAT = "json";
     public static final String ALTERNATE_WORKFLOW_FORMAT = "yml";
     private static final String APP_PROPERTIES_BASE = "kogito.sw.";
+    private static final String OPEN_API_PROPERTIES_BASE = "org.kogito.openapi.client.";
     private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
     private static final String APP_PROPERTIES_STATES_BASE = "states.";
     public static final String OPENAPI_OPERATION_SEPARATOR = "#";
@@ -53,35 +54,57 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
-        return resolveFunctionMetadata(function, metadataKey, context, "");
+        return resolveFunctionMetadata(function, metadataKey, context, String.class, "");
     }
 
-    public static Integer resolveFunctionMetadataAsInt(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
-        String value = resolveFunctionMetadata(function, metadataKey, context);
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            logger.warn("Error converting {} to number", value, ex);
-            return null;
-        }
+    public static <T> T resolveFunctionMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return resolveMetadata(function, APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName(), metadataKey, context, clazz, defaultValue);
     }
 
-    public static String getForEachVarName(KogitoBuildContext context) {
-        return context.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + "foreach.outputVarName").orElse("_swf_eval_temp");
+    public static String resolveOpenAPIMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
+        return resolveOpenAPIMetadata(function, metadataKey, context, String.class, "");
     }
 
-    public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context, String defaultValue) {
+    public static <T> T resolveOpenAPIMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return resolveMetadata(function, OPEN_API_PROPERTIES_BASE + function.getName(), metadataKey, context, clazz, defaultValue);
+    }
+
+    private static <T> T resolveMetadata(FunctionDefinition function, String prefix, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
         if (function != null) {
             if (function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) {
-                return function.getMetadata().get(metadataKey);
+                return clazz.cast(function.getMetadata().get(metadataKey));
             }
-            Optional<String> propValue = context.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName() + "." + metadataKey);
+            Optional<T> propValue = context.getApplicationProperty(prefix + "." + metadataKey, clazz);
             if (propValue.isPresent()) {
                 return propValue.get();
             }
         }
         logger.warn("Could not resolve function metadata: {}", metadataKey);
         return defaultValue;
+    }
+
+    public static String concatPaths(String onePath, String anotherPath) {
+        return concatPaths(onePath, anotherPath, "/");
+    }
+
+    public static String concatPaths(String onePath, String anotherPath, String concatChars) {
+        if (anotherPath.startsWith(concatChars)) {
+            if (onePath.endsWith(concatChars)) {
+                return onePath.concat(anotherPath.substring(concatChars.length()));
+            } else {
+                return onePath.concat(anotherPath);
+            }
+        } else {
+            if (onePath.endsWith(concatChars)) {
+                return onePath.concat(anotherPath);
+            } else {
+                return onePath.concat(concatChars).concat(anotherPath);
+            }
+        }
+    }
+
+    public static String getForEachVarName(KogitoBuildContext context) {
+        return context.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + "foreach.outputVarName").orElse("_swf_eval_temp");
     }
 
     /**

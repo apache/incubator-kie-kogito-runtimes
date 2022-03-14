@@ -30,6 +30,9 @@ import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.concatPaths;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveOpenAPIMetadata;
 
 public class WorkflowUtilsTest {
 
@@ -59,10 +62,25 @@ public class WorkflowUtilsTest {
     @Test
     public void testResolveFunctionMetadata() {
         FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(Collections.singletonMap("testprop1", "customtestprop1val"));
-        String testProp1Val = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "testprop1", context);
-        assertThat(testProp1Val).isNotNull().isEqualTo("customtestprop1val");
+        assertThat(resolveFunctionMetadata(function, "testprop1", context)).isNotNull().isEqualTo("customtestprop1val");
+        assertThat(resolveFunctionMetadata(function, "testprop2", context)).isNotNull().isEqualTo("testprop2val");
+    }
 
-        String testProp2Val = ServerlessWorkflowUtils.resolveFunctionMetadata(function, "testprop2", context);
-        assertThat(testProp2Val).isNotNull().isEqualTo("testprop2val");
+    @Test
+    public void testResolveOpenAPIMetadata() {
+        FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(Collections.singletonMap("testprop1", "customtestprop1val"));
+        assertThat(resolveOpenAPIMetadata(function, "testprop1", context)).isNotNull().isEqualTo("customtestprop1val");
+        assertThat(resolveOpenAPIMetadata(function, "base_path", context, String.class, "http://localhost:8080")).isEqualTo("http://localhost:8282");
+        assertThat(resolveOpenAPIMetadata(function, "base_path2", context, Integer.class, 0)).isEqualTo(0);
+    }
+
+    @Test
+    public void testConcatPaths() {
+        final String expected = "http:localhost:8080/pepe/pepa/pepi";
+        assertThat(concatPaths("http:localhost:8080/pepe/", "/pepa/pepi")).isEqualTo(expected);
+        assertThat(concatPaths("http:localhost:8080/pepe", "pepa/pepi")).isEqualTo(expected);
+        assertThat(concatPaths("http:localhost:8080/pepe/", "pepa/pepi")).isEqualTo(expected);
+        assertThat(concatPaths("http:localhost:8080/pepe", "/pepa/pepi")).isEqualTo(expected);
+
     }
 }

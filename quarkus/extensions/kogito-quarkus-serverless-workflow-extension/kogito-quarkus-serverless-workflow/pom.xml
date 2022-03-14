@@ -11,7 +11,7 @@
 
   <artifactId>kogito-quarkus-serverless-workflow</artifactId>
   <name>Kogito :: Quarkus Serverless Workflow Extension :: Runtime</name>
-  <description>Add Kogito Serverless Workflows (SW) capabilities - Includes OpenApi Client, the Process engine, and Knative Eventing capabilities</description>
+  <description>Add Kogito Serverless Workflows (SW) capabilities - Includes the Process engine and Knative Eventing capabilities</description>
 
   <dependencies>
     <dependency>
@@ -42,6 +42,11 @@
       <artifactId>resteasy-multipart-provider</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-rest-workitem</artifactId>
+    </dependency>
+  
+    <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson2-provider</artifactId>
     </dependency>
@@ -53,11 +58,7 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.eclipse.microprofile.openapi</groupId>
-      <artifactId>microprofile-openapi-api</artifactId>
-    </dependency>
-
+   
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-client</artifactId>

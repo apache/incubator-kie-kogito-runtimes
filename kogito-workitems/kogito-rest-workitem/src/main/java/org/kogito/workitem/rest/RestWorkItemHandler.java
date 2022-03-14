@@ -48,6 +48,8 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.convert;
+
 public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     public static final String REST_TASK_TYPE = "Rest";
@@ -86,7 +88,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (endPoint == null) {
             throw new IllegalArgumentException("Missing required parameter " + URL);
         }
-        HttpMethod method = HttpMethod.valueOf(getParam(parameters, METHOD, String.class, "GET").toUpperCase());
+        HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         Object inputModel = getParam(parameters, CONTENT_DATA, Object.class, null);
         String user = getParam(parameters, USER, String.class, null);
         String password = getParam(parameters, PASSWORD, String.class, null);
@@ -109,7 +111,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
-        HttpResponse<Buffer> response = method == HttpMethod.POST || method == HttpMethod.PUT ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
+        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
 
     }
@@ -208,21 +210,6 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
     private <T> T getParam(Map<String, Object> parameters, String paramName, Class<T> type, T defaultValue) {
         Object value = parameters.remove(paramName);
-        if (value == null) {
-            value = defaultValue;
-        } else if (!type.isAssignableFrom(value.getClass())) {
-            if (type.isAssignableFrom(Integer.class) && CharSequence.class.isAssignableFrom(value.getClass())) {
-                try {
-                    value = Integer.parseInt(value.toString());
-                } catch (NumberFormatException ex) {
-                    value = defaultValue;
-                }
-            } else {
-                throw new IllegalArgumentException("Parameter paramName should be of type " + type +
-                        " but it is of type " +
-                        value.getClass());
-            }
-        }
-        return type.cast(value);
+        return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());
     }
 }
