@@ -96,11 +96,14 @@ public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M>
     }
 
     private ProcessInstance<M> startNewInstance(String trigger, Object event) {
+        if (modelConverter == null) {
+            return null;
+        }
         String businessKey = null;
         String fromNode = null;
         String referenceId = referenceIdResolver.resolve(event).asString();//keep a reference with the caller starting the process instance
         Object data = dataResolver.resolve(event).getValue();
-        return processService.createProcessInstance(process, businessKey, modelConverter == null ? null : modelConverter.apply(data), fromNode, trigger, referenceId);
+        return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId);
     }
 
     private boolean ignoredMessageType(String trigger, Object event) {
