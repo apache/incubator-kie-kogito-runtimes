@@ -18,13 +18,13 @@ package org.kie.kogito.codegen.process;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
@@ -46,17 +46,27 @@ final class TagResourceGenerator {
      */
     static void addTags(CompilationUnit compilationUnit, KogitoWorkflowProcess process) {
         @SuppressWarnings("unchecked")
-        List<String> tags = (List<String>) process.getMetaData().getOrDefault(Metadata.TAGS, Collections.emptyList());
+        List<Tag> tags = (List<Tag>) process.getMetaData().getOrDefault(Metadata.TAGS, Collections.emptyList());
         compilationUnit.findAll(ClassOrInterfaceDeclaration.class).forEach(cls -> addTags(tags, cls));
     }
 
-    private static void addTags(List<String> tags, ClassOrInterfaceDeclaration cls) {
+    private static void addTags(List<Tag> tags, ClassOrInterfaceDeclaration cls) {
         tags.forEach(tag -> addTag(cls, tag));
     }
 
-    private static void addTag(ClassOrInterfaceDeclaration cls, String tag) {
-        NodeList<MemberValuePair> attributes = new NodeList<>(new MemberValuePair("name", new StringLiteralExpr(tag)));
-        AnnotationExpr annotationExpr = new NormalAnnotationExpr(new Name("Tag"), attributes);
-        cls.addAnnotation(annotationExpr);
+    private static void addTag(ClassOrInterfaceDeclaration cls, Tag tag) {
+        NodeList<MemberValuePair> attributes = new NodeList<>();
+
+        if (tag.getName() != null) {
+            MemberValuePair name = new MemberValuePair("name", new StringLiteralExpr(tag.getName()));
+            attributes.add(name);
+        }
+
+        if (tag.getDescription() != null) {
+            MemberValuePair description = new MemberValuePair("description", new StringLiteralExpr(tag.getDescription()));
+            attributes.add(description);
+        }
+
+        cls.addAnnotation(new NormalAnnotationExpr(new Name("Tag"), attributes));
     }
 }

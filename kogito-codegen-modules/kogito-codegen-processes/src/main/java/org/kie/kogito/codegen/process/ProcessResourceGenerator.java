@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.compiler.canonical.UserTaskModelMetaData;
-import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
@@ -322,7 +321,7 @@ public class ProcessResourceGenerator {
                 process.getMetaData()
                         .getOrDefault("Documentation", processName).toString();
         String processInstanceDescription = process.getMetaData()
-                .getOrDefault(Metadata.CUSTOM_DESCRIPTION, "")
+                .getOrDefault("customDescription", "")
                 .toString();
         String interpolated =
                 s.replace("$name$", processName)

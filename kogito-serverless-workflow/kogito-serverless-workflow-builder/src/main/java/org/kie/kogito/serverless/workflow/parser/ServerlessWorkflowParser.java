@@ -17,12 +17,16 @@ package org.kie.kogito.serverless.workflow.parser;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.openapi.OASFactory;
+import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
@@ -119,13 +123,32 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.COMPENSATION, true);
             factory.addCompensationContext(workflow.getId());
         }
+
+        List<Tag> tags = getTags(workflow);
+        if (!tags.isEmpty()) {
+            factory.metaData(Metadata.TAGS, tags);
+        }
+
+        return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
+    }
+
+    private static List<Tag> getTags(Workflow workflow) {
+        List<Tag> tags = new ArrayList<>();
         if (workflow.getAnnotations() != null && !workflow.getAnnotations().isEmpty()) {
-            factory.metaData(Metadata.TAGS, workflow.getAnnotations());
+            tags.addAll(mapToTags(workflow.getAnnotations()));
         }
         if (workflow.getDescription() != null) {
-            factory.metaData(Metadata.CUSTOM_DESCRIPTION, workflow.getDescription());
+            tags.add(OASFactory.createObject(Tag.class)
+                    .name(workflow.getId())
+                    .description(workflow.getDescription()));
         }
-        return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
+        return Collections.unmodifiableList(tags);
+    }
+
+    private static List<Tag> mapToTags(List<String> annotations) {
+        return annotations.stream()
+                .map(annotation -> OASFactory.createObject(Tag.class).name(annotation))
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public GeneratedInfo<KogitoWorkflowProcess> getProcessInfo() {

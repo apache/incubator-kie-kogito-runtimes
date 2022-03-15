@@ -18,9 +18,13 @@ package org.kie.kogito.codegen.process;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.microprofile.openapi.OASFactory;
+import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.ruleflow.core.Metadata;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
@@ -60,9 +64,15 @@ class TagResourceGeneratorTest {
                 createTagAnnotation("everything"));
     }
 
-    private static KogitoWorkflowProcess mockProcessWithTags(String... tags) {
+    private static KogitoWorkflowProcess mockProcessWithTags(String... tagNames) {
         KogitoWorkflowProcess process = mock(KogitoWorkflowProcess.class);
-        when(process.getMetaData()).thenReturn(Collections.singletonMap(Metadata.TAGS, Arrays.asList(tags)));
+
+        List<Tag> tags = Arrays.stream(tagNames)
+                .map(tag -> OASFactory.createObject(Tag.class).name(tag))
+                .collect(Collectors.toUnmodifiableList());
+
+        when(process.getMetaData()).thenReturn(Collections.singletonMap(Metadata.TAGS, tags));
+
         return process;
     }
 

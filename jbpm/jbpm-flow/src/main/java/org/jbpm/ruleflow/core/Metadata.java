@@ -70,7 +70,6 @@ public class Metadata {
     public static final String CONSTANTS = "customConstants";
     public static final String DATA_ONLY = "DataOnly";
     public static final String TAGS = "Tags";
-    public static final String CUSTOM_DESCRIPTION = "customDescription";
 
     private Metadata() {
     }
