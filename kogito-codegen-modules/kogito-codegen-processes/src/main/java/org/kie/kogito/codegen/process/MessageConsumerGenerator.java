@@ -136,9 +136,8 @@ public class MessageConsumerGenerator {
         template.findAll(MethodCallExpr.class)
                 .forEach(t -> t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)))));
         if (!(trigger.getNode() instanceof StartNode)) {
-            MethodDeclaration getModelConverter = template.findAll(MethodDeclaration.class,
-                    m -> m.getName().getIdentifier().equals("getModelConverter")).get(0);
-            template.remove(getModelConverter);
+            template.findAll(MethodDeclaration.class, m -> m.getName().getIdentifier().equals("getModelConverter"))
+                    .stream().findFirst().ifPresent(template::remove);
         }
 
         if (!trigger.dataOnly()) {

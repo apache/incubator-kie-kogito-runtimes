@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.kie.kogito.services.event.correlation;
 
-package org.kie.kogito.correlation;
+import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 
-public interface CorrelationKeyResolver {
+public class KogitoReferenceCorrelationResolver extends SimpleAttributeCorrelationResolver {
 
-    Correlation resolve(Object data);
-
+    public KogitoReferenceCorrelationResolver() {
+        super(CloudEventExtensionConstants.PROCESS_REFERENCE_ID);
+    }
 }

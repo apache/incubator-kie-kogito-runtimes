@@ -21,11 +21,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
 import org.kie.kogito.Model;
-import org.kie.kogito.correlation.CorrelationKeyResolver;
+import org.kie.kogito.correlation.CorrelationResolver;
 import org.kie.kogito.event.EventConsumer;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.services.event.correlation.EventDataCorrelationResolver;
+import org.kie.kogito.services.event.correlation.KogitoReferenceCorrelationResolver;
+import org.kie.kogito.services.event.correlation.SimpleAttributeCorrelationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +36,11 @@ import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROC
 
 public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M> {
 
-    private CorrelationKeyResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
-    private CorrelationKeyResolver eventTypeResolver = new SimpleAttributeCorrelationResolver("type");
-    private CorrelationKeyResolver eventSourceResolver = new SimpleAttributeCorrelationResolver("source");
-    private CorrelationKeyResolver referenceIdResolver = new SimpleAttributeCorrelationResolver(PROCESS_INSTANCE_ID);
-    private CorrelationKeyResolver dataResolver = new EventDataCorrelationResolver();
+    private CorrelationResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
+    private CorrelationResolver eventTypeResolver = new SimpleAttributeCorrelationResolver("type");
+    private CorrelationResolver eventSourceResolver = new SimpleAttributeCorrelationResolver("source");
+    private CorrelationResolver referenceIdResolver = new SimpleAttributeCorrelationResolver(PROCESS_INSTANCE_ID);
+    private CorrelationResolver dataResolver = new EventDataCorrelationResolver();
 
     private ProcessService processService;
     private Function<Object, M> modelConverter;
