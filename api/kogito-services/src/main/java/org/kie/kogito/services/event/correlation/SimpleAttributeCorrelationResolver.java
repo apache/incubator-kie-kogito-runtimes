@@ -25,8 +25,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
 
-    private String referenceKey = CloudEventExtensionConstants.PROCESS_REFERENCE_ID; //can be expression
-    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private String referenceKey = CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
+    private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());//todo to be injected
     private Object defaultValue;
 
     public SimpleAttributeCorrelationResolver(String referenceKey) {
