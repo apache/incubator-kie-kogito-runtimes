@@ -37,6 +37,7 @@ import org.drools.codegen.common.AppPaths;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
+import org.kie.kogito.codegen.api.SourceFileProcessBindNotifier;
 import org.kie.kogito.codegen.api.context.KogitoApplicationPropertyProvider;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
@@ -60,6 +61,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     protected final String contextName;
     protected final Map<String, Object> contextAttributes;
     protected final KogitoGAV gav;
+    protected final SourceFileProcessBindNotifier sourceFileProcessBindNotifier;
     protected Set<ApplicationSection> applicationSections;
 
     protected DependencyInjectionAnnotator dependencyInjectionAnnotator;
@@ -82,6 +84,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         this.contextName = contextName;
         this.contextAttributes = new HashMap<>();
         this.applicationSections = new HashSet<>();
+        this.sourceFileProcessBindNotifier = builder.sourceFileProcessBindNotifier;
     }
 
     protected static Properties load(File... resourcePaths) {
@@ -216,6 +219,11 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     }
 
     @Override
+    public SourceFileProcessBindNotifier getSourceFileProcessBindNotifier() {
+        return sourceFileProcessBindNotifier;
+    }
+
+    @Override
     public String toString() {
         return "KogitoBuildContext{" +
                 "contextName='" + contextName + '\'' +
@@ -236,6 +244,7 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         // default fallback value (usually overridden)
         protected AppPaths appPaths = AppPaths.fromProjectDir(new File(".").toPath(), Path.of(".", AppPaths.TARGET_DIR));
         protected KogitoGAV gav;
+        protected SourceFileProcessBindNotifier sourceFileProcessBindNotifier = new SourceFileProcessBindNotifier();
 
         protected AbstractBuilder() {
         }
@@ -316,6 +325,13 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
         public Builder withGAV(KogitoGAV gav) {
             Objects.requireNonNull(gav, "gav cannot be null");
             this.gav = gav;
+            return this;
+        }
+
+        @Override
+        public Builder withSourceFileProcessBindNotifier(SourceFileProcessBindNotifier sourceFileProcessBindNotifier) {
+            Objects.requireNonNull(sourceFileProcessBindNotifier, "sourceFileProcessBindNotifier cannot be null");
+            this.sourceFileProcessBindNotifier = sourceFileProcessBindNotifier;
             return this;
         }
 

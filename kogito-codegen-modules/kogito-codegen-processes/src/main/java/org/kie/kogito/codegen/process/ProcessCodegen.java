@@ -50,6 +50,8 @@ import org.kie.api.io.Resource;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedInfo;
+import org.kie.kogito.codegen.api.SourceFileProcessBindEvent;
+import org.kie.kogito.codegen.api.SourceFileProcessBindNotifier;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -119,6 +121,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
                         try {
                             Collection<Process> p = parseProcessFile(resource);
+                            notifySourceFileProcessBindListeners(context, resource, p);
                             if (useSvgAddon) {
                                 processSVG(resource, resources, p, processSVGMap);
                             }
@@ -134,7 +137,11 @@ public class ProcessCodegen extends AbstractGenerator {
                         return SUPPORTED_SW_EXTENSIONS.entrySet()
                                 .stream()
                                 .filter(e -> resource.getSourcePath().endsWith(e.getKey()))
-                                .map(e -> parseWorkflowFile(resource, e.getValue(), context));
+                                .map(e -> {
+                                    GeneratedInfo<KogitoWorkflowProcess> generatedInfo = parseWorkflowFile(resource, e.getValue(), context);
+                                    notifySourceFileProcessBindListeners(context, resource, Collections.singletonList(generatedInfo.info()));
+                                    return generatedInfo;
+                                });
                     }
                 })
                 //Validate parsed processes
@@ -148,6 +155,11 @@ public class ProcessCodegen extends AbstractGenerator {
         handleValidation();
 
         return ofProcesses(context, processes);
+    }
+
+    private static void notifySourceFileProcessBindListeners(KogitoBuildContext context, Resource resource, Collection<Process> processes) {
+        SourceFileProcessBindNotifier notifier = context.getSourceFileProcessBindNotifier();
+        processes.forEach(p -> notifier.notify(new SourceFileProcessBindEvent(p.getId(), resource.getSourcePath())));
     }
 
     private static void handleValidation() {

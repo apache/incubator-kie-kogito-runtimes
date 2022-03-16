@@ -35,6 +35,7 @@ import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.kie.kogito.codegen.api.SourceFileProcessBindEvent;
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -360,7 +361,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             logger.debug("OpenAPI parser messages {}", result.getMessages());
             OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptorFactory.of(openAPI, operationId);
             addSecurity(node, openAPIDescriptor, serviceName);
-            return node.workParameter(RestWorkItemHandler.URL,
+
+            WorkItemNodeFactory<T> workItemNodeFactory = node.workParameter(RestWorkItemHandler.URL,
                     runtimeOpenApi(serviceName, "base_path", String.class, OpenAPIDescriptorFactory.getDefaultURL(openAPI, "http://localhost:8080"),
                             (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<String>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
                                     new LambdaExpr(new Parameter(new UnknownType(), "calculatedKey"),
@@ -368,9 +370,17 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                                                     .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
                     .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
+
+            notifySourceFileProcessBindListeners(uri);
+
+            return workItemNodeFactory;
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
         }
+    }
+
+    private void notifySourceFileProcessBindListeners(String uri) {
+        parserContext.getContext().getSourceFileProcessBindNotifier().notify(new SourceFileProcessBindEvent(workflow.getId(), uri));
     }
 
     private ApiKeyAuthDecorator.Location from(In in) {
