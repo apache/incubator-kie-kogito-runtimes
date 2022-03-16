@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.models.tags.Tag;
@@ -677,10 +678,10 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
 
         assertThat(process.getMetaData())
                 .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(List.class));
+                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
 
         @SuppressWarnings("unchecked")
-        List<Tag> tags = (List<Tag>) process.getMetaData().get(Metadata.TAGS);
+        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
 
         annotations.forEach(annotation -> assertThat(tags).anyMatch(tag -> tag.getName().equals(annotation)));
     }
@@ -712,10 +713,10 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
 
         assertThat(process.getMetaData())
                 .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(List.class));
+                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
 
         @SuppressWarnings("unchecked")
-        List<Tag> tags = (List<Tag>) process.getMetaData().get(Metadata.TAGS);
+        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
 
         assertThat(tags).anyMatch(tag -> workflowId.equals(tag.getName()) && description.equals(tag.getDescription()));
     }

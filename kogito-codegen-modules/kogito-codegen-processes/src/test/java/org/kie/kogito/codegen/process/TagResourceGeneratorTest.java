@@ -17,8 +17,8 @@ package org.kie.kogito.codegen.process;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +67,7 @@ class TagResourceGeneratorTest {
     private static KogitoWorkflowProcess mockProcessWithTags(String... tagNames) {
         KogitoWorkflowProcess process = mock(KogitoWorkflowProcess.class);
 
-        List<Tag> tags = Arrays.stream(tagNames)
+        Collection<Tag> tags = Arrays.stream(tagNames)
                 .map(tag -> OASFactory.createObject(Tag.class).name(tag))
                 .collect(Collectors.toUnmodifiableList());
 

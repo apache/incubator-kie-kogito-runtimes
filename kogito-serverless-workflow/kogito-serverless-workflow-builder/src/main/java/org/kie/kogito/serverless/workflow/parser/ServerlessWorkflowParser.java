@@ -20,7 +20,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,7 +123,7 @@ public class ServerlessWorkflowParser {
             factory.addCompensationContext(workflow.getId());
         }
 
-        List<Tag> tags = getTags(workflow);
+        Collection<Tag> tags = getTags(workflow);
         if (!tags.isEmpty()) {
             factory.metaData(Metadata.TAGS, tags);
         }
@@ -132,23 +131,19 @@ public class ServerlessWorkflowParser {
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
     }
 
-    private static List<Tag> getTags(Workflow workflow) {
-        List<Tag> tags = new ArrayList<>();
+    private static Collection<Tag> getTags(Workflow workflow) {
+        Collection<Tag> tags = new ArrayList<>();
         if (workflow.getAnnotations() != null && !workflow.getAnnotations().isEmpty()) {
-            tags.addAll(mapToTags(workflow.getAnnotations()));
+            for (String annotation : workflow.getAnnotations()) {
+                tags.add(OASFactory.createObject(Tag.class).name(annotation));
+            }
         }
         if (workflow.getDescription() != null) {
             tags.add(OASFactory.createObject(Tag.class)
                     .name(workflow.getId())
                     .description(workflow.getDescription()));
         }
-        return Collections.unmodifiableList(tags);
-    }
-
-    private static List<Tag> mapToTags(List<String> annotations) {
-        return annotations.stream()
-                .map(annotation -> OASFactory.createObject(Tag.class).name(annotation))
-                .collect(Collectors.toUnmodifiableList());
+        return Collections.unmodifiableCollection(tags);
     }
 
     public GeneratedInfo<KogitoWorkflowProcess> getProcessInfo() {
