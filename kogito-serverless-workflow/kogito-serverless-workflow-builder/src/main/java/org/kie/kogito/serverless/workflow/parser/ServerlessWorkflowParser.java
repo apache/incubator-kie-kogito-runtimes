@@ -192,7 +192,6 @@ public class ServerlessWorkflowParser {
                 .metaData(Metadata.TRIGGER_REF, eventDefinition.getType())
                 .metaData(Metadata.MESSAGE_TYPE, JSON_NODE)
                 .metaData(Metadata.TRIGGER_TYPE, "ConsumeMessage")
-                //.metaData(Metadata.MAPPING_VARIABLE, DEFAULT_WORKFLOW_VAR)
                 .metaData(Metadata.DATA_ONLY, isDataOnly(eventDefinition));
     }
 

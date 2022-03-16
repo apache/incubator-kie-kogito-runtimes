@@ -40,7 +40,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.path.json.JsonPath;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceHasFinished;
 import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.newProcessInstanceAndGetId;
 
@@ -191,10 +191,8 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
                 .withType(eventTypeToSend)
                 .withTime(OffsetDateTime.now())
                 .withExtension("kogitoprocrefid", processInstanceId)
-                .withExtension("kogitoprocinstanceid", processInstanceId)
                 .withData(JsonCloudEventData.wrap(objectMapper.createObjectNode()))
                 .build());
-
         kafkaClient.produce(response, eventTopicToSend);
 
         // Give some time for the event to be processed and the process to finish.
