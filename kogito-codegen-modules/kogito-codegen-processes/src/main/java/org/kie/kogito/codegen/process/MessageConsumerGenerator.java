@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.codegen.process;
 
+import java.util.Optional;
+
 import org.drools.core.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
 import org.jbpm.ruleflow.core.Metadata;
@@ -134,7 +136,11 @@ public class MessageConsumerGenerator {
     private void generateModelMethods(ClassOrInterfaceDeclaration template) {
         //generate setter call on eventToModel method
         template.findAll(MethodCallExpr.class)
-                .forEach(t -> t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst((String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE)))));
+                .forEach(t -> {
+                    String name = (String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE);
+                    name = Optional.ofNullable(name).orElseGet(() -> trigger.getModelRef());
+                    t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst(name)));
+                });
         if (!(trigger.getNode() instanceof StartNode)) {
             template.findAll(MethodDeclaration.class, m -> m.getName().getIdentifier().equals("getModelConverter"))
                     .stream().findFirst().ifPresent(template::remove);
