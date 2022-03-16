@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
-import org.kie.kogito.event.EventConsumer;
+import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -45,6 +45,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -102,7 +103,7 @@ public class EventImplTest {
         }
 
         public DummyCloudEvent(DummyEvent dummyEvent, String referenceId) {
-            super("dummyTopic", dummyEvent, "1", "1", "1", "1", "1", "1", null);
+            super("dummyTopic", DummyCloudEvent.class.getSimpleName(), dummyEvent, "1", "1", "1", "1", "1", "1", null);
             super.kogitoReferenceId = referenceId;
         }
     }
@@ -133,7 +134,7 @@ public class EventImplTest {
         process = mock(Process.class);
         processInstances = mock(ProcessInstances.class);
         processInstance = mock(ProcessInstance.class);
-
+        when(processInstance.id()).thenReturn("1");
         when(process.instances()).thenReturn(processInstances);
         when(processInstances.findById(Mockito.anyString())).thenReturn(Optional.of(processInstance));
         when(process.createInstance(Mockito.any(DummyModel.class))).thenReturn(processInstance);
@@ -152,7 +153,7 @@ public class EventImplTest {
 
     @Test
     void testSigCloudEvent() throws Exception {
-        EventConsumer<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
+        EventDispatcher<DummyModel> consumer = new ProcessEventDispatcher<>(process, null, processService, executor);
         final String trigger = "dummyTopic";
         consumer.dispatch(trigger, new DummyCloudEvent(new DummyEvent("pepe"), "1")).toCompletableFuture().get();
 
@@ -160,12 +161,12 @@ public class EventImplTest {
         ArgumentCaptor<String> processInstanceId = ArgumentCaptor.forClass(String.class);
         verify(processService, times(1)).signalProcessInstance(Mockito.any(Process.class), processInstanceId.capture(), Mockito.any(Object.class), signal.capture());
         assertEquals("Message-" + trigger, signal.getValue());
-        //assertEquals("1", processInstanceId.getValue());
+        assertEquals("1", processInstanceId.getValue());
     }
 
     @Test
     void testCloudEvent() throws Exception {
-        EventConsumer<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
+        EventDispatcher<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
 
         final String trigger = "dummyTopic";
         consumer.dispatch(trigger, new DummyCloudEvent(new DummyEvent("pepe"))).toCompletableFuture().get();
@@ -174,12 +175,12 @@ public class EventImplTest {
         verify(processService, timeout(1500L).times(1)).createProcessInstance(Mockito.any(Process.class), Mockito.isNull(), Mockito.any(DummyModel.class), Mockito.isNull(), signal.capture(),
                 processInstanceId.capture());
         assertEquals(trigger, signal.getValue());
-        //assertEquals("1", processInstanceId.getValue());
+        assertEquals("1", processInstanceId.getValue());
     }
 
     @Test
     void testDataEvent() throws Exception {
-        EventConsumer<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
+        EventDispatcher<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
         final String trigger = "dummyTopic";
         consumer.dispatch(trigger, new DummyEvent("pepe")).toCompletableFuture().get();
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -205,10 +206,10 @@ public class EventImplTest {
 
     @Test
     void testEventPayloadException() throws Exception {
-        EventConsumer<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
+        EventDispatcher<DummyModel> consumer = new ProcessEventDispatcher<>(process, getConvertedMethod().get(), processService, executor);
         final String trigger = "dummyTopic";
         final String payload = "{ a = b }";
-        consumer.dispatch(trigger, payload).toCompletableFuture().get();
-        //todo verify
+        Object result = consumer.dispatch(trigger, payload).toCompletableFuture().get();
+        assertNull(result);
     }
 }

@@ -36,6 +36,6 @@ public class Correlation {
     }
 
     public String asString() {
-        return Optional.ofNullable(value).filter(String.class::isInstance).map(String.class::cast).orElse(null);
+        return Optional.ofNullable(value).map(Object::toString).orElse(null);
     }
 }

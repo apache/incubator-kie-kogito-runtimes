@@ -20,25 +20,30 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
 import org.kie.kogito.Model;
 import org.kie.kogito.correlation.CorrelationResolver;
-import org.kie.kogito.event.EventConsumer;
+import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.services.event.correlation.EventDataCorrelationResolver;
-import org.kie.kogito.services.event.correlation.KogitoReferenceCorrelationResolver;
 import org.kie.kogito.services.event.correlation.SimpleAttributeCorrelationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.BUSINESS_KEY;
 import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_INSTANCE_ID;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_START_FROM_NODE;
 
-public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M> {
+public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<M> {
 
-    private CorrelationResolver kogitoReferenceCorrelationResolver = new KogitoReferenceCorrelationResolver();
+    private CorrelationResolver kogitoReferenceCorrelationResolver = new SimpleAttributeCorrelationResolver(PROCESS_REFERENCE_ID);
     private CorrelationResolver eventTypeResolver = new SimpleAttributeCorrelationResolver("type");
     private CorrelationResolver eventSourceResolver = new SimpleAttributeCorrelationResolver("source");
+    private CorrelationResolver businessKeyResolver = new SimpleAttributeCorrelationResolver(BUSINESS_KEY);
+    private CorrelationResolver nodeIdResolver = new SimpleAttributeCorrelationResolver(PROCESS_START_FROM_NODE);
     private CorrelationResolver referenceIdResolver = new SimpleAttributeCorrelationResolver(PROCESS_INSTANCE_ID);
     private CorrelationResolver dataResolver = new EventDataCorrelationResolver();
 
@@ -55,43 +60,51 @@ public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M>
         this.executor = executor;
     }
 
-    public CompletableFuture<?> dispatch(String trigger, Object event) {
-        if (ignoredMessageType(trigger, event)) {
-            LOGGER.warn("Ignoring message for trigger '{}',  event '{}'",
-                    trigger,
-                    event);
+    @Override
+    public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, Object event) {
+        if (shouldSkipMessage(trigger, event)) {
+            LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
             return CompletableFuture.completedFuture(null);
         }
 
-        String kogitoReferenceId = kogitoReferenceCorrelationResolver.resolve(event).asString();
-        if (kogitoReferenceId != null && !kogitoReferenceId.isEmpty()) {
-            LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
-                    kogitoReferenceId,
-                    trigger);
-            return CompletableFuture.supplyAsync(() -> {
-                Optional<ProcessInstance<M>> instance = process.instances().findById(kogitoReferenceId);
-                if (instance.isPresent()) {
-                    return signalProcessInstance(trigger, kogitoReferenceId, event);
-                } else {
+        final String kogitoReferenceId = kogitoReferenceCorrelationResolver.resolve(event).asString();
+        if (StringUtils.isNotEmpty(kogitoReferenceId)) {
+            return CompletableFuture.supplyAsync(() -> handleMessageWithReference(trigger, event, kogitoReferenceId), executor);
+        }
+
+        //if the trigger is for a start event (model converter is set only for start node)
+        if (modelConverter != null) {
+            return CompletableFuture.supplyAsync(() -> handleMessageWithoutReference(trigger, event), executor);
+        }
+
+        LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private ProcessInstance<M> handleMessageWithoutReference(String trigger, Object event) {
+        LOGGER.debug("Starting new process instance with trigger '{}'", trigger);
+        return startNewInstance(trigger, event);
+    }
+
+    private ProcessInstance<M> handleMessageWithReference(String trigger, Object event, String kogitoReferenceId) {
+        LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
+                kogitoReferenceId,
+                trigger);
+        return process.instances()
+                .findById(kogitoReferenceId)
+                .map(instance -> {
+                    signalProcessInstance(trigger, instance.id(), event);
+                    return instance;
+                })
+                .orElseGet(() -> {
                     LOGGER.info("Process instance with id '{}' not found for triggering signal '{}', starting a new one",
                             kogitoReferenceId,
                             trigger);
                     return startNewInstance(trigger, event);
-                }
-            }, executor);
-        } else {
-            LOGGER.debug("Received message without reference id, starting new process instance with trigger '{}'", trigger);
-            return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
-        }
-
-        //Extract correlation information
-
-        //Existing target instance to send the event
-
-        //Creating a new instance to the given trigger
+                });
     }
 
-    private Optional signalProcessInstance(String trigger, String id, Object event) {
+    private Optional<M> signalProcessInstance(String trigger, String id, Object event) {
         return processService.signalProcessInstance((Process) process, id, dataResolver.resolve(event).getValue(), "Message-" + trigger);
     }
 
@@ -99,17 +112,18 @@ public class ProcessEventDispatcher<M extends Model> implements EventConsumer<M>
         if (modelConverter == null) {
             return null;
         }
-        String businessKey = null;
-        String fromNode = null;
-        String referenceId = referenceIdResolver.resolve(event).asString();//keep a reference with the caller starting the process instance
+        String businessKey = businessKeyResolver.resolve(event).asString();
+        String fromNode = nodeIdResolver.resolve(event).asString();
+        String referenceId = referenceIdResolver.resolve(event).asString();//keep reference with the caller starting the instance (usually the caller process instance)
         Object data = dataResolver.resolve(event).getValue();
         return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId);
     }
 
-    private boolean ignoredMessageType(String trigger, Object event) {
-        String eventType = eventTypeResolver.resolve(event).asString();//todo get from event
-        String source = Optional.ofNullable(eventSourceResolver.resolve(event).getValue()).map(Object::toString).orElse(null);//todo get from event
-        //return !trigger.equals(eventType) && !event.getClass().getSimpleName().equals(source);
-        return false;
+    private boolean shouldSkipMessage(String trigger, Object event) {
+        String eventType = eventTypeResolver.resolve(event).asString();
+        String source = eventSourceResolver.resolve(event).asString();
+        boolean isTriggerNotMatchedWithType = eventType != null && !trigger.equals(eventType);
+        boolean isSourceNotMatchedWithEventClass = source != null && !event.getClass().getSimpleName().equals(source);
+        return isTriggerNotMatchedWithType && isSourceNotMatchedWithEventClass;
     }
 }

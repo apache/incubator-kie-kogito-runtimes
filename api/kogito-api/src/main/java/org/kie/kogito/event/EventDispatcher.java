@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.services.event.correlation;
+package org.kie.kogito.event;
 
-import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
+import java.util.concurrent.CompletionStage;
 
-public class KogitoReferenceCorrelationResolver extends SimpleAttributeCorrelationResolver {
+import org.kie.kogito.Model;
+import org.kie.kogito.process.ProcessInstance;
 
-    public KogitoReferenceCorrelationResolver() {
-        super(CloudEventExtensionConstants.PROCESS_REFERENCE_ID);
-    }
+public interface EventDispatcher<M extends Model> {
+
+    CompletionStage<ProcessInstance<M>> dispatch(String trigger, Object event);
 }

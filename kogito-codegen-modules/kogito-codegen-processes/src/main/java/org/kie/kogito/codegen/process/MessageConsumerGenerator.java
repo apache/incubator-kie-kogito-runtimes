@@ -26,25 +26,16 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
-import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.services.event.ProcessDataEventConverter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier.Keyword;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
-import com.github.javaparser.ast.expr.ThisExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
@@ -144,19 +135,6 @@ public class MessageConsumerGenerator {
         if (!(trigger.getNode() instanceof StartNode)) {
             template.findAll(MethodDeclaration.class, m -> m.getName().getIdentifier().equals("getModelConverter"))
                     .stream().findFirst().ifPresent(template::remove);
-        }
-
-        if (!trigger.dataOnly()) {
-            ClassOrInterfaceType eventType = new ClassOrInterfaceType(null, trigger.getDataType());
-            ClassOrInterfaceType processEventType = new ClassOrInterfaceType(null, DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(eventType));
-            ClassOrInterfaceType processEventTypeConverter = new ClassOrInterfaceType(null, ProcessDataEventConverter.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(eventType));
-            final String fieldName = "processDataEventConverter";
-            context.getDependencyInjectionAnnotator()
-                    .withInjection(template.addField(processEventTypeConverter, fieldName));
-            final String varName = "cloudEvent";
-            template.addMethod("getData", Keyword.PROTECTED).addAnnotation(Override.class).addParameter(processEventType, varName)
-                    .setType(eventType)
-                    .setBody(new BlockStmt().addStatement(new ReturnStmt(new MethodCallExpr(new FieldAccessExpr(new ThisExpr(), fieldName), "convert").addArgument(new NameExpr(varName)))));
         }
     }
 
