@@ -33,6 +33,8 @@ import org.kie.kogito.services.event.correlation.SimpleAttributeCorrelationResol
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.Objects.equals;
+import static java.util.Objects.nonNull;
 import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.BUSINESS_KEY;
 import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
@@ -123,8 +125,8 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
     private boolean shouldSkipMessage(String trigger, Object event) {
         String eventType = eventTypeResolver.resolve(event).asString();
         String source = eventSourceResolver.resolve(event).asString();
-        boolean isEventTypeNotMatched = !Objects.equals(trigger, eventType);
-        boolean isSourceNotMatched = !Objects.equals(event.getClass().getSimpleName(), source) && !Objects.equals(trigger, source);
+        boolean isEventTypeNotMatched = nonNull(eventType) && !Objects.equals(trigger, eventType);
+        boolean isSourceNotMatched = nonNull(source) && !Objects.equals(event.getClass().getSimpleName(), source) && !Objects.equals(trigger, source);
         return isEventTypeNotMatched && isSourceNotMatched;
     }
 }
