@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jobs.management.springboot;
+package org.kie.kogito.jobs.quarkus.common;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.kie.services.jobs.impl.TriggerJobCommand;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_URI;
@@ -38,33 +40,34 @@ import static org.kie.kogito.jobs.api.JobCallbackResourceDef.PROCESS_ID;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.PROCESS_INSTANCE_ID;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.TIMER_ID;
 
-@RestController
-@RequestMapping(JOBS_CALLBACK_URI)
+@Path(JOBS_CALLBACK_URI)
 public class CallbackJobsServiceResource {
 
-    @Autowired
+    @Inject
     Processes processes;
 
-    @Autowired
+    @Inject
     Application application;
 
-    @PostMapping(value = JOBS_CALLBACK_POST_URI, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity triggerTimer(@PathVariable(PROCESS_ID) String processId,
-            @PathVariable(PROCESS_INSTANCE_ID) String processInstanceId,
-            @PathVariable(TIMER_ID) String timerId,
-            @RequestParam(value = LIMIT, defaultValue = LIMIT_DEFAULT_VALUE, required = false) Integer limit) {
+    @POST
+    @Path(JOBS_CALLBACK_POST_URI)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response triggerTimer(@PathParam(PROCESS_ID) String processId,
+            @PathParam(PROCESS_INSTANCE_ID) String processInstanceId,
+            @PathParam(TIMER_ID) String timerId,
+            @QueryParam(LIMIT) @DefaultValue(LIMIT_DEFAULT_VALUE) Integer limit) {
         if (processId == null || processInstanceId == null) {
-            return ResponseEntity.badRequest().body("Process id and Process instance id must be  given");
+            return Response.status(Status.BAD_REQUEST).entity("Process id and Process instance id must be given").build();
         }
 
         Process<?> process = processes.processById(processId);
         if (process == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process with id " + processId + " not found");
+            return Response.status(Status.NOT_FOUND).entity("Process with id " + processId + " not found").build();
         }
 
         return new TriggerJobCommand(processInstanceId, timerId, limit, process, application.unitOfWorkManager()).execute()
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process instance with id " + processInstanceId + " not found");
+                ? Response.status(Status.OK).build()
+                : Response.status(Status.NOT_FOUND).entity("Process instance with id " + processInstanceId + " not found").build();
 
     }
 }

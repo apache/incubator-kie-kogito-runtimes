@@ -42,7 +42,7 @@ public class TriggerJobCommand {
         this.uom = uom;
     }
 
-    public Boolean execute() {
+    public boolean execute() {
         return UnitOfWorkExecutor.executeInUnitOfWork(uom, () -> {
             Optional<? extends ProcessInstance<?>> processInstanceFound = process.instances().findById(processInstanceId);
             return processInstanceFound.map(processInstance -> {

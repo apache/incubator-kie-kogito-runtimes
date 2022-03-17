@@ -16,7 +16,6 @@
 package org.kie.services.jobs.impl;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,18 +105,6 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
             return scheduledJobs.remove(id).cancel(force);
         }
         return false;
-    }
-
-    @Override
-    public ZonedDateTime getScheduledTime(String id) {
-        if (scheduledJobs.containsKey(id)) {
-            ScheduledFuture<?> scheduled = scheduledJobs.get(id);
-            long remainingTime = scheduled.getDelay(TimeUnit.MILLISECONDS);
-            if (remainingTime > 0) {
-                return ZonedDateTime.from(Instant.ofEpochMilli(System.currentTimeMillis() + remainingTime));
-            }
-        }
-        return null;
     }
 
     protected long calculateDelay(JobDescription description) {
