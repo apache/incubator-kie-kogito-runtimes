@@ -17,14 +17,18 @@ package org.kogito.workitem.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
@@ -37,6 +41,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
 import org.kogito.workitem.rest.bodybuilders.RestWorkItemHandlerBodyBuilder;
+import org.kogito.workitem.rest.decorators.RequestDecorator;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
 import org.slf4j.Logger;
@@ -70,9 +75,12 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private static final Map<String, RestWorkItemHandlerBodyBuilder> BODY_BUILDERS = new ConcurrentHashMap<>();
 
     private WebClient client;
+    private Collection<RequestDecorator> requestDecorators;
 
     public RestWorkItemHandler(WebClient client) {
         this.client = client;
+        this.requestDecorators = StreamSupport.stream(ServiceLoader.load(RequestDecorator.class).spliterator(), false).collect(Collectors.toList());
+
     }
 
     @Override
@@ -111,9 +119,9 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         if (user != null && !user.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
             request.basicAuthentication(user, password);
         }
+        requestDecorators.forEach(d -> d.decorate(workItem, request));
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
-
     }
 
     public RestWorkItemHandlerBodyBuilder getBodyBuilder(Map<String, Object> parameters) {

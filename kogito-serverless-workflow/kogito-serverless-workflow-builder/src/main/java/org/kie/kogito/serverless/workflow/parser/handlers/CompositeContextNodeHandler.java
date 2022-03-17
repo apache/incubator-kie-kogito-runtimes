@@ -322,15 +322,15 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             logger.debug("OpenAPI parser messages {}", result.getMessages());
             OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId, functionArgs);
             String openAPIBasePath = resolveOpenAPIMetadata(function, "base_path", parserContext.getContext(), String.class, "http://localhost:8080");
+            // TODO api_key, api_key_prefix, access_token
             return node.workParameter(RestWorkItemHandler.URL, concatPaths(openAPIBasePath, openAPIDescriptor.getPath()))
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                    .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier());
+                    .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier())
+                    .workParameter(RestWorkItemHandler.USER, resolveOpenAPIMetadata(function, "username",parserContext.getContext()))
+                    .workParameter(RestWorkItemHandler.PASSWORD, resolveFunctionMetadata(function, "password", parserContext.getContext()));
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
         }
-        //                .workParameter(RestWorkItemHandler.USER, resolveFunctionMetadata(actionFunction, "user",
-        //                                parserContext.getContext()))
-        //                .workParameter(RestWorkItemHandler.PASSWORD, resolveFunctionMetadata(actionFunction, "password", parserContext.getContext()))
     }
 
     private Map<String, Object> functionsToMap(JsonNode jsonNode) {
