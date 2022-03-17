@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.services.event;
 
+import java.util.Objects;
+
 public class DummyEvent {
 
     private String dummyField;
@@ -30,5 +32,22 @@ public class DummyEvent {
     @SuppressWarnings("unused")
     public String getDummyField() {
         return dummyField;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DummyEvent)) {
+            return false;
+        }
+        DummyEvent that = (DummyEvent) o;
+        return Objects.equals(getDummyField(), that.getDummyField());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDummyField());
     }
 }

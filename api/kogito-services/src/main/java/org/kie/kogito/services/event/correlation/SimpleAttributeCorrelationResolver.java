@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.services.event.correlation;
 
+import java.util.Optional;
+
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationResolver;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -27,19 +29,20 @@ public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
 
     private String referenceKey = CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
     private ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());//todo to be injected
-    private Object defaultValue;
+    private Optional<Class<?>> type;
 
     public SimpleAttributeCorrelationResolver(String referenceKey) {
-        this.referenceKey = referenceKey;
+        this(referenceKey, null);
     }
 
-    public SimpleAttributeCorrelationResolver(String referenceKey, Object defaultValue) {
+    public SimpleAttributeCorrelationResolver(String referenceKey, Class<?> type) {
         this.referenceKey = referenceKey;
+        this.type = Optional.ofNullable(type);
     }
 
     @Override
     public Correlation resolve(Object data) {
-        JsonNode correlationValue = objectMapper.valueToTree(data).get(referenceKey);
+        final JsonNode correlationValue = objectMapper.valueToTree(data).get(referenceKey);
         if (correlationValue == null) {
             return new Correlation(referenceKey, null);
         }
@@ -47,7 +50,10 @@ public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
         if (correlationValue.isTextual()) {
             return new Correlation(referenceKey, correlationValue.textValue());
         }
-        return new Correlation(referenceKey, correlationValue);
+
+        return type.map(t -> objectMapper.convertValue(correlationValue, t))
+                .map(v -> new Correlation(referenceKey, v))
+                .orElse(new Correlation(referenceKey, correlationValue));
     }
 
     public static SimpleAttributeCorrelationResolver forAttribute(String attributeName) {
