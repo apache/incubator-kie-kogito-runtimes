@@ -15,18 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-public class SecretResolverFactory {
+public interface ConfigResolver {
 
-    private static SecretResolver secretResolver = k -> k;
-
-    public static void setSecretResolver(SecretResolver secretResolver) {
-        SecretResolverFactory.secretResolver = secretResolver;
-    }
-
-    public static SecretResolver getSecretResolver() {
-        return secretResolver;
-    }
-
-    private SecretResolverFactory() {
-    }
+    <T> T getConfigProperty(String name, Class<T> clazz, T defaultValue);
 }

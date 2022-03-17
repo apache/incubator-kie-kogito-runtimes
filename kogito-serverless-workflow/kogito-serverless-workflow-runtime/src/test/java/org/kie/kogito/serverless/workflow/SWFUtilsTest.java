@@ -15,6 +15,19 @@
  */
 package org.kie.kogito.serverless.workflow;
 
-class RuntimeExpressionsTest {
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.kie.kogito.serverless.workflow.SWFUtils.concatPaths;
+
+class SWFUtilsTest {
+    @Test
+    public void testConcatPaths() {
+        final String expected = "http:localhost:8080/pepe/pepa/pepi";
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe/", "/pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe", "pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe/", "pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe", "/pepa/pepi"));
+
+    }
 }

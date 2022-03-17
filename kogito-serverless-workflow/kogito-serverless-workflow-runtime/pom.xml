@@ -65,5 +65,9 @@
       <artifactId>kogito-jq-expression</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-utils</artifactId>
+    </dependency>
   </dependencies>
 </project>

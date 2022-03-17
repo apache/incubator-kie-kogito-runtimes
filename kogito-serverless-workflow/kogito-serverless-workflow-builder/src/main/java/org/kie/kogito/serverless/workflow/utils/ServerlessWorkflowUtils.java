@@ -17,7 +17,7 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.GeneratedFileType;
@@ -25,8 +25,11 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.serverless.workflow.io.URIContentLoader;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.suppliers.ConfigWorkItemSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.javaparser.ast.expr.Expression;
 
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
@@ -42,9 +45,13 @@ public class ServerlessWorkflowUtils {
     public static final String ALTERNATE_WORKFLOW_FORMAT = "yml";
     private static final String APP_PROPERTIES_BASE = "kogito.sw.";
     private static final String OPEN_API_PROPERTIES_BASE = "org.kogito.openapi.client.";
-    private static final String APP_PROPERTIES_FUNCTIONS_BASE = "functions.";
+
+    private static final String APP_PROPERTIES_FUNCTIONS_BASE = APP_PROPERTIES_BASE + "functions.";
     private static final String APP_PROPERTIES_STATES_BASE = "states.";
     public static final String OPENAPI_OPERATION_SEPARATOR = "#";
+
+    private static final String REGEX_NO_EXT = "[.][^.]+$";
+    private static final String ONLY_CHARS = "[^a-z]";
 
     private ServerlessWorkflowUtils() {
     }
@@ -53,54 +60,63 @@ public class ServerlessWorkflowUtils {
         return ALTERNATE_WORKFLOW_FORMAT.equals(workflowFormat) ? new YamlObjectMapper() : new JsonObjectMapper();
     }
 
+    private static String getFunctionPrefix(FunctionDefinition function) {
+        return APP_PROPERTIES_FUNCTIONS_BASE + function.getName();
+    }
+
+    private static String getOpenApiPrefix(String uri) {
+        return OPEN_API_PROPERTIES_BASE + getServiceName(uri);
+    }
+
+    private static String getPropKey(String prefix, String key) {
+        return prefix + "." + key;
+    }
+
     public static String resolveFunctionMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
         return resolveFunctionMetadata(function, metadataKey, context, String.class, "");
     }
 
     public static <T> T resolveFunctionMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return resolveMetadata(function, APP_PROPERTIES_BASE + APP_PROPERTIES_FUNCTIONS_BASE + function.getName(), metadataKey, context, clazz, defaultValue);
+        return (function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) ? clazz.cast(function.getMetadata().get(metadataKey))
+                : context.getApplicationProperty(getPropKey(getFunctionPrefix(function), metadataKey), clazz).orElse(defaultValue);
     }
 
-    public static String resolveOpenAPIMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
-        return resolveOpenAPIMetadata(function, metadataKey, context, String.class, "");
+    public static String getOpenApiProperty(String uri, String metadataKey, KogitoBuildContext context) {
+        return getOpenApiProperty(uri, metadataKey, context, String.class, "");
     }
 
-    public static <T> T resolveOpenAPIMetadata(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return resolveMetadata(function, OPEN_API_PROPERTIES_BASE + function.getName(), metadataKey, context, clazz, defaultValue);
+    public static <T> T getOpenApiProperty(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return context.getApplicationProperty(getPropKey(getOpenApiPrefix(uri), metadataKey), clazz).orElse(defaultValue);
     }
 
-    private static <T> T resolveMetadata(FunctionDefinition function, String prefix, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        if (function != null) {
-            if (function.getMetadata() != null && function.getMetadata().containsKey(metadataKey)) {
-                return clazz.cast(function.getMetadata().get(metadataKey));
-            }
-            Optional<T> propValue = context.getApplicationProperty(prefix + "." + metadataKey, clazz);
-            if (propValue.isPresent()) {
-                return propValue.get();
-            }
-        }
-        logger.warn("Could not resolve function metadata: {}", metadataKey);
-        return defaultValue;
+    public static Supplier<Expression> runtimeRestApi(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
+        return runtimeRestApi(function, metadataKey, context, String.class, null);
     }
 
-    public static String concatPaths(String onePath, String anotherPath) {
-        return concatPaths(onePath, anotherPath, "/");
+    public static Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context) {
+        return runtimeOpenApi(uri, metadataKey, context, String.class, null);
     }
 
-    public static String concatPaths(String onePath, String anotherPath, String concatChars) {
-        if (anotherPath.startsWith(concatChars)) {
-            if (onePath.endsWith(concatChars)) {
-                return onePath.concat(anotherPath.substring(concatChars.length()));
-            } else {
-                return onePath.concat(anotherPath);
-            }
-        } else {
-            if (onePath.endsWith(concatChars)) {
-                return onePath.concat(anotherPath);
-            } else {
-                return onePath.concat(concatChars).concat(anotherPath);
-            }
-        }
+    public static <T> Supplier<Expression> runtimeRestApi(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return runtimeResolveMetadata(getFunctionPrefix(function), metadataKey, context, clazz, resolveFunctionMetadata(function, metadataKey, context, clazz, defaultValue),
+                ConfigWorkItemSupplier::new);
+    }
+
+    public static <T> Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return runtimeOpenApi(uri, metadataKey, context, clazz, getOpenApiProperty(uri, metadataKey, context, clazz, defaultValue), ConfigWorkItemSupplier::new);
+    }
+
+    public static <T> Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue, ExpressionBuilder<T> builder) {
+        return runtimeResolveMetadata(getOpenApiPrefix(uri), metadataKey, context, clazz, defaultValue, builder);
+    }
+
+    private static <T> Supplier<Expression> runtimeResolveMetadata(String prefix, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue,
+            ExpressionBuilder<T> builder) {
+        return builder.create(getPropKey(prefix, metadataKey), clazz, defaultValue);
+    }
+
+    public static interface ExpressionBuilder<T> {
+        Supplier<Expression> create(String key, Class<T> clazz, T defaultValue);
     }
 
     public static String getForEachVarName(KogitoBuildContext context) {
@@ -126,6 +142,11 @@ public class ServerlessWorkflowUtils {
     public static String getOpenApiOperationId(FunctionDefinition function) {
         final String uri = getOpenApiURI(function);
         return uri.isEmpty() ? uri : function.getOperation().substring(uri.length() + 1);
+    }
+
+    private static String getServiceName(String uri) {
+        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
+
     }
 
     /**

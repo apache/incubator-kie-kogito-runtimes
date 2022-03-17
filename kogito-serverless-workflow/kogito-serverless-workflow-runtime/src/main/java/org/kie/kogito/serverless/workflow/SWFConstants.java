@@ -22,5 +22,4 @@ public class SWFConstants {
     }
 
     public static final String DEFAULT_WORKFLOW_VAR = "workflowdata";
-
 }
