@@ -311,7 +311,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(actionFunction, "password", parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(actionFunction, "host", parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(actionFunction, "port", parserContext.getContext(), Integer.class, 8080))
-                .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier());
+                .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
+                .workParameter(RestWorkItemHandler.BEARER_TOKEN, runtimeRestApi(actionFunction, "access_token", parserContext.getContext()));
     }
 
     private NodeFactory<?, ?> addOpenApiParameters(WorkItemNodeFactory<?> node,
@@ -332,13 +333,14 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             }
             logger.debug("OpenAPI parser messages {}", result.getMessages());
             OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId, functionArgs);
-            // TODO api_key, api_key_prefix, access_token
+            // TODO api_key, api_key_prefix
             return node.workParameter(RestWorkItemHandler.URL,
                     runtimeOpenApi(uri, "base_path", parserContext.getContext(), String.class, "http://localhost:8080", getConcatExpression(openAPIDescriptor.getPath())))
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
                     .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier())
                     .workParameter(RestWorkItemHandler.USER, runtimeOpenApi(uri, "username", parserContext.getContext()))
-                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(uri, "password", parserContext.getContext()));
+                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(uri, "password", parserContext.getContext()))
+                    .workParameter(RestWorkItemHandler.BEARER_TOKEN, runtimeOpenApi(uri, "access_token", parserContext.getContext()));
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
         }
