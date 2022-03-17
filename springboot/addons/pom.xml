@@ -5,7 +5,7 @@
   <parent>
     <artifactId>kogito-spring-boot-bom</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>1.19.0.Final</version>
+    <version>1.19.1-SNAPSHOT</version>
     <relativePath>../bom</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>

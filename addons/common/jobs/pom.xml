@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-common-parent</artifactId>
-    <version>1.19.0.Final</version>
+    <version>1.19.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-jobs-parent</artifactId>
   <packaging>pom</packaging>
