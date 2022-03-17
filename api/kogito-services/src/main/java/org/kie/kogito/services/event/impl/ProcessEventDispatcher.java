@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.services.event.impl;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -122,8 +123,8 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
     private boolean shouldSkipMessage(String trigger, Object event) {
         String eventType = eventTypeResolver.resolve(event).asString();
         String source = eventSourceResolver.resolve(event).asString();
-        boolean isTriggerNotMatchedWithType = eventType != null && !trigger.equals(eventType);
-        boolean isSourceNotMatchedWithEventClass = source != null && !event.getClass().getSimpleName().equals(source);
-        return isTriggerNotMatchedWithType && isSourceNotMatchedWithEventClass;
+        boolean isEventTypeNotMatched = !Objects.equals(trigger, eventType);
+        boolean isSourceNotMatched = !Objects.equals(event.getClass().getSimpleName(), source) && !Objects.equals(trigger, source);
+        return isEventTypeNotMatched && isSourceNotMatched;
     }
 }
