@@ -11,7 +11,6 @@ mvn versions:compare-dependencies \
 
 # update Quarkus version
 mvn versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
-
 mvn versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus-test-maven -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
 
 # run the tests
