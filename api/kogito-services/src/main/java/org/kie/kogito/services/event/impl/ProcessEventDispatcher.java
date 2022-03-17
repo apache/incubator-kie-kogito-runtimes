@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.services.event.impl;
 
-import static java.util.Objects.nonNull;
-import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.BUSINESS_KEY;
-import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_INSTANCE_ID;
-import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
-import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_START_FROM_NODE;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +32,12 @@ import org.kie.kogito.services.event.correlation.EventDataCorrelationResolver;
 import org.kie.kogito.services.event.correlation.SimpleAttributeCorrelationResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.nonNull;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.BUSINESS_KEY;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_INSTANCE_ID;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
+import static org.kie.kogito.event.cloudevents.CloudEventExtensionConstants.PROCESS_START_FROM_NODE;
 
 public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<M> {
 
