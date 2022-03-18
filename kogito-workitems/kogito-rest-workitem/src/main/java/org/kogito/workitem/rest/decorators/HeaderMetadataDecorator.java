@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kogito.workitem.rest.decorators;
+
+import java.util.Map;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.meta.ProcessMeta;
@@ -24,7 +25,7 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 public class HeaderMetadataDecorator implements RequestDecorator {
 
     @Override
-    public void decorate(KogitoWorkItem item, HttpRequest<?> request) {
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
         ProcessMeta meta = ProcessMeta.fromKogitoWorkItem(item);
         meta.asMap().forEach((k, v) -> request.putHeader(k, v));
     }

@@ -50,9 +50,6 @@ public class ServerlessWorkflowUtils {
     private static final String APP_PROPERTIES_STATES_BASE = "states.";
     public static final String OPENAPI_OPERATION_SEPARATOR = "#";
 
-    private static final String REGEX_NO_EXT = "[.][^.]+$";
-    private static final String ONLY_CHARS = "[^a-z]";
-
     private ServerlessWorkflowUtils() {
     }
 
@@ -64,8 +61,8 @@ public class ServerlessWorkflowUtils {
         return APP_PROPERTIES_FUNCTIONS_BASE + function.getName();
     }
 
-    private static String getOpenApiPrefix(String uri) {
-        return OPEN_API_PROPERTIES_BASE + getServiceName(uri);
+    private static String getOpenApiPrefix(String serviceName) {
+        return OPEN_API_PROPERTIES_BASE + serviceName;
     }
 
     private static String getPropKey(String prefix, String key) {
@@ -81,20 +78,20 @@ public class ServerlessWorkflowUtils {
                 : context.getApplicationProperty(getPropKey(getFunctionPrefix(function), metadataKey), clazz).orElse(defaultValue);
     }
 
-    public static String getOpenApiProperty(String uri, String metadataKey, KogitoBuildContext context) {
-        return getOpenApiProperty(uri, metadataKey, context, String.class, "");
+    public static String getOpenApiProperty(String serviceName, String metadataKey, KogitoBuildContext context) {
+        return getOpenApiProperty(serviceName, metadataKey, context, String.class, "");
     }
 
-    public static <T> T getOpenApiProperty(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return context.getApplicationProperty(getPropKey(getOpenApiPrefix(uri), metadataKey), clazz).orElse(defaultValue);
+    public static <T> T getOpenApiProperty(String serviceName, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return context.getApplicationProperty(getPropKey(getOpenApiPrefix(serviceName), metadataKey), clazz).orElse(defaultValue);
     }
 
     public static Supplier<Expression> runtimeRestApi(FunctionDefinition function, String metadataKey, KogitoBuildContext context) {
         return runtimeRestApi(function, metadataKey, context, String.class, null);
     }
 
-    public static Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context) {
-        return runtimeOpenApi(uri, metadataKey, context, String.class, null);
+    public static Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, KogitoBuildContext context) {
+        return runtimeOpenApi(serviceName, metadataKey, context, String.class, null);
     }
 
     public static <T> Supplier<Expression> runtimeRestApi(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
@@ -102,12 +99,12 @@ public class ServerlessWorkflowUtils {
                 ConfigWorkItemSupplier::new);
     }
 
-    public static <T> Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return runtimeOpenApi(uri, metadataKey, context, clazz, getOpenApiProperty(uri, metadataKey, context, clazz, defaultValue), ConfigWorkItemSupplier::new);
+    public static <T> Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
+        return runtimeOpenApi(serviceName, metadataKey, context, clazz, getOpenApiProperty(serviceName, metadataKey, context, clazz, defaultValue), ConfigWorkItemSupplier::new);
     }
 
-    public static <T> Supplier<Expression> runtimeOpenApi(String uri, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue, ExpressionBuilder<T> builder) {
-        return runtimeResolveMetadata(getOpenApiPrefix(uri), metadataKey, context, clazz, defaultValue, builder);
+    public static <T> Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue, ExpressionBuilder<T> builder) {
+        return runtimeResolveMetadata(getOpenApiPrefix(serviceName), metadataKey, context, clazz, defaultValue, builder);
     }
 
     private static <T> Supplier<Expression> runtimeResolveMetadata(String prefix, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue,
@@ -142,11 +139,6 @@ public class ServerlessWorkflowUtils {
     public static String getOpenApiOperationId(FunctionDefinition function) {
         final String uri = getOpenApiURI(function);
         return uri.isEmpty() ? uri : function.getOperation().substring(uri.length() + 1);
-    }
-
-    private static String getServiceName(String uri) {
-        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
-
     }
 
     /**

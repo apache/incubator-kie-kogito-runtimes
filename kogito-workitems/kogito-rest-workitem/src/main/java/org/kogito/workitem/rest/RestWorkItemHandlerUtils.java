@@ -15,7 +15,11 @@
  */
 package org.kogito.workitem.rest;
 
+import java.util.Map;
+
 import io.vertx.mutiny.core.Vertx;
+
+import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 
 public class RestWorkItemHandlerUtils {
 
@@ -30,4 +34,14 @@ public class RestWorkItemHandlerUtils {
         }
         return vertx;
     }
+
+    public static <T> T getParam(Map<String, Object> parameters, String paramName, Class<T> type, T defaultValue) {
+        Object value = parameters.remove(paramName);
+        return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());
+    }
+
+    public static boolean isEmpty(String value) {
+        return value == null || value.isBlank();
+    }
+
 }

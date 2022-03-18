@@ -37,9 +37,15 @@ import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.servers.Server;
 import io.vertx.core.http.HttpMethod;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.toCamelCase;
+
 class OpenAPIDescriptor {
+
+    private static final String REGEX_NO_EXT = "[.][^.]+$";
+    private static final String ONLY_CHARS = "[^a-z]";
 
     public static OpenAPIDescriptor of(OpenAPI openAPI, String method, JsonNode functionArgs) {
         // path to operation map
@@ -66,16 +72,19 @@ class OpenAPIDescriptor {
     }
 
     private static boolean isSingleton(Schema<?> schema, JsonNode functionArgs) {
-        return functionArgs.get(schema.getName()) != null;
+        return functionArgs != null && functionArgs.get(schema.getName()) != null;
     }
 
     private static Optional<Schema<?>> getSchema(Components components, Operation operation) {
+
         RequestBody requestBody = operation.getRequestBody();
         Schema<?> schema = null;
         if (requestBody != null) {
             String ref = requestBody.get$ref();
             if (ref != null) {
-                schema = components.getSchemas().get(ref);
+                if (components != null && components.getSchemas() != null) {
+                    schema = components.getSchemas().get(ref);
+                }
             } else if (requestBody.getContent() != null) {
                 for (MediaType type : requestBody.getContent().values()) {
                     schema = type.getSchema();
@@ -89,7 +98,7 @@ class OpenAPIDescriptor {
     }
 
     private static void checkOperation(String path, String operationId, HttpMethod method, Operation operation, Map<String, List<OperationInfo>> map) {
-        if (operation != null && operation.getOperationId().equals(operationId)) {
+        if (operation != null && (operationId.equals(operation.getOperationId()) || operationId.equals(toCamelCase(operation.getOperationId())))) {
             map.computeIfAbsent(path, k -> new ArrayList<>()).add(new OperationInfo(method, operation));
         }
     }
@@ -149,4 +158,17 @@ class OpenAPIDescriptor {
         }
     }
 
+    public static String getServiceName(String uri) {
+        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
+    }
+
+    public static String getDefaultURL(OpenAPI openAPI, String defaultBase) {
+        List<Server> servers = openAPI.getServers();
+        if (servers != null) {
+            for (Server server : servers) {
+                return server.getUrl();
+            }
+        }
+        return defaultBase;
+    }
 }

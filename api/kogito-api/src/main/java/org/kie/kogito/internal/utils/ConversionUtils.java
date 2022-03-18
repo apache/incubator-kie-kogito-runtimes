@@ -28,6 +28,15 @@ public class ConversionUtils {
         return convert(value, clazz, v -> v.toString());
     }
 
+    /**
+     * Converts an object to an instance of the provided class
+     * 
+     * @param <T>
+     * @param value
+     * @param clazz
+     * @param stringConverter
+     * @return
+     */
     public static <T> T convert(Object value, Class<T> clazz, Function<Object, String> stringConverter) {
         if (value == null || clazz.isAssignableFrom(value.getClass())) {
             return clazz.cast(value);
@@ -48,6 +57,34 @@ public class ConversionUtils {
             }
         }
         throw new IllegalArgumentException(value + " cannot be converted to " + clazz.getName());
+    }
+
+    /**
+     * Convert to camel case
+     * 
+     * @param text
+     * @return
+     */
+    public static String toCamelCase(String text) {
+        StringBuilder builder = new StringBuilder();
+        boolean convertNextCharToUpper = false;
+
+        for (int i = 0; i < text.length(); i++) {
+            char currentChar = text.charAt(i);
+            if (!Character.isLetterOrDigit(currentChar)) {
+                convertNextCharToUpper = true;
+            } else if (convertNextCharToUpper) {
+                builder.append(Character.toUpperCase(currentChar));
+                convertNextCharToUpper = false;
+            } else {
+                builder.append(currentChar);
+                convertNextCharToUpper = false;
+            }
+        }
+        if (builder.length() > 0) {
+            builder.setCharAt(0, Character.toLowerCase(builder.charAt(0)));
+        }
+        return builder.toString();
     }
 
 }

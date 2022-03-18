@@ -53,7 +53,7 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
-import static org.kie.kogito.internal.utils.ConversionUtils.convert;
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
 
 public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
@@ -68,7 +68,6 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     public static final String PORT = "Port";
     public static final String RESULT_HANDLER = "ResultHandler";
     public static final String BODY_BUILDER = "BodyBuilder";
-    public static final String BEARER_TOKEN = "_BearerToken";
 
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
     private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
@@ -99,11 +98,8 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         }
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         Object inputModel = getParam(parameters, CONTENT_DATA, Object.class, null);
-        String user = getParam(parameters, USER, String.class, null);
-        String password = getParam(parameters, PASSWORD, String.class, null);
         String hostProp = getParam(parameters, HOST, String.class, "localhost");
         int portProp = getParam(parameters, PORT, Integer.class, 8080);
-        String bearerToken = getParam(parameters, BEARER_TOKEN, String.class, null);
 
         RestWorkItemHandlerResult resultHandler = getParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class,
                 DEFAULT_RESULT_HANDLER);
@@ -118,18 +114,9 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         String path = url.map(java.net.URL::getPath).orElse(endPoint).replace(" ", "%20");//fix issue with spaces in the path
 
         HttpRequest<Buffer> request = client.request(method, port, host, path);
-        if (!isEmpty(user) && !isEmpty(password)) {
-            request.basicAuthentication(user, password);
-        } else if (!isEmpty(bearerToken)) {
-            request.bearerTokenAuthentication(bearerToken);
-        }
-        requestDecorators.forEach(d -> d.decorate(workItem, request));
+        requestDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
-    }
-
-    private static boolean isEmpty(String value) {
-        return value == null || value.isBlank();
     }
 
     public RestWorkItemHandlerBodyBuilder getBodyBuilder(Map<String, Object> parameters) {
@@ -222,10 +209,5 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         }
         parameters.keySet().removeAll(toRemove);
         return sb.toString();
-    }
-
-    private <T> T getParam(Map<String, Object> parameters, String paramName, Class<T> type, T defaultValue) {
-        Object value = parameters.remove(paramName);
-        return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());
     }
 }

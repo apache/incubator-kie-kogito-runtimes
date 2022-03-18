@@ -43,7 +43,7 @@ public class ConfigWorkItemSupplier<T> extends ConfigWorkItemResolver<T> impleme
     }
 
     protected static final ObjectCreationExpr createExpression(Class<? extends ConfigWorkItemResolver> objectClass, String key, Class<?> clazz, Object defaultValue) {
-        return new ObjectCreationExpr().setType(parseClassOrInterfaceType(objectClass.getCanonicalName()).setTypeArguments(StaticJavaParser.parseClassOrInterfaceType(String.class.getCanonicalName())))
+        return new ObjectCreationExpr().setType(parseClassOrInterfaceType(objectClass.getCanonicalName()).setTypeArguments(StaticJavaParser.parseClassOrInterfaceType(clazz.getCanonicalName())))
                 .addArgument(new StringLiteralExpr(key))
                 .addArgument(new ClassExpr(parseClassOrInterfaceType(clazz.getCanonicalName()))).addArgument(
                         AbstractServiceTaskDescriptor.getLiteralExpr(defaultValue));

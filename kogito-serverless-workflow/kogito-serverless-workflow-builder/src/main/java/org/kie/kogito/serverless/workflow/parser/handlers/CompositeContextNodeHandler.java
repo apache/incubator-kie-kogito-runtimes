@@ -49,6 +49,8 @@ import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.ExpressionBuilder;
 import org.kie.kogito.serverless.workflow.workitemparams.ObjectResolver;
 import org.kogito.workitem.rest.RestWorkItemHandler;
+import org.kogito.workitem.rest.decorators.ApiKeyAuthDecorator;
+import org.kogito.workitem.rest.decorators.BearerTokenAuthDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,7 @@ import io.serverlessworkflow.api.functions.SubFlowRef;
 import io.serverlessworkflow.api.interfaces.State;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 
 import static org.kie.kogito.serverless.workflow.SWFUtils.concatPaths;
@@ -312,7 +315,9 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(actionFunction, "host", parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(actionFunction, "port", parserContext.getContext(), Integer.class, 8080))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(RestWorkItemHandler.BEARER_TOKEN, runtimeRestApi(actionFunction, "access_token", parserContext.getContext()));
+                .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, "access_token", parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, "api_key_prefix", parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, "api_key", parserContext.getContext()));
     }
 
     private NodeFactory<?, ?> addOpenApiParameters(WorkItemNodeFactory<?> node,
@@ -321,8 +326,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             JsonNode functionArgs) {
         int indexOf = function.getOperation().indexOf(OPENAPI_OPERATION_SEPARATOR);
         String uri = operation.substring(0, indexOf);
+        String serviceName = OpenAPIDescriptor.getServiceName(uri);
         String operationId = operation.substring(indexOf + OPENAPI_OPERATION_SEPARATOR.length());
-
         try {
             // although OpenAPIParser has built built in support to load uri, it messes up when using contextclassloader, so using our retrieval apis to get the content
             SwaggerParseResult result =
@@ -333,16 +338,42 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             }
             logger.debug("OpenAPI parser messages {}", result.getMessages());
             OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId, functionArgs);
-            // TODO api_key, api_key_prefix
+            addSecurity(node, openAPI, serviceName);
             return node.workParameter(RestWorkItemHandler.URL,
-                    runtimeOpenApi(uri, "base_path", parserContext.getContext(), String.class, "http://localhost:8080", getConcatExpression(openAPIDescriptor.getPath())))
+                    runtimeOpenApi(serviceName, "base_path", parserContext.getContext(), String.class, OpenAPIDescriptor.getDefaultURL(openAPI, "http://localhost:8080"),
+                            getConcatExpression(openAPIDescriptor.getPath())))
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                    .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier())
-                    .workParameter(RestWorkItemHandler.USER, runtimeOpenApi(uri, "username", parserContext.getContext()))
-                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(uri, "password", parserContext.getContext()))
-                    .workParameter(RestWorkItemHandler.BEARER_TOKEN, runtimeOpenApi(uri, "access_token", parserContext.getContext()));
+                    .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier());
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
+        }
+    }
+
+    private void addSecurity(WorkItemNodeFactory<?> node, OpenAPI openAPI, String serviceName) {
+        if (openAPI.getComponents() != null) {
+            Map<String, SecurityScheme> schemes = openAPI.getComponents().getSecuritySchemes();
+            if (schemes != null) {
+                for (SecurityScheme scheme : schemes.values()) {
+                    switch (scheme.getType()) {
+
+                        case APIKEY:
+                            node.workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeOpenApi(serviceName, "api_key_prefix", parserContext.getContext()))
+                                    .workParameter(ApiKeyAuthDecorator.KEY, runtimeOpenApi(serviceName, "api_key", parserContext.getContext()))
+                                    .workParameter(ApiKeyAuthDecorator.LOCATION, scheme.getIn())
+                                    .workParameter(ApiKeyAuthDecorator.PARAMETER, scheme.getName());
+                            break;
+                        case HTTP:
+                            // TODO http security scheme is not properly parsed for some reason (need to investigate it, in the mean time, trust user properties definition) 
+                            break;
+                        default:
+                            logger.warn("Unsupported scheme type {}", scheme.getType());
+                    }
+                }
+            }
+            // add properties for htpp based authentication (both user and token), if specified
+            node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
+                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()))
+                    .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeOpenApi(serviceName, "access_token", parserContext.getContext()));
         }
     }
 

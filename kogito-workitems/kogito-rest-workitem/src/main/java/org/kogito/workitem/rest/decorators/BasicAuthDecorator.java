@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.kogito.workitem.rest.decorators;
 
 import java.util.Map;
@@ -21,6 +22,20 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
-public interface RequestDecorator {
-    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request);
+import static org.kogito.workitem.rest.RestWorkItemHandler.PASSWORD;
+import static org.kogito.workitem.rest.RestWorkItemHandler.USER;
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
+import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.isEmpty;
+
+public class BasicAuthDecorator implements RequestDecorator {
+
+    @Override
+    public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
+        String user = getParam(parameters, USER, String.class, null);
+        String password = getParam(parameters, PASSWORD, String.class, null);
+
+        if (!isEmpty(user) && !isEmpty(password)) {
+            request.basicAuthentication(user, password);
+        }
+    }
 }
