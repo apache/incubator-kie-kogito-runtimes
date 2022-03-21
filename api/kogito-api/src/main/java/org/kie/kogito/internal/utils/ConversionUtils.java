@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.kie.kogito.internal.utils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class ConversionUtils {
@@ -25,7 +26,7 @@ public class ConversionUtils {
     }
 
     public static <T> T convert(Object value, Class<T> clazz) {
-        return convert(value, clazz, v -> v.toString());
+        return convert(value, clazz, Object::toString);
     }
 
     /**
@@ -46,14 +47,15 @@ public class ConversionUtils {
                 if (Modifier.isStatic(modifiers) && method.getParameterCount() == 1 && method.getParameterTypes()[0].equals(String.class) && clazz.isAssignableFrom(method.getReturnType())) {
                     try {
                         return clazz.cast(method.invoke(null, stringConverter.apply(value)));
-                    } catch (ReflectiveOperationException e1) {
+                    } catch (ReflectiveOperationException e) {
+                        // see end method
                     }
                 }
             }
             try {
                 return clazz.getConstructor(String.class).newInstance(stringConverter.apply(value));
             } catch (ReflectiveOperationException e) {
-
+                // see end method
             }
         }
         throw new IllegalArgumentException(value + " cannot be converted to " + clazz.getName());
@@ -87,4 +89,48 @@ public class ConversionUtils {
         return builder.toString();
     }
 
+    /**
+     * Concatenate two paths using / as separator
+     * 
+     * @param onePath
+     * @param anotherPath
+     * @return
+     */
+    public static String concatPaths(String onePath, String anotherPath) {
+        return concatPaths(onePath, anotherPath, "/");
+    }
+
+    /**
+     * Concatenate two paths using a separator
+     * 
+     * @param onePath
+     * @param anotherPath
+     * @param concatChars separator to use
+     * @return
+     */
+    public static String concatPaths(String onePath, String anotherPath, String concatChars) {
+        if (anotherPath.startsWith(concatChars)) {
+            if (onePath.endsWith(concatChars)) {
+                return onePath.concat(anotherPath.substring(concatChars.length()));
+            } else {
+                return onePath.concat(anotherPath);
+            }
+        } else {
+            if (onePath.endsWith(concatChars)) {
+                return onePath.concat(anotherPath);
+            } else {
+                return onePath.concat(concatChars).concat(anotherPath);
+            }
+        }
+    }
+
+    /**
+     * Check empty string
+     * 
+     * @param value
+     * @return
+     */
+    public static boolean isEmpty(String value) {
+        return Objects.isNull(value) || value.isBlank();
+    }
 }

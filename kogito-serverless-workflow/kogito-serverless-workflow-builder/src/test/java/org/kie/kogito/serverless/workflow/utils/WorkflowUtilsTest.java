@@ -68,6 +68,7 @@ public class WorkflowUtilsTest {
     @Test
     public void testResolveOpenAPIMetadata() {
         assertThat(getOpenApiProperty("testfunction", "base_path", context, String.class, "http://localhost:8080")).isEqualTo("http://localhost:8282");
-        assertThat(getOpenApiProperty("testfunction1", "base_path2", context, Integer.class, 0)).isEqualTo(0);
+        assertThat(getOpenApiProperty("testfunction1", "base_path2", context, Integer.class, 0)).isZero();
     }
+
 }

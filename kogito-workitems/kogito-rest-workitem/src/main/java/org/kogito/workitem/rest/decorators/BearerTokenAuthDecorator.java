@@ -21,8 +21,8 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.isEmpty;
 
 public class BearerTokenAuthDecorator implements RequestDecorator {
 

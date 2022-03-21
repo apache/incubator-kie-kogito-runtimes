@@ -27,6 +27,6 @@ public class HeaderMetadataDecorator implements RequestDecorator {
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
         ProcessMeta meta = ProcessMeta.fromKogitoWorkItem(item);
-        meta.asMap().forEach((k, v) -> request.putHeader(k, v));
+        meta.asMap().forEach(request::putHeader);
     }
 }

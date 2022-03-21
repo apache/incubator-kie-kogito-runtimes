@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.compiler.canonical.descriptors.AbstractServiceTaskDescriptor;
@@ -33,11 +32,12 @@ import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.process.expr.ExpressionWorkItemResolver;
-import org.kie.kogito.serverless.workflow.SWFUtils;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
@@ -46,7 +46,6 @@ import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.ExpressionBuilder;
 import org.kie.kogito.serverless.workflow.workitemparams.ObjectResolver;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.decorators.ApiKeyAuthDecorator;
@@ -56,7 +55,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -76,7 +74,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 
-import static org.kie.kogito.serverless.workflow.SWFUtils.concatPaths;
+import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.OPENAPI_OPERATION_SEPARATOR;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeOpenApi;
@@ -216,8 +214,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             case REST:
                 return addRestParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar, functionRef.getArguments()), actionFunction, operation);
             case OPENAPI:
-                return addOpenApiParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar, functionRef.getArguments()), actionFunction, operation,
-                        functionRef.getArguments());
+                return addOpenApiParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar, functionRef.getArguments()), actionFunction, operation);
             default:
                 return emptyNode(embeddedSubProcess, actionName);
         }
@@ -233,10 +230,11 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .name(actionFunction.getName())
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workName(RestWorkItemHandler.REST_TASK_TYPE)
-                .inMapping(inputVar, RestWorkItemHandler.CONTENT_DATA)
-                .outMapping(RestWorkItemHandler.RESULT, outputVar);
-        if (functionArgs != null && !functionArgs.isEmpty()) {
-            processArgs(workItemFactory, functionArgs, RestWorkItemHandler.CONTENT_DATA, ObjectResolver.class);
+                .inMapping(inputVar, SWFConstants.MODEL_WORKFLOW_VAR)
+                .outMapping(RestWorkItemHandler.RESULT, outputVar)
+                .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier());
+        if (functionArgs != null) {
+            processArgs(workItemFactory, functionArgs, SWFConstants.MODEL_WORKFLOW_VAR, ObjectResolver.class);
         }
         return workItemFactory;
     }
@@ -322,8 +320,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
     private NodeFactory<?, ?> addOpenApiParameters(WorkItemNodeFactory<?> node,
             FunctionDefinition function,
-            String operation,
-            JsonNode functionArgs) {
+            String operation) {
         int indexOf = function.getOperation().indexOf(OPENAPI_OPERATION_SEPARATOR);
         String uri = operation.substring(0, indexOf);
         String serviceName = OpenAPIDescriptor.getServiceName(uri);
@@ -337,13 +334,15 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 throw new IllegalArgumentException("Problem parsing uri " + uri);
             }
             logger.debug("OpenAPI parser messages {}", result.getMessages());
-            OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId, functionArgs);
+            OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId);
             addSecurity(node, openAPI, serviceName);
             return node.workParameter(RestWorkItemHandler.URL,
-                    runtimeOpenApi(serviceName, "base_path", parserContext.getContext(), String.class, OpenAPIDescriptor.getDefaultURL(openAPI, "http://localhost:8080"),
-                            getConcatExpression(openAPIDescriptor.getPath())))
-                    .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                    .workParameter(RestWorkItemHandler.BODY_BUILDER, openAPIDescriptor.getRequestBuilderSupplier());
+                    runtimeOpenApi(serviceName, "base_path", String.class, OpenAPIDescriptor.getDefaultURL(openAPI, "http://localhost:8080"),
+                            (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<String>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
+                                    new LambdaExpr(new Parameter(new UnknownType(), "calculatedKey"),
+                                            new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
+                                                    .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
+                    .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod());
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
         }
@@ -377,19 +376,6 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         }
     }
 
-    private ExpressionBuilder<String> getConcatExpression(String path) {
-        final String lambdaArgName = "calculatedKey";
-        return new ExpressionBuilder<String>() {
-            @Override
-            public Supplier<Expression> create(String key, Class<String> clazz, String defaultValue) {
-                return new ConfigSuppliedWorkItemSupplier<String>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, path),
-                        new LambdaExpr(new Parameter(new UnknownType(), lambdaArgName),
-                                new MethodCallExpr(SWFUtils.class.getCanonicalName() + ".concatPaths")
-                                        .addArgument(new NameExpr(lambdaArgName)).addArgument(new StringLiteralExpr(path))));
-            }
-        };
-    }
-
     private Map<String, Object> functionsToMap(JsonNode jsonNode) {
         Map<String, Object> map = new HashMap<>();
         if (jsonNode != null) {
@@ -414,16 +400,20 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
     private void processArgs(WorkItemNodeFactory<?> workItemFactory,
             JsonNode functionArgs, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
-        functionsToMap(functionArgs).entrySet().forEach(entry -> processArg(entry, workItemFactory, paramName, clazz));
+        if (functionArgs.isObject()) {
+            functionsToMap(functionArgs).entrySet().forEach(entry -> processArg(entry.getKey(), entry.getValue(), workItemFactory, paramName, clazz));
+        } else {
+            processArg(RestWorkItemHandler.CONTENT_DATA, functionReference(JsonObjectUtils.simpleToJavaValue(functionArgs)), workItemFactory, paramName, clazz);
+        }
     }
 
-    private void processArg(Entry<String, Object> entry, WorkItemNodeFactory<?> workItemFactory, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
-        boolean isExpr = isExpression(entry.getValue());
+    private void processArg(String key, Object value, WorkItemNodeFactory<?> workItemFactory, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
+        boolean isExpr = isExpression(value);
         workItemFactory
-                .workParameter(entry.getKey(),
-                        AbstractServiceTaskDescriptor.processWorkItemValue(workflow.getExpressionLang(), entry.getValue(), paramName, clazz, isExpr))
-                .workParameterDefinition(entry.getKey(),
-                        DataTypeResolver.fromObject(entry.getValue(), isExpr));
+                .workParameter(key,
+                        AbstractServiceTaskDescriptor.processWorkItemValue(workflow.getExpressionLang(), value, paramName, clazz, isExpr))
+                .workParameterDefinition(key,
+                        DataTypeResolver.fromObject(value, isExpr));
     }
 
     private boolean isExpression(Object expr) {

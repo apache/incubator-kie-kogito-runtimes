@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kogito.workitem.rest.bodybuilders;
+package org.kie.kogito.serverless.workflow.rest;
 
 import java.util.Map;
 
-public class ParamsRestWorkItemHandlerBodyBuilder implements RestWorkItemHandlerBodyBuilder {
+import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
+
+import static org.kie.kogito.serverless.workflow.SWFConstants.MODEL_WORKFLOW_VAR;
+
+public class ParamsRestWorkItemHandlerBodyBuilder extends DefaultWorkItemHandlerBodyBuilder {
 
     @Override
-    public Object apply(Object inputModel, Map<String, Object> parameters) {
-        // if parameters is empty at this stage, assume post content is the whole input model
-        // if not, return remaining parameters
-        return parameters.isEmpty() ? inputModel : parameters;
+    protected Object buildFromParams(Map<String, Object> parameters) {
+        parameters.remove(MODEL_WORKFLOW_VAR);
+        return parameters;
     }
 }

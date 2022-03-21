@@ -39,9 +39,4 @@ public class RestWorkItemHandlerUtils {
         Object value = parameters.remove(paramName);
         return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());
     }
-
-    public static boolean isEmpty(String value) {
-        return value == null || value.isBlank();
-    }
-
 }

@@ -20,23 +20,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
-import org.kie.kogito.serverless.workflow.suppliers.SingletonRestBodyBuilderSupplier;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.github.javaparser.ast.expr.Expression;
-
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.servers.Server;
 import io.vertx.core.http.HttpMethod;
 
@@ -47,54 +35,24 @@ class OpenAPIDescriptor {
     private static final String REGEX_NO_EXT = "[.][^.]+$";
     private static final String ONLY_CHARS = "[^a-z]";
 
-    public static OpenAPIDescriptor of(OpenAPI openAPI, String method, JsonNode functionArgs) {
+    public static OpenAPIDescriptor of(OpenAPI openAPI, String operationId) {
         // path to operation map
-        Map<String, List<OperationInfo>> operations = collectOperations(openAPI.getPaths(), method);
+        Map<String, List<OperationInfo>> operations = collectOperations(openAPI.getPaths(), operationId);
         if (operations.isEmpty()) {
-            throw new IllegalArgumentException("Cannot find operation for " + method);
+            throw new IllegalArgumentException("Cannot find operation for " + operationId);
         }
         if (operations.size() > 1) {
             // TODO improvement try to infer the right method from arguments
-            throw new IllegalArgumentException("There is more than one operation " + operations + " in different paths with name " + method);
+            throw new IllegalArgumentException("There is more than one operation " + operations + " in different paths with name " + operationId);
         }
         Map.Entry<String, List<OperationInfo>> operEntry = operations.entrySet().iterator().next();
 
         if (operEntry.getValue().size() > 1) {
             // TODO improvement try to infer the right method from arguments
-            throw new IllegalArgumentException("There is more than one operation " + operations + " in different methods with name " + method + " for path " + operEntry.getKey());
+            throw new IllegalArgumentException("There is more than one operation " + operations + " in different methods with name " + operationId + " for path " + operEntry.getKey());
         }
         OperationInfo operation = operEntry.getValue().get(0);
-        return new OpenAPIDescriptor(operation.getMethod(), operEntry.getKey(), getRequestBuilder(openAPI.getComponents(), operation.getOperation(), functionArgs));
-    }
-
-    private static Supplier<Expression> getRequestBuilder(Components components, Operation operation, JsonNode functionArgs) {
-        return getSchema(components, operation).filter(s -> isSingleton(s, functionArgs)).isEmpty() ? new ParamsRestBodyBuilderSupplier() : new SingletonRestBodyBuilderSupplier();
-    }
-
-    private static boolean isSingleton(Schema<?> schema, JsonNode functionArgs) {
-        return functionArgs != null && functionArgs.get(schema.getName()) != null;
-    }
-
-    private static Optional<Schema<?>> getSchema(Components components, Operation operation) {
-
-        RequestBody requestBody = operation.getRequestBody();
-        Schema<?> schema = null;
-        if (requestBody != null) {
-            String ref = requestBody.get$ref();
-            if (ref != null) {
-                if (components != null && components.getSchemas() != null) {
-                    schema = components.getSchemas().get(ref);
-                }
-            } else if (requestBody.getContent() != null) {
-                for (MediaType type : requestBody.getContent().values()) {
-                    schema = type.getSchema();
-                    if (schema != null) {
-                        break;
-                    }
-                }
-            }
-        }
-        return Optional.ofNullable(schema);
+        return new OpenAPIDescriptor(operation.getMethod(), operEntry.getKey());
     }
 
     private static void checkOperation(String path, String operationId, HttpMethod method, Operation operation, Map<String, List<OperationInfo>> map) {
@@ -120,12 +78,10 @@ class OpenAPIDescriptor {
 
     private final HttpMethod method;
     private final String path;
-    private final Supplier<Expression> requestBuilderSupplier;
 
-    private OpenAPIDescriptor(HttpMethod method, String path, Supplier<Expression> requestBuilderSupplier) {
+    private OpenAPIDescriptor(HttpMethod method, String path) {
         this.method = method;
         this.path = path;
-        this.requestBuilderSupplier = requestBuilderSupplier;
     }
 
     public HttpMethod getMethod() {
@@ -134,10 +90,6 @@ class OpenAPIDescriptor {
 
     public String getPath() {
         return path;
-    }
-
-    public Supplier<Expression> getRequestBuilderSupplier() {
-        return requestBuilderSupplier;
     }
 
     private static class OperationInfo {
@@ -153,8 +105,9 @@ class OpenAPIDescriptor {
             return method;
         }
 
-        public Operation getOperation() {
-            return operation;
+        @Override
+        public String toString() {
+            return "OperationInfo [method=" + method + ", operation=" + operation + "]";
         }
     }
 
@@ -164,11 +117,6 @@ class OpenAPIDescriptor {
 
     public static String getDefaultURL(OpenAPI openAPI, String defaultBase) {
         List<Server> servers = openAPI.getServers();
-        if (servers != null) {
-            for (Server server : servers) {
-                return server.getUrl();
-            }
-        }
-        return defaultBase;
+        return servers != null && !servers.isEmpty() ? servers.get(0).getUrl() : defaultBase;
     }
 }

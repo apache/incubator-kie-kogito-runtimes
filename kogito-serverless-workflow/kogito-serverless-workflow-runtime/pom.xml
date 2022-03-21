@@ -69,5 +69,9 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-utils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-rest-workitem</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal.utils;
+package org.kie.kogito.internal.utils;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
 import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 import static org.kie.kogito.internal.utils.ConversionUtils.toCamelCase;
 
@@ -38,4 +39,13 @@ class ConversionUtilsTest {
         assertNotEquals("myappcreate", toCamelCase("myapp.create"));
     }
 
+    @Test
+    public void testConcatPaths() {
+        final String expected = "http:localhost:8080/pepe/pepa/pepi";
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe/", "/pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe", "pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe/", "pepa/pepi"));
+        assertEquals(expected, concatPaths("http:localhost:8080/pepe", "/pepa/pepi"));
+
+    }
 }

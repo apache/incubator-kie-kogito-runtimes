@@ -22,15 +22,15 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.isEmpty;
 
 public class ApiKeyAuthDecorator implements RequestDecorator {
 
-    public final static String LOCATION = "_apiKeyLocation";
-    public final static String PARAMETER = "_apiKeyParameter";
-    public final static String KEY = "_apiKey";
-    public final static String KEY_PREFIX = "_apiKeyPrefix";
+    public static final String LOCATION = "_apiKeyLocation";
+    public static final String PARAMETER = "_apiKeyParameter";
+    public static final String KEY = "_apiKey";
+    public static final String KEY_PREFIX = "_apiKeyPrefix";
 
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {

@@ -97,7 +97,6 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
             throw new IllegalArgumentException("Missing required parameter " + URL);
         }
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
-        Object inputModel = getParam(parameters, CONTENT_DATA, Object.class, null);
         String hostProp = getParam(parameters, HOST, String.class, "localhost");
         int portProp = getParam(parameters, PORT, Integer.class, 8080);
 
@@ -115,7 +114,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
 
         HttpRequest<Buffer> request = client.request(method, port, host, path);
         requestDecorators.forEach(d -> d.decorate(workItem, parameters, request));
-        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(inputModel, parameters)) : request.sendAndAwait();
+        HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(parameters)) : request.sendAndAwait();
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
     }
 

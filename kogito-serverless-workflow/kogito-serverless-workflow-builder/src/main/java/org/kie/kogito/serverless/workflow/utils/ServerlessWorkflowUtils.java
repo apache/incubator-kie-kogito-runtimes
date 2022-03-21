@@ -95,19 +95,19 @@ public class ServerlessWorkflowUtils {
     }
 
     public static <T> Supplier<Expression> runtimeRestApi(FunctionDefinition function, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return runtimeResolveMetadata(getFunctionPrefix(function), metadataKey, context, clazz, resolveFunctionMetadata(function, metadataKey, context, clazz, defaultValue),
+        return runtimeResolveMetadata(getFunctionPrefix(function), metadataKey, clazz, resolveFunctionMetadata(function, metadataKey, context, clazz, defaultValue),
                 ConfigWorkItemSupplier::new);
     }
 
     public static <T> Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue) {
-        return runtimeOpenApi(serviceName, metadataKey, context, clazz, getOpenApiProperty(serviceName, metadataKey, context, clazz, defaultValue), ConfigWorkItemSupplier::new);
+        return runtimeOpenApi(serviceName, metadataKey, clazz, getOpenApiProperty(serviceName, metadataKey, context, clazz, defaultValue), ConfigWorkItemSupplier::new);
     }
 
-    public static <T> Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue, ExpressionBuilder<T> builder) {
-        return runtimeResolveMetadata(getOpenApiPrefix(serviceName), metadataKey, context, clazz, defaultValue, builder);
+    public static <T> Supplier<Expression> runtimeOpenApi(String serviceName, String metadataKey, Class<T> clazz, T defaultValue, ExpressionBuilder<T> builder) {
+        return runtimeResolveMetadata(getOpenApiPrefix(serviceName), metadataKey, clazz, defaultValue, builder);
     }
 
-    private static <T> Supplier<Expression> runtimeResolveMetadata(String prefix, String metadataKey, KogitoBuildContext context, Class<T> clazz, T defaultValue,
+    private static <T> Supplier<Expression> runtimeResolveMetadata(String prefix, String metadataKey, Class<T> clazz, T defaultValue,
             ExpressionBuilder<T> builder) {
         return builder.create(getPropKey(prefix, metadataKey), clazz, defaultValue);
     }
