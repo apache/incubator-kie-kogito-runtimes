@@ -46,7 +46,6 @@ public class KogitoDMNCodeCodestartIT {
         return properties.getProperty("version.assertj");
     }
 
-
     @RegisterExtension
     public static QuarkusCodestartTest codestartTest = QuarkusCodestartTest.builder()
             .standaloneExtensionCatalog()
