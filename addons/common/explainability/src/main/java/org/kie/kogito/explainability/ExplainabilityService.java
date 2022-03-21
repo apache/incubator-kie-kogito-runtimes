@@ -40,7 +40,19 @@ public class ExplainabilityService {
                 .filter(r -> r.acceptRequest(predictInput))
                 .map(r -> r.processRequest(application, predictInput))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Malformed resourceType " + predictInput.getModelIdentifier().getResourceType())))
+                .orElseThrow(() -> {
+                    String errorMessage = "Malformed PredictInput ";
+                    if (predictInput == null) {
+                        errorMessage += "predictInput is null";
+                    } else if (predictInput.getModelIdentifier() == null) {
+                        errorMessage += "predictInput.getModelIdentifier()  is null";
+                    } else if (predictInput.getModelIdentifier().getResourceType() == null) {
+                        errorMessage += "predictInput.getModelIdentifier().getResourceType() is null";
+                    } else {
+                        errorMessage += "malformed resourceType : " + predictInput.getModelIdentifier().getResourceType();
+                    }
+                    return new IllegalArgumentException(errorMessage);
+                }))
                 .collect(toList());
     }
 }

@@ -26,6 +26,8 @@ import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.explainability.model.ModelIdentifier;
 import org.kie.kogito.explainability.model.PredictInput;
 import org.kie.kogito.explainability.model.PredictOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.explainability.Constants.SKIP_MONITORING;
 import static org.kie.kogito.explainability.Constants.SKIP_TRACING;
@@ -33,9 +35,24 @@ import static org.kie.kogito.explainability.model.ModelIdentifier.RESOURCE_ID_SE
 
 public class DecisionExplainabilityResourceExecutor implements ExplainabilityResourceExecutor {
 
+    private static final Logger logger = LoggerFactory.getLogger(DecisionExplainabilityResourceExecutor.class);
+
     @Override
     public boolean acceptRequest(PredictInput predictInput) {
-        return "dmn".equalsIgnoreCase(predictInput.getModelIdentifier().getResourceType());
+        if (predictInput != null && predictInput.getModelIdentifier() != null && predictInput.getModelIdentifier().getResourceType() != null) {
+            return "dmn".equalsIgnoreCase(predictInput.getModelIdentifier().getResourceType());
+        } else {
+            String errorMessage = "Malformed PredictInput ";
+            if (predictInput == null) {
+                errorMessage += "predictInput is null";
+            } else if (predictInput.getModelIdentifier() == null) {
+                errorMessage += "predictInput.getModelIdentifier()  is null " + predictInput;
+            } else if (predictInput.getModelIdentifier().getResourceType() == null) {
+                errorMessage += "predictInput.getModelIdentifier().getResourceType() is null " + predictInput;
+            }
+            logger.error(errorMessage);
+            return false;
+        }
     }
 
     @Override
