@@ -15,26 +15,33 @@
  */
 package org.kogito.workitem.rest.decorators;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 
-import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
-import static org.kogito.workitem.rest.RestWorkItemHandler.PASSWORD;
-import static org.kogito.workitem.rest.RestWorkItemHandler.USER;
-import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
-
-public class BasicAuthDecorator implements RequestDecorator {
+public abstract class AbstractParamsDecorator implements ParamsDecorator {
 
     @Override
     public void decorate(KogitoWorkItem item, Map<String, Object> parameters, HttpRequest<?> request) {
-        String user = getParam(parameters, USER, String.class, null);
-        String password = getParam(parameters, PASSWORD, String.class, null);
-
-        if (!isEmpty(user) && !isEmpty(password)) {
-            request.basicAuthentication(user, password);
+        Iterator<Entry<String, Object>> iter = parameters.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, Object> entry = iter.next();
+            String key = entry.getKey();
+            if (isHeaderParameter(key)) {
+                iter.remove();
+                request.putHeader(key, entry.getValue().toString());
+            } else if (isQueryParameter(key)) {
+                iter.remove();
+                request.setQueryParam(key, entry.getValue().toString());
+            }
         }
     }
+
+    protected abstract boolean isHeaderParameter(String key);
+
+    protected abstract boolean isQueryParameter(String key);
 }

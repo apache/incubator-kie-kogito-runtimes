@@ -36,6 +36,7 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
 import org.kogito.workitem.rest.bodybuilders.DefaultWorkItemHandlerBodyBuilder;
+import org.kogito.workitem.rest.pathresolvers.DefaultPathParamResolver;
 import org.kogito.workitem.rest.resulthandlers.DefaultRestWorkItemHandlerResult;
 import org.kogito.workitem.rest.resulthandlers.RestWorkItemHandlerResult;
 import org.mockito.ArgumentCaptor;
@@ -159,7 +160,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/id/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/id/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
+                new DefaultPathParamResolver().apply(endPoint, parameters));
     }
 
     @Test
@@ -170,7 +171,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/{id}/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/pepe/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
+                new DefaultPathParamResolver().apply(endPoint, parameters));
     }
 
     @Test
@@ -181,7 +182,7 @@ public class RestWorkItemHandlerTest {
         String endPoint = "http://pepe:password@www.google.com/results/{id}/names/{name}/?user=pepe#at_point";
         assertEquals(
                 "http://pepe:password@www.google.com/results/26/names/pepe/?user=pepe#at_point",
-                RestWorkItemHandler.resolvePathParams(endPoint, parameters));
+                new DefaultPathParamResolver().apply(endPoint, parameters));
     }
 
     @Test
@@ -192,7 +193,7 @@ public class RestWorkItemHandlerTest {
         assertTrue(
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters))
+                        () -> new DefaultPathParamResolver().apply(endPoint, parameters))
                                 .getMessage()
                                 .contains("name"));
     }
@@ -206,7 +207,7 @@ public class RestWorkItemHandlerTest {
         assertTrue(
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> RestWorkItemHandler.resolvePathParams(endPoint, parameters))
+                        () -> new DefaultPathParamResolver().apply(endPoint, parameters))
                                 .getMessage()
                                 .contains("}"));
     }
