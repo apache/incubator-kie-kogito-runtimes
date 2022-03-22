@@ -32,9 +32,6 @@ import static org.kie.kogito.internal.utils.ConversionUtils.toCamelCase;
 
 class OpenAPIDescriptor {
 
-    private static final String REGEX_NO_EXT = "[.][^.]+$";
-    private static final String ONLY_CHARS = "[^a-z]";
-
     public static OpenAPIDescriptor of(OpenAPI openAPI, String operationId) {
         // path to operation map
         Map<String, List<OperationInfo>> operations = collectOperations(openAPI.getPaths(), operationId);
@@ -109,10 +106,6 @@ class OpenAPIDescriptor {
         public String toString() {
             return "OperationInfo [method=" + method + ", operation=" + operation + "]";
         }
-    }
-
-    public static String getServiceName(String uri) {
-        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
     }
 
     public static String getDefaultURL(OpenAPI openAPI, String defaultBase) {

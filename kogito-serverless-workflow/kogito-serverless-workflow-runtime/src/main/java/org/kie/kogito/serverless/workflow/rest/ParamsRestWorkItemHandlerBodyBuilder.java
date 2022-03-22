@@ -25,7 +25,7 @@ public class ParamsRestWorkItemHandlerBodyBuilder extends DefaultWorkItemHandler
 
     @Override
     protected Object buildFromParams(Map<String, Object> parameters) {
-        parameters.remove(MODEL_WORKFLOW_VAR);
-        return parameters;
+        Object inputModel = parameters.remove(MODEL_WORKFLOW_VAR);
+        return parameters.isEmpty() ? inputModel : parameters;
     }
 }

@@ -61,7 +61,7 @@ public class ExpressionHandlerUtils {
     }
 
     private static String getSecret(String key) {
-        return ConfigResolverFactory.getConfigResolver().getConfigProperty(key, String.class, null);
+        return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, String.class, null);
     }
 
     private static Object getConstant(String key, JsonNode node) {

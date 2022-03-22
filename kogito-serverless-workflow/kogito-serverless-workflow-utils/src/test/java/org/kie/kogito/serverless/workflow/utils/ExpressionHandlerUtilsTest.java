@@ -57,7 +57,7 @@ public class ExpressionHandlerUtilsTest {
     @Test
     void testPrepareString() {
         Map<String, String> map = Collections.singletonMap("name", "javierito");
-        ConfigResolverFactory.setConfigResolver(new ConfigResolver() {
+        ConfigResolverHolder.setConfigResolver(new ConfigResolver() {
 
             @Override
             public <T> T getConfigProperty(String name, Class<T> clazz, T defaultValue) {

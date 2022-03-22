@@ -50,6 +50,9 @@ public class ServerlessWorkflowUtils {
     private static final String APP_PROPERTIES_STATES_BASE = "states.";
     public static final String OPENAPI_OPERATION_SEPARATOR = "#";
 
+    private static final String REGEX_NO_EXT = "[.][^.]+$";
+    private static final String ONLY_CHARS = "[^a-z]";
+
     private ServerlessWorkflowUtils() {
     }
 
@@ -149,6 +152,10 @@ public class ServerlessWorkflowUtils {
      */
     public static boolean isOpenApiOperation(FunctionDefinition function) {
         return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(OPENAPI_OPERATION_SEPARATOR);
+    }
+
+    public static String getServiceName(String uri) {
+        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
     }
 
     public static void processResourceFile(URI uri, ParserContext context) {

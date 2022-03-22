@@ -17,7 +17,7 @@ package org.kie.kogito.secret;
 
 import javax.annotation.PostConstruct;
 
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverFactory;
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 
 import io.quarkus.runtime.Startup;
 
@@ -26,7 +26,7 @@ public class QuarkusConfigResolverRegister {
 
     @PostConstruct
     void init() {
-        ConfigResolverFactory.setConfigResolver(new QuarkusConfigResolver());
+        ConfigResolverHolder.setConfigResolver(new QuarkusConfigResolver());
     }
 
 }

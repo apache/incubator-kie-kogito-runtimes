@@ -17,7 +17,7 @@ package org.kie.kogito.serverless.workflow.workitemparams;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitems.impl.WorkItemParamResolver;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverFactory;
+import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 
 public class ConfigWorkItemResolver<T> implements WorkItemParamResolver {
 
@@ -33,7 +33,7 @@ public class ConfigWorkItemResolver<T> implements WorkItemParamResolver {
 
     @Override
     public Object apply(KogitoWorkItem workitem) {
-        return ConfigResolverFactory.getConfigResolver().getConfigProperty(key, clazz, defaultValue);
+        return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, clazz, defaultValue);
     }
 
 }

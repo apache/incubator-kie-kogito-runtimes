@@ -76,6 +76,7 @@ import io.swagger.v3.parser.core.models.SwaggerParseResult;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.OPENAPI_OPERATION_SEPARATOR;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getServiceName;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeOpenApi;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeRestApi;
@@ -323,7 +324,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             String operation) {
         int indexOf = function.getOperation().indexOf(OPENAPI_OPERATION_SEPARATOR);
         String uri = operation.substring(0, indexOf);
-        String serviceName = OpenAPIDescriptor.getServiceName(uri);
+        String serviceName = getServiceName(uri);
         String operationId = operation.substring(indexOf + OPENAPI_OPERATION_SEPARATOR.length());
         try {
             // although OpenAPIParser has built built in support to load uri, it messes up when using contextclassloader, so using our retrieval apis to get the content

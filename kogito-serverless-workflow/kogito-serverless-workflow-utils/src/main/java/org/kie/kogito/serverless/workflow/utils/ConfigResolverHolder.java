@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-public class ConfigResolverFactory {
+public class ConfigResolverHolder {
 
     private static ConfigResolver configResolver = new ConfigResolver() {
         @Override
@@ -25,13 +25,13 @@ public class ConfigResolverFactory {
     };
 
     public static void setConfigResolver(ConfigResolver secretResolver) {
-        ConfigResolverFactory.configResolver = secretResolver;
+        ConfigResolverHolder.configResolver = secretResolver;
     }
 
     public static ConfigResolver getConfigResolver() {
         return configResolver;
     }
 
-    private ConfigResolverFactory() {
+    private ConfigResolverHolder() {
     }
 }

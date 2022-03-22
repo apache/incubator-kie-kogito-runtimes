@@ -31,6 +31,7 @@ import io.serverlessworkflow.api.mapper.YamlObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getOpenApiProperty;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getServiceName;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
 
 public class WorkflowUtilsTest {
@@ -69,6 +70,11 @@ public class WorkflowUtilsTest {
     public void testResolveOpenAPIMetadata() {
         assertThat(getOpenApiProperty("testfunction", "base_path", context, String.class, "http://localhost:8080")).isEqualTo("http://localhost:8282");
         assertThat(getOpenApiProperty("testfunction1", "base_path2", context, Integer.class, 0)).isZero();
+    }
+
+    @Test
+    public void testGetServiceName() {
+        assertThat(getServiceName("testMethod_1")).isEqualTo("testmethod");
     }
 
 }
