@@ -19,7 +19,7 @@ package org.kie.kogito.jobs.management.springboot;
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
-import org.kie.services.jobs.impl.TriggerJobCommand;
+import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -49,7 +49,7 @@ public class CallbackJobsServiceResource {
     Application application;
 
     @PostMapping(value = JOBS_CALLBACK_POST_URI, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity triggerTimer(@PathVariable(PROCESS_ID) String processId,
+    public ResponseEntity<String> triggerTimer(@PathVariable(PROCESS_ID) String processId,
             @PathVariable(PROCESS_INSTANCE_ID) String processInstanceId,
             @PathVariable(TIMER_ID) String timerId,
             @RequestParam(value = LIMIT, defaultValue = LIMIT_DEFAULT_VALUE, required = false) Integer limit) {

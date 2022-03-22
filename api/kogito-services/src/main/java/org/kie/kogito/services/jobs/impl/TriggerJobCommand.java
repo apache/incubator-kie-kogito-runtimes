@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.services.jobs.impl;
+package org.kie.kogito.services.jobs.impl;
 
 import java.util.Objects;
 import java.util.Optional;

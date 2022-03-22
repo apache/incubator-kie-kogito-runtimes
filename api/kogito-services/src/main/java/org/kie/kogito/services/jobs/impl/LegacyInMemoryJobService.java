@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.services.jobs.impl;
+package org.kie.kogito.services.jobs.impl;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -49,7 +49,7 @@ public class LegacyInMemoryJobService extends InMemoryJobService {
                 UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                     ProcessInstance pi = processRuntime.getProcessInstance(description.processInstanceId());
                     if (pi != null) {
-                        JobId jobId = JobIdResolver.resolve(id);
+                        JobId<?, ?> jobId = JobIdResolver.resolve(id);
                         pi.signalEvent(jobId.signal(), jobId.payload(counter.decrementAndGet()));
                         if (counter.get() == 0) {
                             cancelJob(id, false);

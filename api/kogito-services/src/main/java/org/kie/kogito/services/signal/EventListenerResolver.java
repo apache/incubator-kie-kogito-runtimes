@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.services.signal;
+package org.kie.kogito.services.signal;
 
-public interface Signalable {
+import java.util.Optional;
 
-    public void signalEvent(String type, Object event);
+import org.kie.api.runtime.process.EventListener;
+
+public interface EventListenerResolver {
+    Optional<EventListener> find(String id);
 }

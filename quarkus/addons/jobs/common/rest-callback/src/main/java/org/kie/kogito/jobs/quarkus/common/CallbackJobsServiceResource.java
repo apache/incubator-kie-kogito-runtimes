@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response.Status;
 import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
-import org.kie.services.jobs.impl.TriggerJobCommand;
+import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
 
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_URI;
