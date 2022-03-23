@@ -37,23 +37,24 @@ them in your project.
 
 #### Spring Boot Add-ons
 
-| Add-On Description  | Deprecated Artifact ID | New Artifact ID | Since | 
-|---------------------|------------------------|-----------------|-------|
-| Cloud Events         | kogito-cloudevents-spring-boot-addon | kogito-addons-springboot-messaging | 1.8.0 |
-| Events Decisions     | kogito-event-driven-decisions-springboot-addon | kogito-addons-springboot-events-decisions | 1.8.0 |
-| Events Kafka         | kogito-events-spring-boot-addon | kogito-addons-springboot-events-process-kafka | 1.8.0 |
-| Explainability       | explainability-springboot-addon | kogito-addons-springboot-explainability | 1.8.0 | 
-| Jobs Management      | jobs-management-springboot-addon | kogito-addons-springboot-jobs-management | 1.8.0 |
-| Mail                 | mail-springboot-addon | kogito-addons-springboot-mail | 1.8.0 |
-| Monitoring Core      | monitoring-core-springboot-addon | kogito-addons-springboot-monitoring-core | 1.8.0 | 
-| Monitoring Elastic   | monitoring-elastic-springboot-addon | kogito-addons-springboot-monitoring-elastic | 1.8.0 | 
-| Monitoring Prometheus | monitoring-prometheus-springboot-addon | kogito-addons-springboot-monitoring-prometheus | 1.8.0 |
-| Process Management      | process-management-springboot-addon | kogito-addons-springboot-process-management | 1.8.0 | 
-| Process SVG             | process-svg-springboot-addon | kogito-addons-springboot-process-svg | 1.8.0 | 
-| REST Exception Handler  | kogito-rest-exception-handler-springboot | kogito-addons-springboot-rest-exception-handler | 1.8.0 | 
-| Task Management         | task-management-springboot-addon | kogito-addons-springboot-task-management | 1.8.0 | 
-| Task Notification       | task-notification-springboot-addon | kogito-addons-springboot-task-notification | 1.8.0 | 
-| Tracing Decision        | tracing-decision-springboot-addon | kogito-addons-springboot-tracing-decision | 1.8.0 | 
+| Add-On Description  | Deprecated Artifact ID | New Artifact ID | Since  | 
+|---------------------|------------------------|-----------------|--------|
+| Cloud Events         | kogito-cloudevents-spring-boot-addon | kogito-addons-springboot-messaging | 1.8.0  |
+| Events Decisions     | kogito-event-driven-decisions-springboot-addon | kogito-addons-springboot-events-decisions | 1.8.0  |
+| Events Kafka         | kogito-events-spring-boot-addon | kogito-addons-springboot-events-process-kafka | 1.8.0  |
+| Explainability       | explainability-springboot-addon | kogito-addons-springboot-explainability | 1.8.0  | 
+| Jobs Management      | jobs-management-springboot-addon | kogito-addons-springboot-jobs-management | 1.8.0  |
+| Mail                 | mail-springboot-addon | kogito-addons-springboot-mail | 1.8.0  |
+| Monitoring Core      | monitoring-core-springboot-addon | kogito-addons-springboot-monitoring-core | 1.8.0  | 
+| Monitoring Elastic   | monitoring-elastic-springboot-addon | kogito-addons-springboot-monitoring-elastic | 1.8.0  | 
+| Monitoring Prometheus | monitoring-prometheus-springboot-addon | kogito-addons-springboot-monitoring-prometheus | 1.8.0  |
+| Process Management      | process-management-springboot-addon | kogito-addons-springboot-process-management | 1.8.0  | 
+| Process SVG             | process-svg-springboot-addon | kogito-addons-springboot-process-svg | 1.8.0  | 
+| Persistence Postgresql  | kogito-addons-persistence-postgresql | kogito-addons-springboot-persistence-postgresql | 1.20.0 |
+| REST Exception Handler  | kogito-rest-exception-handler-springboot | kogito-addons-springboot-rest-exception-handler | 1.8.0  | 
+| Task Management         | task-management-springboot-addon | kogito-addons-springboot-task-management | 1.8.0  | 
+| Task Notification       | task-notification-springboot-addon | kogito-addons-springboot-task-notification | 1.8.0  | 
+| Tracing Decision        | tracing-decision-springboot-addon | kogito-addons-springboot-tracing-decision | 1.8.0  | 
 
 #### Common Add-ons
 

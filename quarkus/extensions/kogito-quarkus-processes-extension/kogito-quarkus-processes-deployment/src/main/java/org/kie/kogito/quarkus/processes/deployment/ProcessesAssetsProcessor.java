@@ -268,10 +268,7 @@ public class ProcessesAssetsProcessor {
                 protoGenerator,
                 new JandexMarshallerGenerator(context, modelClasses));
 
-        if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE) ||
-                persistenceGenerator.persistenceType().equals(PersistenceGenerator.JDBC_PERSISTENCE_TYPE)) {
-            resourcePatterns.produce(new NativeImageResourcePatternsBuildItem.Builder().includeGlob("sql/*.sql").build());
-        } else if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.KAFKA_PERSISTENCE_TYPE)) {
+        if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.KAFKA_PERSISTENCE_TYPE)) {
             String processIds = protoGenerator.getProcessIds().stream().map(s -> "kogito.process." + s).collect(joining(","));
             runTimeConfiguration.produce(new RunTimeConfigurationDefaultBuildItem(PersistenceGenerator.QUARKUS_KAFKA_STREAMS_TOPICS_PROP, processIds));
         }

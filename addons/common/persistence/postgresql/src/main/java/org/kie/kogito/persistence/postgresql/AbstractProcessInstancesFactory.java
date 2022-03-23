@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.persistence;
+package org.kie.kogito.persistence.postgresql;
 
-import org.kie.kogito.persistence.postgresql.PostgreProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstancesFactory;
 
 import io.vertx.pgclient.PgPool;
 
-/**
- * This class must always have exact FQCN as <code>org.kie.kogito.persistence.KogitoProcessInstancesFactory</code>
- *
- */
-public abstract class KogitoProcessInstancesFactory implements ProcessInstancesFactory {
+public abstract class AbstractProcessInstancesFactory implements ProcessInstancesFactory {
 
     private final Long queryTimeout;
     private final PgPool client;
-    private final boolean autoDDL;
+    private final Boolean autoDDL;
+    private final Boolean lock;
 
-    // Constructor for DI 
-    protected KogitoProcessInstancesFactory() {
-        this(null, true, 10000L);
+    // Constructor for DI
+    protected AbstractProcessInstancesFactory() {
+        this(null, true, 10000L, false);
     }
 
-    public KogitoProcessInstancesFactory(PgPool client, Boolean autoDDL, Long queryTimeout) {
+    public AbstractProcessInstancesFactory(PgPool client, Boolean autoDDL, Long queryTimeout, Boolean lock) {
         this.client = client;
         this.autoDDL = autoDDL;
         this.queryTimeout = queryTimeout;
+        this.lock = lock;
     }
 
     public PgPool client() {
         return this.client;
     }
 
-    public abstract boolean lock();
+    public boolean lock() {
+        return lock;
+    }
 
     @Override
-    public PostgreProcessInstances createProcessInstances(Process<?> process) {
-        return new PostgreProcessInstances(process, client(), autoDDL, queryTimeout, lock());
+    public PostgresqlProcessInstances createProcessInstances(Process<?> process) {
+        return new PostgresqlProcessInstances(process, client(), autoDDL, queryTimeout, lock());
     }
 }

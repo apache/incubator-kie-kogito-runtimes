@@ -24,8 +24,8 @@ import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
-import org.kie.kogito.persistence.postgresql.PostgreProcessInstances;
+import org.kie.kogito.persistence.postgresql.AbstractProcessInstancesFactory;
+import org.kie.kogito.persistence.postgresql.PostgresqlProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.bpmn2.BpmnProcess;
@@ -47,7 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Testcontainers
-class PostgreProcessInstancesWithLockIT {
+class PostgresqlProcessInstancesWithLockIT {
 
     @Container
     final static KogitoPostgreSqlContainer container = new KogitoPostgreSqlContainer();
@@ -81,7 +81,7 @@ class PostgreProcessInstancesWithLockIT {
     public void testBasic() {
         BpmnProcess process = createProcess("BPMN2-UserTask.bpmn2");
 
-        PostgreProcessInstances pi = new PostgreProcessInstances(process, client, true, 1000L, false);
+        PostgresqlProcessInstances pi = new PostgresqlProcessInstances(process, client, true, 1000L, false);
         assertNotNull(pi);
 
         WorkflowProcessInstance createPi = ((AbstractProcessInstance<?>) process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")))).internalGetProcessInstance();
@@ -116,7 +116,7 @@ class PostgreProcessInstancesWithLockIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
-        PostgreProcessInstances processInstances = (PostgreProcessInstances) process.instances();
+        PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertThat(processInstances.size()).isOne();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
@@ -147,7 +147,7 @@ class PostgreProcessInstancesWithLockIT {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
 
-        PostgreProcessInstances processInstances = (PostgreProcessInstances) process.instances();
+        PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertThat(processInstances.size()).isOne();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
@@ -165,21 +165,16 @@ class PostgreProcessInstancesWithLockIT {
         }
     }
 
-    private class PostgreProcessInstancesFactory extends KogitoProcessInstancesFactory {
+    private class PostgreProcessInstancesFactory extends AbstractProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client) {
-            super(client, true, 10000l);
+            super(client, true, 10000l, true);
         }
 
         @Override
-        public PostgreProcessInstances createProcessInstances(Process<?> process) {
-            PostgreProcessInstances instances = super.createProcessInstances(process);
+        public PostgresqlProcessInstances createProcessInstances(Process<?> process) {
+            PostgresqlProcessInstances instances = super.createProcessInstances(process);
             return instances;
-        }
-
-        @Override
-        public boolean lock() {
-            return true;
         }
     }
 }

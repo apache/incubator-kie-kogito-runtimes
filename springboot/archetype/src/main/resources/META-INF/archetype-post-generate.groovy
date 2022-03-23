@@ -60,7 +60,7 @@ def addonsToArtifactsIds(String addons) {
             [id: "persistence-infinispan", addon: "kogito-addons-persistence-infinispan"],
             [id: "persistence-jdbc", addon: "kogito-addons-persistence-jdbc"],
             [id: "persistence-mongodb", addon: "kogito-addons-persistence-mongodb"],
-            [id: "persistence-postgresql", addon: "kogito-addons-persistence-postgresql"],
+            [id: "persistence-postgresql", addon: "kogito-addons-springboot-persistence-postgresql"],
             [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
             [id: "messaging", addon: "kogito-addons-springboot-messaging"],
             [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],

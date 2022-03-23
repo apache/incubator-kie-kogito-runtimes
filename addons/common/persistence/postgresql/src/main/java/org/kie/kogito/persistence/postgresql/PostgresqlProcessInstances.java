@@ -51,13 +51,13 @@ import io.vertx.sqlclient.Tuple;
 import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
 @SuppressWarnings({ "rawtypes" })
-public class PostgreProcessInstances implements MutableProcessInstances {
+public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     private static final String VERSION = "version";
 
     private static final String PAYLOAD = "payload";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgreProcessInstances.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresqlProcessInstances.class);
 
     private final Process<?> process;
     private final PgPool client;
@@ -66,7 +66,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private final Long queryTimeoutMillis;
     private final boolean lock;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
+    public PostgresqlProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
             boolean lock) {
         this.process = process;
         this.client = client;

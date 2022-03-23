@@ -54,7 +54,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
-import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -168,7 +167,6 @@ public class PersistenceGenerator extends AbstractGenerator {
                 generatedFiles.addAll(kafkaBasedPersistence());
                 break;
             case POSTGRESQL_PERSISTENCE_TYPE:
-                generatedFiles.addAll(postgresqlBasedPersistence());
                 break;
             case JDBC_PERSISTENCE_TYPE:
                 generatedFiles.addAll(jdbcBasedPersistence());
@@ -492,82 +490,6 @@ public class PersistenceGenerator extends AbstractGenerator {
         Collection<GeneratedFile> generatedFiles = new ArrayList<>();
         generatedClientFile.ifPresent(generatedFiles::add);
         generatedTMFile.ifPresent(generatedFiles::add);
-        return generatedFiles;
-    }
-
-    private Collection<GeneratedFile> postgresqlBasedPersistence() {
-        ClassOrInterfaceDeclaration persistenceProviderClazz = new ClassOrInterfaceDeclaration()
-                .setName(KOGITO_PROCESS_INSTANCE_FACTORY_IMPL)
-                .setModifiers(Modifier.Keyword.PUBLIC)
-                .addExtendedType(KOGITO_PROCESS_INSTANCE_FACTORY_PACKAGE);
-
-        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
-        if (context().hasDI()) {
-            context().getDependencyInjectionAnnotator().withApplicationComponent(persistenceProviderClazz);
-
-            //injecting constructor with parameter
-            final String pgPoolClass = "io.vertx.pgclient.PgPool";
-            ConstructorDeclaration constructor = persistenceProviderClazz
-                    .addConstructor(Keyword.PUBLIC)
-                    .addParameter(pgPoolClass, CLIENT)
-                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Boolean.class.getName()), AUTO_DDL)
-                    .addParameter(StaticJavaParser.parseClassOrInterfaceType(Long.class.getName()), QUERY_TIMEOUT)
-                    .setBody(new BlockStmt().addStatement(new ExplicitConstructorInvocationStmt()
-                            .setThis(false)
-                            .addArgument(new NameExpr(CLIENT))
-                            .addArgument(AUTO_DDL)
-                            .addArgument(QUERY_TIMEOUT)));
-            context().getDependencyInjectionAnnotator().withConfigInjection(
-                    constructor.getParameterByName(AUTO_DDL).get(), KOGITO_PERSISTENCE_AUTO_DDL, Boolean.TRUE.toString());
-            context().getDependencyInjectionAnnotator().withConfigInjection(
-                    constructor.getParameterByName(QUERY_TIMEOUT).get(), KOGITO_PERSISTENCE_QUERY_TIMEOUT,
-                    String.valueOf(10000));
-            context().getDependencyInjectionAnnotator().withInjection(constructor);
-
-            //empty constructor for DI
-            persistenceProviderClazz.addConstructor(Keyword.PROTECTED);
-
-            if (context() instanceof SpringBootKogitoBuildContext) {
-                context().getDependencyInjectionAnnotator().withNamed(
-                        constructor.getParameterByName(CLIENT).get(), KOGITO);
-
-                //creating PgClient default producer class
-                ClassOrInterfaceDeclaration pgClientProducerClazz = new ClassOrInterfaceDeclaration()
-                        .setName("PgClientProducer")
-                        .setModifiers(Modifier.Keyword.PUBLIC);
-
-                //creating PgClient producer
-                Parameter uriConfigParam = new Parameter()
-                        .setType(StaticJavaParser.parseClassOrInterfaceType(Optional.class.getName())
-                                .setTypeArguments(StaticJavaParser.parseClassOrInterfaceType(String.class.getName())))
-                        .setName("uri");
-
-                MethodDeclaration clientProviderMethod = pgClientProducerClazz.addMethod(CLIENT, Keyword.PUBLIC)
-                        .setType(pgPoolClass)//PgPool
-                        .addParameter(uriConfigParam)
-                        .setBody(new BlockStmt()// return uri.isPresent() ?  PgPool.pool(uri.get()) : PgPool.pool()
-                                .addStatement(new ReturnStmt(
-                                        new ConditionalExpr(
-                                                new MethodCallExpr(new NameExpr(uriConfigParam.getName()), "isPresent"),
-                                                new MethodCallExpr(new NameExpr(pgPoolClass), "pool")
-                                                        .addArgument(new MethodCallExpr(new NameExpr("uri"), "get")),
-                                                new MethodCallExpr(new NameExpr(pgPoolClass), "pool")))));
-
-                //inserting DI annotations
-                context().getDependencyInjectionAnnotator().withConfigInjection(uriConfigParam, KOGITO_PERSISTENCE_POSTGRESQL_CONNECTION_URI);
-                context().getDependencyInjectionAnnotator().withProduces(clientProviderMethod, true);
-                context().getDependencyInjectionAnnotator().withNamed(clientProviderMethod, KOGITO);
-                context().getDependencyInjectionAnnotator().withApplicationComponent(pgClientProducerClazz);
-
-                Optional<GeneratedFile> generatedPgClientFile = generatePersistenceProviderClazz(pgClientProducerClazz,
-                        new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(pgClientProducerClazz));
-                generatedPgClientFile.ifPresent(generatedFiles::add);
-            }
-        }
-        addOptimisticLockFlag(persistenceProviderClazz);
-        Optional<GeneratedFile> generatedPgClientFile = generatePersistenceProviderClazz(persistenceProviderClazz,
-                new CompilationUnit(KOGITO_PROCESS_INSTANCE_PACKAGE).addType(persistenceProviderClazz));
-        generatedPgClientFile.ifPresent(generatedFiles::add);
         return generatedFiles;
     }
 
