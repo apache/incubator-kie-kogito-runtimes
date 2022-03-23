@@ -70,18 +70,18 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     public static final String PORT = "Port";
     public static final String RESULT_HANDLER = "ResultHandler";
     public static final String BODY_BUILDER = "BodyBuilder";
-    public static final String PARAM_DECORATOR = "ParamDecorator";
+    public static final String PARAMS_DECORATOR = "ParamsDecorator";
     public static final String PATH_PARAM_RESOLVER = "PathParamResolver";
 
     private static final Logger logger = LoggerFactory.getLogger(RestWorkItemHandler.class);
     private static final RestWorkItemHandlerResult DEFAULT_RESULT_HANDLER = new DefaultRestWorkItemHandlerResult();
     private static final RestWorkItemHandlerBodyBuilder DEFAULT_BODY_BUILDER = new DefaultWorkItemHandlerBodyBuilder();
-    private static final ParamsDecorator DEFAULT_PARAM_DECORATOR = new PrefixParamsDecorator();
+    private static final ParamsDecorator DEFAULT_PARAMS_DECORATOR = new PrefixParamsDecorator();
     private static final PathParamResolver DEFAULT_PATH_PARAM_RESOLVER = new DefaultPathParamResolver();
-    private static final Map<String, RestWorkItemHandlerResult> RESULT_HANDLERS = new ConcurrentHashMap<>();
-    private static final Map<String, RestWorkItemHandlerBodyBuilder> BODY_BUILDERS = new ConcurrentHashMap<>();
-    private static final Map<String, ParamsDecorator> PARAM_DECORATORS = new ConcurrentHashMap<>();
-    private static final Map<String, PathParamResolver> PATH_PARAM_RESOLVERS = new ConcurrentHashMap<>();
+    private static final Map<String, RestWorkItemHandlerResult> resultHandlers = new ConcurrentHashMap<>();
+    private static final Map<String, RestWorkItemHandlerBodyBuilder> bodyBuilders = new ConcurrentHashMap<>();
+    private static final Map<String, ParamsDecorator> paramsDecorators = new ConcurrentHashMap<>();
+    private static final Map<String, PathParamResolver> pathParamsResolvers = new ConcurrentHashMap<>();
 
     private WebClient client;
     private Collection<RequestDecorator> requestDecorators;
@@ -106,10 +106,10 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         HttpMethod method = getParam(parameters, METHOD, HttpMethod.class, HttpMethod.GET);
         String hostProp = getParam(parameters, HOST, String.class, "localhost");
         int portProp = getParam(parameters, PORT, Integer.class, 8080);
-        RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, RESULT_HANDLERS);
-        RestWorkItemHandlerBodyBuilder bodyBuilder = getClassParam(parameters, BODY_BUILDER, RestWorkItemHandlerBodyBuilder.class, DEFAULT_BODY_BUILDER, BODY_BUILDERS);
-        ParamsDecorator paramsDecorator = getClassParam(parameters, PARAM_DECORATOR, ParamsDecorator.class, DEFAULT_PARAM_DECORATOR, PARAM_DECORATORS);
-        PathParamResolver pathParamResolver = getClassParam(parameters, PATH_PARAM_RESOLVER, PathParamResolver.class, DEFAULT_PATH_PARAM_RESOLVER, PATH_PARAM_RESOLVERS);
+        RestWorkItemHandlerResult resultHandler = getClassParam(parameters, RESULT_HANDLER, RestWorkItemHandlerResult.class, DEFAULT_RESULT_HANDLER, resultHandlers);
+        RestWorkItemHandlerBodyBuilder bodyBuilder = getClassParam(parameters, BODY_BUILDER, RestWorkItemHandlerBodyBuilder.class, DEFAULT_BODY_BUILDER, bodyBuilders);
+        ParamsDecorator paramsDecorator = getClassParam(parameters, PARAMS_DECORATOR, ParamsDecorator.class, DEFAULT_PARAMS_DECORATOR, paramsDecorators);
+        PathParamResolver pathParamResolver = getClassParam(parameters, PATH_PARAM_RESOLVER, PathParamResolver.class, DEFAULT_PATH_PARAM_RESOLVER, pathParamsResolvers);
 
         logger.debug("Filtered parameters are {}", parameters);
         // create request

@@ -346,7 +346,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                                             new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
                                                     .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
-                    .workParameter(RestWorkItemHandler.PARAM_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
+                    .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
         } catch (IOException e) {
             throw new IllegalArgumentException("Problem retrieving uri " + uri);
         }

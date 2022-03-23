@@ -80,7 +80,6 @@ class OpenAPIDescriptor {
     private final String path;
     private final Set<String> pathParams = new HashSet<>();
     private final Set<String> queryParams = new HashSet<>();
-    private final Set<String> bodyParams = new HashSet<>();
     private final Set<String> headerParams = new HashSet<>();
 
     private OpenAPIDescriptor(HttpMethod method, String path, Operation operation) {
@@ -102,8 +101,6 @@ class OpenAPIDescriptor {
             case "header":
                 headerParams.add(parameter.getName());
                 break;
-            case "body":
-                bodyParams.add(parameter.getName());
         }
     }
 
@@ -121,10 +118,6 @@ class OpenAPIDescriptor {
 
     public Set<String> getQueryParams() {
         return queryParams;
-    }
-
-    public Set<String> getBodyParams() {
-        return bodyParams;
     }
 
     public Set<String> getHeaderParams() {
