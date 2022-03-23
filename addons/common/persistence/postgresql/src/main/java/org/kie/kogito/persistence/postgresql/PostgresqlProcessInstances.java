@@ -51,13 +51,13 @@ import io.vertx.sqlclient.Tuple;
 import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
 
 @SuppressWarnings({ "rawtypes" })
-public class PostgreProcessInstances implements MutableProcessInstances {
+public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     private static final String VERSION = "version";
 
     private static final String PAYLOAD = "payload";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgreProcessInstances.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresqlProcessInstances.class);
 
     private final Process<?> process;
     private final PgPool client;
@@ -66,8 +66,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private final Long queryTimeoutMillis;
     private final boolean lock;
 
-    public PostgreProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis,
-            boolean lock) {
+    public PostgresqlProcessInstances(Process<?> process, PgPool client, boolean autoDDL, Long queryTimeoutMillis, boolean lock) {
         this.process = process;
         this.client = client;
         this.autoDDL = autoDDL;
@@ -120,13 +119,9 @@ public class PostgreProcessInstances implements MutableProcessInstances {
         Optional<Row> row = findByIdInternal(UUID.fromString(id));
 
         if (row.isPresent()) {
-            Optional<byte[]> payload = row
-                    .map(r -> r.getBuffer(PAYLOAD))
-                    .map(Buffer::getBytes);
+            Optional<byte[]> payload = row.map(r -> r.getBuffer(PAYLOAD)).map(Buffer::getBytes);
             if (payload.isPresent()) {
-                ProcessInstance<?> instance = mode == MUTABLE ? marshaller.unmarshallProcessInstance(payload.get(),
-                        process)
-                        : marshaller.unmarshallReadOnlyProcessInstance(payload.get(), process);
+                ProcessInstance<?> instance = mode == MUTABLE ? marshaller.unmarshallProcessInstance(payload.get(), process) : marshaller.unmarshallReadOnlyProcessInstance(payload.get(), process);
                 ((AbstractProcessInstance) instance).setVersion(row.get().getLong(VERSION));
                 return Optional.of(instance);
             }
@@ -136,8 +131,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
     @Override
     public Collection<ProcessInstance> values(ProcessInstanceReadMode mode) {
-        return findAllInternal().stream().map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process)
-                : marshaller.unmarshallReadOnlyProcessInstance(b, process))
+        return findAllInternal().stream().map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process) : marshaller.unmarshallReadOnlyProcessInstance(b, process))
                 .collect(Collectors.toList());
     }
 
@@ -155,9 +149,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
         Supplier<byte[]> supplier = () -> {
             Optional<Row> row = findByIdInternal(UUID.fromString(instance.id()));
             ((AbstractProcessInstance) instance).setVersion(row.get().getLong(VERSION));
-            return row
-                    .map(r -> r.getBuffer(PAYLOAD))
-                    .map(Buffer::getBytes).get();
+            return row.map(r -> r.getBuffer(PAYLOAD)).map(Buffer::getBytes).get();
         };
         ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(supplier));
     }
@@ -168,6 +160,9 @@ public class PostgreProcessInstances implements MutableProcessInstances {
             client.preparedQuery("INSERT INTO process_instances (id, payload, process_id, version) VALUES ($1, $2, $3, $4)")
                     .execute(Tuple.of(id, Buffer.buffer(payload), process.id(), 0L), getAsyncResultHandler(future));
             return getExecutedResult(future);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error inserting process instance %s", id);
         } catch (Exception e) {
             throw uncheckedException(e, "Error inserting process instance %s", id);
         }
@@ -190,9 +185,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private boolean updateInternal(UUID id, byte[] payload) {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.preparedQuery("UPDATE process_instances SET payload = $1 WHERE id = $2")
-                    .execute(Tuple.of(Buffer.buffer(payload), id), getAsyncResultHandler(future));
+            client.preparedQuery("UPDATE process_instances SET payload = $1 WHERE id = $2").execute(Tuple.of(Buffer.buffer(payload), id), getAsyncResultHandler(future));
             return getExecutedResult(future);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error updating process instance %s", id);
         } catch (Exception e) {
             throw uncheckedException(e, "Error updating process instance %s", id);
         }
@@ -201,9 +198,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private boolean deleteInternal(UUID id) {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.preparedQuery("DELETE FROM process_instances WHERE id = $1")
-                    .execute(Tuple.of(id), getAsyncResultHandler(future));
+            client.preparedQuery("DELETE FROM process_instances WHERE id = $1").execute(Tuple.of(id), getAsyncResultHandler(future));
             return getExecutedResult(future);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error deleting process instance %s", id);
         } catch (Exception e) {
             throw uncheckedException(e, "Error deleting process instance %s", id);
         }
@@ -211,10 +210,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
     private Boolean getExecutedResult(CompletableFuture<RowSet<Row>> future) throws ExecutionException, TimeoutException, InterruptedException {
         try {
-            return getResultFromFuture(future)
-                    .map(RowSet::rowCount)
-                    .map(count -> count == 1)
-                    .orElse(false);
+            return getResultFromFuture(future).map(RowSet::rowCount).map(count -> count == 1).orElse(false);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw e;
@@ -233,12 +229,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private Optional<Row> findByIdInternal(UUID id) {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.preparedQuery("SELECT payload, version FROM process_instances WHERE id = $1")
-                    .execute(Tuple.of(id), getAsyncResultHandler(future));
-            return getResultFromFuture(future)
-                    .map(RowSet::iterator)
-                    .filter(Iterator::hasNext)
-                    .map(Iterator::next);
+            client.preparedQuery("SELECT payload, version FROM process_instances WHERE id = $1").execute(Tuple.of(id), getAsyncResultHandler(future));
+            return getResultFromFuture(future).map(RowSet::iterator).filter(Iterator::hasNext).map(Iterator::next);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error finding process instance %s", id);
         } catch (Exception e) {
             throw uncheckedException(e, "Error finding process instance %s", id);
         }
@@ -247,14 +242,12 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private List<byte[]> findAllInternal() {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.preparedQuery("SELECT payload FROM process_instances WHERE process_id = $1")
-                    .execute(Tuple.of(process.id()), getAsyncResultHandler(future));
-            return getResultFromFuture(future)
-                    .map(r -> StreamSupport.stream(r.spliterator(), false)
-                            .map(row -> row.getBuffer(PAYLOAD))
-                            .map(Buffer::getBytes)
-                            .collect(Collectors.toList()))
+            client.preparedQuery("SELECT payload FROM process_instances WHERE process_id = $1").execute(Tuple.of(process.id()), getAsyncResultHandler(future));
+            return getResultFromFuture(future).map(r -> StreamSupport.stream(r.spliterator(), false).map(row -> row.getBuffer(PAYLOAD)).map(Buffer::getBytes).collect(Collectors.toList()))
                     .orElseGet(Collections::emptyList);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
         } catch (Exception e) {
             throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
         }
@@ -263,13 +256,11 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     private Long countInternal() {
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.preparedQuery("SELECT COUNT(id) FROM process_instances WHERE process_id = $1")
-                    .execute(Tuple.of(process.id()), getAsyncResultHandler(future));
-            return getResultFromFuture(future)
-                    .map(RowSet::iterator)
-                    .map(RowIterator::next)
-                    .map(row -> row.getLong("count"))
-                    .orElse(0l);
+            client.preparedQuery("SELECT COUNT(id) FROM process_instances WHERE process_id = $1").execute(Tuple.of(process.id()), getAsyncResultHandler(future));
+            return getResultFromFuture(future).map(RowSet::iterator).map(RowIterator::next).map(row -> row.getLong("count")).orElse(0l);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw uncheckedException(e, "Error counting process instances, for processId %s", process.id());
         } catch (Exception e) {
             throw uncheckedException(e, "Error counting process instances, for processId %s", process.id());
         }
@@ -278,7 +269,7 @@ public class PostgreProcessInstances implements MutableProcessInstances {
     /**
      * Try to create the table using the same application user, this should not be necessary since the database
      * is recommended to be configured properly before starting the application.
-     *
+     * <p>
      * Note:
      * This method could be useful for development and testing purposes and does not break the execution flow,
      * throwing any exception.
@@ -292,49 +283,39 @@ public class PostgreProcessInstances implements MutableProcessInstances {
 
         try {
             final CompletableFuture<RowSet<Row>> future = new CompletableFuture<>();
-            client.query(getQueryFromFile("exists_tables"))
-                    .execute(getAsyncResultHandler(future));
+            client.query(getQueryFromFile("exists_tables")).execute(getAsyncResultHandler(future));
             final CompletableFuture<RowSet<Row>> futureCompose = future.thenCompose(rows -> {
                 final CompletableFuture<RowSet<Row>> futureCreate = new CompletableFuture<>();
-                return Optional.ofNullable(rows.iterator())
-                        .filter(Iterator::hasNext)
-                        .map(Iterator::next)
-                        .map(row -> row.getBoolean("exists"))
-                        .filter(Boolean.FALSE::equals)
-                        .map(e -> client.query(getQueryFromFile("runtime_create")))
-                        .map(q -> {
+                return Optional.ofNullable(rows.iterator()).filter(Iterator::hasNext).map(Iterator::next).map(row -> row.getBoolean("exists")).filter(Boolean.FALSE::equals)
+                        .map(e -> client.query(getQueryFromFile("runtime_create"))).map(q -> {
                             q.execute(getAsyncResultHandler(futureCreate));
                             LOGGER.info("Creating process_instances table.");
                             return futureCreate;
-                        })
-                        .orElseGet(() -> {
+                        }).orElseGet(() -> {
                             futureCreate.complete(null);
                             LOGGER.info("Table process_instances already exists.");
                             return futureCreate;
                         });
             });
-            getResultFromFuture(futureCompose)
-                    .map(RowSet::rowCount)
-                    .ifPresent(count -> {
-                        if (count > 0) {
-                            LOGGER.info("DDL successfully done for ProcessInstance");
-                        } else {
-                            LOGGER.info("DDL executed with no changes for ProcessInstance");
-                        }
-                    });
+            getResultFromFuture(futureCompose).map(RowSet::rowCount).ifPresent(count -> {
+                if (count > 0) {
+                    LOGGER.info("DDL successfully done for ProcessInstance");
+                } else {
+                    LOGGER.info("DDL executed with no changes for ProcessInstance");
+                }
+            });
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.error("Error creating process_instances table, the database should be configured properly before " + "starting the application", e);
         } catch (Exception e) {
             //not break the execution flow in case of any missing permission for db application user, for instance.
-            LOGGER.error("Error creating process_instances table, the database should be configured properly before " +
-                    "starting the application", e);
+            LOGGER.error("Error creating process_instances table, the database should be configured properly before " + "starting the application", e);
         }
     }
 
     private String getQueryFromFile(String scriptName) {
-        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format(
-                "sql/%s.sql",
-                scriptName))) {
-            byte[] buffer = new byte[stream.available()];
-            stream.read(buffer);
+        try (InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(String.format("sql/%s.sql", scriptName))) {
+            byte[] buffer = stream.readAllBytes();
             return new String(buffer);
         } catch (Exception e) {
             throw uncheckedException(e, "Error reading query script file %s", scriptName);

@@ -77,7 +77,8 @@ public class ProcessClassesMojo extends AbstractKieMojo {
             ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder()
                     .build(modelClasses);
 
-            KogitoBuildContext context = discoverKogitoRuntimeContext(getUrlClassLoader());
+            ClassLoader classLoader = projectClassLoader();
+            KogitoBuildContext context = discoverKogitoRuntimeContext(classLoader);
 
             // Generate persistence files
             PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, protoGenerator, new ReflectionMarshallerGenerator(context, protoGenerator.getDataClasses()));
@@ -91,7 +92,7 @@ public class ProcessClassesMojo extends AbstractKieMojo {
                     .collect(Collectors.toList());
 
             // Compile and write persistence files
-            compileAndWriteClasses(generatedClasses, getUrlClassLoader(), settings);
+            compileAndWriteClasses(generatedClasses, classLoader, settings);
 
             // Dump resources
             generatedResources.forEach(this::writeGeneratedFile);

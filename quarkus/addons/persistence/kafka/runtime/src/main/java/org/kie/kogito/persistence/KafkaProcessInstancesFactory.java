@@ -60,7 +60,9 @@ public class KafkaProcessInstancesFactory implements ProcessInstancesFactory {
 
     public KafkaProcessInstances createProcessInstances(Process<?> process) {
         try {
-            LOGGER.info("Creating KafkaProcessInstances for process: {}", process.id());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Creating KafkaProcessInstances for process: {}", process.id());
+            }
             KafkaProcessInstances pi = new KafkaProcessInstances(process, producer);
             stateListener.addProcessInstances(pi);
             return pi;

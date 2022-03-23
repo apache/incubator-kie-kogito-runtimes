@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.persistence.kafka;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
 
@@ -57,16 +58,18 @@ import static org.kie.kogito.process.ProcessInstance.STATE_ERROR;
 public class KafkaProcessInstancesIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProcessInstancesIT.class);
+    private static final Duration TIMEOUT = Duration.ofMinutes(1);
 
     @Container
     KogitoKafkaContainer kafka = new KogitoKafkaContainer();
 
     KafkaProcessInstancesFactory factory;
 
-    KafkaStreamsStateListener listener = new KafkaStreamsStateListener();
+    KafkaStreamsStateListener listener;
 
     @BeforeEach
     void start() {
+        listener = new KafkaStreamsStateListener();
         factory = new KafkaProcessInstancesFactory();
         factory.setKafkaConfig(singletonMap(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers()));
         factory.setStateListener(listener);
@@ -81,6 +84,7 @@ public class KafkaProcessInstancesIT {
             listener.getKafkaStreams().close();
             listener.getKafkaStreams().cleanUp();
         }
+        listener.close();
     }
 
     @Test
@@ -105,7 +109,7 @@ public class KafkaProcessInstancesIT {
         });
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
-        await().until(() -> instances.values().size() == 1);
+        await().atMost(TIMEOUT).until(() -> instances.values().size() == 1);
 
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
@@ -120,7 +124,7 @@ public class KafkaProcessInstancesIT {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.size()).isZero();
+        await().atMost(TIMEOUT).until(() -> instances.size() == 0);
     }
 
     @Test
@@ -138,12 +142,12 @@ public class KafkaProcessInstancesIT {
 
         processInstance.start();
 
-        await().until(() -> instances.values().size() == 1);
+        await().atMost(TIMEOUT).until(() -> instances.values().size() == 1);
 
         ProcessInstance<BpmnVariables> pi = instances.values().stream().findFirst().get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
         instances.values(ProcessInstanceReadMode.MUTABLE).stream().findFirst().get().abort();
-        assertThat(instances.size()).isZero();
+        await().atMost(TIMEOUT).until(() -> instances.size() == 0);
     }
 
     @Test
@@ -162,7 +166,7 @@ public class KafkaProcessInstancesIT {
         processInstance.start();
         assertEquals(STATE_ACTIVE, processInstance.status());
 
-        await().until(() -> instances.values().size() == 1);
+        await().atMost(TIMEOUT).until(() -> instances.values().size() == 1);
 
         SecurityPolicy asJohn = SecurityPolicy.of(IdentityProviders.of("john"));
 
@@ -174,7 +178,7 @@ public class KafkaProcessInstancesIT {
         assertEquals("john", workItem.getParameters().get("ActorId"));
         processInstance.completeWorkItem(workItem.getId(), null, asJohn);
         assertEquals(STATE_COMPLETED, processInstance.status());
-        assertThat(instances.size()).isZero();
+        await().atMost(TIMEOUT).until(() -> instances.size() == 0);
     }
 
     KafkaStreams createStreams() {

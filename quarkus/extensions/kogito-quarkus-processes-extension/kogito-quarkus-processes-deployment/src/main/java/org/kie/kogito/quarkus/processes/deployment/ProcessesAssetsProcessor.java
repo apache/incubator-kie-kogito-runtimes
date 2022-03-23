@@ -110,6 +110,7 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
  */
 public class ProcessesAssetsProcessor {
 
+    private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
     private static final String PROCESS_SVG_SERVICE = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
     private static final String PERSISTENCE_CAPABILITY = "org.kie.kogito.addons.persistence";
 
@@ -294,11 +295,6 @@ public class ProcessesAssetsProcessor {
                 context,
                 protoGenerator,
                 new JandexMarshallerGenerator(context, modelClasses));
-
-        if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE) ||
-                persistenceGenerator.persistenceType().equals(PersistenceGenerator.JDBC_PERSISTENCE_TYPE)) {
-            resourcePatterns.produce(new NativeImageResourcePatternsBuildItem.Builder().includeGlob("sql/*.sql").build());
-        }
 
         return persistenceGenerator.generate();
     }

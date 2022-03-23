@@ -23,8 +23,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
-import org.kie.kogito.persistence.postgresql.PostgreProcessInstances;
+import org.kie.kogito.persistence.postgresql.AbstractProcessInstancesFactory;
+import org.kie.kogito.persistence.postgresql.PostgresqlProcessInstances;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @Testcontainers
-class PostgreProcessInstancesIT {
+class PostgresqlProcessInstancesIT {
 
     @Container
     final static KogitoPostgreSqlContainer container = new KogitoPostgreSqlContainer();
@@ -87,7 +87,7 @@ class PostgreProcessInstancesIT {
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         assertThat(processInstance.description()).isEqualTo("User Task");
 
-        PostgreProcessInstances processInstances = (PostgreProcessInstances) process.instances();
+        PostgresqlProcessInstances processInstances = (PostgresqlProcessInstances) process.instances();
         assertThat(processInstances.size()).isOne();
         assertThat(processInstances.exists(processInstance.id())).isTrue();
 
@@ -106,11 +106,11 @@ class PostgreProcessInstancesIT {
 
         WorkItem workItem = processInstance.workItems(securityPolicy).get(0);
         assertThat(workItem).isNotNull();
-        assertThat(workItem.getParameters().get("ActorId")).isEqualTo("john");
+        assertThat(workItem.getParameters()).containsEntry("ActorId", "john");
         processInstance.completeWorkItem(workItem.getId(), null, securityPolicy);
         assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
 
-        processInstances = (PostgreProcessInstances) process.instances();
+        processInstances = (PostgresqlProcessInstances) process.instances();
         verify(processInstances, times(2)).remove(processInstance.id());
 
         assertThat(processInstances.size()).isZero();
@@ -118,21 +118,16 @@ class PostgreProcessInstancesIT {
         assertThat(process.instances().values()).isEmpty();
     }
 
-    private class PostgreProcessInstancesFactory extends KogitoProcessInstancesFactory {
+    private class PostgreProcessInstancesFactory extends AbstractProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client) {
-            super(client, true, 10000l);
+            super(client, true, 10000l, false);
         }
 
         @Override
-        public PostgreProcessInstances createProcessInstances(Process<?> process) {
-            PostgreProcessInstances instances = spy(super.createProcessInstances(process));
+        public PostgresqlProcessInstances createProcessInstances(Process<?> process) {
+            PostgresqlProcessInstances instances = spy(super.createProcessInstances(process));
             return instances;
-        }
-
-        @Override
-        public boolean lock() {
-            return false;
         }
 
     }

@@ -169,7 +169,7 @@ public class KafkaProcessInstancesTest {
     public void testProcessInstancesSize() {
         doReturn(mock(KeyValueIterator.class)).when(store).prefixScan(eq(processId), any());
 
-        assertThat(instances.size()).isEqualTo(0);
+        assertThat(instances.size()).isZero();
     }
 
     @Test

@@ -27,16 +27,16 @@ import org.kie.kogito.codegen.process.persistence.marshaller.ReflectionMarshalle
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.FILESYSTEM_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasDataIndexProto;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasProtoMarshaller;
 
-class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
+class FileSystemPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("persistenceTestContexts")
-    void testGeneratedFiles(KogitoBuildContext context) {
+    void test(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
@@ -49,12 +49,11 @@ class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
         int marshallerFiles = hasProtoMarshaller(context) ? 14 : 0;
         int dataIndexFiles = hasDataIndexProto(context) ? 2 : 0;
         int expectedNumberOfFiles = marshallerFiles + dataIndexFiles;
-
         assertThat(generatedFiles).hasSize(expectedNumberOfFiles);
     }
 
     @Override
     protected String persistenceType() {
-        return POSTGRESQL_PERSISTENCE_TYPE;
+        return FILESYSTEM_PERSISTENCE_TYPE;
     }
 }

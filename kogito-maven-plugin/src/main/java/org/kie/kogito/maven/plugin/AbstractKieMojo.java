@@ -17,7 +17,6 @@ package org.kie.kogito.maven.plugin;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -85,7 +84,6 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     @Parameter(property = "kogito.codegen.predictions", defaultValue = "true")
     protected String generatePredictions;
 
-    private URLClassLoader urlClassLoader;
     private Reflections reflections;
 
     protected void setSystemProperties(Map<String, String> properties) {
@@ -115,40 +113,26 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         return context;
     }
 
-    public URLClassLoader getUrlClassLoader() {
-        if (urlClassLoader == null) {
-            try {
-                URL[] urlsForClassLoader = project.getRuntimeClasspathElements().stream().map(path -> {
-                    try {
-                        return new File(path).toURI().toURL();
-                    } catch (MalformedURLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).toArray(URL[]::new);
-
-                // need to define parent classloader which knows all dependencies of the plugin
-                urlClassLoader = new URLClassLoader(urlsForClassLoader, Thread.currentThread().getContextClassLoader());
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        return urlClassLoader;
-    }
-
-    protected Reflections getReflections() {
+    protected Reflections getReflections() throws MojoExecutionException {
         if (reflections == null) {
+            URLClassLoader classLoader = (URLClassLoader) projectClassLoader();
             ConfigurationBuilder builder = new ConfigurationBuilder();
-            builder.addUrls(getUrlClassLoader().getURLs());
-            builder.addClassLoader(getUrlClassLoader());
+            builder.addUrls(classLoader.getURLs());
+            builder.addClassLoader(classLoader);
             reflections = new Reflections(builder);
         }
         return reflections;
     }
 
     protected Predicate<Class<?>> classSubTypeAvailabilityResolver() {
-        return clazz -> getReflections().getSubTypesOf(clazz).stream()
-                .filter(c -> !c.isInterface() && !Modifier.isAbstract(c.getModifiers()))
-                .findFirst().isPresent();
+        return clazz -> {
+            try {
+                return getReflections().getSubTypesOf(clazz).stream()
+                        .anyMatch(c -> !c.isInterface() && !Modifier.isAbstract(c.getModifiers()));
+            } catch (MojoExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        };
     }
 
     protected ClassLoader projectClassLoader() throws MojoExecutionException {

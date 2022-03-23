@@ -17,6 +17,8 @@ package org.kie.kogito.codegen.process.persistence;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,16 +29,17 @@ import org.kie.kogito.codegen.process.persistence.marshaller.ReflectionMarshalle
 import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.JDBC_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasDataIndexProto;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasProtoMarshaller;
 
-class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
+class JDBCPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("persistenceTestContexts")
-    void testGeneratedFiles(KogitoBuildContext context) {
+    void test(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
@@ -44,17 +47,27 @@ class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
                 context,
                 protoGenerator,
                 new ReflectionMarshallerGenerator(context));
+        assertEquals(persistenceType(), persistenceGenerator.persistenceType());
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
+        if (context.hasDI()) {
+            if (hasProtoMarshaller(context)) {
+                List<GeneratedFile> marshallerFiles = generatedFiles.stream().filter(gf -> gf.relativePath().endsWith("MessageMarshaller.java")).collect(Collectors.toList());
+
+                String expectedMarshaller = "PersonMessageMarshaller";
+                assertThat(marshallerFiles.size()).isEqualTo(1);
+                assertThat(marshallerFiles.get(0).relativePath()).endsWith(expectedMarshaller + ".java");
+            }
+
+        }
         int marshallerFiles = hasProtoMarshaller(context) ? 14 : 0;
         int dataIndexFiles = hasDataIndexProto(context) ? 2 : 0;
         int expectedNumberOfFiles = marshallerFiles + dataIndexFiles;
-
         assertThat(generatedFiles).hasSize(expectedNumberOfFiles);
     }
 
     @Override
     protected String persistenceType() {
-        return POSTGRESQL_PERSISTENCE_TYPE;
+        return JDBC_PERSISTENCE_TYPE;
     }
 }

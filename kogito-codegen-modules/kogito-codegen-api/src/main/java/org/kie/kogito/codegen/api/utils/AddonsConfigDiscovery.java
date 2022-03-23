@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 public class AddonsConfigDiscovery {
 
-    private static final String PERSISTENCE_FACTORY_CLASS = "org.kie.kogito.process.ProcessInstancesFactory";
     private static final String PROMETHEUS_CLASS = "org.kie.kogito.monitoring.prometheus.common.rest.MetricsResource";
     private static final String MONITORING_CORE_CLASS = "org.kie.kogito.monitoring.core.common.MonitoringRegistry";
     private static final String TRACING_CLASS = "org.kie.kogito.tracing.decision.DecisionTracingListener";

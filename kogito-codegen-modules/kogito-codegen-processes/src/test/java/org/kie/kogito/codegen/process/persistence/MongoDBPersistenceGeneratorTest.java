@@ -28,33 +28,29 @@ import org.kie.kogito.codegen.process.persistence.proto.ReflectionProtoGenerator
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.KOGITO_PERSISTENCE_TYPE;
-import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE;
+import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.MONGODB_PERSISTENCE_TYPE;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasDataIndexProto;
 import static org.kie.kogito.codegen.process.persistence.PersistenceGenerator.hasProtoMarshaller;
 
-class PostgrePersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
+class MongoDBPersistenceGeneratorTest extends AbstractPersistenceGeneratorTest {
 
     @ParameterizedTest
     @MethodSource("persistenceTestContexts")
-    void testGeneratedFiles(KogitoBuildContext context) {
+    void test(KogitoBuildContext context) {
         context.setApplicationProperty(KOGITO_PERSISTENCE_TYPE, persistenceType());
 
         ReflectionProtoGenerator protoGenerator = ReflectionProtoGenerator.builder().build(Collections.singleton(GeneratedPOJO.class));
-        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
-                context,
-                protoGenerator,
-                new ReflectionMarshallerGenerator(context));
+        PersistenceGenerator persistenceGenerator = new PersistenceGenerator(context, protoGenerator, new ReflectionMarshallerGenerator(context));
         Collection<GeneratedFile> generatedFiles = persistenceGenerator.generate();
 
         int marshallerFiles = hasProtoMarshaller(context) ? 14 : 0;
         int dataIndexFiles = hasDataIndexProto(context) ? 2 : 0;
         int expectedNumberOfFiles = marshallerFiles + dataIndexFiles;
-
         assertThat(generatedFiles).hasSize(expectedNumberOfFiles);
     }
 
     @Override
     protected String persistenceType() {
-        return POSTGRESQL_PERSISTENCE_TYPE;
+        return MONGODB_PERSISTENCE_TYPE;
     }
 }
