@@ -29,21 +29,14 @@ import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Lan
 
 public class KogitoDMNCodeCodestartIT {
 
-    static final Properties properties = new Properties();
-    static {
-        try {
-            properties.load(KogitoDMNCodeCodestartIT.class.getClassLoader().getResourceAsStream("project.properties"));
-        } catch (Exception e) {
-            throw new RuntimeException("project.properties version unknown");
-        }
-    }
-
     public static String projectVersion() {
-        return properties.getProperty("version");
-    }
-
-    public static String assertjVersion() {
-        return properties.getProperty("version.assertj");
+        try {
+            final Properties properties = new Properties();
+            properties.load(KogitoDMNCodeCodestartIT.class.getClassLoader().getResourceAsStream("project.properties"));
+            return properties.getProperty("version");
+        } catch (Exception e) {
+            return "<project.properties version unknown>";
+        }
     }
 
     @RegisterExtension
@@ -51,7 +44,6 @@ public class KogitoDMNCodeCodestartIT {
             .standaloneExtensionCatalog()
             .extension(ArtifactCoords.pom("io.quarkus", "quarkus-resteasy-jackson", null)) // account for KOGITO-5817
             .extension(ArtifactCoords.fromString("org.kie.kogito:kogito-quarkus-decisions:" + projectVersion()))
-            .extension(ArtifactCoords.fromString("org.assertj:assertj-core:" + assertjVersion()))
             .putData(QuarkusDataKey.APP_CONFIG, Map.of("quarkus.http.test-port", "0"))
             .languages(JAVA)
             .build();
