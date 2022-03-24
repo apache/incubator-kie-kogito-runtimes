@@ -17,7 +17,7 @@ package org.kie.kogito.serverless.workflow.suppliers;
 
 import org.jbpm.compiler.canonical.ExpressionSupplier;
 import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.compiler.canonical.descriptors.SupplierUtils;
+import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNode;
 import org.kie.kogito.serverless.workflow.actions.CollectorAction;
 
@@ -29,7 +29,7 @@ public class CollectorActionSupplier extends CollectorAction implements Expressi
 
     public CollectorActionSupplier(String lang, String expr, String inputVar, String outputVar) {
         super(lang, expr, inputVar, outputVar);
-        expression = SupplierUtils.getExpression(CollectorAction.class, lang, expr, inputVar, outputVar);
+        expression = ExpressionUtils.getExpression(CollectorAction.class, lang, expr, inputVar, outputVar);
     }
 
     @Override

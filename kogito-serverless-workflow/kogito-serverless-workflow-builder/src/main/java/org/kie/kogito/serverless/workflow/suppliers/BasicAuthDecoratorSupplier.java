@@ -15,22 +15,24 @@
  */
 package org.kie.kogito.serverless.workflow.suppliers;
 
-import org.jbpm.compiler.canonical.ExpressionSupplier;
-import org.jbpm.compiler.canonical.ProcessMetaData;
-import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
-import org.kie.kogito.internal.process.runtime.KogitoNode;
-import org.kie.kogito.serverless.workflow.actions.DataInputSchemaAction;
+import java.util.function.Supplier;
+
+import org.kogito.workitem.rest.auth.BasicAuthDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
-public class DataInputSchemaActionSupplier extends DataInputSchemaAction implements ExpressionSupplier {
+import static org.jbpm.compiler.canonical.descriptors.ExpressionUtils.getExpression;
 
-    public DataInputSchemaActionSupplier(String schema, boolean failOnValidationErrors) {
-        super(schema, failOnValidationErrors);
+public class BasicAuthDecoratorSupplier extends BasicAuthDecorator implements Supplier<Expression> {
+
+    private final Expression expression;
+
+    public BasicAuthDecoratorSupplier() {
+        expression = getExpression(BasicAuthDecorator.class);
     }
 
     @Override
-    public Expression get(KogitoNode node, ProcessMetaData metadata) {
-        return ExpressionUtils.getExpression(DataInputSchemaAction.class, schema, failOnValidationErrors);
+    public Expression get() {
+        return expression;
     }
 }

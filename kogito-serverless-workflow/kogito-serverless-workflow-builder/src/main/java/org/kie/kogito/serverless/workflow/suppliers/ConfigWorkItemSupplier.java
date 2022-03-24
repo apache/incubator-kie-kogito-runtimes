@@ -17,14 +17,11 @@ package org.kie.kogito.serverless.workflow.suppliers;
 
 import java.util.function.Supplier;
 
-import org.jbpm.compiler.canonical.descriptors.AbstractServiceTaskDescriptor;
+import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
 import org.kie.kogito.serverless.workflow.workitemparams.ConfigWorkItemResolver;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
-import com.github.javaparser.ast.expr.StringLiteralExpr;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
@@ -34,7 +31,9 @@ public class ConfigWorkItemSupplier<T> extends ConfigWorkItemResolver<T> impleme
 
     public ConfigWorkItemSupplier(String key, Class<T> clazz, T defaultValue) {
         super(key, clazz, defaultValue);
-        this.expression = createExpression(ConfigWorkItemResolver.class, key, clazz, defaultValue);
+        this.expression =
+                ExpressionUtils.getExpression(
+                        parseClassOrInterfaceType(ConfigWorkItemResolver.class.getCanonicalName()).setTypeArguments(parseClassOrInterfaceType(clazz.getCanonicalName())), key, clazz, defaultValue);
     }
 
     @Override
@@ -42,10 +41,4 @@ public class ConfigWorkItemSupplier<T> extends ConfigWorkItemResolver<T> impleme
         return expression;
     }
 
-    protected static final <T, V extends ConfigWorkItemResolver<T>> ObjectCreationExpr createExpression(Class<V> objectClass, String key, Class<T> clazz, T defaultValue) {
-        return new ObjectCreationExpr().setType(parseClassOrInterfaceType(objectClass.getCanonicalName()).setTypeArguments(StaticJavaParser.parseClassOrInterfaceType(clazz.getCanonicalName())))
-                .addArgument(new StringLiteralExpr(key))
-                .addArgument(new ClassExpr(parseClassOrInterfaceType(clazz.getCanonicalName()))).addArgument(
-                        AbstractServiceTaskDescriptor.getLiteralExpr(defaultValue));
-    }
 }
