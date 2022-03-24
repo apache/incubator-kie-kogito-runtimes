@@ -366,17 +366,18 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                                     .workParameter(ApiKeyAuthDecorator.PARAMETER, scheme.getName());
                             break;
                         case HTTP:
-                            // TODO http security scheme is not properly parsed for some reason (need to investigate it, in the mean time, trust user properties definition) 
+                            if (scheme.getScheme().equals("bearer")) {
+                                node.workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeOpenApi(serviceName, "access_token", parserContext.getContext()));
+                            } else if (scheme.getScheme().equals("basic")) {
+                                node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
+                                        .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()));
+                            }
                             break;
                         default:
                             logger.warn("Unsupported scheme type {}", scheme.getType());
                     }
                 }
             }
-            // add properties for htpp based authentication (both user and token), if specified
-            node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
-                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()))
-                    .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeOpenApi(serviceName, "access_token", parserContext.getContext()));
         }
     }
 

@@ -21,11 +21,14 @@ package org.kie.kogito.quarkus.it.openapi.client.mocks;
  */
 public class AuthSecurityMockService extends MockServiceConfigurer {
 
-    public static final MockServerConfig CONFIG =
-            new MockServerConfig(8383, "{}", "/watsonorchestrate", "authWithApiKeyServer");
+    public static final MockServerConfig SEC_20 =
+            new MockServerConfig(8383, "{}", "/watsonorchestrate", "authWithApiKeyServer2");
+
+    public static final MockServerConfig SEC_30 =
+            new MockServerConfig(8382, "{}", "/", "authWithApiKeyServer3");
 
     public AuthSecurityMockService() {
-        super(CONFIG);
+        super(SEC_20, SEC_30);
     }
 
 }
