@@ -16,6 +16,8 @@
 package org.kie.kogito.maven.plugin;
 
 import java.io.File;
+import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -23,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
@@ -36,7 +39,6 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.QuarkusKogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.SpringBootKogitoBuildContext;
-import org.kie.kogito.codegen.api.utils.AddonsConfigDiscovery;
 import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.utils.GeneratedFileWriter;
 import org.kie.kogito.codegen.decision.DecisionCodegen;
@@ -45,6 +47,8 @@ import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.codegen.process.persistence.PersistenceGenerator;
 import org.kie.kogito.codegen.rules.RuleCodegen;
 import org.kie.kogito.maven.plugin.util.MojoUtil;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 public abstract class AbstractKieMojo extends AbstractMojo {
 
@@ -81,6 +85,9 @@ public abstract class AbstractKieMojo extends AbstractMojo {
     @Parameter(property = "kogito.codegen.predictions", defaultValue = "true")
     protected String generatePredictions;
 
+    private URLClassLoader urlClassLoader;
+    private Reflections reflections;
+
     protected void setSystemProperties(Map<String, String> properties) {
 
         if (properties != null) {
@@ -96,9 +103,9 @@ public abstract class AbstractKieMojo extends AbstractMojo {
         AppPaths appPaths = AppPaths.fromProjectDir(projectDir.toPath(), outputDirectory.toPath());
         KogitoBuildContext context = contextBuilder()
                 .withClassAvailabilityResolver(this::hasClassOnClasspath)
+                .withClassSubTypeAvailabilityResolver(classSubTypeAvailabilityResolver())
                 .withApplicationProperties(appPaths.getResourceFiles())
                 .withPackageName(appPackageName())
-                .withAddonsConfig(AddonsConfigDiscovery.discover(this::hasClassOnClasspath))
                 .withClassLoader(classLoader)
                 .withAppPaths(appPaths)
                 .withGAV(new KogitoGAV(project.getGroupId(), project.getArtifactId(), project.getVersion()))
@@ -106,6 +113,42 @@ public abstract class AbstractKieMojo extends AbstractMojo {
 
         additionalProperties(context);
         return context;
+    }
+
+    public URLClassLoader getUrlClassLoader() {
+        if (urlClassLoader == null) {
+            try {
+                URL[] urlsForClassLoader = project.getRuntimeClasspathElements().stream().map(path -> {
+                    try {
+                        return new File(path).toURI().toURL();
+                    } catch (MalformedURLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).toArray(URL[]::new);
+
+                // need to define parent classloader which knows all dependencies of the plugin
+                urlClassLoader = new URLClassLoader(urlsForClassLoader, Thread.currentThread().getContextClassLoader());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return urlClassLoader;
+    }
+
+    protected Reflections getReflections() {
+        if (reflections == null) {
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.addUrls(getUrlClassLoader().getURLs());
+            builder.addClassLoader(getUrlClassLoader());
+            reflections = new Reflections(builder);
+        }
+        return reflections;
+    }
+
+    protected Predicate<Class<?>> classSubTypeAvailabilityResolver() {
+        return clazz -> getReflections().getSubTypesOf(clazz).stream()
+                .filter(c -> !c.isInterface() && !Modifier.isAbstract(c.getModifiers()))
+                .findFirst().isPresent();
     }
 
     protected ClassLoader projectClassLoader() throws MojoExecutionException {

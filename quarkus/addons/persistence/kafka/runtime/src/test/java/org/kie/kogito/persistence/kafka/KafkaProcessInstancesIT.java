@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.persistence.kafka;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,14 +22,14 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.drools.core.io.impl.ClassPathResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.auth.IdentityProviders;
 import org.kie.kogito.auth.SecurityPolicy;
-import org.kie.kogito.persistence.KogitoProcessInstancesFactory;
-import org.kie.kogito.process.Process;
+import org.kie.kogito.persistence.KafkaProcessInstancesFactory;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.ProcessInstances;
@@ -88,7 +87,7 @@ public class KafkaProcessInstancesIT {
     void testFindByIdReadMode() {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask-Script.bpmn2")).get(0);
 
-        listener.setKafkaStreams(createStreams(process));
+        listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
         process.configure();
         listener.getKafkaStreams().start();
@@ -127,7 +126,7 @@ public class KafkaProcessInstancesIT {
     @Test
     void testValuesReadMode() {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
-        listener.setKafkaStreams(createStreams(process));
+        listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
         process.configure();
         listener.getKafkaStreams().start();
@@ -150,7 +149,7 @@ public class KafkaProcessInstancesIT {
     @Test
     void testBasicFlow() {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-UserTask.bpmn2")).get(0);
-        listener.setKafkaStreams(createStreams(process));
+        listener.setKafkaStreams(createStreams());
         process.setProcessInstancesFactory(factory);
         process.configure();
         listener.getKafkaStreams().start();
@@ -178,10 +177,13 @@ public class KafkaProcessInstancesIT {
         assertThat(instances.size()).isZero();
     }
 
-    KafkaStreams createStreams(Process process) {
-        Topology topology = createTopologyForProcesses(Arrays.asList(process.id()));
+    KafkaStreams createStreams() {
+        Topology topology = createTopologyForProcesses();
         KafkaStreams streams = new KafkaStreams(topology, getStreamsConfig());
-        streams.setUncaughtExceptionHandler((Thread thread, Throwable throwable) -> LOGGER.error("Kafka persistence error: " + throwable.getMessage(), throwable));
+        streams.setUncaughtExceptionHandler((Throwable throwable) -> {
+            LOGGER.error("Kafka persistence error: " + throwable.getMessage(), throwable);
+            return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.REPLACE_THREAD;
+        });
         streams.cleanUp();
         return streams;
     }
@@ -193,7 +195,4 @@ public class KafkaProcessInstancesIT {
         return properties;
     }
 
-    private class KafkaProcessInstancesFactory extends KogitoProcessInstancesFactory {
-
-    }
 }
