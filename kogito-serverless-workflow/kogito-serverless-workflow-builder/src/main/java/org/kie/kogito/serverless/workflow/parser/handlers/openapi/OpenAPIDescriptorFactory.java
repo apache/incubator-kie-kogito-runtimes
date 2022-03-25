@@ -65,6 +65,7 @@ public class OpenAPIDescriptorFactory {
             if (security.isEmpty()) {
                 return Collections.emptyList();
             }
+            // do not care if and or or, we try to fill all 
             security.forEach(s -> s.keySet().forEach(schemeNames::add));
         }
 
@@ -128,5 +129,8 @@ public class OpenAPIDescriptorFactory {
     public static String getDefaultURL(OpenAPI openAPI, String defaultBase) {
         List<Server> servers = openAPI.getServers();
         return servers != null && !servers.isEmpty() ? servers.get(0).getUrl() : defaultBase;
+    }
+
+    private OpenAPIDescriptorFactory() {
     }
 }

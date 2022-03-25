@@ -39,6 +39,10 @@ public class RestWorkItemHandlerUtils {
         return vertx;
     }
 
+    public static String getParam(Map<String, Object> parameters, String paramName) {
+        return getParam(parameters, paramName, String.class, null);
+    }
+
     public static <T> T getParam(Map<String, Object> parameters, String paramName, Class<T> type, T defaultValue) {
         Object value = parameters.remove(paramName);
         return value == null ? defaultValue : convert(value, type, v -> v.toString().toUpperCase());

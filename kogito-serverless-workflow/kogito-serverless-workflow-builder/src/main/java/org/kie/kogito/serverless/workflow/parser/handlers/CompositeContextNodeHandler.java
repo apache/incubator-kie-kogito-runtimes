@@ -50,10 +50,12 @@ import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescrip
 import org.kie.kogito.serverless.workflow.suppliers.ApiKeyAuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.BasicAuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.BearerTokenAuthDecoratorSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.ClientOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CollectionParamsDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ConfigSuppliedWorkItemSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.PasswordOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
 import org.kie.kogito.serverless.workflow.workitemparams.ObjectResolver;
@@ -61,6 +63,7 @@ import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator.Location;
 import org.kogito.workitem.rest.auth.BearerTokenAuthDecorator;
+import org.kogito.workitem.rest.auth.ClientOAuth2AuthDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -367,12 +370,12 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private ApiKeyAuthDecorator.Location from(In in) {
         switch (in) {
             case COOKIE:
-                return Location.cookie;
+                return Location.COOKIE;
             case HEADER:
-                return Location.header;
+                return Location.HEADER;
             case QUERY:
             default:
-                return Location.query;
+                return Location.QUERY;
         }
     }
 
@@ -394,6 +397,22 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         authDecorators.add(new BasicAuthDecoratorSupplier());
                         node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
                                 .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()));
+                    }
+                    break;
+                case OAUTH2:
+                    // only support client and password credentials
+                    if (scheme.getFlows().getClientCredentials() != null) {
+                        authDecorators.add(new ClientOAuth2AuthDecoratorSupplier(scheme.getFlows().getClientCredentials().getTokenUrl(), scheme.getFlows().getClientCredentials().getRefreshUrl()));
+                        node.workParameter(ClientOAuth2AuthDecorator.CLIENT_ID, runtimeOpenApi(serviceName, ClientOAuth2AuthDecorator.CLIENT_ID, parserContext.getContext()))
+                                .workParameter(ClientOAuth2AuthDecorator.CLIENT_SECRET, runtimeOpenApi(serviceName, ClientOAuth2AuthDecorator.CLIENT_SECRET, parserContext.getContext()));
+                    } else if (scheme.getFlows().getPassword() != null) {
+                        authDecorators.add(new PasswordOAuth2AuthDecoratorSupplier(scheme.getFlows().getPassword().getTokenUrl(), scheme.getFlows().getPassword().getRefreshUrl()));
+                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
+                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()));
+                    } else if (scheme.getFlows().getAuthorizationCode() != null) {
+                        logger.warn("Unsupported scheme type {} for authorization code flow {}", scheme.getType(), scheme.getFlows().getAuthorizationCode());
+                    } else if (scheme.getFlows().getImplicit() != null) {
+                        logger.warn("Unsupported scheme type {} for implicit flow {}", scheme.getType(), scheme.getFlows().getImplicit());
                     }
                     break;
                 default:
@@ -455,5 +474,4 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .name(actionName)
                 .action(JavaDialect.ID, "");
     }
-
 }

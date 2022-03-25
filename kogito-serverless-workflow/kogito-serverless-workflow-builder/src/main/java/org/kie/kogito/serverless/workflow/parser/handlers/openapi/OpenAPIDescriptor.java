@@ -53,6 +53,8 @@ public class OpenAPIDescriptor {
             case "header":
                 headerParams.add(parameter.getName());
                 break;
+            default:
+                // all other argument types can be safely ignored
         }
     }
 

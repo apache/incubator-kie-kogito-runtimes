@@ -30,16 +30,16 @@ public class ApiKeyAuthDecorator implements AuthDecorator {
     public static final String KEY_PREFIX = "apiKeyPrefix";
 
     public enum Location {
-        header,
-        query,
-        cookie
-    };
+        HEADER,
+        QUERY,
+        COOKIE
+    }
 
     private final String paramName;
     private final Location location;
 
     public ApiKeyAuthDecorator() {
-        this("X-API-KEY", Location.header);
+        this("X-API-KEY", Location.HEADER);
     }
 
     public ApiKeyAuthDecorator(String paramName, Location location) {
@@ -52,11 +52,11 @@ public class ApiKeyAuthDecorator implements AuthDecorator {
         String apiKey = getApiKey(getParam(parameters, KEY_PREFIX, String.class, null), getParam(parameters, KEY, String.class, ""));
         if (!isEmpty(apiKey)) {
             switch (location) {
-                case query:
+                case QUERY:
                     request.addQueryParam(paramName, apiKey);
                     break;
                 default:
-                case header:
+                case HEADER:
                     request.putHeader(paramName, apiKey);
             }
         }

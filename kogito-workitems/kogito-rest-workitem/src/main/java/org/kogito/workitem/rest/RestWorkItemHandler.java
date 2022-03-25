@@ -90,7 +90,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
     private static final Map<String, ParamsDecorator> paramsDecorators = new ConcurrentHashMap<>();
     private static final Map<String, PathParamResolver> pathParamsResolvers = new ConcurrentHashMap<>();
     private static final Map<String, AuthDecorator> authDecoratorsMap = new ConcurrentHashMap<>();
-    public static final Collection<AuthDecorator> DEFAULT_AUTH_DECORATORS = Arrays.asList(new ApiKeyAuthDecorator(), new BasicAuthDecorator(), new BearerTokenAuthDecorator());
+    private static final Collection<AuthDecorator> DEFAULT_AUTH_DECORATORS = Arrays.asList(new ApiKeyAuthDecorator(), new BasicAuthDecorator(), new BearerTokenAuthDecorator());
 
     private WebClient client;
     private Collection<RequestDecorator> requestDecorators;

@@ -30,13 +30,14 @@ components:
      scheme: bearer
    oauth:
      type: oauth2
-     flow: accessCode
-     authorizationUrl: https://example.com/oauth/authorize
-     tokenUrl: https://example.com/oauth/token
-     scopes:
-       read: Grants read access
-       write: Grants write access
-       admin: Grants read and write access to administrative information
+     flows: 
+       authorizationCode:
+        authorizationUrl: https://example.com/oauth/authorize
+        tokenUrl: https://example.com/oauth/token
+        scopes:
+         read: Grants read access
+         write: Grants write access
+         admin: Grants read and write access to administrative information
   security:
   - client_id: [ ]
   - oauth: [ read, write ]
