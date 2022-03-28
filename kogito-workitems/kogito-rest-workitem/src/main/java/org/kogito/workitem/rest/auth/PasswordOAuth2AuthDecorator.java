@@ -20,6 +20,7 @@ import java.util.Map;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.oauth2.OAuth2FlowType;
 import io.vertx.ext.auth.oauth2.OAuth2Options;
 
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
@@ -32,7 +33,7 @@ public class PasswordOAuth2AuthDecorator extends OAuth2AuthDecorator<UserInfo> {
 
     @Override
     protected OAuth2Options fillOptions(OAuth2Options options, UserInfo cacheKey) {
-        return options;
+        return options.setFlow(OAuth2FlowType.PASSWORD);
     }
 
     @Override

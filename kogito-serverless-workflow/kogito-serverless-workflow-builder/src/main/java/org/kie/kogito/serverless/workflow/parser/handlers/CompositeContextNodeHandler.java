@@ -116,6 +116,11 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private static final String LANG_SEPARATOR = ":";
     private static final String METHOD_SEPARATOR = ":";
     private static final String INTFC_SEPARATOR = "::";
+    private static final String USER_PROP = "username";
+    private static final String PASSWORD_PROP = "password";
+    private static final String API_KEY_PREFIX = "api_key_prefix";
+    private static final String API_KEY = "api_key";
+    private static final String ACCESS_TOKEN = "access_token";
 
     protected CompositeContextNodeHandler(S state, Workflow workflow, ParserContext parserContext) {
         super(state, workflow, parserContext);
@@ -326,14 +331,14 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
         return node.workParameter(RestWorkItemHandler.URL, url)
                 .workParameter(RestWorkItemHandler.METHOD, method)
-                .workParameter(RestWorkItemHandler.USER, runtimeRestApi(actionFunction, "user", parserContext.getContext()))
-                .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(actionFunction, "password", parserContext.getContext()))
+                .workParameter(RestWorkItemHandler.USER, runtimeRestApi(actionFunction, USER_PROP, parserContext.getContext()))
+                .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(actionFunction, PASSWORD_PROP, parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(actionFunction, "host", parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(actionFunction, "port", parserContext.getContext(), Integer.class, 8080))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, "access_token", parserContext.getContext()))
-                .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, "api_key_prefix", parserContext.getContext()))
-                .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, "api_key", parserContext.getContext()));
+                .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, ACCESS_TOKEN, parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, API_KEY_PREFIX, parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, API_KEY, parserContext.getContext()));
     }
 
     private NodeFactory<?, ?> addOpenApiParameters(WorkItemNodeFactory<?> node,
@@ -385,30 +390,30 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             switch (scheme.getType()) {
                 case APIKEY:
                     authDecorators.add(new ApiKeyAuthDecoratorSupplier(scheme.getName(), from(scheme.getIn())));
-                    node.workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeOpenApi(serviceName, "api_key_prefix", parserContext.getContext()))
-                            .workParameter(ApiKeyAuthDecorator.KEY, runtimeOpenApi(serviceName, "api_key", parserContext.getContext()));
+                    node.workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeOpenApi(serviceName, API_KEY_PREFIX, parserContext.getContext()))
+                            .workParameter(ApiKeyAuthDecorator.KEY, runtimeOpenApi(serviceName, API_KEY, parserContext.getContext()));
                     break;
                 case HTTP:
                     if (scheme.getScheme().equals("bearer")) {
                         authDecorators.add(new BearerTokenAuthDecoratorSupplier());
                         node.workParameter(RestWorkItemHandler.AUTH_METHOD, new BearerTokenAuthDecorator()).workParameter(BearerTokenAuthDecorator.BEARER_TOKEN,
-                                runtimeOpenApi(serviceName, "access_token", parserContext.getContext()));
+                                runtimeOpenApi(serviceName, ACCESS_TOKEN, parserContext.getContext()));
                     } else if (scheme.getScheme().equals("basic")) {
                         authDecorators.add(new BasicAuthDecoratorSupplier());
-                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
-                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()));
+                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, USER_PROP, parserContext.getContext()))
+                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, PASSWORD_PROP, parserContext.getContext()));
                     }
                     break;
                 case OAUTH2:
                     // only support client and password credentials
                     if (scheme.getFlows().getClientCredentials() != null) {
                         authDecorators.add(new ClientOAuth2AuthDecoratorSupplier(scheme.getFlows().getClientCredentials().getTokenUrl(), scheme.getFlows().getClientCredentials().getRefreshUrl()));
-                        node.workParameter(ClientOAuth2AuthDecorator.CLIENT_ID, runtimeOpenApi(serviceName, ClientOAuth2AuthDecorator.CLIENT_ID, parserContext.getContext()))
-                                .workParameter(ClientOAuth2AuthDecorator.CLIENT_SECRET, runtimeOpenApi(serviceName, ClientOAuth2AuthDecorator.CLIENT_SECRET, parserContext.getContext()));
+                        node.workParameter(ClientOAuth2AuthDecorator.CLIENT_ID, runtimeOpenApi(serviceName, "client_id", parserContext.getContext()))
+                                .workParameter(ClientOAuth2AuthDecorator.CLIENT_SECRET, runtimeOpenApi(serviceName, "client_secret", parserContext.getContext()));
                     } else if (scheme.getFlows().getPassword() != null) {
                         authDecorators.add(new PasswordOAuth2AuthDecoratorSupplier(scheme.getFlows().getPassword().getTokenUrl(), scheme.getFlows().getPassword().getRefreshUrl()));
-                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
-                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()));
+                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, USER_PROP, parserContext.getContext()))
+                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, PASSWORD_PROP, parserContext.getContext()));
                     } else if (scheme.getFlows().getAuthorizationCode() != null) {
                         logger.warn("Unsupported scheme type {} for authorization code flow {}", scheme.getType(), scheme.getFlows().getAuthorizationCode());
                     } else if (scheme.getFlows().getImplicit() != null) {

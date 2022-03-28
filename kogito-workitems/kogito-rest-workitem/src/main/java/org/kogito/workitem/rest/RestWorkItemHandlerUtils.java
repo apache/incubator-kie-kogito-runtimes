@@ -30,13 +30,15 @@ public class RestWorkItemHandlerUtils {
     private RestWorkItemHandlerUtils() {
     }
 
-    private static Vertx vertx;
+    private static Vertx vertxContext;
 
-    public static synchronized Vertx vertx() {
-        if (vertx == null) {
-            vertx = Vertx.vertx();
-        }
-        return vertx;
+    public static synchronized Vertx vertx(Vertx vertx) {
+        vertxContext = vertx == null ? Vertx.vertx() : vertx;
+        return vertxContext;
+    }
+
+    public static Vertx vertx() {
+        return vertxContext;
     }
 
     public static String getParam(Map<String, Object> parameters, String paramName) {

@@ -17,7 +17,6 @@ package org.jbpm.compiler.canonical;
 
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.jbpm.compiler.canonical.descriptors.ExpressionUtils;
 import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
@@ -126,12 +125,7 @@ public class WorkItemNodeVisitor<T extends WorkItemNode> extends AbstractNodeVis
         }
         ParamType pType = ParamType.fromString(type);
         if (pType == null) {
-            if (value instanceof Supplier) {
-                return ((Supplier<Expression>) value).get();
-            } else {
-                return ExpressionUtils.getLiteralExpr(value);
-            }
-
+            return ExpressionUtils.getLiteralExpr(value);
         }
         switch (pType) {
             case BOOLEAN:

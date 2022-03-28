@@ -18,6 +18,7 @@ package org.kogito.workitem.rest.auth;
 import java.util.Map;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.oauth2.OAuth2FlowType;
 import io.vertx.ext.auth.oauth2.OAuth2Options;
 
 import static org.kogito.workitem.rest.RestWorkItemHandlerUtils.getParam;
@@ -34,7 +35,7 @@ public class ClientOAuth2AuthDecorator extends OAuth2AuthDecorator<ClientInfo> {
 
     @Override
     protected OAuth2Options fillOptions(OAuth2Options options, ClientInfo cacheKey) {
-        return options.setClientId(cacheKey.getClientId()).setClientSecret(cacheKey.getClientId());
+        return options.setFlow(OAuth2FlowType.CLIENT).setClientId(cacheKey.getClientId()).setClientSecret(cacheKey.getClientId());
     }
 
     @Override

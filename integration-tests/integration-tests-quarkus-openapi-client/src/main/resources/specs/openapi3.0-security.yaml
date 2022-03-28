@@ -38,6 +38,8 @@ components:
          read: Grants read access
          write: Grants write access
          admin: Grants read and write access to administrative information
+       clientCredentials:
+         tokenUrl: http://localhost:8382/oauth/token
   security:
   - client_id: [ ]
   - oauth: [ read, write ]
