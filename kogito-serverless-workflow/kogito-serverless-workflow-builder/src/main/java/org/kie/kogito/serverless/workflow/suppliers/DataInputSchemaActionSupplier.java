@@ -31,6 +31,6 @@ public class DataInputSchemaActionSupplier extends DataInputSchemaAction impleme
 
     @Override
     public Expression get(KogitoNode node, ProcessMetaData metadata) {
-        return ExpressionUtils.getExpression(DataInputSchemaAction.class, schema, failOnValidationErrors);
+        return ExpressionUtils.getObjectCreationExpr(DataInputSchemaAction.class, schema, failOnValidationErrors);
     }
 }

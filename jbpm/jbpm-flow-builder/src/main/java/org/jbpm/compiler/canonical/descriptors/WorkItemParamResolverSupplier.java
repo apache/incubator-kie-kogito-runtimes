@@ -33,6 +33,6 @@ public class WorkItemParamResolverSupplier implements Supplier<Expression> {
 
     @Override
     public Expression get() {
-        return ExpressionUtils.getExpression(clazz, args);
+        return ExpressionUtils.getObjectCreationExpr(clazz, args);
     }
 }

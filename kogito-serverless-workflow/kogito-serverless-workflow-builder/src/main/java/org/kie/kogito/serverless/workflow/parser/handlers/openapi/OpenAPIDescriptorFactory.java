@@ -66,7 +66,7 @@ public class OpenAPIDescriptorFactory {
                 return Collections.emptyList();
             }
             // do not care if and or or, we try to fill all 
-            security.forEach(s -> s.keySet().forEach(schemeNames::add));
+            security.forEach(s -> schemeNames.addAll(s.keySet()));
         }
 
         if (openAPI.getComponents() != null) {

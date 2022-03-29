@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class ExpressionUtils {
     private ExpressionUtils() {
     }
 
-    public static ObjectCreationExpr getExpression(Class<?> runtimeClass, Object... args) {
+    public static ObjectCreationExpr getObjectCreationExpr(Class<?> runtimeClass, Object... args) {
         ObjectCreationExpr result = new ObjectCreationExpr().setType(runtimeClass.getCanonicalName());
         for (Object arg : args) {
             result.addArgument(getLiteralExpr(arg));
@@ -59,7 +59,7 @@ public class ExpressionUtils {
         return result;
     }
 
-    public static ObjectCreationExpr getExpression(ClassOrInterfaceType type, Object... args) {
+    public static ObjectCreationExpr getObjectCreationExpr(ClassOrInterfaceType type, Object... args) {
         ObjectCreationExpr result = new ObjectCreationExpr().setType(type);
         for (Object arg : args) {
             result.addArgument(getLiteralExpr(arg));
@@ -87,9 +87,9 @@ public class ExpressionUtils {
         } else if (object instanceof Expression) {
             return (Expression) object;
         } else if (object instanceof Boolean) {
-            return new BooleanLiteralExpr(((Boolean) object).booleanValue());
+            return new BooleanLiteralExpr(((Boolean) object));
         } else if (object instanceof Character) {
-            return new CharLiteralExpr(((Character) object).charValue());
+            return new CharLiteralExpr(((Character) object));
         } else if (object instanceof Long) {
             return new LongLiteralExpr(object.toString());
         } else if (object instanceof Integer || object instanceof Short) {

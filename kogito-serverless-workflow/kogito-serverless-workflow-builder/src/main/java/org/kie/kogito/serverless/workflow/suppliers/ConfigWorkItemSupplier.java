@@ -32,7 +32,7 @@ public class ConfigWorkItemSupplier<T> extends ConfigWorkItemResolver<T> impleme
     public ConfigWorkItemSupplier(String key, Class<T> clazz, T defaultValue) {
         super(key, clazz, defaultValue);
         this.expression =
-                ExpressionUtils.getExpression(
+                ExpressionUtils.getObjectCreationExpr(
                         parseClassOrInterfaceType(ConfigWorkItemResolver.class.getCanonicalName()).setTypeArguments(parseClassOrInterfaceType(clazz.getCanonicalName())), key, clazz, defaultValue);
     }
 

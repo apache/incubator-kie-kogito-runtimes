@@ -29,7 +29,7 @@ public class CollectorActionSupplier extends CollectorAction implements Expressi
 
     public CollectorActionSupplier(String lang, String expr, String inputVar, String outputVar) {
         super(lang, expr, inputVar, outputVar);
-        expression = ExpressionUtils.getExpression(CollectorAction.class, lang, expr, inputVar, outputVar);
+        expression = ExpressionUtils.getObjectCreationExpr(CollectorAction.class, lang, expr, inputVar, outputVar);
     }
 
     @Override

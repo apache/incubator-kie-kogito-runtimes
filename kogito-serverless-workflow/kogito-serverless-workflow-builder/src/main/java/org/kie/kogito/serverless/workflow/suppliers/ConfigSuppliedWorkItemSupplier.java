@@ -33,7 +33,7 @@ public class ConfigSuppliedWorkItemSupplier<T> extends ConfigSuppliedWorkItemRes
     public ConfigSuppliedWorkItemSupplier(String key, Class<T> clazz, T defaultValue, UnaryOperator<T> transformer, Expression transformerExpr) {
         super(key, clazz, defaultValue, transformer);
         this.expression =
-                ExpressionUtils.getExpression(
+                ExpressionUtils.getObjectCreationExpr(
                         parseClassOrInterfaceType(ConfigSuppliedWorkItemResolver.class.getCanonicalName()).setTypeArguments(parseClassOrInterfaceType(clazz.getCanonicalName())), key, clazz,
                         defaultValue, transformerExpr);
     }

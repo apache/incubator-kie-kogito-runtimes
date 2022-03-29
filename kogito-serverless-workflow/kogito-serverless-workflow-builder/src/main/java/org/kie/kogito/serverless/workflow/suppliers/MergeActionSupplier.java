@@ -29,7 +29,7 @@ public class MergeActionSupplier extends MergeAction implements ExpressionSuppli
 
     public MergeActionSupplier(String inputName, String outputName) {
         super(inputName, outputName);
-        this.expression = ExpressionUtils.getExpression(MergeAction.class, inputName, outputName);
+        this.expression = ExpressionUtils.getObjectCreationExpr(MergeAction.class, inputName, outputName);
 
     }
 

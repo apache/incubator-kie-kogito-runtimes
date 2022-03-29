@@ -21,7 +21,7 @@ import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
-import static org.jbpm.compiler.canonical.descriptors.ExpressionUtils.getExpression;
+import static org.jbpm.compiler.canonical.descriptors.ExpressionUtils.getObjectCreationExpr;
 
 public class ApiKeyAuthDecoratorSupplier extends ApiKeyAuthDecorator implements Supplier<Expression> {
 
@@ -29,7 +29,7 @@ public class ApiKeyAuthDecoratorSupplier extends ApiKeyAuthDecorator implements 
 
     public ApiKeyAuthDecoratorSupplier(String paramName, ApiKeyAuthDecorator.Location location) {
         super(paramName, location);
-        expression = getExpression(ApiKeyAuthDecorator.class, paramName, location);
+        expression = getObjectCreationExpr(ApiKeyAuthDecorator.class, paramName, location);
     }
 
     @Override

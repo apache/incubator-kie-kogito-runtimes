@@ -35,7 +35,7 @@ public class InjectActionSupplier extends InjectAction implements ExpressionSupp
     @Override
     public Expression get(KogitoNode kogitoNode, ProcessMetaData metadata) {
         try {
-            return ExpressionUtils.getExpression(InjectAction.class, JsonObjectUtils.toString(this.node));
+            return ExpressionUtils.getObjectCreationExpr(InjectAction.class, JsonObjectUtils.toString(this.node));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
         }

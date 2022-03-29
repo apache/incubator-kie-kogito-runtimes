@@ -79,7 +79,7 @@ public class ExpressionActionSupplier extends ExpressionAction implements Expres
 
     private ExpressionActionSupplier(String lang, String expr, String inputVar, String outputVar, String collectVar, String[] addInputVars) {
         super(lang, expr, inputVar, outputVar, collectVar, addInputVars);
-        expression = ExpressionUtils.getExpression(ExpressionAction.class, lang, expr, inputVar, outputVar, collectVar);
+        expression = ExpressionUtils.getObjectCreationExpr(ExpressionAction.class, lang, expr, inputVar, outputVar, collectVar);
         for (String addInputVar : addInputVars) {
             expression.addArgument(ExpressionUtils.getLiteralExpr(addInputVar));
         }

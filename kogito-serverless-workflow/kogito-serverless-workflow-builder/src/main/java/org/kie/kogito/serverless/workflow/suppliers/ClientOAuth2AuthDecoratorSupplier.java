@@ -28,7 +28,7 @@ public class ClientOAuth2AuthDecoratorSupplier extends ClientOAuth2AuthDecorator
 
     public ClientOAuth2AuthDecoratorSupplier(String tokenUrl, String refreshUrl) {
         super(tokenUrl, refreshUrl);
-        this.expression = ExpressionUtils.getExpression(ClientOAuth2AuthDecorator.class, tokenUrl, refreshUrl);
+        this.expression = ExpressionUtils.getObjectCreationExpr(ClientOAuth2AuthDecorator.class, tokenUrl, refreshUrl);
     }
 
     @Override

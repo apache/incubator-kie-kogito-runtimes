@@ -33,6 +33,6 @@ public class CompensationActionSupplier extends ProcessInstanceCompensationActio
 
     @Override
     public Expression get(KogitoNode node, ProcessMetaData metadata) {
-        return ExpressionUtils.getExpression(ProcessInstanceCompensationAction.class, getActivityRef());
+        return ExpressionUtils.getObjectCreationExpr(ProcessInstanceCompensationAction.class, getActivityRef());
     }
 }

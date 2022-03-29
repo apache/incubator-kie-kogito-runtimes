@@ -30,7 +30,7 @@ public class SysoutActionSupplier extends SysoutAction implements ExpressionSupp
 
     public SysoutActionSupplier(String lang, String expr, String inputVar, String... addVars) {
         super(lang, expr, inputVar, addVars);
-        this.expression = ExpressionUtils.getExpression(SysoutAction.class, lang, expr, inputVar);
+        this.expression = ExpressionUtils.getObjectCreationExpr(SysoutAction.class, lang, expr, inputVar);
         for (String addVar : addVars) {
             expression.addArgument(ExpressionUtils.getLiteralExpr(addVar));
         }

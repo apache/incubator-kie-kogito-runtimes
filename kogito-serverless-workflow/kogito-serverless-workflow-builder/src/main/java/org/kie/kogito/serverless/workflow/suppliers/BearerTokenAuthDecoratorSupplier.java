@@ -21,14 +21,14 @@ import org.kogito.workitem.rest.auth.BearerTokenAuthDecorator;
 
 import com.github.javaparser.ast.expr.Expression;
 
-import static org.jbpm.compiler.canonical.descriptors.ExpressionUtils.getExpression;
+import static org.jbpm.compiler.canonical.descriptors.ExpressionUtils.getObjectCreationExpr;
 
 public class BearerTokenAuthDecoratorSupplier extends BearerTokenAuthDecorator implements Supplier<Expression> {
 
     private final Expression expression;
 
     public BearerTokenAuthDecoratorSupplier() {
-        expression = getExpression(BearerTokenAuthDecorator.class);
+        expression = getObjectCreationExpr(BearerTokenAuthDecorator.class);
     }
 
     @Override
