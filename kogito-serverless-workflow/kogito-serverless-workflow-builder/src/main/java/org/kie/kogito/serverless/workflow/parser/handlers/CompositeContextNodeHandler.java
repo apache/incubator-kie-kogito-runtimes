@@ -352,7 +352,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         try {
             // although OpenAPIParser has built in support to load uri, it messes up when using contextclassloader, so using our retrieval apis to get the content
             SwaggerParseResult result =
-                    new OpenAPIParser().readContents(new String(readAllBytes(buildLoader(URI.create(uri), parserContext.getContext().getClassLoader()))), null, null);
+                    new OpenAPIParser().readContents(new String(readAllBytes(buildLoader(URI.create(uri), parserContext.getContext().getClassLoader(), workflow, function.getAuthRef()))), null, null);
             OpenAPI openAPI = result.getOpenAPI();
             if (openAPI == null) {
                 throw new IllegalArgumentException("Problem parsing uri " + uri);
