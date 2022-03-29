@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -31,11 +32,11 @@ class HttpContentLoader extends FallbackContentLoader {
     }
 
     @Override
-    protected byte[] internalToBytes() {
-        return ResourceCacheFactory.getCache().get(uri, HttpContentLoader::fromUri);
+    protected InputStream internalInputStream() {
+        return new ByteArrayInputStream(ResourceCacheFactory.getCache().get(uri, this::loadURI));
     }
 
-    private static byte[] fromUri(URI u) {
+    private byte[] loadURI(URI u) {
         try {
             HttpURLConnection conn = (HttpURLConnection) u.toURL().openConnection();
             // some http servers required specific accept header (*/* is specified for those we do not care about accept) 
@@ -55,4 +56,5 @@ class HttpContentLoader extends FallbackContentLoader {
             throw new IllegalStateException(io);
         }
     }
+
 }

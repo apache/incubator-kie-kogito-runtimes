@@ -162,7 +162,7 @@ public class ServerlessWorkflowUtils {
         URIContentLoader contentLoader = URIContentLoaderFactory.buildLoader(uri, context.getContext().getClassLoader());
         try {
             context.addGeneratedFile(
-                    new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, uri.getPath(), contentLoader.toBytes()));
+                    new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, uri.getPath(), URIContentLoaderFactory.readAllBytes(contentLoader)));
         } catch (IOException io) {
             // if file cannot be found in build context, warn it and return the unmodified uri (it might be possible that later the resource is available at runtime) 
             logger.warn("Resource {} cannot be found at build time, ignoring", uri, io);

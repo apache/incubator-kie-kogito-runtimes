@@ -15,11 +15,19 @@
  */
 package org.kie.kogito.serverless.workflow.io;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Optional;
 
 public class URIContentLoaderFactory {
+
+    public static byte[] readAllBytes(URIContentLoader loader) throws IOException {
+        try (InputStream is = loader.getInputStream()) {
+            return is.readAllBytes();
+        }
+    }
 
     public static URIContentLoader runtimeLoader(String uriStr) {
         URI uri = URI.create(uriStr);
