@@ -3,9 +3,9 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>springboot</artifactId>
-    <groupId>org.kie.kogito</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-dependencies</artifactId>
+    <version>2.4.9</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -26,14 +26,15 @@
     <version.org.springframework.cloud.kubernetes.fabric8>2.0.3</version.org.springframework.cloud.kubernetes.fabric8>
     <!-- Fabric8 aligned with Spring Cloud. See: https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-kubernetes-core/1.1.10.RELEASE -->
     <version.io.fabric8>4.13.2</version.io.fabric8>
+    <netty.version>4.1.74.Final</netty.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${version.org.springframework.boot}</version>
+        <artifactId>springboot</artifactId>
+        <groupId>org.kie.kogito</groupId>
+        <version>2.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -85,6 +86,21 @@
         <version>${version.io.fabric8}</version>
         <scope>test</scope>
       </dependency>
+      <!--  <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-codec</artifactId>
+          <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-handler</artifactId>
+          <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport</artifactId>
+          <version>${netty.version}</version>
+        </dependency>-->
     </dependencies>
   </dependencyManagement>
   <build>
