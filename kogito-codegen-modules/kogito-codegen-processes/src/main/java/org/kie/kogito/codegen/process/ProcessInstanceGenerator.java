@@ -17,6 +17,8 @@ package org.kie.kogito.codegen.process;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
 import org.jbpm.compiler.canonical.ModelMetaData;
@@ -25,6 +27,7 @@ import org.kie.api.runtime.process.WorkflowProcessInstance;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -39,6 +42,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 
 public class ProcessInstanceGenerator {
@@ -97,6 +101,7 @@ public class ProcessInstanceGenerator {
                                 .setTypeArguments(new ClassOrInterfaceType(null, model.getModelClassSimpleName())))
                 .addMember(constructorDecl())
                 .addMember(constructorWithBusinessKeyDecl())
+                .addMember(constructorWithBusinessKeyAndHeadersDecl())
                 .addMember(constructorWithWorkflowInstanceAndRuntimeDecl())
                 .addMember(constructorWorkflowInstanceDecl())
                 .addMember(bind())
@@ -170,6 +175,27 @@ public class ProcessInstanceGenerator {
                         new NameExpr(VALUE),
                         new NameExpr(BUSINESS_KEY),
                         new NameExpr(PROCESS_RUNTIME))));
+    }
+
+    private ConstructorDeclaration constructorWithBusinessKeyAndHeadersDecl() {
+        Type strType = StaticJavaParser.parseType(String.class.getCanonicalName());
+        final String headerName = "headers";
+        return new ConstructorDeclaration()
+                .setName(targetTypeName)
+                .addModifier(Modifier.Keyword.PUBLIC)
+                .addParameter(ProcessGenerator.processType(canonicalName), PROCESS)
+                .addParameter(model.getModelClassSimpleName(), VALUE)
+                .addParameter(String.class.getCanonicalName(), BUSINESS_KEY)
+                .addParameter(StaticJavaParser.parseClassOrInterfaceType(Map.class.getCanonicalName()).setTypeArguments(strType,
+                        StaticJavaParser.parseClassOrInterfaceType(List.class.getCanonicalName()).setTypeArguments(strType)), headerName)
+                .addParameter(ProcessRuntime.class.getCanonicalName(), PROCESS_RUNTIME)
+                .setBody(new BlockStmt().addStatement(new MethodCallExpr(
+                        "super",
+                        new NameExpr(PROCESS),
+                        new NameExpr(VALUE),
+                        new NameExpr(BUSINESS_KEY),
+                        new NameExpr(PROCESS_RUNTIME),
+                        new NameExpr(headerName))));
     }
 
     private ConstructorDeclaration constructorWithWorkflowInstanceAndRuntimeDecl() {

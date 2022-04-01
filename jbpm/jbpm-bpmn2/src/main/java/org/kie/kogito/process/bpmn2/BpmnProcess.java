@@ -17,6 +17,7 @@ package org.kie.kogito.process.bpmn2;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -67,6 +68,20 @@ public class BpmnProcess extends AbstractProcess<BpmnVariables> {
 
     public ProcessInstance<BpmnVariables> createInstance() {
         return new BpmnProcessInstance(this, createModel(), this.createProcessRuntime());
+    }
+
+    @Override
+    public ProcessInstance<BpmnVariables> createInstance(String businessKey,
+            BpmnVariables workingMemory,
+            Map<String, List<String>> headers) {
+        return new BpmnProcessInstance(this, workingMemory, this.createProcessRuntime());
+    }
+
+    @Override
+    public ProcessInstance<BpmnVariables> createInstance(String businessKey, Model m) {
+        BpmnVariables variables = createModel();
+        variables.fromMap(m.toMap());
+        return new BpmnProcessInstance(this, variables, this.createProcessRuntime());
     }
 
     @Override

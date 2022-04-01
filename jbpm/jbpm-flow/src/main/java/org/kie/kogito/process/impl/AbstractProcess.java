@@ -121,9 +121,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     }
 
     @Override
-    public ProcessInstance<T> createInstance(String businessKey, Model m) {
-        return createInstance(businessKey, m);
-    }
+    public abstract ProcessInstance<T> createInstance(String businessKey, Model m);
 
     public abstract ProcessInstance<T> createInstance(WorkflowProcessInstance wpi);
 

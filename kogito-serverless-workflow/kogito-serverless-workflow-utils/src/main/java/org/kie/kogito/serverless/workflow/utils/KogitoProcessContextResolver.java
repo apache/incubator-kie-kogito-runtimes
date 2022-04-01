@@ -16,14 +16,18 @@
 package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 public class KogitoProcessContextResolver {
 
     private static KogitoProcessContextResolver instance = new KogitoProcessContextResolver();
+
+    private static final String HEADERS_PREFIX = "headers.";
 
     public static KogitoProcessContextResolver get() {
         return instance;
@@ -39,11 +43,24 @@ public class KogitoProcessContextResolver {
     }
 
     public String readKey(KogitoProcessContext context, String key) {
-        Function<KogitoProcessContext, String> m = methods.get(key);
-        if (m == null) {
-            throw new IllegalArgumentException("Cannot find key " + key + " in context");
+        if (key.startsWith(HEADERS_PREFIX)) {
+            Map<String, List<String>> headersMap = (Map<String, List<String>>) context.getProcessInstance().getVariables().get(AbstractProcessInstance.HEADERS_VAR_NAME);
+            if (headersMap == null) {
+                throw new IllegalArgumentException("No headers available");
+            }
+            String headerName = key.substring(HEADERS_PREFIX.length());
+            List<String> headerValue = headersMap.get(headerName);
+            if (headerValue == null) {
+                throw new IllegalArgumentException("Header name " + headerName + " does not exist, headers are " + headersMap);
+            }
+            return headerValue.get(0);
+        } else {
+            Function<KogitoProcessContext, String> m = methods.get(key);
+            if (m == null) {
+                throw new IllegalArgumentException("Cannot find key " + key + " in context");
+            }
+            return m.apply(context);
         }
-        return m.apply(context);
     }
 
 }

@@ -68,6 +68,7 @@ import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
 
     private static final String KOGITO_PROCESS_INSTANCE = "KogitoProcessInstance";
+    public static final String HEADERS_VAR_NAME = "/HEADERS";
 
     protected final T variables;
     protected final AbstractProcess<T> process;
@@ -92,6 +93,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, ProcessRuntime rt) {
+        this(process, variables, businessKey, rt, Collections.emptyMap());
+    }
+
+    public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, ProcessRuntime rt, Map<String, List<String>> headers) {
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
@@ -99,6 +104,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         setCorrelationKey(businessKey);
 
         Map<String, Object> map = bind(variables);
+        if (!headers.isEmpty()) {
+            map.put(HEADERS_VAR_NAME, headers);
+        }
         String processId = process.process().getId();
         syncProcessInstance((WorkflowProcessInstance) ((CorrelationAwareProcessRuntime) rt).createProcessInstance(processId, correlationKey, map));
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
