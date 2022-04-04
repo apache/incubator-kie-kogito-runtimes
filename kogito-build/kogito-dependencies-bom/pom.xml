@@ -78,7 +78,7 @@
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
     <version.org.mongo>4.3.4</version.org.mongo>
     <version.org.mongo-image>4.4.10</version.org.mongo-image> <!-- Version 4.3.0 is not existing ... -->
-    <version.org.mongo.springboot>4.1.0</version.org.mongo.springboot> <!-- https://issues.redhat.com/browse/KOGITO-5031 -->
+    <version.org.mongo.springboot>4.4.2</version.org.mongo.springboot> <!-- https://issues.redhat.com/browse/KOGITO-5031 -->
     <version.org.mozilla.rhino>1.7.13</version.org.mozilla.rhino>
     <version.org.redis>2.0.4</version.org.redis>
 
