@@ -53,9 +53,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.events.EventDefinition;
+import io.serverlessworkflow.api.workflow.Constants;
 
 import static org.jbpm.process.core.timer.Timer.TIME_DURATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
 
 public class ServerlessWorkflowParser {
 
@@ -104,6 +106,7 @@ public class ServerlessWorkflowParser {
                 .visibility("Public")
                 .variable(DEFAULT_WORKFLOW_VAR, new ObjectDataType(JsonNode.class), ObjectMapperFactory.get().createObjectNode());
         ParserContext parserContext = new ParserContext(idGenerator, factory, context);
+        loadConstants(workflow, parserContext);
         Collection<StateHandler<?>> handlers =
                 workflow.getStates().stream().map(state -> StateHandlerFactory.getStateHandler(state, workflow, parserContext))
                         .filter(Optional::isPresent).map(Optional::get).filter(state -> !state.usedForCompensation()).collect(Collectors.toList());
@@ -226,5 +229,18 @@ public class ServerlessWorkflowParser {
                 .delay(duration)
                 .metaData(UNIQUE_ID, Long.toString(nodeFactory.getNode().getId()))
                 .metaData("EventType", "Timer");
+    }
+
+    private static void loadConstants(Workflow workflow, ParserContext parserContext) {
+        Constants constants = workflow.getConstants();
+        if (constants != null && constants.getRefValue() != null) {
+            processResourceFile(workflow, parserContext, constants.getRefValue()).ifPresent(bytes -> {
+                try {
+                    constants.setConstantsDef(ObjectMapperFactory.get().readValue(bytes, JsonNode.class));
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Invalid file " + constants.getRefValue(), e);
+                }
+            });
+        }
     }
 }
