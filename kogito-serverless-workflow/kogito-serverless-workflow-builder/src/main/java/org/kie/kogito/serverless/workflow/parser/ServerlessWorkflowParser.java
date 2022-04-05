@@ -47,6 +47,7 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
+import org.kie.kogito.serverless.workflow.parser.handlers.validation.WorkflowValidator;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -94,10 +95,7 @@ public class ServerlessWorkflowParser {
     }
 
     private GeneratedInfo<KogitoWorkflowProcess> parseProcess() {
-        String workflowStartStateName = workflow.getStart().getStateName();
-        if (workflowStartStateName == null || workflowStartStateName.trim().isEmpty()) {
-            throw new IllegalArgumentException("workflow does not define a starting state");
-        }
+        WorkflowValidator.validateStart(workflow);
         RuleFlowProcessFactory factory = RuleFlowProcessFactory.createProcess(workflow.getId())
                 .name(workflow.getName() == null ? DEFAULT_NAME : workflow.getName())
                 .version(workflow.getVersion() == null ? DEFAULT_VERSION : workflow.getVersion())

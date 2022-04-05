@@ -46,8 +46,6 @@ import org.kie.kogito.serverless.workflow.suppliers.DataInputSchemaActionSupplie
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.MergeActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -66,8 +64,6 @@ import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
 
 public abstract class StateHandler<S extends State> {
-
-    private static final Logger logger = LoggerFactory.getLogger(StateHandler.class);
 
     protected final S state;
     protected final Workflow workflow;
