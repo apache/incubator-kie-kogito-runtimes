@@ -17,15 +17,17 @@ package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.drools.mvel.java.JavaDialect;
-import org.jbpm.compiler.canonical.descriptors.AbstractServiceTaskDescriptor;
 import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
@@ -37,26 +39,34 @@ import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
-import org.kie.kogito.process.expr.ExpressionWorkItemResolver;
 import org.kie.kogito.serverless.workflow.SWFConstants;
-import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptor;
+import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptorFactory;
+import org.kie.kogito.serverless.workflow.suppliers.ApiKeyAuthDecoratorSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.BasicAuthDecoratorSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.BearerTokenAuthDecoratorSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.ClientOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.CollectionParamsDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ConfigSuppliedWorkItemSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
+import org.kie.kogito.serverless.workflow.suppliers.PasswordOAuth2AuthDecoratorSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
-import org.kie.kogito.serverless.workflow.workitemparams.ObjectResolver;
 import org.kogito.workitem.rest.RestWorkItemHandler;
-import org.kogito.workitem.rest.decorators.ApiKeyAuthDecorator;
-import org.kogito.workitem.rest.decorators.BearerTokenAuthDecorator;
+import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
+import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator.Location;
+import org.kogito.workitem.rest.auth.BearerTokenAuthDecorator;
+import org.kogito.workitem.rest.auth.ClientOAuth2AuthDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -74,9 +84,12 @@ import io.serverlessworkflow.api.interfaces.State;
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
+import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.buildLoader;
+import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.OPENAPI_OPERATION_SEPARATOR;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getServiceName;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
@@ -102,6 +115,11 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private static final String LANG_SEPARATOR = ":";
     private static final String METHOD_SEPARATOR = ":";
     private static final String INTFC_SEPARATOR = "::";
+    private static final String USER_PROP = "username";
+    private static final String PASSWORD_PROP = "password";
+    private static final String API_KEY_PREFIX = "api_key_prefix";
+    private static final String API_KEY = "api_key";
+    private static final String ACCESS_TOKEN = "access_token";
 
     protected CompositeContextNodeHandler(S state, Workflow workflow, ParserContext parserContext) {
         super(state, workflow, parserContext);
@@ -215,9 +233,9 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .inMapping(inputVar, WORKITEM_PARAM)
                         .outMapping(WORKITEM_PARAM, outputVar), actionFunction, operation, functionRef.getArguments());
             case REST:
-                return addRestParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar, functionRef.getArguments()), actionFunction, operation);
+                return addFunctionArgs(addRestParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
             case OPENAPI:
-                return addOpenApiParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar, functionRef.getArguments()), actionFunction, operation);
+                return addFunctionArgs(addOpenApiParameters(buildRestWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
             default:
                 return emptyNode(embeddedSubProcess, actionName);
         }
@@ -226,9 +244,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private WorkItemNodeFactory<?> buildRestWorkItem(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionDefinition actionFunction,
             String inputVar,
-            String outputVar,
-            JsonNode functionArgs) {
-        WorkItemNodeFactory<?> workItemFactory = embeddedSubProcess
+            String outputVar) {
+        return embeddedSubProcess
                 .workItemNode(parserContext.newId())
                 .name(actionFunction.getName())
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
@@ -236,10 +253,14 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .inMapping(inputVar, SWFConstants.MODEL_WORKFLOW_VAR)
                 .outMapping(RestWorkItemHandler.RESULT, outputVar)
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier());
+    }
+
+    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addFunctionArgs(WorkItemNodeFactory<T> node, FunctionRef functionRef) {
+        JsonNode functionArgs = functionRef.getArguments();
         if (functionArgs != null) {
-            processArgs(workItemFactory, functionArgs, SWFConstants.MODEL_WORKFLOW_VAR, ObjectResolver.class);
+            processArgs(node, functionArgs, SWFConstants.MODEL_WORKFLOW_VAR);
         }
-        return workItemFactory;
+        return node;
     }
 
     private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addServiceParameters(WorkItemNodeFactory<T> node,
@@ -280,7 +301,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         if (functionArgs == null || functionArgs.isEmpty()) {
             node.workParameter(WORKITEM_PARAM_TYPE, ServerlessWorkflowParser.JSON_NODE);
         } else {
-            processArgs(node, functionArgs, WORKITEM_PARAM, ObjectResolver.class);
+            processArgs(node, functionArgs, WORKITEM_PARAM);
         }
 
         return node.workParameter(WORKITEM_INTERFACE, intfc)
@@ -311,17 +332,17 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
         return node.workParameter(RestWorkItemHandler.URL, url)
                 .workParameter(RestWorkItemHandler.METHOD, method)
-                .workParameter(RestWorkItemHandler.USER, runtimeRestApi(actionFunction, "user", parserContext.getContext()))
-                .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(actionFunction, "password", parserContext.getContext()))
+                .workParameter(RestWorkItemHandler.USER, runtimeRestApi(actionFunction, USER_PROP, parserContext.getContext()))
+                .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(actionFunction, PASSWORD_PROP, parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(actionFunction, "host", parserContext.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(actionFunction, "port", parserContext.getContext(), Integer.class, 8080))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
-                .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, "access_token", parserContext.getContext()))
-                .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, "api_key_prefix", parserContext.getContext()))
-                .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, "api_key", parserContext.getContext()));
+                .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, ACCESS_TOKEN, parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, API_KEY_PREFIX, parserContext.getContext()))
+                .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, API_KEY, parserContext.getContext()));
     }
 
-    private NodeFactory<?, ?> addOpenApiParameters(WorkItemNodeFactory<?> node,
+    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addOpenApiParameters(WorkItemNodeFactory<T> node,
             FunctionDefinition function,
             String operation) {
         int indexOf = function.getOperation().indexOf(OPENAPI_OPERATION_SEPARATOR);
@@ -331,16 +352,16 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         try {
             // although OpenAPIParser has built in support to load uri, it messes up when using contextclassloader, so using our retrieval apis to get the content
             SwaggerParseResult result =
-                    new OpenAPIParser().readContents(new String(URIContentLoaderFactory.buildLoader(URI.create(uri), parserContext.getContext().getClassLoader()).toBytes()), null, null);
+                    new OpenAPIParser().readContents(new String(readAllBytes(buildLoader(URI.create(uri), parserContext.getContext().getClassLoader(), workflow, function.getAuthRef()))), null, null);
             OpenAPI openAPI = result.getOpenAPI();
             if (openAPI == null) {
                 throw new IllegalArgumentException("Problem parsing uri " + uri);
             }
             logger.debug("OpenAPI parser messages {}", result.getMessages());
-            OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptor.of(openAPI, operationId);
-            addSecurity(node, openAPI, serviceName);
+            OpenAPIDescriptor openAPIDescriptor = OpenAPIDescriptorFactory.of(openAPI, operationId);
+            addSecurity(node, openAPIDescriptor, serviceName);
             return node.workParameter(RestWorkItemHandler.URL,
-                    runtimeOpenApi(serviceName, "base_path", String.class, OpenAPIDescriptor.getDefaultURL(openAPI, "http://localhost:8080"),
+                    runtimeOpenApi(serviceName, "base_path", String.class, OpenAPIDescriptorFactory.getDefaultURL(openAPI, "http://localhost:8080"),
                             (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<String>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
                                     new LambdaExpr(new Parameter(new UnknownType(), "calculatedKey"),
                                             new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
@@ -352,31 +373,60 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         }
     }
 
-    private void addSecurity(WorkItemNodeFactory<?> node, OpenAPI openAPI, String serviceName) {
-        if (openAPI.getComponents() != null) {
-            Map<String, SecurityScheme> schemes = openAPI.getComponents().getSecuritySchemes();
-            if (schemes != null) {
-                for (SecurityScheme scheme : schemes.values()) {
-                    switch (scheme.getType()) {
+    private ApiKeyAuthDecorator.Location from(In in) {
+        switch (in) {
+            case COOKIE:
+                return Location.COOKIE;
+            case HEADER:
+                return Location.HEADER;
+            case QUERY:
+            default:
+                return Location.QUERY;
+        }
+    }
 
-                        case APIKEY:
-                            node.workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeOpenApi(serviceName, "api_key_prefix", parserContext.getContext()))
-                                    .workParameter(ApiKeyAuthDecorator.KEY, runtimeOpenApi(serviceName, "api_key", parserContext.getContext()))
-                                    .workParameter(ApiKeyAuthDecorator.LOCATION, scheme.getIn())
-                                    .workParameter(ApiKeyAuthDecorator.PARAMETER, scheme.getName());
-                            break;
-                        case HTTP:
-                            // TODO http security scheme is not properly parsed for some reason (need to investigate it, in the mean time, trust user properties definition) 
-                            break;
-                        default:
-                            logger.warn("Unsupported scheme type {}", scheme.getType());
+    private void addSecurity(WorkItemNodeFactory<?> node, OpenAPIDescriptor openAPI, String serviceName) {
+        Collection<Supplier<Expression>> authDecorators = new ArrayList<>();
+        for (SecurityScheme scheme : openAPI.getSchemes()) {
+            switch (scheme.getType()) {
+                case APIKEY:
+                    authDecorators.add(new ApiKeyAuthDecoratorSupplier(scheme.getName(), from(scheme.getIn())));
+                    node.workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeOpenApi(serviceName, API_KEY_PREFIX, parserContext.getContext()))
+                            .workParameter(ApiKeyAuthDecorator.KEY, runtimeOpenApi(serviceName, API_KEY, parserContext.getContext()));
+                    break;
+                case HTTP:
+                    if (scheme.getScheme().equals("bearer")) {
+                        authDecorators.add(new BearerTokenAuthDecoratorSupplier());
+                        node.workParameter(RestWorkItemHandler.AUTH_METHOD, new BearerTokenAuthDecorator()).workParameter(BearerTokenAuthDecorator.BEARER_TOKEN,
+                                runtimeOpenApi(serviceName, ACCESS_TOKEN, parserContext.getContext()));
+                    } else if (scheme.getScheme().equals("basic")) {
+                        authDecorators.add(new BasicAuthDecoratorSupplier());
+                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, USER_PROP, parserContext.getContext()))
+                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, PASSWORD_PROP, parserContext.getContext()));
                     }
-                }
+                    break;
+                case OAUTH2:
+                    // only support client and password credentials
+                    if (scheme.getFlows().getClientCredentials() != null) {
+                        authDecorators.add(new ClientOAuth2AuthDecoratorSupplier(scheme.getFlows().getClientCredentials().getTokenUrl(), scheme.getFlows().getClientCredentials().getRefreshUrl()));
+                        node.workParameter(ClientOAuth2AuthDecorator.CLIENT_ID, runtimeOpenApi(serviceName, "client_id", parserContext.getContext()))
+                                .workParameter(ClientOAuth2AuthDecorator.CLIENT_SECRET, runtimeOpenApi(serviceName, "client_secret", parserContext.getContext()));
+                    } else if (scheme.getFlows().getPassword() != null) {
+                        authDecorators.add(new PasswordOAuth2AuthDecoratorSupplier(scheme.getFlows().getPassword().getTokenUrl(), scheme.getFlows().getPassword().getRefreshUrl()));
+                        node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, USER_PROP, parserContext.getContext()))
+                                .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, PASSWORD_PROP, parserContext.getContext()));
+                    } else if (scheme.getFlows().getAuthorizationCode() != null) {
+                        logger.warn("Unsupported scheme type {} for authorization code flow {}", scheme.getType(), scheme.getFlows().getAuthorizationCode());
+                    } else if (scheme.getFlows().getImplicit() != null) {
+                        logger.warn("Unsupported scheme type {} for implicit flow {}", scheme.getType(), scheme.getFlows().getImplicit());
+                    }
+                    break;
+                default:
+                    logger.warn("Unsupported scheme type {}", scheme.getType());
             }
-            // add properties for htpp based authentication (both user and token), if specified
-            node.workParameter(RestWorkItemHandler.USER, runtimeOpenApi(serviceName, "username", parserContext.getContext()))
-                    .workParameter(RestWorkItemHandler.PASSWORD, runtimeOpenApi(serviceName, "password", parserContext.getContext()))
-                    .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeOpenApi(serviceName, "access_token", parserContext.getContext()));
+        }
+        if (!authDecorators.isEmpty()) {
+            node.workParameter(RestWorkItemHandler.AUTH_METHOD, authDecorators);
         }
     }
 
@@ -403,25 +453,21 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     private void processArgs(WorkItemNodeFactory<?> workItemFactory,
-            JsonNode functionArgs, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
+            JsonNode functionArgs, String paramName) {
         if (functionArgs.isObject()) {
-            functionsToMap(functionArgs).entrySet().forEach(entry -> processArg(entry.getKey(), entry.getValue(), workItemFactory, paramName, clazz));
+            functionsToMap(functionArgs).entrySet().forEach(entry -> processArg(entry.getKey(), entry.getValue(), workItemFactory, paramName));
         } else {
-            processArg(RestWorkItemHandler.CONTENT_DATA, functionReference(JsonObjectUtils.simpleToJavaValue(functionArgs)), workItemFactory, paramName, clazz);
+            processArg(RestWorkItemHandler.CONTENT_DATA, functionReference(JsonObjectUtils.simpleToJavaValue(functionArgs)), workItemFactory, paramName);
         }
     }
 
-    private void processArg(String key, Object value, WorkItemNodeFactory<?> workItemFactory, String paramName, Class<? extends ExpressionWorkItemResolver> clazz) {
-        boolean isExpr = isExpression(value);
+    private void processArg(String key, Object value, WorkItemNodeFactory<?> workItemFactory, String paramName) {
+        boolean isExpr = value instanceof CharSequence && ExpressionHandlerFactory.get(workflow.getExpressionLang(), value.toString()).isValid(Optional.empty()) || value instanceof JsonNode;
         workItemFactory
                 .workParameter(key,
-                        AbstractServiceTaskDescriptor.processWorkItemValue(workflow.getExpressionLang(), value, paramName, clazz, isExpr))
+                        isExpr ? new ObjectResolverSupplier(workflow.getExpressionLang(), value, paramName) : value)
                 .workParameterDefinition(key,
                         DataTypeResolver.fromObject(value, isExpr));
-    }
-
-    private boolean isExpression(Object expr) {
-        return expr instanceof CharSequence && ExpressionHandlerFactory.get(workflow.getExpressionLang(), expr.toString()).isValid(Optional.empty()) || expr instanceof JsonNode;
     }
 
     private NodeFactory<?, ?> emptyNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionName) {
@@ -430,5 +476,4 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .name(actionName)
                 .action(JavaDialect.ID, "");
     }
-
 }

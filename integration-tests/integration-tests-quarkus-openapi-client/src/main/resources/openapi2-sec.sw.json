@@ -1,12 +1,12 @@
 {
-  "id": "thirdparty",
+  "id": "sec20",
   "version": "1.0",
   "name": "Create a thing in the third-party API",
   "start": "DoAppCreate",
   "functions": [
     {
       "name": "create",
-      "operation": "specs/openapi2.0-security.yaml#myappCreate"
+      "operation": "specs/swagger2.0-security.yaml#myappCreate"
     }
   ],
   "states": [

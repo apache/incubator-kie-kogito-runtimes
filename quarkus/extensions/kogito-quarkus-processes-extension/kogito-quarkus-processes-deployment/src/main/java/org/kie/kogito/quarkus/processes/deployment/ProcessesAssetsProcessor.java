@@ -50,6 +50,20 @@ import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusHumanTaskSe
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusProcessIdFactory;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStatefulProcessService;
 import org.kie.kogito.core.process.incubation.quarkus.support.QuarkusStraightThroughProcessService;
+import org.kie.kogito.event.process.AttachmentEventBody;
+import org.kie.kogito.event.process.CommentEventBody;
+import org.kie.kogito.event.process.MilestoneEventBody;
+import org.kie.kogito.event.process.NodeInstanceEventBody;
+import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.event.process.ProcessErrorEventBody;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceEventBody;
+import org.kie.kogito.event.process.UserTaskDeadlineDataEvent;
+import org.kie.kogito.event.process.UserTaskDeadlineEventBody;
+import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
+import org.kie.kogito.event.process.UserTaskInstanceEventBody;
+import org.kie.kogito.event.process.VariableInstanceDataEvent;
+import org.kie.kogito.event.process.VariableInstanceEventBody;
 import org.kie.kogito.quarkus.common.deployment.InMemoryClassLoader;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoGeneratedClassesBuildItem;
@@ -72,7 +86,6 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.LiveReloadBuildItem;
-import io.quarkus.deployment.builditem.RunTimeConfigurationDefaultBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
@@ -84,7 +97,6 @@ import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.kie.kogito.codegen.core.utils.GeneratedFileValidation.validateGeneratedFileTypes;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.compileGeneratedSources;
@@ -139,15 +151,39 @@ public class ProcessesAssetsProcessor {
     }
 
     @BuildStep
-    public ReflectiveClassBuildItem reflectionProcess() {
+    public ReflectiveClassBuildItem reflectionProcess(BuildProducer<ServiceProviderBuildItem> serviceProvider) {
+        serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath("org.kogito.workitem.rest.decorators.RequestDecorator"));
         return new ReflectiveClassBuildItem(true, true,
                 "org.kogito.workitem.rest.bodybuilders.ParamsRestWorkItemHandlerBodyBuilder",
+                "org.kogito.workitem.rest.decorators.CollectionParamsDecorator",
+                "org.kogito.workitem.rest.auth.ClientOAuth2AuthDecorator",
+                "org.kogito.workitem.rest.auth.PasswordOAuth2AuthDecorator",
+                "io.vertx.core.http.HttpMethod",
                 "org.kie.kogito.process.impl.BaseWorkItem",
                 "org.kie.kogito.event.Topic",
                 "org.kie.kogito.event.cloudevents.CloudEventMeta",
                 "org.kie.kogito.event.cloudevents.SpecVersionDeserializer",
                 "org.kie.kogito.event.cloudevents.SpecVersionSerializer",
                 "org.kie.kogito.jobs.api.Job");
+    }
+
+    @BuildStep
+    public ReflectiveClassBuildItem eventsApiReflection() {
+        return new ReflectiveClassBuildItem(true, true,
+                AttachmentEventBody.class.getName(),
+                CommentEventBody.class.getName(),
+                MilestoneEventBody.class.getName(),
+                NodeInstanceEventBody.class.getName(),
+                ProcessDataEvent.class.getName(),
+                ProcessErrorEventBody.class.getName(),
+                ProcessInstanceDataEvent.class.getName(),
+                ProcessInstanceEventBody.class.getName(),
+                UserTaskDeadlineDataEvent.class.getName(),
+                UserTaskDeadlineEventBody.class.getName(),
+                UserTaskInstanceDataEvent.class.getName(),
+                UserTaskInstanceEventBody.class.getName(),
+                VariableInstanceDataEvent.class.getName(),
+                VariableInstanceEventBody.class.getName());
     }
 
     @BuildStep
@@ -190,7 +226,6 @@ public class ProcessesAssetsProcessor {
             BuildProducer<NativeImageResourceBuildItem> resource,
             BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
             BuildProducer<GeneratedResourceBuildItem> genResBI,
-            BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration,
             CombinedIndexBuildItem combinedIndexBuildItem,
             KogitoBuildContextBuildItem kogitoBuildContextBuildItem,
             Capabilities capabilities) throws IOException {
@@ -209,7 +244,6 @@ public class ProcessesAssetsProcessor {
                     aggregatedIndex,
                     generatedBeans,
                     resourcePatterns,
-                    runTimeConfiguration,
                     liveReload.isLiveReload()));
         }
 
@@ -235,10 +269,9 @@ public class ProcessesAssetsProcessor {
             IndexView index,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
             BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
-            BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration,
             boolean useDebugSymbols) throws IOException {
 
-        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, runTimeConfiguration, resourcePatterns);
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, resourcePatterns);
 
         validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.INTERNAL_RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
 
@@ -251,30 +284,17 @@ public class ProcessesAssetsProcessor {
 
     private Collection<GeneratedFile> getGeneratedPersistenceFiles(IndexView index,
             KogitoBuildContext context,
-            BuildProducer<RunTimeConfigurationDefaultBuildItem> runTimeConfiguration,
             BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns) {
-        ClassInfo persistenceClass = index
-                .getClassByName(persistenceFactoryClass);
 
         Collection<ClassInfo> modelClasses = index
                 .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));
-        JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(
-                index)
-                .withPersistenceClass(persistenceClass)
+        JandexProtoGenerator protoGenerator = JandexProtoGenerator.builder(index)
                 .build(modelClasses);
 
         PersistenceGenerator persistenceGenerator = new PersistenceGenerator(
                 context,
                 protoGenerator,
                 new JandexMarshallerGenerator(context, modelClasses));
-
-        if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.POSTGRESQL_PERSISTENCE_TYPE) ||
-                persistenceGenerator.persistenceType().equals(PersistenceGenerator.JDBC_PERSISTENCE_TYPE)) {
-            resourcePatterns.produce(new NativeImageResourcePatternsBuildItem.Builder().includeGlob("sql/*.sql").build());
-        } else if (persistenceGenerator.persistenceType().equals(PersistenceGenerator.KAFKA_PERSISTENCE_TYPE)) {
-            String processIds = protoGenerator.getProcessIds().stream().map(s -> "kogito.process." + s).collect(joining(","));
-            runTimeConfiguration.produce(new RunTimeConfigurationDefaultBuildItem(PersistenceGenerator.QUARKUS_KAFKA_STREAMS_TOPICS_PROP, processIds));
-        }
 
         return persistenceGenerator.generate();
     }
