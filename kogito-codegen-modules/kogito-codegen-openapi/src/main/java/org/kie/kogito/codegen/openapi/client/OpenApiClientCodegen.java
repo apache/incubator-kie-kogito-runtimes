@@ -30,8 +30,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.drools.core.util.StringUtils;
+import org.drools.model.project.codegen.GeneratedFile;
 import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;

@@ -16,14 +16,20 @@
         <quarkus.test.list.include>false</quarkus.test.list.include>
     </properties>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.kie.kogito</groupId>
+                <artifactId>kogito-kie-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
+    <dependencies>
         <!-- test -->
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-legacy-api</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-api</artifactId>

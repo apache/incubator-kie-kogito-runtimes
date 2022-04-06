@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.drools.core.io.impl.ByteArrayResource;
+import org.drools.model.project.codegen.GeneratedFile;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 
 import static org.assertj.core.api.Assertions.assertThat;

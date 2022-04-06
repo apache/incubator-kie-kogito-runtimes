@@ -21,8 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFileType;
 
 /**
  * Writes {@link GeneratedFile} to the right directory, depending on its

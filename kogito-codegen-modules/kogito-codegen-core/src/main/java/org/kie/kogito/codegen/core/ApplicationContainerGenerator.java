@@ -18,8 +18,8 @@ package org.kie.kogito.codegen.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
+import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;

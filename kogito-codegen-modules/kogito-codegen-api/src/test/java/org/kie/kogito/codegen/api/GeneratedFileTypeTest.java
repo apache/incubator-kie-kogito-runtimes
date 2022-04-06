@@ -15,8 +15,9 @@
  */
 package org.kie.kogito.codegen.api;
 
+import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.model.project.codegen.GeneratedFileType.Category;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.codegen.api.GeneratedFileType.Category;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

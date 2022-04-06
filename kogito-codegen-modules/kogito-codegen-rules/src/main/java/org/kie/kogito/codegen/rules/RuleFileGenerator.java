@@ -16,7 +16,7 @@
 package org.kie.kogito.codegen.rules;
 
 import org.drools.drl.parser.DroolsError;
-import org.kie.kogito.codegen.api.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFile;
 
 public interface RuleFileGenerator {
     String generatedFilePath();

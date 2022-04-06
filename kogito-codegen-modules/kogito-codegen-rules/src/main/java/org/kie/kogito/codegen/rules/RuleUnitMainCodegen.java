@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.drools.drl.parser.DroolsError;
-import org.kie.kogito.codegen.api.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 /**

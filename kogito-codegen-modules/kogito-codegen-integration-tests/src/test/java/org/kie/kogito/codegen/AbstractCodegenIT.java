@@ -31,9 +31,9 @@ import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
+import org.drools.model.project.codegen.GeneratedFile;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;

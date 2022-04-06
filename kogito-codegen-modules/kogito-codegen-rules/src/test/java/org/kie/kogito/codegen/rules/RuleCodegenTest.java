@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 
 import org.drools.drl.extensions.DecisionTableFactory;
 import org.drools.drl.extensions.DecisionTableProvider;
+import org.drools.model.project.codegen.GeneratedFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.internal.utils.KieService;
 import org.kie.kogito.codegen.api.AddonsConfig;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
@@ -271,18 +271,6 @@ public class RuleCodegenTest {
         for (String endpointClass : endpointClasses) {
             assertMonitoringEndpoints(endpointClass);
         }
-    }
-
-    @ParameterizedTest
-    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    public void missingLegacyApi(KogitoBuildContext.Builder contextBuilder) {
-        RuleCodegen codeGenerator = getIncrementalRuleCodegenFromFiles(
-                contextBuilder,
-                new File(RESOURCE_PATH + "/org/kie/kogito/codegen/rules/pkg1/file1.drl"));
-
-        assertThatThrownBy(codeGenerator::generate)
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("kogito-legacy-api");
     }
 
     @ParameterizedTest

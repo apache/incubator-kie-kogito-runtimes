@@ -21,13 +21,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.model.project.codegen.context.AppPaths;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.io.Resource;
-import org.kie.kogito.codegen.api.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
-import org.kie.kogito.codegen.api.utils.AppPaths;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

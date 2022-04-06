@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.codegen.api;
 
+import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFileType;
+
 public interface ConfigGenerator {
 
     GeneratedFileType APPLICATION_CONFIG_TYPE = GeneratedFileType.of("APPLICATION_CONFIG", GeneratedFileType.Category.SOURCE);

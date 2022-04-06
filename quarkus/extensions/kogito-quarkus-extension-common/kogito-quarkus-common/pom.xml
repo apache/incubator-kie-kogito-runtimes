@@ -12,6 +12,18 @@
     <artifactId>kogito-quarkus-common</artifactId>
     <name>Kogito :: Quarkus Extension Common :: Runtime</name>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.kie.kogito</groupId>
+                <artifactId>kogito-kie-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>

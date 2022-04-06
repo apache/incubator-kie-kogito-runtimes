@@ -24,11 +24,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.drools.drl.extensions.DecisionTableFactory;
+import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.model.project.codegen.KieSessionModelBuilder;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.api.ApplicationSection;
-import org.kie.kogito.codegen.api.GeneratedFile;
-import org.kie.kogito.codegen.api.GeneratedFileType;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.codegen.core.AbstractGenerator;
@@ -138,7 +139,7 @@ public class RuleCodegen extends AbstractGenerator {
             if (!ruleUnitCodegen.errors().isEmpty()) {
                 throw new RuleCodegenError(ruleUnitCodegen.errors());
             }
-        } else if (context().hasClassAvailable("org.kie.kogito.legacy.rules.KieRuntimeBuilder")) {
+        } else if (context().hasClassAvailable("org.kie.api.runtime.KieRuntimeBuilder")) {
             KieSessionModelBuilder kieSessionModelBuilder =
                     new KieSessionModelBuilder(context(), droolsModelBuilder.packageSources());
             generatedFiles.addAll(kieSessionModelBuilder.generate());
