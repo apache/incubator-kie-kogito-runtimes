@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationResolver;
+import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
@@ -41,19 +42,24 @@ public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
     }
 
     @Override
-    public Correlation resolve(Object data) {
-        final JsonNode correlationValue = objectMapper.valueToTree(data).get(referenceKey);
+    public Correlation<?> resolve(Object data) {
+        final JsonNode jsonNode = objectMapper.valueToTree(data);
+        final JsonNode correlationValue = Optional.ofNullable(jsonNode.get(referenceKey))
+                .orElseGet(() -> Optional.ofNullable(jsonNode.get(CloudEventExtensionConstants.EXTENSION_ATTRIBUTES))
+                        .map(node -> node.get(referenceKey))
+                        .orElse(null));
+
         if (correlationValue == null) {
-            return new Correlation(referenceKey, null);
+            return new SimpleCorrelation(referenceKey, null);
         }
 
         if (correlationValue.isTextual()) {
-            return new Correlation(referenceKey, correlationValue.textValue());
+            return new SimpleCorrelation(referenceKey, correlationValue.textValue());
         }
 
         return type.map(t -> objectMapper.convertValue(correlationValue, t))
-                .map(v -> new Correlation(referenceKey, v))
-                .orElse(new Correlation(referenceKey, correlationValue));
+                .map(v -> new SimpleCorrelation(referenceKey, v))
+                .orElse(new SimpleCorrelation(referenceKey, correlationValue));
     }
 
     public static SimpleAttributeCorrelationResolver forAttribute(String attributeName) {

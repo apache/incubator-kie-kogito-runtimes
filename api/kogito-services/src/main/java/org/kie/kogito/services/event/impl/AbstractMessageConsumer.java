@@ -16,6 +16,7 @@
 package org.kie.kogito.services.event.impl;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
@@ -39,6 +40,8 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     protected static final Logger logger = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
     private String trigger;
+    private Set<String> correlations;//used to start and signal (to match and find the processInstanceId)
+
     private EventDispatcher<M> eventDispatcher;
 
     // in general we should favor the non-empty constructor
@@ -56,7 +59,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             ProcessService processService,
             ExecutorService executorService,
             EventUnmarshaller<Object> eventUnmarshaller) {
-        init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller);
+        init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
     }
 
     public void init(Application application,
@@ -67,9 +70,13 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
-            EventUnmarshaller<Object> eventUnmarshaller) {
+            EventUnmarshaller<Object> eventUnmarshaller,
+            Set<String> correlations) {
         this.trigger = trigger;
-        this.eventDispatcher = new ProcessEventDispatcher<>(process, getModelConverter().orElse(null), processService, executorService, getDataResolver(useCloudEvents));
+
+        this.correlations = correlations;
+
+        this.eventDispatcher = new ProcessEventDispatcher<>(process, getModelConverter().orElse(null), processService, executorService, correlations, getDataResolver(useCloudEvents));
         SubscriptionInfoBuilder builder = SubscriptionInfo.builder().converter(eventUnmarshaller).type(trigger);
         if (useCloudEvents) {
             builder.outputClass(ProcessDataEvent.class).parametrizedClasses(dataClass);

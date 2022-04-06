@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
+import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
@@ -73,7 +74,7 @@ class ProcessEventDispatcherTest {
         when(processInstances.findById(Mockito.anyString())).thenReturn(Optional.empty());
         when(processInstances.findById("1")).thenReturn(Optional.of(processInstance));
         processService = mock(ProcessService.class);
-        when(processService.createProcessInstance(eq(process), any(), any(), any(), any(), any())).thenReturn(processInstance);
+        when(processService.createProcessInstance(eq(process), any(), any(), any(), any(), any(), any(CompositeCorrelation.class))).thenReturn(processInstance);
         when(processService.signalProcessInstance(eq(process), any(), any(), any())).thenReturn(Optional.of(mock(DummyModel.class)));
         executor = Executors.newSingleThreadExecutor();
     }
@@ -112,7 +113,7 @@ class ProcessEventDispatcherTest {
 
         verify(processInstances, never()).findById(any());
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
-        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), referenceId.capture());
+        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), referenceId.capture(), any(CompositeCorrelation.class));
 
         assertEquals(DUMMY_TOPIC, signal.getValue());
         assertEquals("1", referenceId.getValue());
@@ -129,7 +130,7 @@ class ProcessEventDispatcherTest {
 
         verify(processInstances, times(1)).findById("invalidReference");
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
-        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), referenceId.capture());
+        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), referenceId.capture(), any(CompositeCorrelation.class));
 
         assertEquals(DUMMY_TOPIC, signal.getValue());
         assertEquals("1", referenceId.getValue());
@@ -142,7 +143,7 @@ class ProcessEventDispatcherTest {
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyEvent("pepe")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
-        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), isNull());
+        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), isNull(), any(CompositeCorrelation.class));
         assertEquals(DUMMY_TOPIC, signal.getValue());
         assertEquals(instance, processInstance);
     }
