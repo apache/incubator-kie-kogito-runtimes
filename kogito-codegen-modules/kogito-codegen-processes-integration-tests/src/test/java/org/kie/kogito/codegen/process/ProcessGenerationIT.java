@@ -71,6 +71,7 @@ import org.kie.kogito.codegen.AbstractCodegenIT;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.jbpm.ruleflow.core.Metadata.ACTION;
@@ -107,7 +108,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class ProcessGenerationIT extends AbstractCodegenIT {
 
-    private static final Collection<String> IGNORED_PROCESS_META = Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions");
+    private static final Collection<String> IGNORED_PROCESS_META = Arrays.asList("Definitions", "BPMN.Connections", "BPMN.Associations", "ItemDefinitions", Metadata.DATA_INPUT_SCHEME);
     private static final Path BASE_PATH = Paths.get("src/test/resources");
 
     static Stream<String> processesProvider() throws IOException {

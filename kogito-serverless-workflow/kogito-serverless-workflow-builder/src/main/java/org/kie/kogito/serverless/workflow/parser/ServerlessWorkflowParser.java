@@ -17,6 +17,8 @@ package org.kie.kogito.serverless.workflow.parser;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.OASFactory;
+import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
@@ -49,6 +52,8 @@ import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.handlers.validation.WorkflowValidator;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -70,6 +75,8 @@ public class ServerlessWorkflowParser {
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowParser.class);
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
@@ -124,7 +131,24 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.TAGS, tags);
         }
 
+        factory.metaData(Metadata.DATA_INPUT_SCHEME, getInputSchema(workflow));
+
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
+    }
+
+    private static Schema getInputSchema(Workflow workflow) {
+        if (workflow.getDataInputSchema() == null ||
+                workflow.getDataInputSchema().getSchema() == null ||
+                workflow.getDataInputSchema().getSchema().isEmpty()) {
+            return SchemaUtils.getDefaultWorkflowDataInputSchema();
+        }
+        try {
+            final URI inputSchemaURI = new URI(workflow.getDataInputSchema().getSchema());
+            return SchemaUtils.getDefaultWorkflowDataInputSchema(inputSchemaURI);
+        } catch (URISyntaxException e) {
+            LOGGER.warn("Invalid Data Input Schema for workflow {}. Only valid URIs are supported at this time.", workflow.getId());
+            return SchemaUtils.getDefaultWorkflowDataInputSchema();
+        }
     }
 
     private static Collection<Tag> getTags(Workflow workflow) {

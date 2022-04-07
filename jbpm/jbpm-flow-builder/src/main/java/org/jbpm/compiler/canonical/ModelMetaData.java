@@ -23,7 +23,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.jbpm.process.core.context.variable.Variable;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
@@ -38,6 +39,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.CastExpr;
@@ -76,6 +78,8 @@ public class ModelMetaData {
 
     private boolean supportsValidation;
     private boolean supportsOpenApiGeneration;
+
+    private Schema modelSchema;
 
     public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden) {
         this(processId, packageName, modelClassSimpleName, visibility, variableScope, hidden, "/class-templates/ModelTemplate.java");
@@ -175,6 +179,7 @@ public class ModelMetaData {
                     new MemberValuePair("name", new StringLiteralExpr(ucFirst(ProcessToExecModelGenerator.extractProcessId(processId)))),
                     new MemberValuePair("hidden", new BooleanLiteralExpr(hidden)))));
         }
+        applyOpenApiSchemaAnnotation(modelClass);
         modelClass.setName(modelClassSimpleName);
 
         // setup of the toMap method body
@@ -244,8 +249,41 @@ public class ModelMetaData {
      * @see <a href="https://github.com/smallrye/smallrye-open-api/issues/1048">Jackson's JsonNode class is being incorrectly rendered in the spec file</a>
      */
     private void applyOpenApiSchemaForJsonNodeModel(final FieldDeclaration modelFieldDeclaration) {
-        if (this.supportsOpenApiGeneration && JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
-            modelFieldDeclaration.addAndGetAnnotation(Schema.class).addPair("implementation", new ClassExpr().setType(Object.class.getCanonicalName()));
+        if (this.modelSchema == null &&
+                this.supportsOpenApiGeneration &&
+                JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
+            modelFieldDeclaration.addAndGetAnnotation(org.eclipse.microprofile.openapi.annotations.media.Schema.class).addPair("implementation",
+                    new ClassExpr().setType(Object.class.getCanonicalName()));
+        }
+    }
+
+    private void applyOpenApiSchemaAnnotation(final ClassOrInterfaceDeclaration modelClass) {
+        if (this.supportsOpenApiGeneration && this.modelSchema != null) {
+            final NormalAnnotationExpr schemaAnnotation = new NormalAnnotationExpr();
+            schemaAnnotation.setName(new Name(org.eclipse.microprofile.openapi.annotations.media.Schema.class.getCanonicalName()));
+            // option not to use reflection
+            schemaAnnotation.addPair("description", new StringLiteralExpr(this.modelSchema.getDescription()));
+            schemaAnnotation.addPair("type", SchemaType.class.getCanonicalName() + "." + this.modelSchema.getType().name());
+            final NodeList<Expression> requiredProperties = new NodeList<>();
+            for (final String required : this.modelSchema.getRequired()) {
+                requiredProperties.add(new StringLiteralExpr(required));
+            }
+            schemaAnnotation.addPair("requiredProperties", new ArrayInitializerExpr(requiredProperties));
+
+            final NodeList<Expression> properties = new NodeList<>();
+            this.modelSchema.getProperties().forEach((key, value) -> {
+                final NormalAnnotationExpr schemaPropertyAnnotation = new NormalAnnotationExpr();
+                schemaPropertyAnnotation.setName(new Name(org.eclipse.microprofile.openapi.annotations.media.SchemaProperty.class.getCanonicalName()));
+                schemaPropertyAnnotation.addPair("name", new StringLiteralExpr(key));
+                schemaPropertyAnnotation.addPair("type", SchemaType.class.getCanonicalName() + "." + value.getType().name());
+                if (value.getRef() != null && !value.getRef().isEmpty()) {
+                    schemaPropertyAnnotation.addPair("ref", new StringLiteralExpr(value.getRef()));
+                }
+                properties.add(schemaPropertyAnnotation);
+            });
+            schemaAnnotation.addPair("properties", new ArrayInitializerExpr(properties));
+
+            modelClass.addAnnotation(schemaAnnotation);
         }
     }
 
@@ -279,6 +317,10 @@ public class ModelMetaData {
 
     public void setSupportsOpenApiGeneration(boolean supportsOpenApiGeneration) {
         this.supportsOpenApiGeneration = supportsOpenApiGeneration;
+    }
+
+    public void setModelSchema(org.eclipse.microprofile.openapi.models.media.Schema modelSchema) {
+        this.modelSchema = modelSchema;
     }
 
     @Override
