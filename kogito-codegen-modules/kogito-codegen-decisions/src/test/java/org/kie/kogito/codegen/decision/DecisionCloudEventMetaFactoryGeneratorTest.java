@@ -19,7 +19,7 @@ package org.kie.kogito.codegen.decision;
 import java.nio.file.Paths;
 import java.util.Collection;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;

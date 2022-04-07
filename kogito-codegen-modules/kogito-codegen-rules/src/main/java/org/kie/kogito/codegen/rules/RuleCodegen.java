@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.extensions.DecisionTableFactory;
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
 import org.drools.model.project.codegen.KieSessionModelBuilder;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
@@ -139,13 +139,10 @@ public class RuleCodegen extends AbstractGenerator {
             if (!ruleUnitCodegen.errors().isEmpty()) {
                 throw new RuleCodegenError(ruleUnitCodegen.errors());
             }
-        } else if (context().hasClassAvailable("org.kie.api.runtime.KieRuntimeBuilder")) {
+        } else {
             KieSessionModelBuilder kieSessionModelBuilder =
                     new KieSessionModelBuilder(context(), droolsModelBuilder.packageSources());
             generatedFiles.addAll(kieSessionModelBuilder.generate());
-
-        } else if (hasRuleFiles()) { // this additional check is necessary because also properties or java files can be loaded
-            throw new IllegalStateException("Found DRL files using legacy API, add org.kie.kogito:kogito-legacy-api dependency to enable it");
         }
 
         return generatedFiles;

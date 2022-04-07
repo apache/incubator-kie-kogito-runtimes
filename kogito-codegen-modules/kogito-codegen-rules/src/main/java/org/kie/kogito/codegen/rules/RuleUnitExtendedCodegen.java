@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
 public class RuleUnitExtendedCodegen {

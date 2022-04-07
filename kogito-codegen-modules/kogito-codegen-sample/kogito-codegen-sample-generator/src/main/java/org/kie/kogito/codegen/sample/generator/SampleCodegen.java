@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.ConfigGenerator;

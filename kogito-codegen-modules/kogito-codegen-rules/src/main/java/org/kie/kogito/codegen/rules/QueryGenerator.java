@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.parser.DroolsError;
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
 import org.drools.modelcompiler.builder.QueryModel;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;

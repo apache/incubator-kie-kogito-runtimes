@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
+import org.drools.codegen.common.GeneratedFile;
 import org.drools.compiler.compiler.io.memory.MemoryFileSystem;
-import org.drools.model.project.codegen.GeneratedFile;
 import org.kie.kogito.Application;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.Generator;

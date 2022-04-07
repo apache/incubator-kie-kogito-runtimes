@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.drools.codegen.common.GeneratedFile;
 import org.drools.drl.extensions.DecisionTableFactory;
 import org.drools.drl.extensions.DecisionTableProvider;
-import org.drools.model.project.codegen.GeneratedFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;

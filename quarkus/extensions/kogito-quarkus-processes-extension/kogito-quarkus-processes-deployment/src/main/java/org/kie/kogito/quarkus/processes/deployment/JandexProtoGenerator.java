@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationValue;

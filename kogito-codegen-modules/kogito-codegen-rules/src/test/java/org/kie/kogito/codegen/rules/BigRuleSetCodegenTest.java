@@ -18,8 +18,8 @@ package org.kie.kogito.codegen.rules;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.drools.codegen.common.GeneratedFile;
 import org.drools.core.io.impl.ByteArrayResource;
-import org.drools.model.project.codegen.GeneratedFile;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;

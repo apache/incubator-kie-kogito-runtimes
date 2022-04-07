@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.drools.compiler.builder.impl.KnowledgeBuilderImpl;
 import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.kiesession.rulebase.KnowledgeBaseFactory;
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.api.ApplicationSection;

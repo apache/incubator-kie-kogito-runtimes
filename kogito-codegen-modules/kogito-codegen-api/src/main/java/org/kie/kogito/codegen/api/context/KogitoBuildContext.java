@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.drools.model.project.codegen.context.AppPaths;
-import org.drools.model.project.codegen.context.DroolsModelBuildContext;
+import org.drools.codegen.common.AppPaths;
+import org.drools.codegen.common.DroolsModelBuildContext;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
@@ -61,6 +61,13 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
     default boolean hasDI() {
         return getDependencyInjectionAnnotator() != null &&
                 "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_DI).orElse("true"));
+    }
+
+    default String applicationComponentType() {
+        if (getDependencyInjectionAnnotator() == null) {
+            throw new UnsupportedOperationException();
+        }
+        return getDependencyInjectionAnnotator().applicationComponentType();
     }
 
     /**

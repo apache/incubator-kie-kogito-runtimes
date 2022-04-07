@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.infinispan.protostream.annotations.ProtoEnumValue;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.Generated;

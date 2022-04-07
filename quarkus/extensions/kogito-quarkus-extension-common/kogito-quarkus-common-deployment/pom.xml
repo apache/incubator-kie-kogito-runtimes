@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-drl-quarkus-util</artifactId>
+            <artifactId>drools-drl-quarkus-util-deployment</artifactId>
         </dependency>
 
         <!-- kogito -->

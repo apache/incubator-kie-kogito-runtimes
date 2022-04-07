@@ -18,8 +18,8 @@ package org.kie.kogito.codegen.rules;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.drools.codegen.common.GeneratedFile;
 import org.drools.core.common.ReteEvaluator;
-import org.drools.model.project.codegen.GeneratedFile;
 import org.drools.ruleunits.api.conf.DefaultEntryPoint;
 import org.drools.ruleunits.api.conf.EntryPoint;
 import org.drools.ruleunits.impl.EntryPointDataProcessor;

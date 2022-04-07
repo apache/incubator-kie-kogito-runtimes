@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.codegen.api;
 
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 
 public interface ConfigGenerator {
 

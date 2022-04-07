@@ -35,7 +35,7 @@
 
         <dependency>
             <groupId>org.drools</groupId>
-            <artifactId>drools-model-project-codegen</artifactId>
+            <artifactId>drools-codegen-common</artifactId>
         </dependency>
 
         <!-- required because of Resource in CollectedResource -->

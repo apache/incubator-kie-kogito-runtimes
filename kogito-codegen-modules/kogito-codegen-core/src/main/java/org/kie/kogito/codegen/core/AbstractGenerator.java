@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.kie.kogito.codegen.api.ConfigGenerator;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;

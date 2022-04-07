@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 
 import javax.lang.model.SourceVersion;
 
-import org.drools.model.project.codegen.context.AppPaths;
+import org.drools.codegen.common.AppPaths;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;

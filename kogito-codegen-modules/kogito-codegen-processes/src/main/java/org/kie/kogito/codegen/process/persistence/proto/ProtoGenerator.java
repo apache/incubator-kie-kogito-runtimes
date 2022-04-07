@@ -21,8 +21,8 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

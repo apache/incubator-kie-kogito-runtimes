@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.junit.jupiter.api.Test;
 import org.kie.api.io.ResourceType;
 import org.kie.kogito.codegen.api.AddonsConfig;

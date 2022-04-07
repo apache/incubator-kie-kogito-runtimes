@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.parser.DroolsError;
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
 import org.drools.model.project.codegen.KogitoPackageSources;
 import org.drools.modelcompiler.builder.ModelBuilderImpl;
 import org.kie.api.io.Resource;

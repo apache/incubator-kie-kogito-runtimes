@@ -18,7 +18,7 @@ package org.kie.kogito.codegen.rules;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 
 public class RuleUnitQueryRestCodegen {
 

@@ -25,8 +25,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.GeneratedFileType;
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
 import org.eclipse.microprofile.openapi.spi.OASFactoryResolver;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;

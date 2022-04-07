@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.AbstractStringAssert;
-import org.drools.model.project.codegen.GeneratedFile;
+import org.drools.codegen.common.GeneratedFile;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

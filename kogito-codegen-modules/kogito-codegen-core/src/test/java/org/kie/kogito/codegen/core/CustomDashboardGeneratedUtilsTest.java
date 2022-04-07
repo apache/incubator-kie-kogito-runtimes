@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.model.project.codegen.GeneratedFile;
-import org.drools.model.project.codegen.context.AppPaths;
+import org.drools.codegen.common.AppPaths;
+import org.drools.codegen.common.GeneratedFile;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.api.io.Resource;
