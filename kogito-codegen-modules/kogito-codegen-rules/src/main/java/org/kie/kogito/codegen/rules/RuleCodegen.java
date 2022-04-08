@@ -140,6 +140,7 @@ public class RuleCodegen extends AbstractGenerator {
                 throw new RuleCodegenError(ruleUnitCodegen.errors());
             }
         } else {
+            LOGGER.info("No rule unit is present: generate KieRuntimeBuilder implementation.");
             KieSessionModelBuilder kieSessionModelBuilder =
                     new KieSessionModelBuilder(context(), droolsModelBuilder.packageSources());
             generatedFiles.addAll(kieSessionModelBuilder.generate());
@@ -151,10 +152,6 @@ public class RuleCodegen extends AbstractGenerator {
     public RuleCodegen withHotReloadMode() { // fixme this is currently only used in test cases. Drop?
         this.hotReloadMode = true;
         return this;
-    }
-
-    private boolean hasRuleFiles() {
-        return resources.stream().anyMatch(RuleCodegen::isRuleFile);
     }
 
     private static boolean isRuleFile(Resource resource) {

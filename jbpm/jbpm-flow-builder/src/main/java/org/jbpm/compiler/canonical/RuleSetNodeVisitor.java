@@ -92,9 +92,6 @@ public class RuleSetNodeVisitor extends AbstractNodeVisitor<RuleSetNode> {
         NameExpr methodScope = new NameExpr(getNodeId(node));
         MethodCallExpr m;
         if (ruleType.isRuleFlowGroup()) {
-            if (!hasClass("org.kie.api.runtime.KieRuntimeBuilder")) {
-                throw new IllegalArgumentException("Rule task " + nodeName + "is invalid: the usage of RuleFlowGroup requires org.kie:kie-api dependency");
-            }
             m = handleRuleFlowGroup(ruleType);
         } else if (ruleType.isRuleUnit()) {
             m = handleRuleUnit(variableScope, metadata, node, nodeName, ruleType);

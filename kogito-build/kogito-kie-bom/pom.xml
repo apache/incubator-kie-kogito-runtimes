@@ -155,11 +155,6 @@
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
-                <artifactId>drools-drl-quarkus</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
                 <artifactId>drools-drl-quarkus-util-deployment</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>

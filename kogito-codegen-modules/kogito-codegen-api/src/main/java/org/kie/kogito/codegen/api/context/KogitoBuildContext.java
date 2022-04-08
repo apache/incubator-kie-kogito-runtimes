@@ -63,13 +63,6 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
                 "true".equalsIgnoreCase(getApplicationProperty(KOGITO_GENERATE_DI).orElse("true"));
     }
 
-    default String applicationComponentType() {
-        if (getDependencyInjectionAnnotator() == null) {
-            throw new UnsupportedOperationException();
-        }
-        return getDependencyInjectionAnnotator().applicationComponentType();
-    }
-
     /**
      * Return RestAnnotator if available or null
      */
