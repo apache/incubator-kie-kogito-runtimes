@@ -1,4 +1,4 @@
-name: OptaPlanner Build
+name: Kogito Examples Build
 
 on:
   pull_request:
@@ -13,11 +13,11 @@ on:
       - '.ci/jenkins/**'
 
 jobs:
-  optaplanner-build:
+  example-build:
     concurrency:
-      group: optaplanner_pr-${{ github.head_ref }}
+      group: kogito_examples_pr-${{ github.head_ref }}
       cancel-in-progress: true
-    timeout-minutes: 120
+    timeout-minutes: 180
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -28,27 +28,25 @@ jobs:
     name: Maven Build
     steps:
       - name: Clean Disk Space
-        uses: kiegroup/kogito-pipelines/.ci/actions/ubuntu-disk-space@1.11.x
+        uses: kiegroup/kogito-pipelines/.ci/actions/ubuntu-disk-space@main
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@1.11.x
+        uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@main
       - name: Java and Maven Setup
-        uses: kiegroup/kogito-pipelines/.ci/actions/maven@1.11.x
+        uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
       - name: Build Chain
-        uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@1.11.x
+        uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
-          starting-project: kiegroup/optaplanner
+          starting-project: kiegroup/kogito-examples
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-        env:
-          BUILD_MVN_OPTS: "-DskipUI"
       - name: Surefire Report
-        uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@1.11.x
+        uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
         with:
           report_paths: '**/*-reports/TEST-*.xml'

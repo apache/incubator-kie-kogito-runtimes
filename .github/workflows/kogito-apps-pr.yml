@@ -1,4 +1,4 @@
-name: OptaPlanner Build
+name: Kogito Apps Build
 
 on:
   pull_request:
@@ -13,11 +13,11 @@ on:
       - '.ci/jenkins/**'
 
 jobs:
-  optaplanner-build:
+  apps-build:
     concurrency:
-      group: optaplanner_pr-${{ github.head_ref }}
+      group: kogito_apps_pr-${{ github.head_ref }}
       cancel-in-progress: true
-    timeout-minutes: 120
+    timeout-minutes: 210
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -43,7 +43,7 @@ jobs:
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@1.11.x
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
-          starting-project: kiegroup/optaplanner
+          starting-project: kiegroup/kogito-apps
           github-token: "${{ secrets.GITHUB_TOKEN }}"
         env:
           BUILD_MVN_OPTS: "-DskipUI"

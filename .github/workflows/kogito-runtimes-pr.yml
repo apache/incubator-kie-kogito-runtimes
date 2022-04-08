@@ -1,4 +1,4 @@
-name: OptaPlanner Build
+name: Kogito Runtimes Build
 
 on:
   pull_request:
@@ -13,9 +13,9 @@ on:
       - '.ci/jenkins/**'
 
 jobs:
-  optaplanner-build:
+  runtime-build:
     concurrency:
-      group: optaplanner_pr-${{ github.head_ref }}
+      group: kogito_runtimes_pr-${{ github.head_ref }}
       cancel-in-progress: true
     timeout-minutes: 120
     strategy:
@@ -43,10 +43,7 @@ jobs:
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@1.11.x
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
-          starting-project: kiegroup/optaplanner
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-        env:
-          BUILD_MVN_OPTS: "-DskipUI"
       - name: Surefire Report
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@1.11.x
         if: ${{ always() }}
