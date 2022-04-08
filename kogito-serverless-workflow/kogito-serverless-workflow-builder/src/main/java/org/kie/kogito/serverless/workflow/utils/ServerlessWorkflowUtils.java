@@ -16,7 +16,9 @@
 package org.kie.kogito.serverless.workflow.utils;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -63,6 +65,10 @@ public class ServerlessWorkflowUtils {
 
     private static String getFunctionPrefix(FunctionDefinition function) {
         return APP_PROPERTIES_FUNCTIONS_BASE + function.getName();
+    }
+
+    public static Workflow getWorkflow(Reader workflowFile, String workflowFormat) throws IOException {
+        return getObjectMapper(workflowFormat).readValue(workflowFile, Workflow.class);
     }
 
     private static String getOpenApiPrefix(String serviceName) {
@@ -132,6 +138,10 @@ public class ServerlessWorkflowUtils {
      */
     public static String getOpenApiURI(FunctionDefinition function) {
         return isOpenApiOperation(function) ? function.getOperation().substring(0, function.getOperation().indexOf(OPENAPI_OPERATION_SEPARATOR)) : "";
+    }
+
+    public static String getOpenApiFileName(URI uri) {
+        return Path.of(uri.getPath()).getFileName().toString();
     }
 
     /**

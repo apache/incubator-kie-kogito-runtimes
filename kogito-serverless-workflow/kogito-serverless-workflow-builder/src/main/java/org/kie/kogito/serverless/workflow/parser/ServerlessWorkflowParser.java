@@ -83,7 +83,7 @@ public class ServerlessWorkflowParser {
     private KogitoBuildContext context;
 
     public static ServerlessWorkflowParser of(Reader workflowFile, String workflowFormat, KogitoBuildContext context) throws IOException {
-        return of(ServerlessWorkflowUtils.getObjectMapper(workflowFormat).readValue(workflowFile, Workflow.class), context);
+        return of(ServerlessWorkflowUtils.getWorkflow(workflowFile, workflowFormat), context);
     }
 
     public static ServerlessWorkflowParser of(Workflow workflow, KogitoBuildContext context) {
