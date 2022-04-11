@@ -141,7 +141,7 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String getOpenApiFileName(URI uri) {
-        return Path.of(uri.getPath()).getFileName().toString();
+        return sanitizeName(fileName(uri.getPath()));
     }
 
     /**
@@ -166,7 +166,19 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String getServiceName(String uri) {
-        return uri.substring(uri.lastIndexOf('/') + 1).toLowerCase().replaceFirst(REGEX_NO_EXT, "").replaceAll(ONLY_CHARS, "");
+        return sanitizeName(removeExt(fileName(uri)));
+    }
+
+    public static String removeExt(String fileName) {
+        return fileName.replaceFirst(REGEX_NO_EXT, "");
+    }
+
+    private static String fileName(String uri) {
+        return Path.of(uri).getFileName().toString().toLowerCase();
+    }
+
+    private static String sanitizeName(String name) {
+        return name.replaceAll(ONLY_CHARS, "");
     }
 
     public static Optional<byte[]> processResourceFile(Workflow workflow, ParserContext parserContext, String uriStr) {

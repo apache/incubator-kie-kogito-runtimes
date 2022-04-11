@@ -2095,6 +2095,17 @@
         <artifactId>kogito-quarkus-processes</artifactId>
         <version>${project.version}</version>
       </dependency>
+       <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-inmemory-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-quarkus-inmemory-config</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-processes</artifactId>
@@ -2129,6 +2140,8 @@
         <artifactId>kogito-quarkus-extension-spi</artifactId>
         <version>${project.version}</version>
       </dependency>
+      
+      
 
       <!-- Quarkus DevUI addon -->
       <dependency>

@@ -94,7 +94,11 @@
     <dependency>
       <groupId>io.quarkiverse.openapi.generator</groupId>
       <artifactId>quarkus-openapi-generator</artifactId>
-     </dependency>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-quarkus-inmemory-config</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
