@@ -619,6 +619,20 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertNotNull(process.getId());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "/exec/expression.schema.sw.json" })
+    public void testSpecWithInputSchema(String workflowLocation) throws IOException {
+        Workflow workflow = Workflow.fromSource(WorkflowTestUtils.readWorkflowFile(workflowLocation));
+
+        assertNotNull(workflow);
+        assertNotNull(workflow.getDataInputSchema());
+        assertTrue(workflow.getStates().size() > 0);
+
+        RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation);
+        assertNotNull(process);
+        assertNotNull(process.getId());
+    }
+
     @Test
     public void testMinimumWorkflow() {
         Workflow workflow = createMinimumWorkflow();
