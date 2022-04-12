@@ -50,7 +50,7 @@ public class OpenApiModelSchemaGenerator {
      * Path to save the partial OpenAPI file with the additional model provided by the Workflow definition
      *
      * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
-     * Location And Formats</a>
+     *      Location And Formats</a>
      */
     private static final Path PARTIAL_OPEN_API_PATH = Path.of("META-INF", "openapi.json");
     public static final String INPUT_MODEL_REF = "#/components/schemas/" + SWFConstants.DEFAULT_WORKFLOW_VAR;
@@ -84,10 +84,10 @@ public class OpenApiModelSchemaGenerator {
      * It will try to load the file into bytes, load all the schema inheritance and provide the caller
      * with a reference to an OpenAPI Schema object.
      *
-     * @param workflow      the current parsed workflow definition
+     * @param workflow the current parsed workflow definition
      * @param parserContext the parser context to provide classpath information
      * @param jsonSchemaURI the given JSON Schema URI
-     * @param authRef       the Authentication Reference information to fetch the JSON Schema URI if needed
+     * @param authRef the Authentication Reference information to fetch the JSON Schema URI if needed
      * @return The @{@link Schema} object
      */
     private Schema fromJsonSchemaToOpenApiSchema(Workflow workflow, ParserContext parserContext, String jsonSchemaURI, String authRef) {
