@@ -17,10 +17,6 @@ package org.kie.kogito.serverless.workflow.parser;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,11 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.drools.codegen.common.GeneratedFile;
-import org.drools.codegen.common.GeneratedFileType;
 import org.eclipse.microprofile.openapi.OASFactory;
-import org.eclipse.microprofile.openapi.models.OpenAPI;
-import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
@@ -56,12 +48,12 @@ import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.handlers.validation.WorkflowValidator;
-import org.kie.kogito.serverless.workflow.parser.schema.SchemaUtils;
+import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
+import org.kie.kogito.serverless.workflow.parser.schema.WorkflowModelSchemaRef;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
@@ -70,7 +62,6 @@ import io.serverlessworkflow.api.workflow.Constants;
 
 import static org.jbpm.process.core.timer.Timer.TIME_DURATION;
 import static org.jbpm.ruleflow.core.Metadata.UNIQUE_ID;
-import static org.kie.kogito.serverless.workflow.SWFConstants.DEFAULT_WORKFLOW_VAR;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
 
 public class ServerlessWorkflowParser {
@@ -139,30 +130,12 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.TAGS, tags);
         }
 
-        generateOpenApiInputSchema(parserContext);
+        WorkflowModelSchemaRef schemaRef = new OpenApiModelSchemaGenerator(this.workflow, parserContext).generateModelSchema();
+        if (schemaRef.hasInputModel()) {
+            factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, schemaRef.getInputModelRef());
+        }
 
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
-    }
-
-    private void generateOpenApiInputSchema(final ParserContext parserContext) {
-        if (workflow.getDataInputSchema() == null ||
-                workflow.getDataInputSchema().getSchema() == null ||
-                workflow.getDataInputSchema().getSchema().isEmpty()) {
-            return;
-        }
-        try {
-            final URI inputSchemaURI = new URI(workflow.getDataInputSchema().getSchema());
-            final Schema inputSchema = SchemaUtils.fromWorkflowDataInputToOpenApiSchema(workflow, parserContext, inputSchemaURI.toString(), "");
-            final OpenAPI openApiInputModel = OASFactory.createOpenAPI()
-                    .components(OASFactory.createComponents().addSchema(DEFAULT_WORKFLOW_VAR, inputSchema))
-                    .openapi("inputschema");
-            parserContext
-                    .addGeneratedFile(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, Paths.get("META-INF", "openapi.json"), ObjectMapperFactory.get().writeValueAsString(openApiInputModel)));
-        } catch (URISyntaxException e) {
-            LOGGER.warn("Invalid Data Input Schema for workflow {}. Only valid URIs are supported at this time.", workflow.getId());
-        } catch (JsonProcessingException e) {
-            throw new UncheckedIOException("Failed to generate JSON for OpenAPI Input Schema for workflow " + workflow.getId(), e);
-        }
     }
 
     private static Collection<Tag> getTags(Workflow workflow) {

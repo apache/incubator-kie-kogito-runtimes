@@ -69,7 +69,7 @@ public class Metadata {
     public static final String ASYNC_WAITING = "ASYNC_WAITING";
     public static final String DATA_ONLY = "DataOnly";
     public static final String TAGS = "Tags";
-    public static final String DATA_INPUT_SCHEME = "dataInputScheme";
+    public static final String DATA_INPUT_SCHEMA_REF = "dataInputScheme";
 
     private Metadata() {
     }

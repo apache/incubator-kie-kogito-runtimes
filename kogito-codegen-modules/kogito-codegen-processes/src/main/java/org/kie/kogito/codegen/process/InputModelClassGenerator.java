@@ -16,7 +16,6 @@
 package org.kie.kogito.codegen.process;
 
 import org.drools.core.util.StringUtils;
-import org.eclipse.microprofile.openapi.models.media.Schema;
 import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
 import org.jbpm.ruleflow.core.Metadata;
@@ -46,7 +45,7 @@ public class InputModelClassGenerator {
         modelMetaData = ProcessToExecModelGenerator.INSTANCE.generateInputModel(workFlowProcess);
         modelMetaData.setSupportsValidation(context.isValidationSupported());
         modelMetaData.setSupportsOpenApiGeneration(context.isOpenApiSpecSupported());
-        modelMetaData.setModelSchema((Schema) workFlowProcess.getMetaData().get(Metadata.DATA_INPUT_SCHEME));
+        modelMetaData.setModelSchemaRef((String) workFlowProcess.getMetaData().get(Metadata.DATA_INPUT_SCHEMA_REF));
 
         modelFileName = modelMetaData.getModelClassName().replace('.', '/') + ".java";
         return modelMetaData;

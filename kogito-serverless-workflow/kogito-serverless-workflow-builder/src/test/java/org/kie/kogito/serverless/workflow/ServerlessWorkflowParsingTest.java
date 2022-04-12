@@ -39,6 +39,7 @@ import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.Process;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
@@ -631,6 +632,8 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         RuleFlowProcess process = (RuleFlowProcess) getWorkflowParser(workflowLocation);
         assertNotNull(process);
         assertNotNull(process.getId());
+
+        assertEquals(OpenApiModelSchemaGenerator.INPUT_MODEL_REF, process.getMetaData(Metadata.DATA_INPUT_SCHEMA_REF));
     }
 
     @Test

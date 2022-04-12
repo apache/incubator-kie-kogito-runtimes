@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.jackson.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -31,6 +32,7 @@ public class ObjectMapperFactory {
         return JsonMapper.builder()
                 .enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
                 .build()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .setTypeFactory(TypeFactory.defaultInstance().withClassLoader(Thread.currentThread().getContextClassLoader()))
                 .findAndRegisterModules();
     }

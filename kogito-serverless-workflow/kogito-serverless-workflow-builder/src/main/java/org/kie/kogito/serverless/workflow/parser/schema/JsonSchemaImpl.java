@@ -22,14 +22,17 @@ import java.util.Map;
 import org.eclipse.microprofile.openapi.models.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.smallrye.openapi.api.models.media.SchemaImpl;
 
 /**
- * Model class to map and deserialize a JSON Schema structure to OpenAPI Schema
+ * Holder class to map and deserialize a JSON Schema structure to OpenAPI Schema
+ * Exists just to make it easy for JSON Deserializers to convert the given JSON Schema into an OpenAPI Schema.
  */
-@JsonIgnoreProperties(value = { "$schema" })
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonSchemaImpl extends SchemaImpl {
 
     @JsonDeserialize(as = JsonSchemaImpl.class)

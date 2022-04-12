@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.eclipse.microprofile.openapi.models.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.jbpm.process.core.context.variable.Variable;
 import org.kie.kogito.codegen.Generated;
 import org.kie.kogito.codegen.VariableInfo;
@@ -77,7 +77,7 @@ public class ModelMetaData {
     private boolean supportsValidation;
     private boolean supportsOpenApiGeneration;
 
-    private Schema modelSchema;
+    private String modelSchemaRef;
 
     public ModelMetaData(String processId, String packageName, String modelClassSimpleName, String visibility, VariableDeclarations variableScope, boolean hidden) {
         this(processId, packageName, modelClassSimpleName, visibility, variableScope, hidden, "/class-templates/ModelTemplate.java");
@@ -177,7 +177,6 @@ public class ModelMetaData {
                     new MemberValuePair("name", new StringLiteralExpr(ucFirst(ProcessToExecModelGenerator.extractProcessId(processId)))),
                     new MemberValuePair("hidden", new BooleanLiteralExpr(hidden)))));
         }
-        applyOpenApiSchemaAnnotation(modelClass);
         modelClass.setName(modelClassSimpleName);
 
         // setup of the toMap method body
@@ -213,6 +212,7 @@ public class ModelMetaData {
 
             applyValidation(fd, tags);
             applyOpenApiSchemaForJsonNodeModel(fd);
+            applyOpenApiSchemaAnnotation(fd);
 
             fd.createGetter();
             fd.createSetter();
@@ -247,17 +247,20 @@ public class ModelMetaData {
      * @see <a href="https://github.com/smallrye/smallrye-open-api/issues/1048">Jackson's JsonNode class is being incorrectly rendered in the spec file</a>
      */
     private void applyOpenApiSchemaForJsonNodeModel(final FieldDeclaration modelFieldDeclaration) {
-        if (this.modelSchema == null &&
+        if (this.modelSchemaRef == null &&
                 this.supportsOpenApiGeneration &&
                 JsonNode.class.getCanonicalName().equals(modelFieldDeclaration.getElementType().asString())) {
-            modelFieldDeclaration.addAndGetAnnotation(org.eclipse.microprofile.openapi.annotations.media.Schema.class).addPair("implementation",
+            modelFieldDeclaration.addAndGetAnnotation(Schema.class).addPair("implementation",
                     new ClassExpr().setType(Object.class.getCanonicalName()));
         }
     }
 
-    private void applyOpenApiSchemaAnnotation(final ClassOrInterfaceDeclaration modelClass) {
-        if (this.supportsOpenApiGeneration && this.modelSchema != null) {
-            //modelClass.addAnnotation(OpenApiSchemaAnnotationGenerator.fromSchema(this.modelSchema));
+    private void applyOpenApiSchemaAnnotation(final FieldDeclaration modelFieldDeclaration) {
+        if (this.supportsOpenApiGeneration && this.modelSchemaRef != null) {
+            final NormalAnnotationExpr schemaAnnotation = new NormalAnnotationExpr();
+            schemaAnnotation.setName(new Name(Schema.class.getCanonicalName()));
+            schemaAnnotation.addPair("ref", new StringLiteralExpr(this.modelSchemaRef));
+            modelFieldDeclaration.addAnnotation(schemaAnnotation);
         }
     }
 
@@ -293,8 +296,8 @@ public class ModelMetaData {
         this.supportsOpenApiGeneration = supportsOpenApiGeneration;
     }
 
-    public void setModelSchema(org.eclipse.microprofile.openapi.models.media.Schema modelSchema) {
-        this.modelSchema = modelSchema;
+    public void setModelSchemaRef(String modelSchemaRef) {
+        this.modelSchemaRef = modelSchemaRef;
     }
 
     @Override
