@@ -391,15 +391,6 @@ public class ProcessCodegen extends AbstractGenerator {
                     mmd.generate());
         }
 
-        /*
-         * duplicated?
-         * for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
-         * ModelMetaData mmd = modelClassGenerator.generate();
-         * storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-         * mmd.generate());
-         * }
-         */
-
         for (InputModelClassGenerator modelClassGenerator : processIdToInputModelGenerator.values()) {
             ModelMetaData mmd = modelClassGenerator.generate();
             storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
