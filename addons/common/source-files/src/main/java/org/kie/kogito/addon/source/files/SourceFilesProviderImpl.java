@@ -17,6 +17,7 @@ package org.kie.kogito.addon.source.files;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
     @Override
     public Collection<SourceFile> getSourceFiles(String processId) {
         Collection<SourceFile> foundSourceFiles = this.sourceFiles.get(processId);
-        return foundSourceFiles != null ? List.copyOf(foundSourceFiles) : List.of();
+        return foundSourceFiles != null ? Collections.unmodifiableCollection(foundSourceFiles) : List.of();
     }
 
     @Override
