@@ -15,6 +15,15 @@
  */
 package org.kie.kogito.codegen.api;
 
+/**
+ * Interface to be notified when a process is bound to a source file.
+ */
 public interface SourceFileProcessBindListener {
+
+    /**
+     * Called when a process is bound to a source file.
+     * 
+     * @param event the event
+     */
     void onSourceFileProcessBind(SourceFileProcessBindEvent event);
 }

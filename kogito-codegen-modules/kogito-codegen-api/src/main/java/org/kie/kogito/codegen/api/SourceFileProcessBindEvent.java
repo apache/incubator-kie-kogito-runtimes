@@ -15,6 +15,9 @@
  */
 package org.kie.kogito.codegen.api;
 
+/**
+ * Event that is fired when a process is bound to a source file.
+ */
 public class SourceFileProcessBindEvent {
 
     private final String processId;
