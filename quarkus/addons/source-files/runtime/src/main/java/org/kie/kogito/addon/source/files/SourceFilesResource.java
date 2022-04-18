@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path("/management/process/")
+@RolesAllowed("source-files-client")
 public final class SourceFilesResource {
 
     @Inject
@@ -47,6 +49,7 @@ public final class SourceFilesResource {
     @GET
     @Path("sources")
     @Produces(MediaType.APPLICATION_JSON)
+    //    @RolesAllowed("source-files-client")
     public Map<String, Collection<SourceFile>> getSourceFiles() {
         return sourceFilesProvider.getSourceFiles();
     }

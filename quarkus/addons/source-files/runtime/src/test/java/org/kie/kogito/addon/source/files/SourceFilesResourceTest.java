@@ -26,9 +26,12 @@ import javax.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.security.UnauthorizedException;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @QuarkusTest
 class SourceFilesResourceTest {
@@ -45,6 +48,7 @@ class SourceFilesResourceTest {
     }
 
     @Test
+    @TestSecurity(user = "scott", roles = "source-files-client")
     void getSourceFiles() {
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("petstore.json"));
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("petstore.sw.json"));
@@ -59,6 +63,13 @@ class SourceFilesResourceTest {
     }
 
     @Test
+    void getSourceFilesNonAuthenticated() {
+        assertThatCode(() -> sourceFilesResource.getSourceFiles())
+                .isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    @TestSecurity(user = "scott", roles = "source-files-client")
     void getSourceFilesByProcessId() {
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("petstore.json"));
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("petstore.sw.json"));
@@ -70,6 +81,13 @@ class SourceFilesResourceTest {
     }
 
     @Test
+    void getSourceFilesByProcessIdNonAuthenticated() {
+        assertThatCode(() -> sourceFilesResource.getSourceFiles("a_process"))
+                .isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    @TestSecurity(user = "scott", roles = "source-files-client")
     void getSourceFile() throws IOException {
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("petstore.json"));
 
@@ -86,6 +104,13 @@ class SourceFilesResourceTest {
     }
 
     @Test
+    void getSourceFileNonAuthenticated() {
+        assertThatCode(() -> sourceFilesResource.getSourceFile("petstore.json"))
+                .isInstanceOf(UnauthorizedException.class);
+    }
+
+    @Test
+    @TestSecurity(user = "scott", roles = "source-files-client")
     void getSourceFileThatNotExistsShouldReturn404() throws IOException {
         sourceFilesProvider.addSourceFile("a_process", new SourceFile("file_that_not_exists.json"));
 
@@ -96,6 +121,7 @@ class SourceFilesResourceTest {
     }
 
     @Test
+    @TestSecurity(user = "scott", roles = "source-files-client")
     void getSourceFileThatIsNotInSourceFilesProviderShouldReturn404() throws IOException {
         Response response = sourceFilesResource.getSourceFile("petstore.json");
 

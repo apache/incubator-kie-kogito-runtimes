@@ -28,6 +28,10 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-quarkus-common-deployment</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-elytron-security-properties-file-deployment</artifactId>
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>org.assertj</groupId>

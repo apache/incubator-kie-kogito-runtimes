@@ -38,6 +38,7 @@ class SourceFilesAddOnIT {
     @Test
     void testGetSourceFiles() {
         given()
+                .header("Authorization", "Basic c2NvdHQ6amIwc3M=")
                 .contentType(ContentType.JSON)
                 .when()
                 .get(PATH + "sources")
@@ -59,8 +60,19 @@ class SourceFilesAddOnIT {
     }
 
     @Test
+    void testGetSourceFilesNonAuthenticated() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(PATH + "sources")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
     void testGetSourceFilesByProcessId() {
         given()
+                .header("Authorization", "Basic c2NvdHQ6amIwc3M=")
                 .contentType(ContentType.JSON)
                 .when()
                 .get(PATH + "ymlgreet/sources")
@@ -71,13 +83,33 @@ class SourceFilesAddOnIT {
     }
 
     @Test
+    void testGetSourceFilesByProcessIdNonAuthenticated() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get(PATH + "ymlgreet/sources")
+                .then()
+                .statusCode(401);
+    }
+
+    @Test
     void testGetSourceFile() {
         given()
+                .header("Authorization", "Basic c2NvdHQ6amIwc3M=")
                 .when()
                 .get(PATH + "sources/download?fileName=petstore.json")
                 .then()
                 .statusCode(200)
                 .header("Content-Disposition", "inline; filename=\"petstore.json\"")
                 .header("Content-Length", "5189");
+    }
+
+    @Test
+    void testGetSourceFileNonAuthenticated() {
+        given()
+                .when()
+                .get(PATH + "sources/download?fileName=petstore.json")
+                .then()
+                .statusCode(401);
     }
 }
