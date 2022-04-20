@@ -35,7 +35,6 @@ import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
-import org.kie.kogito.codegen.api.SourceFileProcessBindEvent;
 import org.kie.kogito.internal.utils.ConversionUtils;
 import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -43,6 +42,7 @@ import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.parser.SourceFileServerlessWorkflowBindEvent;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptor;
 import org.kie.kogito.serverless.workflow.parser.handlers.openapi.OpenAPIDescriptorFactory;
 import org.kie.kogito.serverless.workflow.suppliers.ApiKeyAuthDecoratorSupplier;
@@ -371,7 +371,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                     .workParameter(RestWorkItemHandler.METHOD, openAPIDescriptor.getMethod())
                     .workParameter(RestWorkItemHandler.PARAMS_DECORATOR, new CollectionParamsDecoratorSupplier(openAPIDescriptor.getHeaderParams(), openAPIDescriptor.getQueryParams()));
 
-            notifySourceFileProcessBindListeners(uri);
+            notifySourceFileCodegenBindListeners(uri);
 
             return workItemNodeFactory;
         } catch (IOException e) {
@@ -379,8 +379,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         }
     }
 
-    private void notifySourceFileProcessBindListeners(String uri) {
-        parserContext.getContext().getSourceFileProcessBindNotifier().notify(new SourceFileProcessBindEvent(workflow.getId(), uri));
+    private void notifySourceFileCodegenBindListeners(String uri) {
+        parserContext.getContext().getSourceFileCodegenBindNotifier().notify(new SourceFileServerlessWorkflowBindEvent(workflow.getId(), uri));
     }
 
     private ApiKeyAuthDecorator.Location from(In in) {

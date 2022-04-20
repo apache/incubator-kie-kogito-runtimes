@@ -26,13 +26,13 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
     private final Map<String, Collection<SourceFile>> sourceFiles = new HashMap<>();
 
-    public void addSourceFile(String processId, SourceFile sourceFile) {
-        sourceFiles.computeIfAbsent(processId, k -> new ArrayList<>()).add(sourceFile);
+    public void addSourceFile(String id, SourceFile sourceFile) {
+        sourceFiles.computeIfAbsent(id, k -> new ArrayList<>()).add(sourceFile);
     }
 
     @Override
-    public Collection<SourceFile> getSourceFiles(String processId) {
-        Collection<SourceFile> foundSourceFiles = this.sourceFiles.get(processId);
+    public Collection<SourceFile> getSourceFiles(String id) {
+        Collection<SourceFile> foundSourceFiles = this.sourceFiles.get(id);
         return foundSourceFiles != null ? Collections.unmodifiableCollection(foundSourceFiles) : List.of();
     }
 

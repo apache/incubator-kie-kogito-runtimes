@@ -21,12 +21,12 @@ import java.util.Map;
 public interface SourceFilesProvider {
 
     /**
-     * Returns the source files for the given Process ID.
+     * Returns the source files for the given ID.
      * 
-     * @param processId the process ID
+     * @param id the source file ID
      * @return the source files collection. The collection may be empty but not null.
      */
-    Collection<SourceFile> getSourceFiles(String processId);
+    Collection<SourceFile> getSourceFiles(String id);
 
     /**
      * Return all the source files.

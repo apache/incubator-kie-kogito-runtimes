@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.source.files;
+package org.kie.kogito.codegen.api;
 
-import javax.enterprise.inject.spi.CDI;
+public interface SourceFileCodegenBindEvent {
 
-import io.quarkus.runtime.annotations.Recorder;
+    String getSourceFileId();
 
-@Recorder
-public class SourceFilesRecorder {
-
-    public void addSourceFile(String id, SourceFile sourceFile) {
-        CDI.current().select(SourceFilesProviderImpl.class).get().addSourceFile(id, sourceFile);
-    }
+    String getUri();
 }

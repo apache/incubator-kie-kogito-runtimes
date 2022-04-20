@@ -49,7 +49,6 @@ public final class SourceFilesResource {
     @GET
     @Path("sources")
     @Produces(MediaType.APPLICATION_JSON)
-    //    @RolesAllowed("source-files-client")
     public Map<String, Collection<SourceFile>> getSourceFiles() {
         return sourceFilesProvider.getSourceFiles();
     }

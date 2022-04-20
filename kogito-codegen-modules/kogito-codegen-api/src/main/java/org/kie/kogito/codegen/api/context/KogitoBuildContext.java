@@ -29,7 +29,7 @@ import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.Generator;
-import org.kie.kogito.codegen.api.SourceFileProcessBindNotifier;
+import org.kie.kogito.codegen.api.SourceFileCodegenBindNotifier;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.api.rest.RestAnnotator;
 import org.kie.kogito.codegen.api.utils.KogitoCodeGenConstants;
@@ -152,7 +152,7 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
 
     Optional<KogitoGAV> getGAV();
 
-    SourceFileProcessBindNotifier getSourceFileProcessBindNotifier();
+    SourceFileCodegenBindNotifier getSourceFileCodegenBindNotifier();
 
     default Map<String, String> getPropertiesMap() {
         return getApplicationProperties().stream()
@@ -183,7 +183,7 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
 
         Builder withGAV(KogitoGAV gav);
 
-        Builder withSourceFileProcessBindNotifier(SourceFileProcessBindNotifier sourceFileProcessBindNotifier);
+        Builder withSourceFileProcessBindNotifier(SourceFileCodegenBindNotifier sourceFileCodegenBindNotifier);
 
         KogitoBuildContext build();
     }

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.codegen.api;
+package org.kie.kogito.codegen.process;
+
+import org.kie.kogito.codegen.api.SourceFileCodegenBindEvent;
 
 /**
  * Event that is fired when a process is bound to a source file.
  */
-public class SourceFileProcessBindEvent {
+public class SourceFileProcessBindEvent implements SourceFileCodegenBindEvent {
 
     private final String processId;
 
@@ -29,11 +31,12 @@ public class SourceFileProcessBindEvent {
         this.sourceFile = sourceFile;
     }
 
-    public String getProcessId() {
+    public String getSourceFileId() {
         return processId;
     }
 
-    public String getSourceFile() {
+    @Override
+    public String getUri() {
         return sourceFile;
     }
 

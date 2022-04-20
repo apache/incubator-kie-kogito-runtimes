@@ -18,17 +18,20 @@ package org.kie.kogito.codegen.api;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class SourceFileProcessBindNotifier {
+public class SourceFileCodegenBindNotifier {
 
-    private final Collection<SourceFileProcessBindListener> listeners = new ArrayList<>(1);
+    private final Collection<SourceFileCodegenBindListener<?>> listeners = new ArrayList<>();
 
-    public void addListener(SourceFileProcessBindListener listener) {
+    public SourceFileCodegenBindNotifier addListener(SourceFileCodegenBindListener<?> listener) {
         listeners.add(listener);
+        return this;
     }
 
-    public void notify(SourceFileProcessBindEvent event) {
-        for (SourceFileProcessBindListener listener : listeners) {
-            listener.onSourceFileProcessBind(event);
-        }
+    @SuppressWarnings("unchecked")
+    public <T extends SourceFileCodegenBindEvent> void notify(T event) {
+        listeners.stream()
+                .filter(listener -> listener.getEventType().isAssignableFrom(event.getClass()))
+                .map(listener -> (SourceFileCodegenBindListener<T>) listener)
+                .forEach(listener -> listener.onSourceFileCodegenBind(event));
     }
 }

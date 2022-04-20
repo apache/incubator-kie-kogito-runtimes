@@ -15,25 +15,19 @@
  */
 package org.kie.kogito.addon.source.files.deployment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
 
-import org.kie.kogito.addon.source.files.SourceFile;
 import org.kie.kogito.addon.source.files.SourceFilesRecorder;
+import org.kie.kogito.serverless.workflow.parser.SourceFileServerlessWorkflowBindEvent;
 
-final class FakeSourceFilesRecorder extends SourceFilesRecorder {
+final class SourceFileServerlessWorkflowBindListenerImpl extends SourceFileCodegenBindListenerImpl<SourceFileServerlessWorkflowBindEvent> {
 
-    private final Map<String, Collection<SourceFile>> files = new HashMap<>();
-
-    @Override
-    public void addSourceFile(String id, SourceFile sourceFile) {
-        files.computeIfAbsent(id, k -> new ArrayList<>()).add(sourceFile);
+    SourceFileServerlessWorkflowBindListenerImpl(File[] resourcePaths, SourceFilesRecorder sourceFilesRecorder) {
+        super(resourcePaths, sourceFilesRecorder);
     }
 
-    boolean containsRecordFor(String processId, SourceFile sourceFile) {
-        return files.getOrDefault(processId, List.of()).contains(sourceFile);
+    @Override
+    public Class<SourceFileServerlessWorkflowBindEvent> getEventType() {
+        return SourceFileServerlessWorkflowBindEvent.class;
     }
 }

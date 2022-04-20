@@ -17,7 +17,6 @@ package org.kie.kogito.addon.source.files.deployment;
 
 import org.kie.kogito.addon.source.files.SourceFilesProviderProducer;
 import org.kie.kogito.addon.source.files.SourceFilesRecorder;
-import org.kie.kogito.codegen.api.SourceFileProcessBindListener;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
 import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
@@ -53,11 +52,17 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
             SourceFilesRecorder sourceFilesRecorder) {
         KogitoBuildContext kogitoBuildContext = ctxBuildItem.getKogitoBuildContext();
 
-        SourceFileProcessBindListener listener = new SourceFileProcessBindListenerImpl(
+        SourceFileProcessBindListenerImpl processListener = new SourceFileProcessBindListenerImpl(
                 kogitoBuildContext.getAppPaths().getResourceFiles(),
                 sourceFilesRecorder);
 
-        kogitoBuildContext.getSourceFileProcessBindNotifier().addListener(listener);
+        SourceFileServerlessWorkflowBindListenerImpl serverlessWorkflowListener = new SourceFileServerlessWorkflowBindListenerImpl(
+                kogitoBuildContext.getAppPaths().getResourceFiles(),
+                sourceFilesRecorder);
+
+        kogitoBuildContext.getSourceFileCodegenBindNotifier()
+                .addListener(processListener)
+                .addListener(serverlessWorkflowListener);
     }
 
 }

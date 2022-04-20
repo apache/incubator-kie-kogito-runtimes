@@ -50,8 +50,7 @@ import org.kie.api.io.Resource;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.GeneratedInfo;
-import org.kie.kogito.codegen.api.SourceFileProcessBindEvent;
-import org.kie.kogito.codegen.api.SourceFileProcessBindNotifier;
+import org.kie.kogito.codegen.api.SourceFileCodegenBindNotifier;
 import org.kie.kogito.codegen.api.context.ContextAttributesConstants;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -121,7 +120,7 @@ public class ProcessCodegen extends AbstractGenerator {
                     if (SUPPORTED_BPMN_EXTENSIONS.stream().anyMatch(resource.getSourcePath()::endsWith)) {
                         try {
                             Collection<Process> p = parseProcessFile(resource);
-                            notifySourceFileProcessBindListeners(context, resource, p);
+                            notifySourceFileCodegenBindListeners(context, resource, p);
                             if (useSvgAddon) {
                                 processSVG(resource, resources, p, processSVGMap);
                             }
@@ -139,7 +138,7 @@ public class ProcessCodegen extends AbstractGenerator {
                                 .filter(e -> resource.getSourcePath().endsWith(e.getKey()))
                                 .map(e -> {
                                     GeneratedInfo<KogitoWorkflowProcess> generatedInfo = parseWorkflowFile(resource, e.getValue(), context);
-                                    notifySourceFileProcessBindListeners(context, resource, Collections.singletonList(generatedInfo.info()));
+                                    notifySourceFileCodegenBindListeners(context, resource, Collections.singletonList(generatedInfo.info()));
                                     return generatedInfo;
                                 });
                     }
@@ -157,8 +156,8 @@ public class ProcessCodegen extends AbstractGenerator {
         return ofProcesses(context, processes);
     }
 
-    private static void notifySourceFileProcessBindListeners(KogitoBuildContext context, Resource resource, Collection<Process> processes) {
-        SourceFileProcessBindNotifier notifier = context.getSourceFileProcessBindNotifier();
+    private static void notifySourceFileCodegenBindListeners(KogitoBuildContext context, Resource resource, Collection<Process> processes) {
+        SourceFileCodegenBindNotifier notifier = context.getSourceFileCodegenBindNotifier();
         processes.forEach(p -> notifier.notify(new SourceFileProcessBindEvent(p.getId(), resource.getSourcePath())));
     }
 

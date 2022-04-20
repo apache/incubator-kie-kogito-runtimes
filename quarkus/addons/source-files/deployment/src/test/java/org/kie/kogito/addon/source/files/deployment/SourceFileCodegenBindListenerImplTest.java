@@ -22,11 +22,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.addon.source.files.SourceFile;
-import org.kie.kogito.codegen.api.SourceFileProcessBindEvent;
+import org.kie.kogito.codegen.process.SourceFileProcessBindEvent;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SourceFileProcessBindListenerImplTest {
+class SourceFileCodegenBindListenerImplTest {
 
     public static Stream<Arguments> testOnSourceFileProcessBindEventSources() {
         return Stream.of(
@@ -46,7 +46,7 @@ class SourceFileProcessBindListenerImplTest {
 
         FakeSourceFilesRecorder sourceFilesRecorder = new FakeSourceFilesRecorder();
 
-        new SourceFileProcessBindListenerImpl(resourcePaths, sourceFilesRecorder).onSourceFileProcessBind(event);
+        new SourceFileProcessBindListenerImpl(resourcePaths, sourceFilesRecorder).onSourceFileCodegenBind(event);
 
         assertThat(sourceFilesRecorder.containsRecordFor(processId, new SourceFile(expectedSourceFile))).isTrue();
     }
