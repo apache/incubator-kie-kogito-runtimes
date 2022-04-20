@@ -116,12 +116,14 @@ class TaskIT {
         long expectedJsonSchemas = 28;
         Path jsonDir = Paths.get("target", "classes").resolve(JsonSchemaUtil.getJsonDir());
         try (Stream<Path> paths = Files.walk(jsonDir)) {
+
             long generatedJsonSchemas = paths
                     .filter(p -> p.toString().endsWith("json"))
                     .count();
             assertThat(generatedJsonSchemas).isEqualTo(expectedJsonSchemas);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } finally {
         }
     }
 
