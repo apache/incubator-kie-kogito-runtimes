@@ -16,20 +16,24 @@
 package org.kie.kogito.integrationtests.quarkus;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.acme.travels.Traveller;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.services.event.ProcessDataEvent;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
@@ -47,8 +51,6 @@ class ProcessEventIT {
 
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessEventIT.class);
 
-    private ObjectMapper objectMapper;
-
     public KafkaTestClient kafkaClient;
 
     @ConfigProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
@@ -56,17 +58,58 @@ class ProcessEventIT {
 
     @BeforeEach
     public void setup() {
-        objectMapper = new ObjectMapper();
         kafkaClient = new KafkaTestClient(kafkaBootstrapServers);
     }
 
+    public static final class Mapper {
+
+        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+                .registerModule(JsonFormat.getCloudEventJacksonModule())
+                .registerModule(new JavaTimeModule());
+
+        private Mapper() {
+
+        }
+
+        public static ObjectMapper mapper() {
+            return OBJECT_MAPPER;
+        }
+    }
+
+    ObjectMapper mapper = Mapper.mapper();
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
-    void testSaveTask() {
+    void testSaveTask() throws InterruptedException {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish");
+        final int count = 2;
+        final CountDownLatch countDownLatch = new CountDownLatch(count);
+
+        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
+            LOGGER.info("Received from kafka: {}", s);
+            try {
+                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
+                assertTrue(Objects.equals(event.getType(), "ProcessInstanceEvent"));
+                countDownLatch.countDown();
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Error parsing {}", s, e);
+                fail(e);
+            }
+        });
+
+        kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
+            LOGGER.info("Received from kafka: {}", s);
+            try {
+                ProcessDataEvent humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
+                assertTrue(Objects.equals(humanTaskEvent.getType(), "UserTaskInstanceEvent"));
+                countDownLatch.countDown();
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Error parsing {}", s, e);
+                fail(e);
+            }
+        });
 
         String processId = given()
                 .contentType(ContentType.JSON)
@@ -116,26 +159,19 @@ class ProcessEventIT {
                 .extract()
                 .path("results.approved"));
 
-        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
-            LOGGER.info("Received from kafka: {}", s);
-            try {
-                JsonNode event = objectMapper.readValue(s, JsonNode.class);
-                assertTrue(event.size() > 0);
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error parsing {}", s, e);
-                fail(e);
-            }
-        });
+        String humanTaskId = given()
+                .contentType(ContentType.JSON)
+                .queryParam("user", "admin")
+                .queryParam("group", "managers")
+                .pathParam("processId", processId)
+                .when()
+                .get("/approvals/{processId}/tasks")
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("[1].id");
 
-        kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
-            LOGGER.info("Received from kafka: {}", s);
-            try {
-                JsonNode humanTaskEvent = objectMapper.readValue(s, JsonNode.class);
-                assertTrue(humanTaskEvent.size() > 0);
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error parsing {}", s, e);
-                fail(e);
-            }
-        });
+        countDownLatch.await(10, TimeUnit.SECONDS);
+        assertEquals(0, countDownLatch.getCount());
     }
 }
