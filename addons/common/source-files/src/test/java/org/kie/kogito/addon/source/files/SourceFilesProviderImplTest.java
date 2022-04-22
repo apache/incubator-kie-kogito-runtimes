@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.addon.source.files;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -70,14 +70,20 @@ class SourceFilesProviderImplTest {
         sourceFilesProvider.addSourceFile("another_process", new SourceFile("myanotherworkflow.sw.json"));
         sourceFilesProvider.addSourceFile("another_process", new SourceFile("myanotherworkflow.sw.yaml"));
 
-        assertThat(sourceFilesProvider.getSourceFiles())
-                .containsExactlyInAnyOrderEntriesOf(Map.of(
-                        "a_process", List.of(
-                                new SourceFile("myworkflow.sw.json"),
-                                new SourceFile("myworkflow.sw.yaml")),
-                        "another_process", List.of(
-                                new SourceFile("myanotherworkflow.sw.json"),
-                                new SourceFile("myanotherworkflow.sw.yaml"))));
+        Map<String, Collection<SourceFile>> sourceFiles = sourceFilesProvider.getSourceFiles();
+
+        assertThat(sourceFiles)
+                .containsOnlyKeys("a_process", "another_process");
+
+        assertThat(sourceFiles.get("a_process"))
+                .containsExactlyInAnyOrder(
+                        new SourceFile("myworkflow.sw.json"),
+                        new SourceFile("myworkflow.sw.yaml"));
+
+        assertThat(sourceFiles.get("another_process"))
+                .containsExactlyInAnyOrder(
+                        new SourceFile("myanotherworkflow.sw.json"),
+                        new SourceFile("myanotherworkflow.sw.yaml"));
     }
 
     @Test
