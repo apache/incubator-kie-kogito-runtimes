@@ -23,7 +23,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -49,7 +48,6 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.maven.dependency.Dependency;
-import io.quarkus.runtime.LaunchMode;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
 /**
@@ -62,12 +60,10 @@ public class KogitoQuarkusResourceUtils {
     static final String HOT_RELOAD_SUPPORT_FQN = HOT_RELOAD_SUPPORT_PACKAGE + "." + HOT_RELOAD_SUPPORT_CLASS;
     static final String HOT_RELOAD_SUPPORT_PATH = HOT_RELOAD_SUPPORT_FQN.replace('.', '/');
 
-    private static boolean shouldDumpFiles = shouldDumpFiles();
-
-    private static boolean shouldDumpFiles() {
-        Optional<Boolean> prop = ConfigProvider.getConfig().getOptionalValue("kogito.quarkus.codegen.dumpFiles", Boolean.class);
-        return prop.orElse(LaunchMode.current().isDevOrTest());
-    }
+    /**
+     * Defaulting to write files. Skip dumping is optional
+     */
+    private static boolean shouldSkipDumpFiles = ConfigProvider.getConfig().getOptionalValue("kogito.quarkus.codegen.SkipDumpFiles", Boolean.class).orElse(false);
 
     private KogitoQuarkusResourceUtils() {
         // utility class
@@ -147,7 +143,7 @@ public class KogitoQuarkusResourceUtils {
     }
 
     public static void dumpFilesToDisk(AppPaths appPaths, Collection<GeneratedFile> generatedFiles) {
-        if (shouldDumpFiles) {
+        if (!shouldSkipDumpFiles) {
             generatedFileWriterBuilder
                     .build(appPaths.getFirstProjectPath())
                     .writeAll(generatedFiles);
@@ -160,7 +156,7 @@ public class KogitoQuarkusResourceUtils {
             BuildProducer<GeneratedResourceBuildItem> genResBI) {
         for (GeneratedFile f : generatedFiles) {
             if (f.category() == GeneratedFileType.Category.INTERNAL_RESOURCE || f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
-                genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents(), shouldDumpFiles));
+                genResBI.produce(new GeneratedResourceBuildItem(f.relativePath(), f.contents(), shouldSkipDumpFiles));
                 resource.produce(new NativeImageResourceBuildItem(f.relativePath()));
             }
             if (f.category() == GeneratedFileType.Category.STATIC_HTTP_RESOURCE) {
