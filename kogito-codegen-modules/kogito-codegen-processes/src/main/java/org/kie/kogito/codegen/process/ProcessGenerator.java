@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.codegen.process;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,8 +68,6 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
 /**
  * Generates the Process&lt;T&gt; container
@@ -454,6 +454,7 @@ public class ProcessGenerator {
                 constructor.addParameter(parameter);
                 handlersCollection.addArgument(new NameExpr(varName));
                 additionalClasses.add(handler.getValue());
+
             }
         }
         String processInstanceFQCN = ProcessInstanceGenerator.qualifiedName(packageName, typeName);
