@@ -90,8 +90,8 @@ class ProcessEventIT {
         kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
-                assertTrue(Objects.equals(event.getType(), "ProcessInstanceEvent"));
+                ProcessDataEvent<?> event = mapper.readValue(s, ProcessDataEvent.class);
+                assertEquals("ProcessInstanceEvent", event.getType());
                 countDownLatch.countDown();
             } catch (JsonProcessingException e) {
                 LOGGER.error("Error parsing {}", s, e);
@@ -102,8 +102,8 @@ class ProcessEventIT {
         kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
-                assertTrue(Objects.equals(humanTaskEvent.getType(), "UserTaskInstanceEvent"));
+                ProcessDataEvent<?> humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
+                assertEquals("UserTaskInstanceEvent", humanTaskEvent.getType());
                 countDownLatch.countDown();
             } catch (JsonProcessingException e) {
                 LOGGER.error("Error parsing {}", s, e);
