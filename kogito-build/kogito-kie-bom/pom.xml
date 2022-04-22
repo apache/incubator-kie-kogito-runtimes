@@ -87,7 +87,6 @@
                 <groupId>org.drools</groupId>
                 <artifactId>drools-commands</artifactId>
                 <version>${version.org.kie}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.drools</groupId>
