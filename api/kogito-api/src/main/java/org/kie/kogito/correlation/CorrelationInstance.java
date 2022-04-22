@@ -19,9 +19,9 @@ public class CorrelationInstance {
 
     private String correlationId;// encoded based on correlations
     private String correlatedId;// == processInstanceId
-    private Correlation correlation;
+    private Correlation<?> correlation;
 
-    public CorrelationInstance(String correlationId, String correlatedId, Correlation correlation) {
+    public CorrelationInstance(String correlationId, String correlatedId, Correlation<?> correlation) {
         this.correlationId = correlationId;
         this.correlatedId = correlatedId;
         this.correlation = correlation;
@@ -35,7 +35,7 @@ public class CorrelationInstance {
         return correlatedId;
     }
 
-    public Correlation getCorrelation() {
+    public Correlation<?> getCorrelation() {
         return correlation;
     }
 }

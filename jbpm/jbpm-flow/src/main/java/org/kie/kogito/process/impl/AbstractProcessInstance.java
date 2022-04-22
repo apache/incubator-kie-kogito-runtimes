@@ -196,8 +196,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     private void syncProcessInstance(WorkflowProcessInstance wpi) {
-        processInstance = wpi;
-        ((WorkflowProcessInstanceImpl) wpi).wrap(this);
+        internalSetProcessInstance(wpi);
         status = wpi.getState();
         id = wpi.getStringId();
         description = wpi.getDescription();
@@ -221,6 +220,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     public void internalSetProcessInstance(WorkflowProcessInstance processInstance) {
         this.processInstance = processInstance;
+        processInstance.wrap(this);
     }
 
     public void internalRemoveProcessInstance(Consumer<AbstractProcessInstance<?>> reloadSupplier) {
