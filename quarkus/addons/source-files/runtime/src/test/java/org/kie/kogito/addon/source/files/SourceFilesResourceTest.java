@@ -17,7 +17,6 @@ package org.kie.kogito.addon.source.files;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -56,10 +55,13 @@ class SourceFilesResourceTest {
 
         Map<String, Collection<SourceFile>> sourceFiles = sourceFilesResource.getSourceFiles();
 
-        assertThat(sourceFiles)
-                .containsExactlyInAnyOrderEntriesOf(Map.of(
-                        "a_process", List.of(new SourceFile("petstore.json"), new SourceFile("petstore.sw.json")),
-                        "ymlgreet", List.of(new SourceFile("ymlgreet.sw.json"))));
+        assertThat(sourceFiles).hasSize(2);
+
+        assertThat(sourceFiles.get("a_process"))
+                .containsExactlyInAnyOrder(new SourceFile("petstore.json"), new SourceFile("petstore.sw.json"));
+
+        assertThat(sourceFiles.get("ymlgreet"))
+                .containsExactlyInAnyOrder(new SourceFile("ymlgreet.sw.json"));
     }
 
     @Test
