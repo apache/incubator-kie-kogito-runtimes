@@ -32,8 +32,8 @@ import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.drools.core.util.StringUtils;
 import org.drools.core.xml.SemanticModules;
+import org.drools.util.StringUtils;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
@@ -383,12 +383,6 @@ public class ProcessCodegen extends AbstractGenerator {
 
             ps.add(p);
             pis.add(pi);
-        }
-
-        for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
-            ModelMetaData mmd = modelClassGenerator.generate();
-            storeFile(MODEL_TYPE, modelClassGenerator.generatedFilePath(),
-                    mmd.generate());
         }
 
         for (ModelClassGenerator modelClassGenerator : processIdToModelGenerator.values()) {
