@@ -51,8 +51,6 @@ import org.kie.kogito.serverless.workflow.parser.handlers.validation.WorkflowVal
 import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
 import org.kie.kogito.serverless.workflow.parser.schema.WorkflowModelSchemaRef;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -74,8 +72,6 @@ public class ServerlessWorkflowParser {
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServerlessWorkflowParser.class);
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;

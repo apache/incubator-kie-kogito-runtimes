@@ -22,7 +22,6 @@
     <module>extensions</module>
     <module>addons</module>
     <module>test</module>
-    <module>kogito-quarkus-inmemory-config</module>
   </modules>
 
   <build>
