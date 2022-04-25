@@ -15,7 +15,9 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +25,7 @@ import org.acme.travels.Traveller;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.services.event.ProcessDataEvent;
+import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ class ProcessEventIT {
 
     public static final String KOGITO_PROCESSINSTANCES_EVENTS = "kogito-processinstances-events";
     public static final String KOGITO_USERTASKINSTANCES_EVENTS = "kogito-usertaskinstances-events";
+    public static final String KOGITO_VARIABLE_EVENTS = "kogito-variables-events";
 
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessEventIT.class);
 
@@ -90,7 +93,7 @@ class ProcessEventIT {
         kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent<?> event = mapper.readValue(s, ProcessDataEvent.class);
+                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
                 assertEquals("ProcessInstanceEvent", event.getType());
                 countDownLatch.countDown();
             } catch (JsonProcessingException e) {
@@ -102,8 +105,20 @@ class ProcessEventIT {
         kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent<?> humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
+                ProcessDataEvent humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
                 assertEquals("UserTaskInstanceEvent", humanTaskEvent.getType());
+                countDownLatch.countDown();
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Error parsing {}", s, e);
+                fail(e);
+            }
+        });
+
+        kafkaClient.consume(Set.of(KOGITO_VARIABLE_EVENTS), s -> {
+            LOGGER.info("Received from kafka: {}", s);
+            try {
+                ProcessDataEvent variableEvent = mapper.readValue(s, ProcessDataEvent.class);
+                assertEquals("VariableInstanceEvent", variableEvent.getType());
                 countDownLatch.countDown();
             } catch (JsonProcessingException e) {
                 LOGGER.error("Error parsing {}", s, e);
@@ -115,7 +130,7 @@ class ProcessEventIT {
                 .contentType(ContentType.JSON)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
-                .post("/approvals")
+                .post("/handleApprovals")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -126,7 +141,7 @@ class ProcessEventIT {
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .when()
-                .get("/approvals/{processId}/tasks")
+                .get("/handleApprovals/{processId}/tasks")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -141,7 +156,7 @@ class ProcessEventIT {
                 .pathParam("processId", processId)
                 .pathParam("taskId", taskId)
                 .body(model)
-                .put("/approvals/{processId}/firstLineApproval/{taskId}")
+                .put("/handleApprovals/{processId}/firstLineApproval/{taskId}")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -153,7 +168,7 @@ class ProcessEventIT {
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .pathParam("taskId", taskId)
-                .get("/approvals/{processId}/firstLineApproval/{taskId}")
+                .get("/handleApprovals/{processId}/firstLineApproval/{taskId}")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -165,7 +180,7 @@ class ProcessEventIT {
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .when()
-                .get("/approvals/{processId}/tasks")
+                .get("/handleApprovals/{processId}/tasks")
                 .then()
                 .statusCode(200)
                 .extract()
