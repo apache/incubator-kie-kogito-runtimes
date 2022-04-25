@@ -219,8 +219,8 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     }
 
     @Override
-    public SourceFileCodegenBindNotifier getSourceFileCodegenBindNotifier() {
-        return sourceFileCodegenBindNotifier;
+    public Optional<SourceFileCodegenBindNotifier> getSourceFileCodegenBindNotifier() {
+        return Optional.ofNullable(sourceFileCodegenBindNotifier);
     }
 
     @Override

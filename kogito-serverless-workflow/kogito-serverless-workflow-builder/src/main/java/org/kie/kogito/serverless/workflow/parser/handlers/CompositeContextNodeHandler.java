@@ -380,7 +380,9 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     private void notifySourceFileCodegenBindListeners(String uri) {
-        parserContext.getContext().getSourceFileCodegenBindNotifier().notify(new SourceFileServerlessWorkflowBindEvent(workflow.getId(), uri));
+        parserContext.getContext()
+                .getSourceFileCodegenBindNotifier()
+                .ifPresent(notifier -> notifier.notify(new SourceFileServerlessWorkflowBindEvent(workflow.getId(), uri)));
     }
 
     private ApiKeyAuthDecorator.Location from(In in) {

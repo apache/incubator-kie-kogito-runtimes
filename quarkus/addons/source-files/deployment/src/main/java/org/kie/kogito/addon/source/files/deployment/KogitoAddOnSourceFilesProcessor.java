@@ -61,8 +61,7 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
                 sourceFilesRecorder);
 
         kogitoBuildContext.getSourceFileCodegenBindNotifier()
-                .addListener(processListener)
-                .addListener(serverlessWorkflowListener);
+                .ifPresent(notifier -> notifier.addListeners(processListener, serverlessWorkflowListener));
     }
 
 }

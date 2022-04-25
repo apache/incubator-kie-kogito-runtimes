@@ -17,14 +17,14 @@ package org.kie.kogito.codegen.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class SourceFileCodegenBindNotifier {
 
     private final Collection<SourceFileCodegenBindListener<?>> listeners = new ArrayList<>();
 
-    public SourceFileCodegenBindNotifier addListener(SourceFileCodegenBindListener<?> listener) {
-        listeners.add(listener);
-        return this;
+    public void addListeners(SourceFileCodegenBindListener<?>... listeners) {
+        Collections.addAll(this.listeners, listeners);
     }
 
     @SuppressWarnings("unchecked")

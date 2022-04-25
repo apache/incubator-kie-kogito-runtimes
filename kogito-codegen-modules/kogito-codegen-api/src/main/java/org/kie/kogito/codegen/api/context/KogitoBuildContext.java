@@ -152,7 +152,7 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
 
     Optional<KogitoGAV> getGAV();
 
-    SourceFileCodegenBindNotifier getSourceFileCodegenBindNotifier();
+    Optional<SourceFileCodegenBindNotifier> getSourceFileCodegenBindNotifier();
 
     default Map<String, String> getPropertiesMap() {
         return getApplicationProperties().stream()
