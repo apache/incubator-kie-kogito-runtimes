@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.kie.kogito.codegen.process.ProcessCodegen;
-import org.kie.kogito.quarkus.config.InMemoryConfigSource;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
@@ -38,10 +37,6 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvider {
 
-    private static final String KOGITO_PREFIX = "org.kogito.openapi.client.";
-    private static final String API_CODEGEN_PREFIX = "quarkus.openapi-generator.codegen.spec.";
-    private static final String API_CODEGEN_SUFFIX = ".base-package";
-
     @Override
     public List<SpecInputModel> read(CodeGenContext context) {
         Path inputDir = context.inputDir();
@@ -49,7 +44,7 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
             inputDir = inputDir.getParent();
         }
         try (Stream<Path> openApiFilesPaths = Files.walk(inputDir)) {
-            List<SpecInputModel> result = openApiFilesPaths
+            return openApiFilesPaths
                     .filter(Files::isRegularFile)
                     .map(this::getWorkflow)
                     .filter(Optional::isPresent)
@@ -57,8 +52,6 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
                     .map(this::getSpecInput)
                     .flatMap(x -> x)
                     .collect(Collectors.toList());
-            result.forEach(this::addConfig);
-            return result;
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
@@ -75,10 +68,6 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
                         throw new IllegalStateException(ex);
                     }
                 }).findFirst();
-    }
-
-    private void addConfig(SpecInputModel specInput) {
-        InMemoryConfigSource.INSTANCE.addConfig(API_CODEGEN_PREFIX + specInput.getFileName() + API_CODEGEN_SUFFIX, KOGITO_PREFIX + ServerlessWorkflowUtils.removeExt(specInput.getFileName()));
     }
 
     private Stream<SpecInputModel> getSpecInput(Workflow workflow) {
