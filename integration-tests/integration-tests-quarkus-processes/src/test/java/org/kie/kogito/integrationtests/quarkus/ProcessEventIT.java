@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.acme.travels.Traveller;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.process.ProcessDataEvent;
@@ -42,7 +44,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
@@ -55,6 +57,7 @@ class ProcessEventIT {
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessEventIT.class);
 
     public KafkaTestClient kafkaClient;
+    private static ObjectMapper mapper;
 
     @ConfigProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
     private String kafkaBootstrapServers;
@@ -64,22 +67,13 @@ class ProcessEventIT {
         kafkaClient = new KafkaTestClient(kafkaBootstrapServers);
     }
 
-    public static final class Mapper {
-
-        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+    @BeforeAll
+    static void init() {
+        mapper = new ObjectMapper()
                 .registerModule(JsonFormat.getCloudEventJacksonModule())
                 .registerModule(new JavaTimeModule());
-
-        private Mapper() {
-
-        }
-
-        public static ObjectMapper mapper() {
-            return OBJECT_MAPPER;
-        }
     }
 
-    ObjectMapper mapper = Mapper.mapper();
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
@@ -87,38 +81,24 @@ class ProcessEventIT {
     @Test
     void testSaveTask() throws InterruptedException {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish");
-        final int count = 2;
+        final int count = 7;
         final CountDownLatch countDownLatch = new CountDownLatch(count);
 
-        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
+        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS, KOGITO_USERTASKINSTANCES_EVENTS, KOGITO_VARIABLE_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
                 ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
-                assertEquals("ProcessInstanceEvent", event.getType());
-                countDownLatch.countDown();
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error parsing {}", s, e);
-                fail(e);
-            }
-        });
-
-        kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
-            LOGGER.info("Received from kafka: {}", s);
-            try {
-                ProcessDataEvent humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
-                assertEquals("UserTaskInstanceEvent", humanTaskEvent.getType());
-                countDownLatch.countDown();
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Error parsing {}", s, e);
-                fail(e);
-            }
-        });
-
-        kafkaClient.consume(Set.of(KOGITO_VARIABLE_EVENTS), s -> {
-            LOGGER.info("Received from kafka: {}", s);
-            try {
-                ProcessDataEvent variableEvent = mapper.readValue(s, ProcessDataEvent.class);
-                assertEquals("VariableInstanceEvent", variableEvent.getType());
+                switch (event.getType()) {
+                    case "ProcessInstanceEvent":
+                        Assertions.assertEquals("ProcessInstanceEvent", event.getType());
+                        break;
+                    case "UserTaskInstanceEvent":
+                        Assertions.assertEquals("UserTaskInstanceEvent", event.getType());
+                        break;
+                    case "VariableInstanceEvent":
+                        Assertions.assertEquals("VariableInstanceEvent", event.getType());
+                        break;
+                }
                 countDownLatch.countDown();
             } catch (JsonProcessingException e) {
                 LOGGER.error("Error parsing {}", s, e);
@@ -149,7 +129,7 @@ class ProcessEventIT {
 
         Map<String, Object> model = Collections.singletonMap("approved", true);
 
-        assertEquals(model, given().contentType(ContentType.JSON)
+        Assertions.assertEquals(model, given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
@@ -162,7 +142,7 @@ class ProcessEventIT {
                 .extract()
                 .as(Map.class));
 
-        assertEquals(true, given().contentType(ContentType.JSON)
+        Assertions.assertEquals(true, given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
@@ -187,6 +167,6 @@ class ProcessEventIT {
                 .path("[1].id");
 
         countDownLatch.await(10, TimeUnit.SECONDS);
-        assertEquals(0, countDownLatch.getCount());
+        Assertions.assertEquals(0, countDownLatch.getCount());
     }
 }
