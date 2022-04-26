@@ -41,12 +41,14 @@ import org.kie.kogito.incubation.common.EmptyDataContext;
 import org.kie.kogito.incubation.common.EmptyMetaDataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.quarkus.conf.KogitoRuntimeConfig;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.ArchiveRootBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
@@ -60,6 +62,7 @@ import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
+import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
 import static org.drools.drl.quarkus.util.deployment.DroolsQuarkusResourceUtils.compileGeneratedSources;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.HOT_RELOAD_SUPPORT_PATH;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
@@ -95,6 +98,12 @@ public class KogitoAssetsProcessor {
                         combinedIndexBuildItem.getIndex(),
                         curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
         return new KogitoBuildContextBuildItem(context);
+    }
+
+    @Record(RUNTIME_INIT)
+    @BuildStep
+    public void configBuildStep(KogitoRuntimeConfig recorder) {
+        recorder.setGroupId(curateOutcomeBuildItem.getApplicationModel().getAppArtifact().getGroupId());
     }
 
     @BuildStep
