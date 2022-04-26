@@ -39,8 +39,9 @@ public class DefaultPathParamResolver implements PathParamResolver {
             if (value == null) {
                 throw new IllegalArgumentException("missing parameter " + key);
             }
-            toRemove.add(key);
-            sb.replace(start, end + 1, value.toString());
+            String valueString = value.toString();
+            sb.replace(start, end + 1, valueString);
+            end = start + valueString.length();
             start = sb.indexOf("{", end);
         }
         parameters.keySet().removeAll(toRemove);
