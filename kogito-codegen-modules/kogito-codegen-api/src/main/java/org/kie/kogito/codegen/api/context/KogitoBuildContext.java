@@ -160,6 +160,7 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
                 .collect(Collectors.toUnmodifiableMap(key -> key,
                         key -> getApplicationProperty(key).get()));
     }
+    
 
     interface Builder {
 
