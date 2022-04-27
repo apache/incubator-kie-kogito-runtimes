@@ -16,11 +16,9 @@
 package org.kie.kogito.addon.source.files;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
@@ -33,18 +31,7 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
     @Override
     public Collection<SourceFile> getSourceFiles(String id) {
         Map<String, SourceFile> foundSourceFiles = this.sourceFiles.get(id);
-        return foundSourceFiles != null ? Collections.unmodifiableCollection(foundSourceFiles.values()) : List.of();
-    }
-
-    @Override
-    public Map<String, Collection<SourceFile>> getSourceFiles() {
-        return sourceFiles.entrySet().stream()
-                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Collections.unmodifiableCollection(e.getValue().values())));
-    }
-
-    @Override
-    public boolean contains(String sourceFile) {
-        return sourceFiles.values().stream().anyMatch(files -> files.containsKey(sourceFile));
+        return foundSourceFiles != null ? foundSourceFiles.values() : List.of();
     }
 
     public void clear() {
