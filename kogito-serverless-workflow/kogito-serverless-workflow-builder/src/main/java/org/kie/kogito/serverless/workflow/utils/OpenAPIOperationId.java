@@ -18,6 +18,8 @@ package org.kie.kogito.serverless.workflow.utils;
 import java.net.URI;
 import java.nio.file.Path;
 
+import org.drools.util.StringUtils;
+
 public class OpenAPIOperationId {
 
     static final String OPENAPI_OPERATION_SEPARATOR = "#";
@@ -32,11 +34,16 @@ public class OpenAPIOperationId {
     private final URI uri;
     private final String operationId;
     private final String fileName;
+    private final String className;
+    private final String serviceName;
 
     private OpenAPIOperationId(String uri, String operationId) {
         this.uri = URI.create(uri);
         this.operationId = operationId;
-        this.fileName = Path.of(uri).getFileName().toString().toLowerCase();
+        String fileName = Path.of(uri).getFileName().toString().toLowerCase();
+        this.className = getClassName(fileName, operationId);
+        this.serviceName = sanitizeName(removeExt(fileName));
+        this.fileName = fileName;
     }
 
     public URI getUri() {
@@ -53,11 +60,19 @@ public class OpenAPIOperationId {
     }
 
     public String getServiceName() {
-        return sanitizeName(removeExt(fileName));
+        return serviceName;
     }
 
     public String getFileName() {
-        return sanitizeName(fileName);
+        return fileName;
+    }
+
+    public String geClassName() {
+        return className;
+    }
+
+    public static String getClassName(String fileName, String operationId) {
+        return StringUtils.ucFirst(sanitizeName(removeExt(fileName)) + "_" + sanitizeName(operationId));
     }
 
     private static String removeExt(String fileName) {

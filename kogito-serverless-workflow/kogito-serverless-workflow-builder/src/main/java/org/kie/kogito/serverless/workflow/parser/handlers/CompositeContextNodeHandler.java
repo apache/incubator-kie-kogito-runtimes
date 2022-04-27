@@ -37,6 +37,7 @@ import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.SourceFileServerlessWorkflowBindEvent;
+import org.kie.kogito.serverless.workflow.parser.rest.RestOperationHandlerFactory;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;

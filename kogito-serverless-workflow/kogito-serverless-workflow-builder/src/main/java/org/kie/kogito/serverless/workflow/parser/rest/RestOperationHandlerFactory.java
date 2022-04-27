@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.parser.handlers;
+package org.kie.kogito.serverless.workflow.parser.rest;
 
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.utils.OpenAPIOperationId;
 
@@ -24,7 +25,14 @@ public class RestOperationHandlerFactory {
     }
 
     public static RestOperationHandler get(ParserContext parserContext, OpenAPIOperationId id) {
-        return new DescriptorRestOperationHandler(parserContext, id);
+
+        KogitoBuildContext context = parserContext.getContext();
+
+        if (context.getGeneratedHandlers().contains(id.geClassName())) {
+            return new GeneratedRestOperationHandler(id);
+        } else {
+            return new DescriptorRestOperationHandler(parserContext, id);
+        }
     }
 
 }
