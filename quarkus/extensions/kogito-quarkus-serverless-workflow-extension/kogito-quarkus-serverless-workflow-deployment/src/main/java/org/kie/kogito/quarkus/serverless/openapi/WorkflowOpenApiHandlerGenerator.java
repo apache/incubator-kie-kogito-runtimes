@@ -75,6 +75,12 @@ public class WorkflowOpenApiHandlerGenerator implements Runnable {
     private final KogitoBuildContext context;
     private final Collection<GeneratedFile> files = new ArrayList<>();
 
+    public static Collection<GeneratedFile> generateHandlerClasses(KogitoBuildContext context, IndexView index) {
+        WorkflowOpenApiHandlerGenerator runnable = new WorkflowOpenApiHandlerGenerator(context, index);
+        runnable.run();
+        return runnable.files;
+    }
+
     private WorkflowOpenApiHandlerGenerator(KogitoBuildContext context, IndexView index) {
         this.index = index;
         this.context = context;
@@ -86,28 +92,6 @@ public class WorkflowOpenApiHandlerGenerator implements Runnable {
         if (!context.getGeneratedHandlers().isEmpty()) {
             generateWorkItemHandlerConfig();
         }
-    }
-
-    private void generateWorkItemHandlerConfig() {
-        CompilationUnit unit = new CompilationUnit(context.getPackageName());
-        final String className = "OpenApiWorkItemHandlerConfig";
-        ClassOrInterfaceDeclaration clazz = unit.addClass(className);
-        clazz.addExtendedType(CachedWorkItemHandlerConfig.class);
-        clazz.addAnnotation(ApplicationScoped.class);
-        BlockStmt body = clazz.addMethod("init").addAnnotation(PostConstruct.class).createBody();
-        for (String refHandler : context.getGeneratedHandlers()) {
-            final String fieldName = refHandler.toLowerCase();
-            clazz.addField(context.getPackageName() + "." + refHandler, fieldName).addAnnotation(Inject.class);
-            body.addStatement(new MethodCallExpr(new SuperExpr(), "register").addArgument(new StringLiteralExpr(refHandler))
-                    .addArgument(new NameExpr(fieldName)));
-        }
-        files.add(fromCompilationUnit(unit, className));
-    }
-
-    public static Collection<GeneratedFile> generateHandlerClasses(KogitoBuildContext context, IndexView index) {
-        WorkflowOpenApiHandlerGenerator runnable = new WorkflowOpenApiHandlerGenerator(context, index);
-        runnable.run();
-        return runnable.files;
     }
 
     private void generateHandler(AnnotationInstance a) {
@@ -161,5 +145,21 @@ public class WorkflowOpenApiHandlerGenerator implements Runnable {
                 throw new UnsupportedOperationException("Kind " + param.kind() + " is not supported");
         }
 
+    }
+
+    private void generateWorkItemHandlerConfig() {
+        CompilationUnit unit = new CompilationUnit(context.getPackageName());
+        final String className = "OpenApiWorkItemHandlerConfig";
+        ClassOrInterfaceDeclaration clazz = unit.addClass(className);
+        clazz.addExtendedType(CachedWorkItemHandlerConfig.class);
+        clazz.addAnnotation(ApplicationScoped.class);
+        BlockStmt body = clazz.addMethod("init").addAnnotation(PostConstruct.class).createBody();
+        for (String refHandler : context.getGeneratedHandlers()) {
+            final String fieldName = refHandler.toLowerCase();
+            clazz.addField(context.getPackageName() + "." + refHandler, fieldName).addAnnotation(Inject.class);
+            body.addStatement(new MethodCallExpr(new SuperExpr(), "register").addArgument(new StringLiteralExpr(refHandler))
+                    .addArgument(new NameExpr(fieldName)));
+        }
+        files.add(fromCompilationUnit(unit, className));
     }
 }

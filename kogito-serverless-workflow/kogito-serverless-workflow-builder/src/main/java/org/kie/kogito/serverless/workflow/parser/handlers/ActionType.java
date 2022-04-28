@@ -15,7 +15,11 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import java.util.Map;
+
 import io.serverlessworkflow.api.functions.FunctionDefinition;
+
+import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 
 enum ActionType {
     REST("rest"),
@@ -50,7 +54,7 @@ enum ActionType {
     public static ActionType from(FunctionDefinition actionFunction) {
         switch (actionFunction.getType()) {
             case REST:
-                return ActionType.OPENAPI;
+                return isEmpty(actionFunction.getOperation()) ? fromMetadata(actionFunction.getMetadata()) : ActionType.OPENAPI;
             case EXPRESSION:
                 return ActionType.EXPRESSION;
             case CUSTOM:
@@ -71,4 +75,16 @@ enum ActionType {
         throw new UnsupportedOperationException("Unable to recognize custom format " + operation + ", supported custom formats are " + values());
     }
 
+    /* This code is kept for backward compatibility with old workflow files, metadata should not be used for type resolution */
+    private static ActionType fromMetadata(Map<String, String> metadata) {
+        String type = metadata != null ? metadata.get("type") : null;
+        if (type != null) {
+            try {
+                return ActionType.valueOf(type.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                // see return 
+            }
+        }
+        return ActionType.EMPTY;
+    }
 }

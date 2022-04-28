@@ -24,7 +24,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class GeneratedRestOperationHandler implements RestOperationHandler {
 
-    private OpenAPIOperationId id;
+    private final OpenAPIOperationId id;
 
     public GeneratedRestOperationHandler(OpenAPIOperationId id) {
         this.id = id;

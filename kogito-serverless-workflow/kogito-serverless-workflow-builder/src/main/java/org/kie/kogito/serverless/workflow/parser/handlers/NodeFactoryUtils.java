@@ -83,7 +83,7 @@ public class NodeFactoryUtils {
                 .metaData(Metadata.TRIGGER_REF, eventDefinition.getType())
                 .metaData(Metadata.MESSAGE_TYPE, JSON_NODE)
                 .metaData(Metadata.TRIGGER_TYPE, "ConsumeMessage")
-                .metaData(Metadata.DATA_ONLY, isDataOnly(eventDefinition));
+                .metaData(Metadata.DATA_ONLY, eventDefinition.isDataOnly());
     }
 
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> SplitFactory<T> eventBasedExclusiveSplitNode(SplitFactory<T> nodeFactory) {
@@ -113,22 +113,14 @@ public class NodeFactoryUtils {
                 .metaData("EventType", "Timer");
     }
 
-    // TODO remove when SDK is updated to include dataOnly in EventDefinition, see https://github.com/serverlessworkflow/sdk-java/issues/183
-    private static Boolean isDataOnly(EventDefinition eventDefinition) {
-        Boolean result = Boolean.TRUE;
-        Map<String, String> metadata = eventDefinition.getMetadata();
-        final String dataOnlyKey = "dataOnly";
-        if (metadata != null && metadata.containsKey(dataOnlyKey)) {
-            result = Boolean.parseBoolean(metadata.get(dataOnlyKey));
-        }
-        return result;
-    }
-
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillRest(WorkItemNodeFactory<T> workItemNode) {
         return workItemNode
                 .metaData(TaskDescriptor.KEY_WORKITEM_TYPE, RestWorkItemHandler.REST_TASK_TYPE)
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
                 .workName(RestWorkItemHandler.REST_TASK_TYPE);
+    }
+
+    private NodeFactoryUtils() {
     }
 
 }

@@ -26,7 +26,7 @@
     <version.com.jayway.jsonpath>2.6.0</version.com.jayway.jsonpath>
     <version.net.thisptr.jackson-jq>1.0.0-preview.20210928</version.net.thisptr.jackson-jq>
     <version.io.quarkiverse.jackson-jq>1.0.1</version.io.quarkiverse.jackson-jq>
-    <version.io.quarkiverse.openapi.generator>0.4.1</version.io.quarkiverse.openapi.generator> 
+    <version.io.quarkiverse.openapi.generator>0.5.0</version.io.quarkiverse.openapi.generator> 
     <version.io.quarkiverse.reactivemessaging.http>1.0.3</version.io.quarkiverse.reactivemessaging.http>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.23.1</version.com.github.javaparser>
@@ -56,7 +56,7 @@
     <version.io.cloudevents>2.3.0</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>5.8.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.8.5</version.io.micrometer>
-    <version.io.serverlessworkflow>4.0.2.Final</version.io.serverlessworkflow>
+    <version.io.serverlessworkflow>4.0.3.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.1.22</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>2.21.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 

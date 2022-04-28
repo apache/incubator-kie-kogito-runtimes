@@ -191,7 +191,6 @@ public abstract class AbstractKogitoBuildContext implements KogitoBuildContext {
     @Override
     public Collection<String> getGeneratedHandlers() {
         return Collections.unmodifiableCollection(appHandlers);
-
     }
 
     @Override

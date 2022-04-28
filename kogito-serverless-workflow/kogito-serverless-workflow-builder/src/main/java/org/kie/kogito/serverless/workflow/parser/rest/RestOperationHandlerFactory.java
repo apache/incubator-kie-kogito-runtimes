@@ -25,14 +25,8 @@ public class RestOperationHandlerFactory {
     }
 
     public static RestOperationHandler get(ParserContext parserContext, OpenAPIOperationId id) {
-
         KogitoBuildContext context = parserContext.getContext();
-
-        if (context.getGeneratedHandlers().contains(id.geClassName())) {
-            return new GeneratedRestOperationHandler(id);
-        } else {
-            return new DescriptorRestOperationHandler(parserContext, id);
-        }
+        return context.getGeneratedHandlers().contains(id.geClassName()) ? new GeneratedRestOperationHandler(id) : new DescriptorRestOperationHandler(parserContext, id);
     }
 
 }

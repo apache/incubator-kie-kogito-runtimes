@@ -72,7 +72,7 @@ import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.r
 
 public class DescriptorRestOperationHandler implements RestOperationHandler {
 
-    private final static Logger logger = LoggerFactory.getLogger(DescriptorRestOperationHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(DescriptorRestOperationHandler.class);
 
     private final ParserContext parserContext;
     private final OpenAPIOperationId operationId;
@@ -107,7 +107,7 @@ public class DescriptorRestOperationHandler implements RestOperationHandler {
             addSecurity(node, openAPIDescriptor, serviceName);
             return node.workParameter(RestWorkItemHandler.URL,
                     runtimeOpenApi(serviceName, "base_path", String.class, OpenAPIDescriptorFactory.getDefaultURL(openAPI, "http://localhost:8080"),
-                            (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<String>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
+                            (key, clazz, defaultValue) -> new ConfigSuppliedWorkItemSupplier<>(key, clazz, defaultValue, calculatedKey -> concatPaths(calculatedKey, openAPIDescriptor.getPath()),
                                     new LambdaExpr(new Parameter(new UnknownType(), "calculatedKey"),
                                             new MethodCallExpr(ConversionUtils.class.getCanonicalName() + ".concatPaths")
                                                     .addArgument(new NameExpr("calculatedKey")).addArgument(new StringLiteralExpr(openAPIDescriptor.getPath()))))))
