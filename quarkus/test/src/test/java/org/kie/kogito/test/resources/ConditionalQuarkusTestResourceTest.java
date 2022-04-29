@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.test.resources;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -23,10 +24,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.kie.kogito.test.quarkus.QuarkusIntegrationTestProperty;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.lenient;
@@ -39,6 +40,7 @@ public class ConditionalQuarkusTestResourceTest {
 
     private static final int MAPPED_PORT = 8800;
     private static final String KOGITO_PROPERTY = "my-kogito-property";
+    private static final String INTEGRATION_PROPERTY = "integration-property";
     private static final String KOGITO_PROPERTY_VALUE = "localhost:" + MAPPED_PORT;
 
     @Mock
@@ -58,7 +60,10 @@ public class ConditionalQuarkusTestResourceTest {
 
             @Override
             protected Map<String, String> getProperties() {
-                return singletonMap(KOGITO_PROPERTY, KOGITO_PROPERTY_VALUE);
+                Map<String, String> map = new HashMap<>();
+                map.put(KOGITO_PROPERTY, KOGITO_PROPERTY_VALUE);
+                map.put(INTEGRATION_PROPERTY, KOGITO_PROPERTY_VALUE);
+                return map;
             }
 
         };
@@ -112,6 +117,8 @@ public class ConditionalQuarkusTestResourceTest {
         whenInjectTestInstance();
         thenKogitoPropertyIsUpdated();
         thenAnotherPropertyIsNotUpdated();
+        thenIntegrationPropertyIsUpdated();
+        thenIntegrationOtherPropertyIsNotUpdated();
         thenResourceIsUpdated();
     }
 
@@ -160,6 +167,14 @@ public class ConditionalQuarkusTestResourceTest {
         assertNull(testInstance.anotherProperty);
     }
 
+    private void thenIntegrationPropertyIsUpdated() {
+        assertEquals(KOGITO_PROPERTY_VALUE, testInstance.integrationProperty);
+    }
+
+    private void thenIntegrationOtherPropertyIsNotUpdated() {
+        assertNull(testInstance.integrationOtherProperty);
+    }
+
     private void thenResourceIsUpdated() {
         assertEquals(instance, testInstance.resource);
     }
@@ -171,6 +186,12 @@ public class ConditionalQuarkusTestResourceTest {
 
         @ConfigProperty(name = "another-property")
         private String anotherProperty;
+
+        @QuarkusIntegrationTestProperty(name = "integration-property")
+        private String integrationProperty;
+
+        @QuarkusIntegrationTestProperty(name = "integration-other-property")
+        private String integrationOtherProperty;
 
         @Resource
         private ConditionalQuarkusTestResource resource;

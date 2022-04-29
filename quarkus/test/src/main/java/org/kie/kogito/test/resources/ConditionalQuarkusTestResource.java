@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.test.quarkus.QuarkusIntegrationTestProperty;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -74,8 +75,11 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
         while (c != Object.class) {
             for (Field f : c.getDeclaredFields()) {
                 ConfigProperty configProperty = f.getAnnotation(ConfigProperty.class);
+                QuarkusIntegrationTestProperty quarkusIntegrationTestProperty = f.getAnnotation(QuarkusIntegrationTestProperty.class);
                 if (configProperty != null && getProperties().containsKey(configProperty.name())) {
                     setFieldValue(f, testInstance, getProperties().get(configProperty.name()));
+                } else if (quarkusIntegrationTestProperty != null && getProperties().containsKey(quarkusIntegrationTestProperty.name())) {
+                    setFieldValue(f, testInstance, getProperties().get(quarkusIntegrationTestProperty.name()));
                 } else if (f.isAnnotationPresent(Resource.class) && f.getType().isInstance(this)) {
                     setFieldValue(f, testInstance, this);
                 }
