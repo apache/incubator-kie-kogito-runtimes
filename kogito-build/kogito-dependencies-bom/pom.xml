@@ -95,6 +95,8 @@
     <version.org.mockito>4.5.1</version.org.mockito>
     <version.org.testcontainers>1.16.2</version.org.testcontainers>
 
+    <version.net.byte-buddy>1.12.9</version.net.byte-buddy>
+
     <version.org.mvel>2.4.12.Final</version.org.mvel>
     <version.org.reactivestreams>1.0.3</version.org.reactivestreams>
     <version.org.reflections>0.9.11</version.org.reflections>
@@ -359,6 +361,12 @@
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${version.org.mockito}</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy</artifactId>
+        <version>${version.net.byte-buddy}</version>
       </dependency>
 
       <dependency>
