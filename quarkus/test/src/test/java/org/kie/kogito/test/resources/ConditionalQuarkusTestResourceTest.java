@@ -40,6 +40,7 @@ public class ConditionalQuarkusTestResourceTest {
     private static final int MAPPED_PORT = 8800;
     private static final String PROPERTY_KEY = "property-key";
     private static final String PROPERTY_VALUE = "localhost:" + MAPPED_PORT;
+    private static final String PROPERTY_DEFAULT_VALUE = "PROPERTY_DEFAULT_VALUE";
 
     @Mock
     private TestResource resource;
@@ -111,6 +112,7 @@ public class ConditionalQuarkusTestResourceTest {
     public void shouldInjectQuarkusIntegrationTestProperty() {
         whenInjectTestInstance();
         thenPropertyValueIsUpdated();
+        thenPropertyValueWithDefaultValueIsUpdated();
         thenOtherPropertyValueIsNotUpdated();
         thenResourceIsUpdated();
     }
@@ -156,6 +158,10 @@ public class ConditionalQuarkusTestResourceTest {
         assertEquals(PROPERTY_VALUE, testInstance.propertyValue);
     }
 
+    private void thenPropertyValueWithDefaultValueIsUpdated() {
+        assertEquals(PROPERTY_DEFAULT_VALUE, testInstance.propertyWithDefaultValue);
+    }
+
     private void thenOtherPropertyValueIsNotUpdated() {
         assertNull(testInstance.otherPropertyValue);
     }
@@ -168,6 +174,9 @@ public class ConditionalQuarkusTestResourceTest {
 
         @QuarkusTestProperty(name = "property-key")
         private String propertyValue;
+
+        @QuarkusTestProperty(name = "property-key-with-default", defaultValue = PROPERTY_DEFAULT_VALUE)
+        private String propertyWithDefaultValue;
 
         @QuarkusTestProperty(name = "other-property-key")
         private String otherPropertyValue;

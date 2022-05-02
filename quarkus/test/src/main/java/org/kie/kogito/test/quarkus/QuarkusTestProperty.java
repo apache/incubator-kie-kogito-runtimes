@@ -30,4 +30,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface QuarkusTestProperty {
 
     String name() default "";
+
+    String defaultValue() default "";
 }
