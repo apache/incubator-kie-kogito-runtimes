@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.kie.kogito.test.quarkus.QuarkusIntegrationTestProperty;
+import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -73,7 +73,7 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
         Class<?> c = testInstance.getClass();
         while (c != Object.class) {
             for (Field f : c.getDeclaredFields()) {
-                QuarkusIntegrationTestProperty quarkusIntegrationTestProperty = f.getAnnotation(QuarkusIntegrationTestProperty.class);
+                QuarkusTestProperty quarkusIntegrationTestProperty = f.getAnnotation(QuarkusTestProperty.class);
                 if (quarkusIntegrationTestProperty != null && getProperties().containsKey(quarkusIntegrationTestProperty.name())) {
                     setFieldValue(f, testInstance, getProperties().get(quarkusIntegrationTestProperty.name()));
                 } else if (f.isAnnotationPresent(Resource.class) && f.getType().isInstance(this)) {

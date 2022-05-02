@@ -23,7 +23,7 @@ import javax.annotation.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.kie.kogito.test.quarkus.QuarkusIntegrationTestProperty;
+import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -166,10 +166,10 @@ public class ConditionalQuarkusTestResourceTest {
 
     private class TestInstance {
 
-        @QuarkusIntegrationTestProperty(name = "property-key")
+        @QuarkusTestProperty(name = "property-key")
         private String propertyValue;
 
-        @QuarkusIntegrationTestProperty(name = "other-property-key")
+        @QuarkusTestProperty(name = "other-property-key")
         private String otherPropertyValue;
 
         @Resource

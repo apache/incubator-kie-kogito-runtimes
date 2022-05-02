@@ -27,7 +27,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Qualifier
 @Retention(RUNTIME)
 @Target({ FIELD })
-public @interface QuarkusIntegrationTestProperty {
+public @interface QuarkusTestProperty {
 
     String name() default "";
 }
