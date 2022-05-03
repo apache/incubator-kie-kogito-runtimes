@@ -16,7 +16,7 @@
 package org.kie.kogito.quarkus.serverless.workflow.deployment;
 
 import org.kie.kogito.process.expr.ExpressionHandler;
-import org.kie.kogito.quarkus.common.deployment.KogitoAddonsGeneratedSourcesBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.serverless.openapi.WorkflowOpenApiHandlerGenerator;
 
@@ -43,8 +43,8 @@ public class ServerlessWorkflowAssetsProcessor {
     }
 
     @BuildStep
-    void addOpenAPIWorkItemHandler(KogitoBuildContextBuildItem contextBI, CombinedIndexBuildItem indexBuildItem, BuildProducer<KogitoAddonsGeneratedSourcesBuildItem> sources) {
-        sources.produce(new KogitoAddonsGeneratedSourcesBuildItem(WorkflowOpenApiHandlerGenerator.generateHandlerClasses(contextBI.getKogitoBuildContext(), indexBuildItem.getIndex())));
+    void addOpenAPIWorkItemHandler(KogitoBuildContextBuildItem contextBI, CombinedIndexBuildItem indexBuildItem, BuildProducer<KogitoAddonsPreGeneratedSourcesBuildItem> sources) {
+        sources.produce(new KogitoAddonsPreGeneratedSourcesBuildItem(WorkflowOpenApiHandlerGenerator.generateHandlerClasses(contextBI.getKogitoBuildContext(), indexBuildItem.getIndex())));
     }
 
 }
