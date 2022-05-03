@@ -84,7 +84,9 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
                 if (quarkusTestProperty != null) {
                     String value = Optional.ofNullable(getProperties().get(quarkusTestProperty.name()))
                             .orElse(quarkusTestProperty.defaultValue());
-                    setFieldValue(f, testInstance, Strings.emptyToNull(value));
+                    if (!Strings.isNullOrEmpty(value)) {
+                        setFieldValue(f, testInstance, value);
+                    }
                 } else if (f.isAnnotationPresent(Resource.class) && f.getType().isInstance(this)) {
                     setFieldValue(f, testInstance, this);
                 }
