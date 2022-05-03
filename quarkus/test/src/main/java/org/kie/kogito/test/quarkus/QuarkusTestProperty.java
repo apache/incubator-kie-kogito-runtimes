@@ -29,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ FIELD })
 public @interface QuarkusTestProperty {
 
-    String name() default "";
+    String name();
 
     String defaultValue() default "";
 }

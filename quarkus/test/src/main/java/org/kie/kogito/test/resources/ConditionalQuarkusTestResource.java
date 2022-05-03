@@ -23,6 +23,8 @@ import java.util.Optional;
 import javax.annotation.Resource;
 
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -32,6 +34,8 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
  * Quarkus resource to be run if and only if it was enabled.
  */
 public abstract class ConditionalQuarkusTestResource<T extends TestResource> implements QuarkusTestResourceLifecycleManager {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(ConditionalQuarkusTestResource.class);
 
     private final T testResource;
     private final ConditionHolder condition;
@@ -76,10 +80,10 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
         Class<?> c = testInstance.getClass();
         while (c != Object.class) {
             for (Field f : c.getDeclaredFields()) {
-                QuarkusTestProperty quarkusIntegrationTestProperty = f.getAnnotation(QuarkusTestProperty.class);
-                if (quarkusIntegrationTestProperty != null) {
-                    String value = Optional.ofNullable(getProperties().get(Strings.emptyToNull(quarkusIntegrationTestProperty.name())))
-                            .orElse(quarkusIntegrationTestProperty.defaultValue());
+                QuarkusTestProperty quarkusTestProperty = f.getAnnotation(QuarkusTestProperty.class);
+                if (quarkusTestProperty != null) {
+                    String value = Optional.ofNullable(getProperties().get(quarkusTestProperty.name()))
+                            .orElse(quarkusTestProperty.defaultValue());
                     setFieldValue(f, testInstance, Strings.emptyToNull(value));
                 } else if (f.isAnnotationPresent(Resource.class) && f.getType().isInstance(this)) {
                     setFieldValue(f, testInstance, this);
