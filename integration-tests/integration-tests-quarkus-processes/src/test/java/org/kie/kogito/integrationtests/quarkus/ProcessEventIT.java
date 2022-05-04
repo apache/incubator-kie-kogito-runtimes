@@ -149,7 +149,7 @@ class ProcessEventIT {
                 .extract()
                 .as(Map.class));
 
-        Assertions.assertEquals(true, given().contentType(ContentType.JSON)
+        Assertions.assertTrue(given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
