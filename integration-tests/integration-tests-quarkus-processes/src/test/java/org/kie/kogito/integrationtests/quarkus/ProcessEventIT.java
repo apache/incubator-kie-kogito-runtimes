@@ -16,6 +16,7 @@
 package org.kie.kogito.integrationtests.quarkus;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -33,7 +34,6 @@ import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -97,17 +97,15 @@ class ProcessEventIT {
                         break;
                     case "UserTaskInstanceEvent":
                         Assertions.assertEquals("UserTaskInstanceEvent", event.getType());
-                        Assertions.assertEquals("/handleApprovals", event.getSource().toString());
                         Assertions.assertEquals("handleApprovals", data.get("processId"));
                         break;
                     case "VariableInstanceEvent":
                         Assertions.assertEquals("VariableInstanceEvent", event.getType());
-                        Assertions.assertEquals("/handleApprovals", event.getSource().toString());
                         Assertions.assertEquals("handleApprovals", data.get("processId"));
                         break;
                 }
                 countDownLatch.countDown();
-            } catch (JsonProcessingException e) {
+            } catch (Exception e) {
                 LOGGER.error("Error parsing {}", s, e);
                 fail(e);
             }
