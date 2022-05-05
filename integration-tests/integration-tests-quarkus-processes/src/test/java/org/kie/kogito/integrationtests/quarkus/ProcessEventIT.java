@@ -16,7 +16,6 @@
 package org.kie.kogito.integrationtests.quarkus;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -88,20 +87,16 @@ class ProcessEventIT {
             LOGGER.info("Received from kafka: {}", s);
             try {
                 ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
-                LinkedHashMap data = (LinkedHashMap) event.getData();
+
                 switch (event.getType()) {
                     case "ProcessInstanceEvent":
                         Assertions.assertEquals("ProcessInstanceEvent", event.getType());
-                        Assertions.assertEquals("/handleApprovals", event.getSource().toString());
-                        Assertions.assertEquals("handleApprovals", data.get("processId"));
                         break;
                     case "UserTaskInstanceEvent":
                         Assertions.assertEquals("UserTaskInstanceEvent", event.getType());
-                        Assertions.assertEquals("handleApprovals", data.get("processId"));
                         break;
                     case "VariableInstanceEvent":
                         Assertions.assertEquals("VariableInstanceEvent", event.getType());
-                        Assertions.assertEquals("handleApprovals", data.get("processId"));
                         break;
                 }
                 countDownLatch.countDown();
@@ -147,7 +142,7 @@ class ProcessEventIT {
                 .extract()
                 .as(Map.class));
 
-        Assertions.assertTrue(given().contentType(ContentType.JSON)
+        Assertions.assertEquals(true, given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
