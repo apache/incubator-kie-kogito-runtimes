@@ -17,21 +17,21 @@ package org.kie.kogito.addon.source.files;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
-    private final Map<String, Map<String, SourceFile>> sourceFiles = new HashMap<>();
+    private final Map<String, Collection<SourceFile>> sourceFiles = new HashMap<>();
 
     public void addSourceFile(String id, SourceFile sourceFile) {
-        sourceFiles.computeIfAbsent(id, k -> new HashMap<>()).put(sourceFile.getUri(), sourceFile);
+        sourceFiles.computeIfAbsent(id, k -> new HashSet<>()).add(sourceFile);
     }
 
     @Override
     public Collection<SourceFile> getSourceFiles(String id) {
-        Map<String, SourceFile> foundSourceFiles = this.sourceFiles.get(id);
-        return foundSourceFiles != null ? foundSourceFiles.values() : List.of();
+        return sourceFiles.getOrDefault(id, Set.of());
     }
 
     public void clear() {

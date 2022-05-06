@@ -16,7 +16,7 @@
 package org.kie.kogito.integrationtests.quarkus.source.files;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addon.source.files.SourceFilesProvider;
+import org.kie.kogito.addon.source.files.SourceFile;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
@@ -46,7 +46,7 @@ class SourceFilesAddOnIT {
                 .then()
                 .statusCode(200)
                 .body("size()", is(1))
-                .body("", hasItems(hasEntry("uri", SourceFilesProvider.SOURCES_HTTP_PATH + "org/kie/kogito/examples/ymlgreet.sw.yml")));
+                .body("", hasItems(hasEntry("uri", SourceFile.SOURCES_HTTP_PATH + "org/kie/kogito/examples/ymlgreet.sw.yml")));
     }
 
     @Test

@@ -19,8 +19,6 @@ import java.util.Collection;
 
 public interface SourceFilesProvider {
 
-    String SOURCES_HTTP_PATH = "/sources/";
-
     /**
      * Returns the source files for the given ID.
      * 

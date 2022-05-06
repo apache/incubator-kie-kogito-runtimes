@@ -24,7 +24,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.List;
 
-import org.kie.kogito.addon.source.files.SourceFilesProvider;
+import org.kie.kogito.addon.source.files.SourceFile;
 import org.kie.kogito.addon.source.files.SourceFilesProviderProducer;
 import org.kie.kogito.addon.source.files.SourceFilesRecorder;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -89,7 +89,7 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
             BuildProducer<AdditionalStaticResourceBuildItem> additionalStaticResourceProducer,
             BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer) {
         Path sourcesDestinationPath = ctxBuildItem.getKogitoBuildContext().getAppPaths().getOutputTarget().resolve(
-                Path.of("classes/META-INF/resources" + SourceFilesProvider.SOURCES_HTTP_PATH));
+                Path.of("classes/META-INF/resources" + SourceFile.SOURCES_HTTP_PATH));
 
         Collection<CollectedResource> collectedResources = CollectedResourceProducer.fromPaths(
                 ctxBuildItem.getKogitoBuildContext().getAppPaths().getPaths());
@@ -127,7 +127,7 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
             throw new UncheckedIOException("Failed to move source file to static resources directory.", e);
         }
 
-        String sourcesDestinationDirectory = "META-INF/resources" + SourceFilesProvider.SOURCES_HTTP_PATH;
+        String sourcesDestinationDirectory = "META-INF/resources" + SourceFile.SOURCES_HTTP_PATH;
 
         generatedResourceProducer.produce(new GeneratedResourceBuildItem(
                 sourcesDestinationDirectory + relativeDestinationFilePath, contents, true));
@@ -136,7 +136,7 @@ class KogitoAddOnSourceFilesProcessor extends RequireCapabilityKogitoAddOnProces
                 sourcesDestinationDirectory + relativeDestinationFilePath));
 
         additionalStaticResourceProducer.produce(new AdditionalStaticResourceBuildItem(
-                SourceFilesProvider.SOURCES_HTTP_PATH + relativeDestinationFilePath, false));
+                SourceFile.SOURCES_HTTP_PATH + relativeDestinationFilePath, false));
     }
 
     private static void createDirectories(Path path) throws IOException {
