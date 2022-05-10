@@ -88,7 +88,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testSigCloudEvent() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor, AbstractMessageConsumer::cloudEventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -103,7 +103,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testCloudEventNewInstanceWithoutReference() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, AbstractMessageConsumer::cloudEventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC)).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -120,7 +120,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testCloudEventNewInstanceWithReference() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, AbstractMessageConsumer::cloudEventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source", "invalidReference")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -137,7 +137,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testDataEvent() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, AbstractMessageConsumer::eventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyEvent("pepe")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -148,7 +148,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testIgnoredDataEvent() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor, AbstractMessageConsumer::eventResolver);
         final String payload = "{ a = b }";
         ProcessInstance<DummyModel> result = dispatcher.dispatch(DUMMY_TOPIC, payload).toCompletableFuture().get();
         assertNull(result);
@@ -156,7 +156,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testIgnoredCloudEvent() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor,  AbstractMessageConsumer::cloudEventResolver);
         final DummyCloudEvent payload = new DummyCloudEvent(new DummyEvent("test"), "differentTopic", "differentSource");
         ProcessInstance<DummyModel> result = dispatcher.dispatch(DUMMY_TOPIC, payload).toCompletableFuture().get();
         assertNull(result);
