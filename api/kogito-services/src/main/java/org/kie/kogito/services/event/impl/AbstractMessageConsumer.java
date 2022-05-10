@@ -29,7 +29,6 @@ import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.event.SubscriptionInfo.SubscriptionInfoBuilder;
 import org.kie.kogito.event.process.ProcessDataEvent;
-import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
@@ -86,7 +85,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     }
 
     protected static Object cloudEventResolver(Object object) {
-        return JsonObjectUtils.fromValue(object).get("data");
+        return ((ProcessDataEvent) object).getData();
     }
 
     protected static Object eventResolver(Object object) {

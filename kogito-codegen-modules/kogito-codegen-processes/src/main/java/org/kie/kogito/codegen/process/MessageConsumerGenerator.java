@@ -16,6 +16,7 @@
 package org.kie.kogito.codegen.process;
 
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -45,6 +46,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
 import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
@@ -145,8 +147,10 @@ public class MessageConsumerGenerator {
         }
 
         if (!trigger.dataOnly()) {
-            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class).setBody(new BlockStmt().addStatement(new ReturnStmt(
-                    new MethodReferenceExpr(new NameExpr(AbstractMessageConsumer.class.getSimpleName()), NodeList.nodeList(), "eventResolver"))));
+            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class).addParameter(boolean.class, "useCloudEvent")
+                    .setType(parseClassOrInterfaceType(UnaryOperator.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(Object.class.getCanonicalName()))))
+                    .setBody(new BlockStmt().addStatement(new ReturnStmt(
+                            new MethodReferenceExpr(new NameExpr(AbstractMessageConsumer.class.getSimpleName()), NodeList.nodeList(), "eventResolver"))));
         }
     }
 
