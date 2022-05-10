@@ -39,7 +39,6 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcess;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.Modifier.Keyword;
@@ -65,7 +64,6 @@ import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.Type;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
@@ -187,32 +185,6 @@ public class ProcessGenerator {
                 .addModifier(Modifier.Keyword.PUBLIC)
                 .addParameter(String.class.getCanonicalName(), BUSINESS_KEY)
                 .addParameter(modelTypeName, "value")
-                .setType(processInstanceFQCN)
-                .setBody(new BlockStmt().addStatement(returnStmt));
-        return methodDeclaration;
-    }
-
-    private MethodDeclaration createInstanceWithBusinessKeyMethodAndHeaders(String processInstanceFQCN) {
-        MethodDeclaration methodDeclaration = new MethodDeclaration();
-        Type strType = StaticJavaParser.parseType(String.class.getCanonicalName());
-        final String headerName = "headers";
-        final String valueName = "value";
-        ReturnStmt returnStmt = new ReturnStmt(
-                new ObjectCreationExpr()
-                        .setType(processInstanceFQCN)
-                        .setArguments(NodeList.nodeList(
-                                new ThisExpr(),
-                                new NameExpr(valueName),
-                                new NameExpr(BUSINESS_KEY),
-                                new NameExpr(headerName),
-                                createProcessRuntime())));
-
-        methodDeclaration.setName("createInstance")
-                .addModifier(Modifier.Keyword.PUBLIC)
-                .addParameter(String.class.getCanonicalName(), BUSINESS_KEY)
-                .addParameter(modelTypeName, valueName)
-                .addParameter(StaticJavaParser.parseClassOrInterfaceType(Map.class.getCanonicalName()).setTypeArguments(strType,
-                        StaticJavaParser.parseClassOrInterfaceType(List.class.getCanonicalName()).setTypeArguments(strType)), headerName)
                 .setType(processInstanceFQCN)
                 .setBody(new BlockStmt().addStatement(returnStmt));
         return methodDeclaration;
@@ -457,7 +429,6 @@ public class ProcessGenerator {
                 .addMember(getConstructorDeclaration())
                 .addMember(createInstanceMethod(processInstanceFQCN))
                 .addMember(createInstanceWithBusinessKeyMethod(processInstanceFQCN))
-                .addMember(createInstanceWithBusinessKeyMethodAndHeaders(processInstanceFQCN))
                 .addMember(new MethodDeclaration()
                         .addModifier(Keyword.PUBLIC)
                         .setName(CREATE_MODEL)

@@ -16,8 +16,6 @@
 package org.kie.kogito.process;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.kie.kogito.Model;
@@ -28,8 +26,6 @@ public interface Process<T> {
     ProcessInstance<T> createInstance(T workingMemory);
 
     ProcessInstance<T> createInstance(String businessKey, T workingMemory);
-
-    ProcessInstance<T> createInstance(String businessKey, T workingMemory, Map<String, List<String>> headers);
 
     ProcessInstances<T> instances();
 

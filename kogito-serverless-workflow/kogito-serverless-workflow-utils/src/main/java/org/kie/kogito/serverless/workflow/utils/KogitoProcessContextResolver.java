@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
-import org.kie.kogito.process.impl.AbstractProcessInstance;
 
 public class KogitoProcessContextResolver {
 
@@ -44,7 +43,7 @@ public class KogitoProcessContextResolver {
 
     public String readKey(KogitoProcessContext context, String key) {
         if (key.startsWith(HEADERS_PREFIX)) {
-            Map<String, List<String>> headersMap = (Map<String, List<String>>) context.getProcessInstance().getVariables().get(AbstractProcessInstance.HEADERS_VAR_NAME);
+            Map<String, List<String>> headersMap = context.getHeaders();
             if (headersMap == null) {
                 throw new IllegalArgumentException("No headers available");
             }

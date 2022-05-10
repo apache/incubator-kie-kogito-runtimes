@@ -68,7 +68,6 @@ import org.kie.kogito.services.uow.ProcessInstanceWorkUnit;
 public abstract class AbstractProcessInstance<T extends Model> implements ProcessInstance<T> {
 
     private static final String KOGITO_PROCESS_INSTANCE = "KogitoProcessInstance";
-    public static final String HEADERS_VAR_NAME = "/HEADERS";
 
     protected final T variables;
     protected final AbstractProcess<T> process;
@@ -93,10 +92,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, ProcessRuntime rt) {
-        this(process, variables, businessKey, rt, Collections.emptyMap());
-    }
-
-    public AbstractProcessInstance(AbstractProcess<T> process, T variables, String businessKey, ProcessRuntime rt, Map<String, List<String>> headers) {
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
@@ -104,9 +99,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         setCorrelationKey(businessKey);
 
         Map<String, Object> map = bind(variables);
-        if (!headers.isEmpty()) {
-            map.put(HEADERS_VAR_NAME, headers);
-        }
         String processId = process.process().getId();
         syncProcessInstance((WorkflowProcessInstance) ((CorrelationAwareProcessRuntime) rt).createProcessInstance(processId, correlationKey, map));
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
@@ -218,11 +210,20 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void start() {
-        start(null, null);
+        start(Collections.emptyMap());
+    }
+
+    @Override
+    public void start(Map<String, List<String>> headers) {
+        start(null, null, headers);
     }
 
     @Override
     public void start(String trigger, String referenceId) {
+        start(trigger, referenceId, Collections.emptyMap());
+    }
+
+    private void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         if (this.status != KogitoProcessInstance.STATE_PENDING) {
             throw new IllegalStateException("Impossible to start process instance that already was started");
         }
@@ -244,6 +245,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         unbind(variables, kogitoProcessInstance.getVariables());
         if (this.processInstance != null) {
             this.status = this.processInstance.getState();
+            if (headers != null) {
+                this.processInstance.setHeaders(headers);
+            }
         }
     }
 
@@ -345,11 +349,20 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public void startFrom(String nodeId) {
-        startFrom(nodeId, null);
+        startFrom(nodeId, Collections.emptyMap());
+    }
+
+    @Override
+    public void startFrom(String nodeId, Map<String, List<String>> headers) {
+        startFrom(nodeId, null, headers);
     }
 
     @Override
     public void startFrom(String nodeId, String referenceId) {
+        startFrom(nodeId, referenceId, Collections.emptyMap());
+    }
+
+    private void startFrom(String nodeId, String referenceId, Map<String, List<String>> headers) {
         processInstance.setStartDate(new Date());
         processInstance.setState(STATE_ACTIVE);
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
@@ -362,6 +375,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         unbind(variables, processInstance.getVariables());
         if (processInstance != null) {
             this.status = processInstance.getState();
+            if (headers != null) {
+                this.processInstance.setHeaders(headers);
+            }
         }
     }
 

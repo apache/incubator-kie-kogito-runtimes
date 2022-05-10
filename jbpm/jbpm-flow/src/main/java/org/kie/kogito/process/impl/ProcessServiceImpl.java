@@ -60,11 +60,11 @@ public class ProcessServiceImpl implements ProcessService {
             T model, Map<String, List<String>> headers,
             String startFromNodeId) {
         return UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(), () -> {
-            ProcessInstance<T> pi = process.createInstance(businessKey, model, headers);
+            ProcessInstance<T> pi = process.createInstance(businessKey, model);
             if (startFromNodeId != null) {
-                pi.startFrom(startFromNodeId);
+                pi.startFrom(startFromNodeId, headers);
             } else {
-                pi.start();
+                pi.start(headers);
             }
             return pi;
         });
