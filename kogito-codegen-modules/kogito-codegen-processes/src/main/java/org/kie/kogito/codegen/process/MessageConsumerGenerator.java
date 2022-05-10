@@ -26,24 +26,24 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.UnknownType;
 
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
@@ -53,7 +53,6 @@ import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
 public class MessageConsumerGenerator {
 
     private static final String OBJECT_MAPPER_CANONICAL_NAME = ObjectMapper.class.getCanonicalName();
-    private static final String OBJECT_LAMBDA_NAME = "object";
     private final TemplatedGenerator generator;
 
     private KogitoBuildContext context;
@@ -147,7 +146,7 @@ public class MessageConsumerGenerator {
 
         if (!trigger.dataOnly()) {
             template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class).setBody(new BlockStmt().addStatement(new ReturnStmt(
-                    new LambdaExpr(new Parameter(new UnknownType(), OBJECT_LAMBDA_NAME), new NameExpr(OBJECT_LAMBDA_NAME)))));
+                    new MethodReferenceExpr(new NameExpr(AbstractMessageConsumer.class.getSimpleName()), NodeList.nodeList(), "eventResolver"))));
         }
     }
 

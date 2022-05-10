@@ -84,11 +84,11 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     protected UnaryOperator<Object> getDataResolver(boolean useCloudEvents) {
         return useCloudEvents ? AbstractMessageConsumer::cloudEventResolver : AbstractMessageConsumer::eventResolver;
     }
-    
-    protected static Object cloudEventResolver (Object object) {
-        return JsonObjectUtils.fromValue(object).get("data"); 
+
+    protected static Object cloudEventResolver(Object object) {
+        return JsonObjectUtils.fromValue(object).get("data");
     }
-    
+
     protected static Object eventResolver(Object object) {
         return object;
     }
