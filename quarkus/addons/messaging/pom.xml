@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-parent</artifactId>
-    <version>1.21.0-SNAPSHOT</version>
+    <version>1.21.0.Final</version>
   </parent>
   <artifactId>kogito-addons-quarkus-messaging-parent</artifactId>
   <packaging>pom</packaging>
