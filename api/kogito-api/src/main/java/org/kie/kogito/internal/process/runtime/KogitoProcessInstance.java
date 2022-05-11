@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -81,10 +80,10 @@ public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListe
      */
     String getBusinessKey();
 
-    default Map<String, List<String>> getHeaders() {
-        return Collections.emptyMap();
-    }
-
-    default void setHeaders(Map<String, List<String>> headers) {
-    }
+    /**
+     * Returns optional header of the process instance
+     * 
+     * @return map with headers
+     */
+    Map<String, List<String>> getHeaders();
 }

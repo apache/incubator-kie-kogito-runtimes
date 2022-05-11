@@ -225,7 +225,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     private void start(String trigger, String referenceId, Map<String, List<String>> headers) {
         if (this.status != KogitoProcessInstance.STATE_PENDING) {
-            throw new IllegalStateException("Impossible to start process instance that already was started");
+            throw new IllegalStateException("Impossible to start process instance that already has started");
         }
         this.status = KogitoProcessInstance.STATE_ACTIVE;
 

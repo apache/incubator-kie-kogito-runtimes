@@ -360,7 +360,6 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
         return headers;
     }
 
-    @Override
     public void setHeaders(Map<String, List<String>> headers) {
         this.headers = headers;
     }
