@@ -146,7 +146,6 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
         final String referenceId = referenceIdResolver.resolve(event).asString();//keep reference with the caller starting the instance (usually the caller process instance)
 
         final Object data = dataResolver.apply(event);
-        //final Object data = dataResolver.resolve(event).getValue();l
 
         //event correlation, extract if any, the workflow instance correlation
         final CompositeCorrelation instanceCorrelation = instanceCorrelationResolver.map(r -> r.resolve(event)).orElse(null);
