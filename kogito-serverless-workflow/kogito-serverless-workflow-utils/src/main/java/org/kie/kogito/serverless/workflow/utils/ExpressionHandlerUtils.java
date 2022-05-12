@@ -77,18 +77,21 @@ public class ExpressionHandlerUtils {
     }
 
     public static String replaceExpr(Workflow workflow, final String expr) {
-        String candidate = trimExpr(expr);
-        if (candidate.startsWith(FUNCTION_REFERENCE)) {
-            String functionName = candidate.substring(FUNCTION_REFERENCE.length());
-            //covert reference to reference case (and delegate on stack overflow limits for checking loop reference) 
-            return replaceExpr(workflow,
-                    workflow.getFunctions().getFunctionDefs().stream()
-                            .filter(f -> f.getType() == Type.EXPRESSION && f.getName().equals(functionName))
-                            .findAny()
-                            .map(FunctionDefinition::getOperation)
-                            .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName)));
+        if (expr != null) {
+            String candidate = trimExpr(expr);
+            if (candidate.startsWith(FUNCTION_REFERENCE)) {
+                String functionName = candidate.substring(FUNCTION_REFERENCE.length());
+                //covert reference to reference case (and delegate on stack overflow limits for checking loop reference) 
+                return replaceExpr(workflow,
+                        workflow.getFunctions().getFunctionDefs().stream()
+                                .filter(f -> f.getType() == Type.EXPRESSION && f.getName().equals(functionName))
+                                .findAny()
+                                .map(FunctionDefinition::getOperation)
+                                .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName)));
+            }
+            return candidate;
         }
-        return candidate;
+        return expr;
     }
 
     public static void assign(JsonNode context, JsonNode target, JsonNode value, String expr) {

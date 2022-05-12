@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 public class FunctionJsonNode extends BaseJsonNode {
 
     private static final long serialVersionUID = 1L;
-    public Function<String, Object> function;
+    private transient Function<String, Object> function;
 
     public FunctionJsonNode(Function<String, Object> function) {
         this.function = function;
@@ -130,13 +130,14 @@ public class FunctionJsonNode extends BaseJsonNode {
 
     @Override
     public void serialize(JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        // not serialize 
     }
 
     @Override
     public void serializeWithType(JsonGenerator jgen,
             SerializerProvider provider,
             TypeSerializer typeSer) throws IOException {
-
+        // not serialize 
     }
 
 }

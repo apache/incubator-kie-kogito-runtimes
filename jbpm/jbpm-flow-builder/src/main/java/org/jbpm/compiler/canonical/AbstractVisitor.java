@@ -70,9 +70,8 @@ public abstract class AbstractVisitor {
     }
 
     protected void visitMetaData(Map<String, Object> metadata, BlockStmt body, String variableName) {
-        metadata.entrySet().stream().filter(this::isValidMetadata).forEach(e -> {
-            body.addStatement(getFactoryMethod(variableName, METHOD_METADATA, new StringLiteralExpr(e.getKey()), ExpressionUtils.getLiteralExpr(e.getValue())));
-        });
+        metadata.entrySet().stream().filter(this::isValidMetadata)
+                .forEach(e -> body.addStatement(getFactoryMethod(variableName, METHOD_METADATA, new StringLiteralExpr(e.getKey()), ExpressionUtils.getLiteralExpr(e.getValue()))));
     }
 
     private boolean isValidMetadata(Map.Entry<String, Object> e) {
