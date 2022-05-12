@@ -41,7 +41,6 @@ import org.kie.kogito.serverless.workflow.parser.schema.WorkflowModelSchemaRef;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.workflow.Constants;
@@ -155,8 +154,6 @@ public class ServerlessWorkflowParser {
                 });
             }
             factory.metaData(Metadata.CONSTANTS, constants.getConstantsDef());
-        } else {
-            factory.metaData(Metadata.CONSTANTS, NullNode.instance);
         }
     }
 }

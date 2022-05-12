@@ -70,9 +70,13 @@ public abstract class AbstractVisitor {
     }
 
     protected void visitMetaData(Map<String, Object> metadata, BlockStmt body, String variableName) {
-        metadata.forEach((k, v) -> {
-            body.addStatement(getFactoryMethod(variableName, METHOD_METADATA, new StringLiteralExpr(k), ExpressionUtils.getLiteralExpr(v)));
+        metadata.entrySet().stream().filter(this::isValidMetadata).forEach(e -> {
+            body.addStatement(getFactoryMethod(variableName, METHOD_METADATA, new StringLiteralExpr(e.getKey()), ExpressionUtils.getLiteralExpr(e.getValue())));
         });
+    }
+
+    private boolean isValidMetadata(Map.Entry<String, Object> e) {
+        return !e.getKey().startsWith("BPMN.") && (e.getKey().startsWith("custom") || ExpressionUtils.isTypeSupported(e.getValue()));
     }
 
     protected void visitVariableScope(String field, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables, String contextClass) {
