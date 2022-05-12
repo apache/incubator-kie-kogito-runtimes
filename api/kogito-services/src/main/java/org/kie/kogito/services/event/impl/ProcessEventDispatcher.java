@@ -128,9 +128,7 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
                     return instance;
                 })
                 .orElseGet(() -> {
-                    LOGGER.info("Process instance with id '{}' not found for triggering signal '{}', starting a new one",
-                            instanceId,
-                            trigger);
+                    LOGGER.info("Process instance with id '{}' not found for triggering signal '{}'", instanceId, trigger);
                     return startNewInstance(trigger, event);
                 });
     }
@@ -140,7 +138,6 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
     }
 
     private ProcessInstance<M> startNewInstance(String trigger, Object event) {
-        LOGGER.info("Starting new process instance with signal '{}'", trigger);
         if (modelConverter == null) {
             return null;
         }
@@ -149,10 +146,11 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
         final String referenceId = referenceIdResolver.resolve(event).asString();//keep reference with the caller starting the instance (usually the caller process instance)
 
         final Object data = dataResolver.apply(event);
-        //final Object data = dataResolver.resolve(event).getValue();
+        //final Object data = dataResolver.resolve(event).getValue();l
 
         //event correlation, extract if any, the workflow instance correlation
         final CompositeCorrelation instanceCorrelation = instanceCorrelationResolver.map(r -> r.resolve(event)).orElse(null);
+        LOGGER.info("Starting new process instance with signal '{}'", trigger);
         return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId, instanceCorrelation);
     }
 
