@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.codegen.process;
 
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
-import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
@@ -56,6 +50,12 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
+import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
+import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
+import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
 
 public class MessageConsumerGenerator {
 

@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.services.event.correlation;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.kie.kogito.correlation.Correlation;
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
 
-    private String referenceKey = CloudEventExtensionConstants.PROCESS_REFERENCE_ID;
+    private String referenceKey;
     private ObjectMapper objectMapper = ObjectMapperFactory.get();
     private Optional<Class<?>> type;
 
@@ -37,7 +38,7 @@ public class SimpleAttributeCorrelationResolver implements CorrelationResolver {
     }
 
     public SimpleAttributeCorrelationResolver(String referenceKey, Class<?> type) {
-        this.referenceKey = referenceKey;
+        this.referenceKey = Objects.requireNonNull(referenceKey, "referenceKey should not be null");
         this.type = Optional.ofNullable(type);
     }
 

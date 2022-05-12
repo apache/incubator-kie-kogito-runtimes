@@ -15,17 +15,6 @@
  */
 package org.kie.kogito.services.event.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,6 +38,17 @@ import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ProcessEventDispatcherTest {
 
@@ -106,7 +106,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testCloudEventNewInstanceWithoutReference() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, null,  AbstractMessageConsumer::cloudEventResolver);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, null, AbstractMessageConsumer::cloudEventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC)).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -123,7 +123,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testCloudEventNewInstanceWithReference() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, null,  AbstractMessageConsumer::cloudEventResolver);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, modelConverter().get(), processService, executor, null, AbstractMessageConsumer::cloudEventResolver);
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source", "invalidReference")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
@@ -151,7 +151,7 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testIgnoredDataEvent() throws Exception {
-        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor, null,  AbstractMessageConsumer::eventResolver);
+        EventDispatcher<DummyModel> dispatcher = new ProcessEventDispatcher<>(process, null, processService, executor, null, AbstractMessageConsumer::eventResolver);
         final String payload = "{ a = b }";
         ProcessInstance<DummyModel> result = dispatcher.dispatch(DUMMY_TOPIC, payload).toCompletableFuture().get();
         assertNull(result);
