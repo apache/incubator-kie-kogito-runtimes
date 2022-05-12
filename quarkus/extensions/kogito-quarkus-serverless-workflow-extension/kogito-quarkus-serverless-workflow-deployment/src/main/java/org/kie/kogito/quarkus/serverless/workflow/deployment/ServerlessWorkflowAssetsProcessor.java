@@ -18,7 +18,7 @@ package org.kie.kogito.quarkus.serverless.workflow.deployment;
 import org.kie.kogito.process.expr.ExpressionHandler;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
-import org.kie.kogito.quarkus.serverless.openapi.WorkflowOpenApiHandlerGenerator;
+import org.kie.kogito.quarkus.serverless.workflow.openapi.WorkflowOpenApiHandlerGenerator;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;

@@ -134,7 +134,7 @@ public class ServerlessWorkflowUtils {
      * @return true if the given function refers to an OpenApi operation
      */
     public static boolean isOpenApiOperation(FunctionDefinition function) {
-        return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(OpenAPIOperationId.OPENAPI_OPERATION_SEPARATOR);
+        return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(WorkflowOperationId.OPERATION_SEPARATOR);
     }
 
     public static String getForEachVarName(KogitoBuildContext context) {

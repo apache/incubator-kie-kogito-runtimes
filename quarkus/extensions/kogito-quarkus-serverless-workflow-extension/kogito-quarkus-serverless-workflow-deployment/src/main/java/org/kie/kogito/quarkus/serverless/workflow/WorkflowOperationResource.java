@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.parser.rest;
+package org.kie.kogito.quarkus.serverless.workflow;
 
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import java.io.InputStream;
+
 import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 
-public class RestOperationHandlerFactory {
+public class WorkflowOperationResource {
 
-    private RestOperationHandlerFactory() {
+    private final WorkflowOperationId operationId;
+    private final InputStream inputStream;
+
+    public WorkflowOperationResource(WorkflowOperationId operationId, InputStream inputStream) {
+        this.operationId = operationId;
+        this.inputStream = inputStream;
     }
 
-    public static RestOperationHandler get(ParserContext parserContext, WorkflowOperationId id) {
-        KogitoBuildContext context = parserContext.getContext();
-        return context.getGeneratedHandlers().contains(id.geClassName()) ? new GeneratedRestOperationHandler(id) : new DescriptorRestOperationHandler(parserContext, id);
+    public WorkflowOperationId getOperationId() {
+        return operationId;
     }
 
+    public InputStream getInputStream() {
+        return inputStream;
+    }
 }

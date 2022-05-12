@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.serverless.openapi;
+package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import org.jboss.jandex.Type.Kind;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 import org.kie.kogito.serverless.workflow.openapi.OpenApiWorkItemHandler;
-import org.kie.kogito.serverless.workflow.utils.OpenAPIOperationId;
+import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -101,7 +101,7 @@ public class WorkflowOpenApiHandlerGenerator implements Runnable {
     private GeneratedFile generateHandler(ClassInfo classInfo, String fileName, MethodInfo m) {
         final String packageName = context.getPackageName();
         final String methodName = m.annotation(generatedMethod).value().asString();
-        final String className = OpenAPIOperationId.getClassName(fileName, methodName);
+        final String className = WorkflowOperationId.getClassName(fileName, methodName);
         final ClassOrInterfaceType classNameType = parseClassOrInterfaceType(classInfo.name().toString());
         CompilationUnit unit = new CompilationUnit(packageName);
         ClassOrInterfaceDeclaration clazz = unit.addClass(className);

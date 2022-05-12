@@ -42,7 +42,7 @@ import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
-import org.kie.kogito.serverless.workflow.utils.OpenAPIOperationId;
+import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
 import org.kogito.workitem.rest.auth.BearerTokenAuthDecorator;
@@ -200,7 +200,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             case REST:
                 return addFunctionArgs(addRestParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
             case OPENAPI:
-                OpenAPIOperationId operationId = OpenAPIOperationId.fromOperation(operation);
+                WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
                 notifySourceFileCodegenBindListeners(operationId.getUri().toString());
                 return addFunctionArgs(RestOperationHandlerFactory.get(parserContext, operationId).fillWorkItemHandler(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), workflow,
                         actionFunction), functionRef);

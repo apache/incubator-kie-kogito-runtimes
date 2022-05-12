@@ -13,54 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.serverless.openapi;
+package org.kie.kogito.quarkus.serverless.workflow;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
-import org.kie.kogito.serverless.workflow.utils.OpenAPIOperationId;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 
-import io.quarkiverse.openapi.generator.deployment.codegen.OpenApiSpecInputProvider;
-import io.quarkiverse.openapi.generator.deployment.codegen.SpecInputModel;
-import io.quarkus.deployment.CodeGenContext;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvider {
+public class WorkflowCodeGenUtils {
 
-    private static final String KOGITO_PACKAGE_PREFIX = "org.kie.kogito.openapi.";
+    private WorkflowCodeGenUtils() {
+    }
 
-    @Override
-    public List<SpecInputModel> read(CodeGenContext context) {
-        Path inputDir = context.inputDir();
-        while (!Files.exists(inputDir)) {
-            inputDir = inputDir.getParent();
-        }
+    public static Stream<WorkflowOperationResource> operationResources(Path inputDir, Predicate<FunctionDefinition> predicate) {
+        return getWorkflows(inputDir).map(w -> processFunction(w, predicate)).flatMap(x -> x);
+    }
+
+    public static Stream<Workflow> getWorkflows(Path inputDir) {
         try (Stream<Path> openApiFilesPaths = Files.walk(inputDir)) {
             return openApiFilesPaths
                     .filter(Files::isRegularFile)
-                    .map(this::getWorkflow)
+                    .map(WorkflowCodeGenUtils::getWorkflow)
                     .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(this::getSpecInput)
-                    .flatMap(x -> x)
-                    .collect(Collectors.toList());
+                    .map(Optional::get);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private Optional<Workflow> getWorkflow(Path p) {
+    private static Stream<WorkflowOperationResource> processFunction(Workflow workflow, Predicate<FunctionDefinition> predicate) {
+        return workflow.getFunctions().getFunctionDefs().stream().filter(predicate).map(f -> getResource(workflow, f));
+    }
+
+    private static WorkflowOperationResource getResource(Workflow workflow, FunctionDefinition function) {
+        try {
+            WorkflowOperationId operationId = WorkflowOperationId.fromOperation(function.getOperation());
+            URI uri = operationId.getUri();
+            return new WorkflowOperationResource(operationId,
+                    URIContentLoaderFactory.buildLoader(uri, Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()).getInputStream());
+        } catch (IOException io) {
+            throw new IllegalStateException(io);
+        }
+    }
+
+    private static Optional<Workflow> getWorkflow(Path p) {
         return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.entrySet()
                 .stream()
                 .filter(e -> p.getFileName().toString().endsWith(e.getKey()))
@@ -73,19 +81,4 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
                 }).findFirst();
     }
 
-    private Stream<SpecInputModel> getSpecInput(Workflow workflow) {
-        return workflow.getFunctions().getFunctionDefs().stream().filter(ServerlessWorkflowUtils::isOpenApiOperation).map(f -> getSpecInput(f, workflow));
-    }
-
-    private SpecInputModel getSpecInput(FunctionDefinition function, Workflow workflow) {
-        try {
-            OpenAPIOperationId operationId = OpenAPIOperationId.fromOperation(function.getOperation());
-            URI uri = operationId.getUri();
-            return new SpecInputModel(operationId.getFileName(),
-                    URIContentLoaderFactory.buildLoader(uri, Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()).getInputStream(),
-                    KOGITO_PACKAGE_PREFIX + operationId.getServiceName());
-        } catch (IOException io) {
-            throw new IllegalStateException(io);
-        }
-    }
 }

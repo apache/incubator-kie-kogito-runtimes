@@ -15,17 +15,15 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment;
 
-import java.util.HashSet;
 import java.util.Set;
 
+import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.quarkus.common.deployment.KogitoCompilationProvider;
-
-import static java.util.Arrays.asList;
 
 public class ServerlessWorkflowCompilationProvider extends KogitoCompilationProvider {
 
     @Override
     public Set<String> handledExtensions() {
-        return new HashSet<>(asList(".sw.json", ".sw.yaml", ".sw.yml"));
+        return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet();
     }
 }
