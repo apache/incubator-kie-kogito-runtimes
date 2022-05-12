@@ -22,7 +22,6 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
-import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -78,13 +77,6 @@ public class ExpressionHandlerUtils {
     }
 
     public static String replaceExpr(Workflow workflow, final String expr) {
-        if (expr != null) {
-            return replaceExpr(workflow, expr, ExpressionHandlerFactory.getValueInjector(workflow.getExpressionLang()));
-        }
-        return expr;
-    }
-
-    private static String replaceExpr(Workflow workflow, final String expr, Function<Object, String> injector) {
         String candidate = trimExpr(expr);
         if (candidate.startsWith(FUNCTION_REFERENCE)) {
             String functionName = candidate.substring(FUNCTION_REFERENCE.length());
@@ -94,8 +86,7 @@ public class ExpressionHandlerUtils {
                             .filter(f -> f.getType() == Type.EXPRESSION && f.getName().equals(functionName))
                             .findAny()
                             .map(FunctionDefinition::getOperation)
-                            .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName)),
-                    injector);
+                            .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName)));
         }
         return candidate;
     }
@@ -113,5 +104,4 @@ public class ExpressionHandlerUtils {
         int indexOf = expr.lastIndexOf('.');
         return indexOf < 0 ? Optional.empty() : Optional.of(expr.substring(indexOf + 1));
     }
-
 }
