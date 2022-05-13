@@ -16,6 +16,8 @@
 package org.kie.kogito.codegen.api.context;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -29,6 +31,7 @@ import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.AddonsConfig;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.Generator;
+import org.kie.kogito.codegen.api.SourceFileCodegenBindNotifier;
 import org.kie.kogito.codegen.api.di.DependencyInjectionAnnotator;
 import org.kie.kogito.codegen.api.rest.RestAnnotator;
 import org.kie.kogito.codegen.api.utils.KogitoCodeGenConstants;
@@ -151,11 +154,20 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
 
     Optional<KogitoGAV> getGAV();
 
+    Optional<SourceFileCodegenBindNotifier> getSourceFileCodegenBindNotifier();
+
     default Map<String, String> getPropertiesMap() {
         return getApplicationProperties().stream()
                 .filter(key -> getApplicationProperty(key).isPresent())
                 .collect(Collectors.toUnmodifiableMap(key -> key,
                         key -> getApplicationProperty(key).get()));
+    }
+
+    default Collection<String> getGeneratedHandlers() {
+        return Collections.emptySet();
+    }
+
+    default void addGeneratedHandler(String workName) {
     }
 
     interface Builder {
@@ -179,6 +191,8 @@ public interface KogitoBuildContext extends DroolsModelBuildContext {
         Builder withAppPaths(AppPaths appPaths);
 
         Builder withGAV(KogitoGAV gav);
+
+        Builder withSourceFileProcessBindNotifier(SourceFileCodegenBindNotifier sourceFileCodegenBindNotifier);
 
         KogitoBuildContext build();
     }

@@ -10,7 +10,7 @@
       "name": "quietEvent",
       "source": "",
       "type": "quiet",
-      "metadata" : { "dataOnly" : "false"}
+      "dataOnly" : "false"
     },
     {
       "name": "neverArrivingEvent",
@@ -21,9 +21,8 @@
   "functions": [
     {
       "name": "printMessage",
-      "metadata": {
-        "type": "sysout"
-      }
+      "type": "custom",
+      "operation": "sysout"
     }
   ],
   "states": [

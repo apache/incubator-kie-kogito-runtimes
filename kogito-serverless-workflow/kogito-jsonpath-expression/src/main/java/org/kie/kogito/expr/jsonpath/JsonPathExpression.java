@@ -15,9 +15,6 @@
  */
 package org.kie.kogito.expr.jsonpath;
 
-import java.util.Optional;
-import java.util.regex.Pattern;
-
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.expr.Expression;
@@ -29,52 +26,46 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.ParseContext;
+import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-
-import static org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils.getMagicWords;
 
 public class JsonPathExpression implements Expression {
 
-    private static final Configuration jsonPathConfig = Configuration
-            .builder()
-            .mappingProvider(new JacksonMappingProvider())
-            .jsonProvider(new JacksonJsonNodeJsonProvider())
-            .build();
-
-    private static final Pattern jsonPathRegexPattern = Pattern.compile(getPatternString());
-
-    private static final String getPatternString() {
-        StringBuilder sb = new StringBuilder("^((\\$\\[).*|(\\$\\.).*");
-        for (String magicWord : getMagicWords()) {
-            sb.append("|(" + magicWord.replace("$", "\\$").replace(".", "\\.") + ").*");
-        }
-        sb.append(')');
-        return sb.toString();
-    }
-
     private final String expr;
-    private final ParseContext jsonPath;
     private Boolean isValid;
 
     public JsonPathExpression(String expr) {
-        jsonPath = JsonPath.using(jsonPathConfig);
+        expr = replaceMagic(expr, ExpressionHandlerUtils.CONST_MAGIC);
+        expr = replaceMagic(expr, ExpressionHandlerUtils.SECRET_MAGIC);
+        expr = replaceMagic(expr, ExpressionHandlerUtils.CONTEXT_MAGIC);
         this.expr = expr;
     }
 
+    private static final String replaceMagic(String expr, String magic) {
+        return expr.replace("$" + magic, "@." + magic);
+    }
+
+    private Configuration getConfiguration(KogitoProcessContext context) {
+        return Configuration
+                .builder()
+                .mappingProvider(new JacksonMappingProvider())
+                .jsonProvider(new WorkflowJacksonJsonNodeJsonProvider(context))
+                .build();
+    }
+
     private <T> T eval(JsonNode context, Class<T> returnClass, KogitoProcessContext processInfo) {
-        DocumentContext parsedContext = jsonPath.parse(context);
+        Configuration jsonPathConfig = getConfiguration(processInfo);
+        DocumentContext parsedContext = JsonPath.using(jsonPathConfig).parse(context);
         if (String.class.isAssignableFrom(returnClass)) {
             StringBuilder sb = new StringBuilder();
-            for (String part : ExpressionHandlerUtils.prepareExpr(expr, Optional.ofNullable(processInfo)).split("((?=\\$))")) {
+            for (String part : expr.split("((?=\\$))")) {
                 JsonNode partResult = parsedContext.read(part, JsonNode.class);
                 sb.append(partResult.isTextual() ? partResult.asText() : partResult.toPrettyString());
             }
             return (T) sb.toString();
         } else {
-            Object result = parsedContext.read(ExpressionHandlerUtils.prepareExpr(expr, Optional.ofNullable(processInfo)));
+            Object result = parsedContext.read(expr);
             return Boolean.class.isAssignableFrom(returnClass) && result instanceof ArrayNode ? (T) Boolean.valueOf(!((ArrayNode) result).isEmpty())
                     : jsonPathConfig.mappingProvider().map(result, returnClass, jsonPathConfig);
         }
@@ -91,9 +82,14 @@ public class JsonPathExpression implements Expression {
     }
 
     @Override
-    public boolean isValid(Optional<KogitoProcessContext> context) {
+    public boolean isValid() {
         if (isValid == null) {
-            isValid = jsonPathRegexPattern.matcher(ExpressionHandlerUtils.prepareExpr(expr, context)).matches();
+            try {
+                JsonPath.compile(expr);
+                isValid = true;
+            } catch (JsonPathException ex) {
+                isValid = false;
+            }
         }
         return isValid;
     }

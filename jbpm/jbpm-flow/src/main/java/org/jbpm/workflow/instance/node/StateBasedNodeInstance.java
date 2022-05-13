@@ -27,7 +27,7 @@ import java.util.Optional;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.ReteEvaluator;
 import org.drools.core.rule.Declaration;
-import org.drools.core.spi.Activation;
+import org.drools.core.rule.consequence.Activation;
 import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
@@ -266,7 +266,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                 handleSLAViolation();
             }
         } else if (("slaViolation:" + getStringId()).equals(type)) {
-
             handleSLAViolation();
         } else if (type.equals(getActivationType()) && event instanceof MatchCreatedEvent) {
             String name = ((MatchCreatedEvent) event).getMatch().getRule().getName();

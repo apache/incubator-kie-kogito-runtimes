@@ -15,23 +15,21 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
-import io.serverlessworkflow.api.workflow.Constants;
 
 public class ExpressionHandlerUtils {
 
@@ -43,58 +41,21 @@ public class ExpressionHandlerUtils {
     private static final String LEGACY_EXPR_PREFIX = "{{";
     private static final String LEGACY_EXPR_SUFFIX = "}}";
     private static final String FUNCTION_REFERENCE = "fn:";
-    protected static final String SECRET_MAGIC = "$SECRET.";
-    protected static final String CONST_MAGIC = "$CONST.";
-    protected static final String CONTEXT_MAGIC = "$WORKFLOW.";
-    private static final Collection<String> MAGIC_WORDS = Arrays.asList(SECRET_MAGIC, CONST_MAGIC, CONTEXT_MAGIC);
+    public static final String SECRET_MAGIC = "SECRET";
+    public static final String CONST_MAGIC = "CONST";
+    public static final String CONTEXT_MAGIC = "WORKFLOW";
 
-    public static String prepareExpr(String expr, Optional<KogitoProcessContext> context) {
-        expr = replaceMagic(expr, SECRET_MAGIC, ExpressionHandlerUtils::getSecret);
-        return context.isPresent() ? replaceMagic(expr, CONTEXT_MAGIC, key -> KogitoProcessContextResolver.get().readKey(context.get(), key)) : expr;
+    public static JsonNode getConstants(KogitoProcessContext context) {
+        JsonNode node = (JsonNode) context.getProcessInstance().getProcess().getMetaData().get(Metadata.CONSTANTS);
+        return node == null ? NullNode.instance : node;
     }
 
-    public static Collection<String> getMagicWords() {
-        return MAGIC_WORDS;
-    }
-
-    private static String getSecret(String key) {
+    public static String getSecret(String key) {
         return ConfigResolverHolder.getConfigResolver().getConfigProperty(key, String.class, null);
     }
 
-    private static Object getConstant(String key, Constants constants) {
-        Objects.requireNonNull(constants, "Constants has not been specified, key " + key + "cannot be replaced");
-        JsonNode result = constants.getConstantsDef();
-        for (String name : key.split("\\.")) {
-            result = result.get(name);
-        }
-        return JsonObjectUtils.toJavaValue(result);
-    }
-
-    private static <T extends Object> String replaceMagic(String expr, String magic, Function<String, T> replacer) {
-        int indexOf;
-        while ((indexOf = expr.indexOf(magic)) != -1) {
-            String key = extractKey(expr, indexOf + magic.length());
-            T value = replacer.apply(key);
-            if (value != null) {
-                expr = expr.replace(magic + key, value.toString());
-            } else {
-                break;
-            }
-        }
-        return expr;
-    }
-
-    private static String extractKey(String expr, int indexOf) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = indexOf; i < expr.length(); i++) {
-            char ch = expr.charAt(i);
-            if (Character.isJavaIdentifierPart(ch) || ch == '.') {
-                sb.append(ch);
-            } else {
-                break;
-            }
-        }
-        return sb.toString();
+    public static Function<String, Object> getContextFunction(KogitoProcessContext context) {
+        return k -> KogitoProcessContextResolver.get().readKey(context, k);
     }
 
     public static String trimExpr(String expr) {
@@ -128,7 +89,7 @@ public class ExpressionHandlerUtils {
                                 .map(FunctionDefinition::getOperation)
                                 .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName)));
             }
-            return replaceMagic(candidate, CONST_MAGIC, key -> getConstant(key, workflow.getConstants()));
+            return candidate;
         }
         return expr;
     }
@@ -146,5 +107,4 @@ public class ExpressionHandlerUtils {
         int indexOf = expr.lastIndexOf('.');
         return indexOf < 0 ? Optional.empty() : Optional.of(expr.substring(indexOf + 1));
     }
-
 }

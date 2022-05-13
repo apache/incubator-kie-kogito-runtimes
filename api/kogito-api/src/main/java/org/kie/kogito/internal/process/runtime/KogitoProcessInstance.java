@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.internal.process.runtime;
 
+import java.util.List;
 import java.util.Map;
 
 import org.kie.api.runtime.process.ProcessInstance;
@@ -36,13 +37,6 @@ public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListe
     int SLA_ABORTED = 4;
 
     String getStringId();
-
-    /**
-     * Returns parent process instance id if this process instance has a parent
-     * 
-     * @return the unique id of parent process instance, null if this process instance doesn't have a parent
-     */
-    String getParentProcessInstanceStringId();
 
     /**
      * Returns root process instance id if this process instance has a root process instance
@@ -85,4 +79,11 @@ public interface KogitoProcessInstance extends ProcessInstance, KogitoEventListe
      * @return the business key or null if not set
      */
     String getBusinessKey();
+
+    /**
+     * Returns optional header of the process instance
+     * 
+     * @return map with headers
+     */
+    Map<String, List<String>> getHeaders();
 }

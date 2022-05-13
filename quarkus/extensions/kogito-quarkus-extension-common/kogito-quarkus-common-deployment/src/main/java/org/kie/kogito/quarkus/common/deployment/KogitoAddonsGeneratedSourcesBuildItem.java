@@ -21,13 +21,13 @@ import org.drools.codegen.common.GeneratedFile;
 
 import io.quarkus.builder.item.MultiBuildItem;
 
-public final class KogitoAddonsGeneratedSourcesBuildItem extends MultiBuildItem implements Comparable<KogitoAddonsGeneratedSourcesBuildItem> {
+public abstract class KogitoAddonsGeneratedSourcesBuildItem extends MultiBuildItem implements Comparable<KogitoAddonsGeneratedSourcesBuildItem> {
 
     private static int counter;
     private final Collection<GeneratedFile> generatedFiles;
     private final int order;
 
-    public KogitoAddonsGeneratedSourcesBuildItem(Collection<GeneratedFile> generatedFiles) {
+    protected KogitoAddonsGeneratedSourcesBuildItem(Collection<GeneratedFile> generatedFiles) {
         this.generatedFiles = generatedFiles;
         this.order = counter++;
     }
