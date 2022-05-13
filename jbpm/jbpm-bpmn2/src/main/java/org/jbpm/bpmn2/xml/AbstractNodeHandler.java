@@ -29,8 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.Definitions;
@@ -39,6 +37,8 @@ import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.bpmn2.core.Signal;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;

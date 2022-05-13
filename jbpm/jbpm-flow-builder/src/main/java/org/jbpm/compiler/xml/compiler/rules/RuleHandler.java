@@ -15,12 +15,12 @@
  */
 package org.jbpm.compiler.xml.compiler.rules;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.drools.drl.ast.descr.AndDescr;
 import org.drools.drl.ast.descr.AttributeDescr;
 import org.drools.drl.ast.descr.PackageDescr;
 import org.drools.drl.ast.descr.RuleDescr;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,11 +28,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-/**
- *
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
- */
 public class RuleHandler extends BaseAbstractHandler
         implements
         Handler {

@@ -17,11 +17,11 @@ package org.jbpm.bpmn2.xml.di;
 
 import java.util.HashSet;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.xml.ProcessParsingValidationException;
 import org.jbpm.bpmn2.xml.di.BPMNPlaneHandler.ProcessInfo;
 import org.jbpm.bpmn2.xml.di.BPMNShapeHandler.NodeInfo;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;

@@ -15,7 +15,7 @@
  */
 package org.jbpm.compiler.xml.processes;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
 import org.jbpm.workflow.core.Node;

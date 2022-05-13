@@ -18,7 +18,7 @@ package org.jbpm.bpmn2.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.process.core.Work;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.HumanTaskNode;

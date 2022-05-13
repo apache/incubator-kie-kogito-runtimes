@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.XmlWorkflowProcessDumper;
 import org.jbpm.process.core.ParameterDefinition;
 import org.jbpm.process.core.Work;

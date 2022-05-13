@@ -17,7 +17,7 @@ package org.jbpm.compiler.xml.core;
 
 import java.util.Set;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 

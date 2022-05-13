@@ -37,9 +37,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
-import org.drools.core.xml.SemanticModule;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
+import org.jbpm.compiler.xml.SemanticModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -122,7 +122,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     private ClassLoader classLoader;
 
-    private Map metaData = new HashMap();
+    private Map<String, Object> metaData = new HashMap<>();
 
     private Attributes attrs;
 
@@ -339,7 +339,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         this.classLoader = classLoader;
     }
 
-    public Map getMetaData() {
+    public Map<String, Object> getMetaData() {
         return this.metaData;
     }
 

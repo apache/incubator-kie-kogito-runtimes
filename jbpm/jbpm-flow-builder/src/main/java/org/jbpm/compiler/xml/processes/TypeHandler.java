@@ -17,8 +17,8 @@ package org.jbpm.compiler.xml.processes;
 
 import java.util.HashSet;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.process.core.TypeObject;
 import org.jbpm.process.core.datatype.DataType;

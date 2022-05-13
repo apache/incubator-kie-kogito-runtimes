@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.process.core.Work;
 import org.jbpm.process.core.datatype.DataTypeResolver;

@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.SequenceFlow;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.ruleflow.core.RuleFlowProcess;

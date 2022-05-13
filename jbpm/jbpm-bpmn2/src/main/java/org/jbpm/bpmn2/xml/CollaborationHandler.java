@@ -19,10 +19,10 @@ package org.jbpm.bpmn2.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.CorrelationKey;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -15,10 +15,10 @@
  */
 package org.jbpm.compiler.xml.compiler.rules;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.drools.drl.ast.descr.FunctionDescr;
 import org.drools.drl.ast.descr.PackageDescr;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

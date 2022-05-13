@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.kie.api.definition.process.Process;

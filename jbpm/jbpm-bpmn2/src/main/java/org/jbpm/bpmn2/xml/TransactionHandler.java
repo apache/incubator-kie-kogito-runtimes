@@ -15,7 +15,7 @@
  */
 package org.jbpm.bpmn2.xml;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.workflow.core.Node;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;

@@ -17,9 +17,9 @@ package org.jbpm.bpmn2.xml;
 
 import java.util.List;
 
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.Interface;
 import org.jbpm.bpmn2.core.Interface.Operation;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.WorkItemNode;

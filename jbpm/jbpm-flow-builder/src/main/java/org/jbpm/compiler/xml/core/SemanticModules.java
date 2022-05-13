@@ -18,7 +18,7 @@ package org.jbpm.compiler.xml.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.core.xml.SemanticModule;
+import org.jbpm.compiler.xml.SemanticModule;
 
 public class SemanticModules {
     public Map<String, SemanticModule> modules;

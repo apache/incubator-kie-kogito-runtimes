@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.SemanticModule;
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.core.Error;
 import org.jbpm.bpmn2.core.ItemDefinition;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.SemanticModule;
 import org.jbpm.compiler.xml.XmlProcessReader;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.compiler.xml.core.SemanticModules;

@@ -15,7 +15,7 @@
  */
 package org.jbpm.compiler.xml.processes;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.MilestoneNode;

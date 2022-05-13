@@ -17,8 +17,6 @@ package org.jbpm.compiler.xml;
 
 import java.util.HashSet;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;

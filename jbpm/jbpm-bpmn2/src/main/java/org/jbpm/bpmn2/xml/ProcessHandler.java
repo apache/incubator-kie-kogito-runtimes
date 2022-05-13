@@ -26,8 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.Association;
 import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.CorrelationKey;
@@ -45,6 +43,8 @@ import org.jbpm.bpmn2.core.Lane;
 import org.jbpm.bpmn2.core.Message;
 import org.jbpm.bpmn2.core.SequenceFlow;
 import org.jbpm.bpmn2.core.Signal;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.process.core.ContextContainer;

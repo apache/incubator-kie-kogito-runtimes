@@ -15,7 +15,7 @@
  */
 package org.jbpm.compiler.xml.compiler;
 
-import org.drools.core.xml.SemanticModule;
+import org.jbpm.compiler.xml.SemanticModule;
 import org.jbpm.compiler.xml.compiler.rules.AccumulateHandler;
 import org.jbpm.compiler.xml.compiler.rules.AccumulateHelperHandler;
 import org.jbpm.compiler.xml.compiler.rules.AndHandler;

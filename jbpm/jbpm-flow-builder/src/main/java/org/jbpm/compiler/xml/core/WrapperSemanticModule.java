@@ -15,8 +15,8 @@
  */
 package org.jbpm.compiler.xml.core;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.SemanticModule;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.SemanticModule;
 
 public class WrapperSemanticModule
         implements

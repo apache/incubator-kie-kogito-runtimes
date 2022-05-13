@@ -18,7 +18,7 @@ package org.jbpm.bpmn2.xml;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.DataAssociation;
 import org.jbpm.workflow.core.node.Assignment;

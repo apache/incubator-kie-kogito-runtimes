@@ -21,9 +21,9 @@ import java.util.Properties;
 
 import org.drools.compiler.builder.impl.KnowledgeBuilderConfigurationImpl;
 import org.drools.core.util.ConfFileUtils;
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.SemanticModule;
 import org.drools.util.ClassUtils;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.SemanticModule;
 import org.jbpm.compiler.xml.core.DefaultSemanticModule;
 import org.jbpm.compiler.xml.core.SemanticModules;
 import org.jbpm.compiler.xml.core.WrapperSemanticModule;

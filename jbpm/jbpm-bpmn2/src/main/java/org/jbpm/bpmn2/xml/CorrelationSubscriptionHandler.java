@@ -19,10 +19,10 @@ package org.jbpm.bpmn2.xml;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.drools.core.xml.Handler;
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.CorrelationSubscription;
 import org.jbpm.bpmn2.core.Expression;
+import org.jbpm.compiler.xml.Handler;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.w3c.dom.Element;

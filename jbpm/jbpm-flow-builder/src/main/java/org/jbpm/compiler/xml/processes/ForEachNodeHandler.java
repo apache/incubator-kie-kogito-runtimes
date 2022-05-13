@@ -18,7 +18,7 @@ package org.jbpm.compiler.xml.processes;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.process.core.datatype.DataTypeResolver;
 import org.jbpm.workflow.core.Node;

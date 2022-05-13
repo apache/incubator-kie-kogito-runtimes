@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.drools.core.xml.Parser;
 import org.jbpm.bpmn2.core.Error;
 import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Message;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.compiler.xml.compiler.XmlDumper;
 import org.jbpm.compiler.xml.core.ExtensibleXmlParser;

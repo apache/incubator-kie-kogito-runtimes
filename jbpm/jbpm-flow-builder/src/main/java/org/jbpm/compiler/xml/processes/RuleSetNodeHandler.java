@@ -15,7 +15,7 @@
  */
 package org.jbpm.compiler.xml.processes;
 
-import org.drools.core.xml.Parser;
+import org.jbpm.compiler.xml.Parser;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.RuleSetNode;
 import org.w3c.dom.Element;
