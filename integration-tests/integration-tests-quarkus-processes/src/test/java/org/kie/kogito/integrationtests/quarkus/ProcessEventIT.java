@@ -15,25 +15,21 @@
  */
 package org.kie.kogito.integrationtests.quarkus;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.acme.travels.Traveller;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -44,7 +40,7 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
@@ -52,14 +48,12 @@ class ProcessEventIT {
 
     public static final String KOGITO_PROCESSINSTANCES_EVENTS = "kogito-processinstances-events";
     public static final String KOGITO_USERTASKINSTANCES_EVENTS = "kogito-usertaskinstances-events";
-    public static final String KOGITO_VARIABLE_EVENTS = "kogito-variables-events";
 
     private static Logger LOGGER = LoggerFactory.getLogger(ProcessEventIT.class);
 
     public KafkaTestClient kafkaClient;
-    private static ObjectMapper mapper;
 
-    @ConfigProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
+    @QuarkusTestProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
     private String kafkaBootstrapServers;
 
     @BeforeEach
@@ -67,13 +61,22 @@ class ProcessEventIT {
         kafkaClient = new KafkaTestClient(kafkaBootstrapServers);
     }
 
-    @BeforeAll
-    static void init() {
-        mapper = new ObjectMapper()
+    public static final class Mapper {
+
+        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
                 .registerModule(JsonFormat.getCloudEventJacksonModule())
                 .registerModule(new JavaTimeModule());
+
+        private Mapper() {
+
+        }
+
+        public static ObjectMapper mapper() {
+            return OBJECT_MAPPER;
+        }
     }
 
+    ObjectMapper mapper = Mapper.mapper();
     static {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
@@ -81,36 +84,28 @@ class ProcessEventIT {
     @Test
     void testSaveTask() throws InterruptedException {
         Traveller traveller = new Traveller("pepe", "rubiales", "pepe.rubiales@gmail.com", "Spanish");
-        final int count = 7;
+        final int count = 2;
         final CountDownLatch countDownLatch = new CountDownLatch(count);
 
-        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS, KOGITO_USERTASKINSTANCES_EVENTS, KOGITO_VARIABLE_EVENTS), s -> {
+        kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
-                LinkedHashMap data = (LinkedHashMap) event.getData();
-                if (data.get("processId") == "handleApprovals") {
-                    switch (event.getType()) {
-                        case "ProcessInstanceEvent":
-                            Assertions.assertEquals("ProcessInstanceEvent", event.getType());
-                            Assertions.assertEquals("/handleApprovals", event.getSource().toString());
-                            Assertions.assertEquals("handleApprovals", data.get("processId"));
-                            break;
-                        case "UserTaskInstanceEvent":
-                            Assertions.assertEquals("UserTaskInstanceEvent", event.getType());
-                            Assertions.assertEquals("/handleApprovals", event.getSource().toString());
-                            Assertions.assertEquals("handleApprovals", data.get("processId"));
-                            break;
-                        case "VariableInstanceEvent":
-                            Assertions.assertEquals("VariableInstanceEvent", event.getType());
-                            Assertions.assertEquals("/handleApprovals", event.getSource().toString());
-                            Assertions.assertEquals("handleApprovals", data.get("processId"));
-                            break;
-                    }
-                }
+                ProcessDataEvent<?> event = mapper.readValue(s, ProcessDataEvent.class);
+                assertEquals("ProcessInstanceEvent", event.getType());
                 countDownLatch.countDown();
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Error parsing {}", s, e);
+                fail(e);
+            }
+        });
 
-            } catch (Exception e) {
+        kafkaClient.consume(Set.of(KOGITO_USERTASKINSTANCES_EVENTS), s -> {
+            LOGGER.info("Received from kafka: {}", s);
+            try {
+                ProcessDataEvent<?> humanTaskEvent = mapper.readValue(s, ProcessDataEvent.class);
+                assertEquals("UserTaskInstanceEvent", humanTaskEvent.getType());
+                countDownLatch.countDown();
+            } catch (JsonProcessingException e) {
                 LOGGER.error("Error parsing {}", s, e);
                 fail(e);
             }
@@ -120,7 +115,7 @@ class ProcessEventIT {
                 .contentType(ContentType.JSON)
                 .when()
                 .body(Collections.singletonMap("traveller", traveller))
-                .post("/handleApprovals")
+                .post("/approvals")
                 .then()
                 .statusCode(201)
                 .extract()
@@ -131,7 +126,7 @@ class ProcessEventIT {
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .when()
-                .get("/handleApprovals/{processId}/tasks")
+                .get("/approvals/{processId}/tasks")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -139,26 +134,26 @@ class ProcessEventIT {
 
         Map<String, Object> model = Collections.singletonMap("approved", true);
 
-        Assertions.assertEquals(model, given().contentType(ContentType.JSON)
+        assertEquals(model, given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .pathParam("taskId", taskId)
                 .body(model)
-                .put("/handleApprovals/{processId}/firstLineApproval/{taskId}")
+                .put("/approvals/{processId}/firstLineApproval/{taskId}")
                 .then()
                 .statusCode(200)
                 .extract()
                 .as(Map.class));
 
-        Assertions.assertEquals(true, given().contentType(ContentType.JSON)
+        assertEquals(true, given().contentType(ContentType.JSON)
                 .when()
                 .queryParam("user", "admin")
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .pathParam("taskId", taskId)
-                .get("/handleApprovals/{processId}/firstLineApproval/{taskId}")
+                .get("/approvals/{processId}/firstLineApproval/{taskId}")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -170,13 +165,13 @@ class ProcessEventIT {
                 .queryParam("group", "managers")
                 .pathParam("processId", processId)
                 .when()
-                .get("/handleApprovals/{processId}/tasks")
+                .get("/approvals/{processId}/tasks")
                 .then()
                 .statusCode(200)
                 .extract()
                 .path("[1].id");
 
         countDownLatch.await(10, TimeUnit.SECONDS);
-        Assertions.assertEquals(0, countDownLatch.getCount());
+        assertEquals(0, countDownLatch.getCount());
     }
 }
