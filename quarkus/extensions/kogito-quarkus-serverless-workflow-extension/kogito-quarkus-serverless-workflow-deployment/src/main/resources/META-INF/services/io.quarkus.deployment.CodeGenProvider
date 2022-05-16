@@ -1,1 +1,1 @@
-org.kie.kogito.quarkus.serverless.workflow.grpc.WorkflowGRPCGenerator
+org.kie.kogito.quarkus.serverless.workflow.grpc.WorkflowGRPCCodeGenProvider

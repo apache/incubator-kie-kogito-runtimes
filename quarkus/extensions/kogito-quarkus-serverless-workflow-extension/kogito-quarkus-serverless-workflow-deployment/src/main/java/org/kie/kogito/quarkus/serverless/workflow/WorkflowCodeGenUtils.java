@@ -20,19 +20,38 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 import org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class WorkflowCodeGenUtils {
+
+    private final static String WORKITEMCONFIG_CLASSNAME = "GeneratedWorkItemHandlerConfig";
 
     private WorkflowCodeGenUtils() {
     }
@@ -51,6 +70,33 @@ public class WorkflowCodeGenUtils {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static GeneratedFile generateWorkItemHandlerConfig(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles) {
+        CompilationUnit unit = new CompilationUnit(context.getPackageName());
+        ClassOrInterfaceDeclaration clazz = unit.addClass(WORKITEMCONFIG_CLASSNAME);
+        clazz.addExtendedType(CachedWorkItemHandlerConfig.class);
+        clazz.addAnnotation(ApplicationScoped.class);
+        BlockStmt body = clazz.addMethod("init").addAnnotation(PostConstruct.class).createBody();
+        for (GeneratedFile generatedFile : generatedFiles) {
+            final String refHandler = getRefHandler(generatedFile);
+            final String fieldName = refHandler.toLowerCase();
+            context.addGeneratedHandler(refHandler);
+            clazz.addField(context.getPackageName() + "." + refHandler, fieldName).addAnnotation(Inject.class);
+            body.addStatement(new MethodCallExpr(new SuperExpr(), "register").addArgument(new StringLiteralExpr(refHandler))
+                    .addArgument(new NameExpr(fieldName)));
+        }
+        return fromCompilationUnit(context, unit, WORKITEMCONFIG_CLASSNAME);
+    }
+
+    private static String getRefHandler(GeneratedFile generatedFile) {
+        String fileName = generatedFile.path().getFileName().toString();
+        return fileName.substring(0, fileName.lastIndexOf('.'));
+    }
+
+    public static GeneratedFile fromCompilationUnit(KogitoBuildContext context, CompilationUnit unit, String className) {
+        return new GeneratedFile(GeneratedFileType.SOURCE, Path.of("", context.getPackageName().split("\\.")).resolve(className + ".java"),
+                unit.toString());
     }
 
     private static Stream<WorkflowOperationResource> processFunction(Workflow workflow, Predicate<FunctionDefinition> predicate) {

@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.utils;
+package org.kie.kogito.quarkus.serverless.workflow;
 
-import java.util.Optional;
+import java.util.Collection;
 
-public interface ConfigResolver {
+import org.drools.codegen.common.GeneratedFile;
+import org.jboss.jandex.IndexView;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 
-    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
+public interface WorkflowHandlerGenerator {
+
+    Collection<GeneratedFile> generateHandlerClasses(KogitoBuildContext context, IndexView index);
 }

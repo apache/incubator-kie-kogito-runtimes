@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.utils;
+package org.kie.kogito.serverless.workflow;
 
-import java.util.Optional;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 
-public interface ConfigResolver {
+import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
+import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 
-    <T> Optional<T> getConfigProperty(String name, Class<T> clazz);
+@ApplicationScoped
+public class StaticWorkflowWorkflowWorkItemHandler extends CachedWorkItemHandlerConfig {
+
+    @PostConstruct()
+    void init() {
+        super.register(RPCWorkItemHandler.class.getSimpleName(), new RPCWorkItemHandler());
+    }
+
 }

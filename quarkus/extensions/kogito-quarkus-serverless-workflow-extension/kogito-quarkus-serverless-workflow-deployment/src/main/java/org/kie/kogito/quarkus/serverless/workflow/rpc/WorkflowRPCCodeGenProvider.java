@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.serverless.workflow.grpc;
+package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import io.quarkus.deployment.CodeGenProvider;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 
-public class WorkflowGRPCGenerator implements CodeGenProvider {
+public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
 
     @Override
     public String providerId() {

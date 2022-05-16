@@ -15,10 +15,20 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.deployment;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
+import org.drools.codegen.common.GeneratedFile;
+import org.jboss.jandex.IndexView;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.process.expr.ExpressionHandler;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
-import org.kie.kogito.quarkus.serverless.workflow.openapi.WorkflowOpenApiHandlerGenerator;
+import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
+import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -32,6 +42,9 @@ import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
  */
 public class ServerlessWorkflowAssetsProcessor {
 
+    @Inject
+    Instance<WorkflowHandlerGenerator> generators;
+
     @BuildStep
     FeatureBuildItem featureBuildItem() {
         return new FeatureBuildItem("kogito-serverless-workflow");
@@ -43,8 +56,16 @@ public class ServerlessWorkflowAssetsProcessor {
     }
 
     @BuildStep
-    void addOpenAPIWorkItemHandler(KogitoBuildContextBuildItem contextBI, CombinedIndexBuildItem indexBuildItem, BuildProducer<KogitoAddonsPreGeneratedSourcesBuildItem> sources) {
-        sources.produce(new KogitoAddonsPreGeneratedSourcesBuildItem(WorkflowOpenApiHandlerGenerator.generateHandlerClasses(contextBI.getKogitoBuildContext(), indexBuildItem.getIndex())));
+    void addWorkItemHandlers(KogitoBuildContextBuildItem contextBI, CombinedIndexBuildItem indexBuildItem, BuildProducer<KogitoAddonsPreGeneratedSourcesBuildItem> sources) {
+        KogitoBuildContext context = contextBI.getKogitoBuildContext();
+        IndexView index = indexBuildItem.getIndex();
+        Collection<GeneratedFile> generatedFiles = new ArrayList<>();
+        for (WorkflowHandlerGenerator generator : generators) {
+            generatedFiles.addAll(generator.generateHandlerClasses(context, index));
+        }
+        if (!generatedFiles.isEmpty()) {
+            generatedFiles.add(WorkflowCodeGenUtils.generateWorkItemHandlerConfig(context, generatedFiles));
+        }
+        sources.produce(new KogitoAddonsPreGeneratedSourcesBuildItem(generatedFiles));
     }
-
 }
