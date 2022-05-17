@@ -17,45 +17,36 @@ package org.kie.kogito.quarkus.conf;
 
 import java.util.Optional;
 
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import io.quarkus.runtime.annotations.ConfigGroup;
+import io.quarkus.runtime.annotations.ConfigItem;
+import io.quarkus.runtime.annotations.ConfigPhase;
+import io.quarkus.runtime.annotations.ConfigRoot;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.quarkus.runtime.StartupEvent;
-import io.quarkus.runtime.annotations.Recorder;
-
-@Singleton
-@Recorder
+@ConfigRoot(name = "kogito", phase = ConfigPhase.RUN_TIME)
+@ConfigGroup
 public class KogitoRuntimeConfig {
 
-    @ConfigProperty(name = "kogito.service.url")
-    Optional<String> kogitoServiceUrl;
+    /**
+     * The service URL needed to connect to the runtime endpoint from outside the service.
+     * <p>
+     *
+     */
+    @ConfigItem(name = "service.url")
+    public Optional<String> serviceUrl;
 
-    @ConfigProperty(name = "kogito.messaging.as-cloudevents", defaultValue = "true")
-    boolean useCloudEvents;
+    /**
+     * If this is enabled the service will use Cloud Events
+     * <p>
+     * If not defined, true will be used.
+     */
+    @ConfigItem(name = "messaging.as-cloudevents", defaultValue = "true")
+    public Optional<Boolean> useCloudEvents;
 
-    @ConfigProperty(name = "kogito.jackson.fail-on-empty-bean", defaultValue = "false")
-    boolean failOnEmptyBean;
-
-    @ConfigProperty(name = "quarkus.application.name")
-    java.util.Optional<String> applicationName;
-
-    @ConfigProperty(name = "quarkus.application.version")
-    java.util.Optional<String> applicationVersion;
-
-    private static String groupId = "";
-
-    @Inject
-    ConfigBean kogitoQuarkusConfigBean;
-
-    void startup(@Observes StartupEvent event) {
-        kogitoQuarkusConfigBean.setupConfigBean(kogitoServiceUrl.orElse(""), useCloudEvents, failOnEmptyBean,
-                groupId, applicationName.orElse(""), applicationVersion.orElse(""));
-    }
-
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+    /**
+     * If this property is True, Jackson will fail on an empty bean
+     * <p>
+     * If not defined, false will be used.
+     */
+    @ConfigItem(name = "jackson.fail-on-empty-bean", defaultValue = "false")
+    public Optional<Boolean> failOnEmptyBean;
 }

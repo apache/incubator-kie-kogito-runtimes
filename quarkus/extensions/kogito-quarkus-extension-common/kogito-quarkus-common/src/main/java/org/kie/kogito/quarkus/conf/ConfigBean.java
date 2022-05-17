@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.quarkus.conf;
 
+import java.util.Optional;
+
 import javax.inject.Singleton;
 
 import org.kie.kogito.KogitoGAV;
@@ -23,11 +25,30 @@ import org.kie.kogito.conf.StaticConfigBean;
 @Singleton
 public class ConfigBean extends StaticConfigBean {
 
-    public void setupConfigBean(String kogitoServiceUrl, boolean useCloudEvents, boolean failOnEmptyBean,
-            String groupId, String applicationName, String applicationVersion) {
-        setServiceUrl(kogitoServiceUrl);
-        setCloudEvents(useCloudEvents);
-        setFailOnEmptyBean(failOnEmptyBean);
-        setGav(new KogitoGAV(groupId, applicationName, applicationVersion));
+    private ConfigBeanRecorder configBeanRecorder;
+
+    public ConfigBean(ConfigBeanRecorder configBeanRecorder) {
+        super();
+        this.configBeanRecorder = configBeanRecorder;
+    }
+
+    @Override
+    public String getServiceUrl() {
+        return configBeanRecorder.getServiceUrl();
+    }
+
+    @Override
+    public Optional<KogitoGAV> getGav() {
+        return Optional.ofNullable(configBeanRecorder.getGav());
+    }
+
+    @Override
+    public boolean failOnEmptyBean() {
+        return configBeanRecorder.isFailOnEmptyBean();
+    }
+
+    @Override
+    public boolean useCloudEvents() {
+        return configBeanRecorder.isUseCloudEvents();
     }
 }
