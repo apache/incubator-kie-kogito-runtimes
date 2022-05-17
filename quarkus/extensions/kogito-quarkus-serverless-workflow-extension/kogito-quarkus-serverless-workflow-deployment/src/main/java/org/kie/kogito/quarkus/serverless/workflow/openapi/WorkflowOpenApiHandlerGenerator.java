@@ -55,7 +55,6 @@ import io.quarkiverse.openapi.generator.annotations.GeneratedParam;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
-@ApplicationScoped
 public class WorkflowOpenApiHandlerGenerator extends ClassAnnotatedWorkfkowHandlerGenerator {
 
     private static final DotName generatedMethod = DotName.createSimple(GeneratedMethod.class.getCanonicalName());
@@ -63,6 +62,11 @@ public class WorkflowOpenApiHandlerGenerator extends ClassAnnotatedWorkfkowHandl
 
     private static final String WORK_ITEM_PARAMETERS = "parameters";
     private static final String OPEN_API_REF = "openApiRef";
+
+    public static final WorkflowOpenApiHandlerGenerator instance = new WorkflowOpenApiHandlerGenerator();
+
+    private WorkflowOpenApiHandlerGenerator() {
+    }
 
     @Override
     protected Stream<GeneratedFile> generateHandler(KogitoBuildContext context, AnnotationInstance a) {

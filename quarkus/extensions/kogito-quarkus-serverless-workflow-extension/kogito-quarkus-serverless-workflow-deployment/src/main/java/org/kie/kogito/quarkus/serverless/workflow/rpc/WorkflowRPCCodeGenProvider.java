@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
+import org.kie.kogito.serverless.workflow.io.URIContentLoader;
+import org.kie.kogito.serverless.workflow.io.URIContentLoaderType;
 
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
@@ -55,7 +57,8 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
         // write files to proto dir
         Path outputPath = context.inputDir().getParent().resolve("proto");
         for (WorkflowOperationResource resource : resources) {
-            result |= writeResource(outputPath, resource);
+            writeResource(outputPath, resource);
+            result = true;
         }
         return result;
     }
@@ -64,12 +67,14 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
         return function.getType() == Type.RPC;
     }
 
-    private boolean writeResource(Path outputPath, WorkflowOperationResource resource) throws CodeGenException {
-        try (InputStream is = resource.getInputStream()) {
-            Files.write(outputPath.resolve(resource.getOperationId().getFileName()), resource.getInputStream().readAllBytes());
-            return true;
-        } catch (IOException io) {
-            throw new CodeGenException(io);
+    private void writeResource(Path outputPath, WorkflowOperationResource resource) throws CodeGenException {
+        URIContentLoader content = resource.getContentLoader();
+        if (content.type() == URIContentLoaderType.HTTP) {
+            try (InputStream is = content.getInputStream()) {
+                Files.write(outputPath.resolve(resource.getOperationId().getFileName()), is.readAllBytes());
+            } catch (IOException io) {
+                throw new CodeGenException(io);
+            }
         }
     }
 }

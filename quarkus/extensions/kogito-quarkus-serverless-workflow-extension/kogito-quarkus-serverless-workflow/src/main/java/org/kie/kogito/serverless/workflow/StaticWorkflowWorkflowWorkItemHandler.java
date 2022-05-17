@@ -26,7 +26,6 @@ public class StaticWorkflowWorkflowWorkItemHandler extends CachedWorkItemHandler
 
     @PostConstruct()
     void init() {
-        super.register(RPCWorkItemHandler.class.getSimpleName(), new RPCWorkItemHandler());
+        super.register(RPCWorkItemHandler.NAME, new RPCWorkItemHandler());
     }
-
 }

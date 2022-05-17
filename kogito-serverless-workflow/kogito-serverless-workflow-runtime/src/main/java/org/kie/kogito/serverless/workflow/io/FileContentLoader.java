@@ -34,4 +34,9 @@ public class FileContentLoader extends FallbackContentLoader {
     protected InputStream internalInputStream() throws IOException {
         return Files.newInputStream(path);
     }
+
+    @Override
+    public URIContentLoaderType type() {
+        return URIContentLoaderType.FILE;
+    }
 }

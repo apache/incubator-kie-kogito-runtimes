@@ -161,4 +161,9 @@ class HttpContentLoader extends FallbackContentLoader {
     private String encode(String str) {
         return Base64.getEncoder().encodeToString(str.getBytes());
     }
+
+    @Override
+    public URIContentLoaderType type() {
+        return URIContentLoaderType.HTTP;
+    }
 }

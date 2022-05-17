@@ -18,9 +18,6 @@ package org.kie.kogito.quarkus.serverless.workflow.deployment;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-
 import org.drools.codegen.common.GeneratedFile;
 import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -29,6 +26,7 @@ import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPreGeneratedSourcesB
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
+import org.kie.kogito.quarkus.serverless.workflow.openapi.WorkflowOpenApiHandlerGenerator;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -42,8 +40,8 @@ import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
  */
 public class ServerlessWorkflowAssetsProcessor {
 
-    @Inject
-    Instance<WorkflowHandlerGenerator> generators;
+    // Injecting Instance<WorkflowOpenApiHandlerGenerator> does not work here
+    private static WorkflowHandlerGenerator[] generators = { WorkflowOpenApiHandlerGenerator.instance };
 
     @BuildStep
     FeatureBuildItem featureBuildItem() {

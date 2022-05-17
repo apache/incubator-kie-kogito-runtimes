@@ -50,4 +50,9 @@ public class ClassPathContentLoader implements URIContentLoader {
 
     }
 
+    @Override
+    public URIContentLoaderType type() {
+        return URIContentLoaderType.CLASSPATH;
+    }
+
 }

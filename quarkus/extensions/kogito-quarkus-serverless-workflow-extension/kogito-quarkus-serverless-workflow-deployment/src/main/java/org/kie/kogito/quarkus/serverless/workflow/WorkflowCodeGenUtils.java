@@ -104,14 +104,11 @@ public class WorkflowCodeGenUtils {
     }
 
     private static WorkflowOperationResource getResource(Workflow workflow, FunctionDefinition function) {
-        try {
-            WorkflowOperationId operationId = WorkflowOperationId.fromOperation(function.getOperation());
-            URI uri = operationId.getUri();
-            return new WorkflowOperationResource(operationId,
-                    URIContentLoaderFactory.buildLoader(uri, Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()).getInputStream());
-        } catch (IOException io) {
-            throw new IllegalStateException(io);
-        }
+        WorkflowOperationId operationId = WorkflowOperationId.fromOperation(function.getOperation());
+        URI uri = operationId.getUri();
+        return new WorkflowOperationResource(operationId,
+                URIContentLoaderFactory.buildLoader(uri, Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()));
+
     }
 
     private static Optional<Workflow> getWorkflow(Path p) {

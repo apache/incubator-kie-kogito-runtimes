@@ -37,6 +37,7 @@ import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.rest.RestOperationHandlerFactory;
+import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
@@ -199,6 +200,8 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                         .outMapping(WORKITEM_PARAM, outputVar), actionFunction, operation, functionRef.getArguments());
             case REST:
                 return addFunctionArgs(addRestParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
+            case RPC:
+                return addFunctionArgs(addRPCParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
             case OPENAPI:
                 WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
                 notifySourceFileCodegenBindListeners(operationId.getUri().toString());
@@ -309,6 +312,16 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(actionFunction, ACCESS_TOKEN, parserContext.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(actionFunction, API_KEY_PREFIX, parserContext.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, API_KEY, parserContext.getContext())));
+    }
+
+    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addRPCParameters(WorkItemNodeFactory<T> node,
+            FunctionDefinition actionFunction,
+            String operation) {
+        WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
+        return node.workName(RPCWorkItemHandler.NAME)
+                .metaData(RPCWorkItemHandler.FILE_PROP, operationId.getFileName())
+                .metaData(RPCWorkItemHandler.SERVICE_PROP, operationId.getService())
+                .metaData(RPCWorkItemHandler.METHOD_PROP, operationId.getOperation());
     }
 
     private Map<String, Object> functionsToMap(JsonNode jsonNode) {

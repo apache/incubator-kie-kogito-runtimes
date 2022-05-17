@@ -47,6 +47,8 @@ import io.grpc.stub.ClientCalls;
 
 public class RPCWorkItemHandler extends WorkflowWorkItemHandler {
 
+    public final static String NAME = "gRPC";
+
     public final static String SERVICE_PROP = "serviceName";
     public final static String FILE_PROP = "fileName";
     public final static String METHOD_PROP = "methodName";

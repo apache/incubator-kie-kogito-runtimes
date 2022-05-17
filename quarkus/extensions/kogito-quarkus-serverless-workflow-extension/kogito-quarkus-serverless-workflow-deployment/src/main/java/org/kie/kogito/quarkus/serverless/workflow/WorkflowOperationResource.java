@@ -15,25 +15,24 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow;
 
-import java.io.InputStream;
-
+import org.kie.kogito.serverless.workflow.io.URIContentLoader;
 import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 
 public class WorkflowOperationResource {
 
     private final WorkflowOperationId operationId;
-    private final InputStream inputStream;
+    private final URIContentLoader contentLoader;
 
-    public WorkflowOperationResource(WorkflowOperationId operationId, InputStream inputStream) {
+    public WorkflowOperationResource(WorkflowOperationId operationId, URIContentLoader contentLoader) {
         this.operationId = operationId;
-        this.inputStream = inputStream;
+        this.contentLoader = contentLoader;
     }
 
     public WorkflowOperationId getOperationId() {
         return operationId;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
+    public URIContentLoader getContentLoader() {
+        return contentLoader;
     }
 }

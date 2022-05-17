@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -42,6 +43,10 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
     }
 
     private SpecInputModel getSpecInput(WorkflowOperationResource resource) {
-        return new SpecInputModel(resource.getOperationId().getFileName(), resource.getInputStream(), KOGITO_PACKAGE_PREFIX + resource.getOperationId().getPackageName());
+        try {
+            return new SpecInputModel(resource.getOperationId().getFileName(), resource.getContentLoader().getInputStream(), KOGITO_PACKAGE_PREFIX + resource.getOperationId().getPackageName());
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
