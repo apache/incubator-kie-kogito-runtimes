@@ -107,7 +107,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonProperty(CloudEventExtensionConstants.ADDONS)
     private String kogitoAddons;
 
-    //@JsonProperty(CloudEventExtensionConstants.EXTENSION_ATTRIBUTES)
     private Map<String, Object> extensionAttributes = new HashMap<>();
 
     public AbstractDataEvent() {

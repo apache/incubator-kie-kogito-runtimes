@@ -101,20 +101,15 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
 
     private String resolveCorrelationId(Object event) {
         //extract if any, instance correlation
-        final Optional<CompositeCorrelation> instanceCorrelation = instanceCorrelationResolver.map(r -> r.resolve(event));
+        final Optional<CompositeCorrelation> correlation = instanceCorrelationResolver.map(r -> r.resolve(event));
 
         //if exists call service to find the workflow instance id aka referenceId
-        final Optional<CorrelationInstance> correlationInstance = instanceCorrelation.flatMap(process.correlations()::find);
+        final Optional<CorrelationInstance> correlationInstance = correlation.flatMap(process.correlations()::find);
 
         //if not found the default is kogitoReferenceId
         return correlationInstance
                 .map(CorrelationInstance::getCorrelatedId)
                 .orElseGet(() -> kogitoReferenceCorrelationResolver.resolve(event).asString());
-    }
-
-    private ProcessInstance<M> handleMessageWithoutReference(String trigger, Object event) {
-        LOGGER.debug("Starting new process instance with trigger '{}'", trigger);
-        return startNewInstance(trigger, event);
     }
 
     private ProcessInstance<M> handleMessageWithReference(String trigger, Object event, String instanceId) {
@@ -148,9 +143,9 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
         final Object data = dataResolver.apply(event);
 
         //event correlation, extract if any, the workflow instance correlation
-        final CompositeCorrelation instanceCorrelation = instanceCorrelationResolver.map(r -> r.resolve(event)).orElse(null);
+        final CompositeCorrelation correlation = instanceCorrelationResolver.map(r -> r.resolve(event)).orElse(null);
         LOGGER.info("Starting new process instance with signal '{}'", trigger);
-        return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId, instanceCorrelation);
+        return processService.createProcessInstance(process, businessKey, modelConverter.apply(data), fromNode, trigger, referenceId, correlation);
     }
 
     private boolean shouldSkipMessage(String trigger, Object event) {

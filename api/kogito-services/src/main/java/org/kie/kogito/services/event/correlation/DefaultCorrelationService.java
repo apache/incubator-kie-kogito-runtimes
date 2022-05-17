@@ -55,4 +55,9 @@ public class DefaultCorrelationService implements CorrelationService {
         CorrelationInstance removed = correlationRepository.remove(correlationEncoder.encode(correlation));
         correlatedRepository.remove(removed.getCorrelatedId());
     }
+
+    public final void clear(){
+        correlationRepository.clear();
+        correlatedRepository.clear();
+    }
 }

@@ -569,9 +569,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     private void remove() {
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
         correlationInstance.map(CorrelationInstance::getCorrelation)
                 .ifPresent(c -> addToUnitOfWork(r -> process().correlations().delete(c)));
+
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
     }
 
     // this must be overridden at compile time
