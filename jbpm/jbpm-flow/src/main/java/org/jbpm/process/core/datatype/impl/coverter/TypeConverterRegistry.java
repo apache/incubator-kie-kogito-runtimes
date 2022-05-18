@@ -17,6 +17,7 @@ package org.jbpm.process.core.datatype.impl.coverter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
@@ -61,16 +62,21 @@ public class TypeConverterRegistry {
     }
 
     public UnaryOperator<Object> forTypeCloner(String type) {
-        return cloners.getOrDefault(type, o -> o);
+        return cloners.getOrDefault(type, CloneHelper::clone);
     }
 
     public void register(String type, Function<String, ? extends Object> converter) {
-        register(type, converter, Object::toString);
+        register(type, converter, Optional.empty(), Optional.empty());
     }
 
     public <T> void register(String type, Function<String, T> converter, Function<T, String> unconverter) {
+        register(type, converter, Optional.of(unconverter), Optional.empty());
+    }
+
+    public <T> void register(String type, Function<String, T> converter, Optional<Function<T, String>> unconverter, Optional<UnaryOperator<Object>> cloner) {
         this.converters.put(type, converter);
-        this.unconverters.put(type, unconverter);
+        unconverter.ifPresent(u -> this.unconverters.put(type, u));
+        cloner.ifPresent(c -> this.cloners.put(type, c));
     }
 
     public static TypeConverterRegistry get() {
