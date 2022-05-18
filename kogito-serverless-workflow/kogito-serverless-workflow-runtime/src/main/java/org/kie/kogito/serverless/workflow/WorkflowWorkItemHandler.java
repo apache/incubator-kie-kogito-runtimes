@@ -30,7 +30,7 @@ public abstract class WorkflowWorkItemHandler implements KogitoWorkItemHandler {
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
         Map<String, Object> parameters = new HashMap<>(workItem.getParameters());
-        parameters.remove(SWFConstants.DEFAULT_WORKFLOW_VAR);
+        parameters.remove(SWFConstants.MODEL_WORKFLOW_VAR);
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap("Result",
                 JsonObjectUtils.fromValue(internalExecute(workItem, parameters))));
     }

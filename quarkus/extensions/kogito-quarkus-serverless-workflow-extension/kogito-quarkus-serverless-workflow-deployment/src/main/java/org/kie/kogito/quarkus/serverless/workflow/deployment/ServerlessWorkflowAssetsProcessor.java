@@ -27,11 +27,14 @@ import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
 import org.kie.kogito.quarkus.serverless.workflow.openapi.WorkflowOpenApiHandlerGenerator;
+import org.kie.kogito.quarkus.serverless.workflow.rpc.WorkflowRPCHandlerGenerator;
+import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
 
@@ -41,7 +44,7 @@ import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
 public class ServerlessWorkflowAssetsProcessor {
 
     // Injecting Instance<WorkflowOpenApiHandlerGenerator> does not work here
-    private static WorkflowHandlerGenerator[] generators = { WorkflowOpenApiHandlerGenerator.instance };
+    private static WorkflowHandlerGenerator[] generators = { WorkflowOpenApiHandlerGenerator.instance, WorkflowRPCHandlerGenerator.instance };
 
     @BuildStep
     FeatureBuildItem featureBuildItem() {
@@ -49,8 +52,9 @@ public class ServerlessWorkflowAssetsProcessor {
     }
 
     @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
-    void addExpressionHandlers(BuildProducer<ServiceProviderBuildItem> serviceProvider) {
+    NativeImageResourceBuildItem addExpressionHandlers(BuildProducer<ServiceProviderBuildItem> serviceProvider) {
         serviceProvider.produce(ServiceProviderBuildItem.allProvidersFromClassPath(ExpressionHandler.class.getCanonicalName()));
+        return new NativeImageResourceBuildItem(RPCWorkItemHandler.DESCRIPTOR_PATH);
     }
 
     @BuildStep

@@ -18,17 +18,17 @@ package org.kie.kogito.serverless.workflow.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 
 public class ClassPathContentLoader implements URIContentLoader {
 
-    private String path;
-    private Optional<ClassLoader> cl;
+    private final URL resource;
 
     public ClassPathContentLoader(URI uri, Optional<ClassLoader> cl) {
-        this.path = getPath(uri);
-        this.cl = cl;
+        String path = getPath(uri);
+        this.resource = Objects.requireNonNull(cl.orElse(Thread.currentThread().getContextClassLoader()).getResource(path), "Cannot find resource " + path + " in classpath");
     }
 
     private static String getPath(URI uri) {
@@ -40,13 +40,13 @@ public class ClassPathContentLoader implements URIContentLoader {
         return path;
     }
 
+    public URL getResource() {
+        return resource;
+    }
+
     @Override
     public InputStream getInputStream() throws IOException {
-        InputStream is = cl.orElse(Thread.currentThread().getContextClassLoader()).getResourceAsStream(path);
-        if (is == null) {
-            throw new IOException("Cannot find resource " + path + " in classpath");
-        }
-        return is;
+        return resource.openStream();
 
     }
 

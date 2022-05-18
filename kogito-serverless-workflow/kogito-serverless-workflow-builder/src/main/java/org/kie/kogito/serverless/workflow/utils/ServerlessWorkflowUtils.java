@@ -164,4 +164,8 @@ public class ServerlessWorkflowUtils {
         return Optional.empty();
     }
 
+    public static String getRPCClassName(String serviceName) {
+        return "RPC_" + serviceName + "_WorkItemHandler";
+    }
+
 }

@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow;
+package org.kie.kogito.serverless.workflow.rpc;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
-import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
-import org.kie.kogito.serverless.workflow.rpc.QuarkusRPCWorkItemHandler;
-import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
+import io.grpc.Channel;
+import io.quarkus.grpc.GrpcClient;
 
 @ApplicationScoped
-public class StaticWorkflowWorkflowWorkItemHandler extends CachedWorkItemHandlerConfig {
+public class QuarkusRPCWorkItemHandler extends RPCWorkItemHandler {
 
-    @Inject
-    QuarkusRPCWorkItemHandler handler;
+    @GrpcClient
+    Channel channel;
 
-    @PostConstruct()
-    void init() {
-        super.register(RPCWorkItemHandler.NAME, handler);
+    @Override
+    protected Channel getChannel(String file, String service) {
+        return channel;
     }
+
 }

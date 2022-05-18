@@ -19,42 +19,43 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolver;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.DescriptorProtos.MethodDescriptorProto;
+import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
+import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.google.protobuf.Descriptors.ServiceDescriptor;
 import com.google.protobuf.DynamicMessage;
+import com.google.protobuf.DynamicMessage.Builder;
 
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientCall;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.MethodDescriptor.MethodType;
 import io.grpc.protobuf.ProtoUtils;
 import io.grpc.stub.ClientCalls;
 
-public class RPCWorkItemHandler extends WorkflowWorkItemHandler {
+public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(RPCWorkItemHandler.class);
 
     public final static String NAME = "gRPC";
+    public final static String DESCRIPTOR_PATH = "protobuf/descriptor-sets/output.protobin";
 
     public final static String SERVICE_PROP = "serviceName";
     public final static String FILE_PROP = "fileName";
     public final static String METHOD_PROP = "methodName";
-
-    private final static String RPC_PROPERTY_PREFIX = "org.kie.kogito.serverless.rpc.";
-    private final static String TARGET_PROPERTY = "target";
 
     private FileDescriptorSet fdSet;
 
@@ -68,26 +69,27 @@ public class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         String file = (String) metadata.get(FILE_PROP);
         String service = (String) metadata.get(SERVICE_PROP);
         String method = (String) metadata.get(METHOD_PROP);
-        Channel channel = ManagedChannelBuilder.forTarget(getValue(TARGET_PROPERTY, "localhost:50051", String.class, file, service, method)).usePlaintext().build();
-        return getObject(doCall(fdSet, channel, file, service, method));
 
+        return getObject(doCall(fdSet, parameters, getChannel(file, service), file, service, method));
     }
 
+    protected abstract Channel getChannel(String file, String service);
+
     public static FileDescriptorSet loadFileDescriptorSet() {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("protobuf/descriptor-sets/output.protobin")) {
+        try (InputStream inputStream = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(DESCRIPTOR_PATH), DESCRIPTOR_PATH + " cannot be found")) {
             return FileDescriptorSet.newBuilder().mergeFrom(inputStream.readAllBytes()).build();
         } catch (IOException e) {
             throw new IllegalStateException("Cannot initialize RPC workitem handler", e);
         }
     }
 
-    public static DynamicMessage doCall(FileDescriptorSet fdSet, Channel channel, String fileName, String serviceName, String methodName) {
+    public static DynamicMessage doCall(FileDescriptorSet fdSet, Map<String, Object> parameters, Channel channel, String fileName, String serviceName, String methodName) {
         try {
             FileDescriptor descriptor = FileDescriptor.buildFrom(fdSet.getFileList().stream().filter(f -> f.getName().equals(fileName))
                     .findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find file name " + fileName)), new FileDescriptor[0], true);
             ServiceDescriptor serviceDesc = Objects.requireNonNull(descriptor.findServiceByName(serviceName), "Cannot find service name " + serviceName);
             MethodDescriptor methodDesc = Objects.requireNonNull(serviceDesc.findMethodByName(methodName), "Cannot find method name " + methodName);
-            DynamicMessage message = DynamicMessage.newBuilder(methodDesc.getInputType()).setField(methodDesc.getInputType().findFieldByName("name"), "Javierito").build();
+            DynamicMessage message = buildMessage(methodDesc, parameters);
             ClientCall<DynamicMessage, DynamicMessage> call = channel.newCall(io.grpc.MethodDescriptor.<DynamicMessage, DynamicMessage> newBuilder()
                     .setType(getMethodType(methodDesc))
                     .setFullMethodName(io.grpc.MethodDescriptor.generateFullMethodName(
@@ -104,6 +106,23 @@ public class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         }
     }
 
+    private static DynamicMessage buildMessage(MethodDescriptor methodDesc, Map<String, Object> parameters) {
+        Descriptor descriptor = methodDesc.getInputType();
+        Builder builder = DynamicMessage.newBuilder(descriptor);
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            Object value = entry.getValue();
+            if (value != null) {
+                FieldDescriptor fieldDescriptor = descriptor.findFieldByName(entry.getKey());
+                if (fieldDescriptor != null) {
+                    builder.setField(fieldDescriptor, entry.getValue());
+                } else {
+                    logger.info("Unrecognized parameter " + entry.getKey());
+                }
+            }
+        }
+        return builder.build();
+    }
+
     public static JsonNode getObject(DynamicMessage message) {
         return JsonObjectUtils.fromValue(message.getAllFields().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getJsonName(), Map.Entry::getValue)));
     }
@@ -117,29 +136,5 @@ public class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         } else {
             return MethodType.UNKNOWN;
         }
-    }
-
-    private String getPropertyKey(String key, String... strs) {
-        StringBuilder sb = new StringBuilder(RPC_PROPERTY_PREFIX);
-        for (String str : strs) {
-            sb.append(str).append('.');
-        }
-        sb.append(key);
-        return sb.toString();
-    }
-
-    private <T> T getValue(String key, T defaultValue, Class<T> clazz, String... varargs) {
-        ConfigResolver config = ConfigResolverHolder.getConfigResolver();
-        int pending = varargs.length;
-        Optional<T> propValue = Optional.empty();
-        while (propValue.isEmpty() && pending > 0) {
-            String[] strs = new String[pending];
-            System.arraycopy(varargs, 0, strs, 0, pending--);
-            propValue = config.getConfigProperty(getPropertyKey(key, strs), clazz);
-        }
-        if (propValue.isEmpty()) {
-            propValue = config.getConfigProperty(getPropertyKey(key), clazz);
-        }
-        return propValue.orElse(defaultValue);
     }
 }

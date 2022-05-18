@@ -77,19 +77,11 @@
       <!-- gRPC dependencies -->
      <dependency>
        <groupId>io.grpc</groupId>
-       <artifactId>grpc-netty-shaded</artifactId>
-       <version>1.45.1</version>
-       <scope>runtime</scope>
-     </dependency> 
-     <dependency>
-       <groupId>io.grpc</groupId>
        <artifactId>grpc-protobuf</artifactId>
-       <version>1.45.1</version>
      </dependency>
      <dependency>
        <groupId>io.grpc</groupId>
        <artifactId>grpc-stub</artifactId>
-       <version>1.45.1</version>
      </dependency>
   </dependencies>
 </project>

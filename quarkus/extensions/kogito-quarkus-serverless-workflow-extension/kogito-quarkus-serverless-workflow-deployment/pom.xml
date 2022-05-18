@@ -64,6 +64,11 @@
       <groupId>io.quarkiverse.openapi.generator</groupId>
       <artifactId>quarkus-openapi-generator-deployment</artifactId>
      </dependency>
+     
+     <dependency>
+       <groupId>io.quarkus</groupId>
+       <artifactId>quarkus-grpc-deployment</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

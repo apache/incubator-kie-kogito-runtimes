@@ -30,6 +30,10 @@ public class FileContentLoader extends FallbackContentLoader {
         this.path = path;
     }
 
+    public Path getPath() {
+        return path;
+    }
+
     @Override
     protected InputStream internalInputStream() throws IOException {
         return Files.newInputStream(path);

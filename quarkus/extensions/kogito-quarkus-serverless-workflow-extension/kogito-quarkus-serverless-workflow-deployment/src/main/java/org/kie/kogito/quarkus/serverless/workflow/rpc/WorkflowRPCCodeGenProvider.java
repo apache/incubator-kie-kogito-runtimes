@@ -17,6 +17,7 @@ package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -24,8 +25,9 @@ import java.util.stream.Collectors;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
+import org.kie.kogito.serverless.workflow.io.ClassPathContentLoader;
+import org.kie.kogito.serverless.workflow.io.FileContentLoader;
 import org.kie.kogito.serverless.workflow.io.URIContentLoader;
-import org.kie.kogito.serverless.workflow.io.URIContentLoaderType;
 
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
@@ -57,10 +59,28 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
         // write files to proto dir
         Path outputPath = context.inputDir().getParent().resolve("proto");
         for (WorkflowOperationResource resource : resources) {
-            writeResource(outputPath, resource);
-            result = true;
+            if (shouldWriteToProto(resource, outputPath)) {
+                writeResource(outputPath, resource);
+            }
         }
         return result;
+    }
+
+    private boolean shouldWriteToProto(WorkflowOperationResource resource, Path outputPath) {
+        URIContentLoader contentLoader = resource.getContentLoader();
+        switch (contentLoader.type()) {
+            case FILE:
+                return !((FileContentLoader) contentLoader).getPath().startsWith(outputPath);
+            case CLASSPATH:
+                try {
+                    return !Path.of(((ClassPathContentLoader) contentLoader).getResource().toURI().getPath()).startsWith(outputPath);
+                } catch (URISyntaxException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            case HTTP:
+            default:
+                return true;
+        }
     }
 
     private boolean isRPC(FunctionDefinition function) {
@@ -68,13 +88,10 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
     }
 
     private void writeResource(Path outputPath, WorkflowOperationResource resource) throws CodeGenException {
-        URIContentLoader content = resource.getContentLoader();
-        if (content.type() == URIContentLoaderType.HTTP) {
-            try (InputStream is = content.getInputStream()) {
-                Files.write(outputPath.resolve(resource.getOperationId().getFileName()), is.readAllBytes());
-            } catch (IOException io) {
-                throw new CodeGenException(io);
-            }
+        try (InputStream is = resource.getContentLoader().getInputStream()) {
+            Files.write(outputPath.resolve(resource.getOperationId().getFileName()), is.readAllBytes());
+        } catch (IOException io) {
+            throw new CodeGenException(io);
         }
     }
 }
