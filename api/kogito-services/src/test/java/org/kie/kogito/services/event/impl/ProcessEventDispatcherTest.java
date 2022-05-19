@@ -15,19 +15,6 @@
  */
 package org.kie.kogito.services.event.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -59,6 +46,19 @@ import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 class ProcessEventDispatcherTest {
 
     public static final String DUMMY_TOPIC = "dummyTopic";
@@ -81,7 +81,7 @@ class ProcessEventDispatcherTest {
         processInstance = mock(ProcessInstance.class);
         when(processInstance.id()).thenReturn("1");
         when(process.instances()).thenReturn(processInstances);
-        correlationService = spy(new DefaultCorrelationService());        
+        correlationService = spy(new DefaultCorrelationService());
         when(process.correlations()).thenReturn(correlationService);
         when(processInstances.findById(Mockito.anyString())).thenReturn(Optional.empty());
         when(processInstances.findById("1")).thenReturn(Optional.of(processInstance));
@@ -206,7 +206,7 @@ class ProcessEventDispatcherTest {
         DummyCloudEvent event = new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source");
         event.addExtensionAttribute(userId, userValue);
         event.addExtensionAttribute(name, nameValue);
-        
+
         ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, event).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
