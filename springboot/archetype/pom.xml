@@ -12,6 +12,10 @@
   <name>Kogito :: Spring Boot :: Maven Archetype</name>
   <description>Kogito based on Spring Boot runtime Archetype</description>
 
+  <properties>
+    <artefacts.all>false</artefacts.all>
+  </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -84,6 +88,9 @@
           <name>!productized</name>
         </property>
       </activation>
+      <properties>
+        <artefacts.all>true</artefacts.all>
+      </properties>
       <dependencies>
         <dependency>
           <groupId>org.kie.kogito</groupId>

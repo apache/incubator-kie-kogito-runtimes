@@ -22,6 +22,52 @@ import java.nio.file.Paths
 
 log = LoggerFactory.getLogger("org.apache.maven")
 
+includeAllArtefacts = ${artefacts.all}
+
+validStarters = [
+        [id: "rules", starter: "kogito-rules-spring-boot-starter"],
+        [id: "decisions", starter: "kogito-decisions-spring-boot-starter"],
+        [id: "predictions", starter: "kogito-predictions-spring-boot-starter"]
+]
+
+if (includeAllArtefacts) {
+    validStarters.addAll([
+            [id: "processes", starter: "kogito-processes-spring-boot-starter"],
+            [id: "serverless-workflows", starter: "kogito-serverless-workflows-spring-boot-starter"]
+    ])
+}
+
+// this list should be maintained manually for now for each generic/spring boot add-on we create
+// see: https://issues.redhat.com/browse/KOGITO-5619
+validAddons = [
+        [id: "messaging", addon: "kogito-addons-springboot-messaging"],
+        [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],
+        [id: "events-predictions", addon: "kogito-addons-springboot-events-predictions"],
+        [id: "events-rules", addon: "kogito-addons-springboot-events-rules"],
+        [id: "monitoring-prometheus", addon: "kogito-addons-springboot-monitoring-prometheus"],
+]
+
+if (includeAllArtefacts) {
+    validAddons.addAll([
+            [id: "events-process-kafka", addon: "kogito-addons-springboot-events-process-kafka"],
+            [id: "persistence-filesystem", addon: "kogito-addons-persistence-filesystem"],
+            [id: "persistence-infinispan", addon: "kogito-addons-persistence-infinispan"],
+            [id: "persistence-jdbc", addon: "kogito-addons-persistence-jdbc"],
+            [id: "persistence-mongodb", addon: "kogito-addons-persistence-mongodb"],
+            [id: "persistence-postgresql", addon: "kogito-addons-persistence-postgresql"],
+            [id: "process-management", addon: "kogito-addons-springboot-process-management"],
+            [id: "process-svg", addon: "kogito-addons-springboot-process-svg"],
+            [id: "task-management", addon: "kogito-addons-springboot-task-management"],
+            [id: "task-notification", addon: "kogito-addons-springboot-task-notification"],
+            [id: "jobs-management", addon: "kogito-addons-springboot-jobs-management"],
+            [id: "mail", addon: "kogito-addons-springboot-mail"],
+            [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
+            [id: "explainability", addon: "kogito-addons-springboot-explainability"],
+            [id: "monitoring-elastic", addon: "kogito-addons-springboot-monitoring-elastic"],
+            [id: "tracing-decision", addon: "kogito-addons-springboot-tracing-decision"]
+    ])
+}
+
 /**
  * Verify if the starters in the parameters are valid and convert them into actual artifact ids
  */
@@ -29,13 +75,7 @@ def startersToArtifactIds(String starters) {
     if (starters == "_UNDEFINED_" || starters == "" || starters == null) {
         return []
     }
-    def validStarters = [
-            [id: "processes", starter: "kogito-processes-spring-boot-starter"],
-            [id: "rules", starter: "kogito-rules-spring-boot-starter"],
-            [id: "decisions", starter: "kogito-decisions-spring-boot-starter"],
-            [id: "serverless-workflows", starter: "kogito-serverless-workflows-spring-boot-starter"],
-            [id: "predictions", starter: "kogito-predictions-spring-boot-starter"]
-    ]
+
     def startersList = starters.split(",")
     return startersList.collect { starterId ->
         def found = validStarters.find { it -> it.id == starterId }
@@ -54,29 +94,6 @@ def addonsToArtifactsIds(String addons) {
     if (addons == "_UNDEFINED_" || addons == "" || addons == null) {
         return []
     }
-    // this list should be maintained manually for now for each generic/spring boot add-on we create
-    // see: https://issues.redhat.com/browse/KOGITO-5619
-    def validAddons = [
-            [id: "persistence-filesystem", addon: "kogito-addons-persistence-filesystem"],
-            [id: "persistence-infinispan", addon: "kogito-addons-persistence-infinispan"],
-            [id: "persistence-jdbc", addon: "kogito-addons-persistence-jdbc"],
-            [id: "persistence-mongodb", addon: "kogito-addons-persistence-mongodb"],
-            [id: "persistence-postgresql", addon: "kogito-addons-persistence-postgresql"],
-            [id: "human-task-prediction-api", addon: "kogito-addons-human-task-prediction-api"],
-            [id: "messaging", addon: "kogito-addons-springboot-messaging"],
-            [id: "events-decisions", addon: "kogito-addons-springboot-events-decisions"],
-            [id: "events-process-kafka", addon: "kogito-addons-springboot-events-process-kafka"],
-            [id: "explainability", addon: "kogito-addons-springboot-explainability"],
-            [id: "jobs-management", addon: "kogito-addons-springboot-jobs-management"],
-            [id: "mail", addon: "kogito-addons-springboot-mail"],
-            [id: "monitoring-elastic", addon: "kogito-addons-springboot-monitoring-elastic"],
-            [id: "monitoring-prometheus", addon: "kogito-addons-springboot-monitoring-prometheus"],
-            [id: "process-management", addon: "kogito-addons-springboot-process-management"],
-            [id: "process-svg", addon: "kogito-addons-springboot-process-svg"],
-            [id: "task-management", addon: "kogito-addons-springboot-task-management"],
-            [id: "task-notification", addon: "kogito-addons-springboot-task-notification"],
-            [id: "tracing-decision", addon: "kogito-addons-springboot-tracing-decision"]
-    ]
     def addonsList = addons.split(",")
     return addonsList.collect { addonId ->
         def found = validAddons.find { it -> it.id == addonId }
@@ -94,7 +111,12 @@ def addonsToArtifactsIds(String addons) {
 def addDependenciesToPOM(String starters, String addons) {
     def artifacts = startersToArtifactIds(starters)
     if (artifacts.isEmpty()) {
-        artifacts << "kogito-spring-boot-starter"
+        if (includeAllArtefacts) {
+            artifacts << "kogito-spring-boot-starter"
+        } else {
+            def startersMsg = validStarters.collect { s -> s.id }.join(", ")
+            throw new Exception("Invalid Kogito starter, please use one of the following: ${startersMsg}")
+        }
     }
     artifacts = artifacts + addonsToArtifactsIds(addons)
     def dependencies = new StringBuilder()
