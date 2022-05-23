@@ -24,11 +24,12 @@ import java.util.Optional;
 
 public class ClassPathContentLoader implements URIContentLoader {
 
-    private final URL resource;
+    private final Optional<URL> resource;
+    private final String path;
 
     public ClassPathContentLoader(URI uri, Optional<ClassLoader> cl) {
-        String path = getPath(uri);
-        this.resource = Objects.requireNonNull(cl.orElse(Thread.currentThread().getContextClassLoader()).getResource(path), "Cannot find resource " + path + " in classpath");
+        this.path = getPath(uri);
+        this.resource = Optional.ofNullable(cl.orElse(Thread.currentThread().getContextClassLoader()).getResource(path));
     }
 
     private static String getPath(URI uri) {
@@ -40,14 +41,18 @@ public class ClassPathContentLoader implements URIContentLoader {
         return path;
     }
 
-    public URL getResource() {
+    public Optional<URL> getResource() {
         return resource;
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return resource.openStream();
-
+        if (resource.isPresent()) {
+            // openStream throws IOException, hence not using Optional.map method
+            return resource.get().openStream();
+        } else {
+            throw new IOException("cannot find classpath resource " + path);
+        }
     }
 
     @Override
@@ -55,4 +60,8 @@ public class ClassPathContentLoader implements URIContentLoader {
         return URIContentLoaderType.CLASSPATH;
     }
 
+    @Override
+    public String toString() {
+        return "ClassPathContentLoader [path=" + path + "]";
+    }
 }

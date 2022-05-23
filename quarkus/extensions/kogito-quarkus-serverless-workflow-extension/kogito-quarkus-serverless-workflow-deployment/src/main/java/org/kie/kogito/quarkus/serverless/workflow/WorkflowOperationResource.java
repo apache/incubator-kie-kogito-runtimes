@@ -35,4 +35,9 @@ public class WorkflowOperationResource {
     public URIContentLoader getContentLoader() {
         return contentLoader;
     }
+
+    @Override
+    public String toString() {
+        return "WorkflowOperationResource [operationId=" + operationId + ", contentLoader=" + contentLoader + "]";
+    }
 }

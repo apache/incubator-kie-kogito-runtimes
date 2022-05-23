@@ -56,20 +56,16 @@ public class WorkflowCodeGenUtils {
     private WorkflowCodeGenUtils() {
     }
 
-    public static Stream<WorkflowOperationResource> operationResources(Path inputDir, Predicate<FunctionDefinition> predicate) {
-        return getWorkflows(inputDir).map(w -> processFunction(w, predicate)).flatMap(x -> x);
+    public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate) {
+        return getWorkflows(files).map(w -> processFunction(w, predicate)).flatMap(x -> x);
     }
 
-    public static Stream<Workflow> getWorkflows(Path inputDir) {
-        try (Stream<Path> openApiFilesPaths = Files.walk(inputDir)) {
-            return openApiFilesPaths
-                    .filter(Files::isRegularFile)
-                    .map(WorkflowCodeGenUtils::getWorkflow)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    public static Stream<Workflow> getWorkflows(Stream<Path> files) {
+        return files
+                .filter(Files::isRegularFile)
+                .map(WorkflowCodeGenUtils::getWorkflow)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     public static GeneratedFile generateWorkItemHandlerConfig(KogitoBuildContext context, Collection<GeneratedFile> generatedFiles) {

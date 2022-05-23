@@ -43,4 +43,9 @@ public class FileContentLoader extends FallbackContentLoader {
     public URIContentLoaderType type() {
         return URIContentLoaderType.FILE;
     }
+
+    @Override
+    public String toString() {
+        return "FileContentLoader [path=" + path + "]";
+    }
 }

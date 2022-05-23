@@ -166,4 +166,9 @@ class HttpContentLoader extends FallbackContentLoader {
     public URIContentLoaderType type() {
         return URIContentLoaderType.HTTP;
     }
+
+    @Override
+    public String toString() {
+        return "HttpContentLoader [uri=" + uri + "]";
+    }
 }

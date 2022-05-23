@@ -18,16 +18,21 @@ package org.kie.kogito.quarkus.serverless.workflow.rpc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
 import org.kie.kogito.serverless.workflow.io.ClassPathContentLoader;
 import org.kie.kogito.serverless.workflow.io.FileContentLoader;
 import org.kie.kogito.serverless.workflow.io.URIContentLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
@@ -36,6 +41,8 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 
 public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
+
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowRPCCodeGenProvider.class);
 
     @Override
     public String providerId() {
@@ -54,32 +61,47 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
 
     @Override
     public boolean trigger(CodeGenContext context) throws CodeGenException {
-        List<WorkflowOperationResource> resources = WorkflowCodeGenUtils.operationResources(context.inputDir(), this::isRPC).collect(Collectors.toList());
-        boolean result = false;
-        // write files to proto dir
-        Path outputPath = context.inputDir().getParent().resolve("proto");
-        for (WorkflowOperationResource resource : resources) {
-            if (shouldWriteToProto(resource, outputPath)) {
-                writeResource(outputPath, resource);
-            }
+        try (Stream<Path> rpcFilePaths = Files.walk(context.inputDir())) {
+            Path outputPath = context.workDir().resolve("proto_temp");
+            Files.createDirectories(outputPath);
+            Collection<Path> protoFiles =
+                    WorkflowCodeGenUtils.operationResources(rpcFilePaths, this::isRPC).map(r -> getPath(r, outputPath)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+            logger.debug("Collected proto paths are {}", protoFiles);
+            ProtocUtils.generateDescriptor(protoFiles, context);
+            return !protoFiles.isEmpty();
+        } catch (IOException io) {
+            throw new CodeGenException(io);
         }
-        return result;
     }
 
-    private boolean shouldWriteToProto(WorkflowOperationResource resource, Path outputPath) {
+    public Optional<Path> getPath(WorkflowOperationResource resource, Path outputPath) {
+
         URIContentLoader contentLoader = resource.getContentLoader();
+        logger.debug("Checking if resource {} should be writen to {}", resource, outputPath);
         switch (contentLoader.type()) {
             case FILE:
-                return !((FileContentLoader) contentLoader).getPath().startsWith(outputPath);
+                return Optional.of(((FileContentLoader) contentLoader).getPath());
             case CLASSPATH:
-                try {
-                    return !Path.of(((ClassPathContentLoader) contentLoader).getResource().toURI().getPath()).startsWith(outputPath);
-                } catch (URISyntaxException e) {
-                    throw new IllegalArgumentException(e);
-                }
+                return ((ClassPathContentLoader) contentLoader).getResource().map(this::fromURL);
             case HTTP:
+                try (InputStream is = resource.getContentLoader().getInputStream()) {
+                    Path tempPath = outputPath.resolve(resource.getOperationId().getFileName());
+                    Files.write(tempPath, is.readAllBytes());
+                    return Optional.of(tempPath);
+                } catch (IOException e) {
+                    throw new IllegalArgumentException("Error accessing http resource " + resource, e);
+                }
             default:
-                return true;
+                logger.warn("Unsupported content loader", contentLoader);
+                return Optional.empty();
+        }
+    }
+
+    private Path fromURL(URL url) {
+        try {
+            return Path.of(url.toURI().getPath());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid URI " + url, e);
         }
     }
 
@@ -87,11 +109,4 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
         return function.getType() == Type.RPC;
     }
 
-    private void writeResource(Path outputPath, WorkflowOperationResource resource) throws CodeGenException {
-        try (InputStream is = resource.getContentLoader().getInputStream()) {
-            Files.write(outputPath.resolve(resource.getOperationId().getFileName()), is.readAllBytes());
-        } catch (IOException io) {
-            throw new CodeGenException(io);
-        }
-    }
 }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -60,7 +61,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
     private FileDescriptorSet fdSet;
 
     public RPCWorkItemHandler() {
-        fdSet = loadFileDescriptorSet();
+        fdSet = loadFileDescriptorSet().orElseThrow(() -> new IllegalStateException("Cannot initialize RPC workitem handler. Missing descriptor file " + DESCRIPTOR_PATH));
     }
 
     @Override
@@ -69,17 +70,16 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         String file = (String) metadata.get(FILE_PROP);
         String service = (String) metadata.get(SERVICE_PROP);
         String method = (String) metadata.get(METHOD_PROP);
-
         return getObject(doCall(fdSet, parameters, getChannel(file, service), file, service, method));
     }
 
     protected abstract Channel getChannel(String file, String service);
 
-    public static FileDescriptorSet loadFileDescriptorSet() {
-        try (InputStream inputStream = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(DESCRIPTOR_PATH), DESCRIPTOR_PATH + " cannot be found")) {
-            return FileDescriptorSet.newBuilder().mergeFrom(inputStream.readAllBytes()).build();
+    public static Optional<FileDescriptorSet> loadFileDescriptorSet() {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DESCRIPTOR_PATH)) {
+            return inputStream != null ? Optional.of(FileDescriptorSet.newBuilder().mergeFrom(inputStream.readAllBytes()).build()) : Optional.empty();
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot initialize RPC workitem handler", e);
+            throw new IllegalStateException("Cannot initialize RPC workitem handler. Failure loading descriptor file", e);
         }
     }
 

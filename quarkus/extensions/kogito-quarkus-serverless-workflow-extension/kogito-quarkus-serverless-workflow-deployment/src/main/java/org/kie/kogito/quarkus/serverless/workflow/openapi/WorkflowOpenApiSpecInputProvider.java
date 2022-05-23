@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
@@ -39,7 +40,11 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
         while (!Files.exists(inputDir)) {
             inputDir = inputDir.getParent();
         }
-        return WorkflowCodeGenUtils.operationResources(inputDir, ServerlessWorkflowUtils::isOpenApiOperation).map(this::getSpecInput).collect(Collectors.toList());
+        try (Stream<Path> openApiFilesPaths = Files.walk(inputDir)) {
+            return WorkflowCodeGenUtils.operationResources(openApiFilesPaths, ServerlessWorkflowUtils::isOpenApiOperation).map(this::getSpecInput).collect(Collectors.toList());
+        } catch (IOException io) {
+            throw new IllegalStateException(io);
+        }
     }
 
     private SpecInputModel getSpecInput(WorkflowOperationResource resource) {

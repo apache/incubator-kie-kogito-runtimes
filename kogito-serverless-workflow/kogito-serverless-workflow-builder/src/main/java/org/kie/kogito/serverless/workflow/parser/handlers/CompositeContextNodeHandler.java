@@ -43,6 +43,7 @@ import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ParamsRestBodyBuilderSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
+import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 import org.kogito.workitem.rest.RestWorkItemHandler;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
@@ -318,7 +319,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             FunctionDefinition actionFunction,
             String operation) {
         WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
-        return node.workName(RPCWorkItemHandler.NAME)
+        return node.workName(ServerlessWorkflowUtils.getRPCClassName(operationId.getService()))
                 .metaData(RPCWorkItemHandler.FILE_PROP, operationId.getFileName())
                 .metaData(RPCWorkItemHandler.SERVICE_PROP, operationId.getService())
                 .metaData(RPCWorkItemHandler.METHOD_PROP, operationId.getOperation());

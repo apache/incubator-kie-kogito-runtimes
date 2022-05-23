@@ -110,4 +110,10 @@ public class WorkflowOperationId {
         }
         return sb.toString();
     }
+
+    @Override
+    public String toString() {
+        return "WorkflowOperationId [uri=" + uri + ", operation=" + operation + ", fileName=" + fileName +
+                ", className=" + className + ", packageName=" + packageName + ", service=" + service + "]";
+    }
 }

@@ -16,6 +16,7 @@
 package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -29,7 +30,15 @@ import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier.Keyword;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+
+import io.grpc.Channel;
+import io.quarkus.grpc.GrpcClient;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
@@ -47,14 +56,16 @@ public class WorkflowRPCHandlerGenerator implements WorkflowHandlerGenerator {
         ClassOrInterfaceDeclaration clazz = unit.addClass(className);
         clazz.addExtendedType(parseClassOrInterfaceType(RPCWorkItemHandler.class.getCanonicalName()));
         clazz.addAnnotation(ApplicationScoped.class);
-        //TODO
+        clazz.addField(Channel.class, serviceName).addAndGetAnnotation(GrpcClient.class);
+        clazz.addMethod("getChannel", Keyword.PROTECTED).addParameter(String.class, "file").addParameter(String.class, "service").addAnnotation(Override.class).setType(Channel.class)
+                .setBody(new BlockStmt(NodeList.nodeList(new ReturnStmt(new NameExpr(serviceName)))));
         return WorkflowCodeGenUtils.fromCompilationUnit(context, unit, className);
     }
 
     @Override
     public Collection<GeneratedFile> generateHandlerClasses(KogitoBuildContext context, IndexView index) {
-        return RPCWorkItemHandler.loadFileDescriptorSet().getFileList().stream().map(f -> f.getServiceList().stream()).flatMap(x -> x).map(s -> generateHandler(context, s.getName()))
-                .collect(Collectors.toList());
+        return RPCWorkItemHandler.loadFileDescriptorSet().map(fd -> fd.getFileList().stream().map(f -> f.getServiceList().stream()).flatMap(x -> x).map(s -> generateHandler(context, s.getName()))
+                .collect(Collectors.toList())).orElse(Collections.emptyList());
 
     }
 }
