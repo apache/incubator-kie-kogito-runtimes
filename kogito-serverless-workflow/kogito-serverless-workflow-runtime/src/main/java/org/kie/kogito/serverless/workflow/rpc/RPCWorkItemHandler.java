@@ -15,11 +15,8 @@
  */
 package org.kie.kogito.serverless.workflow.rpc;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -49,20 +46,12 @@ import io.grpc.stub.ClientCalls;
 
 public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
 
+    public static final String NAME = "gRPC";
+    public static final String SERVICE_PROP = "serviceName";
+    public static final String FILE_PROP = "fileName";
+    public static final String METHOD_PROP = "methodName";
+
     private static final Logger logger = LoggerFactory.getLogger(RPCWorkItemHandler.class);
-
-    public final static String NAME = "gRPC";
-    public final static String DESCRIPTOR_PATH = "protobuf/descriptor-sets/output.protobin";
-
-    public final static String SERVICE_PROP = "serviceName";
-    public final static String FILE_PROP = "fileName";
-    public final static String METHOD_PROP = "methodName";
-
-    private FileDescriptorSet fdSet;
-
-    public RPCWorkItemHandler() {
-        fdSet = loadFileDescriptorSet().orElseThrow(() -> new IllegalStateException("Cannot initialize RPC workitem handler. Missing descriptor file " + DESCRIPTOR_PATH));
-    }
 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
@@ -70,18 +59,11 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         String file = (String) metadata.get(FILE_PROP);
         String service = (String) metadata.get(SERVICE_PROP);
         String method = (String) metadata.get(METHOD_PROP);
-        return getObject(doCall(fdSet, parameters, getChannel(file, service), file, service, method));
+        return getObject(doCall(FileDescriptorHolder.get().descriptor().orElseThrow(() -> new IllegalStateException("Descriptor " + FileDescriptorHolder.DESCRIPTOR_PATH + " is not present")),
+                parameters, getChannel(file, service), file, service, method));
     }
 
     protected abstract Channel getChannel(String file, String service);
-
-    public static Optional<FileDescriptorSet> loadFileDescriptorSet() {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DESCRIPTOR_PATH)) {
-            return inputStream != null ? Optional.of(FileDescriptorSet.newBuilder().mergeFrom(inputStream.readAllBytes()).build()) : Optional.empty();
-        } catch (IOException e) {
-            throw new IllegalStateException("Cannot initialize RPC workitem handler. Failure loading descriptor file", e);
-        }
-    }
 
     public static DynamicMessage doCall(FileDescriptorSet fdSet, Map<String, Object> parameters, Channel channel, String fileName, String serviceName, String methodName) {
         try {
@@ -116,7 +98,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
                 if (fieldDescriptor != null) {
                     builder.setField(fieldDescriptor, entry.getValue());
                 } else {
-                    logger.info("Unrecognized parameter " + entry.getKey());
+                    logger.info("Unrecognized parameter {}", entry.getKey());
                 }
             }
         }

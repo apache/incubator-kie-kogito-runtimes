@@ -202,7 +202,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             case REST:
                 return addFunctionArgs(addRestParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
             case RPC:
-                return addFunctionArgs(addRPCParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), actionFunction, operation), functionRef);
+                return addFunctionArgs(addRPCParameters(buildWorkItem(embeddedSubProcess, actionFunction, inputVar, outputVar), operation), functionRef);
             case OPENAPI:
                 WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
                 notifySourceFileCodegenBindListeners(operationId.getUri().toString());
@@ -315,9 +315,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .workParameter(ApiKeyAuthDecorator.KEY, runtimeRestApi(actionFunction, API_KEY, parserContext.getContext())));
     }
 
-    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addRPCParameters(WorkItemNodeFactory<T> node,
-            FunctionDefinition actionFunction,
-            String operation) {
+    private <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> addRPCParameters(WorkItemNodeFactory<T> node, String operation) {
         WorkflowOperationId operationId = WorkflowOperationId.fromOperation(operation);
         return node.workName(ServerlessWorkflowUtils.getRPCClassName(operationId.getService()))
                 .metaData(RPCWorkItemHandler.FILE_PROP, operationId.getFileName())

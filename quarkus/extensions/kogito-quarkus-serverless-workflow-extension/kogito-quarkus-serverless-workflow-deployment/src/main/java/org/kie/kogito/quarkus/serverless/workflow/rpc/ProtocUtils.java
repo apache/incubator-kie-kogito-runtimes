@@ -30,20 +30,22 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.microprofile.config.Config;
-import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
+import org.kie.kogito.serverless.workflow.rpc.FileDescriptorHolder;
 
 import io.quarkus.bootstrap.model.ApplicationModel;
 import io.quarkus.bootstrap.prebuild.CodeGenException;
 import io.quarkus.deployment.CodeGenContext;
 import io.quarkus.deployment.util.ProcessUtil;
 import io.quarkus.maven.dependency.ResolvedDependency;
+import io.quarkus.paths.PathVisit;
 import io.quarkus.runtime.util.HashUtil;
 import io.quarkus.utilities.OS;
 
 public class ProtocUtils {
 
     /*
-     * This class is a modified version of Quarkus one customized to generate descriptor and avoid generating code
+     * This class is a modified version of Quarkus one (https://github.com/quarkusio/quarkus/blob/main/extensions/grpc/codegen/src/main/java/io/quarkus/grpc/deployment/GrpcCodeGen.java)
+     * customized to generate descriptor and avoid generating code
      * Yes, I do not like either... ;) but unfortunately the quarkus class is not extensible.
      */
     private static final String SCAN_DEPENDENCIES_FOR_PROTO = "quarkus.generate-code.grpc.scan-for-proto";
@@ -62,7 +64,7 @@ public class ProtocUtils {
 
     public static void generateDescriptor(Collection<Path> protoPaths, CodeGenContext context) throws CodeGenException {
         Path workDir = context.workDir();
-        Path outDir = context.applicationModel().getAppArtifact().getResolvedPaths().getSinglePath().resolve(RPCWorkItemHandler.DESCRIPTOR_PATH);
+        Path outDir = context.applicationModel().getAppArtifact().getResolvedPaths().getSinglePath().resolve(FileDescriptorHolder.DESCRIPTOR_PATH);
         Set<String> protoDirs = new HashSet<>();
         Set<String> protoFiles = new HashSet<>();
         for (Path path : protoPaths) {
@@ -106,9 +108,13 @@ public class ProtocUtils {
                             " to " + outDir + " with command " + String.join(" ", command));
                 }
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             throw new CodeGenException(
                     "Failed to generate java files from proto file in " + context.inputDir().toAbsolutePath(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new CodeGenException(
+                    "Process to generate files from proto file in " + context.inputDir().toAbsolutePath() + " was interrupted", e);
         }
     }
 
@@ -167,44 +173,45 @@ public class ProtocUtils {
 
     private static void extractProtosFromArtifact(Path workDir, Collection<Path> protoFiles,
             Set<String> protoDirectories, ResolvedDependency artifact) throws CodeGenException {
-
         try {
             artifact.getContentTree().walk(
-                    pathVisit -> {
-                        Path path = pathVisit.getPath();
-                        if (Files.isRegularFile(path) && path.getFileName().toString().endsWith(PROTO)) {
-                            Path root = pathVisit.getRoot();
-                            if (Files.isDirectory(root)) {
-                                protoFiles.add(path);
-                                protoDirectories.add(path.getParent().normalize().toAbsolutePath().toString());
-                            } else { // archive
-                                Path relativePath = path.getRoot().relativize(path);
-                                Path protoUnzipDir = workDir
-                                        .resolve(HashUtil.sha1(root.normalize().toAbsolutePath().toString()))
-                                        .normalize().toAbsolutePath();
-                                try {
-                                    Files.createDirectories(protoUnzipDir);
-                                    protoDirectories.add(protoUnzipDir.toString());
-                                } catch (IOException e) {
-                                    throw new GrpcCodeGenException("Failed to create directory: " + protoUnzipDir, e);
-                                }
-                                Path outPath = protoUnzipDir;
-                                for (Path part : relativePath) {
-                                    outPath = outPath.resolve(part.toString());
-                                }
-                                try {
-                                    Files.createDirectories(outPath.getParent());
-                                    Files.copy(path, outPath, StandardCopyOption.REPLACE_EXISTING);
-                                    protoFiles.add(outPath);
-                                } catch (IOException e) {
-                                    throw new GrpcCodeGenException("Failed to extract proto file" + path + " to target: "
-                                            + outPath, e);
-                                }
-                            }
-                        }
-                    });
+                    pathVisit -> visitPath(pathVisit, workDir, protoFiles, protoDirectories));
         } catch (GrpcCodeGenException e) {
             throw new CodeGenException(e.getMessage(), e);
+        }
+    }
+
+    private static void visitPath(PathVisit pathVisit, Path workDir, Collection<Path> protoFiles, Set<String> protoDirectories) {
+        Path path = pathVisit.getPath();
+        if (Files.isRegularFile(path) && path.getFileName().toString().endsWith(PROTO)) {
+            Path root = pathVisit.getRoot();
+            if (Files.isDirectory(root)) {
+                protoFiles.add(path);
+                protoDirectories.add(path.getParent().normalize().toAbsolutePath().toString());
+            } else { // archive
+                Path relativePath = path.getRoot().relativize(path);
+                Path protoUnzipDir = workDir
+                        .resolve(HashUtil.sha1(root.normalize().toAbsolutePath().toString()))
+                        .normalize().toAbsolutePath();
+                try {
+                    Files.createDirectories(protoUnzipDir);
+                    protoDirectories.add(protoUnzipDir.toString());
+                } catch (IOException e) {
+                    throw new GrpcCodeGenException("Failed to create directory: " + protoUnzipDir, e);
+                }
+                Path outPath = protoUnzipDir;
+                for (Path part : relativePath) {
+                    outPath = outPath.resolve(part.toString());
+                }
+                try {
+                    Files.createDirectories(outPath.getParent());
+                    Files.copy(path, outPath, StandardCopyOption.REPLACE_EXISTING);
+                    protoFiles.add(outPath);
+                } catch (IOException e) {
+                    throw new GrpcCodeGenException("Failed to extract proto file" + path + " to target: "
+                            + outPath, e);
+                }
+            }
         }
     }
 

@@ -17,7 +17,6 @@ package org.kie.kogito.quarkus.serverless.workflow;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -51,13 +50,13 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class WorkflowCodeGenUtils {
 
-    private final static String WORKITEMCONFIG_CLASSNAME = "GeneratedWorkItemHandlerConfig";
+    private static final String WORKITEMCONFIG_CLASSNAME = "GeneratedWorkItemHandlerConfig";
 
     private WorkflowCodeGenUtils() {
     }
 
     public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate) {
-        return getWorkflows(files).map(w -> processFunction(w, predicate)).flatMap(x -> x);
+        return getWorkflows(files).flatMap(w -> processFunction(w, predicate));
     }
 
     public static Stream<Workflow> getWorkflows(Stream<Path> files) {
@@ -101,10 +100,8 @@ public class WorkflowCodeGenUtils {
 
     private static WorkflowOperationResource getResource(Workflow workflow, FunctionDefinition function) {
         WorkflowOperationId operationId = WorkflowOperationId.fromOperation(function.getOperation());
-        URI uri = operationId.getUri();
         return new WorkflowOperationResource(operationId,
-                URIContentLoaderFactory.buildLoader(uri, Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()));
-
+                URIContentLoaderFactory.buildLoader(operationId.getUri(), Thread.currentThread().getContextClassLoader(), workflow, function.getAuthRef()));
     }
 
     private static Optional<Workflow> getWorkflow(Path p) {
@@ -119,5 +116,4 @@ public class WorkflowCodeGenUtils {
                     }
                 }).findFirst();
     }
-
 }

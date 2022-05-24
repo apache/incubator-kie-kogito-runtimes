@@ -26,6 +26,7 @@ import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowHandlerGenerator;
+import org.kie.kogito.serverless.workflow.rpc.FileDescriptorHolder;
 import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
@@ -64,7 +65,7 @@ public class WorkflowRPCHandlerGenerator implements WorkflowHandlerGenerator {
 
     @Override
     public Collection<GeneratedFile> generateHandlerClasses(KogitoBuildContext context, IndexView index) {
-        return RPCWorkItemHandler.loadFileDescriptorSet().map(fd -> fd.getFileList().stream().map(f -> f.getServiceList().stream()).flatMap(x -> x).map(s -> generateHandler(context, s.getName()))
+        return FileDescriptorHolder.get().descriptor().map(fd -> fd.getFileList().stream().map(f -> f.getServiceList().stream()).flatMap(x -> x).map(s -> generateHandler(context, s.getName()))
                 .collect(Collectors.toList())).orElse(Collections.emptyList());
 
     }

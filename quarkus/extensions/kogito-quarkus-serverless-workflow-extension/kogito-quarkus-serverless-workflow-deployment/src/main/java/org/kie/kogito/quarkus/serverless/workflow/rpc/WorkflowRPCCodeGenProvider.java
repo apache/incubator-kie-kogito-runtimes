@@ -42,7 +42,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 
 public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
 
-    private final static Logger logger = LoggerFactory.getLogger(WorkflowRPCCodeGenProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowRPCCodeGenProvider.class);
 
     @Override
     public String providerId() {
@@ -67,15 +67,17 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
             Collection<Path> protoFiles =
                     WorkflowCodeGenUtils.operationResources(rpcFilePaths, this::isRPC).map(r -> getPath(r, outputPath)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
             logger.debug("Collected proto paths are {}", protoFiles);
+            if (protoFiles.isEmpty()) {
+                return false;
+            }
             ProtocUtils.generateDescriptor(protoFiles, context);
-            return !protoFiles.isEmpty();
+            return true;
         } catch (IOException io) {
             throw new CodeGenException(io);
         }
     }
 
     public Optional<Path> getPath(WorkflowOperationResource resource, Path outputPath) {
-
         URIContentLoader contentLoader = resource.getContentLoader();
         logger.debug("Checking if resource {} should be writen to {}", resource, outputPath);
         switch (contentLoader.type()) {
@@ -92,7 +94,7 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
                     throw new IllegalArgumentException("Error accessing http resource " + resource, e);
                 }
             default:
-                logger.warn("Unsupported content loader", contentLoader);
+                logger.warn("Unsupported content loader {}", contentLoader);
                 return Optional.empty();
         }
     }
@@ -108,5 +110,4 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
     private boolean isRPC(FunctionDefinition function) {
         return function.getType() == Type.RPC;
     }
-
 }
