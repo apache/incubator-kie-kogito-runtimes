@@ -37,14 +37,14 @@ public class ConfigBeanRecorder {
     }
 
     public String getServiceUrl() {
-        return ConfigProvider.getConfig().getOptionalValue("quarkus.kogito.service.url", String.class).orElse("");
+        return ConfigProvider.getConfig().getOptionalValue("kogito.service.url", String.class).orElse("");
     }
 
     public boolean isUseCloudEvents() {
-        return ConfigProvider.getConfig().getOptionalValue("quarkus.kogito.messaging.as-cloudevents", Boolean.class).orElse(true);
+        return ConfigProvider.getConfig().getOptionalValue("kogito.messaging.as-cloudevents", Boolean.class).orElse(true);
     }
 
     public boolean isFailOnEmptyBean() {
-        return ConfigProvider.getConfig().getOptionalValue("quarkus.kogito.jackson.fail-on-empty-bean", Boolean.class).orElse(false);
+        return ConfigProvider.getConfig().getOptionalValue("kogito.jackson.fail-on-empty-bean", Boolean.class).orElse(false);
     }
 }
