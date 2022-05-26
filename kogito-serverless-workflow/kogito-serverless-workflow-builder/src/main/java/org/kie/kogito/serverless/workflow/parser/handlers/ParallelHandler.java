@@ -19,6 +19,7 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
+import org.jbpm.workflow.core.node.Join;
 import org.jbpm.workflow.core.node.Split;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
@@ -26,6 +27,7 @@ import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.branches.Branch;
 import io.serverlessworkflow.api.states.ParallelState;
+import io.serverlessworkflow.api.states.ParallelState.CompletionType;
 
 public class ParallelHandler extends CompositeContextNodeHandler<ParallelState> {
 
@@ -35,8 +37,17 @@ public class ParallelHandler extends CompositeContextNodeHandler<ParallelState> 
 
     @Override
     public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
+
         SplitFactory<?> nodeFactory = factory.splitNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_START_NAME).type(Split.TYPE_AND);
-        JoinFactory<?> connectionNode = factory.joinNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME).type(Split.TYPE_AND);
+        JoinFactory<?> connectionNode = factory.joinNode(parserContext.newId()).name(state.getName() + ServerlessWorkflowParser.NODE_END_NAME);
+        CompletionType completionType = state.getCompletionType();
+        if (completionType == CompletionType.ALL_OF) {
+            connectionNode.type(Join.TYPE_AND);
+        } else if (completionType == CompletionType.AT_LEAST) {
+            connectionNode.type(Join.TYPE_N_OF_M);
+            // TODO incoporate expression support
+            connectionNode.type(state.getNumCompleted());
+        }
         for (Branch branch : state.getBranches()) {
             CompositeContextNodeFactory<?> embeddedSubProcess = handleActions(makeCompositeNode(factory), branch.getActions());
             long branchId = embeddedSubProcess.getNode().getId();
