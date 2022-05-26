@@ -442,7 +442,6 @@
             <skipInvocation>${skipTests}</skipInvocation>
             <failIfNoProjects>true</failIfNoProjects>
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-            <useLocalRepository>true</useLocalRepository>
           </configuration>
         </plugin>
         <plugin>
