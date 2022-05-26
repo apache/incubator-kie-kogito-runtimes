@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.bpmn2.xpath;
+package org.jbpm.process.builder.dialect.xpath;
 
 import java.util.List;
 import java.util.function.Function;

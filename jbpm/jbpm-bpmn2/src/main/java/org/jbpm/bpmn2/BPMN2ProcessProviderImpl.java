@@ -20,9 +20,9 @@ import org.jbpm.assembler.BPMN2ProcessProvider;
 import org.jbpm.bpmn2.xml.BPMNDISemanticModule;
 import org.jbpm.bpmn2.xml.BPMNExtensionsSemanticModule;
 import org.jbpm.bpmn2.xml.BPMNSemanticModule;
-import org.jbpm.bpmn2.xpath.XPATHProcessDialect;
 import org.jbpm.compiler.xml.compiler.SemanticKnowledgeBuilderConfigurationImpl;
 import org.jbpm.process.builder.dialect.ProcessDialectRegistry;
+import org.jbpm.process.builder.dialect.xpath.XPATHProcessDialect;
 import org.kie.internal.builder.KnowledgeBuilder;
 
 public class BPMN2ProcessProviderImpl implements BPMN2ProcessProvider {
