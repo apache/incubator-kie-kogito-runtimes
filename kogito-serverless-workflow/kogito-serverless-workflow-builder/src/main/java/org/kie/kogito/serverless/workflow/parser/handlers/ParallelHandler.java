@@ -15,14 +15,18 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.workflow.core.node.Join;
 import org.jbpm.workflow.core.node.Split;
+import org.kie.kogito.process.expr.ExpressionHandlerFactory;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
+import org.kie.kogito.serverless.workflow.suppliers.ExpressionReturnValueEvaluatorSupplier;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.branches.Branch;
@@ -44,9 +48,13 @@ public class ParallelHandler extends CompositeContextNodeHandler<ParallelState> 
         if (completionType == CompletionType.ALL_OF) {
             connectionNode.type(Join.TYPE_AND);
         } else if (completionType == CompletionType.AT_LEAST) {
+            String numCompleted = state.getNumCompleted();
             connectionNode.type(Join.TYPE_N_OF_M);
-            // TODO incoporate expression support
-            connectionNode.type(state.getNumCompleted());
+            connectionNode.type(numCompleted);
+            if (ExpressionHandlerFactory.get(workflow.getExpressionLang(), numCompleted).isValid()) {
+                connectionNode.metaData(Metadata.ACTION,
+                        new ExpressionReturnValueEvaluatorSupplier(workflow.getExpressionLang(), state.getNumCompleted(), SWFConstants.DEFAULT_WORKFLOW_VAR, Integer.class));
+            }
         }
         for (Branch branch : state.getBranches()) {
             CompositeContextNodeFactory<?> embeddedSubProcess = handleActions(makeCompositeNode(factory), branch.getActions());
