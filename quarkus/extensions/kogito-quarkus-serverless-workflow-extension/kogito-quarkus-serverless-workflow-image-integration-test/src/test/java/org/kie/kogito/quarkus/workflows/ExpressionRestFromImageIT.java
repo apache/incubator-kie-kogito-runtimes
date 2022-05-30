@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 
 @QuarkusIntegrationTest
-public class ExpressionRestITFromImage {
+public class ExpressionRestFromImageIT {
 
     @Test
     void testExpressionRest() {
