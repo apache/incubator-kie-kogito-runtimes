@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-parent</artifactId>
-    <version>1.13.1-SNAPSHOT</version>
+    <version>1.13.2-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-rest-exception-handler</artifactId>
   <name>Kogito :: Rest Exception Handler :: Quarkus</name>
