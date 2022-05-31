@@ -74,6 +74,9 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
     }
 
     private Stream<SpecInputModel> getSpecInput(Workflow workflow) {
+        if (workflow.getFunctions() == null || workflow.getFunctions().getFunctionDefs() == null) {
+            return Stream.empty();
+        }
         return workflow.getFunctions().getFunctionDefs().stream().filter(ServerlessWorkflowUtils::isOpenApiOperation).map(f -> getSpecInput(f, workflow));
     }
 
