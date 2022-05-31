@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-mail-parent</artifactId>
-    <version>1.22.1-SNAPSHOT</version>
+    <version>1.22.1.Final</version>
   </parent>
   <artifactId>kogito-addons-quarkus-mail-deployment</artifactId>
   <name>Kogito Add-On Mail - Deployment</name>

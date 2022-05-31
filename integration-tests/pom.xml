@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build-no-bom-parent</artifactId>
-    <version>1.22.1-SNAPSHOT</version>
+    <version>1.22.1.Final</version>
     <relativePath>../kogito-build/kogito-build-no-bom-parent/pom.xml</relativePath>
   </parent>
   <artifactId>integration-tests</artifactId>
