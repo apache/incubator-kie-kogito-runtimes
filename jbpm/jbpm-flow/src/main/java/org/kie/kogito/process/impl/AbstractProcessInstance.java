@@ -145,7 +145,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     protected void reconnect() {
         //set correlation
-        if (Objects.nonNull(correlation) && correlationInstance.isEmpty()) {
+        if (correlationInstance.isEmpty()) {
             correlationInstance = process().correlations().findByCorrelatedId(id());
         }
 
@@ -557,6 +557,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void removeOnFinish() {
+        if (processInstance == null) {
+            //already removed
+            return;
+        }
+        status = processInstance.getState();
+        unbind(this.variables, processInstance.getVariables());
         if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
@@ -564,15 +570,13 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         } else {
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
         }
-        unbind(this.variables, processInstance().getVariables());
-        this.status = processInstance.getState();
     }
 
     private void remove() {
         correlationInstance.map(CorrelationInstance::getCorrelation)
-                .ifPresent(c -> addToUnitOfWork(r -> process().correlations().delete(c)));
-
+                .ifPresent(c -> addToUnitOfWork(pi -> process.correlations().delete(c)));
         addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
+        internalRemoveProcessInstance(reloadSupplier);
     }
 
     // this must be overridden at compile time
