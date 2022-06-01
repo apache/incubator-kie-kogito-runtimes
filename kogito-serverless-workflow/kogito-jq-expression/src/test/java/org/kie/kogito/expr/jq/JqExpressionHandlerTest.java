@@ -140,6 +140,14 @@ class JqExpressionHandlerTest {
     }
 
     @Test
+    void testCollectFromArrayCollectionRecursive() {
+        Expression parsedExpression = ExpressionHandlerFactory.get("jq", "..|.property1?//empty");
+        assertTrue(parsedExpression.isValid());
+        assertEquals(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3", "accessible_value1", "accessible_value2", "accessible_value3"),
+                parsedExpression.eval(getObjectNode(), Collection.class, getContext()));
+    }
+
+    @Test
     void testNonValidExpression() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", ".-");
         assertEquals(false, parsedExpression.isValid(), "Exception was not thrown for invalid expression.");
@@ -320,9 +328,9 @@ class JqExpressionHandlerTest {
                 .add(12)
                 .add(false)
                 .add(objectMapper.createArrayNode().add(1.1).add(1.2).add(1.3));
-        objectNode.putObject("CONST").put("property1", "accessible_value");
-        objectNode.putObject("SECRET").put("property1", "accessible_value");
-        objectNode.putObject("WORKFLOW").put("property1", "accessible_value");
+        objectNode.putObject("CONST").put("property1", "accessible_value1");
+        objectNode.putObject("SECRET").put("property1", "accessible_value2");
+        objectNode.putObject("WORKFLOW").put("property1", "accessible_value3");
         return objectNode;
     }
 }
