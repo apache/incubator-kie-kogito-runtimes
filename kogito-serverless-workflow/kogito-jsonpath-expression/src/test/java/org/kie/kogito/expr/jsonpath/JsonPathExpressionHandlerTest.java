@@ -109,7 +109,7 @@ class JsonPathExpressionHandlerTest {
 
     @Test
     @Disabled("KOGITO-7318")
-    void testCollectFromArrayJsonNodeRecursive() {
+    void testCollectFromArrayCollectionRecursive() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jsonpath", "$..property1");
         assertTrue(parsedExpression.isValid());
         assertEquals(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3"), parsedExpression.eval(getObjectNode(), Collection.class, getContext()));
