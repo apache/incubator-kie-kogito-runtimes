@@ -231,7 +231,7 @@ class JsonPathExpressionHandlerTest {
     void testWorkflowPropertyFromJsonAccessible() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jsonpath", "$.WORKFLOW.property1");
         assertTrue(parsedExpression.isValid());
-        assertEquals(parsedExpression.eval(getObjectNode(), String.class, getContext()), "accessible_value");
+        assertEquals("accessible_value", parsedExpression.eval(getObjectNode(), String.class, getContext()));
     }
 
     @ParameterizedTest(name = "{index} \"{0}\" is resolved to \"{1}\"")
