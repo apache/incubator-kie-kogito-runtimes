@@ -243,21 +243,21 @@ class JqExpressionHandlerTest {
     void testConstPropertyFromJsonAccessible() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", ".CONST.property1");
         assertTrue(parsedExpression.isValid());
-        assertEquals("accessible_value", parsedExpression.eval(getObjectNode(), String.class, getContext()));
+        assertEquals("accessible_value1", parsedExpression.eval(getObjectNode(), String.class, getContext()));
     }
 
     @Test
     void testSecretPropertyFromJsonAccessible() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", ".SECRET.property1");
         assertTrue(parsedExpression.isValid());
-        assertEquals("accessible_value", parsedExpression.eval(getObjectNode(), String.class, getContext()));
+        assertEquals("accessible_value2", parsedExpression.eval(getObjectNode(), String.class, getContext()));
     }
 
     @Test
     void testWorkflowPropertyFromJsonAccessible() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", ".WORKFLOW.property1");
         assertTrue(parsedExpression.isValid());
-        assertEquals("accessible_value", parsedExpression.eval(getObjectNode(), String.class, getContext()));
+        assertEquals("accessible_value3", parsedExpression.eval(getObjectNode(), String.class, getContext()));
     }
 
     @ParameterizedTest(name = "{index} \"{0}\" is resolved to \"{1}\"")
