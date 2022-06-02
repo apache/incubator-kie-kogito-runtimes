@@ -28,11 +28,8 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    checkoutDroolsRepo()
-
                     checkoutRepo('kogito-runtimes')
                     checkoutRepo('kogito-runtimes', 'integration-tests')
-                    checkoutOptaplannerRepo()
                     // checkoutRepo('kogito-apps')
                     checkoutRepo('kogito-examples')
                     checkoutRepo('kogito-examples', 'kogito-examples-persistence')
@@ -83,42 +80,6 @@ pipeline {
                 }
             }
         }
-        stage('Build optaplanner') {
-            steps {
-                script {
-                    getMavenCommandWithDroolsVersion('optaplanner')
-                        .withProperty('maven.test.failure.ignore', true)
-                        .run('clean install')
-                }
-            }
-            post {
-                always {
-                    script {
-                        junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
-                        util.archiveConsoleLog()
-                        cleanContainers()
-                    }
-                }
-            }
-        }
-        // stage('Build kogito-apps') {
-        //     steps {
-        //         script {
-        //             getMavenCommandWithDroolsVersion('kogito-apps')
-        //                 .withProperty('maven.test.failure.ignore', true)
-        //                 .run('clean install')
-        //         }
-        //     }
-        //     post {
-        //         always {
-        //             script {
-        //                 junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
-        //                 util.archiveConsoleLog()
-        //                 cleanContainers()
-        //             }
-        //         }
-        //     }
-        // }
         stage('Build kogito-examples') {
             steps {
                 script {
@@ -198,28 +159,6 @@ void sendNotification() {
 void checkoutRepo(String repoName, String dirName=repoName) {
     dir(dirName) {
         checkout(githubscm.resolveRepository(repoName, params.GIT_AUTHOR, params.BUILD_BRANCH_NAME, false))
-    }
-}
-
-void checkoutDroolsRepo() {
-    dir('drools') {
-        checkout(githubscm.resolveRepository('drools', 'kiegroup', 'main', false))
-    }
-}
-
-void checkoutOptaplannerRepo() {
-    String targetBranch = params.BUILD_BRANCH_NAME
-    String [] versionSplit = targetBranch.split("\\.")
-    if (versionSplit.length == 3
-        && versionSplit[0].isNumber()
-        && versionSplit[1].isNumber()
-       && versionSplit[2] == 'x') {
-        targetBranch = "${Integer.parseInt(versionSplit[0]) + 7}.${versionSplit[1]}.x"
-    } else {
-        echo "Cannot parse branch as release branch so going further with current value: ${targetBranch}"
-    }
-    dir('optaplanner') {
-        checkout(githubscm.resolveRepository('optaplanner', params.GIT_AUTHOR, targetBranch, false))
     }
 }
 
