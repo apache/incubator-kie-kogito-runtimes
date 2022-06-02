@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-deprecated-parent</artifactId>
-    <version>1.22.1.Final</version>
+    <version>1.22.2-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-springboot-events-kafka</artifactId>
   <name>Kogito :: Add-Ons :: Events :: SprintBoot :: Kafka</name>
