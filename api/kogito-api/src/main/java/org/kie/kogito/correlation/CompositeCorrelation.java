@@ -32,7 +32,7 @@ public class CompositeCorrelation implements Correlation<Set<? extends Correlati
     }
 
     private static String buildKey(Set<? extends Correlation<?>> correlations) {
-        return correlations.stream().map(Correlation::getKey).collect(Collectors.joining("|"));
+        return correlations.stream().map(Correlation::getKey).sorted().collect(Collectors.joining("|"));
     }
 
     @Override
