@@ -25,9 +25,11 @@ import javax.sql.DataSource;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationInstance;
+import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class CorrelationRepository {
 
@@ -41,7 +43,11 @@ public class CorrelationRepository {
 
     public CorrelationRepository(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.objectMapper = ObjectMapperFactory.get();
+        this.objectMapper = ObjectMapperFactory.get().copy();
+
+        SimpleModule module = new SimpleModule();
+        module.addAbstractTypeMapping(Correlation.class, SimpleCorrelation.class);
+        objectMapper.registerModule(module);
     }
 
     public CorrelationInstance insert(String encodedCorrelationId, String correlatedId, Correlation correlation) {

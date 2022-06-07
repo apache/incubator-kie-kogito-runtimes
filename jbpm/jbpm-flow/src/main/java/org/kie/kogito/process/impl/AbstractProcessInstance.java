@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -79,6 +80,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     protected WorkflowProcessInstance processInstance;
 
     protected Integer status;
+
+    private final AtomicBoolean removed;
+
     protected String id;
     protected CorrelationKey correlationKey;
     protected String description;
@@ -107,7 +111,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.process = process;
         this.rt = (InternalProcessRuntime) rt;
         this.variables = variables;
-
+        this.removed = new AtomicBoolean(false);
         setCorrelationKey(businessKey);
 
         Map<String, Object> map = bind(variables);
@@ -133,6 +137,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.variables = variables;
         syncProcessInstance((WorkflowProcessInstance) wpi);
         unbind(variables, processInstance.getVariables());
+        this.removed = new AtomicBoolean(false);
     }
 
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt, org.kie.api.runtime.process.WorkflowProcessInstance wpi) {
@@ -141,6 +146,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.variables = variables;
         syncProcessInstance((WorkflowProcessInstance) wpi);
         reconnect();
+        this.removed = new AtomicBoolean(false);
     }
 
     protected void reconnect() {
@@ -225,9 +231,12 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     public void internalRemoveProcessInstance(Consumer<AbstractProcessInstance<?>> reloadSupplier) {
         this.reloadSupplier = reloadSupplier;
-        this.status = processInstance.getState();
-        if (this.status == STATE_ERROR) {
-            this.processError = buildProcessError();
+        if (processInstance == null) {
+            return;
+        }
+        status = processInstance.getState();
+        if (status == STATE_ERROR) {
+            processError = buildProcessError();
         }
         removeCompletionListener();
         if (processInstance.getKnowledgeRuntime() != null) {
@@ -288,10 +297,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     @Override
     public void abort() {
         String pid = processInstance().getStringId();
-        unbind(variables, processInstance().getVariables());
         getProcessRuntime().getKogitoProcessRuntime().abortProcessInstance(pid);
-        this.status = processInstance.getState();
-        remove();
+        removeOnFinish();
     }
 
     private InternalProcessRuntime getProcessRuntime() {
@@ -557,12 +564,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     protected void removeOnFinish() {
-        if (processInstance == null) {
-            //already removed
-            return;
-        }
-        status = processInstance.getState();
-        unbind(this.variables, processInstance.getVariables());
         if (processInstance.getState() != KogitoProcessInstance.STATE_ACTIVE && processInstance.getState() != KogitoProcessInstance.STATE_ERROR) {
             removeCompletionListener();
             syncProcessInstance(processInstance);
@@ -570,13 +571,20 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         } else {
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
         }
+        unbind(this.variables, processInstance().getVariables());
+        this.status = processInstance.getState();
     }
 
     private void remove() {
+        if (removed.getAndSet(true)) {
+            //already removed
+            return;
+        }
         correlationInstance.map(CorrelationInstance::getCorrelation)
                 .ifPresent(c -> addToUnitOfWork(pi -> process.correlations().delete(c)));
-        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).remove(pi.id()));
-        internalRemoveProcessInstance(reloadSupplier);
+        addToUnitOfWork(pi -> {
+            ((MutableProcessInstances<T>) process.instances()).remove(pi.id());
+        });
     }
 
     // this must be overridden at compile time
