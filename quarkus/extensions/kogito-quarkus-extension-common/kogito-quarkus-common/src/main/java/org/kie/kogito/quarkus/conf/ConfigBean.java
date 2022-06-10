@@ -17,27 +17,28 @@ package org.kie.kogito.quarkus.conf;
 
 import java.util.Optional;
 
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.conf.StaticConfigBean;
 
-import io.quarkus.runtime.annotations.Recorder;
-
 @Singleton
-@Recorder
 public class ConfigBean extends StaticConfigBean {
 
-    private static KogitoGAV gav;
+    @Inject
+    Instance<KogitoRuntimeConfig> runtimeConfig;
 
-    public static void setRuntimeGav(String groupId, String artifactId, String version) {
-        gav = new KogitoGAV(groupId, artifactId, version);
-    }
+    @Inject
+    Instance<KogitoBuildTimeConfig> buildTimeConfig;
+
+    @Inject
+    KogitoGAV gav;
 
     @Override
     public String getServiceUrl() {
-        return ConfigProvider.getConfig().getOptionalValue("kogito.service.url", String.class).orElse("");
+        return runtimeConfig.get().serviceUrl.orElse("");
     }
 
     @Override
@@ -47,11 +48,11 @@ public class ConfigBean extends StaticConfigBean {
 
     @Override
     public boolean failOnEmptyBean() {
-        return ConfigProvider.getConfig().getOptionalValue("kogito.jackson.fail-on-empty-bean", Boolean.class).orElse(false);
+        return buildTimeConfig.get().failOnEmptyBean;
     }
 
     @Override
     public boolean useCloudEvents() {
-        return ConfigProvider.getConfig().getOptionalValue("kogito.messaging.as-cloudevents", Boolean.class).orElse(true);
+        return buildTimeConfig.get().useCloudEvents;
     }
 }

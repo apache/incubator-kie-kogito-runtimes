@@ -13,25 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.conf;
 
-import java.util.Optional;
+package org.kie.kogito.quarkus;
 
-import io.quarkus.runtime.annotations.ConfigGroup;
-import io.quarkus.runtime.annotations.ConfigItem;
-import io.quarkus.runtime.annotations.ConfigPhase;
-import io.quarkus.runtime.annotations.ConfigRoot;
+import java.util.function.Supplier;
 
-@ConfigRoot(name = "kogito", phase = ConfigPhase.RUN_TIME, prefix = "")
-@ConfigGroup
-public class KogitoRuntimeConfig {
+import org.kie.kogito.KogitoGAV;
 
-    /**
-     * The service URL needed to connect to the runtime endpoint from outside the service.
-     * <p>
-     *
-     */
-    @ConfigItem(name = "service.url")
-    public Optional<String> serviceUrl;
+import io.quarkus.runtime.annotations.Recorder;
+
+@Recorder
+public class KogitoRecorder {
+
+    public Supplier<KogitoGAV> kogitoGAVSupplier(String groupId, String artifactId, String version) {
+        return () -> new KogitoGAV(groupId, artifactId, version);
+    }
 
 }

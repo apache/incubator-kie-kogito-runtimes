@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
@@ -34,6 +35,7 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.jboss.logging.Logger;
+import org.kie.kogito.KogitoGAV;
 import org.kie.kogito.codegen.api.Generator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
@@ -41,9 +43,10 @@ import org.kie.kogito.incubation.common.EmptyDataContext;
 import org.kie.kogito.incubation.common.EmptyMetaDataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
 import org.kie.kogito.incubation.common.MapDataContext;
-import org.kie.kogito.quarkus.conf.ConfigBean;
+import org.kie.kogito.quarkus.KogitoRecorder;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
+import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -103,9 +106,12 @@ public class KogitoAssetsProcessor {
 
     @Record(ExecutionTime.STATIC_INIT)
     @BuildStep
-    public void runtimeConfigBuildStep(ConfigBean recorder) {
+    public SyntheticBeanBuildItem runtimeConfigBuildStep(KogitoRecorder recorder) {
         Dependency appModel = curateOutcomeBuildItem.getApplicationModel().getAppArtifact();
-        recorder.setRuntimeGav(appModel.getGroupId(), appModel.getArtifactId(), appModel.getVersion());
+
+        return SyntheticBeanBuildItem.configure(KogitoGAV.class)
+                .scope(Singleton.class)
+                .supplier(recorder.kogitoGAVSupplier(appModel.getGroupId(), appModel.getArtifactId(), appModel.getVersion())).done();
     }
 
     @BuildStep

@@ -15,23 +15,28 @@
  */
 package org.kie.kogito.quarkus.conf;
 
-import java.util.Optional;
-
 import io.quarkus.runtime.annotations.ConfigGroup;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 
-@ConfigRoot(name = "kogito", phase = ConfigPhase.RUN_TIME, prefix = "")
+@ConfigRoot(name = "kogito", phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED, prefix = "")
 @ConfigGroup
-public class KogitoRuntimeConfig {
+public class KogitoBuildTimeConfig {
 
     /**
-     * The service URL needed to connect to the runtime endpoint from outside the service.
+     * If this is enabled the service will use Cloud Events
      * <p>
-     *
+     * If not defined, true will be used.
      */
-    @ConfigItem(name = "service.url")
-    public Optional<String> serviceUrl;
+    @ConfigItem(name = "messaging.as-cloudevents", defaultValue = "true")
+    public Boolean useCloudEvents;
 
+    /**
+     * If this property is True, Jackson will fail on an empty bean
+     * <p>
+     * If not defined, false will be used.
+     */
+    @ConfigItem(name = "jackson.fail-on-empty-bean", defaultValue = "false")
+    public Boolean failOnEmptyBean;
 }
