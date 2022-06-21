@@ -19,10 +19,10 @@ package org.kie.kogito.jobs.api;
 import java.net.URI;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
+import org.kie.kogito.timer.ExactExpirationTime;
+import org.kie.kogito.timer.TimerJobId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

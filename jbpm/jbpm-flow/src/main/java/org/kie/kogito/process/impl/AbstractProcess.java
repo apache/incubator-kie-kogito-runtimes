@@ -45,8 +45,6 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
-import org.kie.kogito.jobs.DurationExpirationTime;
-import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.ProcessJobDescription;
 import org.kie.kogito.process.MutableProcessInstances;
@@ -58,6 +56,8 @@ import org.kie.kogito.process.ProcessInstances;
 import org.kie.kogito.process.ProcessInstancesFactory;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.event.correlation.DefaultCorrelationService;
+import org.kie.kogito.timer.DurationExpirationTime;
+import org.kie.kogito.timer.ExactExpirationTime;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractProcess<T extends Model> implements Process<T>, ProcessSupplier {

@@ -31,9 +31,9 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.jobs.DurationExpirationTime;
-import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
+import org.kie.kogito.timer.DurationExpirationTime;
+import org.kie.kogito.timer.ExactExpirationTime;
 
 public class DeadlineHelper {
 

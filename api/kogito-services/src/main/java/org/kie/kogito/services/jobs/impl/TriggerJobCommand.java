@@ -19,11 +19,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.kie.kogito.jobs.JobId;
-import org.kie.kogito.jobs.JobIdResolver;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Signal;
 import org.kie.kogito.services.uow.UnitOfWorkExecutor;
+import org.kie.kogito.timer.JobIdResolver;
 import org.kie.kogito.uow.UnitOfWorkManager;
 
 public class TriggerJobCommand {
