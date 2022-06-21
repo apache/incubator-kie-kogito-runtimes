@@ -25,7 +25,6 @@
 
   <modules>
     <module>kogito-drools</module>
-    <module>kogito-pmml-api-dependencies</module>
     <module>kogito-dmn</module>
   </modules>
 
@@ -38,6 +37,7 @@
         </property>
       </activation>
       <modules>
+        <module>kogito-pmml-api-dependencies</module>
         <module>kogito-pmml-dependencies</module>
         <module>kogito-pmml-openapi</module>
         <module>kogito-pmml</module>
