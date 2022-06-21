@@ -37,6 +37,7 @@
         </property>
       </activation>
       <modules>
+        <module>kogito-rules-api</module>
         <module>kogito-api-incubation-predictions</module>
         <module>kogito-api-incubation-predictions-services</module>
         <module>kogito-api-incubation-decisions</module>
