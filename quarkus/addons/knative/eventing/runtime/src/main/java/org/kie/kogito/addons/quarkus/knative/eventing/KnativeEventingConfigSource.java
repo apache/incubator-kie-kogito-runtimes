@@ -35,19 +35,13 @@ public class KnativeEventingConfigSource implements ConfigSource {
     private static final Map<String, String> configuration = new HashMap<>();
 
     private static final String URL_CONFIG = "mp.messaging.outgoing." + KogitoEventStreams.OUTGOING + ".url";
-    /**
-     * @see <a href="https://quarkus.io/guides/deploying-to-kubernetes#kubernetes">Quarkus Kubernetes</a>
-     */
-    private static final String KUBERNETES_DEPLOYMENT_TARGET = "quarkus.kubernetes.deployment-target";
-    private static final String CONTAINER_IMAGE_GROUP = "quarkus.container-image.group";
+
     /**
      * Default Knative Sink for local dev environments. Just a default endpoint, nothing in particular.
      * Users can then configure their local sinks to this port.
      */
     private static final String DEFAULT_SINK_URL = "http://localhost:9090";
-    // these properties enable pushing to an internal registry for dev lifecycle
-    private static final String DEFAULT_DEPLOYMENT_TARGET = "knative";
-    private static final String DEFAULT_CONTAINER_IMAGE_GROUP = "dev.local";
+
     /**
      * Environment variable injected by Knative
      */
@@ -60,8 +54,6 @@ public class KnativeEventingConfigSource implements ConfigSource {
         // bootstrap if either the env var is not defined or the URL is not valid.
         // we handle the missing env var injected by knative via probe
         configuration.put(URL_CONFIG, "${K_SINK:" + DEFAULT_SINK_URL + "}");
-        configuration.put(CONTAINER_IMAGE_GROUP, DEFAULT_CONTAINER_IMAGE_GROUP);
-        configuration.put(DEFAULT_DEPLOYMENT_TARGET, DEFAULT_DEPLOYMENT_TARGET);
     }
 
     /**
