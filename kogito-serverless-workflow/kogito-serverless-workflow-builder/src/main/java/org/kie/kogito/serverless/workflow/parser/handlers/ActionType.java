@@ -21,7 +21,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 
-enum ActionType {
+public enum ActionType {
     REST("rest"),
     SERVICE("service"),
     OPENAPI,

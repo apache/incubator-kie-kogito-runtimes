@@ -16,8 +16,8 @@
 package org.kie.kogito.serverless.workflow.parser.rest;
 
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.utils.WorkflowOperationId;
 
 public class RestOperationHandlerFactory {
 

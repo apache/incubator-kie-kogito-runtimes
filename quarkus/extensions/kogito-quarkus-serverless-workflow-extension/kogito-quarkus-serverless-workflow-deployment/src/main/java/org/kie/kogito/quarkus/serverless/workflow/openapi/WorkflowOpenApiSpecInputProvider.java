@@ -48,10 +48,6 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
     }
 
     private SpecInputModel getSpecInput(WorkflowOperationResource resource) {
-        try {
-            return new SpecInputModel(resource.getOperationId().getFileName(), resource.getContentLoader().getInputStream(), KOGITO_PACKAGE_PREFIX + resource.getOperationId().getPackageName());
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        return new SpecInputModel(resource.getOperationId().getFileName(), resource.getContentLoader().getInputStream(), KOGITO_PACKAGE_PREFIX + resource.getOperationId().getPackageName());
     }
 }
