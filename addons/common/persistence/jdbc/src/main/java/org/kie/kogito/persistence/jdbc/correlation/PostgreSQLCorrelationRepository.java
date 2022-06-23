@@ -31,7 +31,7 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-public class CorrelationRepository {
+public class PostgreSQLCorrelationRepository {
 
     static final String INSERT = "INSERT INTO correlation_instances (id, encoded_correlation_id, correlated_id, correlation) VALUES (?, ?, ?, ?::json)";
     static final String DELETE = "DELETE FROM correlation_instances WHERE encoded_correlation_id = ?";
@@ -41,7 +41,7 @@ public class CorrelationRepository {
     private DataSource dataSource;
     private ObjectMapper objectMapper;
 
-    public CorrelationRepository(DataSource dataSource) {
+    public PostgreSQLCorrelationRepository(DataSource dataSource) {
         this.dataSource = dataSource;
         this.objectMapper = ObjectMapperFactory.get().copy();
 

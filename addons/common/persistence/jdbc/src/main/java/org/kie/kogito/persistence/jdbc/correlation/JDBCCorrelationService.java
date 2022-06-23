@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.persistence.jdbc.correlation;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import javax.sql.DataSource;
@@ -23,6 +25,7 @@ import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.correlation.CorrelationEncoder;
 import org.kie.kogito.correlation.CorrelationInstance;
 import org.kie.kogito.correlation.CorrelationService;
+import org.kie.kogito.persistence.jdbc.DatabaseType;
 import org.kie.kogito.services.event.correlation.MD5CorrelationEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +34,18 @@ public class JDBCCorrelationService implements CorrelationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCCorrelationService.class);
 
-    private CorrelationRepository repository;
+    private PostgreSQLCorrelationRepository repository;
     private CorrelationEncoder correlationEncoder;
 
     public JDBCCorrelationService(DataSource dataSource) {
-        this.repository = new CorrelationRepository(dataSource);
+        try (Connection connection = dataSource.getConnection()) {
+            if (!DatabaseType.POSTGRES.equals(DatabaseType.getDataBaseType(connection))) {
+                throw new IllegalArgumentException("Only PostgreSQL is supported for correlation");
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Error getting connection for {}", dataSource);
+        }
+        this.repository = new PostgreSQLCorrelationRepository(dataSource);
         this.correlationEncoder = new MD5CorrelationEncoder();
     }
 
@@ -49,7 +59,6 @@ public class JDBCCorrelationService implements CorrelationService {
     public Optional<CorrelationInstance> find(Correlation correlation) {
         String encoded = correlationEncoder.encode(correlation);
         return Optional.ofNullable(repository.findByEncodedCorrelationId(encoded));
-
     }
 
     @Override
