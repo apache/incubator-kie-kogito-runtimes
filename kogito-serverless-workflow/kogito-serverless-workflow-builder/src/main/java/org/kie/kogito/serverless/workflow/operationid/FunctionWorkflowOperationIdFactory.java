@@ -15,20 +15,17 @@
  */
 package org.kie.kogito.serverless.workflow.operationid;
 
-public enum WorkflowOperationIdFactoryType {
+import java.net.URI;
+import java.util.Optional;
 
-    FULL_URI(new URIWorkflowOperationIdFactory()),
-    SPEC_TITLE(new SpecWorkflowOperationIdFactory()),
-    FILE_NAME(new FileNameWorkflowOperationIdFactory()),
-    FUNCTION_NAME(new FunctionWorkflowOperationIdFactory());
+import org.kie.kogito.serverless.workflow.parser.ParserContext;
 
-    private final WorkflowOperationIdFactory factory;
+import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-    private WorkflowOperationIdFactoryType(WorkflowOperationIdFactory factory) {
-        this.factory = factory;
-    }
-
-    public WorkflowOperationIdFactory factory() {
-        return factory;
+public class FunctionWorkflowOperationIdFactory extends AbstractWorkflowOperationIdFactory {
+    @Override
+    public String getFileName(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context, URI uri, String operation, String service) {
+        return workflow.getId() + '_' + function.getName();
     }
 }

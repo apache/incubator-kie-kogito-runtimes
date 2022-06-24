@@ -45,7 +45,7 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
         int expectedTokens = tokensPerType(function);
         if (tokens.length != expectedTokens) {
             throw new IllegalArgumentException(
-                    "Operation " + operationStr + " should exactly contains" + (expectedTokens - 1) + " ocurrences of " + OPERATION_SEPARATOR
+                    "Operation " + operationStr + " should exactly contains" + (expectedTokens - 1) + " occurrences of " + OPERATION_SEPARATOR
                             + " to differentiate between location URI and additional operation data");
         }
         final String service;

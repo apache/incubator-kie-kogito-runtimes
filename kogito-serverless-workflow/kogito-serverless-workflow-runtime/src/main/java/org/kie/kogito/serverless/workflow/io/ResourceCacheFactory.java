@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ResourceCacheFactory {
-    private static AtomicReference<ResourceCache> cache = new AtomicReference<>(new LocalResourceCache());
+    private static final AtomicReference<ResourceCache> cache = new AtomicReference<>(new LocalResourceCache());
 
     public static ResourceCache getCache() {
         return cache.get();
     }
 
     private static class LocalResourceCache implements ResourceCache {
-        private Map<URI, byte[]> map = Collections.synchronizedMap(new WeakHashMap<>());
+        private final Map<URI, byte[]> map = Collections.synchronizedMap(new WeakHashMap<>());
 
         @Override
         public byte[] get(URI uri, Function<URI, byte[]> retrieveCall) {

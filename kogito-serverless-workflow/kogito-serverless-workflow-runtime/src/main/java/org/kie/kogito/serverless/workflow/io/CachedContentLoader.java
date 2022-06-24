@@ -28,7 +28,7 @@ public abstract class CachedContentLoader implements URIContentLoader {
 
         @Override
         public synchronized byte[] readAllBytes() {
-            // This is a  optimization that avoids copying the whole array if no byte has been read
+            // This is an optimization that avoids copying the whole array if no byte has been read
             if (pos == 0) {
                 pos = count;
                 return buf;
