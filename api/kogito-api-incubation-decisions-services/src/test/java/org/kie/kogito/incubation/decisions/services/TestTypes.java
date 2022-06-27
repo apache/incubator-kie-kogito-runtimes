@@ -17,6 +17,7 @@
 package org.kie.kogito.incubation.decisions.services;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.application.ReflectiveAppRoot;
 import org.kie.kogito.incubation.common.*;
 import org.kie.kogito.incubation.decisions.DecisionIds;

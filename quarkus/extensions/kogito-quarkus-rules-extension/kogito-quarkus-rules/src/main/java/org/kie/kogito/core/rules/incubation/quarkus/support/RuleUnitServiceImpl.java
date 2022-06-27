@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.kie.kogito.incubation.application.Id;
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 import org.kie.kogito.incubation.rules.QueryId;

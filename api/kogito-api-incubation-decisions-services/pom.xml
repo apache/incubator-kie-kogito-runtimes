@@ -55,12 +55,6 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.kie.kogito</groupId>
-            <artifactId>kogito-api-incubation-application</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -94,6 +88,8 @@
                                         <allowedImport>org.kie.kogito.incubation.decisions.**</allowedImport>
                                         <!-- we allow common -->
                                         <allowedImport>org.kie.kogito.incubation.common.**</allowedImport>
+                                        <!-- we allow common -->
+                                        <allowedImport>org.kie.kogito.incubation.application.**</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>

@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.application.LocalId;
 
 public class HumanTaskId extends TaskId implements LocalId {
 

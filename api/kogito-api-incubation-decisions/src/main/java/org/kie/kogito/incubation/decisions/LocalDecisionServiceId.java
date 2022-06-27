@@ -16,9 +16,9 @@
 
 package org.kie.kogito.incubation.decisions;
 
-import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.Id;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class LocalDecisionServiceId extends LocalUriId implements LocalId {
     public static final String PREFIX = "services";

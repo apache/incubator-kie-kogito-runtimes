@@ -21,8 +21,8 @@ import java.util.UUID;
 
 import org.kie.kogito.drools.core.data.DataHandleImpl;
 import org.kie.kogito.drools.core.data.ListDataStore;
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.data.DataId;

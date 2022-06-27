@@ -21,7 +21,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.kie.kogito.incubation.application.AppRoot;
-import org.kie.kogito.incubation.common.ComponentRoot;
+import org.kie.kogito.incubation.application.ComponentRoot;
 
 @ApplicationScoped
 public class QuarkusAppRoot extends AppRoot {

@@ -16,7 +16,7 @@
 
 package org.kie.kogito.incubation.rules;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
+import org.kie.kogito.incubation.application.ComponentRoot;
 
 public class RuleUnitIds implements ComponentRoot {
     public RuleUnitId get(Class<?> ruleUnitDefinition) {

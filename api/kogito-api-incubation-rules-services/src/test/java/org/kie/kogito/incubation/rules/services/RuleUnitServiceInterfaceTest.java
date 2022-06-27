@@ -19,10 +19,10 @@ package org.kie.kogito.incubation.rules.services;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.incubation.application.Id;
 import org.kie.kogito.incubation.application.ReflectiveAppRoot;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.DefaultCastable;
-import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.QueryId;

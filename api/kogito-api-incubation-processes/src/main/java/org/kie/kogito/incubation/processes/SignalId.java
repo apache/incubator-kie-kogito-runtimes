@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class SignalId extends LocalUriId {
     public static final String PREFIX = "signals";

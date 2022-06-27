@@ -16,7 +16,7 @@
 
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
+import org.kie.kogito.incubation.application.ComponentRoot;
 
 public class ProcessIds implements ComponentRoot {
     public LocalProcessId get(String processId) {

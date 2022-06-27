@@ -21,7 +21,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.kie.kogito.incubation.common.*;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.common.EmptyMetaDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.ExtendedReferenceContext;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.MetaDataContext;
+import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;

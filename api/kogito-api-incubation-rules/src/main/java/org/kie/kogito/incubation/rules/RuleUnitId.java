@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.incubation.rules;
 
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUri;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUri;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class RuleUnitId extends LocalUriId implements LocalId {
     public static final String PREFIX = "rule-units";

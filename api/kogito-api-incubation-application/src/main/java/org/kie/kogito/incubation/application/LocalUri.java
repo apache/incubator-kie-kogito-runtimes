@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.common;
+package org.kie.kogito.incubation.application;
 
 import java.net.URI;
 import java.net.URISyntaxException;

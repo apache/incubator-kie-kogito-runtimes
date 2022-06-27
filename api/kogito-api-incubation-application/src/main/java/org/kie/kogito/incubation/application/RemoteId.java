@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.common;
+package org.kie.kogito.incubation.application;
 
 /**
- * An identifier for a local resource
+ * An identifier for a remote resource
  */
-public interface LocalId extends Id {
-    LocalUri asLocalUri();
+public interface RemoteId extends Id {
 }

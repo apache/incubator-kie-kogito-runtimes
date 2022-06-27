@@ -20,9 +20,9 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.kie.api.pmml.PMML4Result;
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
-import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 import org.kie.kogito.incubation.predictions.LocalPredictionId;

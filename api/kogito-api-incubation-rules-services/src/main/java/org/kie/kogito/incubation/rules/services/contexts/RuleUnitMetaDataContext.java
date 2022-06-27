@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.incubation.rules.services.contexts;
 
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.common.DefaultCastable;
-import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.common.MetaDataContext;
 import org.kie.kogito.incubation.rules.RuleUnitIdParser;
 

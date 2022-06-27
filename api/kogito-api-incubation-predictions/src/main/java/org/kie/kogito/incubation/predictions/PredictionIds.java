@@ -16,7 +16,7 @@
 
 package org.kie.kogito.incubation.predictions;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
+import org.kie.kogito.incubation.application.ComponentRoot;
 
 public class PredictionIds implements ComponentRoot {
     public LocalPredictionId get(String name) {

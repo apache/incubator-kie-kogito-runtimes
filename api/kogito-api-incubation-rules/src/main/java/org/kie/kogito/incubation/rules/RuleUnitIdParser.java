@@ -17,7 +17,7 @@ package org.kie.kogito.incubation.rules;
 
 import java.util.StringTokenizer;
 
-import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.application.LocalId;
 
 public class RuleUnitIdParser {
     public static LocalId parse(String id) {

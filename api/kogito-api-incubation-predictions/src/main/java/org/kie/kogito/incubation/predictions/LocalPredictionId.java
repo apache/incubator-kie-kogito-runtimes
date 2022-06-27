@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.incubation.predictions;
 
-import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUri;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.Id;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUri;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class LocalPredictionId extends LocalUriId implements Id {
     public static final String PREFIX = "predictions";

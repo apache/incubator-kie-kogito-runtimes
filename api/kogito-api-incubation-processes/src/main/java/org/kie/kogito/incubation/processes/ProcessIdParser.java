@@ -17,7 +17,7 @@ package org.kie.kogito.incubation.processes;
 
 import java.util.StringTokenizer;
 
-import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.application.LocalId;
 
 /**
  * Utility class to parse a String into a process identifier of the given type.

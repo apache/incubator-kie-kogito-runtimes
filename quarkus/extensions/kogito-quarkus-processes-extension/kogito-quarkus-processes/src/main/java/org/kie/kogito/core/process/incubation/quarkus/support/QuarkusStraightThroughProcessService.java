@@ -21,8 +21,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.kie.kogito.incubation.application.Id;
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.Id;
 import org.kie.kogito.incubation.processes.services.StraightThroughProcessService;
 import org.kie.kogito.process.Processes;
 

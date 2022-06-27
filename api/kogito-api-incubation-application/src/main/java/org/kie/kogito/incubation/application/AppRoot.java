@@ -15,11 +15,6 @@
  */
 package org.kie.kogito.incubation.application;
 
-import org.kie.kogito.incubation.common.ComponentRoot;
-import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.LocalUri;
-import org.kie.kogito.incubation.common.LocalUriId;
-
 /**
  * Root path of an application.
  *

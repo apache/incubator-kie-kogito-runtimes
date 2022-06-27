@@ -16,7 +16,7 @@
 
 package org.kie.kogito.incubation.rules;
 
-import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.application.LocalId;
 
 public class InvalidRuleUnitIdException extends IllegalArgumentException {
     public InvalidRuleUnitIdException(LocalId id) {

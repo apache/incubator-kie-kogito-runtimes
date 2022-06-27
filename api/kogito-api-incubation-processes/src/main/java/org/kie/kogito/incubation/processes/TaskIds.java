@@ -16,7 +16,7 @@
 
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class TaskIds extends LocalUriId {
     private final ProcessInstanceId processInstanceId;

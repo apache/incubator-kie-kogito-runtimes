@@ -20,8 +20,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.rules.data.DataId;
 import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.rules.RuleUnits;

@@ -19,9 +19,9 @@ package org.kie.kogito.core.process.incubation.quarkus.support;
 import java.util.Map;
 
 import org.kie.kogito.Model;
+import org.kie.kogito.incubation.application.Id;
+import org.kie.kogito.incubation.application.LocalUri;
 import org.kie.kogito.incubation.common.DataContext;
-import org.kie.kogito.incubation.common.Id;
-import org.kie.kogito.incubation.common.LocalUri;
 import org.kie.kogito.incubation.common.MapDataContext;
 import org.kie.kogito.incubation.common.objectmapper.InternalObjectMapper;
 import org.kie.kogito.incubation.processes.LocalProcessId;

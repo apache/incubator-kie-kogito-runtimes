@@ -22,9 +22,9 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.kie.kogito.Application;
+import org.kie.kogito.incubation.application.LocalId;
 import org.kie.kogito.incubation.common.DataContext;
 import org.kie.kogito.incubation.common.ExtendedDataContext;
-import org.kie.kogito.incubation.common.LocalId;
 import org.kie.kogito.incubation.processes.services.StatefulProcessService;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.ProcessServiceImpl;

@@ -16,7 +16,7 @@
 package org.kie.kogito.incubation.processes;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.application.LocalId;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

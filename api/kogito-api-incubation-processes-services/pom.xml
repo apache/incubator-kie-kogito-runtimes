@@ -97,6 +97,8 @@
                                         <allowedImport>org.kie.kogito.incubation.processes.**</allowedImport>
                                         <!-- we allow common -->
                                         <allowedImport>org.kie.kogito.incubation.common.**</allowedImport>
+                                        <!-- we allow application -->
+                                        <allowedImport>org.kie.kogito.incubation.application.**</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>

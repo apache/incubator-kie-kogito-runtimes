@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.incubation.processes;
 
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class TaskInstanceId extends LocalUriId implements LocalId {
 

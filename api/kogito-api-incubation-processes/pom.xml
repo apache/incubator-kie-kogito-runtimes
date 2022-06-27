@@ -41,6 +41,10 @@
             <artifactId>kogito-api-incubation-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-api-incubation-application</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
@@ -81,7 +85,8 @@
                                     <allowedImports>
                                         <!-- we always allow process.* as these will be movable to internal -->
                                         <allowedImport>org.kie.kogito.incubation.processes.**</allowedImport>
-                                        <!-- we always allow common.* -->
+                                        <!-- we always allow common.* and application.* -->
+                                        <allowedImport>org.kie.kogito.incubation.application.**</allowedImport>
                                         <allowedImport>org.kie.kogito.incubation.common.**</allowedImport>
                                     </allowedImports>
                                 </restrictImports>

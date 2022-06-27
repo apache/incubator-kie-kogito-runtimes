@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.incubation.common;
+package org.kie.kogito.incubation.application;
 
 /**
  * An identifier for a resource. It always contains a local part.

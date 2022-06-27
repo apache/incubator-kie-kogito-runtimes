@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.incubation.rules.data;
 
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUriId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 
 public class DataSourceId extends LocalUriId implements LocalId {

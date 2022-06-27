@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.incubation.rules;
 
-import org.kie.kogito.incubation.common.LocalId;
-import org.kie.kogito.incubation.common.LocalUriId;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.application.LocalUriId;
 
 public class QueryId extends LocalUriId implements LocalId {
     public static final String PREFIX = "queries";

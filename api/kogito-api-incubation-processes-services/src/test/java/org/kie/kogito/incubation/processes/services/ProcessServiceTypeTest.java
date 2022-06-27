@@ -17,7 +17,14 @@
 package org.kie.kogito.incubation.processes.services;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.incubation.common.*;
+import org.kie.kogito.incubation.application.Id;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.common.DataContext;
+import org.kie.kogito.incubation.common.DefaultCastable;
+import org.kie.kogito.incubation.common.EmptyDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.MapLikeDataContext;
 import org.kie.kogito.incubation.processes.LocalProcessId;
 import org.kie.kogito.incubation.processes.ProcessInstanceId;
 import org.kie.kogito.incubation.processes.TaskId;

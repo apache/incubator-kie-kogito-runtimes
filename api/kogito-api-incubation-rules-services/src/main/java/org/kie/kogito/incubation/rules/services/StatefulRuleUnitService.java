@@ -18,7 +18,10 @@ package org.kie.kogito.incubation.rules.services;
 
 import java.util.stream.Stream;
 
-import org.kie.kogito.incubation.common.*;
+import org.kie.kogito.incubation.application.LocalId;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.ExtendedReferenceContext;
+import org.kie.kogito.incubation.common.MetaDataContext;
 
 public interface StatefulRuleUnitService {
     MetaDataContext create(LocalId ruleUnitId, ExtendedReferenceContext extendedDataContext);
