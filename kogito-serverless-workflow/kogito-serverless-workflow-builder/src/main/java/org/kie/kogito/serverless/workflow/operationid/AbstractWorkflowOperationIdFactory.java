@@ -40,12 +40,14 @@ import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.r
 public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOperationIdFactory {
     @Override
     public WorkflowOperationId from(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context) {
-        String operationStr = ActionType.from(function).getOperation(function);
+
+        ActionType actionType = ActionType.from(function);
+        String operationStr = actionType.getOperation(function);
         String[] tokens = operationStr.split(OPERATION_SEPARATOR);
-        int expectedTokens = tokensPerType(function);
+        int expectedTokens = actionType.numFragments() + 1;
         if (tokens.length != expectedTokens) {
             throw new IllegalArgumentException(
-                    "Operation " + operationStr + " should exactly contains" + (expectedTokens - 1) + " occurrences of " + OPERATION_SEPARATOR
+                    "Operation " + operationStr + " should exactly contains" + actionType.numFragments() + " occurrences of " + OPERATION_SEPARATOR
                             + " to differentiate between location URI and additional operation data");
         }
         final String service;
@@ -66,11 +68,8 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
         } else {
             uri = URI.create(tokens[0]);
             fileName = getFileName(workflow, function, context, uri, operation, service);
-
         }
-        final String className = getClassName(fileName, service, operation);
-        final String packageName = onlyChars(removeExt(fileName.toLowerCase()));
-        return new WorkflowOperationId(uri, operation, service, fileName, className, packageName);
+        return new WorkflowOperationId(uri, operation, service, fileName, getClassName(fileName, service, operation), onlyChars(removeExt(fileName.toLowerCase())));
     }
 
     private Optional<String> convertURI(Workflow workflow, Optional<ParserContext> context, String uri) {
@@ -92,16 +91,6 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
             uriDefinitions.setDefinitions(definitions);
         }
         return definitions;
-    }
-
-    private int tokensPerType(FunctionDefinition function) {
-        switch (function.getType()) {
-            case RPC:
-                return 3;
-            case REST:
-            default:
-                return 2;
-        }
     }
 
     protected abstract String getFileName(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context, URI uri, String operation, String service);

@@ -24,16 +24,22 @@ import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
 public enum ActionType {
     REST("rest"),
     SERVICE("service"),
-    OPENAPI,
+    OPENAPI(1),
     EXPRESSION,
     SCRIPT("script"),
     SYSOUT("sysout"),
-    RPC,
+    RPC(2),
     EMPTY;
 
-    private String[] prefixes;
+    private final int numFragments;
+    private final String[] prefixes;
 
     private ActionType(String... prefixes) {
+        this(0, prefixes);
+    }
+
+    private ActionType(int numFragments, String... prefixes) {
+        this.numFragments = numFragments;
         this.prefixes = prefixes;
     }
 
@@ -89,5 +95,9 @@ public enum ActionType {
             }
         }
         return ActionType.EMPTY;
+    }
+
+    public int numFragments() {
+        return numFragments;
     }
 }
