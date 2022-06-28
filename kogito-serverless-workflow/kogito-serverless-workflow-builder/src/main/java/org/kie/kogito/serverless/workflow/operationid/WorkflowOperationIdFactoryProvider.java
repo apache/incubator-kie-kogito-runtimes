@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class WorkflowOperationIdFactoryProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowOperationIdFactoryProvider.class);
-    public static final String PROPERTY_NAME = "quarkus.sw.operationIdStrategy";
+    public static final String PROPERTY_NAME = "quarkus.kogito.sw.operationIdStrategy";
 
     private static final WorkflowOperationIdFactoryType defaultType = WorkflowOperationIdFactoryType.FILE_NAME;
 
