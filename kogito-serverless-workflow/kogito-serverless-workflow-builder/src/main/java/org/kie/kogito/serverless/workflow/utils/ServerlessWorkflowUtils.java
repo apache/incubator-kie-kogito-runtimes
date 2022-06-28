@@ -181,14 +181,8 @@ public class ServerlessWorkflowUtils {
         return "RPC_" + serviceName + "_WorkItemHandler";
     }
 
-    public static String getClassName(String fileName, String... additional) {
-        StringBuilder sb = new StringBuilder(removeExt(fileName.toLowerCase()));
-        for (String item : additional) {
-            if (item != null) {
-                sb.append('_').append(item);
-            }
-        }
-        return StringUtils.ucFirst(getValidIdentifier(sb.toString()));
+    public static String getOpenApiClassName(String fileName, String methodName) {
+        return StringUtils.ucFirst(getValidIdentifier(removeExt(fileName.toLowerCase())) + '_' + methodName);
     }
 
     public static String removeExt(String fileName) {

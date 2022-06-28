@@ -17,24 +17,23 @@ package org.kie.kogito.serverless.workflow.parser.rest;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
-import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 public class GeneratedRestOperationHandler implements RestOperationHandler {
 
-    private final WorkflowOperationId id;
+    private final String className;
 
-    public GeneratedRestOperationHandler(WorkflowOperationId id) {
-        this.id = id;
+    public GeneratedRestOperationHandler(String className) {
+        this.className = className;
     }
 
     @Override
     public <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(WorkItemNodeFactory<T> node,
             Workflow workflow,
             FunctionDefinition actionFunction) {
-        return node.workName(id.geClassName());
+        return node.workName(className);
     }
 
 }

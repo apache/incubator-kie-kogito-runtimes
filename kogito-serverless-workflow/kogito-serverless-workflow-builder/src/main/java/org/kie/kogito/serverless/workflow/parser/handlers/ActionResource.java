@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.operationid;
+package org.kie.kogito.serverless.workflow.parser.handlers;
 
-import java.net.URI;
+public class ActionResource {
 
-public class WorkflowOperationId {
-    private final URI uri;
+    private final String uri;
     private final String operation;
-    private final String fileName;
-    private final String packageName;
     private final String service;
 
-    WorkflowOperationId(URI uri, String operation, String service, String fileName, String packageName) {
+    public ActionResource(String uri, String operation, String service) {
         this.uri = uri;
         this.operation = operation;
         this.service = service;
-        this.fileName = fileName;
-        this.packageName = packageName;
     }
 
-    public URI getUri() {
+    public String getUri() {
         return uri;
     }
 
@@ -40,20 +35,7 @@ public class WorkflowOperationId {
         return operation;
     }
 
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
     public String getService() {
         return service;
-    }
-
-    @Override
-    public String toString() {
-        return "WorkflowOperationId [uri=" + uri + ", operation=" + operation + ", fileName=" + fileName + ", packageName=" + packageName + ", service=" + service + "]";
     }
 }

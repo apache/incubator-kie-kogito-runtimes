@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.handlers.ActionResource;
 import org.kie.kogito.serverless.workflow.parser.handlers.ActionType;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.URIDefinitions;
@@ -32,44 +33,25 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.OPERATION_SEPARATOR;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getClassName;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.onlyChars;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.removeExt;
 
 public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOperationIdFactory {
     @Override
     public WorkflowOperationId from(Workflow workflow, FunctionDefinition function, Optional<ParserContext> context) {
-
         ActionType actionType = ActionType.from(function);
-        String operationStr = actionType.getOperation(function);
-        String[] tokens = operationStr.split(OPERATION_SEPARATOR);
-        int expectedTokens = actionType.numFragments() + 1;
-        if (tokens.length != expectedTokens) {
-            throw new IllegalArgumentException(
-                    "Operation " + operationStr + " should exactly contains" + actionType.numFragments() + " occurrences of " + OPERATION_SEPARATOR
-                            + " to differentiate between location URI and additional operation data");
-        }
-        final String service;
-        final String operation;
-        if (expectedTokens == 3) {
-            operation = tokens[2];
-            service = tokens[1];
-        } else {
-            operation = tokens[1];
-            service = null;
-        }
-        Optional<String> convertedUri = convertURI(workflow, context, tokens[0]);
+        ActionResource actionResource = actionType.getActionResource(function);
+        Optional<String> convertedUri = convertURI(workflow, context, actionResource.getUri());
         final URI uri;
         final String fileName;
         if (convertedUri.isPresent()) {
             uri = URI.create(convertedUri.get());
-            fileName = tokens[0];
+            fileName = actionResource.getUri();
         } else {
-            uri = URI.create(tokens[0]);
-            fileName = getFileName(workflow, function, context, uri, operation, service);
+            uri = URI.create(actionResource.getUri());
+            fileName = getFileName(workflow, function, context, uri, actionResource.getOperation(), actionResource.getService());
         }
-        return new WorkflowOperationId(uri, operation, service, fileName, getClassName(fileName, service, operation), onlyChars(removeExt(fileName.toLowerCase())));
+        return new WorkflowOperationId(uri, actionResource.getOperation(), actionResource.getService(), fileName, onlyChars(removeExt(fileName.toLowerCase())));
     }
 
     private Optional<String> convertURI(Workflow workflow, Optional<ParserContext> context, String uri) {

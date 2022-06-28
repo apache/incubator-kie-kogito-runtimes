@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -28,6 +27,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class FunctionOperationIdTest {
 
@@ -37,22 +37,19 @@ class FunctionOperationIdTest {
     @BeforeEach
     void setup() {
         workflow = mock(Workflow.class);
-        definition = new FunctionDefinition("pepe");
-
+        when(workflow.getId()).thenReturn("Test");
+        definition = new FunctionDefinition("function1");
     }
 
     @Test
     void testOperationId() {
         definition.setType(Type.REST);
         definition.setOperation("specs/external-service.yaml#sendRequest");
-        WorkflowOperationId id = WorkflowOperationIdFactoryType.SPEC_TITLE.factory().from(workflow, definition, Optional.empty());
+        WorkflowOperationId id = WorkflowOperationIdFactoryType.FUNCTION_NAME.factory().from(workflow, definition, Optional.empty());
         assertEquals("sendRequest", id.getOperation());
-        assertEquals("external-service", id.getFileName());
-        assertEquals("Externalservice_sendRequest", id.geClassName());
-        assertEquals("externalservice", id.getPackageName());
+        assertEquals("Test_function1", id.getFileName());
+        assertEquals("testfunction", id.getPackageName());
         assertEquals("specs/external-service.yaml", id.getUri().toString());
         assertNull(id.getService());
-        assertEquals(id.geClassName(), ServerlessWorkflowUtils.getClassName(id.getFileName(), id.getService(), id.getOperation()));
     }
-
 }

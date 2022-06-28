@@ -16,30 +16,33 @@
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.isEmpty;
+import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.OPERATION_SEPARATOR;
 
 public enum ActionType {
     REST("rest"),
     SERVICE("service"),
-    OPENAPI(1),
+    OPENAPI(ActionType::justOperation),
     EXPRESSION,
     SCRIPT("script"),
     SYSOUT("sysout"),
-    RPC(2),
+    RPC(ActionType::withService),
     EMPTY;
 
-    private final int numFragments;
     private final String[] prefixes;
+    private Optional<Function<String, ActionResource>> actionResourceFactory;
 
     private ActionType(String... prefixes) {
-        this(0, prefixes);
+        this(null, prefixes);
     }
 
-    private ActionType(int numFragments, String... prefixes) {
-        this.numFragments = numFragments;
+    private ActionType(Function<String, ActionResource> actionResourceFactory, String... prefixes) {
+        this.actionResourceFactory = Optional.ofNullable(actionResourceFactory);
         this.prefixes = prefixes;
     }
 
@@ -97,7 +100,25 @@ public enum ActionType {
         return ActionType.EMPTY;
     }
 
-    public int numFragments() {
-        return numFragments;
+    private static ActionResource justOperation(String operationStr) {
+        String[] tokens = getTokens(operationStr, 2);
+        return new ActionResource(tokens[0], tokens[1], null);
+    }
+
+    private static ActionResource withService(String operationStr) {
+        String[] tokens = getTokens(operationStr, 3);
+        return new ActionResource(tokens[0], tokens[2], tokens[1]);
+    }
+
+    private static String[] getTokens(String operationStr, int expectedTokens) {
+        String[] tokens = operationStr.split(OPERATION_SEPARATOR);
+        if (tokens.length != expectedTokens) {
+            throw new IllegalArgumentException(String.format("%s should have just %d %s", operationStr, expectedTokens - 1, OPERATION_SEPARATOR));
+        }
+        return tokens;
+    }
+
+    public ActionResource getActionResource(FunctionDefinition function) {
+        return actionResourceFactory.map(factory -> factory.apply(function.getOperation())).orElseThrow(() -> new UnsupportedOperationException(this.name() + " does not support action resources"));
     }
 }

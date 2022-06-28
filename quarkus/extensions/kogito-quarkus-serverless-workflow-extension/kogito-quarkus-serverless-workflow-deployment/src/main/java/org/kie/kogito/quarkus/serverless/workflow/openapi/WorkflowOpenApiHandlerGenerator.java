@@ -78,7 +78,7 @@ public class WorkflowOpenApiHandlerGenerator extends ClassAnnotatedWorkfkowHandl
     private GeneratedFile generateHandler(KogitoBuildContext context, ClassInfo classInfo, String fileName, MethodInfo m) {
         final String packageName = context.getPackageName();
         final String methodName = m.annotation(generatedMethod).value().asString();
-        final String className = ServerlessWorkflowUtils.getClassName(fileName, methodName);
+        final String className = ServerlessWorkflowUtils.getOpenApiClassName(fileName, methodName);
         final ClassOrInterfaceType classNameType = parseClassOrInterfaceType(classInfo.name().toString());
         CompilationUnit unit = new CompilationUnit(packageName);
         ClassOrInterfaceDeclaration clazz = unit.addClass(className);
