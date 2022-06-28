@@ -65,7 +65,8 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
             Path outputPath = context.workDir().resolve("proto_temp");
             Files.createDirectories(outputPath);
             Collection<Path> protoFiles =
-                    WorkflowCodeGenUtils.operationResources(rpcFilePaths, this::isRPC).map(r -> getPath(r, outputPath)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+                    WorkflowCodeGenUtils.operationResources(rpcFilePaths, this::isRPC, context).map(r -> getPath(r, outputPath)).filter(Optional::isPresent).map(Optional::get)
+                            .collect(Collectors.toList());
             logger.debug("Collected proto paths are {}", protoFiles);
             if (protoFiles.isEmpty()) {
                 return false;

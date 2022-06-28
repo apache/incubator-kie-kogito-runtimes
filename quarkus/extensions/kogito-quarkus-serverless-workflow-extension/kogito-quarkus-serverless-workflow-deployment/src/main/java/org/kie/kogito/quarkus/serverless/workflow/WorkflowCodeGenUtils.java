@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessCodegen;
 import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
@@ -48,6 +47,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.SuperExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
+import io.quarkus.deployment.CodeGenContext;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
@@ -58,12 +58,12 @@ public class WorkflowCodeGenUtils {
     private WorkflowCodeGenUtils() {
     }
 
-    private static WorkflowOperationIdFactory operationIdFactory() {
-        return WorkflowOperationIdFactoryProvider.getFactory(ConfigProvider.getConfig().getOptionalValue(WorkflowOperationIdFactoryProvider.PROPERTY_NAME, String.class));
+    private static WorkflowOperationIdFactory operationIdFactory(CodeGenContext context) {
+        return WorkflowOperationIdFactoryProvider.getFactory(context.config().getOptionalValue(WorkflowOperationIdFactoryProvider.PROPERTY_NAME, String.class));
     }
 
-    public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate) {
-        return getWorkflows(files).flatMap(w -> processFunction(w, predicate, operationIdFactory()));
+    public static Stream<WorkflowOperationResource> operationResources(Stream<Path> files, Predicate<FunctionDefinition> predicate, CodeGenContext context) {
+        return getWorkflows(files).flatMap(w -> processFunction(w, predicate, operationIdFactory(context)));
     }
 
     public static Stream<Workflow> getWorkflows(Stream<Path> files) {

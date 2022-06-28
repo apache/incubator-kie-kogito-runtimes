@@ -41,7 +41,7 @@ public class WorkflowOpenApiSpecInputProvider implements OpenApiSpecInputProvide
             inputDir = inputDir.getParent();
         }
         try (Stream<Path> openApiFilesPaths = Files.walk(inputDir)) {
-            return WorkflowCodeGenUtils.operationResources(openApiFilesPaths, ServerlessWorkflowUtils::isOpenApiOperation).map(this::getSpecInput).collect(Collectors.toList());
+            return WorkflowCodeGenUtils.operationResources(openApiFilesPaths, ServerlessWorkflowUtils::isOpenApiOperation, context).map(this::getSpecInput).collect(Collectors.toList());
         } catch (IOException io) {
             throw new IllegalStateException(io);
         }
