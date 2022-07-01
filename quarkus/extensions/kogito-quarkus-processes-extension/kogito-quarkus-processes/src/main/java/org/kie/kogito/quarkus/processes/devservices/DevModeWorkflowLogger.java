@@ -16,6 +16,7 @@
 
 package org.kie.kogito.quarkus.processes.devservices;
 
+import org.jbpm.process.core.context.variable.Variable;
 import org.kie.api.event.process.ProcessCompletedEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.api.event.process.ProcessStartedEvent;
@@ -76,7 +77,7 @@ public class DevModeWorkflowLogger extends DefaultKogitoProcessEventListener {
                     LOGGER.info("Workflow data change\n{}", node.toPrettyString());
                 }
             }
-        } else {
+        } else if (!event.getTags().contains(Variable.INTERNAL_TAG)) {
             LOGGER.info("Variable '{}' changed value from: '{}', to: '{}'", event.getVariableId(), event.getOldValue(), event.getNewValue());
         }
     }
