@@ -15,23 +15,24 @@
  */
 package org.jbpm.process.core.context.exception;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-public class ExceptionHandlerPolicyFactory {
-
-    private ExceptionHandlerPolicyFactory() {
+public class MessageContentExceptionPolicy implements ExceptionHandlerPolicy {
+    @Override
+    public boolean test(String test, Throwable exception) {
+        boolean found = verify(test, exception);
+        Throwable rootCause = exception.getCause();
+        while (!found && rootCause != null) {
+            found = verify(test, rootCause);
+            rootCause = rootCause.getCause();
+        }
+        return found;
     }
 
-    private static Collection<ExceptionHandlerPolicy> policies = new ArrayList<>();
-
-    static {
-        policies.add(new SubclassExceptionPolicy());
-        policies.add(new RootCauseExceptionPolicy());
-        policies.add(new MessageContentExceptionPolicy());
+    private boolean verify(String test, Throwable exception) {
+        String msg = exception.getMessage();
+        if (msg != null) {
+            return msg.toLowerCase().contains(test.toLowerCase()) || msg.matches(test);
+        }
+        return false;
     }
 
-    public static Collection<ExceptionHandlerPolicy> getHandlerPolicies() {
-        return policies;
-    }
 }
