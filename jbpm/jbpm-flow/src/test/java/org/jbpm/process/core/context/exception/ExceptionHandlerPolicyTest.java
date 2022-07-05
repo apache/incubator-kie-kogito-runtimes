@@ -16,10 +16,12 @@
 package org.jbpm.process.core.context.exception;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
+import javax.ws.rs.core.Response;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -28,15 +30,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExceptionHandlerPolicyTest {
 
-    protected Map<String, ExceptionHandler> exceptionHandlers = new HashMap<String, ExceptionHandler>();
+    static private Collection<ExceptionHandlerPolicy> policies;
+
+    @BeforeAll
+    static void setup() {
+        policies = ExceptionHandlerPolicyFactory.getHandlerPolicies();
+    }
+
+    @Test
+    void testExceptionHandlerPolicies() {
+        assertEquals(4, policies.size());
+    }
 
     @ParameterizedTest
     @ValueSource(strings = { "java.lang.RuntimeException", "Unknown error", "Status code 400", "(.*)code 4[0-9]{2}" })
     void testExceptionHandlerPolicyFactory(String errorString) {
         Throwable exception = new IllegalStateException("Unknown error, status code 400");
-        Collection<ExceptionHandlerPolicy> policies = ExceptionHandlerPolicyFactory.getHandlerPolicies();
-        assertEquals(3, policies.size());
+        assertTrue(test(policies, errorString, exception));
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "HTTP:500", "500" })
+    void testWebExceptionHandlerPolicyFactory(String errorString) {
+        Throwable exception = new javax.ws.rs.WebApplicationException(Response.status(500).entity("Unknown error").build());
         assertTrue(test(policies, errorString, exception));
     }
 

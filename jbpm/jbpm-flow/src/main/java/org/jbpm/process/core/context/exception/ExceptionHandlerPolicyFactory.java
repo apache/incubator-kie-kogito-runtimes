@@ -29,6 +29,7 @@ public class ExceptionHandlerPolicyFactory {
         policies.add(new SubclassExceptionPolicy());
         policies.add(new RootCauseExceptionPolicy());
         policies.add(new MessageContentExceptionPolicy());
+        policies.add(new WebApplicationExceptionPolicy());
     }
 
     public static Collection<ExceptionHandlerPolicy> getHandlerPolicies() {
