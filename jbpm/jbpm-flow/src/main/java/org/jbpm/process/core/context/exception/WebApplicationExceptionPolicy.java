@@ -22,16 +22,20 @@ public class WebApplicationExceptionPolicy implements ExceptionHandlerPolicy {
     @Override
     public boolean test(String errorCode, Throwable exception) {
         boolean found = false;
-        if (exception instanceof WebApplicationException) {
-            int statusCode = ((WebApplicationException) exception).getResponse().getStatus();
-            String error[] = errorCode.split(":");
-            if (error.length == 1) {
-                // test if errorCode contains the http code, eg. "500"
-                found = Integer.parseInt(error[0]) == statusCode;
-            } else if (error.length == 2) {
-                // test if errorCode contains the http code, eg. "HTTP:500"
-                found = Integer.parseInt(error[1]) == statusCode;
+        try {
+            if (exception instanceof WebApplicationException) {
+                int statusCode = ((WebApplicationException) exception).getResponse().getStatus();
+                String error[] = errorCode.split(":");
+                if (error.length == 1) {
+                    // test if errorCode contains the http code, eg. "500"
+                    found = Integer.parseInt(error[0]) == statusCode;
+                } else if (error.length == 2) {
+                    // test if errorCode contains the http code, eg. "HTTP:500"
+                    found = Integer.parseInt(error[1]) == statusCode;
+                }
             }
+        } catch (NoClassDefFoundError error) {
+            // ignore CL error
         }
         return found;
     }
