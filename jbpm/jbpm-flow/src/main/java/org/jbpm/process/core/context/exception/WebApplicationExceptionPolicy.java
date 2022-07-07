@@ -17,27 +17,40 @@ package org.jbpm.process.core.context.exception;
 
 import javax.ws.rs.WebApplicationException;
 
-public class WebApplicationExceptionPolicy implements ExceptionHandlerPolicy {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class WebApplicationExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebApplicationExceptionPolicy.class);
 
     @Override
-    public boolean test(String errorCode, Throwable exception) {
+    protected boolean verify(String errorCode, Throwable exception) {
         boolean found = false;
         try {
             if (exception instanceof WebApplicationException) {
-                int statusCode = ((WebApplicationException) exception).getResponse().getStatus();
-                String error[] = errorCode.split(":");
-                if (error.length == 1) {
-                    // test if errorCode contains the http code, eg. "500"
-                    found = Integer.parseInt(error[0]) == statusCode;
-                } else if (error.length == 2) {
-                    // test if errorCode contains the http code, eg. "HTTP:500"
-                    found = Integer.parseInt(error[1]) == statusCode;
-                }
+                return checkStatusCode(errorCode, ((WebApplicationException) exception).getResponse().getStatus());
             }
         } catch (NoClassDefFoundError error) {
-            // ignore CL error
+            // ignore classloading errors, ie. in test cases
+            LOGGER.debug("Unable to check for WebApplicationException due to {}", error.getMessage());
         }
         return found;
     }
 
+    private boolean checkStatusCode(String errorCode, int statusCode) {
+        String[] error = errorCode.split(":");
+        try {
+            if (error.length == 1) {
+                // test if errorCode contains the http code, eg. "500"
+                return Integer.parseInt(error[0]) == statusCode;
+            } else if (error.length == 2) {
+                // test if errorCode contains the http code, eg. "HTTP:500"
+                return Integer.parseInt(error[1]) == statusCode;
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.debug("Unable to parse numeric error code from {}", errorCode);
+        }
+        return false;
+    }
 }

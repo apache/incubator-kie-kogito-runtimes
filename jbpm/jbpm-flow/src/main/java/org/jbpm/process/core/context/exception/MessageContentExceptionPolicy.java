@@ -15,24 +15,13 @@
  */
 package org.jbpm.process.core.context.exception;
 
-public class MessageContentExceptionPolicy implements ExceptionHandlerPolicy {
+public class MessageContentExceptionPolicy extends AbstractHierarchyExceptionPolicy {
     @Override
-    public boolean test(String test, Throwable exception) {
-        boolean found = verify(test, exception);
-        Throwable rootCause = exception.getCause();
-        while (!found && rootCause != null) {
-            found = verify(test, rootCause);
-            rootCause = rootCause.getCause();
-        }
-        return found;
-    }
-
-    private boolean verify(String test, Throwable exception) {
+    protected boolean verify(String errorCode, Throwable exception) {
         String msg = exception.getMessage();
         if (msg != null) {
-            return msg.toLowerCase().contains(test.toLowerCase()) || msg.matches(test);
+            return msg.toLowerCase().contains(errorCode.toLowerCase()) || msg.matches(errorCode);
         }
         return false;
     }
-
 }

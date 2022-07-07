@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExceptionHandlerPolicyTest {
@@ -54,6 +55,13 @@ class ExceptionHandlerPolicyTest {
     void testWebExceptionHandlerPolicyFactory(String errorString) {
         Throwable exception = new javax.ws.rs.WebApplicationException(Response.status(500).entity("Unknown error").build());
         assertTrue(test(policies, errorString, exception));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "HTTP:xyz", "xyz" })
+    void testWebExceptionHandlerPolicyFactoryIncorrectFormat(String errorString) {
+        Throwable exception = new javax.ws.rs.WebApplicationException(Response.status(500).entity("Unknown error").build());
+        assertFalse(test(policies, errorString, exception));
     }
 
     private boolean test(Collection<ExceptionHandlerPolicy> policies, String className, Throwable exception) {
