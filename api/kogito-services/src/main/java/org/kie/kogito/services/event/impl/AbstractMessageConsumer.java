@@ -18,6 +18,7 @@ package org.kie.kogito.services.event.impl;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -31,7 +32,9 @@ import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.event.SubscriptionInfo.SubscriptionInfoBuilder;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.process.Process;
+import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
+import org.kie.kogito.services.event.EventDispatcherListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +44,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
 
     private String trigger;
     private EventDispatcher<M> eventDispatcher;
+    private final CopyOnWriteArrayList<EventDispatcherListener> dispatcherListeners = new CopyOnWriteArrayList<>();
 
     // in general we should favor the non-empty constructor
     // but there is an issue with Quarkus https://github.com/quarkusio/quarkus/issues/2949#issuecomment-513017781
@@ -82,6 +86,16 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         logger.info("Consumer for {} started", trigger);
     }
 
+    public String getTriggerName() {
+        return trigger;
+    }
+
+    public void registerDispatcherListener(final EventDispatcherListener dispatcherListener) {
+        if (dispatcherListener != null) {
+            this.dispatcherListeners.add(dispatcherListener);
+        }
+    }
+
     protected UnaryOperator<Object> getDataResolver(boolean useCloudEvents) {
         return useCloudEvents ? AbstractMessageConsumer::cloudEventResolver : AbstractMessageConsumer::eventResolver;
     }
@@ -96,8 +110,30 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
 
     private CompletionStage<?> consume(Object payload) {
         logger.trace("Received {} for trigger {}", payload, trigger);
+        dispatcherListenerOnItem(payload);
         return eventDispatcher.dispatch(trigger, payload)
-                .thenAccept(v -> logger.trace("Consume completed {} for trigger {}", payload, trigger));
+            .whenComplete(this::dispatcherListenerOnComplete)
+            .thenAccept(v -> logger.trace("Consume completed {} for trigger {}", payload, trigger));
+    }
+
+    private void dispatcherListenerOnItem(final Object payload) {
+        dispatcherListeners.forEach(listener -> {
+            try {
+                listener.onItem(payload);
+            } catch (final Exception ex) {
+                logger.error("Fail on item dispatcher listener, trigger {}", trigger, ex);
+            }
+        });
+    }
+
+    private void dispatcherListenerOnComplete(final ProcessInstance<?> processInstance, final Throwable throwable) {
+        dispatcherListeners.forEach(listener -> {
+            try {
+                listener.onComplete(processInstance, throwable);
+            } catch (final Exception ex) {
+                logger.error("Fail on complete dispatcher listener, trigger {}", trigger, ex);
+            }
+        });
     }
 
     protected Optional<Function<Object, M>> getModelConverter() {
