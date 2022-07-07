@@ -26,28 +26,23 @@ public class WebApplicationExceptionPolicy extends AbstractHierarchyExceptionPol
 
     @Override
     protected boolean verify(String errorCode, Throwable exception) {
-        boolean found = false;
-        try {
-            if (exception instanceof WebApplicationException) {
-                return checkStatusCode(errorCode, ((WebApplicationException) exception).getResponse().getStatus());
+        if (exception instanceof WebApplicationException) {
+            int statusCode = ((WebApplicationException) exception).getResponse().getStatus();
+            String[] error = errorCode.split(":");
+            if (error.length == 1) {
+                // test if errorCode contains the http code, eg. "500"
+                return checkStatusCode(error[0], statusCode);
+            } else if (error.length == 2) {
+                // test if errorCode contains the http code, eg. "HTTP:500"
+                return checkStatusCode(error[1], statusCode);
             }
-        } catch (NoClassDefFoundError error) {
-            // ignore classloading errors, ie. in test cases
-            LOGGER.debug("Unable to check for WebApplicationException due to {}", error.getMessage());
         }
-        return found;
+        return false;
     }
 
     private boolean checkStatusCode(String errorCode, int statusCode) {
-        String[] error = errorCode.split(":");
         try {
-            if (error.length == 1) {
-                // test if errorCode contains the http code, eg. "500"
-                return Integer.parseInt(error[0]) == statusCode;
-            } else if (error.length == 2) {
-                // test if errorCode contains the http code, eg. "HTTP:500"
-                return Integer.parseInt(error[1]) == statusCode;
-            }
+            return Integer.parseInt(errorCode) == statusCode;
         } catch (NumberFormatException e) {
             LOGGER.debug("Unable to parse numeric error code from {}", errorCode);
         }

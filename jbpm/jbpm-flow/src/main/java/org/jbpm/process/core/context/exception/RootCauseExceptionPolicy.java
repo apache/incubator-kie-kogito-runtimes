@@ -16,6 +16,12 @@
 package org.jbpm.process.core.context.exception;
 
 public class RootCauseExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+
+    @Override
+    protected boolean verifyRoot(String errorCode, Throwable exception) {
+        return false;
+    }
+
     @Override
     protected boolean verify(String errorCode, Throwable exception) {
         return errorCode.equals(exception.getClass().getName());
