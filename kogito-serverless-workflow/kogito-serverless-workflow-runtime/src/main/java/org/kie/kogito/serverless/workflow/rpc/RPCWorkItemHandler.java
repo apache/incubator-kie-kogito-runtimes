@@ -32,6 +32,7 @@ import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
+import com.google.protobuf.Descriptors.GenericDescriptor;
 import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.google.protobuf.Descriptors.ServiceDescriptor;
 import com.google.protobuf.DynamicMessage;
@@ -106,7 +107,18 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
     }
 
     public static JsonNode getObject(DynamicMessage message) {
-        return JsonObjectUtils.fromValue(message.getAllFields().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getJsonName(), Map.Entry::getValue)));
+        return JsonObjectUtils.fromValue(message.getAllFields().entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getJsonName(), RPCWorkItemHandler::getValue)));
+    }
+
+    private static Object getValue(Map.Entry<FieldDescriptor, Object> e) {
+        Object value = e.getValue();
+        if (value instanceof GenericDescriptor) {
+            return ((GenericDescriptor) value).getName();
+        } else if (value instanceof DynamicMessage) {
+            return getObject((DynamicMessage) value);
+        } else {
+            return value;
+        }
     }
 
     private static MethodType getMethodType(MethodDescriptor methodDesc) {
