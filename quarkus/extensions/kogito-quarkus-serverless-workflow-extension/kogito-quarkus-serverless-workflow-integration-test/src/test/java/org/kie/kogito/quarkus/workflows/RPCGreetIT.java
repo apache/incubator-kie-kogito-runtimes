@@ -23,6 +23,7 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTestResource(GrpcServerPortResource.class)
 @QuarkusIntegrationTest
@@ -36,7 +37,10 @@ class RPCGreetIT {
                 .post("/rpcgreet")
                 .then()
                 .statusCode(201)
-                .body("workflowdata.message", containsString("Hello"));
+                .body("workflowdata.message", containsString("Hello"))
+                .body("workflowdata.state", is("SUCCESS"))
+                .body("workflowdata.innerMessage.inLong", is(23));
+
     }
 
     @Test

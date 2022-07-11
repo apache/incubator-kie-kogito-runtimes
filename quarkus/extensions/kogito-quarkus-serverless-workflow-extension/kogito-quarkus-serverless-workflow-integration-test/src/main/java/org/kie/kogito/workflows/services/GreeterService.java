@@ -17,7 +17,9 @@ package org.kie.kogito.workflows.services;
 
 import org.kie.kogito.examples.sw.greeting.Greeter;
 import org.kie.kogito.examples.sw.greeting.Greeting.HelloReply;
+import org.kie.kogito.examples.sw.greeting.Greeting.HelloReply.State;
 import org.kie.kogito.examples.sw.greeting.Greeting.HelloRequest;
+import org.kie.kogito.examples.sw.greeting.Greeting.InnerMessage;
 
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
@@ -35,6 +37,6 @@ public class GreeterService implements Greeter {
             default:
                 message = "Hello from gRPC service " + request.getName();
         }
-        return Uni.createFrom().item(() -> HelloReply.newBuilder().setMessage(message).build());
+        return Uni.createFrom().item(() -> HelloReply.newBuilder().setMessage(message).setState(State.SUCCESS).setInnerMessage(InnerMessage.newBuilder().setInLong(23).build()).build());
     }
 }

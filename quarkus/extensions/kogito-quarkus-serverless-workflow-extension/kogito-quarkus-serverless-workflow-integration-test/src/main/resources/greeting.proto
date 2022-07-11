@@ -18,5 +18,19 @@ message HelloRequest {
 
 // The response message containing the greetings
 message HelloReply {
+  enum State {
+    UNKNOWN = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+  }
   string message = 1;
+  State state = 2;
+  InnerMessage innerMessage = 3;
+}
+
+
+message InnerMessage {
+  string inStr = 1;
+  int64 inLong = 2;
+  double inDouble = 3;
 }
