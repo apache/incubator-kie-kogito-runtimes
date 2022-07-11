@@ -48,6 +48,11 @@
         <version>${version.org.codehaus.groovy}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${version.org.kafka.springboot}</version>
+      </dependency>
+      <dependency>
         <groupId>org.spockframework</groupId>
         <artifactId>spock-core</artifactId>
         <version>${version.org.spockframework}</version>
