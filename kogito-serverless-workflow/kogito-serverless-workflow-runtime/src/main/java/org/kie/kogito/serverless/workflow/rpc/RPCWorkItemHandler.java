@@ -21,15 +21,14 @@ import java.util.Objects;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
 import com.google.protobuf.DescriptorProtos.MethodDescriptorProto;
-import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.DescriptorValidationException;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.Descriptors.MethodDescriptor;
 import com.google.protobuf.Descriptors.ServiceDescriptor;
 import com.google.protobuf.DynamicMessage;
-import com.google.protobuf.DynamicMessage.Builder;
 import com.google.protobuf.Message;
 
 import io.grpc.CallOptions;
@@ -52,20 +51,20 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         String file = (String) metadata.get(FILE_PROP);
         String service = (String) metadata.get(SERVICE_PROP);
         String method = (String) metadata.get(METHOD_PROP);
-        return RPCConverterFactory.get()
-                .getJsonNode(doCall(FileDescriptorHolder.get().descriptor().orElseThrow(() -> new IllegalStateException("Descriptor " + FileDescriptorHolder.DESCRIPTOR_PATH + " is not present")),
-                        parameters, getChannel(file, service), file, service, method));
+        return doCall(FileDescriptorHolder.get().descriptor().orElseThrow(() -> new IllegalStateException("Descriptor " + FileDescriptorHolder.DESCRIPTOR_PATH + " is not present")),
+                parameters, getChannel(file, service), file, service, method);
     }
 
     protected abstract Channel getChannel(String file, String service);
 
-    private static Message doCall(FileDescriptorSet fdSet, Map<String, Object> parameters, Channel channel, String fileName, String serviceName, String methodName) {
+    private static JsonNode doCall(FileDescriptorSet fdSet, Map<String, Object> parameters, Channel channel, String fileName, String serviceName, String methodName) {
         try {
+            RPCConverter converter = RPCConverterFactory.get();
             FileDescriptor descriptor = FileDescriptor.buildFrom(fdSet.getFileList().stream().filter(f -> f.getName().equals(fileName))
                     .findFirst().orElseThrow(() -> new IllegalArgumentException("Cannot find file name " + fileName)), new FileDescriptor[0], true);
             ServiceDescriptor serviceDesc = Objects.requireNonNull(descriptor.findServiceByName(serviceName), "Cannot find service name " + serviceName);
             MethodDescriptor methodDesc = Objects.requireNonNull(serviceDesc.findMethodByName(methodName), "Cannot find method name " + methodName);
-            Message message = buildMessage(methodDesc, parameters);
+            Message message = converter.buildMessage(parameters, DynamicMessage.newBuilder(methodDesc.getInputType())).build();
             ClientCall<Message, Message> call = channel.newCall(io.grpc.MethodDescriptor.<Message, Message> newBuilder()
                     .setType(getMethodType(methodDesc))
                     .setFullMethodName(io.grpc.MethodDescriptor.generateFullMethodName(
@@ -75,18 +74,11 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
                     .setResponseMarshaller(ProtoUtils.marshaller(
                             DynamicMessage.newBuilder(methodDesc.getOutputType()).buildPartial()))
                     .build(), CallOptions.DEFAULT.withWaitForReady());
-            return ClientCalls.blockingUnaryCall(call, message);
+            return converter.getJsonNode(ClientCalls.blockingUnaryCall(call, message));
 
         } catch (DescriptorValidationException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private static Message buildMessage(MethodDescriptor methodDesc, Map<String, Object> parameters) {
-        Descriptor descriptor = methodDesc.getInputType();
-        Builder builder = DynamicMessage.newBuilder(descriptor);
-        RPCConverterFactory.get().buildMessage(parameters, builder);
-        return builder.build();
     }
 
     private static MethodType getMethodType(MethodDescriptor methodDesc) {

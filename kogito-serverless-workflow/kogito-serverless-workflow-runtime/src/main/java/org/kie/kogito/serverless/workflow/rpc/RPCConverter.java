@@ -22,7 +22,7 @@ import com.google.protobuf.Message;
 
 public interface RPCConverter {
 
-    void buildMessage(Map<String, Object> parameters, Message.Builder builder);
+    Message.Builder buildMessage(Map<String, Object> parameters, Message.Builder builder);
 
     JsonNode getJsonNode(Message message);
 }

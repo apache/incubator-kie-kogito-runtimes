@@ -28,9 +28,10 @@ import com.google.protobuf.util.JsonFormat;
 
 class ProtobufUtilRPCConverter implements RPCConverter {
     @Override
-    public void buildMessage(Map<String, Object> parameters, Builder builder) {
+    public Builder buildMessage(Map<String, Object> parameters, Builder builder) {
         try {
             JsonFormat.parser().merge(ObjectMapperFactory.get().writeValueAsString(parameters), builder);
+            return builder;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
