@@ -66,7 +66,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
             ServiceDescriptor serviceDesc = Objects.requireNonNull(descriptor.findServiceByName(serviceName), "Cannot find service name " + serviceName);
             MethodDescriptor methodDesc = Objects.requireNonNull(serviceDesc.findMethodByName(methodName), "Cannot find method name " + methodName);
             Message message = buildMessage(methodDesc, parameters);
-            ClientCall<Message, DynamicMessage> call = channel.newCall(io.grpc.MethodDescriptor.<Message, DynamicMessage> newBuilder()
+            ClientCall<Message, Message> call = channel.newCall(io.grpc.MethodDescriptor.<Message, Message> newBuilder()
                     .setType(getMethodType(methodDesc))
                     .setFullMethodName(io.grpc.MethodDescriptor.generateFullMethodName(
                             serviceDesc.getFullName(), methodDesc.getName()))

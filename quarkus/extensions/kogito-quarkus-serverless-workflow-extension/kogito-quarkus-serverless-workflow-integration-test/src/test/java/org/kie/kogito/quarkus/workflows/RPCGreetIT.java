@@ -49,12 +49,12 @@ class RPCGreetIT {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"workflowdata\" : {\"name\" : \"Javierito\", \"language\":\"Spanish\"}, \"unknown\": true}").when()
+                .body("{\"workflowdata\" : {\"name\" : \"Javierito\", \"language\":\"Spanish\", \"unknown\": true}}").when()
                 .post("/rpcgreet")
                 .then()
                 .statusCode(201)
                 .body("workflowdata.message", containsString("Saludos"))
-                .body("workflow.state", nullValue());
+                .body("workflowdata.state", nullValue());
     }
 
     @Test
