@@ -149,6 +149,17 @@ class PMMLRestResourceGeneratorTest {
     }
 
     @Test
+    void setPredictionFileName() {
+        assertTrue(TEMPLATE.getFieldByName("FILE_NAME").isPresent());
+        final FieldDeclaration modelName = TEMPLATE.getFieldByName("FILE_NAME").get();
+        assertFalse(modelName.getVariable(0).getInitializer().isPresent());
+        pmmlRestResourceGenerator.setPredictionFileName(TEMPLATE);
+        assertTrue(modelName.getVariable(0).getInitializer().isPresent());
+        assertEquals(KIE_PMML_MODEL.getFileName(),
+                modelName.getVariable(0).getInitializer().get().asStringLiteralExpr().asString());
+    }
+
+    @Test
     void setPredictionModelName() {
         assertTrue(TEMPLATE.getFieldByName("MODEL_NAME").isPresent());
         final FieldDeclaration modelName = TEMPLATE.getFieldByName("MODEL_NAME").get();

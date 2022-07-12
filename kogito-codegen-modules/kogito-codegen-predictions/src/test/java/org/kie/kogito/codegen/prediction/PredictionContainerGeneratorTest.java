@@ -84,7 +84,7 @@ class PredictionContainerGeneratorTest {
         Path path = getPath();
         String modelPath = "path/to/" + resourceName;
         List<KiePMMLModel> kiePmmlModels =
-                IntStream.range(0, 3).mapToObj(i -> getKiePMMLModelInternal(resourceName + "_Model-" + i)).collect(Collectors.toList());
+                IntStream.range(0, 3).mapToObj(i -> getKiePMMLModelInternal(resourceName, resourceName + "_Model-" + i)).collect(Collectors.toList());
         return new PMMLResource(kiePmmlModels, path, modelPath);
     }
 

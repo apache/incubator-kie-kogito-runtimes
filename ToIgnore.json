@@ -1,0 +1,1015 @@
+{
+  "header": {
+    "type": "DMN",
+    "executionId": "execution-8",
+    "startTimestamp": 1638451075942,
+    "endTimestamp": 1638453118851,
+    "duration": 2042909,
+    "resourceId": {
+      "serviceUrl": "serviceUrl-8",
+      "modelNamespace": "modelNamespace-8",
+      "modelName": "modelName-8"
+    },
+    "messages": [
+      {
+        "level": "WARNING",
+        "category": "DMN",
+        "type": "type-9",
+        "sourceId": "sourceId-9",
+        "text": "text-9",
+        "exception": {
+          "className": "className-9",
+          "message": "message-9"
+        },
+        "feelEvent": {
+          "severity": "WARN",
+          "message": "message-9",
+          "line": 9,
+          "column": 9,
+          "sourceException": {
+            "className": "className-9",
+            "message": "message-9"
+          }
+        }
+      },
+      {
+        "level": "ERROR",
+        "category": "DMN",
+        "type": "type-10",
+        "sourceId": "sourceId-10",
+        "text": "text-10",
+        "exception": {
+          "className": "className-10",
+          "message": "message-10"
+        },
+        "feelEvent": {
+          "severity": "ERROR",
+          "message": "message-10",
+          "line": 10,
+          "column": 10,
+          "sourceException": {
+            "className": "className-10",
+            "message": "message-10"
+          }
+        }
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "id-0",
+      "name": "name-0",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-0",
+        "value": null
+      },
+      "messages": [
+        {
+          "level": "INFO",
+          "category": "DMN",
+          "type": "type-1",
+          "sourceId": "sourceId-1",
+          "text": "text-1",
+          "exception": {
+            "className": "className-1",
+            "message": "message-1"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-1",
+            "line": 1,
+            "column": 1,
+            "sourceException": {
+              "className": "className-1",
+              "message": "message-1"
+            }
+          }
+        },
+        {
+          "level": "ERROR",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "id-1",
+      "name": "name-1",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-1",
+        "value": null
+      },
+      "messages": [
+        {
+          "level": "ERROR",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        },
+        {
+          "level": "INFO",
+          "category": "DMN",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "ERROR",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "id-2",
+      "name": "name-2",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-2",
+        "value": null
+      },
+      "messages": [
+        {
+          "level": "ERROR",
+          "category": "DMN",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "TRACE",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        },
+        {
+          "level": "ERROR",
+          "category": "INTERNAL",
+          "type": "type-4",
+          "sourceId": "sourceId-4",
+          "text": "text-4",
+          "exception": {
+            "className": "className-4",
+            "message": "message-4"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-4",
+            "line": 4,
+            "column": 4,
+            "sourceException": {
+              "className": "className-4",
+              "message": "message-4"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "id-0",
+      "name": "name-0",
+      "status": "status-0",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-0",
+        "value": null
+      },
+      "inputs": {
+        "type-0": {
+          "kind": "UNIT",
+          "type": "type-0",
+          "value": null
+        }
+      },
+      "messages": [
+        {
+          "level": "ERROR",
+          "category": "DMN",
+          "type": "type-1",
+          "sourceId": "sourceId-1",
+          "text": "text-1",
+          "exception": {
+            "className": "className-1",
+            "message": "message-1"
+          },
+          "feelEvent": {
+            "severity": "WARN",
+            "message": "message-1",
+            "line": 1,
+            "column": 1,
+            "sourceException": {
+              "className": "className-1",
+              "message": "message-1"
+            }
+          }
+        },
+        {
+          "level": "INFO",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "TRACE",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "id-1",
+      "name": "name-1",
+      "status": "status-1",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-1",
+        "value": null
+      },
+      "inputs": {
+        "type-1": {
+          "kind": "UNIT",
+          "type": "type-1",
+          "value": null
+        }
+      },
+      "messages": [
+        {
+          "level": "WARNING",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        },
+        {
+          "level": "WARNING",
+          "category": "DMN",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "TRACE",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "id-2",
+      "name": "name-2",
+      "status": "status-2",
+      "value": {
+        "kind": "UNIT",
+        "type": "type-2",
+        "value": null
+      },
+      "inputs": {
+        "type-2": {
+          "kind": "UNIT",
+          "type": "type-2",
+          "value": null
+        }
+      },
+      "messages": [
+        {
+          "level": "WARNING",
+          "category": "INTERNAL",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "ERROR",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        },
+        {
+          "level": "ERROR",
+          "category": "INTERNAL",
+          "type": "type-4",
+          "sourceId": "sourceId-4",
+          "text": "text-4",
+          "exception": {
+            "className": "className-4",
+            "message": "message-4"
+          },
+          "feelEvent": {
+            "severity": "WARN",
+            "message": "message-4",
+            "line": 4,
+            "column": 4,
+            "sourceException": {
+              "className": "className-4",
+              "message": "message-4"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "executionSteps": [
+    {
+      "type": "DMN_DECISION",
+      "duration": 1725682150640887669,
+      "name": "name-0",
+      "result": 0,
+      "messages": [
+        {
+          "level": "ERROR",
+          "category": "DMN",
+          "type": "type-1",
+          "sourceId": "sourceId-1",
+          "text": "text-1",
+          "exception": {
+            "className": "className-1",
+            "message": "message-1"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-1",
+            "line": 1,
+            "column": 1,
+            "sourceException": {
+              "className": "className-1",
+              "message": "message-1"
+            }
+          }
+        },
+        {
+          "level": "ERROR",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "WARN",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        }
+      ],
+      "additionalData": {
+        "key": "value"
+      },
+      "children": [
+        {
+          "type": "DMN_CONTEXT_ENTRY",
+          "duration": 2368963194327491177,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "ERROR",
+              "category": "DMN",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "ERROR",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "WARNING",
+              "category": "DMN",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "WARN",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "INTERNAL",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "INFO",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        },
+        {
+          "type": "DMN_DECISION_SERVICE",
+          "duration": 5211110204006601626,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "WARNING",
+              "category": "DMN",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "ERROR",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "INFO",
+              "category": "INTERNAL",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "WARN",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "INFO",
+              "category": "DMN",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "INFO",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        }
+      ]
+    },
+    {
+      "type": "DMN_BKM_INVOCATION",
+      "duration": -183688956576178518,
+      "name": "name-1",
+      "result": 1,
+      "messages": [
+        {
+          "level": "WARNING",
+          "category": "INTERNAL",
+          "type": "type-2",
+          "sourceId": "sourceId-2",
+          "text": "text-2",
+          "exception": {
+            "className": "className-2",
+            "message": "message-2"
+          },
+          "feelEvent": {
+            "severity": "ERROR",
+            "message": "message-2",
+            "line": 2,
+            "column": 2,
+            "sourceException": {
+              "className": "className-2",
+              "message": "message-2"
+            }
+          }
+        },
+        {
+          "level": "WARNING",
+          "category": "INTERNAL",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "TRACE",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        }
+      ],
+      "additionalData": {
+        "key": "value"
+      },
+      "children": [
+        {
+          "type": "DMN_DECISION_SERVICE",
+          "duration": 4136641662407560929,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "ERROR",
+              "category": "DMN",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "TRACE",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "INTERNAL",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "ERROR",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "INFO",
+              "category": "INTERNAL",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "TRACE",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        },
+        {
+          "type": "DMN_BKM_INVOCATION",
+          "duration": 310505858213749718,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "WARNING",
+              "category": "INTERNAL",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "ERROR",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "DMN",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "WARN",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "DMN",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "TRACE",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        }
+      ]
+    },
+    {
+      "type": "DMN_BKM_INVOCATION",
+      "duration": -8408213041826717632,
+      "name": "name-2",
+      "result": 2,
+      "messages": [
+        {
+          "level": "ERROR",
+          "category": "DMN",
+          "type": "type-3",
+          "sourceId": "sourceId-3",
+          "text": "text-3",
+          "exception": {
+            "className": "className-3",
+            "message": "message-3"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-3",
+            "line": 3,
+            "column": 3,
+            "sourceException": {
+              "className": "className-3",
+              "message": "message-3"
+            }
+          }
+        },
+        {
+          "level": "INFO",
+          "category": "INTERNAL",
+          "type": "type-4",
+          "sourceId": "sourceId-4",
+          "text": "text-4",
+          "exception": {
+            "className": "className-4",
+            "message": "message-4"
+          },
+          "feelEvent": {
+            "severity": "INFO",
+            "message": "message-4",
+            "line": 4,
+            "column": 4,
+            "sourceException": {
+              "className": "className-4",
+              "message": "message-4"
+            }
+          }
+        }
+      ],
+      "additionalData": {
+        "key": "value"
+      },
+      "children": [
+        {
+          "type": "DMN_DECISION",
+          "duration": -5577890020705107841,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "INFO",
+              "category": "INTERNAL",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "INFO",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "WARNING",
+              "category": "DMN",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "TRACE",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "INTERNAL",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "INFO",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        },
+        {
+          "type": "DMN_BKM_EVALUATION",
+          "duration": 8650425866904231951,
+          "name": "children-name",
+          "result": false,
+          "messages": [
+            {
+              "level": "WARNING",
+              "category": "INTERNAL",
+              "type": "type-0",
+              "sourceId": "sourceId-0",
+              "text": "text-0",
+              "exception": {
+                "className": "className-0",
+                "message": "message-0"
+              },
+              "feelEvent": {
+                "severity": "WARN",
+                "message": "message-0",
+                "line": 0,
+                "column": 0,
+                "sourceException": {
+                  "className": "className-0",
+                  "message": "message-0"
+                }
+              }
+            },
+            {
+              "level": "ERROR",
+              "category": "DMN",
+              "type": "type-1",
+              "sourceId": "sourceId-1",
+              "text": "text-1",
+              "exception": {
+                "className": "className-1",
+                "message": "message-1"
+              },
+              "feelEvent": {
+                "severity": "INFO",
+                "message": "message-1",
+                "line": 1,
+                "column": 1,
+                "sourceException": {
+                  "className": "className-1",
+                  "message": "message-1"
+                }
+              }
+            },
+            {
+              "level": "WARNING",
+              "category": "DMN",
+              "type": "type-2",
+              "sourceId": "sourceId-2",
+              "text": "text-2",
+              "exception": {
+                "className": "className-2",
+                "message": "message-2"
+              },
+              "feelEvent": {
+                "severity": "TRACE",
+                "message": "message-2",
+                "line": 2,
+                "column": 2,
+                "sourceException": {
+                  "className": "className-2",
+                  "message": "message-2"
+                }
+              }
+            }
+          ],
+          "additionalData": {
+            "c-key": "c-value"
+          }
+        }
+      ]
+    }
+  ]
+}

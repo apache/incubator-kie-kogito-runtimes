@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kie.api.pmml.PMML4Result;
-import org.kie.pmml.evaluator.assembler.PMMLWeaverService;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluator;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinder;
 import org.kie.pmml.evaluator.core.executor.PMMLModelEvaluatorFinderImpl;
-import org.kie.pmml.evaluator.core.service.PMMLRuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,15 +69,4 @@ public class PredictionsAssetsProcessor {
         return new NativeImageResourceBuildItem("META-INF/services/org.kie.pmml.api.runtime.PMMLRuntime");
     }
 
-    @BuildStep
-    public ReflectiveClassBuildItem pmmlRuntimeServiceReflectiveClass() {
-        logger.debug("pmmlRuntimeServiceReflectiveClass()");
-        return new ReflectiveClassBuildItem(true, true, PMMLRuntimeService.class);
-    }
-
-    @BuildStep
-    public ReflectiveClassBuildItem pmmlWeaverServiceReflectiveClass() {
-        logger.debug("pmmlWeaverServiceReflectiveClass()");
-        return new ReflectiveClassBuildItem(true, true, PMMLWeaverService.class);
-    }
 }

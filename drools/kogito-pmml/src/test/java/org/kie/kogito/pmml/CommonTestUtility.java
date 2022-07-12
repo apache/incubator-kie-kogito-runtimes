@@ -58,24 +58,26 @@ public class CommonTestUtility {
     }
 
     public static KiePMMLModel getKiePMMLModelInternal() {
+        String fileName = "FILE_NAME";
         String modelName = "MODEL_NAME";
-        return getKiePMMLModelInternal(modelName, Collections.emptyList(), Collections.emptyList());
+        return getKiePMMLModelInternal(fileName, modelName, Collections.emptyList(), Collections.emptyList());
     }
 
-    public static KiePMMLModel getKiePMMLModelInternal(String modelName) {
-        return getKiePMMLModelInternal(modelName, Collections.emptyList(), Collections.emptyList());
+    public static KiePMMLModel getKiePMMLModelInternal(String fileName, String modelName) {
+        return getKiePMMLModelInternal(fileName, modelName, Collections.emptyList(), Collections.emptyList());
     }
 
     public static KiePMMLModel getKiePMMLModelInternal(final List<MiningField> miningFields, final List<OutputField> outputFields) {
+        String fileName = "FILE_NAME";
         String modelName = "MODEL_NAME";
-        return getKiePMMLModelInternal(modelName, miningFields, outputFields);
+        return getKiePMMLModelInternal(fileName, modelName, miningFields, outputFields);
     }
 
-    public static KiePMMLModel getKiePMMLModelInternal(String modelName, final List<MiningField> miningFieldsParam, final List<OutputField> outputFieldsParam) {
-        return new KiePMMLModel(modelName, Collections.emptyList()) {
+    public static KiePMMLModel getKiePMMLModelInternal(String fileName, String modelName, final List<MiningField> miningFieldsParam, final List<OutputField> outputFieldsParam) {
+        return new KiePMMLModel(fileName, modelName, Collections.emptyList()) {
 
             @Override
-            public Object evaluate(Object knowledgeBase, Map<String, Object> requestData, PMMLContext context) {
+            public Object evaluate(Map<String, Object> requestData, PMMLContext context) {
                 return null;
             }
 

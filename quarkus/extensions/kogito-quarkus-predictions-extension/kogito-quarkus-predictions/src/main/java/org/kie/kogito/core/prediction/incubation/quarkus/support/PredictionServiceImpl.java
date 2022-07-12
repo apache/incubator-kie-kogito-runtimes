@@ -49,7 +49,7 @@ public class PredictionServiceImpl implements PredictionService {
                     "Not a valid prediction id " + predictionId.toLocalId());
         }
         PredictionModel predictionModel =
-                predictionModels.getPredictionModel(localPredictionId.name());
+                predictionModels.getPredictionModel(localPredictionId.getFileName(), localPredictionId.name());
 
         PMMLContext ctx = predictionModel.newContext(inputContext.as(MapDataContext.class).toMap());
 

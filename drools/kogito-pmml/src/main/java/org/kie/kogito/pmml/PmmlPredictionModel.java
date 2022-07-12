@@ -32,15 +32,15 @@ public class PmmlPredictionModel implements PredictionModel {
     private final PMMLRuntime pmmlRuntime;
     private final PMMLModel pmmlModel;
 
-    public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String modelName) {
+    public PmmlPredictionModel(PMMLRuntime pmmlRuntime, String fileName, String modelName) {
         this.pmmlRuntime = pmmlRuntime;
-        this.pmmlModel = pmmlRuntime.getPMMLModel(modelName).orElseThrow(() -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
+        this.pmmlModel = pmmlRuntime.getPMMLModel(fileName, modelName).orElseThrow(() -> new IllegalStateException("PMML model '" + modelName + "' not found in the inherent PMMLRuntime."));
     }
 
     @Override
     public PMMLContext newContext(Map<String, Object> variables) {
         final PMMLRequestData pmmlRequestData = getPMMLRequestData(pmmlModel.getName(), variables);
-        return new PMMLContextImpl(pmmlRequestData);
+        return new PMMLContextImpl(pmmlRequestData, pmmlModel.getFileName(), pmmlRuntime.getMemoryClassLoader());
     }
 
     @Override

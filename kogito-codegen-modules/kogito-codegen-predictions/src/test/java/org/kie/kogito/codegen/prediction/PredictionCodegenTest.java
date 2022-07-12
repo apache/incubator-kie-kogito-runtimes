@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.codegen.prediction;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -24,9 +26,11 @@ import java.util.Optional;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.kie.efesto.common.api.io.IndexFile;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
@@ -41,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getIndexFile;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,6 +68,19 @@ class PredictionCodegenTest {
     private static final String MOCK = "mock";
     private static final String NESTED_MOCK = "nestedMock";
     private static final String PMML = "PMML";
+
+    @BeforeEach
+    public void init() {
+        Optional<IndexFile> alreadyExisting = getIndexFile("pmml");
+        alreadyExisting.ifPresent(indexFile -> {
+            try {
+                System.out.println("Deleting: " + indexFile);
+                Files.deleteIfExists(indexFile.toPath());
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+    }
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
@@ -116,6 +134,7 @@ class PredictionCodegenTest {
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void generateAllFilesMultiple(KogitoBuildContext.Builder contextBuilder) {
+
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MULTIPLE_FULL_SOURCE.toFile()));
@@ -208,7 +227,6 @@ class PredictionCodegenTest {
 
         HasSourcesMap smMock = (HasSourcesMap) mock;
         when(smMock.getSourcesMap()).thenReturn(Collections.emptyMap());
-        when(smMock.getRulesSourcesMap()).thenReturn(null);
 
         List<KiePMMLModel> nestedModelsMock = Collections.singletonList(buildInvalidMockedModel(name));
         HasNestedModels nmMock = (HasNestedModels) mock;

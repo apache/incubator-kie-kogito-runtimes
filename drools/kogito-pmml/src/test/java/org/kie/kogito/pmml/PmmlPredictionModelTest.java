@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
 import org.kie.api.pmml.ParameterInfo;
+import org.kie.memorycompiler.KieMemoryCompiler;
 import org.kie.pmml.api.models.MiningField;
 import org.kie.pmml.api.models.OutputField;
 import org.kie.pmml.api.models.PMMLModel;
@@ -43,15 +44,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PmmlPredictionModelTest {
 
     private static final PMML4Result PMML_4_RESULT = new PMML4Result();
+
+    private final static String FILE_NAME = "FILE_NAME";
     private final static String MODEL_NAME = "MODEL_NAME";
-    private final static PMMLModel PMML_MODEL = new PMMLModelInternal(MODEL_NAME);
+    private final static PMMLModel PMML_MODEL = new PMMLModelInternal(FILE_NAME, MODEL_NAME);
     private final static PMMLRuntime PMML_RUNTIME = getPMMLRuntime();
 
     private static PmmlPredictionModel pmmlPredictionModel;
 
     @BeforeAll
     public static void setup() {
-        pmmlPredictionModel = new PmmlPredictionModel(PMML_RUNTIME, MODEL_NAME);
+        pmmlPredictionModel = new PmmlPredictionModel(PMML_RUNTIME, FILE_NAME, MODEL_NAME);
         assertNotNull(pmmlPredictionModel);
     }
 
@@ -94,6 +97,8 @@ class PmmlPredictionModelTest {
     }
 
     private static PMMLRuntime getPMMLRuntime() {
+        final KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
+                new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
         return new PMMLRuntime() {
 
             private final List<PMMLModel> models = Collections.singletonList(PMML_MODEL);
@@ -105,23 +110,15 @@ class PmmlPredictionModelTest {
             }
 
             @Override
-            public Optional<PMMLModel> getPMMLModel(String s) {
-                return models.stream().filter(model -> model.getName().equals(s)).findFirst();
+            public Optional<PMMLModel> getPMMLModel(String fileName, String modelName) {
+                return models.stream().filter(model -> model.getFileName().equals(fileName) &&
+                        model.getName().equals(modelName))
+                        .findFirst();
             }
 
             @Override
-            public void addPMMLListener(PMMLListener toAdd) {
-                pmmlListeners.add(toAdd);
-            }
-
-            @Override
-            public void removePMMLListener(PMMLListener toRemove) {
-                pmmlListeners.remove(toRemove);
-            }
-
-            @Override
-            public Set<PMMLListener> getPMMLListeners() {
-                return Collections.unmodifiableSet(pmmlListeners);
+            public KieMemoryCompiler.MemoryCompilerClassLoader getMemoryClassLoader() {
+                return memoryCompilerClassLoader;
             }
 
             @Override
@@ -134,12 +131,19 @@ class PmmlPredictionModelTest {
 
     private static class PMMLModelInternal implements PMMLModel {
 
+        private final String fileName;
         private final String name;
         private final List<MiningField> miningFields = Collections.emptyList();
         private final List<OutputField> outputFields = Collections.emptyList();
 
-        public PMMLModelInternal(String name) {
+        public PMMLModelInternal(String fileName, String name) {
+            this.fileName = fileName;
             this.name = name;
+        }
+
+        @Override
+        public String getFileName() {
+            return fileName;
         }
 
         @Override
