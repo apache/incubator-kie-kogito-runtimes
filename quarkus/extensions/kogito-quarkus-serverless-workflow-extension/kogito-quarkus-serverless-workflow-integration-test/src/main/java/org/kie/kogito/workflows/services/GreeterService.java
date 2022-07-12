@@ -37,6 +37,6 @@ public class GreeterService implements Greeter {
             default:
                 message = "Hello from gRPC service " + request.getName();
         }
-        return Uni.createFrom().item(() -> HelloReply.newBuilder().setMessage(message).setState(State.SUCCESS).setInnerMessage(InnerMessage.newBuilder().setInLong(23).build()).build());
+        return Uni.createFrom().item(() -> HelloReply.newBuilder().setMessage(message).setState(State.SUCCESS).setInnerMessage(InnerMessage.newBuilder().setNumber(23).build()).build());
     }
 }
