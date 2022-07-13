@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -28,6 +30,7 @@ import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.workflow.core.impl.IOSpecification;
 import org.jbpm.workflow.core.node.WorkItemNode;
 import org.jbpm.workflow.instance.node.WorkItemNodeInstance;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -172,6 +175,21 @@ public class RestWorkItemHandlerTest {
         handler.executeWorkItem(workItem, manager);
 
         assertResult(manager, argCaptor);
+    }
+
+    @Test
+    public void testFailingCall() {
+        parameters.put(RestWorkItemHandler.URL, "http://localhost:8080/error");
+        parameters.put(RestWorkItemHandler.METHOD, "GET");
+        parameters.put(RestWorkItemHandler.CONTENT_DATA, workflowData);
+        when(response.statusCode()).thenReturn(400);
+
+        WebApplicationException thrown = Assertions.assertThrows(WebApplicationException.class, () -> {
+            handler.executeWorkItem(workItem, manager);
+        }, "WebApplicationException was expected");
+
+        Assertions.assertEquals(400, thrown.getResponse().getStatus());
+
     }
 
     @Test
