@@ -30,10 +30,9 @@ public class MessageContentRegexExceptionPolicy extends AbstractHierarchyExcepti
         String msg = exception.getMessage();
         if (msg != null) {
             try {
-                return Pattern.compile(errorCode, Pattern.CASE_INSENSITIVE).matcher(msg).find();
+                return Pattern.compile(errorCode).matcher(msg).find();
             } catch (PatternSyntaxException ex) {
-                // will return false
-                LOGGER.debug("Failure parsing regular expression: {}", ex.getMessage());
+                LOGGER.debug("Failure parsing regular expression: {}", errorCode, ex);
             }
         }
         return false;

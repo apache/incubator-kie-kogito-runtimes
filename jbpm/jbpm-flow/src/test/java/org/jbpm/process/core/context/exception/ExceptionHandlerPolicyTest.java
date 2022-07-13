@@ -44,7 +44,7 @@ class ExceptionHandlerPolicyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "java.lang.RuntimeException", "Unknown error", "Status code 400", "(.*)code 4[0-9]{2}", "code 4[0-9]{2}" })
+    @ValueSource(strings = { "java.lang.RuntimeException", "Unknown error", "(?i)Status code 400", "(.*)code 4[0-9]{2}", "code 4[0-9]{2}" })
     void testExceptionHandlerPolicyFactory(String errorString) {
         Throwable exception = new IllegalStateException("Unknown error, status code 400");
         assertTrue(test(policies, errorString, exception));
