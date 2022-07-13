@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.ws.rs.WebApplicationException;
+
 import org.jbpm.process.core.Process;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
@@ -139,6 +141,9 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         paramsDecorator.decorate(workItem, parameters, request);
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(parameters)) : request.sendAndAwait();
+        if (response.statusCode() >= 300) {
+            throw new WebApplicationException(response.statusMessage(), response.statusCode());
+        }
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
     }
 
