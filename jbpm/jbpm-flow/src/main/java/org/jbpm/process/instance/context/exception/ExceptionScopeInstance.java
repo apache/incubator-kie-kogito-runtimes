@@ -65,7 +65,7 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
         if (key == null) {
             key = getErrorName(context).orElse(exception.getClass().getCanonicalName());
         }
-        ExceptionHandler handler = getExceptionScope().getExceptionHandler(key, exception, context);
+        ExceptionHandler handler = getExceptionScope().getExceptionHandler(key, exception);
         if (handler == null) {
             logger.info("Could not find ExceptionHandler for key {} and exception {}", key, exception);
             if (exception != null) {

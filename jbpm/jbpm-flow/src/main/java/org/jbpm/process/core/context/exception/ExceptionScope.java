@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 public class ExceptionScope extends AbstractContext {
 
@@ -43,7 +42,7 @@ public class ExceptionScope extends AbstractContext {
         this.exceptionHandlers.put(exception, exceptionHandler);
     }
 
-    public ExceptionHandler getExceptionHandler(String key, Throwable exception, KogitoProcessContext context) {
+    public ExceptionHandler getExceptionHandler(String key, Throwable exception) {
         ExceptionHandler handler = exceptionHandlers.get(key);
         if (handler == null || exception != null && handler.getExceptionCode().map(errorCode -> !test(errorCode, exception)).orElse(true)) {
             handler = exceptionHandlers.get(null);

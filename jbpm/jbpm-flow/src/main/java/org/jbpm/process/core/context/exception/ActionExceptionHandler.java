@@ -26,7 +26,7 @@ public class ActionExceptionHandler implements ExceptionHandler, Serializable {
 
     private String faultVariable;
     private DroolsAction action;
-    private Optional<String> exceptionCode;
+    private transient Optional<String> exceptionCode;
 
     public ActionExceptionHandler() {
         this.exceptionCode = Optional.empty();
