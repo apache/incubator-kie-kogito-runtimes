@@ -63,7 +63,6 @@ import org.kie.kogito.process.IOEventDescription;
 import org.kie.kogito.process.NamedDataType;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
-import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItemManager;
 import org.kie.kogito.process.workitems.impl.KogitoWorkItemImpl;
@@ -183,16 +182,10 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 } else {
                     throw handlerException;
                 }
-            } catch (WorkItemExecutionException e) {
-                handleException(e.getErrorCode(), e);
             } catch (Exception e) {
                 handleException(e);
             }
         }
-    }
-
-    protected void handleException(String exceptionName, Exception e) {
-        getExceptionScopeInstance(exceptionName, e).handleException(exceptionName, getProcessContext(e));
     }
 
     protected void handleException(Exception e) {
@@ -516,7 +509,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 context.setProcessInstance(this.getProcessInstance());
                 context.setNodeInstance(this);
                 context.getContextData().put("Exception", handlerException.getCause());
-                exceptionScopeInstance.handleException(exceptionName, context);
+                exceptionScopeInstance.handleException(exceptionName, handlerException.getCause(), context);
                 break;
             case RETRY:
                 Map<String, Object> parameters = new HashMap<>(getWorkItem().getParameters());

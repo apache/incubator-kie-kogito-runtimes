@@ -15,14 +15,23 @@
  */
 package org.jbpm.process.instance.context.exception;
 
+import java.util.Optional;
+
 import org.jbpm.process.core.context.exception.ExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.instance.context.AbstractContextInstance;
+import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.workflow.instance.WorkflowRuntimeException;
+import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.NodeContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ExceptionScopeInstance extends AbstractContextInstance {
 
     private static final long serialVersionUID = 510l;
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionScopeInstance.class);
 
     @Override
     public String getContextType() {
@@ -34,21 +43,38 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
     }
 
     public void handleException(Throwable exception, KogitoProcessContext params) {
-        ExceptionHandler handler = getExceptionScope().getExceptionHandler(exception);
-        if (handler == null) {
-            throw new IllegalArgumentException(
-                    "Could not find ExceptionHandler for " + exception);
-        }
-        handleException(handler, exception.getClass().getCanonicalName(), params);
+        handleException(null, exception, params);
     }
 
-    public void handleException(String exception, KogitoProcessContext params) {
-        ExceptionHandler handler = getExceptionScope().getExceptionHandler(exception);
-        if (handler == null) {
-            throw new IllegalArgumentException(
-                    "Could not find ExceptionHandler for " + exception);
+    public void handleException(String key, KogitoProcessContext params) {
+        handleException(key, null, params);
+    }
+
+    private Optional<String> getErrorName(KogitoProcessContext context) {
+        Node node = context.getNodeInstance().getNode();
+        String errorName = null;
+        do {
+            errorName = (String) node.getMetaData().get(Metadata.ERROR_NAME);
+            NodeContainer container = node.getNodeContainer();
+            node = container instanceof Node ? (Node) container : null;
+        } while (errorName == null && node != null);
+        return Optional.ofNullable(errorName);
+    }
+
+    public void handleException(String key, Throwable exception, KogitoProcessContext context) {
+        if (key == null) {
+            key = getErrorName(context).orElse(exception.getClass().getCanonicalName());
         }
-        handleException(handler, exception, params);
+        ExceptionHandler handler = getExceptionScope().getExceptionHandler(key, exception, context);
+        if (handler == null) {
+            logger.info("Could not find ExceptionHandler for key {} and exception {}", key, exception);
+            if (exception != null) {
+                throw new WorkflowRuntimeException(context.getNodeInstance(), context.getProcessInstance(), null, exception);
+            } else {
+                throw new IllegalArgumentException("Could not find ExceptionHandler for key " + key);
+            }
+        }
+        handleException(handler, key, context);
     }
 
     public abstract void handleException(ExceptionHandler handler, String exception, KogitoProcessContext params);

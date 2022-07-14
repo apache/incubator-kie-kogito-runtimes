@@ -252,11 +252,12 @@ public abstract class StateHandler<S extends State> {
                 String eventType = "Error-" + node.getNode().getMetaData().get("UniqueId");
                 BoundaryEventNodeFactory<?> boundaryNode =
                         factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId()).metaData(
-                                "EventType", Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
+                                Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
                 if (errorDef.getCode() != null) {
-                    boundaryNode.metaData("ErrorEvent", errorDef.getCode());
+                    boundaryNode.metaData(Metadata.ERROR_EVENT, errorDef.getCode());
                     eventType += "-" + errorDef.getCode();
                 }
+                node.metaData(Metadata.ERROR_NAME, eventType);
                 boundaryNode.eventType(eventType).name("Error-" + node.getNode().getName() + "-" + errorDef.getCode());
                 factory.exceptionHandler(eventType, errorDef.getCode());
                 if (error.getEnd() != null) {

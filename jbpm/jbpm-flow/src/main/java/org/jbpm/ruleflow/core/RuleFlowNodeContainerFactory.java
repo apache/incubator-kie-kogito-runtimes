@@ -191,12 +191,12 @@ public abstract class RuleFlowNodeContainerFactory<T extends RuleFlowNodeContain
     }
 
     public T errorExceptionHandler(String signalType, String faultCode, String faultVariable) {
-        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
+        ActionExceptionHandler exceptionHandler = new ActionExceptionHandler(faultCode);
         DroolsConsequenceAction action = new DroolsConsequenceAction("java", "");
         action.setMetaData("Action", new SignalProcessInstanceAction(signalType, faultVariable, null, SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE));
         exceptionHandler.setAction(action);
         exceptionHandler.setFaultVariable(faultVariable);
-        return exceptionHandler(faultCode, exceptionHandler);
+        return exceptionHandler(signalType, exceptionHandler);
     }
 
     public abstract T variable(String name, DataType type);

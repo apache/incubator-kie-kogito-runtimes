@@ -16,6 +16,7 @@
 package org.jbpm.process.core.context.exception;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.jbpm.workflow.core.DroolsAction;
 
@@ -25,9 +26,23 @@ public class ActionExceptionHandler implements ExceptionHandler, Serializable {
 
     private String faultVariable;
     private DroolsAction action;
+    private Optional<String> exceptionCode;
+
+    public ActionExceptionHandler() {
+        this.exceptionCode = Optional.empty();
+    }
+
+    public ActionExceptionHandler(String exceptionCode) {
+        this.exceptionCode = Optional.ofNullable(exceptionCode);
+    }
 
     public String getFaultVariable() {
         return faultVariable;
+    }
+
+    @Override
+    public Optional<String> getExceptionCode() {
+        return exceptionCode;
     }
 
     public void setFaultVariable(String faultVariable) {
@@ -42,6 +57,7 @@ public class ActionExceptionHandler implements ExceptionHandler, Serializable {
         this.action = action;
     }
 
+    @Override
     public String toString() {
         return action == null ? "" : action.toString();
     }
