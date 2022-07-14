@@ -141,7 +141,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         paramsDecorator.decorate(workItem, parameters, request);
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(parameters)) : request.sendAndAwait();
         int statusCode = response.statusCode();
-        if (statusCode >= 300) {
+        if (statusCode < 200 || statusCode >= 300) {
             throw new WorkItemExecutionException(Integer.toString(statusCode), response.statusMessage());
         }
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
