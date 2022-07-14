@@ -34,7 +34,7 @@
     <version.com.fasterxml.jackson.datatype>2.13.3</version.com.fasterxml.jackson.datatype>
     <version.com.github.erosb>1.14.1</version.com.github.erosb>
     <version.com.github.victools>4.18.0</version.com.github.victools>
-    <version.com.github.tomakehurst.wiremock>2.33.1</version.com.github.tomakehurst.wiremock>
+    <version.com.github.tomakehurst.wiremock>2.33.2</version.com.github.tomakehurst.wiremock>
     <version.com.google.protobuf>3.19.3</version.com.google.protobuf>
     <!-- currently required for integration test only -->
     <version.com.oracle.database.jdbc>21.3.0.0</version.com.oracle.database.jdbc>
@@ -71,7 +71,7 @@
     <!-- consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ -->
     <version.jakarta.ws.rs>2.1.6</version.jakarta.ws.rs>
     <version.org.jboss.resteasy>4.7.5.Final</version.org.jboss.resteasy>
-    <version.org.keycloak>17.0.1</version.org.keycloak>
+    <version.org.keycloak>18.0.2</version.org.keycloak>
     <!-- It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 -->
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
     <version.org.mongo>4.6.1</version.org.mongo>
@@ -89,7 +89,7 @@
     <version.org.junit.platform>1.8.2</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.5.0</version.org.junit.pioneer>
     <version.org.mockito>4.6.0</version.org.mockito>
-    <version.org.testcontainers>1.17.2</version.org.testcontainers>
+    <version.org.testcontainers>1.17.3</version.org.testcontainers>
 
     <version.net.byte-buddy>1.12.9</version.net.byte-buddy>
 
@@ -253,7 +253,7 @@
         <groupId>net.thisptr</groupId>
         <artifactId>jackson-jq</artifactId>
         <version>${version.net.thisptr.jackson-jq}</version>
-       </dependency>
+      </dependency>
 
       <dependency>
         <groupId>io.smallrye</groupId>
@@ -265,13 +265,13 @@
         <artifactId>smallrye-mutiny-vertx-web-client</artifactId>
         <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>io.smallrye.reactive</groupId>
         <artifactId>smallrye-mutiny-vertx-auth-oauth2</artifactId>
         <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>
-      
+
       <!-- metrics - monitoring -->
       <dependency>
         <groupId>io.micrometer</groupId>
