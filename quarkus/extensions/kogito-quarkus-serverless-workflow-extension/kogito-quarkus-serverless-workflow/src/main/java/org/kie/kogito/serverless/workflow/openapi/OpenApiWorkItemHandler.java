@@ -25,8 +25,8 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
-import org.kie.kogito.process.KogitoErrorCodeException;
 import org.kie.kogito.process.meta.ProcessMeta;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
 import io.quarkus.restclient.runtime.RestClientBuilderFactory;
@@ -45,7 +45,7 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {
-            throw new KogitoErrorCodeException(Integer.toString(ex.getResponse().getStatus()), ex.getMessage());
+            throw new WorkItemExecutionException(Integer.toString(ex.getResponse().getStatus()), ex.getMessage());
         }
     }
 

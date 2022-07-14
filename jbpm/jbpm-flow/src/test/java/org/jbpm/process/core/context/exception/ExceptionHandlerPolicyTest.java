@@ -22,7 +22,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.kie.kogito.process.KogitoErrorCodeException;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,14 +59,14 @@ class ExceptionHandlerPolicyTest {
     @ParameterizedTest
     @ValueSource(strings = { "HTTP:500", "500" })
     void testWebExceptionHandlerPolicyFactory(String errorString) {
-        Throwable exception = new KogitoErrorCodeException("500", "Unknown error");
+        Throwable exception = new WorkItemExecutionException("500", "Unknown error");
         assertTrue(test(policies, errorString, exception));
     }
 
     @ParameterizedTest
     @ValueSource(strings = { "HTTP:xyz", "xyz" })
     void testWebExceptionHandlerPolicyFactoryIncorrectFormat(String errorString) {
-        Throwable exception = new KogitoErrorCodeException("500", "Unknown error");
+        Throwable exception = new WorkItemExecutionException("500", "Unknown error");
         assertFalse(test(policies, errorString, exception));
     }
 
