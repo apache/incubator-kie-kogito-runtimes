@@ -19,9 +19,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
+import org.jbpm.ruleflow.core.Metadata;
+import org.kie.api.definition.process.Node;
+import org.kie.api.definition.process.NodeContainer;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 public class ExceptionScope extends AbstractContext {
 
@@ -42,7 +47,28 @@ public class ExceptionScope extends AbstractContext {
         this.exceptionHandlers.put(exception, exceptionHandler);
     }
 
-    public ExceptionHandler getExceptionHandler(String key, Throwable exception) {
+    private Optional<String> getErrorName(KogitoProcessContext context) {
+        if (context == null) {
+            return Optional.empty();
+        }
+        Node node = context.getNodeInstance().getNode();
+        String errorName = null;
+        do {
+            errorName = (String) node.getMetaData().get(Metadata.ERROR_NAME);
+            NodeContainer container = node.getNodeContainer();
+            node = container instanceof Node ? (Node) container : null;
+        } while (errorName == null && node != null);
+        return Optional.ofNullable(errorName);
+    }
+
+    private Throwable getException(KogitoProcessContext context) {
+        return (Throwable) context.getContextData().get("Exception");
+    }
+
+    public ExceptionHandler getExceptionHandler(String key, Throwable exception, KogitoProcessContext context) {
+        if (key == null) {
+            key = getErrorName(context).orElse(exception != null ? exception.getClass().getCanonicalName() : null);
+        }
         ExceptionHandler handler = exceptionHandlers.get(key);
         if (handler == null || exception != null && handler.getExceptionCode().map(errorCode -> !test(errorCode, exception)).orElse(true)) {
             handler = exceptionHandlers.get(null);
@@ -76,6 +102,14 @@ public class ExceptionScope extends AbstractContext {
 
     @Override
     public Context resolveContext(Object param) {
-        return this;
+        if (param instanceof String) {
+            return getExceptionHandler((String) param, null, null) == null ? null : this;
+        } else if (param instanceof Throwable) {
+            return getExceptionHandler(null, (Throwable) param, null) == null ? null : this;
+        } else if (param instanceof KogitoProcessContext) {
+            return getExceptionHandler(null, getException((KogitoProcessContext) param), (KogitoProcessContext) param) == null ? null : this;
+        }
+        throw new IllegalArgumentException(
+                "ExceptionScopes can only resolve exception names: " + param);
     }
 }

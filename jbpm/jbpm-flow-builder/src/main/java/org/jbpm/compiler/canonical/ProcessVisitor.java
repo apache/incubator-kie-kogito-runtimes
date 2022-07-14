@@ -30,13 +30,32 @@ import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.node.*;
+import org.jbpm.workflow.core.node.ActionNode;
+import org.jbpm.workflow.core.node.BoundaryEventNode;
+import org.jbpm.workflow.core.node.CatchLinkNode;
+import org.jbpm.workflow.core.node.CompositeContextNode;
+import org.jbpm.workflow.core.node.DynamicNode;
+import org.jbpm.workflow.core.node.EndNode;
+import org.jbpm.workflow.core.node.EventNode;
+import org.jbpm.workflow.core.node.EventSubProcessNode;
+import org.jbpm.workflow.core.node.FaultNode;
+import org.jbpm.workflow.core.node.ForEachNode;
+import org.jbpm.workflow.core.node.HumanTaskNode;
+import org.jbpm.workflow.core.node.Join;
+import org.jbpm.workflow.core.node.MilestoneNode;
+import org.jbpm.workflow.core.node.RuleSetNode;
+import org.jbpm.workflow.core.node.Split;
+import org.jbpm.workflow.core.node.StartNode;
+import org.jbpm.workflow.core.node.StateNode;
+import org.jbpm.workflow.core.node.SubProcessNode;
+import org.jbpm.workflow.core.node.ThrowLinkNode;
+import org.jbpm.workflow.core.node.TimerNode;
+import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.definition.process.Process;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -253,15 +272,13 @@ public class ProcessVisitor extends AbstractVisitor {
     private void visitContextExceptionScope(Context context, BlockStmt body) {
         if (context instanceof ExceptionScope) {
             ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
-                String faultCode = e.getKey();
+                String signalName = e.getKey();
                 ActionExceptionHandler handler = (ActionExceptionHandler) e.getValue();
                 Optional<String> faultVariable = Optional.ofNullable(handler.getFaultVariable());
-                SignalProcessInstanceAction action =
-                        (SignalProcessInstanceAction) handler.getAction().getMetaData("Action");
-                String signalName = action.getSignalName();
                 body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ERROR_EXCEPTION_HANDLER,
                         new StringLiteralExpr(signalName),
-                        new StringLiteralExpr(faultCode),
+                        handler.getExceptionCode().<Expression> map(StringLiteralExpr::new)
+                                .orElse(new NullLiteralExpr()),
                         faultVariable.<Expression> map(StringLiteralExpr::new)
                                 .orElse(new NullLiteralExpr())));
             });

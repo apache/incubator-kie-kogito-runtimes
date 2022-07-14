@@ -252,11 +252,11 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         try {
             action.execute(context);
         } catch (Exception e) {
-            ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, e);
+            context.getContextData().put("Exception", e);
+            ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, context);
             if (exceptionScopeInstance == null) {
                 throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
             }
-            context.getContextData().put("Exception", e);
             exceptionScopeInstance.handleException(e, context);
             cancel();
         }

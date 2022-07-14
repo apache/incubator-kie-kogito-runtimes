@@ -55,6 +55,7 @@ import org.kie.api.runtime.process.EventListener;
 import org.kie.api.runtime.process.ProcessWorkItemHandlerException;
 import org.kie.kogito.Model;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemNodeInstance;
 import org.kie.kogito.process.EventDescription;
@@ -189,17 +190,15 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     protected void handleException(Exception e) {
-        getExceptionScopeInstance(e, e).handleException(e, getProcessContext(e));
-    }
-
-    private ExceptionScopeInstance getExceptionScopeInstance(Object context, Exception e) {
+        KogitoProcessContext context = getProcessContext(e);
         ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, context);
         if (exceptionScopeInstance == null) {
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }
         // workItemId must be set otherwise cancel activity will not find the right work item
         this.workItemId = workItem.getStringId();
-        return exceptionScopeInstance;
+
+        exceptionScopeInstance.handleException(e, context);
     }
 
     protected InternalKogitoWorkItem newWorkItem() {
