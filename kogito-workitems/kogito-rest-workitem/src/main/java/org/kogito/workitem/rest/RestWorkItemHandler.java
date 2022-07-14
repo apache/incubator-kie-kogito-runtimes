@@ -37,6 +37,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
+import org.kie.kogito.process.KogitoErrorCodeException;
 import org.kogito.workitem.rest.auth.ApiKeyAuthDecorator;
 import org.kogito.workitem.rest.auth.AuthDecorator;
 import org.kogito.workitem.rest.auth.BasicAuthDecorator;
@@ -139,6 +140,10 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         authDecorators.forEach(d -> d.decorate(workItem, parameters, request));
         paramsDecorator.decorate(workItem, parameters, request);
         HttpResponse<Buffer> response = method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT) ? request.sendJsonAndAwait(bodyBuilder.apply(parameters)) : request.sendAndAwait();
+        int statusCode = response.statusCode();
+        if (statusCode >= 300) {
+            throw new KogitoErrorCodeException(Integer.toString(statusCode), response.statusMessage());
+        }
         manager.completeWorkItem(workItem.getStringId(), Collections.singletonMap(RESULT, resultHandler.apply(response, targetInfo)));
     }
 

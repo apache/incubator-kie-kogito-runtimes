@@ -15,24 +15,17 @@
  */
 package org.jbpm.process.core.context.exception;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.kie.kogito.process.KogitoErrorCodeException;
 
-public class ExceptionHandlerPolicyFactory {
+public class ErrorCodeExceptionPolicy extends AbstractHierarchyExceptionPolicy {
 
-    private ExceptionHandlerPolicyFactory() {
+    @Override
+    protected boolean verify(String errorCode, Throwable exception) {
+        return exception instanceof KogitoErrorCodeException && getErrorCode(errorCode).equals(((KogitoErrorCodeException) exception).getErrorCode());
     }
 
-    private static Collection<ExceptionHandlerPolicy> policies = new ArrayList<>();
-
-    static {
-        policies.add(new SubclassExceptionPolicy());
-        policies.add(new RootCauseExceptionPolicy());
-        policies.add(new MessageContentRegexExceptionPolicy());
-        policies.add(new ErrorCodeExceptionPolicy());
-    }
-
-    public static Collection<ExceptionHandlerPolicy> getHandlerPolicies() {
-        return policies;
+    private String getErrorCode(String errorCode) {
+        String[] error = errorCode.split(":");
+        return error[error.length - 1];
     }
 }

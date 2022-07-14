@@ -20,10 +20,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
+import org.kie.kogito.process.KogitoErrorCodeException;
 import org.kie.kogito.process.meta.ProcessMeta;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
@@ -40,7 +42,11 @@ public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler 
                 ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)));
             }
         }).build(clazz);
-        return internalExecute(ref, parameters);
+        try {
+            return internalExecute(ref, parameters);
+        } catch (WebApplicationException ex) {
+            throw new KogitoErrorCodeException(Integer.toString(ex.getResponse().getStatus()), ex.getMessage());
+        }
     }
 
     protected abstract Object internalExecute(T openAPIRef, Map<String, Object> parameters);
