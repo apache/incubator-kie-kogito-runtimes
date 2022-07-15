@@ -249,14 +249,14 @@ public abstract class StateHandler<S extends State> {
     protected void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory) {
         for (Error error : state.getOnErrors()) {
             for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
-                String errorPrefix = "Error-" + node.getNode().getMetaData().get("UniqueId") + "-";
-                String eventType = errorDef.getName();
+                String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getMetaData().get("UniqueId") + '-';
+                String eventType = errorDef.getName() + '-' + node.getNode().getId();
                 BoundaryEventNodeFactory<?> boundaryNode =
                         factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId())
                                 .metaData(Metadata.ERROR_NAME, errorDef.getCode()).metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
                 boundaryNode.metaData(Metadata.ERROR_EVENT, eventType);
                 node.metaData(Metadata.ERROR_NAME, eventType);
-                boundaryNode.eventType(errorPrefix + eventType).name("Error-" + node.getNode().getName() + "-" + errorDef.getCode());
+                boundaryNode.eventType(errorPrefix + eventType).name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getName() + '-' + errorDef.getCode());
                 factory.exceptionHandler(eventType, errorDef.getCode());
                 if (error.getEnd() != null) {
                     connect(boundaryNode, endNodeFactory(factory, error.getEnd()));

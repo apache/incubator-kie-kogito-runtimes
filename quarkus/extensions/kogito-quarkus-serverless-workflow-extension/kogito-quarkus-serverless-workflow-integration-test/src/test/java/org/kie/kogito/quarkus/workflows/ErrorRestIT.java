@@ -30,11 +30,21 @@ public class ErrorRestIT {
 
     @Test
     public void testErrorRest() {
+        innerErrorRest("error");
+    }
+
+    @Test
+    public void testErrorGenericRest() {
+        innerErrorRest("errorGeneric");
+    }
+
+    @Test
+    private void innerErrorRest(String workflowId) {
         given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body("{\"workflowdata\" : {\"number\" : 1}}").when()
-                .post("/error")
+                .post("/" + workflowId)
                 .then()
                 .statusCode(201)
                 .body("workflowdata.numberType", is("odd"))
@@ -43,7 +53,7 @@ public class ErrorRestIT {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body("{\"workflowdata\" : {\"number\" : 4}}").when()
-                .post("/error")
+                .post("/" + workflowId)
                 .then()
                 .statusCode(201)
                 .body("workflowdata.numberType", is("even"))
@@ -52,7 +62,7 @@ public class ErrorRestIT {
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body("{\"workflowdata\" : {\"number\" : 6}}").when()
-                .post("/error")
+                .post("/" + workflowId)
                 .then()
                 .statusCode(201)
                 .body("workflowdata.numberType", is("even"))

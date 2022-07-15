@@ -1,5 +1,5 @@
 {
-  "id": "error",
+  "id": "errorGeneric",
   "version": "1.0",
   "expressionLang": "jsonpath",
   "name": "Workflow Error example",
@@ -8,11 +8,7 @@
   "errors": [
     {
       "name": "odd number",
-      "code": "Odd situation"
-     },
-     {
-      "name": "bad request",
-      "code": "HTTP:400"
+      "code": "java.lang.RuntimeException"
      }
   ],
   "functions": [
@@ -105,7 +101,7 @@
       "end": true,
       "onErrors": [
         {
-          "errorRef": "bad request",
+          "errorRef": "odd number",
           "transition": "setError"
         }
       ]
