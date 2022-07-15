@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.jbpm.process.core.Context;
@@ -27,6 +28,7 @@ import org.jbpm.ruleflow.core.Metadata;
 import org.kie.api.definition.process.Node;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 public class ExceptionScope extends AbstractContext {
 
@@ -47,6 +49,32 @@ public class ExceptionScope extends AbstractContext {
         this.exceptionHandlers.put(exception, exceptionHandler);
     }
 
+    private Throwable getException(KogitoProcessContext context) {
+        return (Throwable) context.getContextData().get("Exception");
+    }
+
+    private boolean isHandler(ExceptionHandler handler, Throwable exception) {
+        return handler.getExceptionCode().map(code -> test(code, exception)).orElse(false);
+    }
+
+    public ExceptionHandler getExceptionHandler(String key, Throwable exception, KogitoProcessContext context) {
+        Optional<ExceptionHandler> result = Optional.empty();
+        if (key != null) {
+            result = Optional.ofNullable(exceptionHandlers.get(key));
+        } else if (exception != null) {
+            Optional<String> errorName = getErrorName(context);
+            if (errorName.isPresent()) {
+                return errorName.map(k -> exceptionHandlers.get(k)).filter(h -> isHandler(h, exception)).orElse(null);
+            } else if (exception instanceof WorkItemExecutionException) {
+                result = Optional.ofNullable(exceptionHandlers.get(((WorkItemExecutionException) exception).getErrorCode()));
+            }
+            if (result.isEmpty()) {
+                result = exceptionHandlers.entrySet().stream().filter(e -> e.getKey() != null && test(e.getKey(), exception)).findAny().map(Entry::getValue);
+            }
+        }
+        return result.orElse(exceptionHandlers.get(null));
+    }
+
     private Optional<String> getErrorName(KogitoProcessContext context) {
         if (context == null) {
             return Optional.empty();
@@ -59,21 +87,6 @@ public class ExceptionScope extends AbstractContext {
             node = container instanceof Node ? (Node) container : null;
         } while (errorName == null && node != null);
         return Optional.ofNullable(errorName);
-    }
-
-    private Throwable getException(KogitoProcessContext context) {
-        return (Throwable) context.getContextData().get("Exception");
-    }
-
-    public ExceptionHandler getExceptionHandler(String key, Throwable exception, KogitoProcessContext context) {
-        if (key == null) {
-            key = getErrorName(context).orElse(exception != null ? exception.getClass().getCanonicalName() : null);
-        }
-        ExceptionHandler handler = exceptionHandlers.get(key);
-        if (handler == null || exception != null && handler.getExceptionCode().map(errorCode -> !test(errorCode, exception)).orElse(true)) {
-            handler = exceptionHandlers.get(null);
-        }
-        return handler;
     }
 
     private boolean test(String errorCode, Throwable exception) {
