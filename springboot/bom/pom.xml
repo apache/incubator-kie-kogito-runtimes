@@ -24,7 +24,7 @@
     <!-- Spring Boot Cloud aligned with Spring Boot Framework version. See: https://spring.io/projects/spring-cloud -->
     <version.org.springframework.cloud.kubernetes.fabric8>2.1.1</version.org.springframework.cloud.kubernetes.fabric8>
     <!-- Fabric8 aligned with Spring Cloud. See: https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-kubernetes-fabric8-autoconfig/2.1.1 -->
-    <version.io.fabric8>5.9.0</version.io.fabric8>
+    <version.io.fabric8>5.11.2</version.io.fabric8>
   </properties>
 
   <dependencyManagement>
