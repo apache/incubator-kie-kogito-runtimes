@@ -19,11 +19,15 @@ public class RootCauseExceptionPolicy extends AbstractHierarchyExceptionPolicy {
     @Override
     protected boolean verify(String errorCode, Throwable exception) {
         Class<?> exceptionClass = exception.getClass();
-        boolean found = errorCode.equals(exception.getClass().getName());
+        boolean found = isException(errorCode, exceptionClass);
         while (!found && !exceptionClass.equals(Object.class)) {
             exceptionClass = exceptionClass.getSuperclass();
-            found = errorCode.equals(exceptionClass.getName());
+            found = isException(errorCode, exceptionClass);
         }
         return found;
+    }
+
+    private boolean isException(String errorCode, Class<?> exceptionClass) {
+        return errorCode.equals(exceptionClass.getName());
     }
 }
