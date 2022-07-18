@@ -22,12 +22,12 @@ public class WorkItemExecutionException extends RuntimeException {
     private final String errorCode;
 
     public WorkItemExecutionException(String errorCode) {
-        super();
+        super("WorkItem execution failed with error code " + errorCode);
         this.errorCode = errorCode;
     }
 
     public WorkItemExecutionException(String errorCode, Throwable e) {
-        super(e);
+        super("WorkItem execution failed with error code " + errorCode, e);
         this.errorCode = errorCode;
     }
 
