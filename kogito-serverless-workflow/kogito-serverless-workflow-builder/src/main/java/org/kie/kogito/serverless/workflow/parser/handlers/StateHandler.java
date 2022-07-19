@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -247,6 +248,7 @@ public abstract class StateHandler<S extends State> {
     }
 
     protected void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory) {
+        Collection<String> errorNames = new ArrayList<>();
         for (Error error : state.getOnErrors()) {
             for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
                 String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getMetaData().get("UniqueId") + '-';
@@ -255,7 +257,7 @@ public abstract class StateHandler<S extends State> {
                         factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId())
                                 .metaData(Metadata.ERROR_NAME, errorDef.getCode()).metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
                 boundaryNode.metaData(Metadata.ERROR_EVENT, eventType);
-                node.metaData(Metadata.ERROR_NAME, eventType);
+                errorNames.add(eventType);
                 boundaryNode.eventType(errorPrefix + eventType).name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getName() + '-' + errorDef.getCode());
                 factory.exceptionHandler(eventType, errorDef.getCode());
                 if (error.getEnd() != null) {
@@ -264,6 +266,9 @@ public abstract class StateHandler<S extends State> {
                     handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
                 }
             }
+        }
+        if (!errorNames.isEmpty()) {
+            node.metaData(Metadata.ERROR_NAME, errorNames);
         }
     }
 

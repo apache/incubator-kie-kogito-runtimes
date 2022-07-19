@@ -38,6 +38,11 @@ public class ErrorRestIT {
         innerErrorRest("errorGeneric");
     }
 
+    @Test
+    public void testErrorRepeatedRest() {
+        innerErrorRest("errorRepeated");
+    }
+
     private void innerErrorRest(String workflowId) {
         given()
                 .contentType(ContentType.JSON)

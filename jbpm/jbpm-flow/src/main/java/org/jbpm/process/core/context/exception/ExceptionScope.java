@@ -16,6 +16,7 @@
 package org.jbpm.process.core.context.exception;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,9 +63,9 @@ public class ExceptionScope extends AbstractContext {
         if (key != null) {
             result = Optional.ofNullable(exceptionHandlers.get(key));
         } else if (exception != null) {
-            Optional<String> errorName = getErrorName(context);
-            if (errorName.isPresent()) {
-                return errorName.map(k -> exceptionHandlers.get(k)).filter(h -> isHandler(h, exception)).orElse(null);
+            Collection<String> errorNames = getErrorNames(context);
+            if (!errorNames.isEmpty()) {
+                return errorNames.stream().map(k -> exceptionHandlers.get(k)).filter(h -> isHandler(h, exception)).findFirst().orElse(null);
             } else if (exception instanceof WorkItemExecutionException) {
                 result = Optional.ofNullable(exceptionHandlers.get(((WorkItemExecutionException) exception).getErrorCode()));
             }
@@ -75,18 +76,18 @@ public class ExceptionScope extends AbstractContext {
         return result.orElse(exceptionHandlers.get(null));
     }
 
-    private Optional<String> getErrorName(KogitoProcessContext context) {
+    private Collection<String> getErrorNames(KogitoProcessContext context) {
         if (context == null) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         Node node = context.getNodeInstance().getNode();
-        String errorName = null;
+        Collection<String> errorNames = null;
         do {
-            errorName = (String) node.getMetaData().get(Metadata.ERROR_NAME);
+            errorNames = (Collection<String>) node.getMetaData().get(Metadata.ERROR_NAME);
             NodeContainer container = node.getNodeContainer();
             node = container instanceof Node ? (Node) container : null;
-        } while (errorName == null && node != null);
-        return Optional.ofNullable(errorName);
+        } while (errorNames == null && node != null);
+        return errorNames == null ? Collections.emptyList() : errorNames;
     }
 
     private boolean test(String errorCode, Throwable exception) {
