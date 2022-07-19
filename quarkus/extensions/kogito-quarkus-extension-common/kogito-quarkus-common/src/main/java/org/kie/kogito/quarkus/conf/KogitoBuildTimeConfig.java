@@ -53,5 +53,6 @@ public class KogitoBuildTimeConfig {
     /**
      * Serverless Workflow build time configuration
      */
+    @ConfigItem
     public KogitoServerlessWorkflowBuildTimeConfig sw;
 }
