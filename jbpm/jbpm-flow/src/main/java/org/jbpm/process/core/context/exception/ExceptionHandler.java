@@ -15,11 +15,6 @@
  */
 package org.jbpm.process.core.context.exception;
 
-import java.util.Optional;
-
 public interface ExceptionHandler {
 
-    default Optional<String> getExceptionCode() {
-        return Optional.empty();
-    }
 }

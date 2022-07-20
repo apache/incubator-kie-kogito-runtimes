@@ -326,7 +326,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         }
         final Boolean hasErrorCode = (Boolean) node.getMetaData().get(HAS_ERROR_EVENT);
         final String errorStructureRef = (String) node.getMetaData().get(ERROR_STRUCTURE_REF);
-        final ActionExceptionHandler exceptionHandler = new ActionExceptionHandler((String) node.getMetaData().get(Metadata.ERROR_NAME));
+        final ActionExceptionHandler exceptionHandler = new ActionExceptionHandler();
         final EventNode eventNode = (EventNode) node;
         final String variable = eventNode.getVariableName();
         final String inputVariable = eventNode.getInputVariableName();

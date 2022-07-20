@@ -55,7 +55,6 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.rules.RuleUnitData;
 import org.kie.kogito.rules.RuleUnitInstance;
 
@@ -185,10 +184,9 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
     }
 
     private void handleException(Throwable e) {
-        KogitoProcessContext processContext = getProcessContext(e);
-        ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, processContext);
+        ExceptionScopeInstance exceptionScopeInstance = (ExceptionScopeInstance) resolveContextInstance(ExceptionScope.EXCEPTION_SCOPE, e);
         if (exceptionScopeInstance != null) {
-            exceptionScopeInstance.handleException(e, processContext);
+            exceptionScopeInstance.handleException(e, getProcessContext(e));
         } else {
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }

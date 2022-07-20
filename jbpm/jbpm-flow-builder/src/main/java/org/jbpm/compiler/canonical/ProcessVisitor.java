@@ -30,6 +30,7 @@ import org.jbpm.process.core.Work;
 import org.jbpm.process.core.context.exception.ActionExceptionHandler;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.jbpm.workflow.core.Node;
@@ -39,6 +40,7 @@ import org.jbpm.workflow.core.node.ActionNode;
 import org.jbpm.workflow.core.node.BoundaryEventNode;
 import org.jbpm.workflow.core.node.CatchLinkNode;
 import org.jbpm.workflow.core.node.CompositeContextNode;
+import org.jbpm.workflow.core.node.CompositeNode;
 import org.jbpm.workflow.core.node.DynamicNode;
 import org.jbpm.workflow.core.node.EndNode;
 import org.jbpm.workflow.core.node.EventNode;
@@ -143,9 +145,6 @@ public class ProcessVisitor extends AbstractVisitor {
         visitVariableScope(FACTORY_FIELD_NAME, variableScope, body, visitedVariables, metadata.getProcessClassName());
         visitSubVariableScopes(process.getNodes(), body, visitedVariables);
 
-        //exception scope
-        visitExceptionScope(process, body);
-
         visitInterfaces(process.getNodes(), body);
 
         metadata.setDynamic(((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic());
@@ -167,6 +166,8 @@ public class ProcessVisitor extends AbstractVisitor {
             processNodes.add((Node) procNode);
         }
         visitNodes(processNodes, body, variableScope, metadata);
+        //exception scope
+        visitExceptionScope(process, body);
         visitConnections(process.getNodes(), body);
 
         body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_VALIDATE));
@@ -272,17 +273,27 @@ public class ProcessVisitor extends AbstractVisitor {
     private void visitContextExceptionScope(Context context, BlockStmt body) {
         if (context instanceof ExceptionScope) {
             ((ExceptionScope) context).getExceptionHandlers().entrySet().stream().forEach(e -> {
-                String signalName = e.getKey();
+                String faultCode = e.getKey();
                 ActionExceptionHandler handler = (ActionExceptionHandler) e.getValue();
                 Optional<String> faultVariable = Optional.ofNullable(handler.getFaultVariable());
-                body.addStatement(getFactoryMethod(FACTORY_FIELD_NAME, METHOD_ERROR_EXCEPTION_HANDLER,
+                SignalProcessInstanceAction action =
+                        (SignalProcessInstanceAction) handler.getAction().getMetaData("Action");
+                String signalName = action.getSignalName();
+                body.addStatement(getFactoryMethod(getFieldName(context.getContextContainer()), METHOD_ERROR_EXCEPTION_HANDLER,
                         new StringLiteralExpr(signalName),
-                        handler.getExceptionCode().<Expression> map(StringLiteralExpr::new)
-                                .orElse(new NullLiteralExpr()),
+                        new StringLiteralExpr(faultCode),
                         faultVariable.<Expression> map(StringLiteralExpr::new)
                                 .orElse(new NullLiteralExpr())));
             });
         }
+    }
+
+    private String getFieldName(ContextContainer contextContainer) {
+        AbstractNodeVisitor visitor = null;
+        if (contextContainer instanceof CompositeNode) {
+            visitor = this.nodesVisitors.get(contextContainer.getClass());
+        }
+        return visitor != null ? visitor.getNodeId(((Node) contextContainer)) : FACTORY_FIELD_NAME;
     }
 
     private void visitSubExceptionScope(org.kie.api.definition.process.Node[] nodes, BlockStmt body) {

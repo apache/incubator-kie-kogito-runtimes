@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,6 +46,8 @@ import org.kie.kogito.serverless.workflow.suppliers.DataInputSchemaActionSupplie
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.MergeActionSupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -67,6 +68,8 @@ import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtil
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.processResourceFile;
 
 public abstract class StateHandler<S extends State> {
+
+    private static Logger logger = LoggerFactory.getLogger(StateHandler.class);
 
     protected final S state;
     protected final Workflow workflow;
@@ -248,27 +251,28 @@ public abstract class StateHandler<S extends State> {
     }
 
     protected void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory) {
-        Collection<String> errorNames = new ArrayList<>();
-        for (Error error : state.getOnErrors()) {
-            for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
-                String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getMetaData().get("UniqueId") + '-';
-                String eventType = errorDef.getName() + '-' + node.getNode().getId();
-                BoundaryEventNodeFactory<?> boundaryNode =
-                        factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId())
-                                .metaData(Metadata.ERROR_NAME, errorDef.getCode()).metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true);
-                boundaryNode.metaData(Metadata.ERROR_EVENT, eventType);
-                errorNames.add(eventType);
-                boundaryNode.eventType(errorPrefix + eventType).name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getName() + '-' + errorDef.getCode());
-                factory.exceptionHandler(eventType, errorDef.getCode());
-                if (error.getEnd() != null) {
-                    connect(boundaryNode, endNodeFactory(factory, error.getEnd()));
-                } else {
-                    handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
+        if (node instanceof RuleFlowNodeContainerFactory) {
+            for (Error error : state.getOnErrors()) {
+                for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
+                    if (errorDef.getCode() == null) {
+                        logger.error("Kogito requires code error to be set. Ignoring {}", errorDef.getName());
+                        break;
+                    }
+                    String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getMetaData().get("UniqueId") + '-';
+                    BoundaryEventNodeFactory<?> boundaryNode = factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId())
+                            .metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true).metaData(Metadata.ERROR_EVENT, errorDef.getCode())
+                            .eventType(errorPrefix + errorDef.getCode())
+                            .name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getName() + '-' + errorDef.getCode());
+                    ((RuleFlowNodeContainerFactory) node).exceptionHandler(errorDef.getCode(), errorDef.getCode());
+                    if (error.getEnd() != null) {
+                        connect(boundaryNode, endNodeFactory(factory, error.getEnd()));
+                    } else {
+                        handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
+                    }
                 }
             }
-        }
-        if (!errorNames.isEmpty()) {
-            node.metaData(Metadata.ERROR_NAME, errorNames);
+        } else {
+            logger.error("State {} does not support error handling", state.getName());
         }
     }
 

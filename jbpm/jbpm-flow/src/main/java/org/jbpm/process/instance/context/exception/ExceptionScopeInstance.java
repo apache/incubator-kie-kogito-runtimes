@@ -34,19 +34,21 @@ public abstract class ExceptionScopeInstance extends AbstractContextInstance {
     }
 
     public void handleException(Throwable exception, KogitoProcessContext params) {
-        handleException(null, exception, params);
-    }
-
-    public void handleException(String key, KogitoProcessContext params) {
-        handleException(key, null, params);
-    }
-
-    public void handleException(String key, Throwable exception, KogitoProcessContext context) {
-        ExceptionHandler handler = getExceptionScope().getExceptionHandler(key, exception, context);
+        ExceptionHandler handler = getExceptionScope().getExceptionHandler(exception);
         if (handler == null) {
-            throw new IllegalArgumentException("Could not find ExceptionHandler for key " + key);
+            throw new IllegalArgumentException(
+                    "Could not find ExceptionHandler for " + exception);
         }
-        handleException(handler, key, context);
+        handleException(handler, exception.getClass().getCanonicalName(), params);
+    }
+
+    public void handleException(String exception, KogitoProcessContext params) {
+        ExceptionHandler handler = getExceptionScope().getExceptionHandler(exception);
+        if (handler == null) {
+            throw new IllegalArgumentException(
+                    "Could not find ExceptionHandler for " + exception);
+        }
+        handleException(handler, exception, params);
     }
 
     public abstract void handleException(ExceptionHandler handler, String exception, KogitoProcessContext params);

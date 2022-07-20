@@ -16,19 +16,13 @@
 package org.jbpm.process.core.context.exception;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
-import org.jbpm.ruleflow.core.Metadata;
-import org.kie.api.definition.process.Node;
-import org.kie.api.definition.process.NodeContainer;
-import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 public class ExceptionScope extends AbstractContext {
@@ -38,7 +32,6 @@ public class ExceptionScope extends AbstractContext {
     public static final String EXCEPTION_SCOPE = "ExceptionScope";
 
     protected Map<String, ExceptionHandler> exceptionHandlers = new HashMap<String, ExceptionHandler>();
-
     private transient Collection<ExceptionHandlerPolicy> policies = ExceptionHandlerPolicyFactory.getHandlerPolicies();
 
     @Override
@@ -50,51 +43,32 @@ public class ExceptionScope extends AbstractContext {
         this.exceptionHandlers.put(exception, exceptionHandler);
     }
 
-    private Throwable getException(KogitoProcessContext context) {
-        return (Throwable) context.getContextData().get("Exception");
-    }
-
-    private boolean isHandler(ExceptionHandler handler, Throwable exception) {
-        return handler.getExceptionCode().map(code -> test(code, exception)).orElse(false);
-    }
-
-    public ExceptionHandler getExceptionHandler(String key, Throwable exception, KogitoProcessContext context) {
-        Optional<ExceptionHandler> result = Optional.empty();
-        if (key != null) {
-            result = Optional.ofNullable(exceptionHandlers.get(key));
-        } else if (exception != null) {
-            Collection<String> errorNames = getErrorNames(context);
-            if (!errorNames.isEmpty()) {
-                return errorNames.stream().map(k -> exceptionHandlers.get(k)).filter(h -> isHandler(h, exception)).findFirst().orElse(null);
-            } else if (exception instanceof WorkItemExecutionException) {
-                result = Optional.ofNullable(exceptionHandlers.get(((WorkItemExecutionException) exception).getErrorCode()));
-            }
-            if (result.isEmpty()) {
-                result = exceptionHandlers.entrySet().stream().filter(e -> e.getKey() != null && test(e.getKey(), exception)).findAny().map(Entry::getValue);
-            }
+    public ExceptionHandler getExceptionHandler(String exception) {
+        ExceptionHandler result = exceptionHandlers.get(exception);
+        if (result == null) {
+            result = exceptionHandlers.get(null);
         }
-        return result.orElse(exceptionHandlers.get(null));
+        return result;
     }
 
-    private Collection<String> getErrorNames(KogitoProcessContext context) {
-        if (context == null) {
-            return Collections.emptyList();
+    public ExceptionHandler getExceptionHandler(Throwable exception) {
+        ExceptionHandler handler = exceptionHandlers.entrySet().stream().filter(e -> test(policies, e.getKey(), exception)).findFirst().map(Entry::getValue).orElse(null);
+        if (handler == null && exception instanceof WorkItemExecutionException) {
+            handler = exceptionHandlers.get(((WorkItemExecutionException) exception).getErrorCode());
         }
-        Node node = context.getNodeInstance().getNode();
-        Collection<String> errorNames = null;
-        do {
-            errorNames = (Collection<String>) node.getMetaData().get(Metadata.ERROR_NAME);
-            NodeContainer container = node.getNodeContainer();
-            node = container instanceof Node ? (Node) container : null;
-        } while (errorNames == null && node != null);
-        return errorNames == null ? Collections.emptyList() : errorNames;
+        if (handler == null) {
+            handler = exceptionHandlers.get(null);
+        }
+        return handler;
     }
 
-    private boolean test(String errorCode, Throwable exception) {
-        boolean found = false;
+    private boolean test(Collection<ExceptionHandlerPolicy> policies, String className, Throwable exception) {
+        if (className == null)
+            return false;
         Iterator<ExceptionHandlerPolicy> iter = policies.iterator();
+        boolean found = false;
         while (!found && iter.hasNext()) {
-            found = iter.next().test(errorCode, exception);
+            found = iter.next().test(className, exception);
         }
         return found;
     }
@@ -117,13 +91,12 @@ public class ExceptionScope extends AbstractContext {
     @Override
     public Context resolveContext(Object param) {
         if (param instanceof String) {
-            return getExceptionHandler((String) param, null, null) == null ? null : this;
+            return getExceptionHandler((String) param) == null ? null : this;
         } else if (param instanceof Throwable) {
-            return getExceptionHandler(null, (Throwable) param, null) == null ? null : this;
-        } else if (param instanceof KogitoProcessContext) {
-            return getExceptionHandler(null, getException((KogitoProcessContext) param), (KogitoProcessContext) param) == null ? null : this;
+            return getExceptionHandler((Throwable) param) == null ? null : this;
         }
         throw new IllegalArgumentException(
                 "ExceptionScopes can only resolve exception names: " + param);
     }
+
 }
