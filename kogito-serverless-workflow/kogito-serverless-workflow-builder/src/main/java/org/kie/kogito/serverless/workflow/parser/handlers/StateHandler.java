@@ -174,7 +174,6 @@ public abstract class StateHandler<S extends State> {
         Transition transition = compensation.getState().getTransition();
         long lastNodeId = compensation.getNode().getNode().getId();
         compensation.handleTransitions(embeddedSubProcess, transition, lastNodeId);
-        compensation.handleErrors(embeddedSubProcess);
         compensation.handleConnections(embeddedSubProcess);
         return lastNodeId;
     }
@@ -234,10 +233,6 @@ public abstract class StateHandler<S extends State> {
         }
     }
 
-    public void handleErrors() {
-        handleErrors(parserContext.factory());
-    }
-
     protected final Iterable<ErrorDefinition> getErrorDefinitions(Error error) {
         Predicate<? super ErrorDefinition> pred;
         if (error.getErrorRef() != null) {
@@ -250,29 +245,25 @@ public abstract class StateHandler<S extends State> {
         return workflow.getErrors().getErrorDefs().stream().filter(pred).collect(Collectors.toList());
     }
 
-    protected void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory) {
-        if (node instanceof RuleFlowNodeContainerFactory) {
-            for (Error error : state.getOnErrors()) {
-                for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
-                    if (errorDef.getCode() == null) {
-                        logger.error("Kogito requires code error to be set. Ignoring {}", errorDef.getName());
-                        break;
-                    }
-                    String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getMetaData().get("UniqueId") + '-';
-                    BoundaryEventNodeFactory<?> boundaryNode = factory.boundaryEventNode(parserContext.newId()).attachedTo(node.getNode().getId())
-                            .metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true).metaData(Metadata.ERROR_EVENT, errorDef.getCode())
-                            .eventType(errorPrefix + errorDef.getCode())
-                            .name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + node.getNode().getName() + '-' + errorDef.getCode());
-                    ((RuleFlowNodeContainerFactory) node).exceptionHandler(errorDef.getCode(), errorDef.getCode());
-                    if (error.getEnd() != null) {
-                        connect(boundaryNode, endNodeFactory(factory, error.getEnd()));
-                    } else {
-                        handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
-                    }
+    protected final void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory, RuleFlowNodeContainerFactory<?, ?> targetNode) {
+        for (Error error : state.getOnErrors()) {
+            for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
+                if (errorDef.getCode() == null) {
+                    logger.error("Kogito requires code error to be set. Ignoring {}", errorDef.getName());
+                    return;
+                }
+                String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + targetNode.getNode().getMetaData().get("UniqueId") + '-';
+                BoundaryEventNodeFactory<?> boundaryNode = factory.boundaryEventNode(parserContext.newId()).attachedTo(targetNode.getNode().getId())
+                        .metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true).metaData(Metadata.ERROR_EVENT, errorDef.getCode())
+                        .eventType(errorPrefix + errorDef.getCode())
+                        .name(RuleFlowProcessFactory.ERROR_TYPE_PREFIX + targetNode.getNode().getName() + '-' + errorDef.getCode());
+                targetNode.exceptionHandler(errorDef.getCode(), errorDef.getCode());
+                if (error.getEnd() != null) {
+                    connect(boundaryNode, endNodeFactory(factory, error.getEnd()));
+                } else {
+                    handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
                 }
             }
-        } else {
-            logger.error("State {} does not support error handling", state.getName());
         }
     }
 
