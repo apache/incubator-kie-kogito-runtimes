@@ -100,7 +100,7 @@
 
     <version.maven>3.8.6</version.maven>
     <version.maven.plugin>3.6.0</version.maven.plugin>
-    <version.maven.invoker>3.1.0</version.maven.invoker>
+    <version.maven.invoker>3.2.0</version.maven.invoker>
 
     <version.plexus>1.6</version.plexus>
     <version.plexus.classworld>2.6.0</version.plexus.classworld>
