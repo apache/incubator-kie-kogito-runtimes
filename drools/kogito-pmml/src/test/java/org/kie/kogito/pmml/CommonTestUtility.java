@@ -33,7 +33,7 @@ import org.kie.pmml.api.enums.RESULT_FEATURE;
 import org.kie.pmml.api.models.Interval;
 import org.kie.pmml.api.models.MiningField;
 import org.kie.pmml.api.models.OutputField;
-import org.kie.pmml.api.runtime.PMMLContext;
+import org.kie.pmml.api.runtime.PMMLRuntimeContext;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -77,7 +77,7 @@ public class CommonTestUtility {
         return new KiePMMLModel(fileName, modelName, Collections.emptyList()) {
 
             @Override
-            public Object evaluate(Map<String, Object> requestData, PMMLContext context) {
+            public Object evaluate(Map<String, Object> requestData, PMMLRuntimeContext context) {
                 return null;
             }
 

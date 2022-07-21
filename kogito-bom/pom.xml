@@ -1511,6 +1511,14 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- EFESTO -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-efesto-dependencies</artifactId>
+        <type>pom</type>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- drools -->
       <dependency>
         <groupId>org.kie.kogito</groupId>

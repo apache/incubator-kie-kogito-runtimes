@@ -16,26 +16,19 @@
 package org.kie.kogito.codegen.prediction;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.dmg.pmml.PMML;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.efesto.common.api.io.IndexFile;
-import org.kie.efesto.common.api.model.FRI;
+import org.kie.api.pmml.PMMLRequestData;
 import org.kie.efesto.common.api.model.GeneratedExecutableResource;
-import org.kie.efesto.compilationmanager.api.model.EfestoFileResource;
-import org.kie.efesto.compilationmanager.api.model.EfestoResource;
 import org.kie.efesto.compilationmanager.api.service.CompilationManager;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -45,19 +38,18 @@ import org.kie.kogito.codegen.prediction.config.PredictionConfigGenerator;
 import org.kie.kogito.pmml.openapi.api.PMMLOASResult;
 import org.kie.kogito.pmml.openapi.factories.PMMLOASResultFactory;
 import org.kie.memorycompiler.KieMemoryCompiler;
-import org.kie.pmml.api.exceptions.KiePMMLException;
+import org.kie.pmml.api.runtime.PMMLRuntimeContext;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.commons.model.KiePMMLModelFactory;
-import org.kie.pmml.compiler.commons.utils.KiePMMLUtil;
+import org.kie.pmml.evaluator.core.PMMLRuntimeContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static java.util.stream.Collectors.toList;
-import static org.kie.efesto.common.api.model.FRI.SLASH;
-import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
+import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getAllGeneratedExecutableResources;
 import static org.kie.pmml.commons.Constants.PMML_STRING;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 import static org.kie.pmml.evaluator.core.utils.PMMLRuntimeHelper.loadAllKiePMMLModelFactories;
@@ -106,36 +98,47 @@ public class PredictionCodegen extends AbstractGenerator {
 
     private static List<KiePMMLModel> getKiePMMLModels(Resource resource) {
         File pmmlFile = new File(resource.getSourcePath());
-        // @TODO gcardosi: all the following line are a workaround needed until DROOLS-7050 (with a "persistent" storage of already compiled classes)
-        // is implemented. Without that, loadAllKiePMMLModelFactories would throw ClassNotFoundException because it read from IndexFile
-        // classes that have been generated/compiled with a different classloader
-        String fileNameNoSuffix = pmmlFile.getName().replace(".pmml", "");
-        Collection<FRI> fries = new HashSet<>();
-        try {
-            PMML pmml = KiePMMLUtil.load(new FileInputStream(pmmlFile), pmmlFile.getName());
-            pmml.getModels().forEach(pmmlModel -> {
-                String basePath = fileNameNoSuffix + SLASH + getSanitizedClassName(pmmlModel.getModelName());
-                FRI toAdd = new FRI(basePath, PMML_STRING);
-                fries.add(toAdd);
-            });
-        } catch (Exception e) {
-            LOGGER.error("failed to load PMMLModel from {}", pmmlFile);
-        }
-
-        EfestoResource<File> efestoFileResource = new EfestoFileResource(pmmlFile);
+        //        // @TODO gcardosi: all the following line are a workaround needed until DROOLS-7050 (with a "persistent"
+        //         storage of already compiled classes)
+        //        // is implemented. Without that, loadAllKiePMMLModelFactories would throw ClassNotFoundException because it
+        //        read from IndexFile
+        //        // classes that have been generated/compiled with a different classloader
+        //        String fileNameNoSuffix = pmmlFile.getName().replace(".pmml", "");
+        //        Collection<FRI> fries = new HashSet<>();
+        //        try {
+        //            PMML pmml = KiePMMLUtil.load(new FileInputStream(pmmlFile), pmmlFile.getName());
+        //            pmml.getModels().forEach(pmmlModel -> {
+        //                String basePath = fileNameNoSuffix + SLASH + getSanitizedClassName(pmmlModel.getModelName());
+        //                FRI toAdd = new FRI(basePath, PMML_STRING);
+        //                fries.add(toAdd);
+        //            });
+        //        } catch (Exception e) {
+        //            LOGGER.error("failed to load PMMLModel from {}", pmmlFile);
+        //        }
+        //
+        //        EfestoResource<File> efestoFileResource = new EfestoFileResource(pmmlFile);
+        //        KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
+        //                new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
+        //        PMMLCompilationContext compilationContext = new PMMLCompilationContextImpl(pmmlFile.getName(),
+        //        memoryCompilerClassLoader);
+        //        Collection<IndexFile> indexFiles = compilationManager.processResource(compilationContext, efestoFileResource);
+        //        IndexFile pmmlIndexFile = indexFiles.stream().filter(indexFile -> indexFile.getModel().equals("pmml"))
+        //                .findFirst()
+        //                .orElseThrow(() -> new KiePMMLException("Failed to retrieve generated IndexFile: please check
+        //                classpath for required  dependencies"));
+        //        // TODO end workaround. When DROOLS-7050 will be merged, there won't be the need anymore to filter by "FRI"
+        //        Collection<GeneratedExecutableResource> executableResources = fries.stream()
+        //                .map(fri -> getGeneratedExecutableResource(fri, pmmlIndexFile))
+        //                .filter(Optional::isPresent)
+        //                .map(Optional::get)
+        //                .collect(Collectors.toSet());
+        Collection<GeneratedExecutableResource> executableResources = getAllGeneratedExecutableResources(PMML_STRING);
         KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
                 new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
-        Collection<IndexFile> indexFiles = compilationManager.processResource(memoryCompilerClassLoader, efestoFileResource);
-        IndexFile pmmlIndexFile = indexFiles.stream().filter(indexFile -> indexFile.getModel().equals("pmml"))
-                .findFirst()
-                .orElseThrow(() -> new KiePMMLException("Failed to retrieve generated IndexFile: please check classpath for required  dependencies"));
-        Collection<GeneratedExecutableResource> executableResources = fries.stream()
-                .map(fri -> getGeneratedExecutableResource(fri, pmmlIndexFile))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
-        // TODO end workaround. When DROOLS-7050 will be merged, there won't be the need anymore to filter by "FRI"
-        Collection<KiePMMLModelFactory> kiePMMLModelFactories = loadAllKiePMMLModelFactories(executableResources, memoryCompilerClassLoader);
+        PMMLRuntimeContext runtimeContext = new PMMLRuntimeContextImpl(new PMMLRequestData(), pmmlFile.getName(),
+                memoryCompilerClassLoader);
+        Collection<KiePMMLModelFactory> kiePMMLModelFactories = loadAllKiePMMLModelFactories(executableResources,
+                runtimeContext);
         return kiePMMLModelFactories.stream()
                 .flatMap(factory -> factory.getKiePMMLModels().stream())
                 .collect(toList());

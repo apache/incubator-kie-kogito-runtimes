@@ -24,15 +24,15 @@ import java.util.stream.Stream;
 
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
-import org.kie.efesto.compilationmanager.api.model.EfestoFileResource;
-import org.kie.efesto.compilationmanager.api.model.EfestoResource;
 import org.kie.efesto.compilationmanager.api.service.CompilationManager;
 import org.kie.memorycompiler.KieMemoryCompiler;
 import org.kie.pmml.api.PMMLRuntimeFactory;
 import org.kie.pmml.api.exceptions.KiePMMLException;
 import org.kie.pmml.api.models.PMMLModel;
 import org.kie.pmml.api.runtime.PMMLRuntime;
-import org.kie.pmml.evaluator.core.PMMLContextImpl;
+import org.kie.pmml.api.runtime.PMMLRuntimeContext;
+import org.kie.pmml.evaluator.core.PMMLRuntimeContextImpl;
+import org.kie.pmml.evaluator.core.service.PMMLRuntimeInternalImpl;
 
 import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
@@ -62,9 +62,11 @@ public class PMMLKogito {
         return toReturn;
     }
 
-    public static PMMLModel modelByName(PMMLRuntime pmmlRuntime, String modelName) {
+    public static PMMLModel modelByName(PMMLRuntime pmmlRuntime, String fileName, String modelName) {
+        final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName);
+        final PMMLRuntimeContext runtimeContext = getPMMLRuntimeContext(pmmlRequestData, fileName);
         List<PMMLModel> modelsWithName =
-                pmmlRuntime.getPMMLModels().stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
+                pmmlRuntime.getPMMLModels(runtimeContext).stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
         if (modelsWithName.size() == 1) {
             return modelsWithName.get(0);
         } else {
@@ -76,24 +78,23 @@ public class PMMLKogito {
         }
     }
 
-    public static PMML4Result evaluate(PMMLRuntime pmmlRuntime, String fileName, String modelName, Map<String, Object> pmmlContext) {
-        final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName, pmmlContext);
-        return pmmlRuntime.evaluate(modelName, new PMMLContextImpl(pmmlRequestData, fileName,
-                pmmlRuntime.getMemoryClassLoader()));
+    public static PMML4Result evaluate(PMMLRuntime pmmlRuntime, String fileName, String modelName, Map<String, Object> pmmlInputData) {
+        final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName, pmmlInputData);
+        return pmmlRuntime.evaluate(modelName, getPMMLRuntimeContext(pmmlRequestData, fileName));
+    }
+
+    private static PMMLRuntimeContext getPMMLRuntimeContext(PMMLRequestData pmmlRequestData, String fileName) {
+        KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
+                new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
+        return new PMMLRuntimeContextImpl(pmmlRequestData, fileName, memoryCompilerClassLoader);
     }
 
     private static PMMLRuntime getPMMLRuntimeAlreadyCompiled() {
-        KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
-                new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
-        return PMML_RUNTIME_FACTORY.getPMMLRuntimeFromClassloader(memoryCompilerClassLoader);
+        return new PMMLRuntimeInternalImpl();
     }
 
     private static PMMLRuntime getPMMLRuntimeWithInMemoryCompilation(File pmmlFile) {
-        EfestoResource<File> darResource = new EfestoFileResource(pmmlFile);
-        KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
-                new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
-        compilationManager.processResource(memoryCompilerClassLoader, darResource);
-        return PMML_RUNTIME_FACTORY.getPMMLRuntimeFromClassloader(memoryCompilerClassLoader);
+        return PMML_RUNTIME_FACTORY.getPMMLRuntimeFromFile(pmmlFile);
     }
 
 }

@@ -73,6 +73,13 @@
                 <version>${version.org.kie}</version>
             </dependency>
 
+          <!-- EFESTO -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-dependencies</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+
             <!-- DROOLS -->
             <dependency>
                 <groupId>org.drools</groupId>
