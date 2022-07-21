@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.core.context.exception;
+package org.kie.kogito.serverless.workflow.rpc;
 
-public abstract class AbstractHierarchyExceptionPolicy implements ExceptionHandlerPolicy {
-    @Override
-    public boolean test(String errorCode, Throwable exception) {
-        boolean found = verify(errorCode, exception);
-        Throwable rootCause = exception.getCause();
-        while (!found && rootCause != null) {
-            found = verify(errorCode, rootCause);
-            rootCause = rootCause.getCause();
-        }
-        return found;
-    }
+import java.util.Map;
 
-    protected abstract boolean verify(String errorCode, Throwable exception);
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.protobuf.Message;
 
+public interface RPCConverter {
+
+    Message.Builder buildMessage(Map<String, Object> parameters, Message.Builder builder);
+
+    JsonNode getJsonNode(Message message);
 }

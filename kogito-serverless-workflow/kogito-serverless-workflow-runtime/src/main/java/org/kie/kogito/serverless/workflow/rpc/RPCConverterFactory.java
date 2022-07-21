@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.core.context.exception;
+package org.kie.kogito.serverless.workflow.rpc;
 
-public class SubclassExceptionPolicy implements ExceptionHandlerPolicy {
-
-    @Override
-    public boolean test(String className, Throwable exception) {
-        boolean found = false;
-        Class<?> exceptionClass = exception.getClass().getSuperclass();
-        while (!found && !exceptionClass.equals(Object.class)) {
-            found = className.equals(exceptionClass.getName());
-            exceptionClass = exceptionClass.getSuperclass();
-        }
-        return found;
+public class RPCConverterFactory {
+    private RPCConverterFactory() {
     }
 
+    private static final RPCConverter instance = new ProtobufUtilRPCConverter();
+
+    public static RPCConverter get() {
+        return instance;
+    }
 }

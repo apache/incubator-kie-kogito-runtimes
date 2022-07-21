@@ -15,13 +15,17 @@
  */
 package org.jbpm.process.core.context.exception;
 
-public class MessageContentExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+import org.kie.kogito.process.workitem.WorkItemExecutionException;
+
+public class ErrorCodeExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+
     @Override
     protected boolean verify(String errorCode, Throwable exception) {
-        String msg = exception.getMessage();
-        if (msg != null) {
-            return msg.toLowerCase().contains(errorCode.toLowerCase()) || msg.matches(errorCode);
-        }
-        return false;
+        return exception instanceof WorkItemExecutionException && getErrorCode(errorCode).equals(((WorkItemExecutionException) exception).getErrorCode());
+    }
+
+    private String getErrorCode(String errorCode) {
+        String[] error = errorCode.split(":");
+        return error[error.length - 1];
     }
 }

@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.core.context.exception;
 
-public abstract class AbstractHierarchyExceptionPolicy implements ExceptionHandlerPolicy {
-    @Override
-    public boolean test(String errorCode, Throwable exception) {
-        boolean found = verify(errorCode, exception);
-        Throwable rootCause = exception.getCause();
-        while (!found && rootCause != null) {
-            found = verify(errorCode, rootCause);
-            rootCause = rootCause.getCause();
-        }
-        return found;
-    }
+package org.kie.kogito.quarkus.conf;
 
-    protected abstract boolean verify(String errorCode, Throwable exception);
+import io.quarkus.runtime.annotations.ConfigGroup;
+import io.quarkus.runtime.annotations.ConfigItem;
+
+@ConfigGroup
+public class KogitoPersistenceBuildTimeConfig {
+
+    /**
+     * Generate Protobuf marshallers for runtime
+     */
+    @ConfigItem(name = "proto.marshaller", defaultValue = "true")
+    public boolean runtimeProtoMarshaller;
+
+    /**
+     * Generate Protobuf marshallers for Data Index
+     */
+    @ConfigItem(name = "data-index.proto.generation", defaultValue = "true")
+    public boolean dataIndexProtoMarshaller;
 
 }
