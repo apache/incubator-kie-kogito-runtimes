@@ -44,6 +44,7 @@ jobs:
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+          definition-file: 'https://raw.githubusercontent.com/radtriste/kogito-pipelines/kogito-7626-maven-wrapper/.ci/pull-request-config.yaml'
       - name: Surefire Report
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
