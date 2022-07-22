@@ -113,7 +113,7 @@
   </build>
   <!-- 
     to invoke protobuff files again just use this command:
-        mvn generate-sources  -Pproto
+        ./mvnw generate-sources  -Pproto
    -->
   <profiles>
     <profile>

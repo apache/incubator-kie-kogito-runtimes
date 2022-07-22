@@ -65,7 +65,7 @@ public class GenerateModelMojo extends AbstractKieMojo {
     public void execute() throws MojoExecutionException {
         addCompileSourceRoots();
         if (isOnDemand()) {
-            getLog().info("On-Demand Mode is On. Use mvn compile kogito:scaffold");
+            getLog().info("On-Demand Mode is On. Use ./mvnw compile kogito:scaffold");
         } else {
             generateModel();
         }

@@ -12,7 +12,8 @@
 current_path=$(pwd)
 
 cd ../drools
-mvn clean install -Dquickly
+# TODO setup mvn wrapper on Drools
+./mvnw clean install -Dquickly
 
 cd ${current_path}
 

@@ -34,7 +34,7 @@ jobs:
       run: cd $GITHUB_WORKSPACE/main/.ci/jenkins/tests && ./setup_pipeline_env.sh
       
     - name: Test pipelines
-      run: cd $GITHUB_WORKSPACE/main/.ci/jenkins/tests && mvn -B clean test
+      run: cd $GITHUB_WORKSPACE/main/.ci/jenkins/tests && ../../../mvnw -B clean test
 
   dsl-tests:
     runs-on: ubuntu-latest

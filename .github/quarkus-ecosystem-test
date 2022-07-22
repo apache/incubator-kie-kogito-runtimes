@@ -3,7 +3,7 @@ set -e
 set -x
 
 # update Quarkus dependencies
-mvn versions:compare-dependencies \
+./mvnw versions:compare-dependencies \
     -pl :kogito-dependencies-bom \
     -DremotePom=io.quarkus:quarkus-bom:${QUARKUS_VERSION} \
     -DupdatePropertyVersions=true \
@@ -11,10 +11,10 @@ mvn versions:compare-dependencies \
     -DgenerateBackupPoms=false
 
 # update Quarkus version
-mvn versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
-mvn versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus-test-maven -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
+./mvnw versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
+./mvnw versions:set-property -pl :kogito-dependencies-bom -Dproperty=version.io.quarkus-test-maven -DnewVersion=${QUARKUS_VERSION} -DgenerateBackupPoms=false
 
 # run the tests
-mvn --settings .github/quarkus-ecosystem-maven-settings.xml -B --fail-at-end clean install -Dnative -Dquarkus.native.container-build=true ${MAVEN_EXTRA_OPTS}
+./mvnw --settings .github/quarkus-ecosystem-maven-settings.xml -B --fail-at-end clean install -Dnative -Dquarkus.native.container-build=true ${MAVEN_EXTRA_OPTS}
 
 set +x

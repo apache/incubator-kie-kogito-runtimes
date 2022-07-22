@@ -51,7 +51,7 @@ We decided to disallow `@author` tags in the Javadoc: they are hard to maintain,
 
 Copyright headers format is enforced during build time. In order to automatically format your files, you could run the following Maven command:
 ```bash
-mvn com.mycila:license-maven-plugin:format
+./mvnw com.mycila:license-maven-plugin:format
 ```
 
 Make sure you have configured your IDE according to the [project codestyle](https://github.com/kiegroup/kogito-runtimes/tree/main/kogito-build/kogito-ide-config).
@@ -179,7 +179,7 @@ After the build is successful, the artifacts are available in your local Maven r
 
 ### Test Coverage
 
-Kogito uses Jacoco to generate test coverage. If you would like to generate the report run `mvn clean verify -Ptest-coverage`. 
+Kogito uses Jacoco to generate test coverage. If you would like to generate the report run `./mvnw clean verify -Ptest-coverage`. 
 The code coverage report will be generated in `target/site/jacoco/`.
 
 ## The small print

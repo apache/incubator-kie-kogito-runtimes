@@ -20,9 +20,10 @@
 **JIRA Issues:** https://issues.jboss.org/projects/KOGITO
 
 ## Requirements
-- [Maven](https://maven.apache.org/) 3.8.1 or later
 - [Java](https://openjdk.java.net/install/) 11 or later (devel package)
 - optional: Docker installation for running integration tests
+
+**NOTE:** This project uses the [Maven wrapper](https://maven.apache.org/wrapper/) so you should not need any default installation of Maven.
 
 ## Getting Started
 The [Kogito Examples repository](https://github.com/kiegroup/kogito-examples) module contains a number of examples that you can take a look at and try out yourself. Please take a look at the readme of each individual example for more details on how the example works and how to run it yourself (either locally or on Kubernetes).
