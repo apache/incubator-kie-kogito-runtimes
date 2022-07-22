@@ -123,6 +123,7 @@ String getTargetBranch(Integer addToMajor) {
 
 MavenCommand getMavenCommand(String directory) {
     return new MavenCommand(this, ['-fae', '-ntp'])
+                .useMavenWrapper()
                 .withSettingsXmlId('kogito_release_settings')
                 .withProperty('java.net.preferIPv4Stack', true)
                 .inDirectory(directory)

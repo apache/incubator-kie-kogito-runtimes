@@ -71,5 +71,6 @@ pipeline {
 
 MavenCommand getMavenCommand() {
     return new MavenCommand(this, ['-fae', '-ntp'])
+                .useMavenWrapper()
                 .withSettingsXmlId('kogito_release_settings')
 }
