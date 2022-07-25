@@ -26,7 +26,8 @@ public class ExceptionHandlerPolicyFactory {
     private static Collection<ExceptionHandlerPolicy> policies = new ArrayList<>();
 
     static {
-        policies.add(new SubclassExceptionPolicy());
+        policies.add(new MessageContentRegexExceptionPolicy());
+        policies.add(new ErrorCodeExceptionPolicy());
         policies.add(new RootCauseExceptionPolicy());
     }
 

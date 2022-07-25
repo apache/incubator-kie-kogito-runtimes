@@ -15,19 +15,18 @@
  */
 package org.jbpm.process.core.context.exception;
 
-public class RootCauseExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+public abstract class AbstractHierarchyExceptionPolicy implements ExceptionHandlerPolicy {
     @Override
-    protected boolean verify(String errorCode, Throwable exception) {
-        Class<?> exceptionClass = exception.getClass();
-        boolean found = isException(errorCode, exceptionClass);
-        while (!found && !exceptionClass.equals(Object.class)) {
-            exceptionClass = exceptionClass.getSuperclass();
-            found = isException(errorCode, exceptionClass);
+    public boolean test(String errorCode, Throwable exception) {
+        boolean found = verify(errorCode, exception);
+        Throwable rootCause = exception.getCause();
+        while (!found && rootCause != null) {
+            found = verify(errorCode, rootCause);
+            rootCause = rootCause.getCause();
         }
         return found;
     }
 
-    private boolean isException(String errorCode, Class<?> exceptionClass) {
-        return errorCode.equals(exceptionClass.getName());
-    }
+    protected abstract boolean verify(String errorCode, Throwable exception);
+
 }
