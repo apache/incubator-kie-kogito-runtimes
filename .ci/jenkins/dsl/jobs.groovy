@@ -55,14 +55,14 @@ if (Utils.isMainBranch(this)) {
 
 // PR checks
 setupMultijobPrDefaultChecks()
-// setupMultijobPrNativeChecks()
+setupMultijobPrNativeChecks()
 setupMultijobPrLTSChecks()
 
 // Nightly jobs
 if (Utils.isMainBranch(this)) {
     setupQuarkusJob('main')
 }
-// setupNativeJob()
+setupNativeJob()
 setupDeployJob(FolderUtils.getNightlyFolder(this), KogitoJobType.NIGHTLY)
 setupPromoteJob(FolderUtils.getNightlyFolder(this), KogitoJobType.NIGHTLY)
 
@@ -74,7 +74,7 @@ if (!Utils.isMainBranch(this)) {
 
 if (Utils.isLTSBranch(this)) {
     setupQuarkusJob(Utils.getQuarkusLTSVersion(this))
-    // setupNativeLTSJob()
+    setupNativeLTSJob()
 }
 
 // Tools job
