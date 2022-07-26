@@ -16,6 +16,7 @@
     <module>common</module>
     <module>runtime</module>
     <module>deployment</module>
+    <module>throttling</module>
   </modules>
 
 </project>
