@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.actions;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,20 +44,19 @@ public class DataInputSchemaValidatorTest {
 
     @Test
     void testValidSchema() throws IOException {
-        assertDoesNotThrow(
-                () -> validator.validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new IntNode(4), new IntNode(3)))));
+        final Map<String, Object> model = Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new IntNode(4), new IntNode(3)));
+        assertDoesNotThrow(() -> validator.validate(model));
     }
 
     @Test
     void testInvalidSchema() throws IOException {
-        assertThrows(IllegalArgumentException.class,
-                () -> validator.validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new TextNode("xcdsfd"), new IntNode(3)))));
+        final Map<String, Object> model = Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new TextNode("xcdsfd"), new IntNode(3)));
+        assertThrows(IllegalArgumentException.class, () -> validator.validate(model));
     }
 
     @Test
     void testEmptyInput() throws IOException {
-        assertThrows(IllegalArgumentException.class,
-                () -> validator.validate(Collections.emptyMap()));
+        assertThrows(IllegalArgumentException.class, () -> validator.validate(Collections.emptyMap()));
     }
 
     private ObjectNode createNode(JsonNode x, JsonNode y) {
