@@ -18,6 +18,7 @@ package org.kie.kogito.serverless.workflow.actions;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
@@ -33,22 +34,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DataInputSchemaValidatorTest {
 
+    private static DataInputSchemaValidator validator;
+
+    @BeforeAll
+    static void init() {
+        validator = new DataInputSchemaValidator("expression.json", true);
+    }
+
     @Test
     void testValidSchema() throws IOException {
         assertDoesNotThrow(
-                () -> new DataInputSchemaValidator("expression.json", true).validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new IntNode(4), new IntNode(3)))));
+                () -> validator.validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new IntNode(4), new IntNode(3)))));
     }
 
     @Test
     void testInvalidSchema() throws IOException {
         assertThrows(IllegalArgumentException.class,
-                () -> new DataInputSchemaValidator("expression.json", true).validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new TextNode("xcdsfd"), new IntNode(3)))));
+                () -> validator.validate(Collections.singletonMap(SWFConstants.DEFAULT_WORKFLOW_VAR, createNode(new TextNode("xcdsfd"), new IntNode(3)))));
     }
 
     @Test
     void testEmptyInput() throws IOException {
         assertThrows(IllegalArgumentException.class,
-                () -> new DataInputSchemaValidator("expression.json", true).validate(Collections.emptyMap()));
+                () -> validator.validate(Collections.emptyMap()));
     }
 
     private ObjectNode createNode(JsonNode x, JsonNode y) {

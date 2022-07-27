@@ -39,8 +39,8 @@ public class DataInputSchemaValidator implements WorkflowValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInputSchemaValidator.class);
 
-    protected String schema;
-    protected boolean failOnValidationErrors;
+    protected final String schema;
+    protected final boolean failOnValidationErrors;
 
     public DataInputSchemaValidator(String schema, boolean failOnValidationErrors) {
         this.schema = schema;
