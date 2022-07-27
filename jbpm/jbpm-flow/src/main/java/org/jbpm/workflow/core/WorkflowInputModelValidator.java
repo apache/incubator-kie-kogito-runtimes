@@ -18,7 +18,7 @@ package org.jbpm.workflow.core;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface WorkflowValidator extends Serializable {
+public interface WorkflowInputModelValidator extends Serializable {
 
     /**
      * Validates the input model

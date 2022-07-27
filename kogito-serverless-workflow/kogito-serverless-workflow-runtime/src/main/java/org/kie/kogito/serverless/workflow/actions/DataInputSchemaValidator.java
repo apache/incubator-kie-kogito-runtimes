@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
-import org.jbpm.workflow.core.WorkflowValidator;
+import org.jbpm.workflow.core.WorkflowInputModelValidator;
 import org.json.JSONObject;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.runtimeLoader;
 
-public class DataInputSchemaValidator implements WorkflowValidator {
+public class DataInputSchemaValidator implements WorkflowInputModelValidator {
 
     private static final long serialVersionUID = 1L;
 
