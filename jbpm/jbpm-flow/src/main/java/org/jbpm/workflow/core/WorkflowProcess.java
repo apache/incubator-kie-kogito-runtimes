@@ -17,6 +17,7 @@ package org.jbpm.workflow.core;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 
@@ -39,6 +40,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @return the imports of this RuleFlow process
      */
+    @Override
     Set<String> getImports();
 
     /**
@@ -47,6 +49,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @return the function imports of this RuleFlow process
      */
+    @Override
     List<String> getFunctionImports();
 
     /**
@@ -54,6 +57,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @param imports the imports as a List of fully qualified class names
      */
+    @Override
     void setImports(Set<String> imports);
 
     /**
@@ -61,6 +65,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @param functionImports the imports as a List of fully qualified class names
      */
+    @Override
     void setFunctionImports(List<String> functionImports);
 
     /**
@@ -69,6 +74,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @return the imports of this RuleFlow process
      */
+    @Override
     Map<String, String> getGlobals();
 
     /**
@@ -76,6 +82,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @param globals the globals as a Map with the name as key and the type as value
      */
+    @Override
     void setGlobals(Map<String, String> globals);
 
     /**
@@ -83,6 +90,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
      * 
      * @return the names of the globals of this RuleFlow process
      */
+    @Override
     String[] getGlobalNames();
 
     /**
@@ -100,5 +108,9 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
     void setExpressionEvaluator(BiFunction<String, ProcessInstance, String> expressionEvaluator);
 
     String evaluateExpression(String metaData, ProcessInstance processInstance);
+
+    Optional<WorkflowValidator> getValidator();
+
+    void setValidator(WorkflowValidator validator);
 
 }
