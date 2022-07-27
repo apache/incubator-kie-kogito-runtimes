@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,7 +69,9 @@ import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
 
+import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.drools.drl.quarkus.util.deployment.DroolsQuarkusResourceUtils.compileGeneratedSources;
+import static org.drools.drl.quarkus.util.deployment.DroolsQuarkusResourceUtils.makeBuildItems;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.HOT_RELOAD_SUPPORT_PATH;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.dumpFilesToDisk;
 import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtils.getHotReloadSupportSource;
@@ -151,18 +155,35 @@ public class KogitoAssetsProcessor {
 
         Collection<GeneratedFile> generatedFiles = collectGeneratedFiles(sources, addonsPreSources, addonsPostSources);
 
-        // dump files to disk
-        dumpFilesToDisk(context.getAppPaths(), generatedFiles);
+        Map<GeneratedFileType, List<GeneratedFile>> mappedGeneratedFiles = generatedFiles.stream()
+                .collect(Collectors.groupingBy(GeneratedFile::type));
 
-        // build Java source code and register the generated beans
-        Optional<KogitoGeneratedClassesBuildItem> optionalIndex = compileAndIndexJavaSources(
+        Collection<GeneratedFile> generatedJavaSourcesFiles = mappedGeneratedFiles.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey() != COMPILED_CLASS)
+                .flatMap((Function<Map.Entry<GeneratedFileType, List<GeneratedFile>>, Stream<GeneratedFile>>) generatedFileTypeListEntry -> generatedFileTypeListEntry.getValue().stream())
+                .collect(Collectors.toList());
+
+        dumpFilesToDisk(context.getAppPaths(), generatedJavaSourcesFiles);
+
+        Collection<GeneratedBeanBuildItem> generatedBeanBuildItems = createGeneratedBeanBuildItemsFromJavaSources(
                 context,
-                generatedFiles,
-                generatedBeans,
-                jaxrsProducer,
+                generatedJavaSourcesFiles,
                 liveReload.isLiveReload());
 
-        registerDataEventsForReflection(optionalIndex.map(KogitoGeneratedClassesBuildItem::getIndexedClasses), context, reflectiveClass);
+        Collection<GeneratedBeanBuildItem> buildItemsFromCompiledClasses = createGeneratedBeanBuildItemsFromCompiledClasses(mappedGeneratedFiles.getOrDefault(COMPILED_CLASS, Collections.emptyList()));
+        generatedBeanBuildItems.addAll(buildItemsFromCompiledClasses);
+
+        // build Java source code and register the generated beans
+        Optional<KogitoGeneratedClassesBuildItem> optionalIndex = indexGeneratedBeanBuildItemWithRestResources(
+                context,
+                generatedJavaSourcesFiles,
+                generatedBeanBuildItems,
+                generatedBeans,
+                jaxrsProducer);
+
+        registerDataEventsForReflection(optionalIndex.map(KogitoGeneratedClassesBuildItem::getIndexedClasses),
+                context, reflectiveClass);
         registerKogitoIncubationAPI(reflectiveClass);
 
         registerResources(generatedFiles, staticResProducer, resource, genResBI);
@@ -223,17 +244,30 @@ public class KogitoAssetsProcessor {
                 .generate();
     }
 
-    private Optional<KogitoGeneratedClassesBuildItem> compileAndIndexJavaSources(
+    private Collection<GeneratedBeanBuildItem> createGeneratedBeanBuildItemsFromJavaSources(
             KogitoBuildContext context,
             Collection<GeneratedFile> generatedFiles,
-            BuildProducer<GeneratedBeanBuildItem> generatedBeans,
-            BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer,
             boolean useDebugSymbols) throws IOException {
 
-        Collection<ResolvedDependency> dependencies = curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
+        Collection<ResolvedDependency> dependencies =
+                curateOutcomeBuildItem.getApplicationModel().getRuntimeDependencies();
+        return compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
+    }
 
-        Collection<GeneratedBeanBuildItem> generatedBeanBuildItems =
-                compileGeneratedSources(context, dependencies, generatedFiles, useDebugSymbols);
+    private Collection<GeneratedBeanBuildItem> createGeneratedBeanBuildItemsFromCompiledClasses(
+            Collection<GeneratedFile> generatedFiles) {
+        Map<String, byte[]> compiledClassesMap = new HashMap<>();
+        generatedFiles.forEach(generatedFile -> compiledClassesMap.put(generatedFile.relativePath(), generatedFile.contents()));
+        return makeBuildItems(compiledClassesMap);
+    }
+
+    private Optional<KogitoGeneratedClassesBuildItem> indexGeneratedBeanBuildItemWithRestResources(
+            KogitoBuildContext context,
+            Collection<GeneratedFile> generatedFiles,
+            Collection<GeneratedBeanBuildItem> generatedBeanBuildItems,
+            BuildProducer<GeneratedBeanBuildItem> generatedBeans,
+            BuildProducer<GeneratedJaxRsResourceBuildItem> jaxrsProducer) throws IOException {
+
         generatedBeanBuildItems.forEach(generatedBeans::produce);
         Set<String> restResourceClassNameSet = generatedFiles.stream()
                 .filter(file -> file.type().equals(Generator.REST_TYPE))
