@@ -15,8 +15,9 @@
  */
 package org.kie.kogito.event;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -44,19 +45,62 @@ public class KogitoEventExecutor {
     }
 
     public static ExecutorService getEventExecutor(int numOfThreads, int blockQueueSize, String threadNamePrefix) {
-        BlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(blockQueueSize);
-        RejectedExecutionHandler rejectedExecutionHandler = new ThreadPoolExecutor.CallerRunsPolicy();
-        AtomicInteger counter = new AtomicInteger(0);
-        ThreadFactory threadFactory = runnable -> {
-            String threadName = threadNamePrefix + "-" + counter.getAndIncrement();
-            Thread th = new Thread(runnable);
-            th.setName(threadName);
-            th.setDaemon(true);
-            return th;
-        };
-        return new ThreadPoolExecutor(1, numOfThreads, 1L, TimeUnit.MINUTES, blockingQueue, threadFactory, rejectedExecutionHandler);
+        return new KogitoThreadPoolExecutor(numOfThreads, blockQueueSize, threadNamePrefix);
     }
 
     private KogitoEventExecutor() {
+    }
+
+    private static class KogitoThreadPoolExecutor extends ThreadPoolExecutor {
+
+        private final Deque<Runnable> overflowBuffer = new LinkedList<>();
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            Runnable queued;
+            synchronized (overflowBuffer) {
+                queued = overflowBuffer.pollFirst();
+                if (queued != null && !getQueue().offer(queued)) {
+                    overflowBuffer.addFirst(queued);
+                }
+            }
+            if (queued == null) {
+                KogitoEmitterStatus.setStatus(true);
+            }
+        }
+
+        public KogitoThreadPoolExecutor(int numThreads, int queueSize, final String threadNamePrefix) {
+            super(1, numThreads, 1L, TimeUnit.MINUTES, new ArrayBlockingQueue<>(queueSize));
+            setThreadFactory(new KogitoThreadFactory(threadNamePrefix));
+            setRejectedExecutionHandler(new NonBlockingRejectedExecutionHandler());
+        }
+
+        private class NonBlockingRejectedExecutionHandler implements RejectedExecutionHandler {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                if (!executor.isShutdown()) {
+                    KogitoEmitterStatus.setStatus(false);
+                    overflowBuffer.addLast(r);
+                }
+            }
+        }
+
+        private static class KogitoThreadFactory implements ThreadFactory {
+            private final AtomicInteger counter = new AtomicInteger(1);
+            private String threadNamePrefix;
+
+            public KogitoThreadFactory(String threadNamePrefix) {
+                this.threadNamePrefix = threadNamePrefix;
+            }
+
+            @Override
+            public Thread newThread(Runnable r) {
+                String threadName = threadNamePrefix + "-" + counter.getAndIncrement();
+                Thread th = new Thread(r);
+                th.setName(threadName);
+                th.setDaemon(true);
+                return th;
+            }
+        }
     }
 }
