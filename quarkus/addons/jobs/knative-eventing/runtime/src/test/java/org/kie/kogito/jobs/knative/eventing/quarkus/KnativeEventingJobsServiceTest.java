@@ -18,13 +18,12 @@ package org.kie.kogito.jobs.knative.eventing.quarkus;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Optional;
 
 import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.jobs.messaging.quarkus.AbstractReactiveMessagingJobsServiceTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.kie.kogito.jobs.knative.eventing.quarkus.KnativeEventingJobsService.CLOUD_EVENTS_CONTENT_TYPE;
 
 class KnativeEventingJobsServiceTest extends AbstractReactiveMessagingJobsServiceTest<KnativeEventingJobsService> {
@@ -42,16 +42,22 @@ class KnativeEventingJobsServiceTest extends AbstractReactiveMessagingJobsServic
     }
 
     @Override
-    protected void verifyEmitterWasInvoked() {
-        super.verifyEmitterWasInvoked();
-        Metadata metadata = messageCaptor.getValue().getMetadata();
-        List<Object> metadataElements = StreamSupport.stream(metadata.spliterator(), false).collect(Collectors.toList());
-        assertThat(metadataElements).hasSize(1);
-        assertThat(metadataElements).element(0).isInstanceOf(OutgoingHttpMetadata.class);
-        OutgoingHttpMetadata httpMetadata = (OutgoingHttpMetadata) metadataElements.get(0);
-        assertThat(httpMetadata.getHeaders()).hasSize(1);
-        List<String> contentTypeValues = httpMetadata.getHeaders().get(HttpHeaders.CONTENT_TYPE);
-        assertThat(contentTypeValues).hasSize(1);
-        assertThat(contentTypeValues.get(0)).isEqualTo(CLOUD_EVENTS_CONTENT_TYPE);
+    protected void verifyEmitterWasInvoked(int times, String... expectedPayloads) {
+        super.verifyEmitterWasInvoked(times, expectedPayloads);
+        for (int i = 0; i < times; i++) {
+            Message<String> message = messageCaptor.getAllValues().get(i);
+            assertHasExpectedHttpMetadata(message);
+        }
+    }
+
+    private void assertHasExpectedHttpMetadata(Message<String> message) {
+        Optional<OutgoingHttpMetadata> httpMetadata = message.getMetadata(OutgoingHttpMetadata.class);
+        if (httpMetadata.isEmpty()) {
+            fail("Message doesn't have the expected OutgoingHttpMetadata");
+        } else {
+            assertThat(httpMetadata.get().getHeaders()).hasSize(1);
+            List<String> contentTypeValues = httpMetadata.get().getHeaders().get(HttpHeaders.CONTENT_TYPE);
+            assertThat(contentTypeValues).containsExactly(CLOUD_EVENTS_CONTENT_TYPE);
+        }
     }
 }
