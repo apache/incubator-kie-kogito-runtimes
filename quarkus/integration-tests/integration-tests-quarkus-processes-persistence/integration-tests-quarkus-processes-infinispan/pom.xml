@@ -51,8 +51,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-quarkus-test-utils</artifactId>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-test-infinispan-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
