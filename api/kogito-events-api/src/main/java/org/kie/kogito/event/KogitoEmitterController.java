@@ -16,18 +16,11 @@
 
 package org.kie.kogito.event;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+public interface KogitoEmitterController {
 
-public class KogitoEmitterStatus {
+    void resume(String channelName);
 
-    private static AtomicBoolean status = new AtomicBoolean(true);
+    void stop(String channelName);
 
-    public static void setStatus(boolean newStatus) {
-        status.set(newStatus);
-    }
-
-    public static boolean getStatus() {
-        return status.get();
-    }
-
+    boolean isEnabled(String channelName);
 }
