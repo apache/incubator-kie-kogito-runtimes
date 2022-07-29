@@ -17,9 +17,9 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 
 public interface QuarkusEmitterController {
 
-    void resume(String channelName);
+    boolean resume(String channelName);
 
-    void stop(String channelName);
+    boolean stop(String channelName);
 
     boolean isEnabled(String channelName);
 }

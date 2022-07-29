@@ -16,8 +16,8 @@
 package org.kie.kogito.addon.quarkus.messaging.common;
 
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +31,7 @@ public class QuarkusEventThreadPool extends ThreadPoolExecutor {
 
     private static final Logger logger = LoggerFactory.getLogger(QuarkusEventThreadPool.class);
 
-    private final Deque<Runnable> overflowBuffer = new ConcurrentLinkedDeque<>();
+    private final Deque<Runnable> overflowBuffer = new LinkedList<>();
     private final QuarkusEmitterController kogitoEmitter;
     private final String channelName;
 
@@ -45,26 +45,31 @@ public class QuarkusEventThreadPool extends ThreadPoolExecutor {
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        Runnable queued = overflowBuffer.pollFirst();
+        Runnable queued;
+        boolean resume;
+        synchronized (overflowBuffer) {
+            queued = overflowBuffer.pollFirst();
+            resume = queued != null && overflowBuffer.isEmpty();
+        }
         if (queued != null) {
-            if (overflowBuffer.isEmpty()) {
+            logger.trace("Addding runnable {} back to the executor", queued);
+            super.execute(queued);
+            if (resume) {
                 logger.trace("Resuming emission");
                 kogitoEmitter.resume(channelName);
             }
-            logger.trace("Trying to add runnable {} back to the queue", queued);
-            super.submit(queued);
-            logger.trace("Runnable {} added back to the queue", queued);
         }
-
     }
 
     private class NonBlockingRejectedExecutionHandler implements RejectedExecutionHandler {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
             if (!executor.isShutdown()) {
-                logger.trace("Rejecting runnable {}", r);
+                logger.trace("Rejecting runnable {}. Stopping emission", r);
                 kogitoEmitter.stop(channelName);
-                overflowBuffer.addLast(r);
+                synchronized (overflowBuffer) {
+                    overflowBuffer.addLast(r);
+                }
             }
         }
     }

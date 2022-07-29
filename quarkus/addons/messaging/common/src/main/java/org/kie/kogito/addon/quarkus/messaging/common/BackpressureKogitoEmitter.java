@@ -30,15 +30,20 @@ public class BackpressureKogitoEmitter implements QuarkusEmitterController {
     private Map<String, Runnable> handlers = new HashMap<>();
 
     @Override
-    public void resume(String channelName) {
-        if (statuses.remove(channelName)) {
-            handlers.get(channelName).run();
+    public boolean resume(String channelName) {
+        boolean result = statuses.remove(channelName);
+        if (result) {
+            Runnable handler = handlers.get(channelName);
+            if (handler != null) {
+                handler.run();
+            }
         }
+        return result;
     }
 
     @Override
-    public void stop(String channelName) {
-        statuses.add(channelName);
+    public boolean stop(String channelName) {
+        return statuses.add(channelName);
     }
 
     @Override
