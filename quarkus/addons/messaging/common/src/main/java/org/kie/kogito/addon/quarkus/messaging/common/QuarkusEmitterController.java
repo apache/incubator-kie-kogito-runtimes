@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.kie.kogito.addon.quarkus.messaging.common;
 
-package org.kie.kogito.event;
-
-public interface KogitoEmitterController {
+public interface QuarkusEmitterController {
 
     void resume(String channelName);
 

@@ -21,12 +21,10 @@ import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.kie.kogito.event.KogitoEmitterController;
-
 import io.vertx.core.impl.ConcurrentHashSet;
 
 @ApplicationScoped
-public class BackpressureKogitoEmitter implements KogitoEmitterController {
+public class BackpressureKogitoEmitter implements QuarkusEmitterController {
 
     private Set<String> statuses = new ConcurrentHashSet<>();
     private Map<String, Runnable> handlers = new HashMap<>();

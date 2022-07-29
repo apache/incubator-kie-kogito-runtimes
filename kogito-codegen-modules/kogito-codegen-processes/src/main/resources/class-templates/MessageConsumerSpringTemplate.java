@@ -28,7 +28,6 @@ import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.EventExecutorServiceFactory;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.KogitoEventExecutor;
 
 
 @org.springframework.stereotype.Component()
