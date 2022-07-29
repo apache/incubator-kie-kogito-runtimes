@@ -32,6 +32,7 @@ import io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventHttpOutgoingDecorator.CLOUD_EVENTS_CONTENT_TYPE;
 
 class KnativeEventingJobsServiceTest extends AbstractReactiveMessagingJobsServiceTest<KnativeEventingJobsService> {
 
@@ -56,7 +57,7 @@ class KnativeEventingJobsServiceTest extends AbstractReactiveMessagingJobsServic
         } else {
             assertThat(httpMetadata.get().getHeaders()).hasSize(1);
             List<String> contentTypeValues = httpMetadata.get().getHeaders().get(HttpHeaders.CONTENT_TYPE);
-            assertThat(contentTypeValues).containsExactly("application/cloudevents+json");
+            assertThat(contentTypeValues).containsExactly(CLOUD_EVENTS_CONTENT_TYPE);
         }
     }
 }
