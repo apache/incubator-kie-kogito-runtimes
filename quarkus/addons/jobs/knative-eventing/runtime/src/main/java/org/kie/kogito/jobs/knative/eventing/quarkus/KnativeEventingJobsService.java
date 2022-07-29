@@ -17,35 +17,25 @@
 package org.kie.kogito.jobs.knative.eventing.quarkus;
 
 import java.net.URI;
-import java.util.function.Supplier;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.HttpHeaders;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
-import org.kie.kogito.jobs.api.event.JobCloudEvent;
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventHttpOutgoingDecorator;
 import org.kie.kogito.jobs.messaging.quarkus.AbstractReactiveMessagingJobsService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata;
-
 @ApplicationScoped
 public class KnativeEventingJobsService extends AbstractReactiveMessagingJobsService {
 
-    static final String CLOUD_EVENTS_CONTENT_TYPE = "application/cloudevents+json";
     private static final String KOGITO_ADDON = "jobs-knative-eventing";
 
-    /**
-     * Metadata to include the content-type for structured CloudEvents messages
-     */
-    static final Supplier<OutgoingHttpMetadata> OUTGOING_HTTP_METADATA = () -> new OutgoingHttpMetadata.Builder()
-            .addHeader(HttpHeaders.CONTENT_TYPE, CLOUD_EVENTS_CONTENT_TYPE)
-            .build();
+    private static final CloudEventHttpOutgoingDecorator HTTP_OUTGOING_DECORATOR = new CloudEventHttpOutgoingDecorator();
 
     @Inject
     public KnativeEventingJobsService(
@@ -56,8 +46,8 @@ public class KnativeEventingJobsService extends AbstractReactiveMessagingJobsSer
     }
 
     @Override
-    public Metadata buildMetadata(JobCloudEvent<?> event) {
-        return Metadata.of(OUTGOING_HTTP_METADATA.get());
+    protected Message<String> decorate(Message<String> message) {
+        return HTTP_OUTGOING_DECORATOR.decorate(message);
     }
 
     @Override

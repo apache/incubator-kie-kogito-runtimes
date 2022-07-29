@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
+import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.JobsServiceException;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
@@ -101,7 +101,9 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
         return true;
     }
 
-    protected abstract Metadata buildMetadata(JobCloudEvent<?> event);
+    protected Message<String> decorate(Message<String> message) {
+        return message;
+    }
 
     protected abstract String getAddonName();
 
@@ -111,16 +113,14 @@ public abstract class AbstractReactiveMessagingJobsService implements JobsServic
             String json = serializer.serialize(event);
             LOGGER.trace("JobCloudEvent json value: {}", json);
             Context context = Vertx.currentContext();
-            Metadata metadata = buildMetadata(event);
-            Uni<Void> uni = Uni.createFrom().emitter(e -> eventsEmitter.send(ContextAwareMessage.of(json)
-                    .withMetadata(metadata != null ? metadata : Metadata.empty())
+            Uni<Void> uni = Uni.createFrom().emitter(e -> eventsEmitter.send(decorate(ContextAwareMessage.of(json)
                     .withAck(() -> {
                         e.complete(null);
                         return CompletableFuture.completedFuture(null);
                     }).withNack(reason -> {
                         e.fail(reason);
                         return CompletableFuture.completedFuture(null);
-                    })));
+                    }))));
             if (context != null) {
                 uni = uni.emitOn(runnable -> context.runOnContext(x -> runnable.run()));
             }

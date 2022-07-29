@@ -24,8 +24,6 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
-import org.kie.kogito.jobs.api.event.JobCloudEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,11 +38,6 @@ public class ReactiveMessagingJobsService extends AbstractReactiveMessagingJobsS
             ObjectMapper objectMapper,
             @Channel(KOGITO_JOB_SERVICE_JOB_REQUEST_EVENTS_CHANNEL) Emitter<String> eventsEmitter) {
         super(serviceUrl, objectMapper, eventsEmitter);
-    }
-
-    @Override
-    protected Metadata buildMetadata(JobCloudEvent<?> event) {
-        return Metadata.empty();
     }
 
     @Override
