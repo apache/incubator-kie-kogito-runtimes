@@ -39,6 +39,11 @@ pipeline {
             }
             steps {
                 script {
+                    // Calculate integration branch
+                    env.INTEGRATION_BRANCH = "${getKogitoBranch()}-integration-quarkus-${getQuarkusBranch()}"
+                    mergeOnIntegrationBranch(droolsRepo, getDroolsBranch())
+                    mergeOnIntegrationBranch(kogitoRuntimesRepo, getKogitoBranch())
+
                     checkoutQuarkusRepo()
                     getBasicMavenCommand('quarkus')
                         .withProperty('quickly')
@@ -117,24 +122,35 @@ pipeline {
 }
 
 void sendNotification() {
-    mailer.sendMarkdownTestSummaryNotification("${NOTIFICATION_JOB_NAME}", "[${getBuildBranch()}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+    mailer.sendMarkdownTestSummaryNotification("${NOTIFICATION_JOB_NAME}", "[${getKogitoBranch()}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO], "If any changes need to be done, please perform them on branch **${env.INTEGRATION_BRANCH}**")
 }
 
 void checkoutKogitoRepo(String repo) {
     dir(repo) {
-        checkout(githubscm.resolveRepository(repo, params.GIT_AUTHOR, getBuildBranch(), false))
+        deleteDir()
+        checkout(githubscm.resolveRepository(repo, params.GIT_AUTHOR, getKogitoBranch(), false))
     }
 }
 
 void checkoutDroolsRepo() {
     dir(droolsRepo) {
-        checkout(githubscm.resolveRepository(droolsRepo, params.GIT_AUTHOR, util.calculateTargetReleaseBranch(getBuildBranch(), 7), false))
+        deleteDir()
+        checkout(githubscm.resolveRepository(droolsRepo, params.GIT_AUTHOR, , false))
     }
 }
 
 void checkoutQuarkusRepo() {
     dir('quarkus') {
+        deleteDir()
         checkout(githubscm.resolveRepository('quarkus', 'quarkusio', getQuarkusBranch(), false))
+    }
+}
+
+void mergeOnIntegrationBranch(String repoName, String baseBranch) {
+    dir(dirName) {
+        getOrCreateGitBranch(env.INTEGRATION_BRANCH)
+        sh "git merge origin/${baseBranch}"
+        githubscm.pushObject('origin', env.INTEGRATION_BRANCH,  params.GIT_AUTHOR_CREDS_ID)
     }
 }
 
@@ -194,6 +210,22 @@ String getQuarkusBranch() {
     return env['QUARKUS_BRANCH'] ?: ''
 }
 
-String getBuildBranch() {
+String getKogitoBranch() {
     return params.BUILD_BRANCH_NAME
+}
+
+String getDroolsBranch() {
+    return util.calculateTargetReleaseBranch(getKogitoBranch(), 7)
+}
+
+void getOrCreateGitBranch(String branch) {
+    sh 'git fetch origin'
+    String branchRemoteResult = sh(script: "git ls-remote origin ${branch} | wc -l", returnStdout: true).trim()
+    if (Integer.parseInt(branchRemoteResult) > 0) {
+        echo "Branch ${branch} already exist ... will not create it. Checking out !"
+        sh "git checkout ${branch}"
+    } else {
+        echo "Branch ${branch} does not exist ... gonna create it"
+        githubscm.createBranch(branch)
+    }
 }

@@ -92,6 +92,7 @@ void setupSpecificNightlyJob(Folder specificNightlyFolder) {
         parameters {
             stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
             stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+            stringParam('GIT_AUTHOR_CREDS_ID', "${GIT_AUTHOR_CREDS_ID}", 'Set the Git author creds id')
         }
     }
 }
