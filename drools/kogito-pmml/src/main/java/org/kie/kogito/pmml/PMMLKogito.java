@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import org.kie.api.pmml.PMML4Result;
 import org.kie.api.pmml.PMMLRequestData;
-import org.kie.efesto.compilationmanager.api.service.CompilationManager;
 import org.kie.memorycompiler.KieMemoryCompiler;
 import org.kie.pmml.api.PMMLRuntimeFactory;
 import org.kie.pmml.api.exceptions.KiePMMLException;
@@ -33,6 +32,8 @@ import org.kie.pmml.api.runtime.PMMLRuntime;
 import org.kie.pmml.api.runtime.PMMLRuntimeContext;
 import org.kie.pmml.evaluator.core.PMMLRuntimeContextImpl;
 import org.kie.pmml.evaluator.core.service.PMMLRuntimeInternalImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
 
@@ -40,9 +41,9 @@ import static org.kie.kogito.pmml.utils.PMMLUtils.getPMMLRequestData;
  * Internal Utility class
  */
 public class PMMLKogito {
-
-    private static final CompilationManager compilationManager = org.kie.efesto.compilationmanager.api.utils.SPIUtils.getCompilationManager(true).get();
     private static final PMMLRuntimeFactory PMML_RUNTIME_FACTORY = org.kie.pmml.evaluator.utils.SPIUtils.getPMMLRuntimeFactory(false);
+
+    private static final Logger logger = LoggerFactory.getLogger(PMMLKogito.class);
 
     private PMMLKogito() {
         // intentionally private.
@@ -56,17 +57,18 @@ public class PMMLKogito {
      */
     public static Map<String, PMMLRuntime> createPMMLRuntimes(String... pmmlPaths) {
         Map<String, PMMLRuntime> toReturn = new HashMap<>();
-        // TODO gcardosi: can't work until DROOLS-7050
         Stream.of(pmmlPaths).forEach(pmmlPath -> toReturn.put(pmmlPath,
                 getPMMLRuntimeAlreadyCompiled()));
         return toReturn;
     }
 
     public static PMMLModel modelByName(PMMLRuntime pmmlRuntime, String fileName, String modelName) {
+        logger.debug("modelByName {} {} {}", pmmlRuntime, fileName, modelName);
         final PMMLRequestData pmmlRequestData = getPMMLRequestData(modelName);
         final PMMLRuntimeContext runtimeContext = getPMMLRuntimeContext(pmmlRequestData, fileName);
-        List<PMMLModel> modelsWithName =
-                pmmlRuntime.getPMMLModels(runtimeContext).stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
+        List<PMMLModel> allPmmlModels = pmmlRuntime.getPMMLModels(runtimeContext);
+        logger.debug("allPmmlModels {}", allPmmlModels);
+        List<PMMLModel> modelsWithName = allPmmlModels.stream().filter(m -> modelName.equals(m.getName())).collect(Collectors.toList());
         if (modelsWithName.size() == 1) {
             return modelsWithName.get(0);
         } else {

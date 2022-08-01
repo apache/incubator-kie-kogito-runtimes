@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.codegen.prediction;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -27,17 +25,19 @@ import java.util.Optional;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.kie.efesto.common.api.io.IndexFile;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.pmml.commons.model.HasNestedModels;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.CompilationUnit;
 
@@ -47,13 +47,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getIndexFile;
+import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 class PredictionCodegenTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegenTest.class);
 
     private static final Path BASE_PATH = Paths.get("src/test/resources/").toAbsolutePath();
     private static final String REGRESSION_SOURCE = "prediction/test_regression.pmml";
@@ -71,17 +73,14 @@ class PredictionCodegenTest {
     private static final String NESTED_MOCK = "nestedMock";
     private static final String PMML = "PMML";
 
-    @BeforeEach
-    public void init() {
-        Optional<IndexFile> alreadyExisting = getIndexFile("pmml");
-        alreadyExisting.ifPresent(indexFile -> {
-            try {
-                System.out.println("Deleting: " + indexFile);
-                Files.deleteIfExists(indexFile.toPath());
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-        });
+    @BeforeAll
+    public static void setup() {
+        System.setProperty(INDEXFILE_DIRECTORY_PROPERTY, "target/test-classes");
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        System.clearProperty(INDEXFILE_DIRECTORY_PROPERTY);
     }
 
     @ParameterizedTest
@@ -112,7 +111,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, REGRESSION_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 5, 3, 1, false);
+        generateAllFiles(context, codeGenerator, 6, 3, 1, false);
     }
 
     @ParameterizedTest
@@ -121,7 +120,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, SCORECARD_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 4, 2, 1, false);
+        generateAllFiles(context, codeGenerator, 38, 34, 1, false);
     }
 
     @ParameterizedTest
@@ -130,7 +129,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MINING_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 46, 44, 1, false);
+        generateAllFiles(context, codeGenerator, 312, 308, 1, false);
     }
 
     @ParameterizedTest
@@ -140,7 +139,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MULTIPLE_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 14, 10, 2, false);
+        generateAllFiles(context, codeGenerator, 90, 84, 2, false);
     }
 
     private static void generateAllFiles(KogitoBuildContext context, PredictionCodegen codeGenerator, int expectedTotalFiles, int expectedCompiledClasses, int expectedRestEndpoints,
@@ -152,8 +151,7 @@ class PredictionCodegenTest {
 
         assertEquals(expectedCompiledClasses, generatedFiles.stream()
                 .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.COMPILED_CLASS) &&
-                        generatedFile.type().equals(COMPILED_CLASS) &&
-                        generatedFile.relativePath().endsWith(".class"))
+                        generatedFile.type().equals(COMPILED_CLASS))
                 .count());
 
         int expectedReflectResource = assertReflect ? 1 : 0;

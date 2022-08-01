@@ -257,6 +257,7 @@ public class KogitoAssetsProcessor {
     private Collection<GeneratedBeanBuildItem> createGeneratedBeanBuildItemsFromCompiledClasses(
             Collection<GeneratedFile> generatedFiles) {
         Map<String, byte[]> compiledClassesMap = new HashMap<>();
+
         generatedFiles.forEach(generatedFile -> compiledClassesMap.put(generatedFile.relativePath(), generatedFile.contents()));
         return makeBuildItems(compiledClassesMap);
     }

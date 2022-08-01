@@ -35,7 +35,6 @@ import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
-import org.kie.api.pmml.PMMLRequestData;
 import org.kie.efesto.common.api.io.IndexFile;
 import org.kie.efesto.common.api.model.FRI;
 import org.kie.efesto.common.api.model.GeneratedExecutableResource;
@@ -52,14 +51,12 @@ import org.kie.kogito.pmml.openapi.factories.PMMLOASResultFactory;
 import org.kie.memorycompiler.KieMemoryCompiler;
 import org.kie.pmml.api.compilation.PMMLCompilationContext;
 import org.kie.pmml.api.exceptions.KiePMMLException;
-import org.kie.pmml.api.runtime.PMMLRuntimeContext;
 import org.kie.pmml.commons.model.HasNestedModels;
 import org.kie.pmml.commons.model.HasSourcesMap;
 import org.kie.pmml.commons.model.KiePMMLFactoryModel;
 import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.commons.model.KiePMMLModelFactory;
 import org.kie.pmml.compiler.PMMLCompilationContextImpl;
-import org.kie.pmml.evaluator.core.PMMLRuntimeContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,14 +65,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
-import static org.drools.codegen.common.GeneratedFileType.INTERNAL_RESOURCE;
 import static org.kie.efesto.common.api.utils.CollectionUtils.findExactlyOne;
 import static org.kie.efesto.compilationmanager.core.utils.CompilationManagerUtils.getExistingIndexFile;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getAllGeneratedExecutableResources;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
 import static org.kie.pmml.commons.Constants.PMML_STRING;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
-import static org.kie.pmml.evaluator.core.utils.PMMLRuntimeHelper.loadAllKiePMMLModelFactories;
+import static org.kie.pmml.commons.utils.PMMLLoaderUtils.loadAllKiePMMLModelFactories;
 
 public class PredictionCodegen extends AbstractGenerator {
 
@@ -96,9 +92,9 @@ public class PredictionCodegen extends AbstractGenerator {
 
     public static PredictionCodegen ofCollectedResources(KogitoBuildContext context,
             Collection<CollectedResource> resources) {
-        LOGGER.info("ofCollectedResources {}", resources);
+        LOGGER.debug("ofCollectedResources {}", resources);
         if (context.hasClassAvailable(DMN_JPMML_CLASS)) {
-            LOGGER.info("jpmml libraries available on classpath, skipping kogito-pmml parsing and compilation");
+            LOGGER.debug("jpmml libraries available on classpath, skipping kogito-pmml parsing and compilation");
             return ofPredictions(context, Collections.emptyList(), Collections.emptySet());
         }
         deleteIndexFiles();
@@ -113,12 +109,12 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private static PredictionCodegen ofPredictions(KogitoBuildContext context, Collection<PMMLResource> resources, Set<IndexFile> indexFiles) {
-        LOGGER.info("ofPredictions {} {}", resources, indexFiles);
+        LOGGER.debug("ofPredictions {} {}", resources, indexFiles);
         return new PredictionCodegen(context, resources, indexFiles);
     }
 
     private static Collection<PMMLResource> parsePredictions(Path path, List<Resource> resources, Set<IndexFile> indexFiles) {
-        LOGGER.info("parsePredictions {} {} {}", path, resources, indexFiles);
+        LOGGER.debug("parsePredictions {} {} {}", path, resources, indexFiles);
         Collection<PMMLResource> toReturn = new ArrayList<>();
         resources.forEach(resource -> {
             KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
@@ -135,15 +131,16 @@ public class PredictionCodegen extends AbstractGenerator {
                 throw new KiePMMLException("Failed to find " + resource.getSourcePath(), e);
             }
             Collection<IndexFile> createdIndexFiles = compileResource(compilationContext, efestoResource);
-            PMMLRuntimeContext runtimeContext = getPMMLRuntimeContext(fileName, memoryCompilerClassLoader);
             IndexFile indexFile = findExactlyOne(createdIndexFiles, file -> file.getModel().equals(PMML_STRING),
-                    (s1, s2) -> new KiePMMLException("Found more than one IndexFile.pmml_json: " + s1 + " and " + s2),
+                    (s1, s2) -> new KiePMMLException("Found more than one IndexFile" +
+                            ".pmml_json: " + s1 + " and" +
+                            " " + s2),
                     () -> new KiePMMLException("Failed to create IndexFile for PMML"));
-            List<KiePMMLModel> kiePMMLModels = getKiePMMLModels(runtimeContext, indexFile,
+            List<KiePMMLModel> kiePMMLModels = getKiePMMLModels(compilationContext, indexFile,
                     compilationContext.getFRIForFile());
             String modelPath = resource.getSourcePath();
             PMMLResource toAdd = new PMMLResource(kiePMMLModels, path, modelPath,
-                    getAllGeneratedClasses(runtimeContext, createdIndexFiles));
+                    getAllGeneratedClasses(compilationContext, createdIndexFiles));
             toReturn.add(toAdd);
             indexFiles.addAll(createdIndexFiles);
         });
@@ -151,27 +148,24 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private static void deleteIndexFiles() {
-        LOGGER.info("deleteIndexFiles");
+        LOGGER.debug("deleteIndexFiles");
         List<String> toDelete = Arrays.asList("pmml", "drl");
-        toDelete.forEach(model -> {
-            getExistingIndexFile(model).ifPresent(indexFile -> {
-                try {
-                    LOGGER.info("Going to delete {}", indexFile.getAbsolutePath());
-                    Files.delete(indexFile.toPath());
-                } catch (IOException e) {
-                    throw new KiePMMLException("Failed to delete " + indexFile.getAbsolutePath(), e);
-                }
-            });
-        });
+        toDelete.forEach(model -> getExistingIndexFile(model).ifPresent(indexFile -> {
+            try {
+                LOGGER.debug("Going to delete {}", indexFile.getAbsolutePath());
+                Files.delete(indexFile.toPath());
+            } catch (IOException e) {
+                throw new KiePMMLException("Failed to delete " + indexFile.getAbsolutePath(), e);
+            }
+        }));
     }
 
-    private static Map<String, byte[]> getAllGeneratedClasses(PMMLRuntimeContext runtimeContext, Collection<IndexFile> indexFiles) {
+    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext,
+            Collection<IndexFile> indexFiles) {
         Map<String, byte[]> toReturn = new HashMap<>();
         indexFiles.forEach(indexFile -> {
             Collection<GeneratedExecutableResource> executableResources = getAllGeneratedExecutableResources(indexFile);
-            executableResources.forEach(executableResource -> {
-                toReturn.putAll(runtimeContext.getGeneratedClasses(executableResource.getFri()));
-            });
+            executableResources.forEach(executableResource -> toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getFri())));
         });
         return toReturn;
     }
@@ -179,12 +173,6 @@ public class PredictionCodegen extends AbstractGenerator {
     private static PMMLCompilationContext getPMMLCompilationContext(String fileName,
             KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
         return new PMMLCompilationContextImpl(fileName, memoryCompilerClassLoader);
-    }
-
-    private static PMMLRuntimeContext getPMMLRuntimeContext(String fileName,
-            KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader) {
-        return new PMMLRuntimeContextImpl(new PMMLRequestData(), fileName,
-                memoryCompilerClassLoader);
     }
 
     private static Collection<IndexFile> compileResource(PMMLCompilationContext compilationContext,
@@ -197,7 +185,7 @@ public class PredictionCodegen extends AbstractGenerator {
         return toReturn;
     }
 
-    private static List<KiePMMLModel> getKiePMMLModels(PMMLRuntimeContext runtimeContext, IndexFile indexFile,
+    private static List<KiePMMLModel> getKiePMMLModels(PMMLCompilationContext compilationContext, IndexFile indexFile,
             Set<FRI> friKeySet) {
         Collection<GeneratedExecutableResource> executableResources = friKeySet.stream()
                 .map(fri -> getGeneratedExecutableResource(fri, indexFile))
@@ -205,7 +193,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 .map(Optional::get)
                 .collect(toSet());
         Collection<KiePMMLModelFactory> kiePMMLModelFactories = loadAllKiePMMLModelFactories(executableResources,
-                runtimeContext);
+                compilationContext);
         return kiePMMLModelFactories.stream()
                 .flatMap(factory -> factory.getKiePMMLModels().stream())
                 .collect(toList());
@@ -213,13 +201,13 @@ public class PredictionCodegen extends AbstractGenerator {
 
     @Override
     public Optional<ApplicationSection> section() {
-        LOGGER.info("section");
+        LOGGER.debug("section");
         return Optional.of(new PredictionModelsGenerator(context(), applicationCanonicalName(), resources));
     }
 
     @Override
     protected Collection<GeneratedFile> internalGenerate() {
-        LOGGER.info("section");
+        LOGGER.debug("internalGenerate");
         Collection<GeneratedFile> files = new ArrayList<>();
         for (PMMLResource resource : resources) {
             generateModelsFromResource(files, resource);
@@ -269,11 +257,14 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private void generateModelFromIndexFile(Collection<GeneratedFile> files, IndexFile indexFile) {
+        if (indexFile.getPath().contains("test-classes")) {
+            return;
+        }
         files.add(new GeneratedFile(INDEX_FILE, indexFile.getName(), getFileContent(indexFile)));
     }
 
     private String getFileContent(IndexFile indexFile) {
-        LOGGER.info("getFileContent {}", indexFile);
+        LOGGER.debug("getFileContent {}", indexFile);
         try {
             return Files.readString(indexFile.toPath());
         } catch (IOException e) {

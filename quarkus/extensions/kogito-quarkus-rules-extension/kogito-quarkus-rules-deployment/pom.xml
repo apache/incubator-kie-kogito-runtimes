@@ -12,6 +12,16 @@
     <artifactId>kogito-quarkus-rules-deployment</artifactId>
     <name>Kogito :: Quarkus Rules Extension :: Deployment</name>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drl-map-input-runtime</artifactId>
+        <version>8.26.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.kie.kogito</groupId>
@@ -28,6 +38,12 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-codegen-rules</artifactId>
         </dependency>
+
+      <!-- Efesto -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>kie-drl-map-input-runtime</artifactId>
+      </dependency>
     </dependencies>
 
     <build>
