@@ -1513,10 +1513,8 @@
 
       <!-- EFESTO -->
       <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-efesto-dependencies</artifactId>
-        <type>pom</type>
-        <version>${project.version}</version>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-dependencies</artifactId>
       </dependency>
 
       <!-- drools -->

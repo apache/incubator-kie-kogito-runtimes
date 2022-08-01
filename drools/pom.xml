@@ -27,7 +27,6 @@
     <module>kogito-drools</module>
     <module>kogito-pmml-api-dependencies</module>
     <module>kogito-dmn</module>
-    <module>kogito-efesto-dependencies</module>
   </modules>
 
   <profiles>

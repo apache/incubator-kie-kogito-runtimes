@@ -19,7 +19,6 @@
   
   <properties>
     <java.module.name>org.kie.kogito.kogito.pmml.dependencies</java.module.name>
-    <version.org.kie>8.26.0-SNAPSHOT</version.org.kie>
   </properties>
 
   <dependencyManagement>
@@ -28,13 +27,6 @@
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-pmml-bom</artifactId>
-        <version>${version.org.kie}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

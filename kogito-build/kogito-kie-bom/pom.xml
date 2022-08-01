@@ -46,25 +46,26 @@
             <dependency>
                 <groupId>org.kie</groupId>
                 <artifactId>kie-pmml-bom</artifactId>
-                <version>${version.org.kie}</version>
-                <type>pom</type>
+              <version>${version.org.kie}</version>
+              <type>pom</type>
+              <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-bom</artifactId>
-                <version>${version.org.kie}</version>
-                <type>pom</type>
-            </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-bom</artifactId>
+            <version>${version.org.kie}</version>
+            <type>pom</type>
+          </dependency>
 
-            <!-- KIE -->
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-api</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-internal</artifactId>
+          <!-- KIE -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-api</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-internal</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
             <dependency>
@@ -247,6 +248,41 @@
                 <artifactId>kie-pmml-commons</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
+          <!-- PMML-DROOLS models -->
+          <!-- Drools models -->
+          <!-- Tree -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-tree-model</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-tree-compiler</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-tree-evaluator</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <!-- Scorecard -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-scorecard-model</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-scorecard-compiler</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-pmml-models-drools-scorecard-evaluator</artifactId>
+            <version>${drools.version}</version>
+          </dependency>
+
 
             <!-- Scenario Simulation -->
             <dependency>
@@ -259,6 +295,30 @@
                 <artifactId>drools-scenario-simulation-backend</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
+
+          <!-- Efesto DRL modules -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-compilation-common</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-map-input-runtime</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-compilation-common</artifactId>
+            <version>${version.org.kie}</version>
+            <scope>test</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-map-input-runtime</artifactId>
+            <version>${version.org.kie}</version>
+            <scope>test</scope>
+          </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
