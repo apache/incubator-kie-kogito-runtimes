@@ -25,15 +25,18 @@ message InnerHello {
 
 message InnerMessage {
   int32 number = 2;
+  State state  = 3;
 }
 
-// The response message containing the greetings
-message HelloReply {
-  enum State {
+enum State {
     UNKNOWN = 0;
     SUCCESS = 1;
     ERROR = 2;
   }
+  
+// The response message containing the greetings
+message HelloReply {
+  
   string message = 1;
   State state = 2;
   InnerMessage innerMessage = 3;

@@ -17,9 +17,9 @@ package org.kie.kogito.workflows.services;
 
 import org.kie.kogito.examples.sw.greeting.Greeter;
 import org.kie.kogito.examples.sw.greeting.Greeting.HelloReply;
-import org.kie.kogito.examples.sw.greeting.Greeting.HelloReply.State;
 import org.kie.kogito.examples.sw.greeting.Greeting.HelloRequest;
 import org.kie.kogito.examples.sw.greeting.Greeting.InnerMessage;
+import org.kie.kogito.examples.sw.greeting.Greeting.State;
 
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
