@@ -254,33 +254,33 @@
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-tree-model</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-tree-compiler</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-tree-evaluator</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
           <!-- Scorecard -->
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-scorecard-model</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-scorecard-compiler</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-pmml-models-drools-scorecard-evaluator</artifactId>
-            <version>${drools.version}</version>
+            <version>${version.org.kie}</version>
           </dependency>
 
 
@@ -307,18 +307,19 @@
             <artifactId>kie-drl-map-input-runtime</artifactId>
             <version>${version.org.kie}</version>
           </dependency>
+
+          <!-- Efesto deployments -->
           <dependency>
             <groupId>org.kie</groupId>
-            <artifactId>kie-drl-compilation-common</artifactId>
+            <artifactId>efesto-quarkus</artifactId>
             <version>${version.org.kie}</version>
-            <scope>test</scope>
           </dependency>
           <dependency>
             <groupId>org.kie</groupId>
-            <artifactId>kie-drl-map-input-runtime</artifactId>
+            <artifactId>efesto-quarkus-deployment</artifactId>
             <version>${version.org.kie}</version>
-            <scope>test</scope>
           </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

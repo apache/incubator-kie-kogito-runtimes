@@ -16,6 +16,7 @@
 package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -191,6 +192,18 @@ public class KogitoAssetsProcessor {
         return optionalIndex
                 .map(Collections::singletonList)
                 .orElse(Collections.emptyList());
+    }
+
+    @BuildStep
+    public List<ReflectiveClassBuildItem> reflectiveGeneratedClasses(KogitoGeneratedSourcesBuildItem efestoGeneratedSourcesBuildItem) {
+        LOGGER.infof("reflectiveEfestoGeneratedClasses %s",  efestoGeneratedSourcesBuildItem);
+
+        Map<GeneratedFileType, List<GeneratedFile>> mappedGeneratedFiles = efestoGeneratedSourcesBuildItem.getGeneratedFiles().stream()
+                .collect(Collectors.groupingBy(GeneratedFile::type));
+        List<GeneratedFile> generatedCompiledFiles = mappedGeneratedFiles.getOrDefault(COMPILED_CLASS,
+                                                                                       Collections.emptyList());
+        LOGGER.infof("generatedCompiledFiles {}", generatedCompiledFiles);
+        return makeReflectiveClassBuildItems(generatedCompiledFiles);
     }
 
     private Collection<GeneratedFile> collectGeneratedFiles(KogitoGeneratedSourcesBuildItem sources, List<KogitoAddonsPreGeneratedSourcesBuildItem> preSources,
@@ -446,5 +459,13 @@ public class KogitoAssetsProcessor {
         Map<String, byte[]> generatedClasses = buildItems.stream().collect(Collectors.toMap(GeneratedBeanBuildItem::getName, GeneratedBeanBuildItem::getData));
 
         return new KogitoGeneratedClassesBuildItem(kogitoIndexer.complete(), generatedClasses);
+    }
+
+    private static List<ReflectiveClassBuildItem> makeReflectiveClassBuildItems(List<GeneratedFile> generatedCompiledFiles) {
+        List<ReflectiveClassBuildItem> buildItems = new ArrayList<>();
+        for (GeneratedFile generatedFile : generatedCompiledFiles) {
+            buildItems.add(new ReflectiveClassBuildItem(true, true, generatedFile.relativePath()));
+        }
+        return buildItems;
     }
 }

@@ -13,6 +13,16 @@
     <name>Kogito Add-On Source Files</name>
     <description>Provides access to source files for Quarkus</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus</artifactId>
+        <version>8.26.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -51,6 +61,12 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
+      <!-- EFESTO -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus</artifactId>
+      </dependency>
 
         <!-- Test -->
         <dependency>

@@ -18,7 +18,7 @@
   </description>
   
   <properties>
-    <java.module.name>org.kie.kogito.kogito.pmml.dependencies</java.module.name>
+    <java.module.name>org.kie.kogito.pmml.dependencies</java.module.name>
   </properties>
 
   <dependencyManagement>

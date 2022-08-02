@@ -12,6 +12,16 @@
     <artifactId>kogito-quarkus-common</artifactId>
     <name>Kogito :: Quarkus Extension Common :: Runtime</name>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus</artifactId>
+        <version>8.26.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.graalvm.nativeimage</groupId>
@@ -75,6 +85,12 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-api</artifactId>
         </dependency>
+      <!-- EFESTO -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus</artifactId>
+      </dependency>
+
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>

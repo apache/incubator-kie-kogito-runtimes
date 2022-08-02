@@ -133,6 +133,15 @@
         <artifactId>efesto-compilation-manager-core</artifactId>
         <scope>compile</scope>
       </dependency>
+      <!-- Efesto deployments -->
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.kie</groupId>
+        <artifactId>efesto-quarkus-deployment</artifactId>
+      </dependency>
 
     </dependencies>
 
