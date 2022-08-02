@@ -21,6 +21,8 @@ import org.kie.kogito.examples.sw.greeting.Greeting.HelloRequest;
 import org.kie.kogito.examples.sw.greeting.Greeting.InnerMessage;
 import org.kie.kogito.examples.sw.greeting.Greeting.State;
 
+import com.google.protobuf.Empty;
+
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
 
@@ -39,5 +41,10 @@ public class GreeterService implements Greeter {
         }
         return Uni.createFrom().item(() -> HelloReply.newBuilder().setMessage(message).setState(request.getInnerHello().getUnknown() ? State.UNKNOWN : State.SUCCESS)
                 .setInnerMessage(InnerMessage.newBuilder().setNumber(23).build()).build());
+    }
+
+    @Override
+    public Uni<Empty> doNothing(Empty request) {
+        return Uni.createFrom().item(Empty.getDefaultInstance());
     }
 }
