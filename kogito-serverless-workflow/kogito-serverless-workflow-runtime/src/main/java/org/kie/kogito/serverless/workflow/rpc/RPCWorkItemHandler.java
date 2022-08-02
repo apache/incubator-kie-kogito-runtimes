@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
-import org.kie.kogito.serverless.workflow.utils.ConfigResolverHolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.protobuf.DescriptorProtos.FileDescriptorSet;
@@ -61,13 +60,22 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
     public static final String SERVICE_PROP = "serviceName";
     public static final String FILE_PROP = "fileName";
     public static final String METHOD_PROP = "methodName";
+
     public static final String GRPC_ENUM_DEFAULT_PROPERTY = "kogito.grpc.enum.includeDefault";
-    private static final String GRPC_STREAM_TIMEOUT_PROPERTY = "kogito.grpc.stream.timeout";
+    public static final String GRPC_STREAM_TIMEOUT_PROPERTY = "kogito.grpc.stream.timeout";
+    public static final boolean GRPC_ENUM_DEFAULT_VALUE = false;
+    public static final int GRPC_STREAM_TIMEOUT_VALUE = 20;
 
     private final Collection<RPCDecorator> decorators = new ArrayList<>();
+    private final int streamTimeout;
 
     public RPCWorkItemHandler() {
-        if (ConfigResolverHolder.getConfigResolver().getConfigProperty(GRPC_ENUM_DEFAULT_PROPERTY, Boolean.class).orElse(false)) {
+        this(GRPC_ENUM_DEFAULT_VALUE, GRPC_STREAM_TIMEOUT_VALUE);
+    }
+
+    public RPCWorkItemHandler(boolean enumDefault, int streamTimeout) {
+        this.streamTimeout = streamTimeout;
+        if (enumDefault) {
             decorators.add(new DefaultEnumRpcDecorator());
         }
     }
@@ -129,7 +137,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
 
     private JsonNode asyncStreamingCall(Map<String, Object> parameters, MethodDescriptor methodDesc, UnaryOperator<StreamObserver<Message>> streamObserverFunction,
             Function<List<JsonNode>, JsonNode> nodesFunction) {
-        WaitingStreamObserver responseObserver = new WaitingStreamObserver();
+        WaitingStreamObserver responseObserver = new WaitingStreamObserver(streamTimeout);
         StreamObserver<Message> requestObserver = streamObserverFunction.apply(responseObserver);
 
         for (Object messageParam : Objects.requireNonNull((List<Object>) parameters.get(CONTENT_DATA), "Missing streaming call parameter")) {
@@ -164,6 +172,11 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
     private static class WaitingStreamObserver implements StreamObserver<Message> {
         List<Message> responses = new ArrayList<>();
         CompletableFuture<List<Message>> responsesFuture = new CompletableFuture<>();
+        private final int timeout;
+
+        public WaitingStreamObserver(int timeout) {
+            this.timeout = timeout;
+        }
 
         @Override
         public void onNext(Message messageReply) {
@@ -181,7 +194,6 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         }
 
         public List<Message> get() {
-            Long timeout = ConfigResolverHolder.getConfigResolver().getConfigProperty(GRPC_STREAM_TIMEOUT_PROPERTY, Long.class).orElse(20L);
             try {
                 return responsesFuture.get(timeout, TimeUnit.SECONDS);
             } catch (InterruptedException e) {

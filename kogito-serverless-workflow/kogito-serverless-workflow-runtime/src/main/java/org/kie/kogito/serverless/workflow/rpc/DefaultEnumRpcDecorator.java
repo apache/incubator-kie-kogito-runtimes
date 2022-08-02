@@ -33,7 +33,6 @@ public class DefaultEnumRpcDecorator implements RPCDecorator {
             decorate((ArrayNode) node, methodDescriptor.getOutputType());
         }
         return node;
-
     }
 
     private void decorate(ArrayNode node, Descriptor descriptor) {
@@ -55,10 +54,8 @@ public class DefaultEnumRpcDecorator implements RPCDecorator {
                 if (node.has(field.getName())) {
                     decorate((ObjectNode) node.get(field.getName()), field.getContainingType());
                 }
-            } else if (type == Type.ENUM) {
-                if (!node.has(field.getName())) {
-                    node.put(field.getName(), field.getDefaultValue().toString());
-                }
+            } else if (type == Type.ENUM && !node.has(field.getName())) {
+                node.put(field.getName(), field.getDefaultValue().toString());
             }
         }
     }
