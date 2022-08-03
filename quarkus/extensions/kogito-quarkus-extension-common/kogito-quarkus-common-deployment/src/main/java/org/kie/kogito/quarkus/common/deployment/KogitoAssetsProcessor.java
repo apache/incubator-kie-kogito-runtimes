@@ -16,7 +16,6 @@
 package org.kie.kogito.quarkus.common.deployment;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,22 +30,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.drools.codegen.common.GeneratedFile;
-import org.drools.codegen.common.GeneratedFileType;
-import org.jboss.jandex.DotName;
-import org.jboss.jandex.IndexView;
-import org.jboss.jandex.Indexer;
-import org.jboss.logging.Logger;
-import org.kie.kogito.KogitoGAV;
-import org.kie.kogito.codegen.api.Generator;
-import org.kie.kogito.codegen.api.context.KogitoBuildContext;
-import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
-import org.kie.kogito.incubation.common.EmptyDataContext;
-import org.kie.kogito.incubation.common.EmptyMetaDataContext;
-import org.kie.kogito.incubation.common.ExtendedDataContext;
-import org.kie.kogito.incubation.common.MapDataContext;
-import org.kie.kogito.quarkus.KogitoRecorder;
 
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
@@ -69,6 +52,22 @@ import io.quarkus.maven.dependency.Dependency;
 import io.quarkus.maven.dependency.ResolvedDependency;
 import io.quarkus.resteasy.reactive.spi.GeneratedJaxRsResourceBuildItem;
 import io.quarkus.vertx.http.deployment.spi.AdditionalStaticResourceBuildItem;
+import org.drools.codegen.common.GeneratedFile;
+import org.drools.codegen.common.GeneratedFileType;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+import org.jboss.jandex.Indexer;
+import org.jboss.logging.Logger;
+import org.kie.efesto.quarkus.deployment.EfestoGeneratedClassBuildItem;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.codegen.api.Generator;
+import org.kie.kogito.codegen.api.context.KogitoBuildContext;
+import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
+import org.kie.kogito.incubation.common.EmptyDataContext;
+import org.kie.kogito.incubation.common.EmptyMetaDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.quarkus.KogitoRecorder;
 
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.drools.drl.quarkus.util.deployment.DroolsQuarkusResourceUtils.compileGeneratedSources;
@@ -195,15 +194,9 @@ public class KogitoAssetsProcessor {
     }
 
     @BuildStep
-    public List<ReflectiveClassBuildItem> reflectiveGeneratedClasses(KogitoGeneratedSourcesBuildItem efestoGeneratedSourcesBuildItem) {
-        LOGGER.infof("reflectiveEfestoGeneratedClasses %s",  efestoGeneratedSourcesBuildItem);
-
-        Map<GeneratedFileType, List<GeneratedFile>> mappedGeneratedFiles = efestoGeneratedSourcesBuildItem.getGeneratedFiles().stream()
-                .collect(Collectors.groupingBy(GeneratedFile::type));
-        List<GeneratedFile> generatedCompiledFiles = mappedGeneratedFiles.getOrDefault(COMPILED_CLASS,
-                                                                                       Collections.emptyList());
-        LOGGER.infof("generatedCompiledFiles {}", generatedCompiledFiles);
-        return makeReflectiveClassBuildItems(generatedCompiledFiles);
+    public EfestoGeneratedClassBuildItem reflectiveEfestoGeneratedClassBuildItem(KogitoGeneratedSourcesBuildItem kogitoGeneratedSourcesBuildItem) {
+        LOGGER.infof("reflectiveEfestoGeneratedClassBuildItem %s", kogitoGeneratedSourcesBuildItem);
+        return new EfestoGeneratedClassBuildItem(kogitoGeneratedSourcesBuildItem.getGeneratedFiles());
     }
 
     private Collection<GeneratedFile> collectGeneratedFiles(KogitoGeneratedSourcesBuildItem sources, List<KogitoAddonsPreGeneratedSourcesBuildItem> preSources,
@@ -461,11 +454,4 @@ public class KogitoAssetsProcessor {
         return new KogitoGeneratedClassesBuildItem(kogitoIndexer.complete(), generatedClasses);
     }
 
-    private static List<ReflectiveClassBuildItem> makeReflectiveClassBuildItems(List<GeneratedFile> generatedCompiledFiles) {
-        List<ReflectiveClassBuildItem> buildItems = new ArrayList<>();
-        for (GeneratedFile generatedFile : generatedCompiledFiles) {
-            buildItems.add(new ReflectiveClassBuildItem(true, true, generatedFile.relativePath()));
-        }
-        return buildItems;
-    }
 }
