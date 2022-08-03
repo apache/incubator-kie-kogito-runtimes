@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.kie.kogito.Addons;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventBatch;
 import org.kie.kogito.event.EventManager;
@@ -27,13 +28,13 @@ import org.kie.kogito.event.EventPublisher;
 
 public class BaseEventManager implements EventManager {
 
-    private String service;
+    private ConfigBean config;
     private Addons addons;
     private Set<EventPublisher> publishers = new LinkedHashSet<>();
 
     @Override
     public EventBatch newBatch() {
-        return new ProcessInstanceEventBatch(service, addons);
+        return new ProcessInstanceEventBatch(config != null ? config.getServiceUrl() : null, addons);
     }
 
     @Override
@@ -53,8 +54,8 @@ public class BaseEventManager implements EventManager {
     }
 
     @Override
-    public void setService(String service) {
-        this.service = service;
+    public void setService(ConfigBean config) {
+        this.config = config;
     }
 
     @Override

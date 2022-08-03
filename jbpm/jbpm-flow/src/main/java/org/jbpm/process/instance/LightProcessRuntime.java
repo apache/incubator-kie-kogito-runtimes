@@ -177,6 +177,8 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         try {
             runtimeContext.startOperation();
             org.jbpm.process.instance.ProcessInstance pi = runtimeContext.createProcessInstance(process, correlationKey);
+            ProcessInstanceHolder.set(pi);
+            // todo add thread local
             pi.setKnowledgeRuntime(knowledgeRuntime);
             runtimeContext.setupParameters(pi, parameters);
             processInstanceManager.addProcessInstance(pi);
@@ -207,15 +209,18 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         return (Collection<ProcessInstance>) (Object) processInstanceManager.getProcessInstances();
     }
 
+    @Override
     public KogitoProcessInstance getProcessInstance(String id) {
         return getProcessInstance(id, false);
     }
 
+    @Override
     public KogitoProcessInstance getProcessInstance(String id, boolean readOnly) {
         return processInstanceManager.getProcessInstance(id, readOnly);
     }
 
     public void removeProcessInstance(KogitoProcessInstance processInstance) {
+        ProcessInstanceHolder.clear();
         processInstanceManager.removeProcessInstance(processInstance);
     }
 
@@ -375,6 +380,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         startProcess(processId, params, type);
     }
 
+    @Override
     public void abortProcessInstance(String processInstanceId) {
         ProcessInstance processInstance = getProcessInstance(processInstanceId);
         if (processInstance == null) {
@@ -402,6 +408,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         signalManager.signalEvent(type, event);
     }
 
+    @Override
     public void signalEvent(String type, Object event, String processInstanceId) {
         signalManager.signalEvent(processInstanceId, type, event);
     }

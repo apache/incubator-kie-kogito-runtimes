@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.codegen.data.Person;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
@@ -39,6 +40,8 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.uow.UnitOfWork;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PublishEventBusinessRuleIT extends AbstractRulesCodegenIT {
 
@@ -50,7 +53,9 @@ public class PublishEventBusinessRuleIT extends AbstractRulesCodegenIT {
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        app.unitOfWorkManager().eventManager().setService("http://myhost");
+        ConfigBean config = mock(ConfigBean.class);
+        when(config.getServiceUrl()).thenReturn("http://myhost");
+        app.unitOfWorkManager().eventManager().setService(config);
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -97,7 +102,9 @@ public class PublishEventBusinessRuleIT extends AbstractRulesCodegenIT {
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        app.unitOfWorkManager().eventManager().setService("http://myhost");
+        ConfigBean config = mock(ConfigBean.class);
+        when(config.getServiceUrl()).thenReturn("http://myhost");
+        app.unitOfWorkManager().eventManager().setService(config);
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -129,7 +136,9 @@ public class PublishEventBusinessRuleIT extends AbstractRulesCodegenIT {
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        app.unitOfWorkManager().eventManager().setService("http://myhost");
+        ConfigBean config = mock(ConfigBean.class);
+        when(config.getServiceUrl()).thenReturn("http://myhost");
+        app.unitOfWorkManager().eventManager().setService(config);
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();

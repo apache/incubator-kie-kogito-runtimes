@@ -47,7 +47,7 @@ public class ProcessConfig extends org.kie.kogito.process.impl.AbstractProcessCo
                 unitOfWorkManager,
                 jobsService,
                 eventPublishers,
-                configBean.getServiceUrl(),
+                configBean,
                 unitOfWorkEventListeners,
                 versionResolver);
     }
