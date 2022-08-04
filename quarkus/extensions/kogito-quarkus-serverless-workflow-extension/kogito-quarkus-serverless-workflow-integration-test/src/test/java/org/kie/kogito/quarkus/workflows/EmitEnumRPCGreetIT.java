@@ -40,6 +40,10 @@ class EmitEnumRPCGreetIT {
                 .then()
                 .statusCode(201)
                 .body("workflowdata.state", is("UNKNOWN"))
-                .body("workflowdata.innerMessage.state", is("UNKNOWN"));
+                .body("workflowdata.innerMessage.state", is("UNKNOWN"))
+                .body("workflowdata.minority[0].state", is("UNKNOWN"))
+                .body("workflowdata.minority[0].innerMessage.state", is("UNKNOWN"))
+                .body("workflowdata.minority[1].state", is("UNKNOWN"))
+                .body("workflowdata.minority[1].innerMessage.state", is("UNKNOWN"));
     }
 }

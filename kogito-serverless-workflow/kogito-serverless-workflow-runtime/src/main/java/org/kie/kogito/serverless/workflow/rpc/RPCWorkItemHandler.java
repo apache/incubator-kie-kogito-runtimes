@@ -130,7 +130,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
     private JsonNode convert(Message m, MethodDescriptor descriptor) {
         JsonNode node = RPCConverterFactory.get().getJsonNode(m);
         for (RPCDecorator decorator : decorators) {
-            node = decorator.decorate(node, descriptor);
+            node = decorator.decorate(node, descriptor.getOutputType());
         }
         return node;
     }

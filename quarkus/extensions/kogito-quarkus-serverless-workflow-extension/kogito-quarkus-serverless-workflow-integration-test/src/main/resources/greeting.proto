@@ -12,6 +12,8 @@ service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   
   rpc DoNothing (google.protobuf.Empty) returns (google.protobuf.Empty) {} 
+  
+  rpc SayHelloArray (HelloArrayRequest) returns (HelloArrayReply) {}
 }
 
 // The request message containing the user's name.
@@ -25,7 +27,13 @@ message InnerHello {
   bool unknown = 1;
 }
 
+message HelloArrayRequest {
+	repeated HelloRequest requests = 1;
+}
 
+message HelloArrayReply {
+	repeated HelloReply replies = 1;
+}
 
 message InnerMessage {
   int32 number = 2;

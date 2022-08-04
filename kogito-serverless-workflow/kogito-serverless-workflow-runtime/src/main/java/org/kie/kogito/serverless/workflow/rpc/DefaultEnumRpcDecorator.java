@@ -16,47 +16,26 @@
 package org.kie.kogito.serverless.workflow.rpc;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor.Type;
-import com.google.protobuf.Descriptors.MethodDescriptor;
 
 public class DefaultEnumRpcDecorator implements RPCDecorator {
 
     @Override
-    public JsonNode decorate(JsonNode node, MethodDescriptor methodDescriptor) {
-        if (node.isObject()) {
-            decorate((ObjectNode) node, methodDescriptor.getOutputType());
-        } else if (node.isArray()) {
-            decorate((ArrayNode) node, methodDescriptor.getOutputType());
+    public JsonNode decorate(JsonNode node, Descriptor descriptor) {
+        for (FieldDescriptor field : descriptor.getFields()) {
+            if (node.has(field.getName())) {
+                if (field.isRepeated()) {
+                    node.get(field.getName()).forEach(n -> decorate(n, field.getMessageType()));
+                } else if (field.getType() == Type.MESSAGE) {
+                    decorate(node.get(field.getName()), field.getMessageType());
+                }
+            } else if (field.getType() == Type.ENUM) {
+                ((ObjectNode) node).put(field.getName(), field.getDefaultValue().toString());
+            }
         }
         return node;
-    }
-
-    private void decorate(ArrayNode node, Descriptor descriptor) {
-        node.forEach(n -> {
-            if (n.isObject()) {
-                decorate((ObjectNode) n, descriptor);
-            }
-        });
-    }
-
-    private void decorate(ObjectNode node, Descriptor descriptor) {
-        for (FieldDescriptor field : descriptor.getFields()) {
-            Type type = field.getType();
-            if (field.isRepeated()) {
-                if (node.has(field.getName())) {
-                    decorate((ArrayNode) node.get(field.getName()), field.getContainingType());
-                }
-            } else if (type == Type.MESSAGE) {
-                if (node.has(field.getName())) {
-                    decorate((ObjectNode) node.get(field.getName()), field.getContainingType());
-                }
-            } else if (type == Type.ENUM && !node.has(field.getName())) {
-                node.put(field.getName(), field.getDefaultValue().toString());
-            }
-        }
     }
 }
