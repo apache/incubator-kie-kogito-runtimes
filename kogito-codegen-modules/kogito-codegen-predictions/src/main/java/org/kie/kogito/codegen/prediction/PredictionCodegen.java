@@ -101,7 +101,7 @@ public class PredictionCodegen extends AbstractGenerator {
         Set<IndexFile> indexFiles = new HashSet<>();
         Collection<PMMLResource> pmmlResources = resources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.PMML)
-                .flatMap(r -> parsePredictions(r.basePath(),
+                .flatMap(r -> parsePredictions(context.getClassLoader(), r.basePath(),
                         Collections.singletonList(r.resource()),
                         indexFiles).stream())
                 .collect(toList());
@@ -113,12 +113,12 @@ public class PredictionCodegen extends AbstractGenerator {
         return new PredictionCodegen(context, resources, indexFiles);
     }
 
-    private static Collection<PMMLResource> parsePredictions(Path path, List<Resource> resources, Set<IndexFile> indexFiles) {
+    private static Collection<PMMLResource> parsePredictions(ClassLoader classLoader, Path path, List<Resource> resources, Set<IndexFile> indexFiles) {
         LOGGER.debug("parsePredictions {} {} {}", path, resources, indexFiles);
         Collection<PMMLResource> toReturn = new ArrayList<>();
         resources.forEach(resource -> {
             KieMemoryCompiler.MemoryCompilerClassLoader memoryCompilerClassLoader =
-                    new KieMemoryCompiler.MemoryCompilerClassLoader(Thread.currentThread().getContextClassLoader());
+                    new KieMemoryCompiler.MemoryCompilerClassLoader(classLoader);
             String fileName = resource.getSourcePath();
             if (fileName.contains(File.separator)) {
                 fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
