@@ -17,20 +17,21 @@ package org.kie.kogito.quarkus.workflows;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
-import org.kie.kogito.quarkus.utils.SocketUtils;
+import org.kie.kogito.serverless.workflow.rpc.RPCWorkItemHandler;
 
-import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import io.quarkus.test.junit.QuarkusTestProfile;
 
-public class GrpcServerPortResource implements QuarkusTestResourceLifecycleManager {
+public class EmitEnumProfile implements QuarkusTestProfile {
 
     @Override
-    public Map<String, String> start() {
-        int port = SocketUtils.findAvailablePort();
-        return Collections.singletonMap("kogito.grpc.server.port", Integer.toString(port));
+    public Map<String, String> getConfigOverrides() {
+        return Collections.singletonMap(RPCWorkItemHandler.GRPC_ENUM_DEFAULT_PROPERTY, "true");
     }
 
     @Override
-    public void stop() {
+    public Set<String> tags() {
+        return Collections.singleton("emitEnum");
     }
 }

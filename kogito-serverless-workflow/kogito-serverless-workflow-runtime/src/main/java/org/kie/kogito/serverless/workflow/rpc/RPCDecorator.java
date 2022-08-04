@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.dmn;
+package org.kie.kogito.serverless.workflow.rpc;
 
-import org.junit.jupiter.api.Disabled;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.protobuf.Descriptors.Descriptor;
 
-import io.quarkus.test.junit.NativeImageTest;
-
-@Disabled("Blocked by because of https://issues.redhat.com/browse/KOGITO-4662 (classes not registed for reflection)")
-@NativeImageTest
-public class NativeDMNIT extends DMNIT {
+public interface RPCDecorator {
+    JsonNode decorate(JsonNode node, Descriptor typeDescriptor);
 }
