@@ -155,7 +155,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 LOGGER.debug("Going to delete {}", indexFile.getAbsolutePath());
                 Files.delete(indexFile.toPath());
             } catch (IOException e) {
-                LOGGER.error("Failed to delete {}", indexFile.getAbsolutePath(), e);
+                throw new KiePMMLException("Failed to delete " + indexFile.getAbsolutePath(), e);
             }
         }));
     }
