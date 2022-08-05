@@ -111,7 +111,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, REGRESSION_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 6, 3, 1, false);
+        generateAllFiles(context, codeGenerator, 5, 3, 1, false);
     }
 
     @ParameterizedTest
@@ -120,7 +120,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, SCORECARD_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 38, 34, 1, false);
+        generateAllFiles(context, codeGenerator, 36, 34, 1, false);
     }
 
     @ParameterizedTest
@@ -129,7 +129,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MINING_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 312, 308, 1, false);
+        generateAllFiles(context, codeGenerator, 310, 308, 1, false);
     }
 
     @ParameterizedTest
@@ -139,7 +139,7 @@ class PredictionCodegenTest {
         KogitoBuildContext context = contextBuilder.build();
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, MULTIPLE_FULL_SOURCE.toFile()));
-        generateAllFiles(context, codeGenerator, 90, 84, 2, false);
+        generateAllFiles(context, codeGenerator, 88, 84, 2, false);
     }
 
     private static void generateAllFiles(KogitoBuildContext context, PredictionCodegen codeGenerator, int expectedTotalFiles, int expectedCompiledClasses, int expectedRestEndpoints,
