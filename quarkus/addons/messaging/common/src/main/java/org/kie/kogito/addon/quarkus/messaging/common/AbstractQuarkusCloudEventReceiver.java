@@ -43,11 +43,12 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
     public CompletionStage<?> produce(final Message<?> message) {
         LOGGER.debug("Received message {}", message);
         return produce(message.getPayload(), (v, e) -> {
-            LOGGER.debug("Acking message {}", message.getPayload());
-            message.ack();
             if (e != null) {
                 LOGGER.error("Error processing message {}", message.getPayload(), e);
             }
+        }).thenCompose(f -> {
+            LOGGER.debug("Acking message {}", message.getPayload());
+            return message.ack();
         });
     }
 
