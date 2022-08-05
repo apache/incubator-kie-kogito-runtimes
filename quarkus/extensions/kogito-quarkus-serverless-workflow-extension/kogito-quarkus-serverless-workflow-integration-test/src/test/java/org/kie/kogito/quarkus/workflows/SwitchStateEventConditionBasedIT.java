@@ -17,6 +17,7 @@
 package org.kie.kogito.quarkus.workflows;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -215,12 +216,12 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
         assertDecisionEvent(result, processInstanceId, PROCESS_RESULT_EVENT_TYPE, expectedDecision);
     }
 
-    protected JsonPath waitForEvent(String topic, long seconds) throws Exception {
+    protected JsonPath waitForEvent(String topic, long seconds) {
         ConsumerTask<String, String> event_consumer = kafkaCompanion.consumeStrings()
                 .withGroupId("kogito-quarkus-serverless-workflow-integration-test")
                 .withAutoCommit()
                 .fromTopics(topic, 1);
-        event_consumer.awaitCompletion();
+        event_consumer.awaitCompletion(Duration.ofSeconds(seconds));
         assertEquals(1, event_consumer.count());
         return new JsonPath(event_consumer.getLastRecord().value());
     }

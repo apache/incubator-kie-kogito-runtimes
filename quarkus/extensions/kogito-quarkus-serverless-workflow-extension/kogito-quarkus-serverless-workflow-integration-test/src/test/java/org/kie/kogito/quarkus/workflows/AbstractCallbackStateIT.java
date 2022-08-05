@@ -85,7 +85,7 @@ abstract class AbstractCallbackStateIT {
                         "kogitoprocrefid", processInstanceId)
                 .withData(JsonCloudEventData.wrap(objectMapper.createObjectNode().put("answer", answer)))
                 .build());
-        kafkaCompanion.produceStrings().usingGenerator(i -> new ProducerRecord<>(callbackEventTopic, response));
+        kafkaCompanion.produceStrings().usingGenerator(i -> new ProducerRecord<>(callbackEventTopic, response), 1);
 
         // give some time for the event to be processed and the process to finish.
         assertProcessInstanceHasFinished(callbackProcessGetByIdUrl, processInstanceId, 1, 180);

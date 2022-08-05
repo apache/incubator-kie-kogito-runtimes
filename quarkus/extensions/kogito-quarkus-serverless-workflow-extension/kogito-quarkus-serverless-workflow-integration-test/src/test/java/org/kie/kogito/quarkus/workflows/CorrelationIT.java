@@ -60,8 +60,6 @@ public class CorrelationIT {
     @InjectKafkaCompanion
     KafkaCompanion kafkaCompanion;
 
-    private String kafkaBootstrapServers;
-
     private ObjectMapper objectMapper;
 
     @BeforeEach
