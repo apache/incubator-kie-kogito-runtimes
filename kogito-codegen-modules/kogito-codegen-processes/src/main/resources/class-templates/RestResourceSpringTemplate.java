@@ -117,7 +117,7 @@ public class $Type$Resource {
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "$documentation$", description = "$processInstanceDescription$")
-    public $Type$Output updateModel_$name$(@PathVariable("id") String id, @RequestBody(required = false) $Type$ resource) {
+    public $Type$Output updateModelPartial_$name$(@PathVariable("id") String id, @RequestBody(required = false) $Type$ resource) {
         return processService.updatePartial(process, id, resource).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

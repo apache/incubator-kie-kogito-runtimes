@@ -370,11 +370,16 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
     }
 
     @Override
-    public T updateVariables(T updates, boolean replace) {
-        Map<String, Object> map = bind(updates);
-        if (!replace) {
-            map = map.entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        }
+    public T updateVariables(T updates) {
+        return updateVariables(bind(updates));
+    }
+
+    @Override
+    public T updateVariablesPartially(T updates) {
+        return updateVariables(bind(updates).entrySet().stream().filter(e -> e.getValue() != null).collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+    }
+
+    private T updateVariables(Map<String, Object> map) {
         for (Entry<String, Object> entry : map.entrySet()) {
             processInstance().setVariable(entry.getKey(), entry.getValue());
         }

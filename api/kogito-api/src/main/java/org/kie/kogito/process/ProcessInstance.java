@@ -114,7 +114,9 @@ public interface ProcessInstance<T> {
     /**
      * Updates process variables of this process instance
      */
-    T updateVariables(T updates, boolean replace);
+    T updateVariables(T updates);
+
+    T updateVariablesPartially(T updates);
 
     /**
      * Returns current status of this process instance
