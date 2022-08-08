@@ -116,6 +116,10 @@ public interface ProcessInstance<T> {
      */
     T updateVariables(T updates);
 
+    /**
+     * Partially updates process variables of this process instance
+     * Partial means that null values are ignored.
+     */
     T updateVariablesPartially(T updates);
 
     /**
