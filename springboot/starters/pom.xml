@@ -18,6 +18,7 @@
     <module>kogito-decisions-spring-boot-starter</module>
     <module>kogito-predictions-spring-boot-starter</module>
     <module>kogito-efesto-spring-boot-starter</module>
+    <module>kogito-efesto-drl-spring-boot-starter</module>
     <module>kogito-rules-spring-boot-starter</module>
     <module>kogito-spring-boot-starter</module>
     <module>kogito-processes-spring-boot-starter</module>

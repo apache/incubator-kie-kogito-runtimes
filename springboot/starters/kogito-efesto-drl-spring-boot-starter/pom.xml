@@ -13,6 +13,17 @@
   <name>Kogito :: Spring Boot :: Starter :: Efesto :: Drl</name>
   <description>Spring Boot Starter for Kogito Efesto Drl. Contains everything you need to get started with Drl Efesto in Kogito!</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-efesto-drl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
