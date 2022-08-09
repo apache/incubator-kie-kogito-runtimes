@@ -1945,6 +1945,7 @@
         <artifactId>kogito-quarkus-predictions-deployment</artifactId>
         <version>${project.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-quarkus-common</artifactId>

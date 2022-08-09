@@ -40,6 +40,16 @@
 
     <dependency>
       <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-efesto-spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-efesto-drl-spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-springboot-monitoring-prometheus</artifactId>
     </dependency>
 

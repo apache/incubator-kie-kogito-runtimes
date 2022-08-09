@@ -66,40 +66,65 @@
           <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-internal</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-test-util</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-test-util</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
 
           <!-- EFESTO -->
           <dependency>
             <groupId>org.kie</groupId>
-            <artifactId>efesto-dependencies</artifactId>
+            <artifactId>efesto-common-utils</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-common-api</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-compilation-manager-api</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-compilation-manager-core</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-runtime-manager-api</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>efesto-runtime-manager-core</artifactId>
             <version>${version.org.kie}</version>
           </dependency>
 
-            <!-- DROOLS -->
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-compiler</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-util</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-io</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-core</artifactId>
+          <!-- DROOLS -->
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-util</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-io</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
             <dependency>
@@ -184,25 +209,38 @@
                 <artifactId>drools-ruleunits-api</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-ruleunits-impl</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.drools</groupId>
-                <artifactId>drools-drl-quarkus-util-deployment</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-ruleunits-impl</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-drl-quarkus-util-deployment</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
 
-            <!-- DMN -->
-            <dependency>
-                <groupId>org.kie</groupId>
-                <artifactId>kie-dmn-api</artifactId>
-                <version>${version.org.kie}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kie</groupId>
+          <!-- Kie-DRL  -Efesto rules -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-compilation-common</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-drl-map-input-runtime</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+
+
+          <!-- DMN -->
+          <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-dmn-api</artifactId>
+            <version>${version.org.kie}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.kie</groupId>
                 <artifactId>kie-dmn-feel</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
@@ -290,18 +328,6 @@
                 <artifactId>drools-scenario-simulation-backend</artifactId>
                 <version>${version.org.kie}</version>
             </dependency>
-
-          <!-- Efesto DRL modules -->
-          <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-drl-compilation-common</artifactId>
-            <version>${version.org.kie}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-drl-map-input-runtime</artifactId>
-            <version>${version.org.kie}</version>
-          </dependency>
 
           <!-- Efesto deployments -->
           <dependency>

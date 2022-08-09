@@ -21,18 +21,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-          <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>efesto-runtime-manager-core</artifactId>
-            <version>8.26.0-SNAPSHOT</version>
-            <scope>compile</scope>
-          </dependency>
-          <dependency>
-            <groupId>org.kie</groupId>
-            <artifactId>efesto-compilation-manager-core</artifactId>
-            <version>8.26.0-SNAPSHOT</version>
-            <scope>compile</scope>
-          </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -132,15 +120,6 @@
         <groupId>org.kie</groupId>
         <artifactId>efesto-compilation-manager-core</artifactId>
         <scope>compile</scope>
-      </dependency>
-      <!-- Efesto deployments -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>efesto-quarkus</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>efesto-quarkus-deployment</artifactId>
       </dependency>
 
     </dependencies>

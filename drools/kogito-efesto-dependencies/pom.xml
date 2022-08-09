@@ -21,7 +21,6 @@
     <java.module.name>org.kie.kogito.kogito.efesto.dependencies</java.module.name>
   </properties>
 
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -35,10 +34,35 @@
   </dependencyManagement>
 
   <dependencies>
-    <!-- EFESTO -->
     <dependency>
       <groupId>org.kie</groupId>
-      <artifactId>efesto-dependencies</artifactId>
+      <artifactId>efesto-common-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-common-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-compilation-manager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-compilation-manager-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-runtime-manager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-runtime-manager-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>efesto-runtime-manager-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
