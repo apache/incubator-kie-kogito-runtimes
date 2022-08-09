@@ -66,7 +66,7 @@ public class DevModeServerlessWorkflowLogger extends DevModeWorkflowLogger {
     @Override
     public void afterVariableChanged(ProcessVariableChangedEvent event) {
         if (isSWEvent(event)) {
-            if (SWFConstants.DEFAULT_WORKFLOW_VAR.equals(event.getVariableId())) {
+            if (event.getVariableId().startsWith(SWFConstants.DEFAULT_WORKFLOW_VAR)) {
                 if (event.getNewValue() instanceof JsonNode) {
                     JsonNode node = (JsonNode) event.getNewValue();
                     if (!node.isEmpty()) {

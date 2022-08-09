@@ -24,7 +24,6 @@ import java.util.stream.StreamSupport;
 
 import org.kie.api.event.process.ProcessEventListener;
 import org.kie.kogito.Addons;
-import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.process.ProcessConfig;
@@ -54,7 +53,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
             Iterable<UnitOfWorkManager> unitOfWorkManager,
             Iterable<JobsService> jobsService,
             Iterable<EventPublisher> eventPublishers,
-            ConfigBean configBean,
+            String kogitoService,
             Iterable<UnitOfWorkEventListener> unitOfWorkListeners,
             Iterable<ProcessVersionResolver> versionResolver) {
 
@@ -68,7 +67,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
 
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
         unitOfWorkListeners.forEach(listener -> unitOfWorkManager().register(listener));
-        unitOfWorkManager().eventManager().setService(configBean);
+        unitOfWorkManager().eventManager().setService(kogitoService);
     }
 
     private static WorkItemHandlerConfig mergeWorkItemHandler(Iterable<WorkItemHandlerConfig> workItemHandlerConfigs,

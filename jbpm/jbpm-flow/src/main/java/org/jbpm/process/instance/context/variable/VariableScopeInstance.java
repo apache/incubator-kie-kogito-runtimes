@@ -18,6 +18,7 @@ package org.jbpm.process.instance.context.variable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.context.variable.Variable;
@@ -29,6 +30,7 @@ import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.process.KogitoObjectListenerAware;
 import org.kie.kogito.process.VariableViolationException;
 
 /**
@@ -82,15 +84,10 @@ public class VariableScopeInstance extends AbstractContextInstance {
     }
 
     public void setVariable(KogitoNodeInstance nodeInstance, String name, Object value) {
-        if (name == null) {
-            throw new IllegalArgumentException(
-                    "The name of a variable may not be null!");
-        }
+        Objects.requireNonNull(name, "The name of a variable may not be null!");
         Object oldValue = getVariable(name);
-        if (oldValue == null) {
-            if (value == null) {
-                return;
-            }
+        if (Objects.equals(oldValue, value)) {
+            return;
         }
 
         // check if variable that is being set is readonly and has already been set
@@ -123,7 +120,15 @@ public class VariableScopeInstance extends AbstractContextInstance {
     }
 
     public void internalSetVariable(String name, Object value) {
-        // not a case, store it in normal variables
+        if (value instanceof KogitoObjectListenerAware) {
+            ((KogitoObjectListenerAware) value).addKogitoObjectListener(
+                    (container, property, o, v) -> getProcessEventSupport(getProcessInstance().getKnowledgeRuntime()).fireAfterVariableChanged(
+                            (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name + "." + property,
+                            (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name + "." + property,
+                            o, v, getVariableScope().tags(name), getProcessInstance(),
+                            null,
+                            getProcessInstance().getKnowledgeRuntime()));
+        }
         variables.put(name, value);
     }
 

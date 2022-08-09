@@ -31,6 +31,6 @@ public class MergeAction implements Action {
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        ActionUtils.setOutput(context, inputName, outputName, MergeUtils::merge);
+        MergeUtils.merge(getJsonNode(context, inputName), getJsonNode(context, outputName));
     }
 }

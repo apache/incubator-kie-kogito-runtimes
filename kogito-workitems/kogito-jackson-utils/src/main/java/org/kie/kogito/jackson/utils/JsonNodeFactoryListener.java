@@ -15,22 +15,15 @@
  */
 package org.kie.kogito.jackson.utils;
 
-import java.util.Collection;
-
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonNodeFactoryListener extends JsonNodeFactory {
 
     private static final long serialVersionUID = 1L;
-    private Collection<JsonNodeListener> listeners;
-
-    public JsonNodeFactoryListener(Collection<JsonNodeListener> listeners) {
-        this.listeners = listeners;
-    }
 
     @Override
     public ObjectNode objectNode() {
-        return new ObjectNodeListenerAware(this, listeners);
+        return new ObjectNodeListenerAware(this);
     }
 }

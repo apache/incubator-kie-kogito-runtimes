@@ -31,7 +31,6 @@ import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.auth.SecurityPolicy;
 import org.kie.kogito.codegen.AbstractCodegenIT;
-import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventPublisher;
 import org.kie.kogito.event.process.MilestoneEventBody;
@@ -52,8 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class PublishEventIT extends AbstractCodegenIT {
 
@@ -63,9 +60,7 @@ public class PublishEventIT extends AbstractCodegenIT {
 
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -109,9 +104,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         Application app = generateCode(resourcesTypeMap);
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -165,9 +158,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         m.fromMap(parameters);
 
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -236,9 +227,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         m.fromMap(parameters);
 
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -288,9 +277,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         m.fromMap(parameters);
 
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -326,9 +313,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         m.fromMap(parameters);
 
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -390,9 +375,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         Application app = generateCodeProcessesOnly("gateway/ExclusiveSplit.bpmn2");
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
@@ -437,9 +420,7 @@ public class PublishEventIT extends AbstractCodegenIT {
         Application app = generateCodeProcessesOnly("servicetask/ServiceProcessDifferentOperations.bpmn2");
         assertThat(app).isNotNull();
         TestEventPublisher publisher = new TestEventPublisher();
-        ConfigBean config = mock(ConfigBean.class);
-        when(config.getServiceUrl()).thenReturn("http://myhost");
-        app.unitOfWorkManager().eventManager().setService(config);
+        app.unitOfWorkManager().eventManager().setService("http://myhost");
         app.unitOfWorkManager().eventManager().addPublisher(publisher);
 
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();

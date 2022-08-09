@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.jackson.utils;
+package org.kie.kogito.process;
 
-import com.fasterxml.jackson.databind.JsonNode;
+public interface KogitoObjectListenerAware {
 
-public interface JsonNodeListener {
+    void addKogitoObjectListener(KogitoObjectListener listener);
 
-    void onValueChanged(JsonNode container, String property, JsonNode oldValue, JsonNode newValue);
 }

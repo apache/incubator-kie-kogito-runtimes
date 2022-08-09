@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.instance;
+package org.kie.kogito.process;
 
-public class ProcessInstanceHolder {
-
-    private static ThreadLocal<ProcessInstance> processInstance = new ThreadLocal<>();
-
-    public static void set(ProcessInstance instance) {
-        processInstance.set(instance);
-    }
-
-    public static ProcessInstance get() {
-        return processInstance.get();
-    }
-
-    public static void clear() {
-        processInstance.remove();
-    }
+public interface KogitoObjectListener {
+    void onValueChanged(Object container, String property, Object oldValue, Object newValue);
 }

@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.jackson.utils;
 
-import java.util.Collection;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,9 +39,5 @@ public class ObjectMapperFactory {
 
     public static ObjectMapper get() {
         return objectMapper;
-    }
-
-    public static ObjectMapper get(Collection<JsonNodeListener> listeners) {
-        return objectMapper.copy().setNodeFactory(new JsonNodeFactoryListener(listeners));
     }
 }

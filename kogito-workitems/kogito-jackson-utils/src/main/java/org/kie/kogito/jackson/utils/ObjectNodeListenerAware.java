@@ -16,20 +16,24 @@
 package org.kie.kogito.jackson.utils;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.kie.kogito.process.KogitoObjectListener;
+import org.kie.kogito.process.KogitoObjectListenerAware;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ObjectNodeListenerAware extends ObjectNode {
+public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectListenerAware {
 
     private static final long serialVersionUID = 1L;
 
-    private Collection<JsonNodeListener> listeners;
+    private Collection<KogitoObjectListener> listeners = new CopyOnWriteArrayList<>();
 
-    public ObjectNodeListenerAware(JsonNodeFactory nc, Collection<JsonNodeListener> listeners) {
+    public ObjectNodeListenerAware(JsonNodeFactory nc) {
         super(nc);
-        this.listeners = listeners;
     }
 
     @Override
@@ -53,5 +57,19 @@ public class ObjectNodeListenerAware extends ObjectNode {
         final JsonNode oldValue = super.remove(propertyName);
         listeners.forEach(l -> l.onValueChanged(this, propertyName, oldValue, nullNode()));
         return oldValue;
+    }
+
+    @Override
+    public void addKogitoObjectListener(KogitoObjectListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public ObjectNode deepCopy() {
+        ObjectNodeListenerAware ret = new ObjectNodeListenerAware(_nodeFactory);
+        for (Map.Entry<String, JsonNode> entry : _children.entrySet()) {
+            ret._children.put(entry.getKey(), entry.getValue().deepCopy());
+        }
+        return ret;
     }
 }
