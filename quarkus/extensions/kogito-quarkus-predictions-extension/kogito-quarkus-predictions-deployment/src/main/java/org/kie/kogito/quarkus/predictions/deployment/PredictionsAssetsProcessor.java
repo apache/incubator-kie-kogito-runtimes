@@ -47,15 +47,15 @@ public class PredictionsAssetsProcessor {
     @SuppressWarnings("rawtypes")
     @BuildStep
     public List<ReflectiveClassBuildItem> reflectivePredictions() {
-        logger.info("reflectivePredictions()");
+        logger.debug("reflectivePredictions()");
         PMMLModelEvaluatorFinder pmmlModelEvaluatorFinder = new PMMLModelEvaluatorFinderImpl();
         final List<PMMLModelEvaluator> pmmlEvaluators = pmmlModelEvaluatorFinder.getImplementations(false);
-        logger.info("pmmlEvaluators {}", pmmlEvaluators.size());
+        logger.debug("pmmlEvaluators {}", pmmlEvaluators.size());
         final List<ReflectiveClassBuildItem> toReturn = new ArrayList<>();
         toReturn.add(new ReflectiveClassBuildItem(true, true, PMML4Result.class));
         pmmlEvaluators.forEach(pmmlModelEvaluator -> toReturn.add(new ReflectiveClassBuildItem(true, true,
                 pmmlModelEvaluator.getClass())));
-        logger.info("toReturn {}", toReturn.size());
+        logger.debug("toReturn {}", toReturn.size());
         return toReturn;
     }
 
@@ -66,7 +66,7 @@ public class PredictionsAssetsProcessor {
         toReturn.add(new ReflectiveClassBuildItem(true, true, KieRuntimeServicePMML.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, KieCompilerServicePMMLFile.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, KieCompilerServicePMMLFile.class));
-        logger.info("toReturn {}", toReturn.size());
+        logger.debug("toReturn {}", toReturn.size());
         return toReturn;
     }
 
