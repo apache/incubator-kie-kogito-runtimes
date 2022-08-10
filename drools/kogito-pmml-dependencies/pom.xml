@@ -16,7 +16,7 @@
   <description>
     Declare this artifact as "pom" dependency to import all default kie-pmml-trusty modules with exclusions needed for Kogito environment.
   </description>
-  
+
   <properties>
     <java.module.name>org.kie.kogito.pmml.dependencies</java.module.name>
   </properties>
@@ -39,32 +39,32 @@
       <groupId>org.kie</groupId>
       <artifactId>kie-pmml-dependencies</artifactId>
       <exclusions>
-          <!-- Tree -->
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-tree-model</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-tree-compiler</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-tree-evaluator</artifactId>
-          </exclusion>
-          <!-- Scorecard -->
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-scorecard-model</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-scorecard-compiler</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.kie</groupId>
-            <artifactId>kie-pmml-models-scorecard-evaluator</artifactId>
-          </exclusion>
+        <!-- Tree -->
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-tree-model</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-tree-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-tree-evaluator</artifactId>
+        </exclusion>
+        <!-- Scorecard -->
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-scorecard-model</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-scorecard-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.kie</groupId>
+          <artifactId>kie-pmml-models-scorecard-evaluator</artifactId>
+        </exclusion>
 
         <exclusion>
           <groupId>org.drools</groupId>

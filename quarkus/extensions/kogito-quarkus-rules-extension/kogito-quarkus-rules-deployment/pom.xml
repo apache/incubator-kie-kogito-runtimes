@@ -17,7 +17,7 @@
       <!-- Efesto -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-efesto-dependencies</artifactId>
+        <artifactId>kogito-kie-bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>

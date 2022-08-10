@@ -28,12 +28,12 @@
        <type>pom</type>
        <version>${project.version}</version>
      </dependency>
-     <!-- Efesto -->
      <dependency>
        <groupId>org.kie.kogito</groupId>
-       <artifactId>kogito-efesto-dependencies</artifactId>
+       <artifactId>kogito-kie-bom</artifactId>
        <type>pom</type>
        <version>${project.version}</version>
+       <scope>import</scope>
      </dependency>
    </dependencies>
   </dependencyManagement>
@@ -57,9 +57,8 @@
 
     <!-- EFESTO -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-efesto-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-dependencies</artifactId>
     </dependency>
 
     <!-- test -->

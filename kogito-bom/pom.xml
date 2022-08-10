@@ -1551,12 +1551,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <!-- EFESTO -->
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>efesto-dependencies</artifactId>
-      </dependency>
-
       <!-- drools -->
       <dependency>
         <groupId>org.kie.kogito</groupId>

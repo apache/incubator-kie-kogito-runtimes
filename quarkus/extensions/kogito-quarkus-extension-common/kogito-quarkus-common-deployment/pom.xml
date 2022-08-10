@@ -113,15 +113,8 @@
         </dependency>
       <dependency>
         <groupId>org.kie</groupId>
-        <artifactId>efesto-runtime-manager-core</artifactId>
-        <scope>compile</scope>
+        <artifactId>efesto-dependencies</artifactId>
       </dependency>
-      <dependency>
-        <groupId>org.kie</groupId>
-        <artifactId>efesto-compilation-manager-core</artifactId>
-        <scope>compile</scope>
-      </dependency>
-
     </dependencies>
 
     <build>

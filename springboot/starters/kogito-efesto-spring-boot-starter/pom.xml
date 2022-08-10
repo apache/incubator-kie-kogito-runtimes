@@ -17,18 +17,19 @@
     <dependencies>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-efesto-dependencies</artifactId>
-        <version>${project.version}</version>
+        <artifactId>kogito-kie-bom</artifactId>
         <type>pom</type>
+        <version>${project.version}</version>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <!-- EFESTO -->
     <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-efesto-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.kie</groupId>
+      <artifactId>efesto-dependencies</artifactId>
     </dependency>
   </dependencies>
 </project>

@@ -40,6 +40,7 @@ import org.kie.kogito.codegen.core.ApplicationGenerator;
 import org.kie.kogito.codegen.core.utils.ApplicationGeneratorDiscovery;
 
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
+import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
 
 @Mojo(name = "generateModel",
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
@@ -68,13 +69,26 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
+    @Parameter(property = "build.output.directory", readonly = true, defaultValue = "${build.outputDirectory}")
+    private String buildOutputDirectory;
+
     @Override
     public void execute() throws MojoExecutionException {
+        // TODO to be removed with DROOLS-7090
+        boolean indexFileDirectorySet = false;
+        if (System.getProperty(INDEXFILE_DIRECTORY_PROPERTY) == null) {
+            System.setProperty(INDEXFILE_DIRECTORY_PROPERTY, buildOutputDirectory);
+            indexFileDirectorySet = true;
+        }
         addCompileSourceRoots();
         if (isOnDemand()) {
             getLog().info("On-Demand Mode is On. Use mvn compile kogito:scaffold");
         } else {
             generateModel();
+        }
+        // TODO to be removed with DROOLS-7090
+        if (indexFileDirectorySet) {
+            System.clearProperty(INDEXFILE_DIRECTORY_PROPERTY);
         }
     }
 
