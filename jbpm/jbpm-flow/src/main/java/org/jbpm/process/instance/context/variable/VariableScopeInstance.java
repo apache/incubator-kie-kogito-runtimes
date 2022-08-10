@@ -85,16 +85,15 @@ public class VariableScopeInstance extends AbstractContextInstance {
 
     public void setVariable(KogitoNodeInstance nodeInstance, String name, Object value) {
         Objects.requireNonNull(name, "The name of a variable may not be null!");
-        Object oldValue = getVariable(name);
-        if (Objects.equals(oldValue, value)) {
-            return;
-        }
-
         // check if variable that is being set is readonly and has already been set
+        Object oldValue = getVariable(name);
         if (oldValue != null && getVariableScope().isReadOnly(name)) {
             throw new VariableViolationException(getProcessInstance().getStringId(), name, "Variable '" + name + "' is already set and is marked as read only");
         }
-
+        // ignore similar value
+        if (Objects.equals(oldValue, value) && (value == null || value instanceof KogitoObjectListenerAware)) {
+            return;
+        }
         InternalKnowledgeRuntime runtime = getProcessInstance().getKnowledgeRuntime();
         if (runtime != null) {
             getProcessEventSupport(runtime).fireBeforeVariableChanged(

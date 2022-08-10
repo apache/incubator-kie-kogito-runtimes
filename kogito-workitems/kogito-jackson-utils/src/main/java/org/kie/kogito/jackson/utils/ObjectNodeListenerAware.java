@@ -30,7 +30,7 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
 
     private static final long serialVersionUID = 1L;
 
-    private Collection<KogitoObjectListener> listeners = new CopyOnWriteArrayList<>();
+    private transient Collection<KogitoObjectListener> listeners = new CopyOnWriteArrayList<>();
 
     public ObjectNodeListenerAware(JsonNodeFactory nc) {
         super(nc);
