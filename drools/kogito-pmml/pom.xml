@@ -55,6 +55,13 @@
       <type>pom</type>
     </dependency>
 
+    <!-- TODO to be removed when importing kie-drl inside kogito -->
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-efesto-drl</artifactId>
+      <type>pom</type>
+    </dependency>
+
     <!-- EFESTO -->
     <dependency>
       <groupId>org.kie</groupId>

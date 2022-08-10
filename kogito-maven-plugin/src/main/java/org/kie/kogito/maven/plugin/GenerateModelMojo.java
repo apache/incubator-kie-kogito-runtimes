@@ -69,13 +69,17 @@ public class GenerateModelMojo extends AbstractKieMojo {
     @Parameter(property = "kogito.sources.keep", defaultValue = "false")
     private boolean keepSources;
 
-    @Parameter(property = "build.output.directory", readonly = true, defaultValue = "${build.outputDirectory}")
+    @Parameter(property = "build.output.directory", readonly = true, defaultValue = "${project.build.directory}/classes/")
     private String buildOutputDirectory;
 
     @Override
     public void execute() throws MojoExecutionException {
         // TODO to be removed with DROOLS-7090
         boolean indexFileDirectorySet = false;
+        getLog().debug("execute -> " + buildOutputDirectory);
+        if (buildOutputDirectory == null) {
+            throw new MojoExecutionException("${project.build.directory} is null");
+        }
         if (System.getProperty(INDEXFILE_DIRECTORY_PROPERTY) == null) {
             System.setProperty(INDEXFILE_DIRECTORY_PROPERTY, buildOutputDirectory);
             indexFileDirectorySet = true;

@@ -19,16 +19,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-efesto-spring-boot-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-efesto-drl-spring-boot-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -46,16 +36,6 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-predictions-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-efesto-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-efesto-drl-spring-boot-starter</artifactId>
     </dependency>
 
     <dependency>
