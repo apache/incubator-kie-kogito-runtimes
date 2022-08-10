@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.actions;
 
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
@@ -37,7 +37,7 @@ class ActionUtils {
         return JsonObjectUtils.fromValue(context.getVariable(variableName));
     }
 
-    protected static void setOutput(KogitoProcessContext context, String inputName, String outputName, BiFunction<JsonNode, JsonNode, JsonNode> function) {
+    protected static void setOutput(KogitoProcessContext context, String inputName, String outputName, BinaryOperator<JsonNode> function) {
         JsonNode inputNode = getJsonNode(context, inputName);
         JsonNode targetNode = getJsonNode(context, outputName);
         if (!inputNode.equals(targetNode)) {
