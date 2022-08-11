@@ -57,7 +57,7 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
             Iterable<UnitOfWorkEventListener> unitOfWorkListeners,
             Iterable<ProcessVersionResolver> versionResolver) {
 
-        this.workItemHandlerConfig = orDefault(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
+        this.workItemHandlerConfig = mergeWorkItemHandler(workItemHandlerConfig, DefaultWorkItemHandlerConfig::new);
         this.processEventListenerConfig = merge(processEventListenerConfigs, processEventListeners);
         this.unitOfWorkManager = orDefault(unitOfWorkManager,
                 () -> new DefaultUnitOfWorkManager(
@@ -68,6 +68,33 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         eventPublishers.forEach(publisher -> unitOfWorkManager().eventManager().addPublisher(publisher));
         unitOfWorkListeners.forEach(listener -> unitOfWorkManager().register(listener));
         unitOfWorkManager().eventManager().setService(kogitoService);
+    }
+
+    private static WorkItemHandlerConfig mergeWorkItemHandler(Iterable<WorkItemHandlerConfig> workItemHandlerConfigs,
+            Supplier<WorkItemHandlerConfig> supplier) {
+        Iterator<WorkItemHandlerConfig> iterator = workItemHandlerConfigs.iterator();
+        if (iterator.hasNext()) {
+            WorkItemHandlerConfig config = iterator.next();
+            if (iterator.hasNext()) {
+                CachedWorkItemHandlerConfig multiConfig = new CachedWorkItemHandlerConfig();
+                mergeWorkItemHandler(multiConfig, config);
+                do {
+                    config = iterator.next();
+                    mergeWorkItemHandler(multiConfig, config);
+                } while (iterator.hasNext());
+                return multiConfig;
+            } else {
+                return config;
+            }
+        } else {
+            return supplier.get();
+        }
+    }
+
+    private static void mergeWorkItemHandler(CachedWorkItemHandlerConfig multiConfig, WorkItemHandlerConfig config) {
+        for (String name : config.names()) {
+            multiConfig.register(name, config.forName(name));
+        }
     }
 
     @Override
