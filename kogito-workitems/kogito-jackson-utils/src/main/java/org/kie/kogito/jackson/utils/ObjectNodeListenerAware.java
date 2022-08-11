@@ -16,11 +16,13 @@
 package org.kie.kogito.jackson.utils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
+import org.kie.kogito.process.KogitoObjectListenerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -47,6 +49,10 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T set(String propertyName, JsonNode value) {
         final JsonNode newValue = value == null ? nullNode() : value;
+        if (newValue instanceof KogitoObjectListenerAware) {
+            listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
+                    .forEach(l -> ((KogitoObjectListenerAware) value).addKogitoObjectListener(l.newListener(propertyName)));
+        }
         JsonNode oldValue = _children.put(propertyName, value);
         listeners.forEach(l -> l.onValueChanged(this, propertyName, oldValue, newValue));
         return (T) this;
@@ -62,6 +68,11 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
     @Override
     public void addKogitoObjectListener(KogitoObjectListener listener) {
         listeners.add(listener);
+    }
+
+    @Override
+    public Collection<KogitoObjectListener> listeners() {
+        return Collections.unmodifiableCollection(listeners);
     }
 
     @Override

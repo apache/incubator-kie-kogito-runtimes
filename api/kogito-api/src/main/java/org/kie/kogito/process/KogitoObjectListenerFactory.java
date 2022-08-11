@@ -15,12 +15,6 @@
  */
 package org.kie.kogito.process;
 
-import java.util.Collection;
-
-public interface KogitoObjectListenerAware {
-
-    void addKogitoObjectListener(KogitoObjectListener listener);
-
-    Collection<KogitoObjectListener> listeners();
-
+public interface KogitoObjectListenerFactory {
+    KogitoObjectListener newListener(String fieldName);
 }

@@ -120,13 +120,9 @@ public class VariableScopeInstance extends AbstractContextInstance {
 
     public void internalSetVariable(String name, Object value) {
         if (value instanceof KogitoObjectListenerAware) {
+            InternalKnowledgeRuntime runtime = getProcessInstance().getKnowledgeRuntime();
             ((KogitoObjectListenerAware) value).addKogitoObjectListener(
-                    (container, property, o, v) -> getProcessEventSupport(getProcessInstance().getKnowledgeRuntime()).fireAfterVariableChanged(
-                            (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name + "." + property,
-                            (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name + "." + property,
-                            o, v, getVariableScope().tags(name), getProcessInstance(),
-                            null,
-                            getProcessInstance().getKnowledgeRuntime()));
+                    new VariableScopeListener(getProcessEventSupport(runtime), getProcessInstance(), name, variableIdPrefix, variableInstanceIdPrefix, getVariableScope().tags(name)));
         }
         variables.put(name, value);
     }
