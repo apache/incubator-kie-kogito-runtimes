@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.jackson.utils;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -75,7 +74,7 @@ public class MergeUtils {
                     return src;
                 }
             } else {
-                add(target, src, Collections.emptySet());
+                add(target, src, getExistingNodes(target));
             }
         }
         return target;
