@@ -19,7 +19,8 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <test.list.file.location>${project.build.directory}/kogito-quarkus-test-list.xml</test.list.file.location>
+    <test.list.file.name>kogito-quarkus-test-list.xml</test.list.file.name>
+    <test.list.file.location>${project.build.directory}/${test.list.file.name}</test.list.file.location>
   </properties>
 
   <build>
@@ -49,6 +50,30 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.github.olivierlemasle.maven</groupId>
+        <artifactId>plaintext-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>update-test-list-file</id>
+            <goals>
+              <goal>write</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <files>
+            <file>
+              <name>${test.list.file.name}</name>
+              <append>true</append>
+              <lines>
+                <line>&lt;!--${project.version} --&gt;</line>
+              </lines>
+            </file>
+          </files>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
