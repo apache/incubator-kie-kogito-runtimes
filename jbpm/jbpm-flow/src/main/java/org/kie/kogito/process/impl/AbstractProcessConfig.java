@@ -75,25 +75,9 @@ public abstract class AbstractProcessConfig implements ProcessConfig {
         Iterator<WorkItemHandlerConfig> iterator = workItemHandlerConfigs.iterator();
         if (iterator.hasNext()) {
             WorkItemHandlerConfig config = iterator.next();
-            if (iterator.hasNext()) {
-                CachedWorkItemHandlerConfig multiConfig = new CachedWorkItemHandlerConfig();
-                mergeWorkItemHandler(multiConfig, config);
-                do {
-                    config = iterator.next();
-                    mergeWorkItemHandler(multiConfig, config);
-                } while (iterator.hasNext());
-                return multiConfig;
-            } else {
-                return config;
-            }
+            return iterator.hasNext() ? new MultiWorkItemHandlerConfig(workItemHandlerConfigs) : config;
         } else {
             return supplier.get();
-        }
-    }
-
-    private static void mergeWorkItemHandler(CachedWorkItemHandlerConfig multiConfig, WorkItemHandlerConfig config) {
-        for (String name : config.names()) {
-            multiConfig.register(name, config.forName(name));
         }
     }
 
