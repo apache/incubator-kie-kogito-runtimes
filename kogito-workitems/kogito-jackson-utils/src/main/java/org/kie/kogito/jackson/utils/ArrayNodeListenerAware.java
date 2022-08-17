@@ -17,6 +17,7 @@ package org.kie.kogito.jackson.utils;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
@@ -48,32 +49,31 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
 
     @Override
     protected ArrayNode _set(int index, JsonNode node) {
-        JsonNode oldValue = super.get(index);
-        super._set(index, node);
-        processNode(index, oldValue, node);
+        processNode(index, super.get(index), node, n -> super._set(index, n));
         return this;
     }
 
-    private void processNode(int index, JsonNode oldValue, JsonNode newValue) {
+    private void processNode(int index, JsonNode oldValue, JsonNode newValue, Consumer<JsonNode> consumer) {
         String propertyName = "[" + index + "]";
+        listeners.forEach(l -> l.beforeValueChanged(this, propertyName, oldValue, newValue));
         if (newValue instanceof KogitoObjectListenerAware) {
             listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
                     .forEach(l -> ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(l.newListener(propertyName)));
         }
-        listeners.forEach(l -> l.onValueChanged(this, propertyName, oldValue, newValue));
+        consumer.accept(newValue);
+        listeners.forEach(l -> l.afterValueChanged(this, propertyName, oldValue, newValue));
     }
 
     @Override
     protected ArrayNode _add(JsonNode node) {
-        super._add(node);
-        processNode(size() - 1, null, node);
+
+        processNode(size() - 1, null, node, super::_add);
         return this;
     }
 
     @Override
     protected ArrayNode _insert(int index, JsonNode node) {
-        super._insert(index, node);
-        processNode(index, null, node);
+        processNode(index, null, node, n -> super._insert(index, n));
         return this;
     }
 

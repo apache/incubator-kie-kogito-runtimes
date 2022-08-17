@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.instance.ContextInstanceContainer;
@@ -94,9 +93,8 @@ public class VariableScopeInstance extends AbstractContextInstance {
         if (Objects.equals(oldValue, value) && (value == null || value instanceof KogitoObjectListenerAware)) {
             return;
         }
-        InternalKnowledgeRuntime runtime = getProcessInstance().getKnowledgeRuntime();
-        if (runtime != null) {
-            getProcessEventSupport(runtime).fireBeforeVariableChanged(
+        if (shouldFireEvent(value)) {
+            getProcessEventSupport().fireBeforeVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
                     oldValue, value, getVariableScope().tags(name), getProcessInstance(),
@@ -104,8 +102,8 @@ public class VariableScopeInstance extends AbstractContextInstance {
                     getProcessInstance().getKnowledgeRuntime());
         }
         internalSetVariable(name, value);
-        if (runtime != null) {
-            getProcessEventSupport(runtime).fireAfterVariableChanged(
+        if (shouldFireEvent(value)) {
+            getProcessEventSupport().fireAfterVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
                     oldValue, value, getVariableScope().tags(name), getProcessInstance(),
@@ -114,15 +112,18 @@ public class VariableScopeInstance extends AbstractContextInstance {
         }
     }
 
-    private KogitoProcessEventSupport getProcessEventSupport(InternalKnowledgeRuntime runtime) {
-        return ((InternalProcessRuntime) runtime.getProcessRuntime()).getProcessEventSupport();
+    private KogitoProcessEventSupport getProcessEventSupport() {
+        return ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getProcessEventSupport();
+    }
+
+    private boolean shouldFireEvent(Object value) {
+        return getProcessInstance().getKnowledgeRuntime() != null && !(value instanceof KogitoObjectListenerAware);
     }
 
     public void internalSetVariable(String name, Object value) {
         if (value instanceof KogitoObjectListenerAware) {
-            InternalKnowledgeRuntime runtime = getProcessInstance().getKnowledgeRuntime();
             ((KogitoObjectListenerAware) value).addKogitoObjectListener(
-                    new VariableScopeListener(getProcessEventSupport(runtime), getProcessInstance(), name, variableIdPrefix, variableInstanceIdPrefix, getVariableScope().tags(name)));
+                    new VariableScopeListener(getProcessInstance(), name, variableIdPrefix, variableInstanceIdPrefix, getVariableScope().tags(name)));
         }
         variables.put(name, value);
     }

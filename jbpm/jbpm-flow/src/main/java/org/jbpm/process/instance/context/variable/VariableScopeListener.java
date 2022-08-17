@@ -17,6 +17,7 @@ package org.jbpm.process.instance.context.variable;
 
 import java.util.List;
 
+import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.KogitoObjectListener;
@@ -24,14 +25,12 @@ import org.kie.kogito.process.KogitoObjectListenerFactory;
 
 public class VariableScopeListener implements KogitoObjectListener, KogitoObjectListenerFactory {
 
-    private final KogitoProcessEventSupport eventSupport;
     private final ProcessInstance processInstance;
     private final String variableIdPrefix;
     private final String variableInstanceIdPrefix;
     private final List<String> tags;
 
-    public VariableScopeListener(KogitoProcessEventSupport eventSupport, ProcessInstance processInstance, String name, String variableIdPrefix, String variableInstanceIdPrefix, List<String> tags) {
-        this.eventSupport = eventSupport;
+    public VariableScopeListener(ProcessInstance processInstance, String name, String variableIdPrefix, String variableInstanceIdPrefix, List<String> tags) {
         this.processInstance = processInstance;
         this.variableIdPrefix = getString(variableIdPrefix, name);
         this.variableInstanceIdPrefix = getString(variableInstanceIdPrefix, name);
@@ -43,17 +42,28 @@ public class VariableScopeListener implements KogitoObjectListener, KogitoObject
     }
 
     @Override
-    public void onValueChanged(Object container, String property, Object oldValue, Object newValue) {
-        eventSupport.fireAfterVariableChanged(
+    public void afterValueChanged(Object container, String property, Object oldValue, Object newValue) {
+        getProcessEventSupport().fireAfterVariableChanged(
                 getString(variableIdPrefix, property),
                 getString(variableInstanceIdPrefix, property),
                 oldValue, newValue, tags, processInstance, null, processInstance.getKnowledgeRuntime());
+    }
 
+    @Override
+    public void beforeValueChanged(Object container, String property, Object oldValue, Object newValue) {
+        getProcessEventSupport().fireBeforeVariableChanged(
+                getString(variableIdPrefix, property),
+                getString(variableInstanceIdPrefix, property),
+                oldValue, newValue, tags, processInstance, null, processInstance.getKnowledgeRuntime());
+    }
+
+    private KogitoProcessEventSupport getProcessEventSupport() {
+        return ((InternalProcessRuntime) processInstance.getKnowledgeRuntime().getProcessRuntime()).getProcessEventSupport();
     }
 
     @Override
     public KogitoObjectListener newListener(String fieldName) {
-        return new VariableScopeListener(eventSupport, processInstance, fieldName, variableIdPrefix, variableInstanceIdPrefix, tags);
+        return new VariableScopeListener(processInstance, fieldName, variableIdPrefix, variableInstanceIdPrefix, tags);
     }
 
 }

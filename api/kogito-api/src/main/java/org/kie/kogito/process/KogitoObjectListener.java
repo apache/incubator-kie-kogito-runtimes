@@ -16,5 +16,7 @@
 package org.kie.kogito.process;
 
 public interface KogitoObjectListener {
-    void onValueChanged(Object container, String property, Object oldValue, Object newValue);
+    void beforeValueChanged(Object container, String property, Object oldValue, Object newValue);
+
+    void afterValueChanged(Object container, String property, Object oldValue, Object newValue);
 }

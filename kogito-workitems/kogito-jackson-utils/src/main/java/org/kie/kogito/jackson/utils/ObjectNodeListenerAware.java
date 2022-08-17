@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
@@ -40,8 +41,7 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
 
     @Override
     protected ObjectNode _put(String fieldName, JsonNode value) {
-        JsonNode oldValue = _children.put(fieldName, value);
-        listeners.forEach(l -> l.onValueChanged(this, fieldName, oldValue, value));
+        processNode(fieldName, _children.get(fieldName), value, _children::put);
         return this;
     }
 
@@ -53,16 +53,21 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
             listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
                     .forEach(l -> ((KogitoObjectListenerAware) value).addKogitoObjectListener(l.newListener(propertyName)));
         }
-        JsonNode oldValue = _children.put(propertyName, value);
-        listeners.forEach(l -> l.onValueChanged(this, propertyName, oldValue, newValue));
+        processNode(propertyName, _children.get(propertyName), value, _children::put);
         return (T) this;
     }
 
     @Override
     public JsonNode remove(String propertyName) {
-        final JsonNode oldValue = super.remove(propertyName);
-        listeners.forEach(l -> l.onValueChanged(this, propertyName, oldValue, nullNode()));
+        JsonNode oldValue = _children.get(propertyName);
+        processNode(propertyName, oldValue, nullNode(), (p, n) -> remove(p));
         return oldValue;
+    }
+
+    private void processNode(String propertyName, JsonNode oldValue, JsonNode newValue, BiConsumer<String, JsonNode> consumer) {
+        listeners.forEach(l -> l.beforeValueChanged(this, propertyName, oldValue, newValue));
+        consumer.accept(propertyName, newValue);
+        listeners.forEach(l -> l.afterValueChanged(this, propertyName, oldValue, newValue));
     }
 
     @Override
