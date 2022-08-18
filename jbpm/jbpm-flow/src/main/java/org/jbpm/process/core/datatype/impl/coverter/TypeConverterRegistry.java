@@ -61,7 +61,7 @@ public class TypeConverterRegistry {
     }
 
     public UnaryOperator<Object> forTypeCloner(Class<?> type) {
-        return cloners.getOrDefault(type, (UnaryOperator<Object>) CloneHelperFactory.getCloner(type));
+        return cloners.getOrDefault(type, CloneHelperFactory.getCloner(type));
     }
 
     public TypeConverterRegistry register(String type, Function<String, ? extends Object> converter) {
@@ -77,7 +77,6 @@ public class TypeConverterRegistry {
     public <T> TypeConverterRegistry registerCloner(Class<T> type, UnaryOperator<T> cloner) {
         cloners.put(type, (UnaryOperator<Object>) cloner);
         return this;
-
     }
 
     public static TypeConverterRegistry get() {

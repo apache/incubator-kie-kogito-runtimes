@@ -30,32 +30,30 @@ public class CloneHelperFactory {
     private CloneHelperFactory() {
     }
 
-    public static <T> UnaryOperator<T> getCloner(Class<T> type) {
+    public static UnaryOperator<Object> getCloner(Class<?> type) {
         // handling cloneable
         if (Cloneable.class.isAssignableFrom(type)) {
             try {
                 Method m = type.getMethod("clone");
                 return o -> {
                     try {
-                        return type.cast(m.invoke(o));
+                        return m.invoke(o);
                     } catch (ReflectiveOperationException ex) {
                         throw new IllegalStateException(type + " implements cloneable but invocation to clone method failed", ex);
                     }
                 };
             } catch (NoSuchMethodException ex) {
-                throw new IllegalStateException(type + " implements cloneable but clone method cannot be found", ex);
+                logger.warn(type + " implements cloneable but clone method cannot be found", ex);
             }
         }
 
         // search copy constructor
-        return findCopyConstructor(type).<UnaryOperator<T>> map(c -> {
-            return o -> {
-                try {
-                    return type.cast(c.newInstance(o));
-                } catch (ReflectiveOperationException ex) {
-                    throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex);
-                }
-            };
+        return findCopyConstructor(type).<UnaryOperator<Object>> map(c -> o -> {
+            try {
+                return c.newInstance(o);
+            } catch (ReflectiveOperationException ex) {
+                throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex);
+            }
         }).orElse(o -> o);
     }
 
