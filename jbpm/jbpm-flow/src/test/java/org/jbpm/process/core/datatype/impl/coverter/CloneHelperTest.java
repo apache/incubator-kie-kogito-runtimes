@@ -87,7 +87,7 @@ public class CloneHelperTest {
     @Test
     void testCloneable() {
         CollectionHolder<Integer> toClone = new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = CloneHelper.clone(toClone);
+        CollectionHolder<Integer> cloned = CloneHelperFactory.getCloner(toClone.getClass().asSubclass(CollectionHolder.class)).apply(toClone);
         assertNotSame(toClone.getCollection(), cloned.getCollection());
         assertEquals(toClone.getCollection(), cloned.getCollection());
     }
@@ -95,7 +95,7 @@ public class CloneHelperTest {
     @Test
     void testCopyConstructor() {
         CollectionHolder<Integer> toClone = new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = CloneHelper.clone(toClone);
+        CollectionHolder<Integer> cloned = CloneHelperFactory.getCloner(toClone.getClass().asSubclass(CollectionHolder.class)).apply(toClone);
         assertNotSame(toClone.getCollection(), cloned.getCollection());
         assertEquals(toClone.getCollection(), cloned.getCollection());
     }
@@ -103,19 +103,19 @@ public class CloneHelperTest {
     @Test
     void testDefault() {
         CollectionHolder<Integer> toClone = new CollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = CloneHelper.clone(toClone);
+        CollectionHolder<Integer> cloned = CloneHelperFactory.getCloner(toClone.getClass().asSubclass(CollectionHolder.class)).apply(toClone);
         assertSame(toClone.getCollection(), cloned.getCollection());
     }
 
     @Test
     void testCloneableError() {
         CollectionHolder<Integer> toClone = new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        assertThrows(IllegalStateException.class, () -> CloneHelper.clone(toClone));
+        assertThrows(IllegalStateException.class, () -> CloneHelperFactory.getCloner(toClone.getClass().asSubclass(CollectionHolder.class)).apply(toClone));
     }
 
     @Test
     void testCopyError() {
         CollectionHolder<Integer> toClone = new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        assertThrows(IllegalStateException.class, () -> CloneHelper.clone(toClone));
+        assertThrows(IllegalStateException.class, () -> CloneHelperFactory.getCloner(toClone.getClass().asSubclass(CollectionHolder.class)).apply(toClone));
     }
 }
