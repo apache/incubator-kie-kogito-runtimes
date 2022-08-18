@@ -15,13 +15,14 @@
  */
 package org.kie.kogito.jackson.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
-import org.kie.kogito.process.KogitoObjectListenerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -41,6 +42,10 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
         super(nf, capacity);
     }
 
+    public ArrayNodeListenerAware(JsonNodeFactory nf, List<JsonNode> children) {
+        super(nf, children);
+    }
+
     @Override
     public void addKogitoObjectListener(KogitoObjectListener listener) {
         listeners.add(listener);
@@ -49,36 +54,39 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
 
     @Override
     protected ArrayNode _set(int index, JsonNode node) {
-        processNode(index, super.get(index), node, n -> super._set(index, n));
+        processNode(index, super.get(index), node, () -> super._set(index, node));
         return this;
     }
 
-    private void processNode(int index, JsonNode oldValue, JsonNode newValue, Consumer<JsonNode> consumer) {
+    private void processNode(int index, JsonNode oldValue, JsonNode newValue, Runnable updater) {
         String propertyName = "[" + index + "]";
-        listeners.forEach(l -> l.beforeValueChanged(this, propertyName, oldValue, newValue));
-        if (newValue instanceof KogitoObjectListenerAware) {
-            listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
-                    .forEach(l -> ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(l.newListener(propertyName)));
-        }
-        consumer.accept(newValue);
-        listeners.forEach(l -> l.afterValueChanged(this, propertyName, oldValue, newValue));
+        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, newValue, updater);
     }
 
     @Override
     protected ArrayNode _add(JsonNode node) {
-
-        processNode(size() - 1, null, node, super::_add);
+        processNode(size() - 1, null, node, () -> super._add(node));
         return this;
     }
 
     @Override
     protected ArrayNode _insert(int index, JsonNode node) {
-        processNode(index, null, node, n -> super._insert(index, n));
+        processNode(index, null, node, () -> super._insert(index, node));
         return this;
     }
 
     @Override
     public Collection<KogitoObjectListener> listeners() {
         return listeners;
+    }
+
+    @Override
+    public ArrayNode deepCopy() {
+        List<JsonNode> nodes = new ArrayList<>();
+        Iterator<JsonNode> iter = super.elements();
+        while (iter.hasNext()) {
+            nodes.add(iter.next().deepCopy());
+        }
+        return new ArrayNodeListenerAware(_nodeFactory, nodes);
     }
 }

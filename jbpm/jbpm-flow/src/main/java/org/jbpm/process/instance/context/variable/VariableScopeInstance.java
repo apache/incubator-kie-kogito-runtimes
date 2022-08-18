@@ -90,34 +90,44 @@ public class VariableScopeInstance extends AbstractContextInstance {
             throw new VariableViolationException(getProcessInstance().getStringId(), name, "Variable '" + name + "' is already set and is marked as read only");
         }
         // ignore similar value
-        if (Objects.equals(oldValue, value) && (value == null || value instanceof KogitoObjectListenerAware)) {
+        if (ignoreChange(oldValue, value)) {
             return;
         }
-        if (shouldFireEvent(value)) {
+        final Object clonedValue = getProcessInstance().getKnowledgeRuntime() != null ? clone(name, value) : null;
+        if (clonedValue != null) {
             getProcessEventSupport().fireBeforeVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
-                    oldValue, value, getVariableScope().tags(name), getProcessInstance(),
+                    oldValue, clonedValue, getVariableScope().tags(name), getProcessInstance(),
                     nodeInstance,
                     getProcessInstance().getKnowledgeRuntime());
         }
         internalSetVariable(name, value);
-        if (shouldFireEvent(value)) {
+        if (clonedValue != null) {
             getProcessEventSupport().fireAfterVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
-                    oldValue, value, getVariableScope().tags(name), getProcessInstance(),
+                    oldValue, clonedValue, getVariableScope().tags(name), getProcessInstance(),
                     nodeInstance,
                     getProcessInstance().getKnowledgeRuntime());
+        }
+    }
+
+    private Object clone(String name, Object newValue) {
+        Variable variable = getVariableScope().findVariable(name);
+        return variable != null ? variable.getType().clone(newValue) : newValue;
+    }
+
+    private boolean ignoreChange(Object oldValue, Object newValue) {
+        if (newValue instanceof KogitoObjectListenerAware) {
+            return Objects.equals(oldValue, newValue) || (oldValue == null && ((KogitoObjectListenerAware) newValue).isEmpty());
+        } else {
+            return oldValue == null && newValue == null;
         }
     }
 
     private KogitoProcessEventSupport getProcessEventSupport() {
         return ((InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getProcessEventSupport();
-    }
-
-    private boolean shouldFireEvent(Object value) {
-        return getProcessInstance().getKnowledgeRuntime() != null && !(value instanceof KogitoObjectListenerAware);
     }
 
     public void internalSetVariable(String name, Object value) {

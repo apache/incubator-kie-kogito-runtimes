@@ -23,7 +23,6 @@ import java.util.function.BiConsumer;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
-import org.kie.kogito.process.KogitoObjectListenerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -49,18 +48,14 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T set(String propertyName, JsonNode value) {
         final JsonNode newValue = value == null ? nullNode() : value;
-        if (newValue instanceof KogitoObjectListenerAware) {
-            listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
-                    .forEach(l -> ((KogitoObjectListenerAware) value).addKogitoObjectListener(l.newListener(propertyName)));
-        }
-        processNode(propertyName, _children.get(propertyName), value, _children::put);
+        ListenerAwareUtils.processNode(listeners, this, propertyName, _children.get(propertyName), value, () -> _children.put(propertyName, newValue));
         return (T) this;
     }
 
     @Override
     public JsonNode remove(String propertyName) {
         JsonNode oldValue = _children.get(propertyName);
-        processNode(propertyName, oldValue, nullNode(), (p, n) -> remove(p));
+        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, nullNode(), () -> super.remove(propertyName));
         return oldValue;
     }
 

@@ -23,4 +23,5 @@ public interface KogitoObjectListenerAware {
 
     Collection<KogitoObjectListener> listeners();
 
+    boolean isEmpty();
 }
