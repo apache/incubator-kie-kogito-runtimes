@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
@@ -40,7 +39,7 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
 
     @Override
     protected ObjectNode _put(String fieldName, JsonNode value) {
-        processNode(fieldName, _children.get(fieldName), value, _children::put);
+        ListenerAwareUtils.processNode(listeners, this, fieldName, _children.get(fieldName), value, () -> _children.put(fieldName, value));
         return this;
     }
 
@@ -55,14 +54,8 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
     @Override
     public JsonNode remove(String propertyName) {
         JsonNode oldValue = _children.get(propertyName);
-        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, nullNode(), () -> super.remove(propertyName));
+        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, null, () -> super.remove(propertyName));
         return oldValue;
-    }
-
-    private void processNode(String propertyName, JsonNode oldValue, JsonNode newValue, BiConsumer<String, JsonNode> consumer) {
-        listeners.forEach(l -> l.beforeValueChanged(this, propertyName, oldValue, newValue));
-        consumer.accept(propertyName, newValue);
-        listeners.forEach(l -> l.afterValueChanged(this, propertyName, oldValue, newValue));
     }
 
     @Override

@@ -21,9 +21,8 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.process.KogitoObjectListener;
-import org.kie.kogito.process.KogitoObjectListenerFactory;
 
-public class VariableScopeListener implements KogitoObjectListener, KogitoObjectListenerFactory {
+public class VariableScopeListener implements KogitoObjectListener {
 
     private final ProcessInstance processInstance;
     private final String variableIdPrefix;
@@ -60,10 +59,4 @@ public class VariableScopeListener implements KogitoObjectListener, KogitoObject
     private KogitoProcessEventSupport getProcessEventSupport() {
         return ((InternalProcessRuntime) processInstance.getKnowledgeRuntime().getProcessRuntime()).getProcessEventSupport();
     }
-
-    @Override
-    public KogitoObjectListener newListener(String fieldName) {
-        return new VariableScopeListener(processInstance, fieldName, variableIdPrefix, variableInstanceIdPrefix, tags);
-    }
-
 }

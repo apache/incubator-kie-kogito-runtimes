@@ -20,18 +20,16 @@ import java.util.Collection;
 
 import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
-import org.kie.kogito.process.KogitoObjectListenerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 class ListenerAwareUtils {
 
-    static void processNode(Collection<KogitoObjectListener> listeners, JsonNode container, String propertyName, JsonNode oldValue, JsonNode newValue, Runnable updater) {
-        listeners.forEach(l -> l.beforeValueChanged(container, propertyName, oldValue, newValue));
+    static void processNode(Collection<KogitoObjectListener> listeners, KogitoObjectListenerAware container, String propertyName, JsonNode oldValue, JsonNode newValue, Runnable updater) {
         if (newValue instanceof KogitoObjectListenerAware) {
-            listeners.stream().filter(KogitoObjectListenerFactory.class::isInstance).map(KogitoObjectListenerFactory.class::cast)
-                    .forEach(l -> ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(l.newListener(propertyName)));
+            ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(new InternalParentListener(container, propertyName));
         }
+        listeners.forEach(l -> l.beforeValueChanged(container, propertyName, oldValue, newValue));
         updater.run();
         listeners.forEach(l -> l.afterValueChanged(container, propertyName, oldValue, newValue));
     }

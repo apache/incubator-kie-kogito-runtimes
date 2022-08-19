@@ -72,8 +72,7 @@ public class DevModeServerlessWorkflowLogger extends DevModeWorkflowLogger {
                         LOGGER.info("Workflow data change\n{}", ((JsonNode) event.getNewValue()).toPrettyString());
                     }
                 } else {
-                    LOGGER.info("Workflow data change. Name: {} Value: {}", event.getVariableId().substring(SWFConstants.DEFAULT_WORKFLOW_VAR.length() + 1),
-                            ((JsonNode) event.getNewValue()).toPrettyString());
+                    LOGGER.info("Property '{}' changed value from: '{}', to: '{}'", event.getVariableId(), event.getOldValue(), event.getNewValue());
                 }
             }
         } else {

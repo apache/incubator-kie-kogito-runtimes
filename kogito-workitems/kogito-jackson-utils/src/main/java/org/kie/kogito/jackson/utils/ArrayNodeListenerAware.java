@@ -49,7 +49,6 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
     @Override
     public void addKogitoObjectListener(KogitoObjectListener listener) {
         listeners.add(listener);
-
     }
 
     @Override
@@ -65,7 +64,7 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
 
     @Override
     protected ArrayNode _add(JsonNode node) {
-        processNode(size() - 1, null, node, () -> super._add(node));
+        processNode(size(), null, node, () -> super._add(node));
         return this;
     }
 
@@ -73,6 +72,13 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
     protected ArrayNode _insert(int index, JsonNode node) {
         processNode(index, null, node, () -> super._insert(index, node));
         return this;
+    }
+
+    @Override
+    public JsonNode remove(int index) {
+        JsonNode oldValue = get(index);
+        processNode(index, oldValue, null, () -> super.remove(index));
+        return oldValue;
     }
 
     @Override
