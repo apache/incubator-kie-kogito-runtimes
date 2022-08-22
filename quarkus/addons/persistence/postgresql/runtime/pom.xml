@@ -30,6 +30,11 @@
 
   <description>PostgreSQL Persistence support for Quarkus</description>
 
+  <properties>
+    <quarkus.flyway.migrate-at-start>true</quarkus.flyway.migrate-at-start>
+    <quarkus.datasource.jdbc>false</quarkus.datasource.jdbc>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -43,6 +48,11 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-addons-persistence-postgresql</artifactId>
+    </dependency>
+    <!--  Flyway  -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-flyway</artifactId>
     </dependency>
   </dependencies>
 

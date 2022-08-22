@@ -13,6 +13,10 @@
   <description>PostgreSQL persistence for Springboot</description>
   <artifactId>kogito-addons-springboot-persistence-postgresql</artifactId>
 
+  <properties>
+    <version.org.flywaydb>9.1.2</version.org.flywaydb>
+    <quarkus.flyway.migrate-at-start>true</quarkus.flyway.migrate-at-start>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -21,6 +25,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>${version.org.flywaydb}</version>
     </dependency>
   </dependencies>
 
