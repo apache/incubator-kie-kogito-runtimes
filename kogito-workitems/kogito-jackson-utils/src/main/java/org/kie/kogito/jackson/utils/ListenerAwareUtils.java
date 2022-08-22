@@ -22,6 +22,7 @@ import org.kie.kogito.process.KogitoObjectListener;
 import org.kie.kogito.process.KogitoObjectListenerAware;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 class ListenerAwareUtils {
 
@@ -29,9 +30,13 @@ class ListenerAwareUtils {
         if (newValue instanceof KogitoObjectListenerAware) {
             ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(new InternalParentListener(container, propertyName));
         }
-        listeners.forEach(l -> l.beforeValueChanged(container, propertyName, oldValue, newValue));
+        listeners.forEach(l -> l.beforeValueChanged(container, propertyName, handleNull(oldValue), handleNull(newValue)));
         updater.run();
-        listeners.forEach(l -> l.afterValueChanged(container, propertyName, oldValue, newValue));
+        listeners.forEach(l -> l.afterValueChanged(container, propertyName, handleNull(oldValue), handleNull(newValue)));
+    }
+
+    private static Object handleNull(Object value) {
+        return value == null ? NullNode.instance : value;
     }
 
     private ListenerAwareUtils() {

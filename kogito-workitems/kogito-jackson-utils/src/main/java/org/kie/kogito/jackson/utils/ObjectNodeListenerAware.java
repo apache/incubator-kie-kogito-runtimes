@@ -46,15 +46,14 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
     @Override
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T set(String propertyName, JsonNode value) {
-        final JsonNode newValue = value == null ? nullNode() : value;
-        ListenerAwareUtils.processNode(listeners, this, propertyName, _children.get(propertyName), value, () -> _children.put(propertyName, newValue));
+        ListenerAwareUtils.processNode(listeners, this, propertyName, _children.get(propertyName), value, () -> _children.put(propertyName, value));
         return (T) this;
     }
 
     @Override
     public JsonNode remove(String propertyName) {
         JsonNode oldValue = _children.get(propertyName);
-        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, null, () -> super.remove(propertyName));
+        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, nullNode(), () -> super.remove(propertyName));
         return oldValue;
     }
 

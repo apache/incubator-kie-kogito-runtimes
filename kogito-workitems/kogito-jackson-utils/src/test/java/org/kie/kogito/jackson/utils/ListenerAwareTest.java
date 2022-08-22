@@ -19,10 +19,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.KogitoObjectListener;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -40,14 +45,14 @@ public class ListenerAwareTest {
         ObjectNodeListenerAware node = (ObjectNodeListenerAware) ObjectMapperFactory.listenerAware().createObjectNode();
         node.addKogitoObjectListener(listener);
         node.put("name", "Javierito");
-        verify(listener).beforeValueChanged(node, "name", null, new TextNode("Javierito"));
-        verify(listener).afterValueChanged(node, "name", null, new TextNode("Javierito"));
+        verify(listener).beforeValueChanged(node, "name", NullNode.instance, new TextNode("Javierito"));
+        verify(listener).afterValueChanged(node, "name", NullNode.instance, new TextNode("Javierito"));
         node.put("name", 3);
         verify(listener).beforeValueChanged(node, "name", new TextNode("Javierito"), new IntNode(3));
         verify(listener).afterValueChanged(node, "name", new TextNode("Javierito"), new IntNode(3));
         node.remove("name");
-        verify(listener).beforeValueChanged(node, "name", new IntNode(3), null);
-        verify(listener).afterValueChanged(node, "name", new IntNode(3), null);
+        verify(listener).beforeValueChanged(node, "name", new IntNode(3), NullNode.instance);
+        verify(listener).afterValueChanged(node, "name", new IntNode(3), NullNode.instance);
     }
 
     @Test
@@ -55,17 +60,17 @@ public class ListenerAwareTest {
         ArrayNodeListenerAware node = (ArrayNodeListenerAware) ObjectMapperFactory.listenerAware().createArrayNode();
         node.addKogitoObjectListener(listener);
         node.add("Javierito");
-        verify(listener).beforeValueChanged(node, "[0]", null, new TextNode("Javierito"));
-        verify(listener).afterValueChanged(node, "[0]", null, new TextNode("Javierito"));
+        verify(listener).beforeValueChanged(node, "[0]", NullNode.instance, new TextNode("Javierito"));
+        verify(listener).afterValueChanged(node, "[0]", NullNode.instance, new TextNode("Javierito"));
         node.insert(1, "OtherJavierito");
-        verify(listener).beforeValueChanged(node, "[1]", null, new TextNode("OtherJavierito"));
-        verify(listener).afterValueChanged(node, "[1]", null, new TextNode("OtherJavierito"));
+        verify(listener).beforeValueChanged(node, "[1]", NullNode.instance, new TextNode("OtherJavierito"));
+        verify(listener).afterValueChanged(node, "[1]", NullNode.instance, new TextNode("OtherJavierito"));
         node.set(1, "NotLikeJavierito");
         verify(listener).beforeValueChanged(node, "[1]", new TextNode("OtherJavierito"), new TextNode("NotLikeJavierito"));
         verify(listener).afterValueChanged(node, "[1]", new TextNode("OtherJavierito"), new TextNode("NotLikeJavierito"));
         node.remove(0);
-        verify(listener).beforeValueChanged(node, "[0]", new TextNode("Javierito"), null);
-        verify(listener).afterValueChanged(node, "[0]", new TextNode("Javierito"), null);
+        verify(listener).beforeValueChanged(node, "[0]", new TextNode("Javierito"), NullNode.instance);
+        verify(listener).afterValueChanged(node, "[0]", new TextNode("Javierito"), NullNode.instance);
     }
 
     @Test
@@ -74,11 +79,30 @@ public class ListenerAwareTest {
         node.addKogitoObjectListener(listener);
         ObjectNode embedded = node.objectNode().put("surname", "Javierito");
         node.set("name", embedded);
-        verify(listener).beforeValueChanged(node, "name", null, embedded);
-        verify(listener).afterValueChanged(node, "name", null, embedded);
+        verify(listener).beforeValueChanged(node, "name", NullNode.instance, embedded);
+        verify(listener).afterValueChanged(node, "name", NullNode.instance, embedded);
         embedded.put("surname", "NotLikeJavierito");
         verify(listener).beforeValueChanged(node, "name.surname", new TextNode("Javierito"), new TextNode("NotLikeJavierito"));
         verify(listener).afterValueChanged(node, "name.surname", new TextNode("Javierito"), new TextNode("NotLikeJavierito"));
     }
 
+    @Test
+    void testObjectClone() {
+        ObjectNode node = ObjectMapperFactory.listenerAware().createObjectNode().put("name", "Javierito");
+        assertTrue(node instanceof ObjectNodeListenerAware);
+        ObjectNode cloned = node.deepCopy();
+        assertTrue(cloned instanceof ObjectNodeListenerAware);
+        assertNotSame(node, cloned);
+        assertEquals(node, cloned);
+    }
+
+    @Test
+    void testArrayClone() {
+        ArrayNode node = ObjectMapperFactory.listenerAware().getNodeFactory().arrayNode(2).add("Javierito");
+        assertTrue(node instanceof ArrayNodeListenerAware);
+        ArrayNode cloned = node.deepCopy();
+        assertTrue(cloned instanceof ArrayNodeListenerAware);
+        assertNotSame(node, cloned);
+        assertEquals(node, cloned);
+    }
 }

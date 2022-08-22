@@ -64,20 +64,20 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
 
     @Override
     protected ArrayNode _add(JsonNode node) {
-        processNode(size(), null, node, () -> super._add(node));
+        processNode(size(), nullNode(), node, () -> super._add(node));
         return this;
     }
 
     @Override
     protected ArrayNode _insert(int index, JsonNode node) {
-        processNode(index, null, node, () -> super._insert(index, node));
+        processNode(index, nullNode(), node, () -> super._insert(index, node));
         return this;
     }
 
     @Override
     public JsonNode remove(int index) {
         JsonNode oldValue = get(index);
-        processNode(index, oldValue, null, () -> super.remove(index));
+        processNode(index, oldValue, nullNode(), () -> super.remove(index));
         return oldValue;
     }
 
