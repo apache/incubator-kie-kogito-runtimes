@@ -15,8 +15,8 @@
  */
 package org.kie.kogito.jackson.utils;
 
-import org.kie.kogito.process.KogitoObjectListener;
-import org.kie.kogito.process.KogitoObjectListenerAware;
+import org.kie.kogito.internal.process.event.KogitoObjectListener;
+import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
 
 class InternalParentListener implements KogitoObjectListener {
 

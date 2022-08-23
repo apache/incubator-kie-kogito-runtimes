@@ -17,7 +17,7 @@ package org.kie.kogito.jackson.utils;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.process.KogitoObjectListener;
+import org.kie.kogito.internal.process.event.KogitoObjectListener;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.IntNode;

@@ -18,8 +18,8 @@ package org.kie.kogito.jackson.utils;
 
 import java.util.Collection;
 
-import org.kie.kogito.process.KogitoObjectListener;
-import org.kie.kogito.process.KogitoObjectListenerAware;
+import org.kie.kogito.internal.process.event.KogitoObjectListener;
+import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;

@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessInstance;
+import org.kie.kogito.internal.process.event.KogitoObjectListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
-import org.kie.kogito.process.KogitoObjectListener;
 
 public class VariableScopeListener implements KogitoObjectListener {
 

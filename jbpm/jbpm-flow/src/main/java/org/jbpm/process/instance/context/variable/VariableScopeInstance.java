@@ -27,9 +27,9 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.AbstractContextInstance;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.instance.node.CompositeContextNodeInstance;
+import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.process.KogitoObjectListenerAware;
 import org.kie.kogito.process.VariableViolationException;
 
 /**

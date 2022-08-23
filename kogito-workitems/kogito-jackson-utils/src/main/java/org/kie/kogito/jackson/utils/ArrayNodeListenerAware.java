@@ -21,8 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.kie.kogito.process.KogitoObjectListener;
-import org.kie.kogito.process.KogitoObjectListenerAware;
+import org.kie.kogito.internal.process.event.KogitoObjectListener;
+import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
