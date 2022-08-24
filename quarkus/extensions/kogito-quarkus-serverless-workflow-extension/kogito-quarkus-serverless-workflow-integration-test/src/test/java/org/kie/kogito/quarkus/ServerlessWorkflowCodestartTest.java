@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import io.quarkus.devtools.testing.codestarts.QuarkusCodestartTest;
-import io.quarkus.maven.ArtifactCoords;
+import io.quarkus.maven.dependency.ArtifactCoords;
 
 import static io.quarkus.devtools.codestarts.quarkus.QuarkusCodestartCatalog.Language.JAVA;
 
