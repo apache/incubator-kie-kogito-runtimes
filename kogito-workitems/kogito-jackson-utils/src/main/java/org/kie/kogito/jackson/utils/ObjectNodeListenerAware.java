@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static org.kie.kogito.jackson.utils.ListenerAwareUtils.handleNull;
+
 public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectListenerAware {
 
     private static final long serialVersionUID = 1L;
@@ -39,21 +41,21 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
 
     @Override
     protected ObjectNode _put(String fieldName, JsonNode value) {
-        ListenerAwareUtils.processNode(listeners, this, fieldName, _children.get(fieldName), value, () -> _children.put(fieldName, value));
+        fireEvent(fieldName, _children.get(fieldName), value, () -> _children.put(fieldName, value));
         return this;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T extends JsonNode> T set(String propertyName, JsonNode value) {
-        ListenerAwareUtils.processNode(listeners, this, propertyName, _children.get(propertyName), value, () -> _children.put(propertyName, value));
+        fireEvent(propertyName, _children.get(propertyName), value, () -> _children.put(propertyName, value));
         return (T) this;
     }
 
     @Override
     public JsonNode remove(String propertyName) {
         JsonNode oldValue = _children.get(propertyName);
-        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, nullNode(), () -> super.remove(propertyName));
+        fireEvent(propertyName, oldValue, nullNode(), () -> super.remove(propertyName));
         return oldValue;
     }
 
@@ -74,5 +76,10 @@ public class ObjectNodeListenerAware extends ObjectNode implements KogitoObjectL
             ret._children.put(entry.getKey(), entry.getValue().deepCopy());
         }
         return ret;
+    }
+
+    @Override
+    public void fireEvent(String propertyName, Object oldValue, Object newValue, Runnable updater) {
+        KogitoObjectListenerAware.super.fireEvent(propertyName, handleNull(oldValue), handleNull(newValue), updater);
     }
 }

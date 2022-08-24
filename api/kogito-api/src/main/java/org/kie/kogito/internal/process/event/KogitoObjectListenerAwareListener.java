@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.jackson.utils;
+package org.kie.kogito.internal.process.event;
 
-import org.kie.kogito.internal.process.event.KogitoObjectListener;
-import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
-
-class InternalParentListener implements KogitoObjectListener {
+class KogitoObjectListenerAwareListener implements KogitoObjectListener {
 
     private final KogitoObjectListenerAware container;
     private final String prefix;
 
-    public InternalParentListener(KogitoObjectListenerAware container, String prefix) {
+    public KogitoObjectListenerAwareListener(KogitoObjectListenerAware container, String prefix) {
         this.container = container;
         this.prefix = prefix;
     }

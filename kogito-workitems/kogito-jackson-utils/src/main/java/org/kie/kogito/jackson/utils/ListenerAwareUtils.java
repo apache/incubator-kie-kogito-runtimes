@@ -16,26 +16,11 @@
 
 package org.kie.kogito.jackson.utils;
 
-import java.util.Collection;
-
-import org.kie.kogito.internal.process.event.KogitoObjectListener;
-import org.kie.kogito.internal.process.event.KogitoObjectListenerAware;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 class ListenerAwareUtils {
 
-    static void processNode(Collection<KogitoObjectListener> listeners, KogitoObjectListenerAware container, String propertyName, JsonNode oldValue, JsonNode newValue, Runnable updater) {
-        if (newValue instanceof KogitoObjectListenerAware) {
-            ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(new InternalParentListener(container, propertyName));
-        }
-        listeners.forEach(l -> l.beforeValueChanged(container, propertyName, handleNull(oldValue), handleNull(newValue)));
-        updater.run();
-        listeners.forEach(l -> l.afterValueChanged(container, propertyName, handleNull(oldValue), handleNull(newValue)));
-    }
-
-    private static Object handleNull(Object value) {
+    static Object handleNull(Object value) {
         return value == null ? NullNode.instance : value;
     }
 

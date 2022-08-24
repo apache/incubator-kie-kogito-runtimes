@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import static org.kie.kogito.jackson.utils.ListenerAwareUtils.handleNull;
+
 public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectListenerAware {
 
     private static final long serialVersionUID = 1L;
@@ -59,7 +61,7 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
 
     private void processNode(int index, JsonNode oldValue, JsonNode newValue, Runnable updater) {
         String propertyName = "[" + index + "]";
-        ListenerAwareUtils.processNode(listeners, this, propertyName, oldValue, newValue, updater);
+        fireEvent(propertyName, oldValue, newValue, updater);
     }
 
     @Override
@@ -94,5 +96,10 @@ public class ArrayNodeListenerAware extends ArrayNode implements KogitoObjectLis
             nodes.add(iter.next().deepCopy());
         }
         return new ArrayNodeListenerAware(_nodeFactory, nodes);
+    }
+
+    @Override
+    public void fireEvent(String propertyName, Object oldValue, Object newValue, Runnable updater) {
+        KogitoObjectListenerAware.super.fireEvent(propertyName, handleNull(oldValue), handleNull(newValue), updater);
     }
 }
