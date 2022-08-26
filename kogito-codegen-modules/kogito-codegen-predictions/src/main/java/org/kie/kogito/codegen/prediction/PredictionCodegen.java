@@ -65,6 +65,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
+import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
 import static org.kie.efesto.common.api.utils.CollectionUtils.findExactlyOne;
 import static org.kie.efesto.compilationmanager.core.utils.CompilationManagerUtils.getExistingIndexFile;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getAllGeneratedExecutableResources;
@@ -79,12 +80,17 @@ public class PredictionCodegen extends AbstractGenerator {
     public static final String GENERATOR_NAME = "predictions";
     private static final Logger LOGGER = LoggerFactory.getLogger(PredictionCodegen.class);
     private static final GeneratedFileType PMML_TYPE = GeneratedFileType.of("PMML", GeneratedFileType.Category.SOURCE);
-    private static final GeneratedFileType INDEX_FILE = GeneratedFileType.of("IndexFile", GeneratedFileType.Category.INTERNAL_RESOURCE);
-    private static final CompilationManager compilationManager = org.kie.efesto.compilationmanager.api.utils.SPIUtils.getCompilationManager(true).get();
+    private static final GeneratedFileType INDEX_FILE = GeneratedFileType.of("IndexFile",
+            GeneratedFileType.Category.INTERNAL_RESOURCE);
+    private static final CompilationManager compilationManager =
+            org.kie.efesto.compilationmanager.api.utils.SPIUtils.getCompilationManager(true).get();
     private final Collection<PMMLResource> resources;
     private final Set<IndexFile> indexFiles;
 
-    public PredictionCodegen(KogitoBuildContext context, Collection<PMMLResource> resources, Set<IndexFile> indexFiles) {
+    private static final String DEFAULT_INDEXFILE_DIRECTORY = "./target/classes";
+
+    public PredictionCodegen(KogitoBuildContext context, Collection<PMMLResource> resources,
+            Set<IndexFile> indexFiles) {
         super(context, GENERATOR_NAME, new PredictionConfigGenerator(context));
         this.resources = resources;
         this.indexFiles = indexFiles;
@@ -151,11 +157,13 @@ public class PredictionCodegen extends AbstractGenerator {
         LOGGER.debug("deleteIndexFiles");
         List<String> toDelete = Arrays.asList("pmml", "drl");
         toDelete.forEach(model -> getExistingIndexFile(model).ifPresent(indexFile -> {
-            try {
-                LOGGER.debug("Going to delete {}", indexFile.getAbsolutePath());
-                Files.delete(indexFile.toPath());
-            } catch (IOException e) {
-                throw new KiePMMLException("Failed to delete " + indexFile.getAbsolutePath(), e);
+            if (indexFile.exists()) {
+                try {
+                    LOGGER.debug("Going to delete {}", indexFile.getAbsolutePath());
+                    Files.delete(indexFile.toPath());
+                } catch (IOException e) {
+                    throw new KiePMMLException("Failed to delete " + indexFile.getAbsolutePath(), e);
+                }
             }
         }));
     }
@@ -177,8 +185,11 @@ public class PredictionCodegen extends AbstractGenerator {
 
     private static Collection<IndexFile> compileResource(PMMLCompilationContext compilationContext,
             EfestoResource<InputStream> efestoResource) {
-        Collection<IndexFile> toReturn = compilationManager.processResource(compilationContext,
+        compilationManager.processResource(compilationContext,
                 efestoResource);
+        Path targetDirectory =
+                new File(System.getProperty(INDEXFILE_DIRECTORY_PROPERTY, DEFAULT_INDEXFILE_DIRECTORY)).toPath();
+        Collection<IndexFile> toReturn = compilationContext.createIndexFiles(targetDirectory).values();
         if (toReturn.stream().noneMatch(indexFile -> indexFile.getModel().equals(PMML_STRING))) {
             throw new KiePMMLException("Failed to create IndexFile for PMML");
         }
