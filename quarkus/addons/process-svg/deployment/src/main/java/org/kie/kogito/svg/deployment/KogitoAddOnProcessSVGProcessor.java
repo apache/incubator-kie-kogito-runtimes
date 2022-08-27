@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.svg.deployment;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
@@ -47,7 +45,7 @@ class KogitoAddOnProcessSVGProcessor extends RequireCapabilityKogitoAddOnProcess
     }
 
     @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
-    public void nativeResources(BuildProducer<NativeImageResourceBuildItem> resource, BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns) throws IOException {
+    public void nativeResources(BuildProducer<NativeImageResourceBuildItem> resource, BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns) {
         //batik
         resource.produce(new NativeImageResourceBuildItem("org/apache/batik/util/resources/XMLResourceDescriptor.properties"));
 
