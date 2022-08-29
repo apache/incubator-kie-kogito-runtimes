@@ -44,6 +44,14 @@
       <artifactId>batik-anim</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>xalan</groupId>
           <artifactId>xalan</artifactId>
         </exclusion>
