@@ -67,7 +67,6 @@ import static java.util.stream.Collectors.toSet;
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.kie.efesto.common.api.utils.CollectionUtils.findExactlyOne;
 import static org.kie.efesto.compilationmanager.core.utils.CompilationManagerUtils.getExistingIndexFile;
-import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getAllGeneratedExecutableResources;
 import static org.kie.efesto.runtimemanager.api.utils.GeneratedResourceUtils.getGeneratedExecutableResource;
 import static org.kie.pmml.commons.Constants.PMML_STRING;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
@@ -139,7 +138,7 @@ public class PredictionCodegen extends AbstractGenerator {
                     compilationContext.getModelLocalUriIdsForFile());
             String modelPath = resource.getSourcePath();
             PMMLResource toAdd = new PMMLResource(kiePMMLModels, path, modelPath,
-                    getAllGeneratedClasses(compilationContext, createdIndexFiles));
+                    getAllGeneratedClasses(compilationContext/* , createdIndexFiles */));
             toReturn.add(toAdd);
             indexFiles.addAll(createdIndexFiles);
         });
@@ -159,15 +158,26 @@ public class PredictionCodegen extends AbstractGenerator {
         }));
     }
 
-    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext,
-            Collection<IndexFile> indexFiles) {
+    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext/*
+                                                                                                        * ,
+                                                                                                        * Collection<IndexFile> indexFiles
+                                                                                                        */) {
         Map<String, byte[]> toReturn = new HashMap<>();
-        indexFiles.forEach(indexFile -> {
-            Collection<GeneratedExecutableResource> executableResources = getAllGeneratedExecutableResources(indexFile);
-            executableResources.forEach(executableResource -> {
-                toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getModelLocalUriId()));
-            });
+        Collection<GeneratedExecutableResource> executableResources =
+                compilationContext.getModelLocalUriIdsForFile().stream().map(modelLocalUriId -> getGeneratedExecutableResource(modelLocalUriId, modelLocalUriId.model()))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(toList());
+        executableResources.forEach(executableResource -> {
+            toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getModelLocalUriId()));
         });
+        //
+        //        indexFiles.forEach(indexFile -> {
+        //            Collection<GeneratedExecutableResource> executableResources = getAllGeneratedExecutableResources(indexFile);
+        //            executableResources.forEach(executableResource -> {
+        //                toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getModelLocalUriId()));
+        //            });
+        //        });
         return toReturn;
     }
 
