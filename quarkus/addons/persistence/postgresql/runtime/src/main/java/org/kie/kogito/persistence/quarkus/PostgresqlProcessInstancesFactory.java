@@ -29,7 +29,7 @@ public class PostgresqlProcessInstancesFactory extends AbstractProcessInstancesF
 
     @Inject
     public PostgresqlProcessInstancesFactory(PgPool client,
-            @ConfigProperty(name = "kogito.persistence.auto.ddl", defaultValue = "true") Boolean autoDDL,
+            @ConfigProperty(name = "kogito.persistence.auto.ddl", defaultValue = "false") Boolean autoDDL,
             @ConfigProperty(name = "kogito.persistence.query.timeout.millis", defaultValue = "10000") Long queryTimeout,
             @ConfigProperty(name = "kogito.persistence.optimistic.lock", defaultValue = "false") Boolean lock) {
         super(client, autoDDL, queryTimeout, lock);
