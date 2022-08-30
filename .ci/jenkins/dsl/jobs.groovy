@@ -8,7 +8,9 @@
 * https://github.com/kiegroup/kogito-pipelines/tree/main/dsl/seed/src/main/groovy/org/kie/jenkins/jobdsl.
 */
 
+import org.kie.jenkins.jobdsl.model.Environment
 import org.kie.jenkins.jobdsl.model.Folder
+import org.kie.jenkins.jobdsl.model.JobType
 import org.kie.jenkins.jobdsl.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.KogitoJobUtils
 import org.kie.jenkins.jobdsl.Utils
@@ -59,6 +61,7 @@ setupQuarkusJob(Folder.NIGHTLY_QUARKUS_MAIN)
 setupQuarkusJob(Folder.NIGHTLY_QUARKUS_BRANCH)
 setupQuarkusJob(Folder.NIGHTLY_QUARKUS_LTS)
 setupMandrelJob()
+setupPodmanJob()
 
 // Release jobs
 setupDeployJob(Folder.RELEASE)
@@ -130,6 +133,31 @@ void setupMandrelJob() {
     jobParams.env.putAll([
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
         NOTIFICATION_JOB_NAME: 'Mandrel check'
+    ])
+    KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
+        parameters {
+            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
+            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+        }
+    }
+}
+
+void setupPodmanJob() {
+    Environment podmanEnv = new Environment(
+        name: 'PODMAN',
+        optional: true,
+    )
+    Folder podmanFolder = new Folder(
+        name: 'NIGHTLY_PODMAN',
+        jobType: JobType.NIGHTLY,
+        environment: podmanEnv,
+    )
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'kogito-runtimes', podmanFolder, "${jenkins_path}/Jenkinsfile.podman", 'Kogito Runtimes Podman Testing')
+    KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
+    jobParams.triggers = [ cron : 'H 8 * * *' ]
+    jobParams.env.putAll([
+        JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
+        NOTIFICATION_JOB_NAME: 'Podman check'
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
         parameters {
