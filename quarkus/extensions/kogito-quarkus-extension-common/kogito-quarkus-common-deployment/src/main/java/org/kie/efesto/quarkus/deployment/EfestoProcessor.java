@@ -25,7 +25,8 @@ import java.util.stream.Collectors;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.jboss.logging.Logger;
-import org.kie.efesto.common.api.model.FRI;
+import org.kie.efesto.common.api.identifiers.ModelLocalUriId;
+import org.kie.efesto.common.api.identifiers.ReflectiveAppRoot;
 import org.kie.efesto.common.api.model.GeneratedClassResource;
 import org.kie.efesto.common.api.model.GeneratedExecutableResource;
 import org.kie.efesto.common.api.model.GeneratedRedirectResource;
@@ -51,12 +52,16 @@ public class EfestoProcessor {
     public List<ReflectiveClassBuildItem> reflectiveEfestoStaticClasses() {
         LOGGER.infof("reflectiveEfestoStaticClasses");
         final List<ReflectiveClassBuildItem> toReturn = new ArrayList<>();
+        // Generated Resources
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedResources.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedResource.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedExecutableResource.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedRedirectResource.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedClassResource.class));
-        toReturn.add(new ReflectiveClassBuildItem(true, true, FRI.class));
+        // Identifiers
+        toReturn.add(new ReflectiveClassBuildItem(true, true, ModelLocalUriId.class));
+        toReturn.add(new ReflectiveClassBuildItem(true, true, ReflectiveAppRoot.class));
+        // Managers
         toReturn.add(new ReflectiveClassBuildItem(true, true, CompilationManagerImpl.class));
         toReturn.add(new ReflectiveClassBuildItem(true, true, RuntimeManagerImpl.class));
         return toReturn;
