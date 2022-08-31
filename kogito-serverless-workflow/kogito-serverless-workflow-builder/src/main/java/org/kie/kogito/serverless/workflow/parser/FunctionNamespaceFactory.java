@@ -22,18 +22,18 @@ import java.util.ServiceLoader;
 
 import io.serverlessworkflow.api.functions.FunctionRef;
 
-public class SWFunctionNamespaceFactory {
+public class FunctionNamespaceFactory {
 
-    public static SWFunctionNamespaceFactory instance() {
+    public static FunctionNamespaceFactory instance() {
         return INSTANCE;
     }
 
-    private static final SWFunctionNamespaceFactory INSTANCE = new SWFunctionNamespaceFactory();
+    private static final FunctionNamespaceFactory INSTANCE = new FunctionNamespaceFactory();
     private static final String NAMESPACE_SEPARATOR = ":";
 
-    private final Map<String, SWFunctionNamespace> namespaceMap = new HashMap<>();
+    private final Map<String, FunctionNamespace> namespaceMap = new HashMap<>();
 
-    public Optional<SWFunctionNamespace> getNamespace(FunctionRef functionDef) {
+    public Optional<FunctionNamespace> getNamespace(FunctionRef functionDef) {
         return Optional.ofNullable(namespaceMap.get(extractNamespace(functionDef)));
     }
 
@@ -49,7 +49,7 @@ public class SWFunctionNamespaceFactory {
         return indexOf == -1 ? name : name.substring(indexOf + 1);
     }
 
-    private SWFunctionNamespaceFactory() {
-        ServiceLoader.load(SWFunctionNamespace.class).forEach(handler -> namespaceMap.put(handler.namespace(), handler));
+    private FunctionNamespaceFactory() {
+        ServiceLoader.load(FunctionNamespace.class).forEach(handler -> namespaceMap.put(handler.namespace(), handler));
     }
 }

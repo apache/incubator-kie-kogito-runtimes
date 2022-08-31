@@ -28,7 +28,7 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 
-import static org.kie.kogito.serverless.workflow.parser.SWFunctionTypeHandlerFactory.trimCustomOperation;
+import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
 
 public class ServiceTypeHandler extends WorkItemTypeHandler {

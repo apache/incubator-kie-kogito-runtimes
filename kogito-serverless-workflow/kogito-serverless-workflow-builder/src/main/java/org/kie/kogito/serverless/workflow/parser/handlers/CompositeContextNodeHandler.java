@@ -24,9 +24,9 @@ import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.kie.kogito.serverless.workflow.parser.FunctionNamespaceFactory;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.SWFunctionNamespaceFactory;
-import org.kie.kogito.serverless.workflow.parser.SWFunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 
 import io.serverlessworkflow.api.Workflow;
@@ -137,13 +137,13 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private NodeFactory fromFunctionDefinition(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionDefinition functionDef,
             FunctionRef functionRef, VariableInfo varInfo) {
-        return SWFunctionTypeHandlerFactory.instance().getTypeHandler(functionDef)
+        return FunctionTypeHandlerFactory.instance().getTypeHandler(functionDef)
                 .map(type -> type.getActionNode(workflow, parserContext, embeddedSubProcess, functionDef, functionRef, varInfo))
                 .orElseGet(() -> (NodeFactory) embeddedSubProcess.actionNode(parserContext.newId()).name(functionRef.getRefName()).action(JavaDialect.ID, ""));
     }
 
     private Optional<NodeFactory> fromPredefinedFunction(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionRef functionRef, VariableInfo varInfo) {
-        return SWFunctionNamespaceFactory.instance().getNamespace(functionRef).map(f -> f.getActionNode(workflow, parserContext, embeddedSubProcess, functionRef, varInfo));
+        return FunctionNamespaceFactory.instance().getNamespace(functionRef).map(f -> f.getActionNode(workflow, parserContext, embeddedSubProcess, functionRef, varInfo));
     }
 }

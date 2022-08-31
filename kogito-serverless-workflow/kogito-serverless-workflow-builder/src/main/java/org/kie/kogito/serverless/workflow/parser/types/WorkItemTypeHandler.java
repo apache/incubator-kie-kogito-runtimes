@@ -28,8 +28,8 @@ import org.kie.kogito.jackson.utils.JsonNodeVisitor;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.process.expr.ExpressionHandlerFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.SWFunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.suppliers.ExpressionParametersFactorySupplier;
 import org.kie.kogito.serverless.workflow.suppliers.ObjectResolverSupplier;
@@ -42,7 +42,7 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 
-public abstract class WorkItemTypeHandler implements SWFunctionTypeHandler {
+public abstract class WorkItemTypeHandler implements FunctionTypeHandler {
     @Override
     public NodeFactory<?, ?> getActionNode(Workflow workflow, ParserContext context, RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef, FunctionRef functionRef,
             VariableInfo varInfo) {

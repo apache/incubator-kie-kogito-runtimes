@@ -18,14 +18,14 @@ package org.kie.kogito.serverless.workflow.functions;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.kie.kogito.serverless.workflow.parser.FunctionNamespace;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
-import org.kie.kogito.serverless.workflow.parser.SWFunctionNamespace;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionRef;
 
-public abstract class ActionFunctionNamespace implements SWFunctionNamespace {
+public abstract class ActionFunctionNamespace implements FunctionNamespace {
 
     @Override
     public NodeFactory<?, ?> getActionNode(Workflow workflow,

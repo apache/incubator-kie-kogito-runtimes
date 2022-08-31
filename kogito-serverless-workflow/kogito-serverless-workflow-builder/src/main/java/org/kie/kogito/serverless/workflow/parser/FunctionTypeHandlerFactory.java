@@ -22,19 +22,19 @@ import java.util.ServiceLoader;
 
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-public class SWFunctionTypeHandlerFactory {
+public class FunctionTypeHandlerFactory {
 
-    public static SWFunctionTypeHandlerFactory instance() {
+    public static FunctionTypeHandlerFactory instance() {
         return INSTANCE;
     }
 
-    private static final SWFunctionTypeHandlerFactory INSTANCE = new SWFunctionTypeHandlerFactory();
+    private static final FunctionTypeHandlerFactory INSTANCE = new FunctionTypeHandlerFactory();
     private static final String CUSTOM_TYPE_SEPARATOR = ":";
 
-    private final Map<String, SWFunctionTypeHandler> typeMap = new HashMap<>();
-    private final Map<String, SWFunctionTypeHandler> customMap = new HashMap<>();
+    private final Map<String, FunctionTypeHandler> typeMap = new HashMap<>();
+    private final Map<String, FunctionTypeHandler> customMap = new HashMap<>();
 
-    public Optional<SWFunctionTypeHandler> getTypeHandler(FunctionDefinition functionDef) {
+    public Optional<FunctionTypeHandler> getTypeHandler(FunctionDefinition functionDef) {
         final boolean isCustom = functionDef.getType() == FunctionDefinition.Type.CUSTOM;
         return Optional.ofNullable(getMap(isCustom).get(isCustom ? getTypeFromOperation(functionDef) : functionDef.getType().toString()));
     }
@@ -51,11 +51,11 @@ public class SWFunctionTypeHandlerFactory {
         return indexOf == -1 ? operation : operation.substring(indexOf + 1);
     }
 
-    private Map<String, SWFunctionTypeHandler> getMap(boolean isCustom) {
+    private Map<String, FunctionTypeHandler> getMap(boolean isCustom) {
         return isCustom ? customMap : typeMap;
     }
 
-    private SWFunctionTypeHandlerFactory() {
-        ServiceLoader.load(SWFunctionTypeHandler.class).forEach(handler -> getMap(handler.isCustom()).put(handler.type(), handler));
+    private FunctionTypeHandlerFactory() {
+        ServiceLoader.load(FunctionTypeHandler.class).forEach(handler -> getMap(handler.isCustom()).put(handler.type(), handler));
     }
 }
