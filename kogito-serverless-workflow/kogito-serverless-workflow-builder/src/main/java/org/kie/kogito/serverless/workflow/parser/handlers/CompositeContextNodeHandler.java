@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
@@ -23,6 +24,7 @@ import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
+import org.kie.kogito.serverless.workflow.parser.SWFunctionNamespaceFactory;
 import org.kie.kogito.serverless.workflow.parser.SWFunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 
@@ -115,14 +117,27 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
     private NodeFactory<?, ?> getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionRef functionRef, String inputVar, String outputVar, String collectVar, String... extraVariables) {
-        String actionName = functionRef.getRefName();
-        FunctionDefinition functionDef = workflow.getFunctions().getFunctionDefs()
+        String functionName = functionRef.getRefName();
+        VariableInfo varInfo = new VariableInfo(inputVar, outputVar, collectVar, extraVariables);
+        return workflow.getFunctions().getFunctionDefs()
                 .stream()
-                .filter(wf -> wf.getName().equals(actionName))
+                .filter(wf -> wf.getName().equals(functionName))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("cannot find function " + actionName));
+                .map(functionDef -> fromFunctionDefinition(embeddedSubProcess, functionDef, functionRef, varInfo))
+                .or(() -> fromPredefinedFuntion(embeddedSubProcess, functionRef, varInfo))
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName));
+    }
+
+    private NodeFactory fromFunctionDefinition(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+            FunctionDefinition functionDef,
+            FunctionRef functionRef, VariableInfo varInfo) {
         return SWFunctionTypeHandlerFactory.instance().getTypeHandler(functionDef)
-                .map(type -> type.getActionNode(workflow, parserContext, embeddedSubProcess, functionDef, functionRef, new VariableInfo(inputVar, outputVar, collectVar, extraVariables)))
+                .map(type -> type.getActionNode(workflow, parserContext, embeddedSubProcess, functionDef, functionRef, varInfo))
                 .orElseGet(() -> (NodeFactory) embeddedSubProcess.actionNode(parserContext.newId()).name(functionRef.getRefName()).action(JavaDialect.ID, ""));
+    }
+
+    private Optional<NodeFactory> fromPredefinedFuntion(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+            FunctionRef functionRef, VariableInfo varInfo) {
+        return SWFunctionNamespaceFactory.instance().getNamespace(functionRef).map(f -> f.getActionNode(workflow, parserContext, embeddedSubProcess, functionRef, varInfo));
     }
 }
