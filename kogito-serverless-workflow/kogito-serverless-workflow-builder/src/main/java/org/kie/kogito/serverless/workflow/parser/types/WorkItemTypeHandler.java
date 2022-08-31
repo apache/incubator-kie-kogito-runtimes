@@ -86,7 +86,7 @@ public abstract class WorkItemTypeHandler implements SWFunctionTypeHandler {
     protected final void processArgs(Workflow workflow, WorkItemNodeFactory<?> workItemFactory,
             JsonNode functionArgs, String paramName) {
         if (functionArgs.isObject()) {
-            functionsToMap(workflow, functionArgs).entrySet().forEach(entry -> processArg(workflow, entry.getKey(), entry.getValue(), workItemFactory, paramName));
+            functionsToMap(workflow, functionArgs).forEach((key, value) -> processArg(workflow, key, value, workItemFactory, paramName));
         } else {
             Object object = functionReference(workflow, JsonObjectUtils.simpleToJavaValue(functionArgs));
             if (isExpression(workflow, object)) {

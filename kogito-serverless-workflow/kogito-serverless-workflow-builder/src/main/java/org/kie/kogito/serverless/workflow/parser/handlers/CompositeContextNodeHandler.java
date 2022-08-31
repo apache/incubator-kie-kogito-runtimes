@@ -125,7 +125,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .filter(wf -> wf.getName().equals(functionName))
                 .findFirst()
                 .map(functionDef -> fromFunctionDefinition(embeddedSubProcess, functionDef, functionRef, varInfo))
-                .or(() -> fromPredefinedFuntion(embeddedSubProcess, functionRef, varInfo))
+                .or(() -> fromPredefinedFunction(embeddedSubProcess, functionRef, varInfo))
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName));
     }
 
@@ -142,7 +142,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
                 .orElseGet(() -> (NodeFactory) embeddedSubProcess.actionNode(parserContext.newId()).name(functionRef.getRefName()).action(JavaDialect.ID, ""));
     }
 
-    private Optional<NodeFactory> fromPredefinedFuntion(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+    private Optional<NodeFactory> fromPredefinedFunction(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionRef functionRef, VariableInfo varInfo) {
         return SWFunctionNamespaceFactory.instance().getNamespace(functionRef).map(f -> f.getActionNode(workflow, parserContext, embeddedSubProcess, functionRef, varInfo));
     }

@@ -31,8 +31,8 @@ public class SWFunctionTypeHandlerFactory {
     private static final SWFunctionTypeHandlerFactory INSTANCE = new SWFunctionTypeHandlerFactory();
     private static final String CUSTOM_TYPE_SEPARATOR = ":";
 
-    private Map<String, SWFunctionTypeHandler> typeMap = new HashMap<>();
-    private Map<String, SWFunctionTypeHandler> customMap = new HashMap<>();
+    private final Map<String, SWFunctionTypeHandler> typeMap = new HashMap<>();
+    private final Map<String, SWFunctionTypeHandler> customMap = new HashMap<>();
 
     public Optional<SWFunctionTypeHandler> getTypeHandler(FunctionDefinition functionDef) {
         final boolean isCustom = functionDef.getType() == FunctionDefinition.Type.CUSTOM;

@@ -78,19 +78,16 @@ public class ServiceTypeHandler extends WorkItemTypeHandler {
         String lang = null;
         String operation = trimCustomOperation(functionDef);
 
-        // try extracting from operation (format language:interface::method)
-        if (operation != null) {
-            int indexOf = operation.indexOf(INTFC_SEPARATOR);
+        int indexOf = operation.indexOf(INTFC_SEPARATOR);
+        if (indexOf != -1) {
+            method = operation.substring(indexOf + INTFC_SEPARATOR.length());
+            operation = operation.substring(0, indexOf);
+            indexOf = operation.indexOf(LANG_SEPARATOR);
             if (indexOf != -1) {
-                method = operation.substring(indexOf + INTFC_SEPARATOR.length());
-                operation = operation.substring(0, indexOf);
-                indexOf = operation.indexOf(LANG_SEPARATOR);
-                if (indexOf != -1) {
-                    intfc = operation.substring(indexOf + LANG_SEPARATOR.length());
-                    lang = operation.substring(0, indexOf);
-                } else {
-                    intfc = operation;
-                }
+                intfc = operation.substring(indexOf + LANG_SEPARATOR.length());
+                lang = operation.substring(0, indexOf);
+            } else {
+                intfc = operation;
             }
         }
         if (lang == null) {

@@ -48,14 +48,12 @@ public class RestTypeHandler extends WorkItemTypeHandler {
         String method = null;
         // try extracting from operation (format method:url)
         String operation = trimCustomOperation(functionDef);
-        if (operation != null) {
-            int indexOf = operation.indexOf(METHOD_SEPARATOR);
-            if (indexOf != -1) {
-                method = operation.substring(0, indexOf);
-                url = operation.substring(indexOf + METHOD_SEPARATOR.length());
-            } else {
-                url = operation;
-            }
+        int indexOf = operation.indexOf(METHOD_SEPARATOR);
+        if (indexOf != -1) {
+            method = operation.substring(0, indexOf);
+            url = operation.substring(indexOf + METHOD_SEPARATOR.length());
+        } else {
+            url = operation;
         }
         return fillRest(node.workParameter(RestWorkItemHandler.URL, url)
                 .workParameter(RestWorkItemHandler.METHOD, method)

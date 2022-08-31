@@ -13,7 +13,7 @@
           "functionRef": "ansible:doSomething"
        }
       ],
-      "end": "true"
+      "end": true
  	}
   ]
 }

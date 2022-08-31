@@ -31,7 +31,7 @@ public class SWFunctionNamespaceFactory {
     private static final SWFunctionNamespaceFactory INSTANCE = new SWFunctionNamespaceFactory();
     private static final String NAMESPACE_SEPARATOR = ":";
 
-    private Map<String, SWFunctionNamespace> namespaceMap = new HashMap<>();
+    private final Map<String, SWFunctionNamespace> namespaceMap = new HashMap<>();
 
     public Optional<SWFunctionNamespace> getNamespace(FunctionRef functionDef) {
         return Optional.ofNullable(namespaceMap.get(extractNamespace(functionDef)));

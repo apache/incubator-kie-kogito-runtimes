@@ -25,7 +25,7 @@ import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.O
 
 public class ActionResourceFactory {
 
-    private static Map<Type, Function<String, ActionResource>> map =
+    private static final Map<Type, Function<String, ActionResource>> map =
             Map.of(FunctionDefinition.Type.REST, ActionResourceFactory::justOperation, FunctionDefinition.Type.RPC, ActionResourceFactory::withService);
 
     private static ActionResource justOperation(String operationStr) {
