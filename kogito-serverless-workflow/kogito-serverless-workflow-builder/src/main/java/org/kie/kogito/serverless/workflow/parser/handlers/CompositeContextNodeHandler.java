@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.parser.handlers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.drools.mvel.java.JavaDialect;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
@@ -36,6 +37,7 @@ import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.serverlessworkflow.api.functions.SubFlowRef;
 import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.workflow.Functions;
 
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.subprocessNode;
 
@@ -119,13 +121,17 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             FunctionRef functionRef, String inputVar, String outputVar, String collectVar, String... extraVariables) {
         String functionName = functionRef.getRefName();
         VariableInfo varInfo = new VariableInfo(inputVar, outputVar, collectVar, extraVariables);
-        return workflow.getFunctions().getFunctionDefs()
-                .stream()
+        return getFunctionDefStream()
                 .filter(wf -> wf.getName().equals(functionName))
                 .findFirst()
                 .map(functionDef -> fromFunctionDefinition(embeddedSubProcess, functionDef, functionRef, varInfo))
                 .or(() -> fromPredefinedFuntion(embeddedSubProcess, functionRef, varInfo))
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find function " + functionName));
+    }
+
+    private Stream<FunctionDefinition> getFunctionDefStream() {
+        Functions functions = workflow.getFunctions();
+        return functions == null ? Stream.empty() : workflow.getFunctions().getFunctionDefs().stream();
     }
 
     private NodeFactory fromFunctionDefinition(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
