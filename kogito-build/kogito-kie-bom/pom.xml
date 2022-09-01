@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-build</artifactId>
-        <version>1.27.0.Final</version>
+        <version>1.27.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,7 @@
         This is to prevent misleading situation where both org.drools:drools-core and org.kie.kogito:drools-core as managed dependency</description>
 
     <properties>
-        <version.org.kie>8.27.0.Beta</version.org.kie>
+        <version.org.kie>8.27.1-SNAPSHOT</version.org.kie>
     </properties>
 
     <dependencyManagement>
