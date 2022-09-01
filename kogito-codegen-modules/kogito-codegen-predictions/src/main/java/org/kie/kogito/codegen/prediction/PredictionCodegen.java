@@ -169,10 +169,7 @@ public class PredictionCodegen extends AbstractGenerator {
         }));
     }
 
-    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext/*
-                                                                                                        * ,
-                                                                                                        * Collection<IndexFile> indexFiles
-                                                                                                        */) {
+    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext) {
         Map<String, byte[]> toReturn = new HashMap<>();
         Collection<GeneratedExecutableResource> executableResources =
                 compilationContext.getFRIForFile().stream().map(modelLocalUriId -> getGeneratedExecutableResource(modelLocalUriId, compilationContext.getGeneratedResourcesMap()))
@@ -182,13 +179,6 @@ public class PredictionCodegen extends AbstractGenerator {
         executableResources.forEach(executableResource -> {
             toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getFri()));
         });
-        //
-        //        indexFiles.forEach(indexFile -> {
-        //            Collection<GeneratedExecutableResource> executableResources = getAllGeneratedExecutableResources(indexFile);
-        //            executableResources.forEach(executableResource -> {
-        //                toReturn.putAll(compilationContext.getGeneratedClasses(executableResource.getModelLocalUriId()));
-        //            });
-        //        });
         return toReturn;
     }
 
