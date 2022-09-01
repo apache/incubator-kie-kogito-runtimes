@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-springboot-messaging-parent</artifactId>
-    <version>1.27.0.Final</version>
+    <version>1.27.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-springboot-messaging</artifactId>
   <name>Kogito :: Add-Ons :: Messaging :: Spring Boot</name>

@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-jobs-parent</artifactId>
-    <version>1.27.0.Final</version>
+    <version>1.27.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>kogito-addons-quarkus-jobs-knative-eventing-parent</artifactId>
