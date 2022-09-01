@@ -161,20 +161,20 @@ public class ServerlessWorkflowUtils {
 
     public static Optional<byte[]> processResourceFile(Workflow workflow, ParserContext parserContext, String uriStr, String authRef) {
         final URI uri = URI.create(uriStr);
-        final Optional<byte[]> bytes = loadResourceFile(workflow, parserContext, uriStr, authRef);
+        final Optional<byte[]> bytes = loadResourceFile(workflow, parserContext.getContext().getClassLoader(), uriStr, authRef);
         bytes.ifPresent(value -> parserContext.addGeneratedFile(new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, uri.getPath(), value)));
         return bytes;
     }
 
-    public static Optional<byte[]> loadResourceFile(Workflow workflow, ParserContext parserContext, String uriStr, String authRef) {
-        return loadResourceFile(uriStr, Optional.of(workflow), Optional.of(parserContext), authRef);
+    public static Optional<byte[]> loadResourceFile(Workflow workflow, ClassLoader classLoader, String uriStr, String authRef) {
+        return loadResourceFile(uriStr, Optional.of(workflow), Optional.of(classLoader), authRef);
     }
 
-    public static Optional<byte[]> loadResourceFile(String uriStr, Optional<Workflow> workflow, Optional<ParserContext> parserContext, String authRef) {
+    public static Optional<byte[]> loadResourceFile(String uriStr, Optional<Workflow> workflow, Optional<ClassLoader> classLoader, String authRef) {
         final URI uri = URI.create(uriStr);
         try {
             final byte[] bytes =
-                    URIContentLoaderFactory.readAllBytes(URIContentLoaderFactory.loader(uri, parserContext.map(p -> p.getContext().getClassLoader()), Optional.empty(), workflow, authRef));
+                    URIContentLoaderFactory.readAllBytes(URIContentLoaderFactory.loader(uri, classLoader, Optional.empty(), workflow, authRef));
             return Optional.of(bytes);
         } catch (UncheckedIOException io) {
             // if file cannot be found in build context, warn it and return the unmodified uri (it might be possible that later the resource is available at runtime)

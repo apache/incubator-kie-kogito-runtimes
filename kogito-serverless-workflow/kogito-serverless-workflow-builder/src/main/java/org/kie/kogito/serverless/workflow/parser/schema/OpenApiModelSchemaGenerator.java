@@ -19,11 +19,8 @@ package org.kie.kogito.serverless.workflow.parser.schema;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.Optional;
 
-import org.drools.codegen.common.GeneratedFile;
-import org.drools.codegen.common.GeneratedFileType;
 import org.eclipse.microprofile.openapi.OASFactory;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.media.Schema;
@@ -33,7 +30,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
-import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,15 +48,15 @@ public class OpenApiModelSchemaGenerator {
      * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
      *      Location And Formats</a>
      */
-    private static final Path PARTIAL_OPEN_API_PATH = Path.of("META-INF", "openapi.json");
     public static final String INPUT_MODEL_REF = "#/components/schemas/" + SWFConstants.DEFAULT_WORKFLOW_VAR;
 
     private final Workflow workflow;
-    private final ParserContext parserContext;
 
-    public OpenApiModelSchemaGenerator(Workflow workflow, ParserContext parserContext) {
+    private final ClassLoader classLoader;
+
+    public OpenApiModelSchemaGenerator(Workflow workflow, ClassLoader classLoader) {
         this.workflow = workflow;
-        this.parserContext = parserContext;
+        this.classLoader = classLoader;
     }
 
     private Schema generateInputModel() {
@@ -71,7 +67,7 @@ public class OpenApiModelSchemaGenerator {
         }
         try {
             final URI inputSchemaURI = new URI(workflow.getDataInputSchema().getSchema());
-            return fromJsonSchemaToOpenApiSchema(workflow, parserContext, inputSchemaURI.toString(), "");
+            return fromJsonSchemaToOpenApiSchema(workflow, classLoader, inputSchemaURI.toString(), "");
         } catch (URISyntaxException e) {
             LOGGER.warn("Invalid Data Input Schema for workflow {}. Only valid URIs are supported at this time.", workflow.getId());
         }
@@ -85,14 +81,14 @@ public class OpenApiModelSchemaGenerator {
      * with a reference to an OpenAPI Schema object.
      *
      * @param workflow the current parsed workflow definition
-     * @param parserContext the parser context to provide classpath information
+     * @param classLoader the {@link ClassLoader} to provide classpath information
      * @param jsonSchemaURI the given JSON Schema URI
      * @param authRef the Authentication Reference information to fetch the JSON Schema URI if needed
      * @return The @{@link Schema} object
      */
-    private Schema fromJsonSchemaToOpenApiSchema(Workflow workflow, ParserContext parserContext, String jsonSchemaURI, String authRef) {
+    private Schema fromJsonSchemaToOpenApiSchema(Workflow workflow, ClassLoader classLoader, String jsonSchemaURI, String authRef) {
         if (jsonSchemaURI != null) {
-            final Optional<byte[]> bytes = ServerlessWorkflowUtils.loadResourceFile(workflow, parserContext, jsonSchemaURI, authRef);
+            final Optional<byte[]> bytes = ServerlessWorkflowUtils.loadResourceFile(workflow, classLoader, jsonSchemaURI, authRef);
             if (bytes.isPresent()) {
                 // SchemaLoader will load all the references from other files into the schema
                 final JSONObject rawSchema = new JSONObject(new JSONTokener(new String(bytes.get())));
@@ -113,36 +109,25 @@ public class OpenApiModelSchemaGenerator {
         return null;
     }
 
-    private void generatePartialOpenApiModelSchema(final WorkflowModelSchemaRef schemaRef) {
-        final OpenAPI openApiModelSchema = OASFactory.createOpenAPI()
-                .components(OASFactory.createComponents().addSchema(SWFConstants.DEFAULT_WORKFLOW_VAR, schemaRef.getInputModel()))
-                .openapi("workflowmodelschema");
-        try {
-            parserContext.addGeneratedFile(
-                    new GeneratedFile(GeneratedFileType.INTERNAL_RESOURCE, PARTIAL_OPEN_API_PATH,
-                            ObjectMapperFactory.get().writeValueAsString(openApiModelSchema)));
-        } catch (JsonProcessingException e) {
-            throw new UncheckedIOException("Failed to generate JSON for OpenAPI Model Schema for workflow " + workflow.getId(), e);
-        }
-    }
-
     /**
      * Generates the additional schema model for the given @{@link Workflow} instance.
      *
      * @return a reference for the given models (input/output) to be referenced by the Workflow interfaces in runtime.
      */
-    public WorkflowModelSchemaRef generateModelSchema() {
+    public WorkflowModelSchemaRef generateWorkflowModelSchemaRef() {
         final WorkflowModelSchemaRef schemaRef = new WorkflowModelSchemaRef();
         //TODO: do the same for output once we have in the Spec
         schemaRef.setInputModel(this.generateInputModel());
         if (schemaRef.getInputModel() != null) {
             schemaRef.setInputModelRef(INPUT_MODEL_REF);
         }
-        // generate the partial file
-        if (schemaRef.hasModel()) {
-            this.generatePartialOpenApiModelSchema(schemaRef);
-        }
         return schemaRef;
+    }
+
+    public OpenAPI generateOpenAPIModelSchema() {
+        return OASFactory.createOpenAPI()
+                .components(OASFactory.createComponents().addSchema(SWFConstants.DEFAULT_WORKFLOW_VAR, generateInputModel()))
+                .openapi("workflowmodelschema");
     }
 
 }

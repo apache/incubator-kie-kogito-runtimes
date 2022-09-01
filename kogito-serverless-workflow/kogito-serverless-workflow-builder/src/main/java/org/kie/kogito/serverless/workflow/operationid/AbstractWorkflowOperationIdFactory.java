@@ -70,7 +70,7 @@ public abstract class AbstractWorkflowOperationIdFactory implements WorkflowOper
         JsonNode definitions = uriDefinitions.getDefinitions();
         if (definitions == null || definitions.isNull()) {
             String uri = uriDefinitions.getURI();
-            definitions = uri == null ? NullNode.instance : ServerlessWorkflowUtils.loadResourceFile(uri, Optional.of(workflow), context, null).map(bytes -> {
+            definitions = uri == null ? NullNode.instance : ServerlessWorkflowUtils.loadResourceFile(uri, Optional.of(workflow), context.map(c -> c.getContext().getClassLoader()), null).map(bytes -> {
                 try {
                     return ObjectMapperFactory.get().readTree(bytes);
                 } catch (IOException e) {

@@ -116,7 +116,7 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.TAGS, tags);
         }
 
-        WorkflowModelSchemaRef schemaRef = new OpenApiModelSchemaGenerator(this.workflow, parserContext).generateModelSchema();
+        WorkflowModelSchemaRef schemaRef = new OpenApiModelSchemaGenerator(this.workflow, parserContext.getContext().getClassLoader()).generateWorkflowModelSchemaRef();
         if (schemaRef.hasInputModel()) {
             factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, schemaRef.getInputModelRef());
         }
