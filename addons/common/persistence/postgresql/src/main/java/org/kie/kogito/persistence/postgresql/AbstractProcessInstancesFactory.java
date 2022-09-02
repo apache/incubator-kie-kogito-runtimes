@@ -29,7 +29,7 @@ public abstract class AbstractProcessInstancesFactory implements ProcessInstance
 
     // Constructor for DI
     protected AbstractProcessInstancesFactory() {
-        this(null, true, 10000L, false);
+        this(null, false, 10000L, false);
     }
 
     public AbstractProcessInstancesFactory(PgPool client, Boolean autoDDL, Long queryTimeout, Boolean lock) {
