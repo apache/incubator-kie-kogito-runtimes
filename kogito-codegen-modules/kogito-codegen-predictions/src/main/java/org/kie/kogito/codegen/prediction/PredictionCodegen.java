@@ -146,7 +146,7 @@ public class PredictionCodegen extends AbstractGenerator {
             List<KiePMMLModel> kiePMMLModels = getKiePMMLModels(compilationContext, indexFile);
             String modelPath = resource.getSourcePath();
             PMMLResource toAdd = new PMMLResource(kiePMMLModels, path, modelPath,
-                    getAllGeneratedClasses(compilationContext));
+                                                  getExecutableClassesForModel(compilationContext));
             toReturn.add(toAdd);
             indexFiles.addAll(createdIndexFiles);
         });
@@ -168,7 +168,7 @@ public class PredictionCodegen extends AbstractGenerator {
         }));
     }
 
-    private static Map<String, byte[]> getAllGeneratedClasses(PMMLCompilationContext compilationContext) {
+    private static Map<String, byte[]> getExecutableClassesForModel(PMMLCompilationContext compilationContext) {
         Map<String, byte[]> toReturn = new HashMap<>();
         Collection<GeneratedExecutableResource> executableResources =
                 compilationContext.getModelLocalUriIdsForFile().stream().map(modelLocalUriId -> getGeneratedExecutableResource(modelLocalUriId, compilationContext.getGeneratedResourcesMap()))
@@ -200,7 +200,7 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private static List<KiePMMLModel> getKiePMMLModels(PMMLCompilationContext compilationContext, IndexFile indexFile) {
-        Set<ModelLocalUriId> friKeySet = getFRIInIndexFile(compilationContext.localUriIdKeySet(), indexFile);
+        Set<ModelLocalUriId> friKeySet = getModelLocalUriIdInIndexFile(compilationContext.localUriIdKeySet(), indexFile);
         Collection<GeneratedExecutableResource> executableResources = friKeySet.stream()
                 .map(fri -> getGeneratedExecutableResource(fri, compilationContext.getGeneratedResourcesMap()))
                 .filter(Optional::isPresent)
@@ -213,7 +213,7 @@ public class PredictionCodegen extends AbstractGenerator {
                 .collect(toList());
     }
 
-    private static Set<ModelLocalUriId> getFRIInIndexFile(Set<ModelLocalUriId> modelLocalUriIds, IndexFile indexFile) {
+    private static Set<ModelLocalUriId> getModelLocalUriIdInIndexFile(Set<ModelLocalUriId> modelLocalUriIds, IndexFile indexFile) {
         try {
             GeneratedResources generatedResources = getGeneratedResourcesObject(indexFile);
             Set<ModelLocalUriId> toReturn = new HashSet<>();
