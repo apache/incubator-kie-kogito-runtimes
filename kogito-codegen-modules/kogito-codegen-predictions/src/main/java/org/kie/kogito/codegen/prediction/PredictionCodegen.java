@@ -200,9 +200,9 @@ public class PredictionCodegen extends AbstractGenerator {
     }
 
     private static List<KiePMMLModel> getKiePMMLModels(PMMLCompilationContext compilationContext, IndexFile indexFile) {
-        Set<ModelLocalUriId> friKeySet = getModelLocalUriIdInIndexFile(compilationContext.localUriIdKeySet(), indexFile);
-        Collection<GeneratedExecutableResource> executableResources = friKeySet.stream()
-                .map(fri -> getGeneratedExecutableResource(fri, compilationContext.getGeneratedResourcesMap()))
+        Set<ModelLocalUriId> modelLocalUriIds = getModelLocalUriIdInIndexFile(compilationContext.localUriIdKeySet(), indexFile);
+        Collection<GeneratedExecutableResource> executableResources = modelLocalUriIds.stream()
+                .map(modelLocalUriId -> getGeneratedExecutableResource(modelLocalUriId, compilationContext.getGeneratedResourcesMap()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(toSet());
@@ -217,9 +217,9 @@ public class PredictionCodegen extends AbstractGenerator {
         try {
             GeneratedResources generatedResources = getGeneratedResourcesObject(indexFile);
             Set<ModelLocalUriId> toReturn = new HashSet<>();
-            modelLocalUriIds.forEach(fri -> {
-                getGeneratedExecutableResource(fri, generatedResources).ifPresent(opt -> toReturn.add(fri));
-                getGeneratedRedirectResource(fri, generatedResources).ifPresent(opt -> toReturn.add(fri));
+            modelLocalUriIds.forEach(modelLocalUriId -> {
+                getGeneratedExecutableResource(modelLocalUriId, generatedResources).ifPresent(opt -> toReturn.add(modelLocalUriId));
+                getGeneratedRedirectResource(modelLocalUriId, generatedResources).ifPresent(opt -> toReturn.add(modelLocalUriId));
             });
             return toReturn;
         } catch (Exception e) {
