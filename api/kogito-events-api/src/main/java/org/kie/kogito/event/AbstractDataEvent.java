@@ -65,6 +65,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
      */
     public static final String SOURCE_FORMAT = "/process/%s";
     public static final String SPEC_VERSION = "1.0";
+    public static final String DATA_CONTENT_TYPE = "application/json";
 
     @JsonDeserialize(using = SpecVersionDeserializer.class)
     @JsonSerialize(using = SpecVersionSerializer.class)
@@ -87,6 +88,9 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private URI dataSchema;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private String datacontenttype;
 
     private T data;
 
@@ -127,7 +131,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         this.type = type;
         this.time = ZonedDateTime.now().toOffsetDateTime();
         this.data = body;
-
+        this.datacontenttype = DATA_CONTENT_TYPE;
         this.kogitoProcessInstanceId = kogitoProcessInstanceId;
         this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
         this.kogitoProcessId = kogitoProcessId;
@@ -208,6 +212,10 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return subject;
     }
 
+    public String getDatacontenttype() {
+        return datacontenttype;
+    }
+
     public String getKogitoProcessInstanceId() {
         return kogitoProcessInstanceId;
     }
@@ -285,7 +293,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
                 ", type='" + type + '\'' +
                 ", time=" + time +
                 ", subject='" + subject + '\'' +
-                ", dataContentType='" + dataContentType + '\'' +
+                ", dataContentType='" + datacontenttype + '\'' +
                 ", dataSchema=" + dataSchema +
                 ", data=" + data +
                 ", kogitoProcessInstanceId='" + kogitoProcessInstanceId + '\'' +
