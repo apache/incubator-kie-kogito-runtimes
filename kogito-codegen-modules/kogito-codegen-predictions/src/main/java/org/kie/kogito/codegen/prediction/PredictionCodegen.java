@@ -146,7 +146,7 @@ public class PredictionCodegen extends AbstractGenerator {
             List<KiePMMLModel> kiePMMLModels = getKiePMMLModels(compilationContext, indexFile);
             String modelPath = resource.getSourcePath();
             PMMLResource toAdd = new PMMLResource(kiePMMLModels, path, modelPath,
-                                                  getExecutableClassesForModel(compilationContext));
+                    getExecutableClassesForModel(compilationContext));
             toReturn.add(toAdd);
             indexFiles.addAll(createdIndexFiles);
         });
