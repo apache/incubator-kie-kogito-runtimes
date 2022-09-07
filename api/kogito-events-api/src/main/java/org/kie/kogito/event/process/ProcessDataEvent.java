@@ -166,6 +166,30 @@ public class ProcessDataEvent<T> extends AbstractDataEvent<T> {
         return kogitoProcessType;
     }
 
+    public void setKogitoProcessInstanceVersion(String kogitoProcessInstanceVersion) {
+        this.kogitoProcessInstanceVersion = kogitoProcessInstanceVersion;
+    }
+
+    public void setKogitoParentProcessInstanceId(String kogitoParentProcessInstanceId) {
+        this.kogitoParentProcessInstanceId = kogitoParentProcessInstanceId;
+    }
+
+    public void setKogitoProcessInstanceState(String kogitoProcessInstanceState) {
+        this.kogitoProcessInstanceState = kogitoProcessInstanceState;
+    }
+
+    public void setKogitoReferenceId(String kogitoReferenceId) {
+        this.kogitoReferenceId = kogitoReferenceId;
+    }
+
+    public void setKogitoBusinessKey(String kogitoBusinessKey) {
+        this.kogitoBusinessKey = kogitoBusinessKey;
+    }
+
+    public void setKogitoProcessType(String kogitoProcessType) {
+        this.kogitoProcessType = kogitoProcessType;
+    }
+
     @Override
     public String toString() {
         return "ProcessDataEvent{" +

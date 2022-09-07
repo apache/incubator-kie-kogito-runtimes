@@ -261,6 +261,66 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return extensionAttributes;
     }
 
+    public void setSpecVersion(SpecVersion specVersion) {
+        this.specVersion = specVersion;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setSource(URI source) {
+        this.source = source;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setTime(OffsetDateTime time) {
+        this.time = time;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public void setDataContentType(String dataContentType) {
+        this.dataContentType = dataContentType;
+    }
+
+    public void setDataSchema(URI dataSchema) {
+        this.dataSchema = dataSchema;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public void setKogitoProcessInstanceId(String kogitoProcessInstanceId) {
+        this.kogitoProcessInstanceId = kogitoProcessInstanceId;
+    }
+
+    public void setKogitoRootProcessInstanceId(String kogitoRootProcessInstanceId) {
+        this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
+    }
+
+    public void setKogitoProcessId(String kogitoProcessId) {
+        this.kogitoProcessId = kogitoProcessId;
+    }
+
+    public void setKogitoRootProcessId(String kogitoRootProcessId) {
+        this.kogitoRootProcessId = kogitoRootProcessId;
+    }
+
+    public void setKogitoAddons(String kogitoAddons) {
+        this.kogitoAddons = kogitoAddons;
+    }
+
+    public void setExtensionAttributes(Map<String, Object> extensionAttributes) {
+        this.extensionAttributes = extensionAttributes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
