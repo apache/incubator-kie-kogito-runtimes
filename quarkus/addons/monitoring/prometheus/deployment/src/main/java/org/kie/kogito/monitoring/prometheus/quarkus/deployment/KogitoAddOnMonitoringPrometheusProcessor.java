@@ -17,7 +17,9 @@ package org.kie.kogito.monitoring.prometheus.quarkus.deployment;
 
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
+import io.quarkus.builder.item.EmptyBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Produce;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
 class KogitoAddOnMonitoringPrometheusProcessor extends AnyEngineKogitoAddOnProcessor {
@@ -25,6 +27,7 @@ class KogitoAddOnMonitoringPrometheusProcessor extends AnyEngineKogitoAddOnProce
     private static final String FEATURE = "kogito-addon-monitoring-prometheus-extension";
 
     @BuildStep
+    @Produce(EmptyBuildItem.class)
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
