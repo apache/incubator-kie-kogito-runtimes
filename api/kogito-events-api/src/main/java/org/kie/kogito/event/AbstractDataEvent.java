@@ -84,13 +84,11 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     private String subject;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty("datacontenttype")
     private String dataContentType;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private URI dataSchema;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String datacontenttype;
 
     private T data;
 
@@ -118,44 +116,42 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     public AbstractDataEvent(String type,
-            String source,
-            T body,
-            String kogitoProcessInstanceId,
-            String kogitoRootProcessInstanceId,
-            String kogitoProcessId,
-            String kogitoRootProcessId,
-            String kogitoAddons) {
+                             String source,
+                             T body,
+                             String kogitoProcessInstanceId,
+                             String kogitoRootProcessInstanceId,
+                             String kogitoProcessId,
+                             String kogitoRootProcessId,
+                             String kogitoAddons) {
+        this(type, source, body, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons, null, DATA_CONTENT_TYPE, null);
+    }
+
+    public AbstractDataEvent(String type,
+                             String source,
+                             T body,
+                             String kogitoProcessInstanceId,
+                             String kogitoRootProcessInstanceId,
+                             String kogitoProcessId,
+                             String kogitoRootProcessId,
+                             String kogitoAddons,
+                             String subject,
+                             String dataContentType,
+                             String dataSchema) {
         this.specVersion = SpecVersion.parse(SPEC_VERSION);
         this.id = UUID.randomUUID().toString();
         this.source = Optional.ofNullable(source).map(URI::create).orElse(null);
         this.type = type;
         this.time = ZonedDateTime.now().toOffsetDateTime();
         this.data = body;
-        this.datacontenttype = DATA_CONTENT_TYPE;
         this.kogitoProcessInstanceId = kogitoProcessInstanceId;
         this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
         this.kogitoProcessId = kogitoProcessId;
         this.kogitoRootProcessId = kogitoRootProcessId;
         this.kogitoAddons = kogitoAddons;
-
-        this.ensureRequiredFields();
-    }
-
-    public AbstractDataEvent(String type,
-            String source,
-            T body,
-            String kogitoProcessInstanceId,
-            String kogitoRootProcessInstanceId,
-            String kogitoProcessId,
-            String kogitoRootProcessId,
-            String kogitoAddons,
-            String subject,
-            String dataContentType,
-            String dataSchema) {
-        this(type, source, body, kogitoProcessInstanceId, kogitoRootProcessInstanceId, kogitoProcessId, kogitoRootProcessId, kogitoAddons);
         this.subject = subject;
         this.dataContentType = dataContentType;
-        this.dataSchema = URI.create(dataSchema);
+        this.dataSchema = dataSchema != null ? URI.create(dataSchema) : null;
+        ensureRequiredFields();
     }
 
     protected void ensureRequiredFields() {
@@ -198,11 +194,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public String getDataContentType() {
-        return dataContentType;
-    }
-
-    @Override
     public URI getDataSchema() {
         return dataSchema;
     }
@@ -212,8 +203,9 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return subject;
     }
 
-    public String getDatacontenttype() {
-        return datacontenttype;
+    @Override
+    public String getDataContentType() {
+        return dataContentType;
     }
 
     public String getKogitoProcessInstanceId() {
@@ -293,7 +285,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
                 ", type='" + type + '\'' +
                 ", time=" + time +
                 ", subject='" + subject + '\'' +
-                ", dataContentType='" + datacontenttype + '\'' +
+                ", dataContentType='" + dataContentType + '\'' +
                 ", dataSchema=" + dataSchema +
                 ", data=" + data +
                 ", kogitoProcessInstanceId='" + kogitoProcessInstanceId + '\'' +
