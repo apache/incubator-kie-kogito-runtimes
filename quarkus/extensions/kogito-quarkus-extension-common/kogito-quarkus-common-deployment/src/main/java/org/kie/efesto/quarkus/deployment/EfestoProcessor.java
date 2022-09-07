@@ -54,7 +54,7 @@ public class EfestoProcessor {
 
     @BuildStep
     public List<ReflectiveClassBuildItem> reflectiveEfestoStaticClasses() {
-        LOGGER.infof("reflectiveEfestoStaticClasses");
+        LOGGER.debug("reflectiveEfestoStaticClasses");
         final List<ReflectiveClassBuildItem> toReturn = new ArrayList<>();
         // Generated Resources
         toReturn.add(new ReflectiveClassBuildItem(true, true, GeneratedResources.class));
@@ -84,7 +84,7 @@ public class EfestoProcessor {
             dumpGeneratedClasses(generatedCompiledFiles, contextBuildItem);
             Collection<ReflectiveClassBuildItem> reflectiveClassBuildItems =
                     makeReflectiveClassBuildItems(generatedCompiledFiles);
-            LOGGER.infof("reflectiveClassBuildItems %s", reflectiveClassBuildItems);
+            LOGGER.debugf("reflectiveClassBuildItems %s", reflectiveClassBuildItems);
             toReturn.addAll(reflectiveClassBuildItems);
         });
         LOGGER.debugf("toReturn %s", toReturn);
