@@ -17,5 +17,5 @@ package org.kie.kogito.drools.core.data;
 
 import org.kie.kogito.rules.DataStream;
 
-public class ListDataStream<T> extends org.drools.ruleunits.impl.ListDataStream<T> implements DataStream<T> {
+public class ListDataStream<T> extends org.drools.ruleunits.impl.datasources.DirectDataStream<T> implements DataStream<T> {
 }
