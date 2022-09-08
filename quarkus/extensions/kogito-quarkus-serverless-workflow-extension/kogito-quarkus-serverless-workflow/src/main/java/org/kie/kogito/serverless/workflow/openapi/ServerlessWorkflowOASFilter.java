@@ -15,27 +15,25 @@
  */
 package org.kie.kogito.serverless.workflow.openapi;
 
+import java.util.Collection;
+
 import org.eclipse.microprofile.openapi.OASFilter;
-import org.eclipse.microprofile.openapi.models.Components;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
+
+import io.smallrye.openapi.api.util.MergeUtil;
 
 public final class ServerlessWorkflowOASFilter implements OASFilter {
 
-    private final OpenAPI openAPIModelSchema;
+    private final Collection<OpenAPI> inputModelSchemas;
 
-    public ServerlessWorkflowOASFilter(OpenAPI openAPIModelSchema) {
-        this.openAPIModelSchema = openAPIModelSchema;
+    public ServerlessWorkflowOASFilter(Collection<OpenAPI> inputModelSchemas) {
+        this.inputModelSchemas = inputModelSchemas;
     }
 
     @Override
     public void filterOpenAPI(OpenAPI openAPI) {
-        Components components = openAPI.getComponents();
-        if (components == null) {
-            openAPI.setComponents(openAPIModelSchema.getComponents());
-        } else {
-            if (openAPIModelSchema.getComponents() != null && openAPIModelSchema.getComponents().getSchemas() != null) {
-                openAPIModelSchema.getComponents().getSchemas().forEach((key, schema) -> openAPI.getComponents().addSchema(key, schema));
-            }
+        if (!inputModelSchemas.isEmpty()) {
+            inputModelSchemas.forEach(modelSchema -> MergeUtil.merge(openAPI, modelSchema));
         }
     }
 }

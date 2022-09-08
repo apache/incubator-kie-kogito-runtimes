@@ -37,8 +37,6 @@ import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationIdFactory
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandler;
 import org.kie.kogito.serverless.workflow.parser.handlers.StateHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.handlers.validation.WorkflowValidator;
-import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenerator;
-import org.kie.kogito.serverless.workflow.parser.schema.WorkflowModelSchemaRef;
 import org.kie.kogito.serverless.workflow.suppliers.DataInputSchemaValidatorSupplier;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
@@ -60,6 +58,14 @@ public class ServerlessWorkflowParser {
 
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
+
+    /**
+     * Path to save the partial OpenAPI file with the additional model provided by the Workflow definition
+     *
+     * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
+     *      Location And Formats</a>
+     */
+    public static final String INPUT_MODEL_REF = "#/components/schemas/" + SWFConstants.DEFAULT_WORKFLOW_VAR;
 
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
@@ -116,12 +122,17 @@ public class ServerlessWorkflowParser {
             factory.metaData(Metadata.TAGS, tags);
         }
 
-        WorkflowModelSchemaRef schemaRef = new OpenApiModelSchemaGenerator(this.workflow, parserContext.getContext().getClassLoader()).generateWorkflowModelSchemaRef();
-        if (schemaRef.hasInputModel()) {
-            factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, schemaRef.getInputModelRef());
+        if (workflowHasDataInputSchema()) {
+            factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, INPUT_MODEL_REF);
         }
 
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());
+    }
+
+    private boolean workflowHasDataInputSchema() {
+        return workflow.getDataInputSchema() != null &&
+                workflow.getDataInputSchema().getSchema() != null &&
+                !workflow.getDataInputSchema().getSchema().isEmpty();
     }
 
     private void dataInputSchema(RuleFlowProcessFactory factory, ParserContext parserContext) {

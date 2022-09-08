@@ -80,7 +80,7 @@ public class WorkflowRPCCodeGenProvider implements CodeGenProvider {
 
     public Optional<Path> getPath(WorkflowOperationResource resource, Path outputPath) {
         URIContentLoader contentLoader = resource.getContentLoader();
-        logger.debug("Checking if resource {} should be written to {}", resource, outputPath);
+        logger.debug("Checking if resource {} should be writen to {}", resource, outputPath);
         switch (contentLoader.type()) {
             case FILE:
                 return Optional.of(((FileContentLoader) contentLoader).getPath());

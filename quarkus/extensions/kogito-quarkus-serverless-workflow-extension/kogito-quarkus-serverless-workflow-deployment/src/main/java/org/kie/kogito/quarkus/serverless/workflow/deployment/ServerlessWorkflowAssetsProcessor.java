@@ -19,12 +19,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.drools.codegen.common.GeneratedFile;
-import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.jboss.jandex.IndexView;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -88,25 +86,22 @@ public class ServerlessWorkflowAssetsProcessor {
     }
 
     @BuildStep
-    WorkflowsBuildItem generateWorkflows(KogitoBuildContextBuildItem contextBuildItem) {
+    void addOpenAPIModelSchema(KogitoBuildContextBuildItem contextBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer) {
+        Collection<OpenAPI> inputModelSchemas = getWorkflows(contextBuildItem)
+                .map(workflow -> new OpenApiModelSchemaGenerator(workflow, contextBuildItem.getKogitoBuildContext().getClassLoader()))
+                .map(OpenApiModelSchemaGenerator::generateOpenAPIModelSchema)
+                .collect(Collectors.toList());
+
+        openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(new ServerlessWorkflowOASFilter(inputModelSchemas)));
+    }
+
+    private static Stream<Workflow> getWorkflows(KogitoBuildContextBuildItem contextBuildItem) {
         Path[] paths = contextBuildItem.getKogitoBuildContext().getAppPaths().getPaths();
 
-        Stream<Path> files = CollectedResourceProducer.fromPaths(paths).stream()
+        Stream<Path> workflowFiles = CollectedResourceProducer.fromPaths(paths).stream()
                 .map(collectedResource -> collectedResource.resource().getSourcePath())
                 .map(Paths::get);
 
-        List<Workflow> workflows = WorkflowCodeGenUtils.getWorkflows(files).collect(Collectors.toList());
-
-        return new WorkflowsBuildItem(workflows);
-    }
-
-    @BuildStep
-    void addOpenAPIModelSchema(WorkflowsBuildItem workflowsBuildItem, KogitoBuildContextBuildItem contextBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer) {
-        workflowsBuildItem.getWorkflows().forEach(workflow -> {
-            OpenApiModelSchemaGenerator openApiModelSchemaGenerator = new OpenApiModelSchemaGenerator(workflow, contextBuildItem.getKogitoBuildContext().getClassLoader());
-            OpenAPI openAPIModelSchema = openApiModelSchemaGenerator.generateOpenAPIModelSchema();
-            OASFilter oasFilter = new ServerlessWorkflowOASFilter(openAPIModelSchema);
-            openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(oasFilter));
-        });
+        return WorkflowCodeGenUtils.getWorkflows(workflowFiles);
     }
 }

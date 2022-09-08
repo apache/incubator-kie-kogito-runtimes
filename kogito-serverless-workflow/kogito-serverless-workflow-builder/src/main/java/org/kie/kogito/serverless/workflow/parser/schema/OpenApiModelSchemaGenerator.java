@@ -42,13 +42,6 @@ import io.serverlessworkflow.api.Workflow;
 public class OpenApiModelSchemaGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiModelSchemaGenerator.class);
-    /**
-     * Path to save the partial OpenAPI file with the additional model provided by the Workflow definition
-     *
-     * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
-     *      Location And Formats</a>
-     */
-    public static final String INPUT_MODEL_REF = "#/components/schemas/" + SWFConstants.DEFAULT_WORKFLOW_VAR;
 
     private final Workflow workflow;
 
@@ -67,7 +60,7 @@ public class OpenApiModelSchemaGenerator {
         }
         try {
             final URI inputSchemaURI = new URI(workflow.getDataInputSchema().getSchema());
-            return fromJsonSchemaToOpenApiSchema(workflow, classLoader, inputSchemaURI.toString(), "");
+            return fromJsonSchemaToOpenApiSchema(inputSchemaURI.toString(), "");
         } catch (URISyntaxException e) {
             LOGGER.warn("Invalid Data Input Schema for workflow {}. Only valid URIs are supported at this time.", workflow.getId());
         }
@@ -80,13 +73,11 @@ public class OpenApiModelSchemaGenerator {
      * It will try to load the file into bytes, load all the schema inheritance and provide the caller
      * with a reference to an OpenAPI Schema object.
      *
-     * @param workflow the current parsed workflow definition
-     * @param classLoader the {@link ClassLoader} to provide classpath information
      * @param jsonSchemaURI the given JSON Schema URI
      * @param authRef the Authentication Reference information to fetch the JSON Schema URI if needed
      * @return The @{@link Schema} object
      */
-    private Schema fromJsonSchemaToOpenApiSchema(Workflow workflow, ClassLoader classLoader, String jsonSchemaURI, String authRef) {
+    private Schema fromJsonSchemaToOpenApiSchema(String jsonSchemaURI, String authRef) {
         if (jsonSchemaURI != null) {
             final Optional<byte[]> bytes = ServerlessWorkflowUtils.loadResourceFile(workflow, classLoader, jsonSchemaURI, authRef);
             if (bytes.isPresent()) {
@@ -107,21 +98,6 @@ public class OpenApiModelSchemaGenerator {
             }
         }
         return null;
-    }
-
-    /**
-     * Generates the additional schema model for the given @{@link Workflow} instance.
-     *
-     * @return a reference for the given models (input/output) to be referenced by the Workflow interfaces in runtime.
-     */
-    public WorkflowModelSchemaRef generateWorkflowModelSchemaRef() {
-        final WorkflowModelSchemaRef schemaRef = new WorkflowModelSchemaRef();
-        //TODO: do the same for output once we have in the Spec
-        schemaRef.setInputModel(this.generateInputModel());
-        if (schemaRef.getInputModel() != null) {
-            schemaRef.setInputModelRef(INPUT_MODEL_REF);
-        }
-        return schemaRef;
     }
 
     public OpenAPI generateOpenAPIModelSchema() {
