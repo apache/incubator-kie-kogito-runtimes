@@ -16,7 +16,6 @@
 package org.kie.kogito.addon.quarkus.messaging.common.message;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.eclipse.microprofile.reactive.messaging.Metadata;
 
 /**
  * {@link InputMessageDecorator}s can decorates the {@link Message} envelope with metadata and additional information in a given context.
@@ -30,7 +29,7 @@ public interface InputMessageDecorator extends Comparable<InputMessageDecorator>
      * @param <T> payload type
      * @return payload in Message format decorated
      */
-    <T> T decorate(T event, Metadata metadata);
+    <T> T decorate(T event, Message<?> message);
 
     default int priority() {
         return 100;

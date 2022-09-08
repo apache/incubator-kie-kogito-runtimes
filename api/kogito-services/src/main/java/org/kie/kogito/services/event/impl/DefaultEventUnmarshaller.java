@@ -37,6 +37,9 @@ public class DefaultEventUnmarshaller implements EventUnmarshaller<Object> {
     @Override
     public <T> T unmarshall(Object value, Class<T> clazz, Class<?>... parametrizedClasses) throws IOException {
         logger.debug("Converting event with payload {} to class {} ", value, clazz);
+        if (value == null) {
+            return null;
+        }
         if (clazz.isInstance(value)) {
             return clazz.cast(value);
         }

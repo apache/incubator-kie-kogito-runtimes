@@ -250,11 +250,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return extensionAttributes.keySet();
     }
 
-    @JsonAnySetter
-    public void addExtensionAttribute(String name, Object value) {
-        extensionAttributes.put(name, value);
-    }
-
     @JsonAnyGetter
     @JsonIgnore
     public Map<String, Object> getExtensionAttributes() {
@@ -319,6 +314,29 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     public void setExtensionAttributes(Map<String, Object> extensionAttributes) {
         this.extensionAttributes = extensionAttributes;
+    }
+
+    @JsonAnySetter
+    public void addExtensionAttribute(String name, Object value) {
+        switch (name) {
+            case CloudEventExtensionConstants.PROCESS_INSTANCE_ID:
+                kogitoProcessInstanceId = (String) value;
+                break;
+            case CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID:
+                kogitoRootProcessId = (String) value;
+                break;
+            case CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID:
+                kogitoRootProcessInstanceId = (String) value;
+                break;
+            case CloudEventExtensionConstants.ADDONS:
+                kogitoAddons = (String) value;
+                break;
+            case CloudEventExtensionConstants.PROCESS_ID:
+                kogitoProcessId = (String) value;
+                break;
+            default:
+                extensionAttributes.put(name, value);
+        }
     }
 
     @Override

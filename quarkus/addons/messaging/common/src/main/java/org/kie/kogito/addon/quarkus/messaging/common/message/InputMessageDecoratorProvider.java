@@ -23,7 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.reactive.messaging.Metadata;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
 @ApplicationScoped
 public class InputMessageDecoratorProvider {
@@ -43,9 +43,9 @@ public class InputMessageDecoratorProvider {
      *
      * @return an instance of {@link MessageDecorator}
      */
-    public <T> T decorate(T object, Metadata metadata) {
+    public <T> T decorate(T object, Message<?> message) {
         for (InputMessageDecorator messageDecorator : sortedMessageDecorators) {
-            object = messageDecorator.decorate(object, metadata);
+            object = messageDecorator.decorate(object, message);
         }
         return object;
     }

@@ -29,15 +29,20 @@ import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.jboss.jandex.DotName;
 import org.jbpm.compiler.canonical.ProcessMetaData;
+import org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventHttpOutgoingDecorator;
+import org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventInputDecorator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 import org.kie.kogito.quarkus.common.deployment.KogitoAddonsPostGeneratedSourcesBuildItem;
 import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
+import org.kie.kogito.quarkus.conf.KogitoBuildTimeConfig;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 
 import com.github.javaparser.ast.CompilationUnit;
 
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.processor.DotNames;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
@@ -53,6 +58,20 @@ public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    void inputMessageDecorator(BuildProducer<AdditionalBeanBuildItem> beanBuildItem, KogitoBuildTimeConfig buildTimeConfig, KogitoBuildContextBuildItem kogitoContext) {
+        if (buildTimeConfig.useCloudEvents) {
+            addBean(beanBuildItem, CloudEventInputDecorator.class);
+            if (kogitoContext.getKogitoBuildContext().hasClassAvailable("io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata")) {
+                addBean(beanBuildItem, CloudEventHttpOutgoingDecorator.class);
+            }
+        }
+    }
+
+    private void addBean(BuildProducer<AdditionalBeanBuildItem> beanBuildItem, Class<?> beanClass) {
+        beanBuildItem.produce(AdditionalBeanBuildItem.builder().addBeanClass(beanClass).setDefaultScope(DotNames.APPLICATION_SCOPED).build());
     }
 
     @BuildStep
