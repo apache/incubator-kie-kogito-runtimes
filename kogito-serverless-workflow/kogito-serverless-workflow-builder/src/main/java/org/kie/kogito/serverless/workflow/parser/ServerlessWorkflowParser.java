@@ -59,14 +59,6 @@ public class ServerlessWorkflowParser {
     public static final String JSON_NODE = "com.fasterxml.jackson.databind.JsonNode";
     public static final String DEFAULT_WORKFLOW_VAR = SWFConstants.DEFAULT_WORKFLOW_VAR;
 
-    /**
-     * Path to save the partial OpenAPI file with the additional model provided by the Workflow definition
-     *
-     * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
-     *      Location And Formats</a>
-     */
-    public static final String INPUT_MODEL_REF = "#/components/schemas/" + SWFConstants.DEFAULT_WORKFLOW_VAR;
-
     private NodeIdGenerator idGenerator = DefaultNodeIdGenerator.get();
     private Workflow workflow;
     private GeneratedInfo<KogitoWorkflowProcess> processInfo;
@@ -123,7 +115,7 @@ public class ServerlessWorkflowParser {
         }
 
         if (workflowHasDataInputSchema()) {
-            factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, INPUT_MODEL_REF);
+            factory.metaData(Metadata.DATA_INPUT_SCHEMA_REF, SWFConstants.INPUT_MODEL_REF);
         }
 
         return new GeneratedInfo<>(factory.validate().getProcess(), parserContext.generatedFiles());

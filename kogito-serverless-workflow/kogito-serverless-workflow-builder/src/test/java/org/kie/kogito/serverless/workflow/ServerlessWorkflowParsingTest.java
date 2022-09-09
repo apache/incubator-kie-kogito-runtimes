@@ -647,7 +647,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertNotNull(process);
         assertNotNull(process.getId());
 
-        assertEquals(ServerlessWorkflowParser.INPUT_MODEL_REF, process.getMetaData(Metadata.DATA_INPUT_SCHEMA_REF));
+        assertEquals(SWFConstants.INPUT_MODEL_REF, process.getMetaData(Metadata.DATA_INPUT_SCHEMA_REF));
     }
 
     @Test
