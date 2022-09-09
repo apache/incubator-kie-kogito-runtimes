@@ -16,6 +16,7 @@
 package org.kie.kogito.addon.quarkus.messaging.common;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -23,11 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.Subscription;
-import org.kie.kogito.addon.quarkus.messaging.common.message.InputMessageDecoratorProvider;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.slf4j.Logger;
@@ -36,9 +34,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuarkusCloudEventReceiver.class);
-
-    @Inject
-    InputMessageDecoratorProvider decorator;
 
     private Collection<Subscription<Object>> consumers = new CopyOnWriteArrayList<>();
 
@@ -54,15 +49,13 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
     }
 
     private CompletionStage<?> produce(final Message<?> message, BiConsumer<Object, Throwable> callback) {
-        Object payload = message.getPayload();
         CompletionStage<?> result = CompletableFuture.completedFuture(null);
         CompletionStage<?> future = result;
         for (Subscription<Object> subscription : consumers) {
             try {
-                Object object = decorator.decorate(subscription.getInfo().getConverter().unmarshall(payload, subscription.getInfo().getOutputClass(), subscription.getInfo().getParametrizedClasses()),
-                        message);
+                Object object = subscription.getInfo().getConverter().unmarshall(message, subscription.getInfo().getOutputClass(), subscription.getInfo().getParametrizedClasses());
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
-            } catch (IOException e) {
+            } catch (IOException | UncheckedIOException e) {
                 LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
                         subscription.getInfo().getType(), e.getMessage());
             }

@@ -30,7 +30,6 @@ import org.drools.codegen.common.GeneratedFileType;
 import org.jboss.jandex.DotName;
 import org.jbpm.compiler.canonical.ProcessMetaData;
 import org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventHttpOutgoingDecorator;
-import org.kie.kogito.addon.quarkus.messaging.common.message.CloudEventInputDecorator;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
@@ -61,17 +60,10 @@ public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor
     }
 
     @BuildStep
-    void inputMessageDecorator(BuildProducer<AdditionalBeanBuildItem> beanBuildItem, KogitoBuildTimeConfig buildTimeConfig, KogitoBuildContextBuildItem kogitoContext) {
-        if (buildTimeConfig.useCloudEvents) {
-            addBean(beanBuildItem, CloudEventInputDecorator.class);
-            if (kogitoContext.getKogitoBuildContext().hasClassAvailable("io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata")) {
-                addBean(beanBuildItem, CloudEventHttpOutgoingDecorator.class);
-            }
+    void httpMessageDecorator(BuildProducer<AdditionalBeanBuildItem> beanBuildItem, KogitoBuildTimeConfig buildTimeConfig, KogitoBuildContextBuildItem kogitoContext) {
+        if (buildTimeConfig.useCloudEvents && kogitoContext.getKogitoBuildContext().hasClassAvailable("io.quarkus.reactivemessaging.http.runtime.OutgoingHttpMetadata")) {
+            beanBuildItem.produce(AdditionalBeanBuildItem.builder().addBeanClass(CloudEventHttpOutgoingDecorator.class).setDefaultScope(DotNames.APPLICATION_SCOPED).build());
         }
-    }
-
-    private void addBean(BuildProducer<AdditionalBeanBuildItem> beanBuildItem, Class<?> beanClass) {
-        beanBuildItem.produce(AdditionalBeanBuildItem.builder().addBeanClass(beanClass).setDefaultScope(DotNames.APPLICATION_SCOPED).build());
     }
 
     @BuildStep

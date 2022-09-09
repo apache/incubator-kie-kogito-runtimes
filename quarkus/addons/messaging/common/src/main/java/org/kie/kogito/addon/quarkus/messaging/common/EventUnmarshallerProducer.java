@@ -20,7 +20,6 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.services.event.impl.DefaultEventUnmarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,6 +34,6 @@ public class EventUnmarshallerProducer {
     @Produces
     @DefaultBean
     public EventUnmarshaller<Object> getEventConverter() {
-        return new DefaultEventUnmarshaller(objectMapper);
+        return new QuarkusDefaultEventUnmarshaller(objectMapper);
     }
 }
