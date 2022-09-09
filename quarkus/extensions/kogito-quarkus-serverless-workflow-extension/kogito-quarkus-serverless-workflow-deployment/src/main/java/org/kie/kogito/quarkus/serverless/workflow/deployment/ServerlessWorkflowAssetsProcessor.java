@@ -87,16 +87,16 @@ public class ServerlessWorkflowAssetsProcessor {
 
     @BuildStep
     void addOpenAPIModelSchema(KogitoBuildContextBuildItem contextBuildItem, BuildProducer<AddToOpenAPIDefinitionBuildItem> openAPIProducer) {
-        Collection<OpenAPI> inputModelSchemas = getWorkflows(contextBuildItem)
-                .map(workflow -> new OpenApiModelSchemaGenerator(workflow, contextBuildItem.getKogitoBuildContext().getClassLoader()))
+        Collection<OpenAPI> inputModelSchemas = getWorkflows(contextBuildItem.getKogitoBuildContext())
+                .map(OpenApiModelSchemaGenerator::new)
                 .map(OpenApiModelSchemaGenerator::generateOpenAPIModelSchema)
                 .collect(Collectors.toList());
 
         openAPIProducer.produce(new AddToOpenAPIDefinitionBuildItem(new ServerlessWorkflowOASFilter(inputModelSchemas)));
     }
 
-    private static Stream<Workflow> getWorkflows(KogitoBuildContextBuildItem contextBuildItem) {
-        Path[] paths = contextBuildItem.getKogitoBuildContext().getAppPaths().getPaths();
+    private static Stream<Workflow> getWorkflows(KogitoBuildContext kogitoBuildContext) {
+        Path[] paths = kogitoBuildContext.getAppPaths().getPaths();
 
         Stream<Path> workflowFiles = CollectedResourceProducer.fromPaths(paths).stream()
                 .map(collectedResource -> collectedResource.resource().getSourcePath())

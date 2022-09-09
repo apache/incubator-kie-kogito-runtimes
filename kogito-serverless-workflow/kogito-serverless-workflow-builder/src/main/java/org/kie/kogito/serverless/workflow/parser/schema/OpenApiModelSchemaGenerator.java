@@ -45,11 +45,8 @@ public class OpenApiModelSchemaGenerator {
 
     private final Workflow workflow;
 
-    private final ClassLoader classLoader;
-
-    public OpenApiModelSchemaGenerator(Workflow workflow, ClassLoader classLoader) {
+    public OpenApiModelSchemaGenerator(Workflow workflow) {
         this.workflow = workflow;
-        this.classLoader = classLoader;
     }
 
     private Schema generateInputModel() {
@@ -79,7 +76,7 @@ public class OpenApiModelSchemaGenerator {
      */
     private Schema fromJsonSchemaToOpenApiSchema(String jsonSchemaURI, String authRef) {
         if (jsonSchemaURI != null) {
-            final Optional<byte[]> bytes = ServerlessWorkflowUtils.loadResourceFile(workflow, classLoader, jsonSchemaURI, authRef);
+            final Optional<byte[]> bytes = ServerlessWorkflowUtils.loadResourceFile(workflow, Optional.empty(), jsonSchemaURI, authRef);
             if (bytes.isPresent()) {
                 // SchemaLoader will load all the references from other files into the schema
                 final JSONObject rawSchema = new JSONObject(new JSONTokener(new String(bytes.get())));
