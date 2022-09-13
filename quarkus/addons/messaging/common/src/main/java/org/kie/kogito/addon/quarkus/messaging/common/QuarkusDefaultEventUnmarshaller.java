@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.event.process.ProcessDataEvent;
-import org.kie.kogito.services.event.impl.DefaultEventUnmarshaller;
+import org.kie.kogito.services.event.impl.AbstractEventUnmarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,15 +34,14 @@ import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.smallrye.reactive.messaging.ce.CloudEventMetadata;
 
-public class QuarkusDefaultEventUnmarshaller extends DefaultEventUnmarshaller {
+public class QuarkusDefaultEventUnmarshaller extends AbstractEventUnmarshaller<Message<?>> {
 
     public QuarkusDefaultEventUnmarshaller(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
     @Override
-    public <T> T unmarshall(Object value, Class<T> clazz, Class<?>... parametrizedClasses) throws IOException {
-        Message<?> message = (Message<?>) value;
+    public <T> T unmarshall(Message<?> message, Class<T> clazz, Class<?>... parametrizedClasses) throws IOException {
         return (T) message.getMetadata(CloudEventMetadata.class).map(meta -> binaryCE(meta, message.getPayload(), clazz, parametrizedClasses))
                 .orElseGet(() -> safeCallSuper(message.getPayload(), clazz, parametrizedClasses));
     }
@@ -73,7 +72,7 @@ public class QuarkusDefaultEventUnmarshaller extends DefaultEventUnmarshaller {
 
     private Object safeCallSuper(Object value, Class<?> clazz, Class<?>... parametrizedClasses) {
         try {
-            return super.unmarshall(value, clazz, parametrizedClasses);
+            return unmarshallPayload(value, clazz, parametrizedClasses);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

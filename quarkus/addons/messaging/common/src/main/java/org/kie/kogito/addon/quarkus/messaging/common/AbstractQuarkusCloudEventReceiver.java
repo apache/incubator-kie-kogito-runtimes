@@ -24,8 +24,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import javax.inject.Inject;
+
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.Subscription;
+import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.SubscriptionInfo;
 import org.slf4j.Logger;
@@ -34,6 +37,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuarkusCloudEventReceiver.class);
+
+    @Inject
+    ConfigBean configBean;
 
     private Collection<Subscription<Object>> consumers = new CopyOnWriteArrayList<>();
 
@@ -53,7 +59,8 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
         CompletionStage<?> future = result;
         for (Subscription<Object> subscription : consumers) {
             try {
-                Object object = subscription.getInfo().getConverter().unmarshall(message, subscription.getInfo().getOutputClass(), subscription.getInfo().getParametrizedClasses());
+                Object object = subscription.getInfo().getConverter().unmarshall(configBean.useCloudEvents() ? message : message.getPayload(), subscription.getInfo().getOutputClass(),
+                        subscription.getInfo().getParametrizedClasses());
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException | UncheckedIOException e) {
                 LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
