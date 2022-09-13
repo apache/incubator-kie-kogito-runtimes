@@ -63,18 +63,20 @@ public class KogitoProcessKnativeEventingProcessor {
             List<KubernetesDeploymentTargetBuildItem> allDeploymentTargets,
             List<KubernetesResourceMetadataBuildItem> kubernetesMetaBuildItems,
             BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
-        final Set<CloudEventMeta> cloudEvents = new HashSet<>(this.getCloudEventMetaBuilder().build(processContainerBuildItem.getProcessContainerGenerators()));
-        final Set<CloudEventMeta> extendedCloudEvents = extendedCloudEventsBuildItems.stream()
-                .flatMap(cloudEventsBuildItem -> cloudEventsBuildItem.getCloudEvents().stream())
-                .collect(Collectors.toSet());
-        cloudEvents.addAll(extendedCloudEvents);
-        if (!cloudEvents.isEmpty()) {
-            Optional<KogitoServiceDeploymentTarget> target = this.selectDeploymentTarget(allDeploymentTargets, kubernetesMetaBuildItems);
+        if(processContainerBuildItem != null) {
+            final Set<CloudEventMeta> cloudEvents = new HashSet<>(this.getCloudEventMetaBuilder().build(processContainerBuildItem.getProcessContainerGenerators()));
+            final Set<CloudEventMeta> extendedCloudEvents = extendedCloudEventsBuildItems.stream()
+                    .flatMap(cloudEventsBuildItem -> cloudEventsBuildItem.getCloudEvents().stream())
+                    .collect(Collectors.toSet());
+            cloudEvents.addAll(extendedCloudEvents);
+            if (!cloudEvents.isEmpty()) {
+                Optional<KogitoServiceDeploymentTarget> target = this.selectDeploymentTarget(allDeploymentTargets, kubernetesMetaBuildItems);
 
-            if (target.isEmpty()) {
-                LOGGER.warn("Impossible to get the Kubernetes deployment target for this Kogito service. Skipping generation.");
-            } else {
-                metadataProducer.produce(new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target.get()));
+                if (target.isEmpty()) {
+                    LOGGER.warn("Impossible to get the Kubernetes deployment target for this Kogito service. Skipping generation.");
+                } else {
+                    metadataProducer.produce(new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target.get()));
+                }
             }
         }
     }
