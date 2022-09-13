@@ -63,7 +63,7 @@ public class KogitoProcessKnativeEventingProcessor {
             List<KubernetesDeploymentTargetBuildItem> allDeploymentTargets,
             List<KubernetesResourceMetadataBuildItem> kubernetesMetaBuildItems,
             BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
-        if(processContainerBuildItem != null) {
+        if (processContainerBuildItem != null) {
             final Set<CloudEventMeta> cloudEvents = new HashSet<>(this.getCloudEventMetaBuilder().build(processContainerBuildItem.getProcessContainerGenerators()));
             final Set<CloudEventMeta> extendedCloudEvents = extendedCloudEventsBuildItems.stream()
                     .flatMap(cloudEventsBuildItem -> cloudEventsBuildItem.getCloudEvents().stream())
