@@ -1,0 +1,168 @@
+@Library('jenkins-pipeline-shared-libraries')_
+
+import org.kie.jenkins.MavenCommand
+
+droolsRepo = 'drools'
+kogitoRuntimesRepo = 'kogito-runtimes'
+
+pipeline {
+    agent {
+        label 'kie-rhel8 && kie-mem16g && !master'
+    }
+    tools {
+        maven env.BUILD_MAVEN_TOOL
+        jdk env.BUILD_JDK_TOOL
+    }
+    options {
+        timestamps()
+        timeout(time: 360, unit: 'MINUTES')
+    }
+    environment {
+        KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
+        MAVEN_OPTS = '-Xms1024m -Xmx6g -XX:PermSize=128m -XX:MaxPermSize=512m'
+    }
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    checkoutDroolsRepo()
+                    checkoutKogitoRuntimesRepo()
+                }
+            }
+        }
+
+        stage('Setup podman env') {
+            steps {
+                script {
+                    // Follow instructions from https://quarkus.io/blog/quarkus-devservices-testcontainers-podman/
+                    sh '''
+                        echo "DOCKER_HOST=${DOCKER_HOST}"
+                    '''
+                    sh 'podman version'
+                    sh '''
+                        whereis podman-docker
+                        sudo yum install -y podman-docker podman-remote
+                        whereis podman-docker
+
+                        systemctl --user enable podman.socket --now
+
+                        podman-remote info
+                        podman info
+
+                        docker info
+                    '''
+
+                // Create testcontainers properties
+                // dir(getRepoName()) {
+                //     sh """
+                //         echo 'ryuk.container.privileged=true' > .text
+                //     """
+                // }
+                }
+            }
+        }
+
+        stage('Build Drools') {
+            steps {
+                script {
+                    getMavenCommand(droolsRepo)
+                        .withProperty('quickly')
+                        .run('clean install')
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+
+        stage('Build kogito-runtimes') {
+            steps {
+                script {
+                    dir('kogito-runtimes') {
+                        sh """
+                            export DOCKER_HOST=unix:///run/user/\${UID}/podman/podman.sock
+                            export TESTCONTAINERS_RYUK_DISABLED=true
+                            ${getMavenCommand('kogito-runtimes').withProperty('maven.test.failure.ignore', true).getFullRunCommand('clean install')}
+                        """
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        cleanContainers()
+                    }
+                }
+            }
+        }
+    }
+    post {
+        unsuccessful {
+            sendNotification()
+        }
+        always {
+            script {
+                junit testResults: '**/target/surefire-reports/**/*.xml, **/target/failsafe-reports/**/*.xml', allowEmptyResults: true
+                util.archiveConsoleLog()
+            }
+        }
+        cleanup {
+            script {
+                util.cleanNode('podman')
+            }
+        }
+    }
+}
+
+void sendNotification() {
+    mailer.sendMarkdownTestSummaryNotification("${NOTIFICATION_JOB_NAME}", "[${params.BUILD_BRANCH_NAME}] Kogito Runtimes", [env.KOGITO_CI_EMAIL_TO])
+}
+
+void checkoutKogitoRuntimesRepo() {
+    dir(kogitoRuntimesRepo) {
+        checkout(githubscm.resolveRepository(kogitoRuntimesRepo, params.GIT_AUTHOR, getKogitoTargetBranch(), false))
+    }
+}
+
+void checkoutDroolsRepo() {
+    dir(droolsRepo) {
+        checkout(githubscm.resolveRepository(droolsRepo, params.GIT_AUTHOR, getDroolsTargetBranch(), false))
+    }
+}
+
+String getKogitoTargetBranch() {
+    return getTargetBranch(0)
+}
+
+String getDroolsTargetBranch() {
+    return getTargetBranch(7)
+}
+
+String getTargetBranch(Integer addToMajor) {
+    String targetBranch = params.BUILD_BRANCH_NAME
+    String [] versionSplit = targetBranch.split("\\.")
+    if (versionSplit.length == 3
+        && versionSplit[0].isNumber()
+        && versionSplit[1].isNumber()
+        && versionSplit[2] == 'x') {
+        targetBranch = "${Integer.parseInt(versionSplit[0]) + addToMajor}.${versionSplit[1]}.x"
+    } else {
+        echo "Cannot parse targetBranch as release branch so going further with current value: ${targetBranch}"
+        }
+    return targetBranch
+}
+
+MavenCommand getMavenCommand(String directory) {
+    return new MavenCommand(this, ['-fae', '-ntp'])
+                .withSettingsXmlId('kogito_release_settings')
+                .withProperty('java.net.preferIPv4Stack', true)
+                .inDirectory(directory)
+}
+
+void cleanContainers() {
+    cloud.cleanContainersAndImages('podman')
+}
