@@ -57,7 +57,7 @@ public class JsonPathExpression implements Expression {
 
     private <T> T eval(JsonNode context, Class<T> returnClass, KogitoProcessContext processInfo) {
         Configuration jsonPathConfig = getConfiguration(processInfo);
-        DocumentContext parsedContext = JsonPath.using(jsonPathConfig).parse(context);
+        DocumentContext parsedContext = JsonPath.using(jsonPathConfig).parse(ExpressionHandlerUtils.addVariablesFromContext(context, processInfo));
         if (String.class.isAssignableFrom(returnClass)) {
             StringBuilder sb = new StringBuilder();
             // valid json path is $. or $[

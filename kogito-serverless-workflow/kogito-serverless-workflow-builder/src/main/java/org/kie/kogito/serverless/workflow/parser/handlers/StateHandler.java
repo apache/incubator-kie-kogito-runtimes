@@ -375,16 +375,11 @@ public abstract class StateHandler<S extends State> {
         return filterAndMergeNode(embeddedSubProcess, varName, null, dataExpr, toExpr, useData, nodeSupplier);
     }
 
-    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String fromStateExpr, String resultExpr, String toStateExpr, boolean shouldMerge,
-            FilterableNodeSupplier nodeSupplier) {
-        return filterAndMergeNode(embeddedSubProcess, getVarName(), fromStateExpr, resultExpr, toStateExpr, shouldMerge, nodeSupplier);
-    }
-
     protected boolean isTempVariable(String varName) {
         return !varName.equals(ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
     }
 
-    private final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionVarName, String fromStateExpr, String resultExpr, String toStateExpr,
+    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionVarName, String fromStateExpr, String resultExpr, String toStateExpr,
             boolean shouldMerge,
             FilterableNodeSupplier nodeSupplier) {
         if (isTempVariable(actionVarName)) {

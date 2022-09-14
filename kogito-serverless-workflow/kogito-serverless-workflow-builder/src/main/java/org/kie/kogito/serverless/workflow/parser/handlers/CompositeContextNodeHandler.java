@@ -55,12 +55,12 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         return handleActions(embeddedSubProcess, actions, null);
     }
 
-    protected final <T extends AbstractCompositeNodeFactory<?, ?>> T handleActions(T embeddedSubProcess, List<Action> actions, String outputVar, String... extraVariables) {
+    protected final <T extends AbstractCompositeNodeFactory<?, ?>> T handleActions(T embeddedSubProcess, List<Action> actions, String outputVar) {
         if (actions != null && !actions.isEmpty()) {
             NodeFactory<?, ?> startNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
             NodeFactory<?, ?> currentNode = startNode;
             for (Action action : actions) {
-                currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar, extraVariables));
+                currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar));
             }
             connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         } else {
@@ -76,26 +76,28 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     public MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
-            Action action, String collectVar, String... extraVariables) {
+            Action action, String collectVar) {
         ActionDataFilter actionFilter = action.getActionDataFilter();
         String fromExpr = null;
         String resultExpr = null;
         String toExpr = null;
-        boolean useData = true;
+        final boolean generateVar = collectVar == null;
+        boolean useData = generateVar;
         if (actionFilter != null) {
             fromExpr = actionFilter.getFromStateData();
             resultExpr = actionFilter.getResults();
             toExpr = actionFilter.getToStateData();
             useData = actionFilter.isUseResults();
         }
+        final String varName = generateVar ? getVarName() : collectVar;
         if (action.getFunctionRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, fromExpr, resultExpr, toExpr, useData,
-                    (factory, inputVar, outputVar) -> getActionNode(factory, action.getFunctionRef(), inputVar, outputVar, collectVar, extraVariables));
+            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
+                    (factory, inputVar, outputVar) -> getActionNode(factory, action.getFunctionRef(), inputVar, outputVar));
         } else if (action.getEventRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, fromExpr, resultExpr, toExpr, useData,
+            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
                     (factory, inputVar, outputVar) -> getActionNode(factory, action.getEventRef(), inputVar));
         } else if (action.getSubFlowRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, fromExpr, resultExpr, toExpr, useData,
+            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
                     (factory, inputVar, outputVar) -> getActionNode(factory, action.getSubFlowRef(), inputVar, outputVar));
         } else {
             throw new IllegalArgumentException("Action node " + action.getName() + " of state " + state.getName() + " does not have function or event defined");
@@ -118,9 +120,9 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     private NodeFactory<?, ?> getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
-            FunctionRef functionRef, String inputVar, String outputVar, String collectVar, String... extraVariables) {
+            FunctionRef functionRef, String inputVar, String outputVar) {
         String functionName = functionRef.getRefName();
-        VariableInfo varInfo = new VariableInfo(inputVar, outputVar, collectVar, extraVariables);
+        VariableInfo varInfo = new VariableInfo(inputVar, outputVar);
         return getFunctionDefStream()
                 .filter(wf -> wf.getName().equals(functionName))
                 .findFirst()

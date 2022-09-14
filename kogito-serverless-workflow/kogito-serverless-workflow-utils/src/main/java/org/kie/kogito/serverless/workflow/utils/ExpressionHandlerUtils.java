@@ -15,10 +15,17 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.instance.ContextableInstance;
+import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.ruleflow.core.Metadata;
+import org.kie.api.runtime.process.NodeInstanceContainer;
+import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
@@ -106,5 +113,32 @@ public class ExpressionHandlerUtils {
     public static Optional<String> fallbackVarToName(String expr) {
         int indexOf = expr.lastIndexOf('.');
         return indexOf < 0 ? Optional.empty() : Optional.of(expr.substring(indexOf + 1));
+    }
+
+    public static JsonNode addVariablesFromContext(JsonNode context, KogitoProcessContext processInfo) {
+        if (context.isObject()) {
+            KogitoNodeInstance node = processInfo.getNodeInstance();
+            if (node instanceof ContextableInstance) {
+                return addVariablesFromContext((ObjectNode) context, (ContextableInstance) node);
+            } else if (node != null) {
+                NodeInstanceContainer container = node.getNodeInstanceContainer();
+                if (container instanceof ContextableInstance) {
+                    return addVariablesFromContext((ObjectNode) context, (ContextableInstance) container);
+                }
+            }
+        }
+        return context;
+    }
+
+    private static JsonNode addVariablesFromContext(ObjectNode context, ContextableInstance node) {
+        VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
+        Map<String, Object> variables = variableScope.getVariables();
+        if (!variables.isEmpty()) {
+            context = context.deepCopy();
+            for (Entry<String, Object> entry : variables.entrySet()) {
+                context.set(entry.getKey(), JsonObjectUtils.fromValue(entry.getValue()));
+            }
+        }
+        return context;
     }
 }

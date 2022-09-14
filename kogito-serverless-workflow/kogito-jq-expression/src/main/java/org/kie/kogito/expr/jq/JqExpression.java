@@ -147,7 +147,7 @@ public class JqExpression implements Expression {
         try {
             TypedOutput output = output(returnClass);
             compile();
-            query.apply(getScope(processInfo), context, output);
+            query.apply(getScope(processInfo), ExpressionHandlerUtils.addVariablesFromContext(context, processInfo), output);
             return JsonObjectUtils.convertValue(output.getResult(), returnClass);
         } catch (JsonQueryException e) {
             throw new IllegalArgumentException("Unable to evaluate content " + context + " using expr " + expr, e);
