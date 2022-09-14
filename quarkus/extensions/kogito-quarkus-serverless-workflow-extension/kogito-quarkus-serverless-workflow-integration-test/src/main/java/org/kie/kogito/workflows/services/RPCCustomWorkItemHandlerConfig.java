@@ -13,27 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.parser;
+package org.kie.kogito.workflows.services;
 
-public class VariableInfo {
-    private final String inputVar;
-    private final String outputVar;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-    public VariableInfo(String inputVar, String outputVar) {
-        this.inputVar = inputVar;
-        this.outputVar = outputVar;
-    }
+import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 
-    @Override
-    public String toString() {
-        return "VariableInfo [inputVar=" + inputVar + ", outputVar=" + outputVar + ']';
-    }
+@ApplicationScoped
+public class RPCCustomWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
 
-    public String getInputVar() {
-        return inputVar;
-    }
+    @Inject
+    RPCCustomWorkItemHandler handler;
 
-    public String getOutputVar() {
-        return outputVar;
+    @PostConstruct
+    void init() {
+        register(handler.getName(), handler);
     }
 }
