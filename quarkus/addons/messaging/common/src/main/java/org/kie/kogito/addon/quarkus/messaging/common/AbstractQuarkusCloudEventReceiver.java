@@ -16,7 +16,6 @@
 package org.kie.kogito.addon.quarkus.messaging.common;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -62,7 +61,7 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
                 Object object = subscription.getInfo().getConverter().unmarshall(configBean.useCloudEvents() ? message : message.getPayload(), subscription.getInfo().getOutputClass(),
                         subscription.getInfo().getParametrizedClasses());
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
-            } catch (IOException | UncheckedIOException e) {
+            } catch (IOException e) {
                 LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
                         subscription.getInfo().getType(), e.getMessage());
             }

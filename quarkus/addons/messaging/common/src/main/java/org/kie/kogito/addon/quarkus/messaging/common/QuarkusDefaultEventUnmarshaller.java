@@ -16,10 +16,10 @@
 package org.kie.kogito.addon.quarkus.messaging.common;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -42,17 +42,21 @@ public class QuarkusDefaultEventUnmarshaller extends AbstractEventUnmarshaller<M
 
     @Override
     public <T> T unmarshall(Message<?> message, Class<T> clazz, Class<?>... parametrizedClasses) throws IOException {
-        return (T) message.getMetadata(CloudEventMetadata.class).map(meta -> binaryCE(meta, message.getPayload(), clazz, parametrizedClasses))
-                .orElseGet(() -> safeCallSuper(message.getPayload(), clazz, parametrizedClasses));
+        Optional<CloudEventMetadata> metadata = message.getMetadata(CloudEventMetadata.class);
+        return metadata.isPresent() ? (T) binaryCE(metadata.get(), message.getPayload(), clazz, parametrizedClasses) : unmarshallPayload(message.getPayload(), clazz, parametrizedClasses);
     }
 
-    private Object binaryCE(CloudEventMetadata<?> meta, Object payload, Class<?> clazz, Class<?>... parametrizedClasses) {
+    private Object binaryCE(CloudEventMetadata<?> meta, Object payload, Class<?> clazz, Class<?>... parametrizedClasses) throws IOException {
         if (ProcessDataEvent.class.isAssignableFrom(clazz)) {
             ProcessDataEvent processDataEvent = new ProcessDataEvent<>();
-            processDataEvent.setData(safeCallSuper(payload, parametrizedClasses[0]));
+            processDataEvent.setData(unmarshallPayload(payload, parametrizedClasses[0]));
             return addCloudEventInfo(meta, processDataEvent);
         } else if (CloudEvent.class.isAssignableFrom(clazz)) {
-            CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(from(meta.getSpecVersion())).withType(meta.getType()).withSource(meta.getSource()).withId(meta.getId());
+            CloudEventBuilder builder =
+                    CloudEventBuilder.fromSpecVersion(SpecVersion.parse(meta.getSpecVersion()))
+                            .withType(meta.getType())
+                            .withSource(meta.getSource())
+                            .withId(meta.getId());
             meta.getDataContentType().ifPresent(builder::withDataContentType);
             meta.getDataSchema().ifPresent(builder::withDataSchema);
             meta.getTimeStamp().map(ZonedDateTime::toOffsetDateTime).ifPresent(builder::withTime);
@@ -66,15 +70,7 @@ public class QuarkusDefaultEventUnmarshaller extends AbstractEventUnmarshaller<M
             }
             return builder.build();
         } else {
-            return safeCallSuper(payload, clazz, parametrizedClasses);
-        }
-    }
-
-    private Object safeCallSuper(Object value, Class<?> clazz, Class<?>... parametrizedClasses) {
-        try {
-            return unmarshallPayload(value, clazz, parametrizedClasses);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            return unmarshallPayload(payload, clazz, parametrizedClasses);
         }
     }
 
@@ -102,22 +98,9 @@ public class QuarkusDefaultEventUnmarshaller extends AbstractEventUnmarshaller<M
         set(meta::getId, event::setId);
         set(meta::getType, event::setType);
         set(meta::getSource, event::setSource);
-        set(meta::getSpecVersion, specVersion -> event.setSpecVersion(from(specVersion)));
+        set(meta::getSpecVersion, specVersion -> event.setSpecVersion(SpecVersion.parse(specVersion)));
         meta.getExtensions().forEach(event::addExtensionAttribute);
         return event;
-    }
-
-    private SpecVersion from(String value) {
-        try {
-            return SpecVersion.valueOf(value);
-        } catch (IllegalArgumentException ex) {
-            for (SpecVersion version : SpecVersion.values()) {
-                if (value.contains(version.toString())) {
-                    return version;
-                }
-            }
-            return SpecVersion.V1;
-        }
     }
 
     private <T> void set(Supplier<T> supplier, Consumer<T> consumer) {
