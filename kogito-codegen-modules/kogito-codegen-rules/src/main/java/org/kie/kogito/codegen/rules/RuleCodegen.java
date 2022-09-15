@@ -26,9 +26,13 @@ import java.util.Optional;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.extensions.DecisionTableFactory;
+import org.drools.model.codegen.execmodel.QueryModel;
+import org.drools.model.codegen.project.CodegenPackageSources;
+import org.drools.model.codegen.project.DroolsModelBuilder;
 import org.drools.model.codegen.project.KieSessionModelBuilder;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
+import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.kogito.codegen.api.ApplicationSection;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.io.CollectedResource;
@@ -103,13 +107,24 @@ public class RuleCodegen extends AbstractGenerator {
     @Override
     protected Collection<GeneratedFile> internalGenerate() {
 
-        DroolsModelBuilder droolsModelBuilder =
+        org.drools.model.codegen.project.DroolsModelBuilder droolsModelBuilder =
                 new DroolsModelBuilder(
-                        context(), resources, decisionTableSupported, hotReloadMode);
+                        context(), resources, decisionTableSupported);
 
         droolsModelBuilder.build();
         Collection<GeneratedFile> generatedFiles = droolsModelBuilder.generateCanonicalModelSources();
-        this.ruleUnitGenerators.addAll(droolsModelBuilder.createRuleUnitGenerators(configs));
+        for (CodegenPackageSources pkgSources: droolsModelBuilder.packageSources()) {
+            Collection<RuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
+            for (RuleUnitDescription ruleUnit : ruleUnits) {
+                String canonicalName = ruleUnit.getCanonicalName();
+                String rulesFileName = pkgSources.getRulesFileName();
+                Collection<QueryModel> queryModels = pkgSources.getQueriesInRuleUnit(canonicalName);
+                this.ruleUnitGenerators.add(new RuleUnitGenerator(context(), ruleUnit, rulesFileName)
+                        .withQueries(pkgSources.getQueriesInRuleUnit(canonicalName))
+                        .mergeConfig(configs.get(canonicalName)));
+            }
+        }
+
 
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
