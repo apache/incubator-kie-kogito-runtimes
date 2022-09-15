@@ -15,20 +15,10 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.jbpm.process.core.ContextResolver;
-import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.instance.ContextableInstance;
-import org.jbpm.process.instance.context.variable.VariableScopeInstance;
 import org.jbpm.ruleflow.core.Metadata;
-import org.kie.api.definition.process.Node;
-import org.kie.api.runtime.process.NodeInstanceContainer;
-import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.MergeUtils;
@@ -116,37 +106,5 @@ public class ExpressionHandlerUtils {
     public static Optional<String> fallbackVarToName(String expr) {
         int indexOf = expr.lastIndexOf('.');
         return indexOf < 0 ? Optional.empty() : Optional.of(expr.substring(indexOf + 1));
-    }
-
-    public static JsonNode addVariablesFromContext(JsonNode context, KogitoProcessContext processInfo) {
-        if (context.isObject()) {
-            KogitoNodeInstance nodeInstance = processInfo.getNodeInstance();
-            if (nodeInstance instanceof ContextableInstance) {
-                return addVariablesFromContext((ObjectNode) context, (ContextableInstance) nodeInstance);
-            } else if (nodeInstance != null) {
-                NodeInstanceContainer container = nodeInstance.getNodeInstanceContainer();
-                if (container instanceof ContextableInstance && container instanceof KogitoNodeInstance) {
-                    return addVariablesFromContext((ObjectNode) context, (ContextableInstance) container);
-                }
-            }
-        }
-        return context;
-    }
-
-    private static boolean isEvalVariable(String varName, KogitoNodeInstance nodeInstance) {
-        Node node = nodeInstance.getNode();
-        VariableScope scope = (VariableScope) ((ContextResolver) node).resolveContext(VariableScope.VARIABLE_SCOPE, varName);
-        return scope.getVariables().stream().filter(v -> v.getName().equals(varName)).findAny().orElseThrow().getMetaData("evalVariable") != null;
-    }
-
-    private static JsonNode addVariablesFromContext(ObjectNode context, ContextableInstance node) {
-        VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
-        Map<String, JsonNode> variables = variableScope.getVariables().entrySet().stream().filter(e -> isEvalVariable(e.getKey(), (KogitoNodeInstance) node))
-                .collect(Collectors.toMap(Entry::getKey, entry -> JsonObjectUtils.fromValue(entry.getValue())));
-        if (!variables.isEmpty()) {
-            context = context.deepCopy();
-            variables.forEach(context::set);
-        }
-        return context;
     }
 }
