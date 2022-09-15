@@ -21,7 +21,6 @@ import org.drools.ruleunits.api.RuleUnitData;
 import org.drools.ruleunits.api.annotation.When;
 import org.kie.kogito.codegen.data.Person;
 
-
 public class AnnotatedRules implements RuleUnitData {
 
     private final DataStore<Person> persons = DataSource.createStore();

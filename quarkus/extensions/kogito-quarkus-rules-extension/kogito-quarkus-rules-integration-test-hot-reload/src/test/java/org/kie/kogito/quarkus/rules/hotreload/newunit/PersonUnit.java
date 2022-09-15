@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.quarkus.rules.hotreload.newunit;
 
-
 import org.drools.ruleunits.api.DataSource;
 import org.drools.ruleunits.api.DataStore;
 import org.drools.ruleunits.api.RuleUnitData;

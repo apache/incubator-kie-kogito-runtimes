@@ -15,8 +15,10 @@
  */
 package org.kie.kogito.codegen.json;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.drools.ruleunits.api.DataHandle;
 import org.drools.ruleunits.api.DataProcessor;
 import org.drools.ruleunits.api.DataStore;
@@ -25,9 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.kogito.codegen.data.Person;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

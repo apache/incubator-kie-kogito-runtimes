@@ -15,6 +15,14 @@
  */
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.drools.ruleunits.api.DataSource;
+import org.drools.ruleunits.api.DataStore;
+import org.drools.ruleunits.api.DataStream;
+import org.drools.ruleunits.api.SingletonStore;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -24,13 +32,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import org.drools.ruleunits.api.DataSource;
-import org.drools.ruleunits.api.DataStore;
-import org.drools.ruleunits.api.DataStream;
-import org.drools.ruleunits.api.SingletonStore;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Custom JacksonModule to allow (de)serialization of data source types

@@ -15,7 +15,12 @@
  */
 package org.kie.kogito.quarkus.drools;
 
-import io.quarkus.test.junit.QuarkusTest;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import org.drools.ruleunits.api.DataSource;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.incubation.application.AppRoot;
@@ -32,10 +37,7 @@ import org.kie.kogito.incubation.rules.services.DataSourceService;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
 import org.kie.kogito.incubation.rules.services.contexts.RuleUnitMetaDataContext;
 
-import javax.inject.Inject;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import io.quarkus.test.junit.QuarkusTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

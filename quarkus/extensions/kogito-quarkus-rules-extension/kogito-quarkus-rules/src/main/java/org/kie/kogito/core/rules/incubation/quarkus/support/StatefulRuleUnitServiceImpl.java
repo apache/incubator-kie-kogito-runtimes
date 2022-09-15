@@ -16,6 +16,11 @@
 
 package org.kie.kogito.core.rules.incubation.quarkus.support;
 
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitData;
 import org.drools.ruleunits.api.RuleUnitInstance;
@@ -31,11 +36,6 @@ import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Stream;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 

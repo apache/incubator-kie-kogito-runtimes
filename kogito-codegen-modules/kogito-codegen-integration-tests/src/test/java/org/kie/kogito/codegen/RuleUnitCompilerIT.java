@@ -15,6 +15,13 @@
  */
 package org.kie.kogito.codegen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.drools.core.common.ReteEvaluator;
 import org.drools.ruleunits.api.DataHandle;
 import org.drools.ruleunits.api.DataObserver;
@@ -44,13 +51,6 @@ import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
 import org.kie.kogito.codegen.unit.StockUnit;
 import org.kie.kogito.rules.RuleUnits;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
