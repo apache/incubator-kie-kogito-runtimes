@@ -15,14 +15,14 @@
  */
 package org.kie.kogito.codegen;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.drools.core.common.ReteEvaluator;
+import org.drools.ruleunits.api.DataHandle;
+import org.drools.ruleunits.api.DataObserver;
+import org.drools.ruleunits.api.DataSource;
+import org.drools.ruleunits.api.DataStore;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.drools.ruleunits.api.RuleUnitQuery;
 import org.drools.ruleunits.impl.AbstractRuleUnitInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -43,14 +43,14 @@ import org.kie.kogito.codegen.rules.singleton.Singleton;
 import org.kie.kogito.codegen.unit.AdultUnit;
 import org.kie.kogito.codegen.unit.PersonsUnit;
 import org.kie.kogito.codegen.unit.StockUnit;
-import org.kie.kogito.rules.DataHandle;
-import org.kie.kogito.rules.DataObserver;
-import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnitQuery;
 import org.kie.kogito.rules.RuleUnits;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;

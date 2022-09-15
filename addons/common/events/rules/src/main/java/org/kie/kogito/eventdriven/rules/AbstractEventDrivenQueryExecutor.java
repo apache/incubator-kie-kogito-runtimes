@@ -15,17 +15,15 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
-import java.util.Optional;
-
-import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnitQuery;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.cloudevents.CloudEvent;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.drools.ruleunits.api.RuleUnitQuery;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+
+import java.util.Optional;
 
 public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R> implements EventDrivenQueryExecutor {
 

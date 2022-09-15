@@ -15,12 +15,12 @@
  */
 package ruletask;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import org.drools.ruleunits.api.DataSource;
+import org.drools.ruleunits.api.DataStream;
+import org.drools.ruleunits.api.RuleUnitData;
 import org.kie.kogito.codegen.data.Person;
-import org.kie.kogito.rules.DataSource;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.RuleUnitData;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Example implements RuleUnitData {
 

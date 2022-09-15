@@ -15,18 +15,16 @@
  */
 package org.kie.kogito.quarkus.drools;
 
+import io.quarkus.test.junit.QuarkusTest;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.junit.jupiter.api.Test;
+import org.kie.kogito.examples.Hello;
+
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.junit.jupiter.api.Test;
-import org.kie.kogito.examples.Hello;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitInstance;
-
-import io.quarkus.test.junit.QuarkusTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
