@@ -52,15 +52,15 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     protected final <T extends AbstractCompositeNodeFactory<?, ?>> T handleActions(T embeddedSubProcess, List<Action> actions) {
-        return handleActions(embeddedSubProcess, actions, null);
+        return handleActions(embeddedSubProcess, actions, getVarName(), true);
     }
 
-    protected final <T extends AbstractCompositeNodeFactory<?, ?>> T handleActions(T embeddedSubProcess, List<Action> actions, String outputVar) {
+    protected final <T extends AbstractCompositeNodeFactory<?, ?>> T handleActions(T embeddedSubProcess, List<Action> actions, String outputVar, boolean shouldMerge) {
         if (actions != null && !actions.isEmpty()) {
             NodeFactory<?, ?> startNode = embeddedSubProcess.startNode(parserContext.newId()).name("EmbeddedStart");
             NodeFactory<?, ?> currentNode = startNode;
             for (Action action : actions) {
-                currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar));
+                currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar, shouldMerge));
             }
             connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         } else {
@@ -72,32 +72,30 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
 
     protected final MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             Action action) {
-        return getActionNode(embeddedSubProcess, action, null);
+        return getActionNode(embeddedSubProcess, action, getVarName(), true);
     }
 
-    public MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
-            Action action, String collectVar) {
+    protected final MakeNodeResult getActionNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
+            Action action, String collectVar, boolean shouldMerge) {
         ActionDataFilter actionFilter = action.getActionDataFilter();
         String fromExpr = null;
         String resultExpr = null;
         String toExpr = null;
-        final boolean generateVar = collectVar == null;
-        boolean useData = generateVar;
+        boolean useData = true;
         if (actionFilter != null) {
             fromExpr = actionFilter.getFromStateData();
             resultExpr = actionFilter.getResults();
             toExpr = actionFilter.getToStateData();
             useData = actionFilter.isUseResults();
         }
-        final String varName = generateVar ? getVarName() : collectVar;
         if (action.getFunctionRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
+            return filterAndMergeNode(embeddedSubProcess, collectVar, fromExpr, resultExpr, toExpr, useData, shouldMerge,
                     (factory, inputVar, outputVar) -> getActionNode(factory, action.getFunctionRef(), inputVar, outputVar));
         } else if (action.getEventRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
+            return filterAndMergeNode(embeddedSubProcess, collectVar, fromExpr, resultExpr, toExpr, useData, shouldMerge,
                     (factory, inputVar, outputVar) -> getActionNode(factory, action.getEventRef(), inputVar));
         } else if (action.getSubFlowRef() != null) {
-            return filterAndMergeNode(embeddedSubProcess, varName, fromExpr, resultExpr, toExpr, useData,
+            return filterAndMergeNode(embeddedSubProcess, collectVar, fromExpr, resultExpr, toExpr, useData, shouldMerge,
                     (factory, inputVar, outputVar) -> getActionNode(factory, action.getSubFlowRef(), inputVar, outputVar));
         } else {
             throw new IllegalArgumentException("Action node " + action.getName() + " of state " + state.getName() + " does not have function or event defined");

@@ -25,7 +25,10 @@
               "dividend": ".item",
               "divisor" : ".divisor"
              }
-          }
+          }, 
+           "actionDataFilter" : {
+              "results" : ".+1"
+           }
          }
        ],
        "end": true

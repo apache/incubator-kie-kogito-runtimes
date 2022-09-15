@@ -45,7 +45,7 @@ public class ForEachStateHandler extends CompositeContextNodeHandler<ForEachStat
                 factory.forEachNode(parserContext.newId()).sequential(false).waitForCompletion(true).expressionLanguage(workflow.getExpressionLang()).collectionExpression(state.getInputCollection())
                         .outputVariable(outputVarName, new ObjectDataType())
                         .metaData(Metadata.VARIABLE, ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
-        handleActions(result, state.getActions(), outputVarName);
+        handleActions(result, state.getActions(), outputVarName, false);
         if (state.getIterationParam() != null) {
             result.variable(state.getIterationParam(), new ObjectDataType());
         }

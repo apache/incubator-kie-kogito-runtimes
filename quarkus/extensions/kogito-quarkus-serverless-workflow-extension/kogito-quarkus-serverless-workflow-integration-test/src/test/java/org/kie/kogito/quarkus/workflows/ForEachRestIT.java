@@ -24,6 +24,7 @@ import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 @QuarkusIntegrationTest
 class ForEachRestIT {
@@ -37,6 +38,7 @@ class ForEachRestIT {
                 .post("/forEachCustomType")
                 .then()
                 .statusCode(201)
-                .body("workflowdata.output", is(Arrays.asList(1, 2, 3, 4, 5)));
+                .body("workflowdata.output", is(Arrays.asList(2, 3, 4, 5, 6)))
+                .body("workflowdata.response", nullValue());
     }
 }

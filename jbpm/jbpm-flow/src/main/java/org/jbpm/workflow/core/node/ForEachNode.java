@@ -248,6 +248,7 @@ public class ForEachNode extends CompositeContextNode {
         Variable variable = new Variable();
         variable.setId(varRef);
         variable.setName(variableName);
+        variable.setMetaData("evalVariable", true);
         variable.setType(type);
         variables.add(variable);
     }
