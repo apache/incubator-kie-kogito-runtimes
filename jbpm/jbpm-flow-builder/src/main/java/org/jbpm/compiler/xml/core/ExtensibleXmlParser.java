@@ -91,8 +91,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /** Locator for errors. */
     private Locator locator;
 
-    // private Map repo;
-
     /** Stack of configurations. */
     private LinkedList configurationStack;
 
@@ -537,8 +535,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         this.characters = new StringBuilder();
 
         final Element element = this.document.createElement(tagName);
-
-        //final DefaultConfiguration config = new DefaultConfiguration( tagName );
 
         final int numAttrs = attrs.getLength();
 

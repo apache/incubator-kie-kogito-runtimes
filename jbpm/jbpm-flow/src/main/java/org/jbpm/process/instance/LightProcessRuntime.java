@@ -423,7 +423,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     }
 
     public boolean isActive() {
-        // originally: kruntime.getEnvironment().get("Active");
+        // originally: kruntime.getEnvironment().get("Active")
         return runtimeContext.isActive();
     }
 
