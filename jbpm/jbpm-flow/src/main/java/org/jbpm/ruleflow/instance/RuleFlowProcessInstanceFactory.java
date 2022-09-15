@@ -32,9 +32,11 @@ public class RuleFlowProcessInstanceFactory extends AbstractProcessInstanceFacto
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        //intentionally blank - must implement all methods from interface
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
+        //intentionally blank - must implement all methods from interface
     }
 
 }

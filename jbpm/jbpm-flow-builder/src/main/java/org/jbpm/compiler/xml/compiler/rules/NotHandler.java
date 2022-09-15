@@ -35,6 +35,7 @@ public class NotHandler extends BaseAbstractHandler
         implements
         Handler {
     public NotHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

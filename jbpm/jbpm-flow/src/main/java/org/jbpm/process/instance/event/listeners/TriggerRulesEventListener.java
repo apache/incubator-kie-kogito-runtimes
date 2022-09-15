@@ -46,36 +46,37 @@ public class TriggerRulesEventListener implements AgendaEventListener {
 
     @Override
     public void matchCreated(MatchCreatedEvent event) {
+        //intentionally-blank override
     }
 
     @Override
     public void matchCancelled(MatchCancelledEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void beforeMatchFired(BeforeMatchFiredEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void afterMatchFired(AfterMatchFiredEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void agendaGroupPopped(AgendaGroupPoppedEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void agendaGroupPushed(AgendaGroupPushedEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void beforeRuleFlowGroupActivated(RuleFlowGroupActivatedEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -86,11 +87,11 @@ public class TriggerRulesEventListener implements AgendaEventListener {
 
     @Override
     public void beforeRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
-
+        //intentionally-blank override
     }
 }

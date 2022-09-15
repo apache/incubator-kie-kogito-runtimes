@@ -35,6 +35,7 @@ public class FieldConstraintHandler extends BaseAbstractHandler
         implements
         Handler {
     public FieldConstraintHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

@@ -28,6 +28,7 @@ public class FieldBindingHandler extends BaseAbstractHandler
         implements
         Handler {
     public FieldBindingHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

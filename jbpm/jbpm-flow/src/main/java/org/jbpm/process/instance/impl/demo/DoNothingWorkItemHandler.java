@@ -26,10 +26,12 @@ public class DoNothingWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        //intentionally-blank override
     }
 
     @Override
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        //intentionally-blank override
     }
 
 }

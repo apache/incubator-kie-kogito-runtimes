@@ -30,6 +30,7 @@ public class FromHandler extends BaseAbstractHandler
         Handler {
 
     public FromHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

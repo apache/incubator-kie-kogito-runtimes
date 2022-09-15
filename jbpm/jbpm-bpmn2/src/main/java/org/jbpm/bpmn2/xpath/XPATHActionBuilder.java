@@ -63,7 +63,7 @@ public class XPATHActionBuilder
     }
 
     public XPATHActionBuilder() {
-
+        //intentionally blank constructor
     }
 
     public void build(final PackageBuildContext context,

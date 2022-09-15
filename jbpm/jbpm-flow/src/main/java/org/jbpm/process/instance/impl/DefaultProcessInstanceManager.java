@@ -83,7 +83,7 @@ public class DefaultProcessInstanceManager implements ProcessInstanceManager {
     }
 
     public void clearProcessInstancesState() {
-
+        //intentionally blank - must implement all methods from interface
     }
 
     public void setLock(boolean lock) {

@@ -37,6 +37,7 @@ public class PackageHandler extends BaseAbstractHandler
         implements
         Handler {
     public PackageHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

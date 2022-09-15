@@ -57,6 +57,7 @@ public class MockDataWorkItemHandler implements KogitoWorkItemHandler {
 
     @Override
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+        //intentionally-blank override
     }
 
 }

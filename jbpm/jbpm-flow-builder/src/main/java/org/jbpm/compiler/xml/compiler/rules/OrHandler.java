@@ -31,6 +31,7 @@ public class OrHandler extends BaseAbstractHandler
         implements
         Handler {
     public OrHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

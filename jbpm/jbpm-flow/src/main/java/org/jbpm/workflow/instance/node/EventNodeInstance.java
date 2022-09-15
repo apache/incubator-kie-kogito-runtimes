@@ -232,7 +232,7 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
 
     @Override
     public void removeEventListeners() {
-
+        //intentionally-blank override
     }
 
     public String getEventType() {

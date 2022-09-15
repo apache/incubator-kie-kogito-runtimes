@@ -30,6 +30,7 @@ public class LiteralRestrictionHandler extends BaseAbstractHandler
         implements
         Handler {
     public LiteralRestrictionHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

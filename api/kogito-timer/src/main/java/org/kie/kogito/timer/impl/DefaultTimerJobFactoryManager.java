@@ -48,8 +48,10 @@ public class DefaultTimerJobFactoryManager
     }
 
     public void addTimerJobInstance(TimerJobInstance instance) {
+        //intentionally blank - must implement all methods from interface
     }
 
     public void removeTimerJobInstance(TimerJobInstance instance) {
+        //intentionally blank - must implement all methods from interface
     }
 }

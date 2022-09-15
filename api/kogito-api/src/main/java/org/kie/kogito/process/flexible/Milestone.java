@@ -37,6 +37,7 @@ public class Milestone extends ItemDescription {
         private Status status;
 
         public Builder() {
+            //intentionally blank constructor
         }
 
         public Builder withId(String id) {

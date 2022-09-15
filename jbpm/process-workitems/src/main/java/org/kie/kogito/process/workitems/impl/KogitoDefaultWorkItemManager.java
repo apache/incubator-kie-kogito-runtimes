@@ -211,7 +211,7 @@ public class KogitoDefaultWorkItemManager implements InternalKogitoWorkItemManag
 
     @Override
     public void internalCompleteWorkItem(InternalKogitoWorkItem workItem) {
-
+        //intentionally-blank override
     }
 
     @Override

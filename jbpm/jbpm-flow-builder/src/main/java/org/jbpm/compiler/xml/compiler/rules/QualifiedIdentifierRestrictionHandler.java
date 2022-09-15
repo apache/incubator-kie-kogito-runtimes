@@ -28,6 +28,7 @@ public class QualifiedIdentifierRestrictionHandler extends BaseAbstractHandler
         implements
         Handler {
     public QualifiedIdentifierRestrictionHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

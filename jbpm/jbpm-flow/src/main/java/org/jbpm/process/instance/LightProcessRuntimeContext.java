@@ -48,22 +48,22 @@ public class LightProcessRuntimeContext implements ProcessRuntimeContext {
 
     @Override
     public void startOperation() {
-
+        //intentionally-blank override
     }
 
     @Override
     public void endOperation() {
-
+        //intentionally-blank override
     }
 
     @Override
     public void queueWorkingMemoryAction(WorkingMemoryAction action) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void addEventListener(DefaultAgendaEventListener conditional) {
-
+        //intentionally-blank override
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.kie.kogito.codegen.process.ProcessGenerator;
 public class ProcessCloudEventMetaBuilder implements CloudEventMetaBuilder<ProcessCloudEventMeta, Collection<ProcessExecutableModelGenerator>> {
 
     public ProcessCloudEventMetaBuilder() {
+        //intentionally-blank constructor
     }
 
     public Set<ProcessCloudEventMeta> build(Set<ProcessContainerGenerator> sourceModel) {

@@ -36,6 +36,7 @@ public class AndHandler extends BaseAbstractHandler
         implements
         Handler {
     public AndHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

@@ -38,7 +38,7 @@ public class MVELReturnValueEvaluatorBuilder extends AbstractMVELBuilder
         ReturnValueEvaluatorBuilder {
 
     public MVELReturnValueEvaluatorBuilder() {
-
+        //intentionally-blank constructor
     }
 
     public void build(final PackageBuildContext context,

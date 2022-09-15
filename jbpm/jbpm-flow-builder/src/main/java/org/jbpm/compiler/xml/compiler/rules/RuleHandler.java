@@ -32,6 +32,7 @@ public class RuleHandler extends BaseAbstractHandler
         implements
         Handler {
     public RuleHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

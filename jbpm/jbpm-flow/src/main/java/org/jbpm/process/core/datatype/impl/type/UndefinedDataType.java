@@ -38,10 +38,12 @@ public final class UndefinedDataType implements DataType {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        //intentionally-blank override
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
+        //intentionally-blank override
     }
 
     @Override

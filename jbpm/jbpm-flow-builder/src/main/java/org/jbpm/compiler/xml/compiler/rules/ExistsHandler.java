@@ -35,6 +35,7 @@ public class ExistsHandler extends BaseAbstractHandler
         implements
         Handler {
     public ExistsHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

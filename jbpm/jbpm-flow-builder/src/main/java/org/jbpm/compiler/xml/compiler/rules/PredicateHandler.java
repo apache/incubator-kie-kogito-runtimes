@@ -35,6 +35,7 @@ public class PredicateHandler extends BaseAbstractHandler
         implements
         Handler {
     public PredicateHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

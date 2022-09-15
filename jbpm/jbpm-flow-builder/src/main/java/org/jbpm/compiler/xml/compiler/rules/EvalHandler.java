@@ -33,6 +33,7 @@ public class EvalHandler extends BaseAbstractHandler
         implements
         Handler {
     public EvalHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

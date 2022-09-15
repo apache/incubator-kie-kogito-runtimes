@@ -31,6 +31,7 @@ public class AccumulateHandler extends BaseAbstractHandler
         Handler {
 
     public AccumulateHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

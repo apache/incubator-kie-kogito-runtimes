@@ -48,6 +48,7 @@ public class ReturnValueConstraintEvaluator
     private boolean isDefault = false;
 
     public ReturnValueConstraintEvaluator() {
+        //intentionally-blank constructor
     }
 
     private ReturnValueEvaluator evaluator;

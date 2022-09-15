@@ -26,6 +26,7 @@ public class DummyEventListener implements KogitoEventListener {
 
     @Override
     public void signalEvent(String type, Object event) {
+        //intentionally-blank override
     }
 
     @Override

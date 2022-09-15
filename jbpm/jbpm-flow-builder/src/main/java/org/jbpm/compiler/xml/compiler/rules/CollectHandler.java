@@ -31,6 +31,7 @@ public class CollectHandler extends BaseAbstractHandler
         Handler {
 
     public CollectHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

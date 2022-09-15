@@ -33,12 +33,12 @@ public interface DataObserver extends org.drools.ruleunits.api.DataObserver {
 
             @Override
             public void update(DataHandle handle, T object) {
-
+                //intentionally blank - must implement all methods from interface
             }
 
             @Override
             public void delete(DataHandle handle) {
-
+                //intentionally blank - must implement all methods from interface
             }
         };
     }

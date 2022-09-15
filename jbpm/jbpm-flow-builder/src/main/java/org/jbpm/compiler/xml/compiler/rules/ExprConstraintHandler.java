@@ -33,6 +33,7 @@ public class ExprConstraintHandler extends BaseAbstractHandler
         implements
         Handler {
     public ExprConstraintHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

@@ -29,6 +29,7 @@ public class AccumulateHelperHandler extends BaseAbstractHandler
         Handler {
 
     public AccumulateHelperHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

@@ -48,7 +48,7 @@ public class MVELActionBuilder extends AbstractMVELBuilder implements ActionBuil
     }
 
     public MVELActionBuilder() {
-
+        //intentionally-blank constructor
     }
 
     public static String processMacros(String consequence) {

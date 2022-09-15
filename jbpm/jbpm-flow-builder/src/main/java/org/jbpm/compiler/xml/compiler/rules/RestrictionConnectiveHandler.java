@@ -41,6 +41,7 @@ public class RestrictionConnectiveHandler extends BaseAbstractHandler
     public final static String OR = "or-";
 
     public RestrictionConnectiveHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

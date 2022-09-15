@@ -35,7 +35,7 @@ public class PatternHandler extends BaseAbstractHandler
         implements
         Handler {
     public PatternHandler() {
-
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

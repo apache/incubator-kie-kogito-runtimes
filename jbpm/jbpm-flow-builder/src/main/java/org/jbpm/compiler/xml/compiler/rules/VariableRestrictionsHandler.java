@@ -28,6 +28,7 @@ public class VariableRestrictionsHandler extends BaseAbstractHandler
         implements
         Handler {
     public VariableRestrictionsHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

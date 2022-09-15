@@ -30,6 +30,7 @@ public class ExpressionHandler extends BaseAbstractHandler
         Handler {
 
     public ExpressionHandler() {
+        //intentionally-blank constructor
     }
 
     public Class generateNodeFor() {

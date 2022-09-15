@@ -29,7 +29,7 @@ public class ForallHandler extends BaseAbstractHandler
         Handler {
 
     public ForallHandler() {
-
+        //intentionally-blank constructor
     }
 
     /*

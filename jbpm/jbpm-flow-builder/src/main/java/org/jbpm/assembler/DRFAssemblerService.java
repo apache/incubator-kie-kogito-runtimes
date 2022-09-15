@@ -27,5 +27,6 @@ public class DRFAssemblerService extends AbstractProcessAssembler {
 
     @Override
     protected void configurePackageBuilder(KnowledgeBuilderImpl kb) {
+        //intentionally blank - must implement all methods from interface
     }
 }

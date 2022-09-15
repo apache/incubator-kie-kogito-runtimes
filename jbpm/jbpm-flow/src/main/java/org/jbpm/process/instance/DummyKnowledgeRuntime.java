@@ -77,12 +77,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void setIdentifier(long id) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void setEndOperationListener(EndOperationListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -122,12 +122,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void startOperation() {
-
+        //intentionally-blank override
     }
 
     @Override
     public void endOperation() {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -137,7 +137,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void setGlobal(String identifier, Object value) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -167,12 +167,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void registerChannel(String name, Channel channel) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void unregisterChannel(String name) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -192,12 +192,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void addEventListener(ProcessEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void removeEventListener(ProcessEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -207,12 +207,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void addEventListener(RuleRuntimeEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void removeEventListener(RuleRuntimeEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -222,12 +222,12 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void addEventListener(AgendaEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void removeEventListener(AgendaEventListener listener) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -313,7 +313,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void abortProcessInstance(String processInstanceId) {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -323,7 +323,7 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void halt() {
-
+        //intentionally-blank override
     }
 
     @Override
@@ -358,27 +358,27 @@ class DummyKnowledgeRuntime implements InternalKnowledgeRuntime, KogitoProcessRu
 
     @Override
     public void retract(FactHandle handle) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void delete(FactHandle handle) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void delete(FactHandle handle, FactHandle.State fhState) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void update(FactHandle handle, Object object) {
-
+        //intentionally-blank override
     }
 
     @Override
     public void update(FactHandle handle, Object object, String... modifiedProperties) {
-
+        //intentionally-blank override
     }
 
     @Override

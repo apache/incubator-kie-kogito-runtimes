@@ -28,6 +28,7 @@ public class ReturnValueRestrictionHandler extends BaseAbstractHandler
         implements
         Handler {
     public ReturnValueRestrictionHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

@@ -35,6 +35,7 @@ public class QueryHandler extends BaseAbstractHandler
         implements
         Handler {
     public QueryHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

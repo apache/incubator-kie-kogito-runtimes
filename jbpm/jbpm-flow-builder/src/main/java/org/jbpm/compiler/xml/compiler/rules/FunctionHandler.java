@@ -35,6 +35,7 @@ public class FunctionHandler extends BaseAbstractHandler
         implements
         Handler {
     public FunctionHandler() {
+        //intentionally-blank constructor
     }
 
     public Object start(final String uri,

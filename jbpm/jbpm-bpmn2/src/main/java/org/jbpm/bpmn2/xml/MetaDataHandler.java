@@ -112,6 +112,7 @@ public class MetaDataHandler extends BaseAbstractHandler
         }
 
         public void setType(DataType type) {
+            //intentionally blank - must implement all methods from interface
         }
     }
 
