@@ -123,7 +123,7 @@ public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
     }
 
     private void reloadWorkItemsList() {
-        List<WorkItemWrapper> result = new ArrayList<WorkItemWrapper>();
+        List<WorkItemWrapper> result = new ArrayList<>();
         for (KogitoWorkItem workItem : workItems.keySet()) {
             result.add(new WorkItemWrapper(workItem));
         }
