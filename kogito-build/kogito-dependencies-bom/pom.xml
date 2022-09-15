@@ -50,7 +50,7 @@
     <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
 
     <version.io.cloudevents>2.3.0</version.io.cloudevents>
-    <version.io.fabric8.kubernetes-client>5.8.0</version.io.fabric8.kubernetes-client>
+    <version.io.fabric8.kubernetes-client>5.12.3</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.9.3</version.io.micrometer>
     <version.io.serverlessworkflow>4.0.3.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.2.1</version.io.smallrye-open-api-core>
@@ -510,6 +510,18 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.io.swagger.parser.v3}</version>
+      </dependency>
+
+      <!-- fabric8 -->
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>kubernetes-client</artifactId>
+        <version>${version.io.fabric8.kubernetes-client}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.fabric8</groupId>
+        <artifactId>knative-client</artifactId>
+        <version>${version.io.fabric8.kubernetes-client}</version>
       </dependency>
 
       <!-- infinispan -->
