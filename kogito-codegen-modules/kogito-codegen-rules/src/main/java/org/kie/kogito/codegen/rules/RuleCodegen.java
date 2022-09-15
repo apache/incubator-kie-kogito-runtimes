@@ -111,9 +111,14 @@ public class RuleCodegen extends AbstractGenerator {
                 new DroolsModelBuilder(
                         context(), resources, decisionTableSupported);
 
-        droolsModelBuilder.build();
+        try {
+            droolsModelBuilder.build();
+        } catch (RuntimeException e) {
+            throw new RuleCodegenError(e);
+        }
+
         Collection<GeneratedFile> generatedFiles = droolsModelBuilder.generateCanonicalModelSources();
-        for (CodegenPackageSources pkgSources: droolsModelBuilder.packageSources()) {
+        for (CodegenPackageSources pkgSources : droolsModelBuilder.packageSources()) {
             Collection<RuleUnitDescription> ruleUnits = pkgSources.getRuleUnits();
             for (RuleUnitDescription ruleUnit : ruleUnits) {
                 String canonicalName = ruleUnit.getCanonicalName();
@@ -124,7 +129,6 @@ public class RuleCodegen extends AbstractGenerator {
                         .mergeConfig(configs.get(canonicalName)));
             }
         }
-
 
         boolean hasRuleUnits = !ruleUnitGenerators.isEmpty();
 
