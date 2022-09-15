@@ -39,8 +39,7 @@ public class CollectHandler extends BaseAbstractHandler
             final Parser parser) throws SAXException {
         parser.startElementBuilder(localName,
                 attrs);
-        final CollectDescr collectDescr = new CollectDescr();
-        return collectDescr;
+        return new CollectDescr();
     }
 
     public Object end(final String uri,

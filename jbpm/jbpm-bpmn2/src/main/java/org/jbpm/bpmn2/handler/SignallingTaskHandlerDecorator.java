@@ -92,7 +92,7 @@ public class SignallingTaskHandlerDecorator extends AbstractExceptionHandlingTas
     public void handleExecuteException(Throwable cause, org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager manager) {
         if (getAndIncreaseExceptionCount(workItem.getProcessInstanceStringId()) < exceptionCountLimit) {
             workItem.getParameters().put(this.workItemExceptionParameterName, cause);
-            ((InternalKogitoWorkItemManager) manager).signalEvent(this.eventType, (InternalKogitoWorkItem) workItem, workItem.getProcessInstanceStringId());
+            ((InternalKogitoWorkItemManager) manager).signalEvent(this.eventType, workItem, workItem.getProcessInstanceStringId());
         } else {
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
@@ -107,7 +107,7 @@ public class SignallingTaskHandlerDecorator extends AbstractExceptionHandlingTas
     public void handleAbortException(Throwable cause, org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem, org.kie.kogito.internal.process.runtime.KogitoWorkItemManager manager) {
         if (getAndIncreaseExceptionCount(workItem.getProcessInstanceStringId()) < exceptionCountLimit) {
             workItem.getParameters().put(this.workItemExceptionParameterName, cause);
-            ((InternalKogitoWorkItemManager) manager).signalEvent(this.eventType, (InternalKogitoWorkItem) workItem, workItem.getProcessInstanceId());
+            ((InternalKogitoWorkItemManager) manager).signalEvent(this.eventType, workItem, workItem.getProcessInstanceId());
         }
     }
 

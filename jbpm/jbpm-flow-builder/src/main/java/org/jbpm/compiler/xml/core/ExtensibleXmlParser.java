@@ -620,8 +620,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public Object removeParent() {
-        Object parent = this.parents.removeLast();
-        return parent;
+        return this.parents.removeLast();
     }
 
     public Collection getParents() {

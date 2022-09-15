@@ -34,8 +34,7 @@ public class MD5CorrelationEncoder implements CorrelationEncoder {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(rawCorrelationString.getBytes());
             byte[] digest = md.digest();
-            String myHash = bytesToHex(digest);
-            return myHash;
+            return bytesToHex(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error generating MD5 hash for correlation " + correlation);
         }

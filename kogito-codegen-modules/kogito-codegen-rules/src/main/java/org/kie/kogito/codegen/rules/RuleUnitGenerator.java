@@ -198,16 +198,14 @@ public class RuleUnitGenerator implements RuleFileGenerator {
     }
 
     private Expression eventProcessingConfigExpression(EventProcessingType eventProcessingType) {
-        Expression replacement =
+        return
                 (eventProcessingType == EventProcessingType.STREAM) ? parseExpression("org.kie.api.conf.EventProcessingOption.STREAM")
                         : parseExpression("org.kie.api.conf.EventProcessingOption.CLOUD");
-        return replacement;
     }
 
     private Expression clockConfigExpression(ClockType clockType) {
-        Expression replacement =
+        return
                 (clockType == ClockType.PSEUDO) ? parseExpression("org.drools.core.ClockType.PSEUDO_CLOCK") : parseExpression("org.drools.core.ClockType.REALTIME_CLOCK");
-        return replacement;
     }
 
     private void setClassName(ConstructorDeclaration constructorDeclaration) {

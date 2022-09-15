@@ -38,8 +38,7 @@ public class FromHandler extends BaseAbstractHandler
             final Parser parser) throws SAXException {
         parser.startElementBuilder(localName,
                 attrs);
-        final FromDescr fromDesctiptor = new FromDescr();
-        return fromDesctiptor;
+        return new FromDescr();
     }
 
     public Object end(final String uri,

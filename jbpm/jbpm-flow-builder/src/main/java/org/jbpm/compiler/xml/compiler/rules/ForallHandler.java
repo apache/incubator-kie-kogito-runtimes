@@ -44,9 +44,7 @@ public class ForallHandler extends BaseAbstractHandler
         parser.startElementBuilder(localName,
                 attrs);
 
-        final ForallDescr forallDescr = new ForallDescr();
-
-        return forallDescr;
+        return new ForallDescr();
     }
 
     /*

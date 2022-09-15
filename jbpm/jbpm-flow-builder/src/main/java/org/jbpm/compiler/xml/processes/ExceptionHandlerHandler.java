@@ -71,7 +71,7 @@ public class ExceptionHandlerHandler extends BaseAbstractHandler implements Hand
             if (xmlNode instanceof Element) {
                 Element actionXml = (Element) xmlNode;
                 DroolsAction action = ActionNodeHandler.extractAction(actionXml);
-                ((ActionExceptionHandler) exceptionHandler).setAction(action);
+                (exceptionHandler).setAction(action);
             }
         } else {
             throw new SAXParseException("Unknown exception handler type " + type, parser.getLocator());
