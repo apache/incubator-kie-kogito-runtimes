@@ -171,10 +171,10 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
                 .addModifier(Modifier.Keyword.PROTECTED)
                 .addTypeParameter("Q")
                 .addParameter("Class<? extends org.drools.ruleunits.api.RuleUnitQuery<Q>>", "query")
-                .setType("org.kie.kogito.rules.RuleUnitQuery<Q>")
+                .setType("org.drools.ruleunits.api.RuleUnitQuery<Q>")
                 .setBody(methodBlock);
 
-        String statement = "if (@@@.class.equals( query )) return (org.kie.kogito.rules.RuleUnitQuery<Q>) new @@@(this);";
+        String statement = "if (@@@.class.equals( query )) return (org.drools.ruleunits.api.RuleUnitQuery<Q>) new @@@(this);";
         for (String queryClass : queryClasses) {
             methodBlock.addStatement(statement.replaceAll("@@@", queryClass));
         }
