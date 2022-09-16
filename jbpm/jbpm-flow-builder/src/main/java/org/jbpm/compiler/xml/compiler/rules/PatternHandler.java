@@ -68,7 +68,6 @@ public class PatternHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
         final PatternDescr patternDescr = (PatternDescr) parser.getCurrent();
 
         final Object parent = parser.getParent();

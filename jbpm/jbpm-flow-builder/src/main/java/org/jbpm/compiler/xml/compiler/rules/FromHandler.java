@@ -53,8 +53,6 @@ public class FromHandler extends BaseAbstractHandler
 
         final PatternDescr patternDescr = (PatternDescr) parent;
 
-        final ConditionalElementDescr parentDescr = (ConditionalElementDescr) parser.getParent(1);
-
         if (element.getElementsByTagName("expression").getLength() > 0) {
             patternDescr.setSource(fromDescr);
         }

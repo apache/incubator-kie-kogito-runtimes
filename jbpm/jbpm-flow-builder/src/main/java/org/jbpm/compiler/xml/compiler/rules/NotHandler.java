@@ -51,8 +51,6 @@ public class NotHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
-
         final NotDescr notDescr = (NotDescr) parser.getCurrent();
 
         if ((notDescr.getDescrs().size() != 1) && (notDescr.getDescrs().get(0).getClass() != PatternDescr.class)) {

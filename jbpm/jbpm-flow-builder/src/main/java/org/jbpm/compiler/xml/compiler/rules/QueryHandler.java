@@ -55,8 +55,6 @@ public class QueryHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
-
         final QueryDescr queryDescr = (QueryDescr) parser.getCurrent();
 
         final AndDescr lhs = queryDescr.getLhs();

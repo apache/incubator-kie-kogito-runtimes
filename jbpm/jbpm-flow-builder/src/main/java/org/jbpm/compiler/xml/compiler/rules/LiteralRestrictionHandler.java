@@ -59,8 +59,6 @@ public class LiteralRestrictionHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
-
         ConnectiveDescr c = (ConnectiveDescr) parser.getParent();
         String s = (String) parser.getCurrent();
 
