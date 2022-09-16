@@ -45,6 +45,10 @@ public class MVELProcessHelper {
                 throw new UnsupportedOperationException("MVEL compilation is not supported in native image");
             };
 
+    private MVELProcessHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static MVELEvaluator evaluator() {
         return EVALUATOR_SUPPLIER.get();
     }

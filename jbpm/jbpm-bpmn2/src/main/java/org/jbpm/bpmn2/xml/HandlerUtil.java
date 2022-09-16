@@ -31,6 +31,10 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 @SuppressWarnings("unchecked")
 public final class HandlerUtil {
 
+    private HandlerUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Map<String, Message> messages(Parser parser) {
         Map<String, Message> messages = (Map<String, Message>) ((ProcessBuildData) parser.getData()).getMetaData("Messages");
         if (messages == null) {
