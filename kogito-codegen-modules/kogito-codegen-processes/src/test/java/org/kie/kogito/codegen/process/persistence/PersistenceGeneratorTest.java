@@ -42,7 +42,7 @@ class PersistenceGeneratorTest {
         assertThat(emptyCodeGenerator.isEnabled()).isFalse();
 
         Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
-        assertThat(emptyGeneratedFiles.size()).isEqualTo(0);
+        assertThat(emptyGeneratedFiles.size()).isZero();
 
         KogitoBuildContext persistenceContext = contextBuilder
                 .withAddonsConfig(AddonsConfig.builder()

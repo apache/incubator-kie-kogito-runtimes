@@ -823,7 +823,7 @@ public class UserTaskIT extends AbstractCodegenIT {
 
         // find the process instance by ID and verify business key
         Optional<? extends ProcessInstance<? extends Model>> processInstanceByBussinesKey = p.instances().findById(processInstance.id());
-        assertThat(processInstanceByBussinesKey.isPresent()).isTrue();
+        assertThat(processInstanceByBussinesKey.isPresent());
         assertThat(processInstanceByBussinesKey.get().businessKey()).isEqualTo(businessKey);
 
         List<WorkItem> workItems = processInstance.workItems(securityPolicy);

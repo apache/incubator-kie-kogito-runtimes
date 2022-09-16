@@ -666,7 +666,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), completedNodes);
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
@@ -728,7 +728,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "User Task 2", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
@@ -762,7 +762,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(1);
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -813,7 +813,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
@@ -937,7 +937,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(1);
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -971,9 +971,9 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertThat(processInstance).isNull();
-        assertThat(variablevalues.size()).isEqualTo(2);
-        assertThat(variablevalues.contains("SCRIPT1")).isTrue();
-        assertThat(variablevalues.contains("SCRIPT2")).isTrue();
+        assertThat(variablevalues).hasSize(2);
+        assertThat(variablevalues.contains("SCRIPT1"));
+        assertThat(variablevalues.contains("SCRIPT2"));
     }
 
     @Test
@@ -1000,7 +1000,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem).isTrue();
+        assertThat(workItem).isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1022,7 +1022,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem).isTrue();
+        assertThat(workItem).isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1665,7 +1665,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotNull();
-            assertThat(e.getMessage().contains("has no incoming connection")).isTrue();
+            assertThat(e.getMessage().contains("has no incoming connection"));
         }
 
     }
@@ -1690,7 +1690,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1717,7 +1717,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
 
@@ -1763,7 +1763,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).hasSize(2);
 
         kruntime.signalEvent("Inside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1862,7 +1862,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 "MessageIntermediateEvent", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertThat(messageContent.toString()).isEqualTo("MYVALUE");
+        assertThat(messageContent.toString()).hasToString(  "MYVALUE");
 
     }
 
@@ -1966,7 +1966,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
         assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(3);
+        assertThat(workItems).hasSize(3);
 
         for (KogitoWorkItem wi : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -2124,7 +2124,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertNodeActive(processInstance.getStringId(), kruntime, "Complete work", "Wait");
 
         List<KogitoWorkItem> items = handler.getWorkItems();
-        assertThat(items.size()).isEqualTo(1);
+        assertThat(items).hasSize(1);
         KogitoWorkItem wi = items.get(0);
 
         Map<String, Object> result = new HashMap<>();
@@ -2182,7 +2182,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDateInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage().contains("Could not parse date 'abcdef'")).isTrue();
+            assertThat(e.getMessage().contains("Could not parse date 'abcdef'"));
         }
     }
 
@@ -2192,7 +2192,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDurationInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'")).isTrue();
+            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'"));
         }
     }
 
@@ -2202,7 +2202,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventCycleInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'")).isTrue();
+            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'"));
         }
     }
 
@@ -2222,7 +2222,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
+        assertThat(processInstances).hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2237,7 +2237,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
+        assertThat(processInstances.size()).isZero();
     }
 
     @Test
@@ -2256,7 +2256,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
+        assertThat(processInstances).hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2271,7 +2271,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
+        assertThat(processInstances.size()).isZero();
     }
 
     @Test
@@ -2306,7 +2306,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
             List<KogitoWorkItem> wi = handler.getWorkItems();
             assertThat(wi).isNotNull();
-            assertThat(wi.size()).isEqualTo(3);
+            assertThat(wi).hasSize(3);
 
             kruntime.abortProcessInstance(processInstance.getStringId());
         } finally {

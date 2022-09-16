@@ -221,8 +221,8 @@ class ProcessEventDispatcherTest {
 
         CompositeCorrelation correlation = correlationCaptor.getValue();
         Set<? extends Correlation<?>> correlations = correlation.getValue();
-        assertThat(correlations.contains(new SimpleCorrelation<>(userId, userValue))).isTrue();
-        assertThat(correlations.contains(new SimpleCorrelation<>(name, nameValue))).isTrue();
+        assertThat(correlations.contains(new SimpleCorrelation<>(userId, userValue)));
+        assertThat(correlations.contains(new SimpleCorrelation<>(name, nameValue)));
         assertThat(correlation.getKey()).isNotEmpty();
         assertThat(correlationService.findByCorrelatedId(processInstance.id())).isEmpty();
     }
