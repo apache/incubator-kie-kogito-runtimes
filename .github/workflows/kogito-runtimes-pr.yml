@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: report
-          path: target/jacoco
+          path: kiegroup_kogito_runtimes/kogito-runtimes/target/jacoco
       
       - name: Surefire Report
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
