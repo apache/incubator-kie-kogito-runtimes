@@ -48,15 +48,13 @@ jobs:
           KOGITO_RUNTIMES_BUILD_MVN_OPTS: -Prun-code-coverage
       
       # probably can shift all of the below to build chain (except for the surefire report)
-      - name: run code coverage
-        run: mvn -f kogito-runtimes/pom.xml clean install -Prun-code-coverage -fae -ntp
       - name: Generate code coverage report
-        run: mvn -f kogito-runtimes/pom.xml validate -Pgenerate-jacoco -e -nsu -fae -ntp
+        run: mvn -f kiegroup_kogito_runtimes/kogito-runtimes/pom.xml validate -Pgenerate-jacoco -e -nsu -fae -ntp
       - name: Upload code coverage report
         uses: actions/upload-artifact@v3
         with:
           name: report
-          path: kogito-runtimes/target/jacoco
+          path: target/jacoco
       
       - name: Surefire Report
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
