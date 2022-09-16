@@ -1021,7 +1021,7 @@ limitations under the License.
       <id>upload-to-sonar</id>
       <properties>
         <sonar.coverage.jacoco.xmlReportPaths>${env.SONAR_REPORT_DIR}/${project.artifactId}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.javascript.node.maxspace>4096</sonar.javascript.node.maxspace>
         <sonar.java.source>${maven.compiler.release}</sonar.java.source>
         <!--suppress UnresolvedMavenProperty -->
