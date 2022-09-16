@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class JsonNodeModelInput implements Model, MapInput, MapInputId, MapOutput, MappableToModel<JsonNodeModel> {
 
-    private ObjectNode workflowdata = ObjectMapperFactory.listenerAware().createObjectNode();
+    private JsonNode workflowdata;
 
     public JsonNode getWorkflowdata() {
         return workflowdata;
@@ -36,7 +36,12 @@ public class JsonNodeModelInput implements Model, MapInput, MapInputId, MapOutpu
 
     @JsonAnySetter
     public void setData(String key, JsonNode value) {
-        workflowdata.set(key, value);
+        if (workflowdata == null) {
+            workflowdata = ObjectMapperFactory.listenerAware().createObjectNode();
+        }
+        if (workflowdata.isObject()) {
+            ((ObjectNode) workflowdata).set(key, value);
+        }
     }
 
     @Override
