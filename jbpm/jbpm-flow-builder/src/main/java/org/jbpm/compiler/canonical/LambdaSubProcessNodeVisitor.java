@@ -84,9 +84,10 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
 
         Map<String, String> inputTypes = node.getIoSpecification().getInputTypes();
 
-        String subProcessModelClassName = ProcessToExecModelGenerator.extractModelClassName(subProcessId);
+        String subProcessModelClassName = metadata.getModelClassName() != null ? metadata.getModelClassName() : ProcessToExecModelGenerator.extractModelClassName(subProcessId);
+
         ModelMetaData subProcessModel = new ModelMetaData(subProcessId,
-                metadata.getPackageName(),
+                metadata.getModelPackageName() != null ? metadata.getModelPackageName() : metadata.getPackageName(),
                 subProcessModelClassName,
                 KogitoWorkflowProcess.PRIVATE_VISIBILITY,
                 VariableDeclarations.ofRawInfo(inputTypes),

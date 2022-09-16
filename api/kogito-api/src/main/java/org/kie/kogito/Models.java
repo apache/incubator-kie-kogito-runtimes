@@ -20,6 +20,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,12 +58,16 @@ public class Models {
                     continue;
                 }
                 k = unprefixVar(k);
-                map.put(k, e.getValue().getReadMethod().invoke(m));
+                map.put(k, getValue(e.getValue(), m));
             }
             return map;
         } catch (IntrospectionException | ReflectiveOperationException e) {
             throw new ReflectiveModelAccessException(e);
         }
+    }
+
+    private static Object getValue(PropertyDescriptor pd, Object target) throws ReflectiveOperationException {
+        return pd.getReadMethod() == null ? pd.getValue(pd.getName()) : pd.getReadMethod().invoke(target);
     }
 
     public static <T> T fromMap(T m, String id, Map<String, Object> map) {
@@ -78,7 +84,7 @@ public class Models {
                 String k = e.getKey();
                 k = unprefixVar(k);
                 if (map.containsKey(k)) {
-                    e.getValue().getWriteMethod().invoke(m, map.get(k));
+                    updateValue(e.getValue(), m, map.get(k));
                 }
             }
             return m;
@@ -101,12 +107,23 @@ public class Models {
         }
     }
 
+    private static void updateValue(PropertyDescriptor pd, Object target, Object value) throws ReflectiveOperationException {
+        Method writeMethod = pd.getWriteMethod();
+        if (writeMethod != null) {
+            writeMethod.invoke(target, value);
+        } else {
+            Field f = target.getClass().getDeclaredField(pd.getName());
+            f.setAccessible(true);
+            f.set(target, value);
+        }
+    }
+
     public static void setId(Object m, String id) {
         try {
             BeanInfo beanInfo = Introspector.getBeanInfo(m.getClass());
             for (PropertyDescriptor pd : beanInfo.getPropertyDescriptors()) {
                 if (isIdentifier(pd.getName())) {
-                    pd.getWriteMethod().invoke(m, id);
+                    updateValue(pd, m, id);
                     return;
                 }
             }
