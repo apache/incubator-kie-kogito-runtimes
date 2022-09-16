@@ -65,7 +65,7 @@ public class QuarkusDefaultEventUnmarshaller extends AbstractEventUnmarshaller<M
 
             if (payload instanceof byte[]) {
                 builder.withData((byte[]) payload);
-            } else {
+            } else if (payload != null) {
                 builder.withData(payload.toString().getBytes());
             }
             return builder.build();
