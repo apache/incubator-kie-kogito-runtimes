@@ -65,18 +65,10 @@ public class KogitoProcessKnativeEventingProcessor {
             BuildProducer<KogitoKnativeResourcesMetadataBuildItem> metadataProducer) {
         if (processContainerBuildItem != null) {
             final Set<CloudEventMeta> cloudEvents = new HashSet<>(this.getCloudEventMetaBuilder().build(processContainerBuildItem.getProcessContainerGenerators()));
-            final Set<CloudEventMeta> extendedCloudEvents = extendedCloudEventsBuildItems.stream()
-                    .flatMap(cloudEventsBuildItem -> cloudEventsBuildItem.getCloudEvents().stream())
-                    .collect(Collectors.toSet());
-            cloudEvents.addAll(extendedCloudEvents);
+            extendedCloudEventsBuildItems.forEach(buildItem -> cloudEvents.addAll(buildItem.getCloudEvents()));
             if (!cloudEvents.isEmpty()) {
-                Optional<KogitoServiceDeploymentTarget> target = this.selectDeploymentTarget(allDeploymentTargets, kubernetesMetaBuildItems);
-
-                if (target.isEmpty()) {
-                    LOGGER.warn("Impossible to get the Kubernetes deployment target for this Kogito service. Skipping generation.");
-                } else {
-                    metadataProducer.produce(new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target.get()));
-                }
+                selectDeploymentTarget(allDeploymentTargets, kubernetesMetaBuildItems).map(target -> new KogitoKnativeResourcesMetadataBuildItem(cloudEvents, target))
+                        .ifPresentOrElse(metadataProducer::produce, () -> LOGGER.warn("Impossible to get the Kubernetes deployment target for this Kogito service. Skipping generation."));
             }
         }
     }
