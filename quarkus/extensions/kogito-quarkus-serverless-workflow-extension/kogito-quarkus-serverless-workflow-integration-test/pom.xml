@@ -58,6 +58,10 @@
       <artifactId>quarkus-jdbc-postgresql</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-events-process</artifactId>
+    </dependency>
     <!-- Testing dependencies -->
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -92,6 +96,11 @@
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
       <scope>test</scope>
     </dependency>
 

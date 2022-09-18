@@ -41,8 +41,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.path.json.JsonPath;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.assertProcessInstanceHasFinished;
-import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.newProcessInstanceAndGetId;
+import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.*;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
@@ -90,7 +89,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
 
     @AfterEach
     void cleanUp() {
-        kafkaClient.shutdown();
+        if (kafkaClient != null) {
+            kafkaClient.shutdown();
+        }
     }
 
     @Test
