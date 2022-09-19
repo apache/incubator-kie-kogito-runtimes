@@ -16,6 +16,7 @@
 package org.jbpm.workflow.instance.node;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -439,7 +440,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             }
         }
 
-        return null;
+        return Collections.emptyMap();
     }
 
     protected final KogitoProcessContext getProcessContext(Throwable e) {
