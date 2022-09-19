@@ -18,6 +18,7 @@ package org.kie.kogito.codegen.rules;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,9 @@ import java.util.Optional;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.drl.extensions.DecisionTableFactory;
+import org.drools.model.codegen.execmodel.PackageModelWriter;
 import org.drools.model.codegen.execmodel.QueryModel;
+import org.drools.model.codegen.execmodel.RuleUnitWriter;
 import org.drools.model.codegen.project.CodegenPackageSources;
 import org.drools.model.codegen.project.DroolsModelBuilder;
 import org.drools.model.codegen.project.KieSessionModelBuilder;
@@ -109,7 +112,12 @@ public class RuleCodegen extends AbstractGenerator {
 
         org.drools.model.codegen.project.DroolsModelBuilder droolsModelBuilder =
                 new DroolsModelBuilder(
-                        context(), resources, decisionTableSupported);
+                        context(), resources, decisionTableSupported, model -> new PackageModelWriter(model) {
+                    @Override
+                    public List<RuleUnitWriter> getRuleUnitWriters() {
+                        return Collections.emptyList();
+                    }
+                });
 
         try {
             droolsModelBuilder.build();
