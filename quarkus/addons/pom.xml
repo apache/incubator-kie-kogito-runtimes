@@ -16,6 +16,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>events</module>
     <module>messaging</module>
     <module>common</module>
     <module>rest-exception-handler</module>
