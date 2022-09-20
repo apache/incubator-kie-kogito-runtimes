@@ -24,10 +24,9 @@ import java.util.concurrent.CompletionStage;
 
 import org.kie.api.pmml.PMML4Result;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.prediction.PredictionModel;
@@ -53,13 +52,13 @@ public class EventDrivenPredictionsController {
     private ConfigBean config;
     private EventEmitter eventEmitter;
     private EventReceiver eventReceiver;
-    private EventUnmarshaller<Object> eventUnmarshaller;
+    private CloudEventUnmarshaller<Object> eventUnmarshaller;
 
     protected EventDrivenPredictionsController() {
     }
 
     protected EventDrivenPredictionsController(PredictionModels predictionModels, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver,
-            EventUnmarshaller<Object> eventUnmarshaller) {
+            CloudEventUnmarshaller<Object> eventUnmarshaller) {
         this.predictionModels = predictionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -67,7 +66,7 @@ public class EventDrivenPredictionsController {
         this.eventUnmarshaller = eventUnmarshaller;
     }
 
-    protected void init(PredictionModels decisionModels, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, EventUnmarshaller<Object> eventUnmarshaller) {
+    protected void init(PredictionModels decisionModels, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, CloudEventUnmarshaller<Object> eventUnmarshaller) {
         this.predictionModels = decisionModels;
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -76,7 +75,7 @@ public class EventDrivenPredictionsController {
     }
 
     protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest, SubscriptionInfo.builder().converter(eventUnmarshaller).outputClass(CloudEvent.class).createSubscriptionInfo());
+        eventReceiver.subscribe(this::handleRequest, eventUnmarshaller::unmarshall);
     }
 
     private CompletionStage<Void> handleRequest(CloudEvent event) {
@@ -84,8 +83,7 @@ public class EventDrivenPredictionsController {
                 .flatMap(this::buildEvaluationContext)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
-                .flatMap(CloudEventUtils::toDataEvent)
-                .ifPresent(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()));
+                .ifPresent(e -> eventEmitter.emit(e, e.getType(), Optional.empty()));
         return CompletableFuture.completedFuture(null);
     }
 

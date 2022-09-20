@@ -20,9 +20,9 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
 
 import io.quarkus.runtime.Startup;
 
@@ -42,7 +42,7 @@ public class QuarkusEventDrivenRulesController extends EventDrivenRulesControlle
     EventReceiver eventReceiver;
 
     @Inject
-    EventUnmarshaller<Object> eventUnmarshaller;
+    CloudEventUnmarshaller<Object> eventUnmarshaller;
 
     @PostConstruct
     private void onPostConstruct() {

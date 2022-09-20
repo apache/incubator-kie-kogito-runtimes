@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.addon.cloudevents.message.MessagePayloadDecorator;
 import org.kie.kogito.addon.cloudevents.message.MessagePayloadDecoratorProvider;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
-import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.services.event.cloudevents.utils.CloudEventUtils;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -59,7 +59,7 @@ class KnativeEventingMessagePayloadDecoratorTest {
                 .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, "12345")
                 .withData("{\"mykey\": \"myvalue\"}".getBytes(StandardCharsets.UTF_8))
                 .build();
-        final String ceMarshalled = decoratorSpy.decorate(CloudEventUtils.encode(ce).get());
+        final String ceMarshalled = decoratorSpy.decorate(mapper.writeValueAsString(ce));
         assertNotNull(ceMarshalled);
         final CloudEvent ceOverride = mapper.readValue(ceMarshalled, CloudEvent.class);
         assertNotNull(ceOverride);
@@ -86,7 +86,7 @@ class KnativeEventingMessagePayloadDecoratorTest {
                 .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, "12345")
                 .withData("{\"mykey\": \"myvalue\"}".getBytes(StandardCharsets.UTF_8))
                 .build();
-        final String ceMarshalled = decoratorSpy.decorate(CloudEventUtils.encode(ce).get());
+        final String ceMarshalled = decoratorSpy.decorate(mapper.writeValueAsString(ce));
         assertNotNull(ceMarshalled);
         final CloudEvent ceOverride = mapper.readValue(ceMarshalled, CloudEvent.class);
         assertNotNull(ceOverride);
@@ -125,7 +125,7 @@ class KnativeEventingMessagePayloadDecoratorTest {
                 .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, "12345")
                 .withData("{\"mykey\": \"myvalue\"}".getBytes(StandardCharsets.UTF_8))
                 .build();
-        final String ceMarshalled = decoratorSpy.decorate(CloudEventUtils.encode(ce).get());
+        final String ceMarshalled = decoratorSpy.decorate(mapper.writeValueAsString(ce));
         assertNotNull(ceMarshalled);
         final CloudEvent ceOverride = mapper.readValue(ceMarshalled, CloudEvent.class);
         assertNotNull(ceOverride);
@@ -150,7 +150,7 @@ class KnativeEventingMessagePayloadDecoratorTest {
                 .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, "12345")
                 .withData("{\"mykey\": \"myvalue\"}".getBytes(StandardCharsets.UTF_8))
                 .build();
-        final String ceMarshalled = decoratorSpy.decorate(CloudEventUtils.encode(ce).get());
+        final String ceMarshalled = decoratorSpy.decorate(mapper.writeValueAsString(ce));
         assertNotNull(ceMarshalled);
         final CloudEvent ceOverride = mapper.readValue(ceMarshalled, CloudEvent.class);
         assertNotNull(ceOverride);

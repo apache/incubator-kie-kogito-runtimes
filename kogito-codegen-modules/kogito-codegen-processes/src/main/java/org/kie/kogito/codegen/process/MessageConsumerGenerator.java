@@ -31,7 +31,7 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.correlation.Correlation;
-import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
+import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
@@ -160,10 +160,10 @@ public class MessageConsumerGenerator {
         }
 
         if (!trigger.dataOnly()) {
-            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class).addParameter(boolean.class, "useCloudEvent")
+            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class)
                     .setType(parseClassOrInterfaceType(UnaryOperator.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(Object.class.getCanonicalName()))))
                     .setBody(new BlockStmt().addStatement(new ReturnStmt(
-                            new MethodReferenceExpr(new NameExpr(AbstractMessageConsumer.class.getSimpleName()), NodeList.nodeList(), "eventResolver"))));
+                            new MethodReferenceExpr(new NameExpr(ServerlessWorkflowUtils.class.getSimpleName()), NodeList.nodeList(), "dataOnlyIsFalse"))));
         }
     }
 

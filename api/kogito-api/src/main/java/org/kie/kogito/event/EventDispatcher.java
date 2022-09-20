@@ -22,5 +22,5 @@ import org.kie.kogito.process.ProcessInstance;
 
 public interface EventDispatcher<M extends Model> {
 
-    CompletionStage<ProcessInstance<M>> dispatch(String trigger, Object event);
+    CompletionStage<ProcessInstance<M>> dispatch(String trigger, DataEvent<?> event);
 }

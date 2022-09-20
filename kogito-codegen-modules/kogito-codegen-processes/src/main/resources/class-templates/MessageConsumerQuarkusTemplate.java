@@ -29,11 +29,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.correlation.CompositeCorrelation;
-import org.kie.kogito.event.EventUnmarshaller;
+import org.kie.kogito.event.EventDataUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
-import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
+import org.kie.kogito.event.impl.AbstractMessageConsumer;
 import org.kie.kogito.event.EventExecutorServiceFactory;
 
 
@@ -44,7 +45,10 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     Application application;
 
     @Inject
-    EventUnmarshaller<Object> eventUnmarshaller;
+    EventUnmarshaller<Object> eventDataUnmarshaller;
+    
+    @Inject
+    CloudEventUnmarshaller<Object> cloudEventUnmarshaller;
 
     @Inject
     @Named("$ProcessName$")
@@ -81,7 +85,8 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
              configBean.useCloudEvents(),
              processService,
              executor,
-             eventUnmarshaller,
+             eventDataUnmarshaller,
+             cloudEventUnmarshaller,
              correlation);
     }
 

@@ -20,8 +20,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.EventDataMarshaller;
 import org.kie.kogito.event.EventEmitter;
-import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +43,7 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
     @Autowired
     Environment env;
     @Autowired
-    EventMarshaller<M> marshaller;
+    EventDataMarshaller<M> marshaller;
     @Autowired
     ConfigBean configBean;
     @Autowired

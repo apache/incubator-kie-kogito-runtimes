@@ -19,9 +19,9 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -35,7 +35,7 @@ class EventDrivenRulesControllerTest {
         ConfigBean configMock = mock(ConfigBean.class);
         EventEmitter eventEmitterMock = mock(EventEmitter.class);
         EventReceiver eventReceiverMock = mock(EventReceiver.class);
-        EventUnmarshaller<Object> eventUnmarshaller = mock(EventUnmarshaller.class);
+        CloudEventUnmarshaller<Object> eventUnmarshaller = mock(CloudEventUnmarshaller.class);
 
         // option #1: parameters via constructor + parameterless setup
         EventDrivenRulesController controller1 = new EventDrivenRulesController(Collections.emptySet(), configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);

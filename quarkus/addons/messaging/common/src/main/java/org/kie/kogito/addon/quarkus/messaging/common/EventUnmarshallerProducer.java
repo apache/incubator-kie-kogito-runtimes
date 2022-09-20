@@ -19,9 +19,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.services.event.impl.DefaultEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.EventDataUnmarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,13 +32,17 @@ public class EventUnmarshallerProducer {
     @Inject
     ObjectMapper objectMapper;
 
-    @Inject
-    ConfigBean configBean;
+    @Produces
+    @DefaultBean
+    public EventDataUnmarshaller<Object> getEventDataConverter() {
+        EventDataUnmarshaller unmarshaller = new QuarkusEventDataUnmarshaller(objectMapper);
+        return unmarshaller;
+    }
 
     @Produces
     @DefaultBean
-    public EventUnmarshaller<Object> getMessageConverter() {
-        EventUnmarshaller<?> unmarshaller = configBean.useCloudEvents() ? new QuarkusDefaultEventUnmarshaller(objectMapper) : new DefaultEventUnmarshaller(objectMapper);
-        return (EventUnmarshaller<Object>) unmarshaller;
+    public CloudEventUnmarshaller<Object> getCloudEventConverter() {
+        CloudEventUnmarshaller unmarshaller = new QuarkusCloudEventUnmarshaller(objectMapper);
+        return unmarshaller;
     }
 }

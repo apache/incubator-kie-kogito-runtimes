@@ -20,9 +20,9 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,7 +31,7 @@ public class SpringBootEventDrivenRulesController extends EventDrivenRulesContro
 
     @Autowired
     public SpringBootEventDrivenRulesController(List<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver,
-            EventUnmarshaller<Object> eventUnmarshaller) {
+            CloudEventUnmarshaller<Object> eventUnmarshaller) {
         super(executors, config, eventEmitter, eventReceiver, eventUnmarshaller);
     }
 

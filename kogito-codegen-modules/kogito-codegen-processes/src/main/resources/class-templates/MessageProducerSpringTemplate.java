@@ -18,7 +18,7 @@ package org.kie.kogito.test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventEmitter;
-import org.kie.kogito.services.event.impl.AbstractMessageProducer;
+import org.kie.kogito.event.impl.AbstractMessageProducer;
 
 @org.springframework.stereotype.Component()
 public class MessageProducer extends AbstractMessageProducer<$DataType$> {

@@ -20,7 +20,7 @@ import java.util.Optional;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-import org.kie.kogito.services.event.impl.StringEventMarshaller;
+import org.kie.kogito.event.impl.StringEventMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

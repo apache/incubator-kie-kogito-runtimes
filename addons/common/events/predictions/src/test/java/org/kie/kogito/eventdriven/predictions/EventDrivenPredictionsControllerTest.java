@@ -17,9 +17,9 @@ package org.kie.kogito.eventdriven.predictions;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.prediction.PredictionModels;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -35,7 +35,7 @@ class EventDrivenPredictionsControllerTest {
         ConfigBean configMock = mock(ConfigBean.class);
         EventEmitter eventEmitterMock = mock(EventEmitter.class);
         EventReceiver eventReceiverMock = mock(EventReceiver.class);
-        EventUnmarshaller<Object> eventUnmarshaller = mock(EventUnmarshaller.class);
+        CloudEventUnmarshaller<Object> eventUnmarshaller = mock(CloudEventUnmarshaller.class);
 
         // option #1: parameters via constructor + parameterless setup
         EventDrivenPredictionsController controller1 = new EventDrivenPredictionsController(predictionModelsMock, configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);

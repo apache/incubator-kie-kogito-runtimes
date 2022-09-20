@@ -25,10 +25,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.SubscriptionInfo;
 import org.kie.kogito.event.cloudevents.extension.KogitoRulesExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.slf4j.Logger;
@@ -54,13 +53,13 @@ public class EventDrivenRulesController {
     private ConfigBean config;
     private EventEmitter eventEmitter;
     private EventReceiver eventReceiver;
-    private EventUnmarshaller<Object> eventUnmarshaller;
+    private CloudEventUnmarshaller<Object> eventUnmarshaller;
 
     protected EventDrivenRulesController() {
     }
 
     protected EventDrivenRulesController(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver,
-            EventUnmarshaller<Object> eventUnmarshaller) {
+            CloudEventUnmarshaller<Object> eventUnmarshaller) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -68,7 +67,7 @@ public class EventDrivenRulesController {
         this.eventUnmarshaller = eventUnmarshaller;
     }
 
-    protected void init(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, EventUnmarshaller<Object> eventUnmarshaller) {
+    protected void init(Iterable<EventDrivenQueryExecutor> executors, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver, CloudEventUnmarshaller<Object> eventUnmarshaller) {
         this.executors = buildExecutorsMap(executors);
         this.config = config;
         this.eventEmitter = eventEmitter;
@@ -77,7 +76,7 @@ public class EventDrivenRulesController {
     }
 
     protected void subscribe() {
-        eventReceiver.subscribe(this::handleRequest, SubscriptionInfo.builder().converter(eventUnmarshaller).outputClass(CloudEvent.class).createSubscriptionInfo());
+        eventReceiver.subscribe(this::handleRequest, eventUnmarshaller::unmarshall);
     }
 
     private CompletionStage<Void> handleRequest(CloudEvent event) {
@@ -85,8 +84,7 @@ public class EventDrivenRulesController {
                 .flatMap(this::buildEvaluationContext)
                 .map(this::processRequest)
                 .flatMap(this::buildResponseCloudEvent)
-                .flatMap(CloudEventUtils::toDataEvent)
-                .ifPresent(e -> eventEmitter.emit(e, (String) e.get("type"), Optional.empty()));
+                .ifPresent(e -> eventEmitter.emit(e, e.getType(), Optional.empty()));
         return CompletableFuture.completedFuture(null);
     }
 

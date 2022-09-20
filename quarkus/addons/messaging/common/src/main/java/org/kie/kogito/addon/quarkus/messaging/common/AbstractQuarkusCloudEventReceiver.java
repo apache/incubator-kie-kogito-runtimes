@@ -23,13 +23,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import javax.inject.Inject;
-
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.Subscription;
-import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.SubscriptionInfo;
+import org.kie.kogito.event.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +34,7 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuarkusCloudEventReceiver.class);
 
-    @Inject
-    ConfigBean configBean;
-
-    private Collection<Subscription<Object>> consumers = new CopyOnWriteArrayList<>();
+    private Collection<Subscription<Object, Message>> consumers = new CopyOnWriteArrayList<>();
 
     public CompletionStage<?> produce(final Message<?> message) {
         LOGGER.debug("Received message {}", message);
@@ -53,17 +47,15 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
         });
     }
 
-    private CompletionStage<?> produce(final Message<?> message, BiConsumer<Object, Throwable> callback) {
+    private CompletionStage<?> produce(final Message message, BiConsumer<Object, Throwable> callback) {
         CompletionStage<?> result = CompletableFuture.completedFuture(null);
         CompletionStage<?> future = result;
-        for (Subscription<Object> subscription : consumers) {
+        for (Subscription<Object, Message> subscription : consumers) {
             try {
-                Object object = subscription.getInfo().getConverter().unmarshall(configBean.useCloudEvents() ? message : message.getPayload(), subscription.getInfo().getOutputClass(),
-                        subscription.getInfo().getParametrizedClasses());
+                Object object = subscription.getConverter().unmarshall(message);
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException e) {
-                LOGGER.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", subscription.getInfo().getOutputClass(), message,
-                        subscription.getInfo().getType(), e.getMessage());
+                LOGGER.info("Error converting event. Exception message is {}", e.getMessage());
             }
         }
         if (callback != null) {
@@ -74,7 +66,7 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<S, T> info) {
+    public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> info) {
         consumers.add(new Subscription(consumer, info));
     }
 }

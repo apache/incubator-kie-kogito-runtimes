@@ -28,7 +28,7 @@ import javax.annotation.PostConstruct;
 import org.kie.kogito.addon.cloudevents.Subscription;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.KogitoEventStreams;
-import org.kie.kogito.event.SubscriptionInfo;
+import org.kie.kogito.event.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class SpringKafkaCloudEventReceiver implements EventReceiver {
 
     private static final Logger log = LoggerFactory.getLogger(SpringKafkaCloudEventReceiver.class);
-    private Collection<Subscription<Object>> consumers;
+    private Collection<Subscription<Object, String>> consumers;
 
     @PostConstruct
     private void init() {
@@ -48,7 +48,7 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, SubscriptionInfo<S, T> info) {
+    public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> info) {
         log.info("Registering consumer with info {}", info);
         consumers.add(new Subscription(consumer, info));
     }
@@ -58,12 +58,11 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
         log.debug("Received {} events", messages.size());
         Collection<CompletionStage<?>> futures = new ArrayList<>();
         for (String message : messages) {
-            for (Subscription<Object> consumer : consumers) {
+            for (Subscription<Object, String> consumer : consumers) {
                 try {
-                    futures.add(consumer.getConsumer().apply(consumer.getInfo().getConverter().unmarshall(message, consumer.getInfo().getOutputClass(), consumer.getInfo().getParametrizedClasses())));
+                    futures.add(consumer.getConsumer().apply(consumer.getConverter().unmarshall(message)));
                 } catch (IOException e) {
-                    log.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", consumer.getInfo().getOutputClass(), message, consumer.getInfo().getType(),
-                            e.getMessage());
+                    log.info("Cannot convert to {} from {}, ignoring type {}, exception message is {}", e.getMessage());
                 }
             }
         }
