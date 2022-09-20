@@ -128,7 +128,7 @@ public class AbstractCodegenIT {
             log(new String(entry.contents()));
         }
 
-        if (true ||LOGGER.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
             Path temp = Files.createTempDirectory("KOGITO_TESTS");
             LOGGER.debug("Dumping generated files in " + temp);
             for (GeneratedFile entry : generatedFiles) {

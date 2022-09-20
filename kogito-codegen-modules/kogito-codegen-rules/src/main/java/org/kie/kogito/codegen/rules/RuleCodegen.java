@@ -113,11 +113,11 @@ public class RuleCodegen extends AbstractGenerator {
         org.drools.model.codegen.project.DroolsModelBuilder droolsModelBuilder =
                 new DroolsModelBuilder(
                         context(), resources, decisionTableSupported, model -> new PackageModelWriter(model) {
-                    @Override
-                    public List<RuleUnitWriter> getRuleUnitWriters() {
-                        return Collections.emptyList();
-                    }
-                });
+                            @Override
+                            public List<RuleUnitWriter> getRuleUnitWriters() {
+                                return Collections.emptyList();
+                            }
+                        });
 
         try {
             droolsModelBuilder.build();
