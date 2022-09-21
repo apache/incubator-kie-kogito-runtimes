@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.workflows.services;
 
+import java.util.Date;
+
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -22,5 +24,14 @@ public class AgePersonService {
 
     public AgePerson from(String name, int age, double income) {
         return new AgePerson(name, age, income);
+    }
+
+    public AgePerson fullFrom(String name, int age, double income, long creationDate,
+            String cardId, double discount, int count, Boolean enabled, long birthDate) {
+        Date receivedCreation = new Date(creationDate);
+        Date receivedBirth = new Date(birthDate);
+        AgePerson agePerson = new AgePerson(name, age, income, receivedCreation);
+        agePerson.setBasicDataPerson(new BasicDataPerson(cardId, discount, count, enabled, receivedBirth));
+        return agePerson;
     }
 }
