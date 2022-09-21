@@ -25,7 +25,7 @@ import org.kie.kogito.codegen.data.Person;
 public class Example implements RuleUnitData {
 
     String singleValue;
-    DataStream<Person> persons = DataSource.createStream();
+    DataStream<Person> persons = DataSource.createBufferedStream(16);
     private AtomicInteger counter = new AtomicInteger(0);
 
     public DataStream<Person> getPersons() {

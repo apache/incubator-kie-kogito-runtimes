@@ -69,7 +69,7 @@ public class KogitoObjectMapper implements ObjectMapperCustomizer {
 
             @Override
             public DataStream deserialize( JsonParser jp, DeserializationContext ctxt) throws IOException {
-                DataStream stream = DataSource.createStream();
+                DataStream stream = DataSource.createBufferedStream(16);
                 List list = ctxt.readValue( jp, collectionType );
                 list.forEach( stream::append );
                 return stream;

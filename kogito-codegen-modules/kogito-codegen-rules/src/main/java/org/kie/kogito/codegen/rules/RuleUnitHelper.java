@@ -70,7 +70,8 @@ public class RuleUnitHelper {
             }
         } else if (isAssignableFrom(DataStream.class, ruleUnitVariableClass)) {
             if (ruleUnitVariable.setter() != null) {
-                supplierBlock.addStatement(String.format("org.drools.ruleunits.api.DataStream<%s> %s = org.drools.ruleunits.api.DataSource.createStream();", genericType, ruleUnitVariable.getName()));
+                supplierBlock.addStatement(
+                        String.format("org.drools.ruleunits.api.DataStream<%s> %s = org.drools.ruleunits.api.DataSource.createBufferedStream(16);", genericType, ruleUnitVariable.getName()));
                 supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
             }
             supplierBlock.addStatement(String.format("this.%s.forEach( unit.%s()::append);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
