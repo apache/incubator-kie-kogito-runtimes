@@ -71,9 +71,9 @@ public class RuleUnitPojoGenerator implements RuleFileGenerator {
             if (v.isDataSource()) {
                 t.setTypeArguments(StaticJavaParser.parseType(v.getDataSourceParameterType().getCanonicalName()));
                 if (ruleUnitHelper.isAssignableFrom(DataStore.class, rawType(v.getType()))) {
-                    vd.setInitializer("org.kie.kogito.rules.DataSource.createStore()");
+                    vd.setInitializer("org.drools.ruleunits.api.DataSource.createStore()");
                 } else {
-                    vd.setInitializer("org.kie.kogito.rules.DataSource.createSingleton()");
+                    vd.setInitializer("org.drools.ruleunits.api.DataSource.createSingleton()");
                 }
             }
             c.addMember(f);
