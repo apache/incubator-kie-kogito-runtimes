@@ -10,6 +10,10 @@
 
   <description>JDBC based persistence for Kogito</description>
 
+  <properties>
+    <quarkus.flyway.migrate-at-start>true</quarkus.flyway.migrate-at-start>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>

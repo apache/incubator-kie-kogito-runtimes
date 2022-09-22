@@ -252,7 +252,7 @@ class PostgresqlProcessInstancesIT {
     private class PostgreProcessInstancesFactory extends AbstractProcessInstancesFactory {
 
         public PostgreProcessInstancesFactory(PgPool client, boolean lock) {
-            super(client, true, 10000l, lock);
+            super(client, 10000l, lock);
         }
 
         @Override
