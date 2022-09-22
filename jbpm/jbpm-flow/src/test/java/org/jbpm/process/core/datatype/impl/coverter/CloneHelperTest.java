@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -122,7 +123,7 @@ public class CloneHelperTest {
     @Test
     void testCloneable() {
         CollectionHolder<Integer> toClone = new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelperFactory.getCloner(toClone.getClass()).apply(toClone);
+        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
         assertNotSame(toClone.getCollection(), cloned.getCollection());
         assertEquals(toClone.getCollection(), cloned.getCollection());
     }
@@ -130,7 +131,7 @@ public class CloneHelperTest {
     @Test
     void testCopyConstructor() {
         CollectionHolder<Integer> toClone = new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelperFactory.getCloner(toClone.getClass()).apply(toClone);
+        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
         assertNotSame(toClone.getCollection(), cloned.getCollection());
         assertEquals(toClone.getCollection(), cloned.getCollection());
     }
@@ -138,34 +139,60 @@ public class CloneHelperTest {
     @Test
     void testDefault() {
         CollectionHolder<Integer> toClone = new CollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelperFactory.getCloner(toClone.getClass()).apply(toClone);
+        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
         assertSame(toClone.getCollection(), cloned.getCollection());
     }
 
     @Test
     void testCloneableError() {
         CollectionHolder<Integer> toClone = new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = CloneHelperFactory.getCloner(toClone.getClass());
+        UnaryOperator<Object> cloner = CloneHelper.getCloner(toClone.getClass());
         assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
     }
 
     @Test
     void testCopyError() {
         CollectionHolder<Integer> toClone = new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = CloneHelperFactory.getCloner(toClone.getClass());
+        UnaryOperator<Object> cloner = CloneHelper.getCloner(toClone.getClass());
         assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
     }
 
     @Test
-    void NoCloneableError() {
+    void testNoCloneable() {
         CollectionHolder<Integer> toClone = new LierCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        assertSame(toClone, CloneHelperFactory.getCloner(toClone.getClass()).apply(toClone));
+        assertSame(toClone, CloneHelper.clone(toClone));
     }
 
     @Test
     void testCloneRegister() {
-        CloneHelperFactory.registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
+        CloneHelper.registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
         CustomCloneable toClone = new CustomCloneable("Javierito");
-        assertEquals(new CustomCloneable("Javierito_Javierito"), CloneHelperFactory.getCloner(toClone.getClass()).apply(toClone));
+        assertEquals(new CustomCloneable("Javierito_Javierito"), CloneHelper.clone(toClone));
+    }
+
+    @Test
+    void testCloneIntPrimitive() {
+        assertSame(1, CloneHelper.clone(1));
+    }
+
+    @Test
+    void testCloneBoolPrimitive() {
+        assertSame(true, CloneHelper.clone(true));
+    }
+
+    @Test
+    void testCloneWrapper() {
+        Integer integer = Integer.valueOf(1223);
+        assertSame(integer, CloneHelper.clone(integer));
+    }
+
+    @Test
+    void testCloneStringPrimitive() {
+        assertEquals("pepe", CloneHelper.clone("pepe"));
+    }
+
+    @Test
+    void testCloneNull() {
+        assertNull(CloneHelper.clone(null));
     }
 }

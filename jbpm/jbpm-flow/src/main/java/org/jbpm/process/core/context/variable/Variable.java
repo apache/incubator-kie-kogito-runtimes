@@ -30,7 +30,7 @@ import org.drools.util.StringUtils;
 import org.jbpm.process.core.TypeObject;
 import org.jbpm.process.core.ValueObject;
 import org.jbpm.process.core.datatype.DataType;
-import org.jbpm.process.core.datatype.impl.coverter.CloneHelperFactory;
+import org.jbpm.process.core.datatype.impl.coverter.CloneHelper;
 import org.jbpm.process.core.datatype.impl.type.UndefinedDataType;
 
 /**
@@ -170,8 +170,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     }
 
     public Object cloneValue() {
-        Object value = getValue();
-        return value != null ? CloneHelperFactory.getCloner(value.getClass()).apply(value) : value;
+        return CloneHelper.clone(getValue());
     }
 
     public boolean hasTag(String tagName) {
