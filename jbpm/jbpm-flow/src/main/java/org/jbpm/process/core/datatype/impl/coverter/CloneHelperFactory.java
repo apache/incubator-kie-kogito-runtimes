@@ -17,44 +17,62 @@ package org.jbpm.process.core.datatype.impl.coverter;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.UnaryOperator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public class CloneHelperFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(CloneHelperFactory.class);
+
+    private static Map<Class<?>, UnaryOperator<Object>> cloners = new ConcurrentHashMap<>();
+
+    static {
+        cloners.put(JsonNode.class, o -> ((JsonNode) o).deepCopy());
+    }
+
+    public static <T> void registerCloner(Class<T> type, UnaryOperator<T> cloner) {
+        cloners.put(type, (UnaryOperator<Object>) cloner);
+    }
 
     private CloneHelperFactory() {
     }
 
     public static UnaryOperator<Object> getCloner(Class<?> type) {
-        // handling cloneable
-        if (Cloneable.class.isAssignableFrom(type)) {
-            try {
-                Method m = type.getMethod("clone");
-                return o -> {
-                    try {
-                        return m.invoke(o);
-                    } catch (ReflectiveOperationException ex) {
-                        throw new IllegalStateException(type + " implements cloneable but invocation to clone method failed", ex);
-                    }
-                };
-            } catch (NoSuchMethodException ex) {
-                logger.warn(type + " implements cloneable but clone method cannot be found", ex);
-            }
-        }
 
-        // search copy constructor
-        return findCopyConstructor(type).<UnaryOperator<Object>> map(c -> o -> {
-            try {
-                return c.newInstance(o);
-            } catch (ReflectiveOperationException ex) {
-                throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex);
+        return cloners.computeIfAbsent(type, (k) -> {
+
+            // handling cloneable
+            if (Cloneable.class.isAssignableFrom(type)) {
+                try {
+                    Method m = type.getMethod("clone");
+                    return o -> {
+                        try {
+                            return m.invoke(o);
+                        } catch (ReflectiveOperationException ex) {
+                            throw new IllegalStateException(type + " implements cloneable but invocation to clone method failed", ex);
+                        }
+                    };
+                } catch (NoSuchMethodException ex) {
+                    logger.warn(type + " implements cloneable but clone method cannot be found", ex);
+                }
             }
-        }).orElse(o -> o);
+
+            // search copy constructor
+            return findCopyConstructor(type).<UnaryOperator<Object>> map(c -> o -> {
+                try {
+                    return c.newInstance(o);
+                } catch (ReflectiveOperationException ex) {
+                    throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex);
+                }
+            }).orElse(o -> o);
+        });
     }
 
     private static Optional<Constructor<?>> findCopyConstructor(Class<?> type) {
