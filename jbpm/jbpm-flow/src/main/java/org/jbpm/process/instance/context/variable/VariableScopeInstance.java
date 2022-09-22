@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
-import org.jbpm.process.core.datatype.impl.coverter.CloneHelperFactory;
+import org.jbpm.process.core.datatype.impl.coverter.CloneHelper;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.AbstractContextInstance;
@@ -94,8 +94,10 @@ public class VariableScopeInstance extends AbstractContextInstance {
         if (ignoreChange(oldValue, value)) {
             return;
         }
-        final Object clonedValue = getProcessInstance().getKnowledgeRuntime() != null ? clone(name, value) : null;
-        if (clonedValue != null) {
+        Object clonedValue = null;
+        boolean shouldPublish = getProcessInstance().getKnowledgeRuntime() != null;
+        if (shouldPublish) {
+            clonedValue = CloneHelper.clone(value);
             getProcessEventSupport().fireBeforeVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
@@ -104,7 +106,7 @@ public class VariableScopeInstance extends AbstractContextInstance {
                     getProcessInstance().getKnowledgeRuntime());
         }
         internalSetVariable(name, value);
-        if (clonedValue != null) {
+        if (shouldPublish) {
             getProcessEventSupport().fireAfterVariableChanged(
                     (variableIdPrefix == null ? "" : variableIdPrefix + ":") + name,
                     (variableInstanceIdPrefix == null ? "" : variableInstanceIdPrefix + ":") + name,
@@ -112,10 +114,6 @@ public class VariableScopeInstance extends AbstractContextInstance {
                     nodeInstance,
                     getProcessInstance().getKnowledgeRuntime());
         }
-    }
-
-    private Object clone(String name, Object value) {
-        return value != null ? CloneHelperFactory.getCloner(value.getClass()).apply(value) : value;
     }
 
     private boolean ignoreChange(Object oldValue, Object newValue) {

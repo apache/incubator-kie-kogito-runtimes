@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class CloneHelperFactory {
+public class CloneHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(CloneHelperFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(CloneHelper.class);
 
     private static Map<Class<?>, UnaryOperator<Object>> cloners = new ConcurrentHashMap<>();
 
@@ -41,7 +41,7 @@ public class CloneHelperFactory {
         cloners.put(type, (UnaryOperator<Object>) cloner);
     }
 
-    private CloneHelperFactory() {
+    private CloneHelper() {
     }
 
     public static UnaryOperator<Object> getCloner(Class<?> type) {
@@ -73,6 +73,10 @@ public class CloneHelperFactory {
                 }
             }).orElse(o -> o);
         });
+    }
+
+    public static Object clone(Object value) {
+        return value == null ? value : getCloner(value.getClass()).apply(value);
     }
 
     private static Optional<Constructor<?>> findCopyConstructor(Class<?> type) {
