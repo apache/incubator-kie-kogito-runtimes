@@ -40,7 +40,6 @@ public class TypeConverterRegistry {
         converters.put("java.util.Date", new DateTypeConverter());
         converters.put(JsonNode.class.getName(), new JsonNodeConverter(ObjectMapperFactory::listenerAware));
         unconverters.put(JsonNode.class.getName(), new StringConverter());
-        cloners.put(JsonNode.class, o -> ((JsonNode) o).deepCopy());
     }
 
     public boolean isRegistered(String type) {
@@ -61,10 +60,6 @@ public class TypeConverterRegistry {
         return result == null ? Object::toString : result;
     }
 
-    public UnaryOperator<Object> forTypeCloner(Class<?> type) {
-        return cloners.getOrDefault(type, CloneHelperFactory.getCloner(type));
-    }
-
     public TypeConverterRegistry register(String type, Function<String, ? extends Object> converter) {
         converters.put(type, converter);
         return this;
@@ -72,11 +67,6 @@ public class TypeConverterRegistry {
 
     public <T> TypeConverterRegistry registerUnconverter(String type, Function<T, String> unconverter) {
         unconverters.put(type, unconverter);
-        return this;
-    }
-
-    public <T> TypeConverterRegistry registerCloner(Class<T> type, UnaryOperator<T> cloner) {
-        cloners.put(type, (UnaryOperator<Object>) cloner);
         return this;
     }
 

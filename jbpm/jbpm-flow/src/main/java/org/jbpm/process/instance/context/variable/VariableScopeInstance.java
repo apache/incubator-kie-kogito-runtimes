@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.coverter.CloneHelperFactory;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.context.AbstractContextInstance;
@@ -113,9 +114,8 @@ public class VariableScopeInstance extends AbstractContextInstance {
         }
     }
 
-    private Object clone(String name, Object newValue) {
-        Variable variable = getVariableScope().findVariable(name);
-        return variable != null ? variable.getType().clone(newValue) : newValue;
+    private Object clone(String name, Object value) {
+        return value != null ? CloneHelperFactory.getCloner(value.getClass()).apply(value) : value;
     }
 
     private boolean ignoreChange(Object oldValue, Object newValue) {
