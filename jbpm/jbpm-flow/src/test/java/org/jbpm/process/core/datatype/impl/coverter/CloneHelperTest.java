@@ -21,7 +21,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -42,6 +47,23 @@ public class CloneHelperTest {
         public CollectionHolder(Collection<T> collection) {
             this.collection = collection;
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(collection);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CollectionHolder other = (CollectionHolder) obj;
+            return Objects.equals(collection, other.collection);
+        }
     }
 
     private static class CloneableCollectionHolder<T> extends CollectionHolder<T> implements Cloneable {
@@ -56,6 +78,7 @@ public class CloneHelperTest {
     }
 
     private static class DumbCloneableCollectionHolder<T> extends CollectionHolder<T> implements Cloneable {
+
         public DumbCloneableCollectionHolder(Collection<T> collection) {
             super(collection);
         }
@@ -120,79 +143,89 @@ public class CloneHelperTest {
         }
     }
 
+    @BeforeAll
+    static void init() {
+        CloneHelperRegister.get().registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
+    }
+
     @Test
     void testCloneable() {
-        CollectionHolder<Integer> toClone = new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
-        assertNotSame(toClone.getCollection(), cloned.getCollection());
-        assertEquals(toClone.getCollection(), cloned.getCollection());
+        assertCloned(new CloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCopyConstructor() {
-        CollectionHolder<Integer> toClone = new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
-        assertNotSame(toClone.getCollection(), cloned.getCollection());
-        assertEquals(toClone.getCollection(), cloned.getCollection());
+        assertCloned(new CopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testDefault() {
-        CollectionHolder<Integer> toClone = new CollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        CollectionHolder<Integer> cloned = (CollectionHolder<Integer>) CloneHelper.clone(toClone);
-        assertSame(toClone.getCollection(), cloned.getCollection());
+        assertNotCloned(new CollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCloneableError() {
-        CollectionHolder<Integer> toClone = new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = CloneHelper.getCloner(toClone.getClass());
-        assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
+        assertCloneError(new DumbCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCopyError() {
-        CollectionHolder<Integer> toClone = new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        UnaryOperator<Object> cloner = CloneHelper.getCloner(toClone.getClass());
-        assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
+        assertCloneError(new DumbCopyCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testNoCloneable() {
-        CollectionHolder<Integer> toClone = new LierCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4));
-        assertSame(toClone, CloneHelper.clone(toClone));
+        assertNotCloned(new LierCloneableCollectionHolder<>(Arrays.asList(1, 2, 3, 4)));
     }
 
     @Test
     void testCloneRegister() {
-        CloneHelper.registerCloner(CustomCloneable.class, o -> new CustomCloneable(o.getName() + "_" + o.getName()));
-        CustomCloneable toClone = new CustomCloneable("Javierito");
-        assertEquals(new CustomCloneable("Javierito_Javierito"), CloneHelper.clone(toClone));
+        assertEquals(new CustomCloneable("Javierito_Javierito"), CloneHelper.get().clone(new CustomCloneable("Javierito")));
     }
 
     @Test
     void testCloneIntPrimitive() {
-        assertSame(1, CloneHelper.clone(1));
+        assertNotCloned(1);
     }
 
     @Test
     void testCloneBoolPrimitive() {
-        assertSame(true, CloneHelper.clone(true));
-    }
-
-    @Test
-    void testCloneWrapper() {
-        Integer integer = Integer.valueOf(1223);
-        assertSame(integer, CloneHelper.clone(integer));
+        assertNotCloned(true);
     }
 
     @Test
     void testCloneStringPrimitive() {
-        assertEquals("pepe", CloneHelper.clone("pepe"));
+        assertCloned("pepe");
     }
 
     @Test
     void testCloneNull() {
-        assertNull(CloneHelper.clone(null));
+        assertNull(CloneHelper.get().clone(null));
+    }
+
+    @Test
+    void testListClone() {
+        assertCloned(new ArrayList<>(Arrays.asList(1, 2, 3)));
+    }
+
+    @Test
+    void testObjectNodeClone() {
+        assertSame(CloneHelper.get().getCloner(JsonNode.class), CloneHelper.get().getCloner(ObjectNode.class));
+        assertCloned(ObjectMapperFactory.get().createObjectNode().put("name", "Javierito"));
+    }
+
+    private void assertNotCloned(Object toClone) {
+        assertSame(toClone, CloneHelper.get().clone(toClone));
+    }
+
+    private void assertCloned(Object toClone) {
+        Object cloned = CloneHelper.get().clone(toClone);
+        assertEquals(toClone, cloned);
+        assertNotSame(toClone, cloned);
+    }
+
+    private <T> void assertCloneError(T toClone) {
+        UnaryOperator<T> cloner = (UnaryOperator<T>) CloneHelper.get().getCloner(toClone.getClass());
+        assertThrows(IllegalStateException.class, () -> cloner.apply(toClone));
     }
 }

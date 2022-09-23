@@ -170,7 +170,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     }
 
     public Object cloneValue() {
-        return CloneHelper.clone(getValue());
+        return CloneHelper.get().clone(getValue());
     }
 
     public boolean hasTag(String tagName) {

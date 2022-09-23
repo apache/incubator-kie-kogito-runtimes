@@ -18,7 +18,6 @@ package org.jbpm.process.core.datatype.impl.coverter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import org.kie.kogito.jackson.utils.JsonNodeConverter;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
@@ -32,8 +31,6 @@ public class TypeConverterRegistry {
 
     private Map<String, Function<String, ? extends Object>> converters = new HashMap<>();
     private Map<String, Function<? extends Object, String>> unconverters = new HashMap<>();
-    private Map<Class<?>, UnaryOperator<Object>> cloners = new HashMap<>();
-
     private Function<String, String> defaultConverter = new NoOpTypeConverter();
 
     private TypeConverterRegistry() {
