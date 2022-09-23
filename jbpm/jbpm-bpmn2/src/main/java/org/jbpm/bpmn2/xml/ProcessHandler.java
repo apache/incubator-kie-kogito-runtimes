@@ -293,8 +293,8 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
                                 throwLink.getUniqueId());
                         if (throwNode != null) {
                             Connection result = new ConnectionImpl(throwNode,
-                                                                   org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, catchNode,
-                                                                   org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
+                                    org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE, catchNode,
+                                    org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
                             result.setMetaData("linkNodeHidden", "yes");
                         }
                     }
