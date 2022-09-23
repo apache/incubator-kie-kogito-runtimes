@@ -667,7 +667,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
             }
         });
         kruntime.signalEvent("MySignal", "NewValue");
-        assertThat(list.hasSize(1);
+        assertThat(list).hasSize(1);
     }
 
     @Test
