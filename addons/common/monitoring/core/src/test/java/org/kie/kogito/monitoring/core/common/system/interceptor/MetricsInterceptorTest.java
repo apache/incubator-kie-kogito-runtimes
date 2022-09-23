@@ -22,10 +22,7 @@ import org.kie.kogito.monitoring.core.common.system.metrics.SystemMetricsCollect
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
-
-
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 

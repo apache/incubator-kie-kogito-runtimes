@@ -1862,7 +1862,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 "MessageIntermediateEvent", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertThat(messageContent.toString()).hasToString(  "MYVALUE");
+        assertThat(messageContent.toString()).hasToString("MYVALUE");
 
     }
 
