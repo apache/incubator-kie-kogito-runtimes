@@ -63,7 +63,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
-    private final KogitoProcessEventListener LOGGING_EVENT_LISTENER = new DefaultKogitoProcessEventListener() {
+    private KogitoProcessEventListener LOGGING_EVENT_LISTENER = new DefaultKogitoProcessEventListener() {
 
         @Override
         public void afterNodeLeft(ProcessNodeLeftEvent event) {
@@ -2216,7 +2216,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(new RuleAwareProcessEventListener());
 
         Collection<? extends Object> processInstances = kruntime.getKieSession().getObjects(object -> {
-            return object instanceof KogitoProcessInstance;
+            if (object instanceof KogitoProcessInstance) {
+                return true;
+            }
+            return false;
         });
         assertThat(processInstances).isNotNull();
         assertThat(processInstances).hasSize(1);
@@ -2228,7 +2231,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
 
         processInstances = kruntime.getKieSession().getObjects(object -> {
-            return object instanceof KogitoProcessInstance;
+            if (object instanceof KogitoProcessInstance) {
+                return true;
+            }
+            return false;
         });
         assertThat(processInstances).isNotNull();
         assertThat(processInstances.size()).isZero();
@@ -2244,7 +2250,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getProcessEventManager().addEventListener(new RuleAwareProcessEventListener());
 
         Collection<? extends Object> processInstances = kruntime.getKieSession().getObjects(object -> {
-            return object instanceof KogitoProcessInstance;
+            if (object instanceof KogitoProcessInstance) {
+                return true;
+            }
+            return false;
         });
         assertThat(processInstances).isNotNull();
         assertThat(processInstances).hasSize(1);
@@ -2256,7 +2265,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
 
         processInstances = kruntime.getKieSession().getObjects(object -> {
-            return object instanceof KogitoProcessInstance;
+            if (object instanceof KogitoProcessInstance) {
+                return true;
+            }
+            return false;
         });
         assertThat(processInstances).isNotNull();
         assertThat(processInstances.size()).isZero();
