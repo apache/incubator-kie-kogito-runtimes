@@ -531,7 +531,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
                 outputSet.put("event", event);
             }
 
-            Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
+            Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), outputSet::get);
             startProcessWithParamsAndTrigger(processId, parameters, type, false);
 
         }

@@ -25,7 +25,7 @@ public final class ExclusionTypeUtils {
     }
 
     public static Predicate<String> createTypeExclusions() {
-        return type -> "com.fasterxml.jackson.databind.JsonNode".equals(type);
+        return "com.fasterxml.jackson.databind.JsonNode"::equals;
     }
 
 }

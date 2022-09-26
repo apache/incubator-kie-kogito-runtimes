@@ -66,13 +66,13 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
             EventNode eventNode = (EventNode) getNode();
             Map<String, Object> outputSet = new HashMap<>();
             outputSet.put(eventNode.getInputVariableName(), event);
-            NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+            NodeIoHelper.processOutputs(this, outputSet::get, this::getVariable);
             triggerCompleted();
         }
     }
 
     public void signalEvent(String type, Object event) {
-        this.signalEvent(type, event, varName -> this.getVariable(varName));
+        this.signalEvent(type, event, this::getVariable);
     }
 
     @Override

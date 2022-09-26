@@ -797,7 +797,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
         activeListeners.forEach(el -> eventDesciptions.addAll(el.getEventDescriptions()));
 
-        ((org.jbpm.workflow.core.WorkflowProcess) getProcess()).getNodesRecursively().stream().filter(n -> n instanceof EventNodeInterface).forEach(n -> {
+        ((org.jbpm.workflow.core.WorkflowProcess) getProcess()).getNodesRecursively().stream().filter(EventNodeInterface.class::isInstance).forEach(n -> {
 
             NamedDataType dataType = null;
             if (((EventNodeInterface) n).getVariableName() != null) {

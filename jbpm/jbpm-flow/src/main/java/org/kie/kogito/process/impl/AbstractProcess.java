@@ -106,7 +106,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         this.services = services;
         this.instances = new MapProcessInstances<>();
         this.processInstancesFactory = factory;
-        this.correlations = Optional.ofNullable(correlations).orElseGet(() -> new DefaultCorrelationService());
+        this.correlations = Optional.ofNullable(correlations).orElseGet(DefaultCorrelationService::new);
         this.versionResolver = Optional.ofNullable(versionResolver).orElse(p -> get().getVersion());
         KogitoWorkItemManager workItemManager = services.getKogitoWorkItemManager();
         for (KogitoWorkItemHandler handler : handlers) {

@@ -306,7 +306,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
         for (org.kie.api.definition.process.Node node : getCompositeNode().internalGetNodes()) {
             if (node instanceof EventNodeInterface
-                    && ((EventNodeInterface) node).acceptsEvent(type, event, varName -> this.getVariable(varName))) {
+                    && ((EventNodeInterface) node).acceptsEvent(type, event, this::getVariable)) {
                 if (node instanceof EventNode && ((EventNode) node).getFrom() == null || node instanceof EventSubProcessNode) {
                     EventNodeInstanceInterface eventNodeInstance = (EventNodeInstanceInterface) getNodeInstance(node);
                     eventNodeInstance.signalEvent(type, event, varResolver);
@@ -337,7 +337,7 @@ public class CompositeNodeInstance extends StateBasedNodeInstance implements Nod
 
     @Override
     public void signalEvent(String type, Object event) {
-        this.signalEvent(type, event, varName -> this.getVariable(varName));
+        this.signalEvent(type, event, this::getVariable);
     }
 
     public List<NodeInstance> getNodeInstances(final long nodeId) {

@@ -92,6 +92,6 @@ public class JsonResolver {
             return false;
         }
         Class<?> clazz = (Class<?>) element;
-        return Arrays.stream(clazz.getDeclaredFields()).anyMatch(f -> hasJacksonAnnotations(f));
+        return Arrays.stream(clazz.getDeclaredFields()).anyMatch(this::hasJacksonAnnotations);
     }
 }

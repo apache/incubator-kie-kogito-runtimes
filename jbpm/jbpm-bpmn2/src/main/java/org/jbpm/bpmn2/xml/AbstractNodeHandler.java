@@ -1057,7 +1057,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             if (parent instanceof ContextContainer) {
                 ContextContainer contextContainer = (ContextContainer) parent;
                 VariableScope variableScope = (VariableScope) contextContainer.getDefaultContext(VariableScope.VARIABLE_SCOPE);
-                return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(v -> v.getName()).findFirst().orElse(variableName);
+                return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(Variable::getName).findFirst().orElse(variableName);
             }
         }
 

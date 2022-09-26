@@ -208,7 +208,7 @@ public class PMMLRestResourceGenerator {
         return source.stream()
                 .filter(node -> node instanceof NormalAnnotationExpr &&
                         searched.equals(((NormalAnnotationExpr) node).getName().asString()))
-                .map(node -> (NormalAnnotationExpr) node)
+                .map(NormalAnnotationExpr.class::cast)
                 .findFirst();
     }
 
@@ -216,7 +216,7 @@ public class PMMLRestResourceGenerator {
         return source.stream()
                 .filter(node -> node instanceof MemberValuePair &&
                         searched.equals(((MemberValuePair) node).getName().asString()))
-                .map(node -> (MemberValuePair) node)
+                .map(MemberValuePair.class::cast)
                 .findFirst();
     }
 
@@ -224,7 +224,7 @@ public class PMMLRestResourceGenerator {
         return source.getChildNodes().stream()
                 .filter(node -> node instanceof MemberValuePair &&
                         searched.equals(((MemberValuePair) node).getName().asString()))
-                .map(node -> (MemberValuePair) node)
+                .map(MemberValuePair.class::cast)
                 .findFirst();
     }
 

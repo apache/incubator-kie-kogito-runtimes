@@ -148,7 +148,7 @@ public class NodeIoHelper {
         NodeIoHelper ioHelper = new NodeIoHelper(nodeInstanceImpl);
         Map<String, Object> inputSet = new HashMap<>();
         // for inputs resolve it is supposed to create object by default constructor (that is the reason is null
-        ioHelper.processInputs(dataInputAssociation, sourceResolver, targetResolver, (target, value) -> inputSet.put(target, value));
+        ioHelper.processInputs(dataInputAssociation, sourceResolver, targetResolver, inputSet::put);
         return inputSet;
     }
 
@@ -172,7 +172,7 @@ public class NodeIoHelper {
     public static Map<String, Object> processOutputs(List<DataAssociation> dataOutputAssociations, Function<String, Object> sourceResolver) {
         NodeIoHelper ioHelper = new NodeIoHelper(null);
         Map<String, Object> outputSet = new HashMap<>();
-        ioHelper.processOutputs(dataOutputAssociations, sourceResolver, key -> null, (key, value) -> outputSet.put(key, value));
+        ioHelper.processOutputs(dataOutputAssociations, sourceResolver, key -> null, outputSet::put);
         return outputSet;
     }
 

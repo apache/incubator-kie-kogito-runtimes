@@ -35,6 +35,6 @@ public class ExpressionHandlerFactory {
     }
 
     private static Optional<ExpressionHandler> getExpressionHandler(String lang) {
-        return serviceLoader.stream().filter(p -> p.get().lang().equals(lang)).findFirst().map(p -> p.get());
+        return serviceLoader.stream().filter(p -> p.get().lang().equals(lang)).findFirst().map(ServiceLoader.Provider::get);
     }
 }

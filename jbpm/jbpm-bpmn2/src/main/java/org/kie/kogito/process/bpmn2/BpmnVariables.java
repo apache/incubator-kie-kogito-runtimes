@@ -91,6 +91,6 @@ public class BpmnVariables implements Model {
         return definitions.stream()
                 .filter(filter)
                 .filter(v -> variables.containsKey(v.getName()))
-                .collect(Collectors.toMap(v -> v.getName(), v -> variables.get(v.getName())));
+                .collect(Collectors.toMap(Variable::getName, v -> variables.get(v.getName())));
     }
 }

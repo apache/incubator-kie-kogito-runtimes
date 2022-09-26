@@ -56,7 +56,7 @@ public class BoundaryEventNodeInstance extends EventNodeInstance {
 
     @Override
     public void signalEvent(String type, Object event) {
-        this.signalEvent(type, event, varName -> this.getVariable(varName));
+        this.signalEvent(type, event, this::getVariable);
     }
 
     private boolean isAttachedToNodeActive(Collection<NodeInstance> nodeInstances, String attachedTo, String type, Object event) {

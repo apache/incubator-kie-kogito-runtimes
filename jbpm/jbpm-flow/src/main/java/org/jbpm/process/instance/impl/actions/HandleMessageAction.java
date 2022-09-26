@@ -49,7 +49,7 @@ public class HandleMessageAction implements Action, Serializable {
 
         // compute inputs for message action
         NodeInstanceImpl impl = ((NodeInstanceImpl) context.getNodeInstance());
-        Map<String, Object> inputSet = NodeIoHelper.processInputs(impl, varRef -> impl.getVariable(varRef));
+        Map<String, Object> inputSet = NodeIoHelper.processInputs(impl, impl::getVariable);
         workItem.getParameters().put(variableName, inputSet.get(variableName));
 
         ((InternalKogitoWorkItemManager) context.getKogitoProcessRuntime().getKogitoWorkItemManager()).internalExecuteWorkItem(workItem);

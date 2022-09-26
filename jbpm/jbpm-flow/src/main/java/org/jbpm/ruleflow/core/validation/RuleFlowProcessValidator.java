@@ -91,6 +91,7 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.printer.DefaultPrettyPrinterVisitor;
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
@@ -452,7 +453,8 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                         CompilationUnit unit = parse.getResult().get();
 
                         //Check local variables declaration
-                        Set<String> knownVariables = unit.findAll(VariableDeclarationExpr.class).stream().flatMap(v -> v.getVariables().stream()).map(v -> v.getNameAsString()).collect(toSet());
+                        Set<String> knownVariables =
+                                unit.findAll(VariableDeclarationExpr.class).stream().flatMap(v -> v.getVariables().stream()).map(NodeWithSimpleName::getNameAsString).collect(toSet());
 
                         knownVariables.add(KCONTEXT);
                         knownVariables.addAll(Arrays.stream(process.getVariableScope().getVariableNames()).collect(toSet()));
@@ -860,11 +862,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                     if (arg.isMethodCallExpr() || arg.isBinaryExpr()) {
                         resolveVariablesTypes(arg, knownVariables);
                     } else {
-                        arg.findAll(NameExpr.class).stream().filter(ex -> !knownVariables.contains(ex.getNameAsString())).forEach(ex -> ex.calculateResolvedType());
+                        arg.findAll(NameExpr.class).stream().filter(ex -> !knownVariables.contains(ex.getNameAsString())).forEach(Expression::calculateResolvedType);
                     }
                 });
         node.findAll(BinaryExpr.class).stream()
-                .map(bex -> bex.asBinaryExpr())
+                .map(BinaryExpr::asBinaryExpr)
                 .forEach(bex -> {
                     if (bex.getLeft().isNameExpr()) {
                         if (!knownVariables.contains(bex.getLeft().asNameExpr().getNameAsString())) {

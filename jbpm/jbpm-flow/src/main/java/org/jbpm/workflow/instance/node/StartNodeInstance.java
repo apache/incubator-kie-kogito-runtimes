@@ -57,7 +57,7 @@ public class StartNodeInstance extends NodeInstanceImpl {
         String variableName = (String) getStartNode().getMetaData(TRIGGER_MAPPING_INPUT);
         if (variableName != null) {
             Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
-            NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+            NodeIoHelper.processOutputs(this, outputSet::get, this::getVariable);
         }
         triggerCompleted();
     }

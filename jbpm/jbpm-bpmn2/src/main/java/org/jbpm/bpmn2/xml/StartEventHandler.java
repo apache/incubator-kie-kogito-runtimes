@@ -207,7 +207,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         trigger.addEventFilter(eventFilter);
         String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
-            startNode.getIoSpecification().getDataOutputAssociation().forEach(da -> trigger.addInAssociation(da));
+            startNode.getIoSpecification().getDataOutputAssociation().forEach(trigger::addInAssociation);
         }
 
         startNode.addTrigger(trigger);
@@ -420,7 +420,7 @@ public class StartEventHandler extends AbstractNodeHandler {
         startNode.setTriggers(startTriggers);
         String mapping = (String) startNode.getMetaData(TRIGGER_MAPPING);
         if (mapping != null) {
-            startNode.getIoSpecification().getDataOutputAssociation().forEach(da -> startTrigger.addInAssociation(da));
+            startNode.getIoSpecification().getDataOutputAssociation().forEach(startTrigger::addInAssociation);
         }
     }
 }

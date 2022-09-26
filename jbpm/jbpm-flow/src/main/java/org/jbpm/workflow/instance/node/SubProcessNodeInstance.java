@@ -79,7 +79,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
                     "A SubProcess node only accepts default incoming connections!");
         }
 
-        Map<String, Object> parameters = NodeIoHelper.processInputs(this, key -> getVariable(key));
+        Map<String, Object> parameters = NodeIoHelper.processInputs(this, this::getVariable);
 
         String processIdExpression = getSubProcessNode().getProcessId();
         if (processIdExpression == null) {
@@ -204,7 +204,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         removeEventListeners();
 
         Map<String, Object> outputSet = processInstance.getVariables();
-        NodeIoHelper.processOutputs(this, varRef -> outputSet.get(varRef), varName -> this.getVariable(varName));
+        NodeIoHelper.processOutputs(this, outputSet::get, this::getVariable);
 
         if (processInstance.getState() == ProcessInstance.STATE_ABORTED) {
             String faultName = processInstance.getOutcome() == null ? "" : processInstance.getOutcome();

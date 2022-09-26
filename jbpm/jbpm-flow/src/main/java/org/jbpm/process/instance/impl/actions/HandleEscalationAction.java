@@ -51,7 +51,7 @@ public class HandleEscalationAction implements Action, Serializable {
             NodeInstanceImpl impl = ((NodeInstanceImpl) context.getNodeInstance());
             // for event nodes we create a "virtual assignment and we process it"
             Map<String, Object> outputSet = Collections.singletonMap(variableName, event);
-            NodeIoHelper.processOutputs(impl, varRef -> outputSet.get(varRef), target -> impl.getVariable(target));
+            NodeIoHelper.processOutputs(impl, outputSet::get, impl::getVariable);
             context.getContextData().put("Exception", context.getVariable(variableName));
             scopeInstance.handleException(faultName, context);
         } else {

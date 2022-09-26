@@ -30,6 +30,7 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
+import org.kie.kogito.codegen.core.CodegenUtils;
 import org.kie.kogito.correlation.Correlation;
 import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
 
@@ -128,14 +129,14 @@ public class MessageConsumerGenerator {
         // legacy: force initialize fields
         if (!context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                    fd -> isProcessField(fd)).forEach(fd -> initializeProcessField(fd));
+                    CodegenUtils::isProcessField).forEach(fd -> initializeProcessField(fd));
             template.findAll(FieldDeclaration.class,
-                    fd -> isApplicationField(fd)).forEach(fd -> initializeApplicationField(fd));
+                    CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
             template.findAll(FieldDeclaration.class,
-                    fd -> isObjectMapperField(fd)).forEach(fd -> initializeObjectMapperField(fd));
+                    CodegenUtils::isObjectMapperField).forEach(this::initializeObjectMapperField);
         }
 
-        template.findAll(FieldDeclaration.class, f -> isCorrelationField(f)).stream().findFirst().ifPresent(f -> initializeCorrelationField(f));
+        template.findAll(FieldDeclaration.class, MessageConsumerGenerator::isCorrelationField).stream().findFirst().ifPresent(this::initializeCorrelationField);
 
         template.getMembers().sort(new BodyDeclarationComparator());
         return clazz.toString();
@@ -150,7 +151,7 @@ public class MessageConsumerGenerator {
         template.findAll(MethodCallExpr.class)
                 .forEach(t -> {
                     String name = (String) trigger.getNode().getMetaData().get(Metadata.MAPPING_VARIABLE);
-                    name = Optional.ofNullable(name).orElseGet(() -> trigger.getModelRef());
+                    name = Optional.ofNullable(name).orElseGet(trigger::getModelRef);
                     t.setName(t.getNameAsString().replace("$SetModelMethodName$", "set" + StringUtils.ucFirst(name)));
                 });
         if (!(trigger.getNode() instanceof StartNode)) {
@@ -172,7 +173,7 @@ public class MessageConsumerGenerator {
         }
         NodeList<Expression> arguments = new NodeList<>(trigger.getCorrelation().getValue().stream()
                 .map(Correlation::getKey)
-                .map(f -> new StringLiteralExpr(f))
+                .map(StringLiteralExpr::new)
                 .collect(Collectors.toSet()));
         MethodCallExpr streamOf =
                 new MethodCallExpr(new NameExpr(Stream.class.getCanonicalName()), "of").setArguments(arguments).setTypeArguments(new ClassOrInterfaceType().setName(String.class.getCanonicalName()));

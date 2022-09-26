@@ -96,7 +96,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
             RuleSetNode ruleSetNode = getRuleSetNode();
 
             KieRuntime kruntime = Optional.ofNullable(getRuleSetNode().getKieRuntime()).orElse(() -> getProcessInstance().getKnowledgeRuntime()).get();
-            Map<String, Object> inputs = NodeIoHelper.processInputs(this, varRef -> getVariable(varRef));
+            Map<String, Object> inputs = NodeIoHelper.processInputs(this, this::getVariable);
 
             RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
             if (ruleType.isDecision()) {
@@ -124,7 +124,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 }
                 //Output Binding
                 Map<String, Object> outputSet = dmnResult.getContext().getAll();
-                NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+                NodeIoHelper.processOutputs(this, outputSet::get, this::getVariable);
 
                 triggerCompleted();
             } else if (ruleType.isRuleFlowGroup()) {
@@ -254,7 +254,7 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
         }
 
         Map<String, Object> outputSet = objects;
-        NodeIoHelper.processOutputs(this, key -> outputSet.get(key), varName -> this.getVariable(varName));
+        NodeIoHelper.processOutputs(this, outputSet::get, this::getVariable);
         factHandles.clear();
     }
 

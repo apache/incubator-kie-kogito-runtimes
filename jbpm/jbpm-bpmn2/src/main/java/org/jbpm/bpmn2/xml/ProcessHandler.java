@@ -53,6 +53,7 @@ import org.jbpm.process.core.context.exception.CompensationHandler;
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.exception.ExceptionScope;
 import org.jbpm.process.core.context.swimlane.Swimlane;
+import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.correlation.CorrelationManager;
 import org.jbpm.process.core.event.EventFilter;
@@ -1112,7 +1113,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             return null;
         }
 
-        return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(v -> v.getName()).findFirst().orElse(variableName);
+        return variableScope.getVariables().stream().filter(v -> v.matchByIdOrName(variableName)).map(Variable::getName).findFirst().orElse(variableName);
     }
 
     public static DroolsConsequenceAction createJavaAction(Action action) {

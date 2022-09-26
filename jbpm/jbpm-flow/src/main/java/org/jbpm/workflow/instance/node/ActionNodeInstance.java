@@ -48,7 +48,7 @@ public class ActionNodeInstance extends NodeInstanceImpl {
                     "An ActionNode only accepts default incoming connections!");
         }
 
-        Map<String, Object> data = NodeIoHelper.processInputs(this, key -> getVariable(key));
+        Map<String, Object> data = NodeIoHelper.processInputs(this, this::getVariable);
 
         Action action = (Action) getActionNode().getAction().getMetaData("Action");
         try {

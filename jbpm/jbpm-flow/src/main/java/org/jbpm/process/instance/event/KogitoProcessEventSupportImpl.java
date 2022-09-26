@@ -47,7 +47,7 @@ public class KogitoProcessEventSupportImpl implements KogitoProcessEventSupport 
     private List<KogitoProcessEventListener> listeners = new CopyOnWriteArrayList();
 
     public KogitoProcessEventSupportImpl(List<KogitoProcessEventListener> listeners) {
-        listeners.forEach(l -> addEventListener(l));
+        listeners.forEach(this::addEventListener);
     }
 
     /**
@@ -57,7 +57,7 @@ public class KogitoProcessEventSupportImpl implements KogitoProcessEventSupport 
     }
 
     private void notifyAllListeners(Consumer<KogitoProcessEventListener> consumer) {
-        this.listeners.forEach(l -> consumer.accept(l));
+        this.listeners.forEach(consumer::accept);
     }
 
     @Override
