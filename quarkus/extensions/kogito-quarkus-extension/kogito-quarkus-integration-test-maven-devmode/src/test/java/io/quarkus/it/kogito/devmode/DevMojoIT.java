@@ -85,7 +85,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
     @Override
     protected void run(boolean performCompile, String... options) throws FileNotFoundException, MavenInvocationException {
         assertThat(testDir).isDirectory();
-        running = new RunningInvoker(testDir, false);
+        running = new RunningInvoker(testDir, true);
         final List<String> args = new ArrayList<>(2 + options.length);
         if (performCompile) {
             args.add("compile");
@@ -108,6 +108,7 @@ public class DevMojoIT extends RunAndCheckMojoTestBase {
 
         args.addAll(getProvidedMavenProperties());
 
+        System.out.println("\n\n\n>>>args = " + args);
         running.execute(args, Collections.emptyMap());
     }
 
