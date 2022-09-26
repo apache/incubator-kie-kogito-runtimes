@@ -25,6 +25,7 @@ public class RuleUnitIdParser {
         throw new IllegalStateException("Utility class");
 
     }
+
     public static LocalId parse(String id) {
         return parse(id, LocalId.class);
     }

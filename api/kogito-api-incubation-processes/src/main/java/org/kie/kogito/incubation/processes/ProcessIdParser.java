@@ -26,6 +26,7 @@ public final class ProcessIdParser {
     private ProcessIdParser() {
         throw new IllegalStateException("Utility class");
     }
+
     public static <T extends LocalId> T parse(String id, Class<T> expected) {
         StringTokenizer tok = new StringTokenizer(id, "/");
         if (!tok.hasMoreTokens())
