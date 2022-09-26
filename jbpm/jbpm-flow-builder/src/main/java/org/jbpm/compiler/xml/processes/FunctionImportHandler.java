@@ -23,7 +23,6 @@ import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.process.core.Process;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

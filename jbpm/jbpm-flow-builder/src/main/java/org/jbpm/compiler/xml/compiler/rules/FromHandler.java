@@ -15,7 +15,6 @@
  */
 package org.jbpm.compiler.xml.compiler.rules;
 
-import org.drools.drl.ast.descr.ConditionalElementDescr;
 import org.drools.drl.ast.descr.FromDescr;
 import org.drools.drl.ast.descr.PatternDescr;
 import org.jbpm.compiler.xml.Handler;

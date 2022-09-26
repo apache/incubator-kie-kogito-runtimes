@@ -22,7 +22,6 @@ import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.ProcessBuildData;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

@@ -21,7 +21,6 @@ import org.drools.drl.ast.descr.QueryDescr;
 import org.jbpm.compiler.xml.Handler;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
