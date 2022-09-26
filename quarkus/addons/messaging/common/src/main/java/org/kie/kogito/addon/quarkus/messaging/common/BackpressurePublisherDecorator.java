@@ -26,7 +26,7 @@ import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.operators.multi.AbstractMultiOperator;
 import io.smallrye.mutiny.operators.multi.MultiOperatorProcessor;
 import io.smallrye.mutiny.subscription.MultiSubscriber;
-import io.smallrye.reactive.messaging.providers.PublisherDecorator;
+import io.smallrye.reactive.messaging.PublisherDecorator;
 
 @ApplicationScoped
 public class BackpressurePublisherDecorator implements PublisherDecorator {
@@ -37,7 +37,7 @@ public class BackpressurePublisherDecorator implements PublisherDecorator {
     BackpressureKogitoEmitter emitter;
 
     @Override
-    public Multi<? extends Message<?>> decorate(Multi<? extends Message<?>> publisher, String channelName) {
+    public Multi<? extends Message<?>> decorate(Multi<? extends Message<?>> publisher, String channelName, boolean isConnector) {
         return publisher.plug(upstream -> new BackpressureOperator(publisher, channelName));
     }
 
