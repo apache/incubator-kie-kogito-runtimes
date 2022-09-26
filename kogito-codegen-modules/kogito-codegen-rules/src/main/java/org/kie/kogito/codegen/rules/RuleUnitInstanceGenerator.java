@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.core.common.ReteEvaluator;
-import org.drools.ruleunits.api.DataSource;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.drools.ruleunits.api.conf.DefaultEntryPoint;
 import org.drools.ruleunits.api.conf.EntryPoint;
@@ -128,7 +127,7 @@ public class RuleUnitInstanceGenerator implements RuleFileGenerator {
 
                     if (m.setter() != null) { // if writable and DataSource is null create and set a new one
                         Expression nullCheck = new BinaryExpr(new MethodCallExpr(new NameExpr("value"), methodName), new NullLiteralExpr(), BinaryExpr.Operator.EQUALS);
-                        Expression createDataSourceExpr = new MethodCallExpr(new NameExpr(DataSource.class.getCanonicalName()), ruleUnitHelper.createDataSourceMethodName(m.getBoxedVarType()));
+                        Expression createDataSourceExpr = ruleUnitHelper.createDataSourceMethodCallExpr(m.getBoxedVarType());
                         Expression dataSourceSetter = new MethodCallExpr(new NameExpr("value"), m.setter(), new NodeList<>(createDataSourceExpr));
                         methodBlock.addStatement(new IfStmt(nullCheck, new BlockStmt().addStatement(dataSourceSetter), null));
                     }

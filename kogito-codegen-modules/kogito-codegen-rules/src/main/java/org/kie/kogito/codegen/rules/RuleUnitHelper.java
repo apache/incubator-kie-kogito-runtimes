@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.codegen.rules;
 
+import org.drools.ruleunits.api.DataSource;
 import org.drools.ruleunits.api.DataStore;
 import org.drools.ruleunits.api.DataStream;
 import org.drools.ruleunits.api.SingletonStore;
@@ -23,6 +24,8 @@ import org.drools.ruleunits.impl.ReflectiveRuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
 
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 import static org.drools.util.ClassUtils.rawType;
@@ -90,15 +93,22 @@ public class RuleUnitHelper {
         return supplierBlock;
     }
 
-    String createDataSourceMethodName(Class<?> dsClass) {
+    MethodCallExpr createDataSourceMethodCallExpr(Class<?> dsClass) {
+        MethodCallExpr methodCallExpr = new MethodCallExpr();
+        methodCallExpr.setScope(new NameExpr(DataSource.class.getCanonicalName()));
+
         if (isAssignableFrom(DataStream.class, dsClass)) {
-            return "createStream";
+            return methodCallExpr
+                    .setName("createBufferedStream")
+                    .addArgument("16");
         }
         if (isAssignableFrom(DataStore.class, dsClass)) {
-            return "createStore";
+            return methodCallExpr
+                    .setName("createStore");
         }
         if (isAssignableFrom(SingletonStore.class, dsClass)) {
-            return "createSingleton";
+            return methodCallExpr
+                    .setName("createSingleton");
         }
         throw new IllegalArgumentException("Unknown data source type " + dsClass.getCanonicalName());
     }
