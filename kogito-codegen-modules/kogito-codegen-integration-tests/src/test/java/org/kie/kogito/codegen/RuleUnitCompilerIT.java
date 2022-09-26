@@ -371,7 +371,7 @@ public class RuleUnitCompilerIT extends AbstractCodegenIT {
 
         instance.fire();
 
-        assertEquals(46, mario.getAge()); //fixme should it be 50?
+        assertEquals(usePropertyReactivity ? 46 : 50, mario.getAge());
     }
 
     private Application createApplication(SessionType sessionType, String... drls) throws Exception {
