@@ -48,11 +48,20 @@
       <artifactId>kie-api</artifactId>
     </dependency>
     
-     <dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    
+    <dependency>
       <groupId>io.cloudevents</groupId>
       <artifactId>cloudevents-api</artifactId>
     </dependency>
-    
 
     <dependency>
       <groupId>org.drools</groupId>
