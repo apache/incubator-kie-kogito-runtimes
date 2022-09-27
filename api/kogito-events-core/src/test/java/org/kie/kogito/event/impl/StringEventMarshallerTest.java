@@ -17,7 +17,7 @@ package org.kie.kogito.event.impl;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.DummyEvent;
-import org.kie.kogito.event.EventDataMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StringEventMarshallerTest {
 
-    private EventDataMarshaller<String> marshaller = new StringEventMarshaller(new ObjectMapper());;
+    private EventMarshaller<String> marshaller = new StringEventMarshaller(new ObjectMapper());;
 
     @Test
     void testDataMarshaller() {

@@ -15,14 +15,14 @@
  */
 package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.EventDataMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class StringEventMarshaller implements EventDataMarshaller<String> {
+public class StringEventMarshaller implements EventMarshaller<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(StringEventMarshaller.class);
 

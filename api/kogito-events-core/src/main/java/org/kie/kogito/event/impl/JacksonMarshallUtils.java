@@ -16,21 +16,28 @@
 package org.kie.kogito.event.impl;
 
 import java.io.IOException;
+import java.util.Objects;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JacksonMarshallUtils {
 
-    public static <T> T unmarshall(ObjectMapper mapper, Object input, Class<T> outputClass) throws IOException {
+    public static <T> T unmarshall(ObjectMapper mapper, Object input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
         if (input == null) {
             return null;
         }
         if (outputClass.isAssignableFrom(input.getClass())) {
             return outputClass.cast(input);
-        } else if (input instanceof byte[]) {
-            return mapper.readValue((byte[]) input, outputClass);
         } else {
-            return mapper.readValue(input.toString(), outputClass);
+            final JavaType type = Objects.isNull(parametrizedClasses) ? mapper.getTypeFactory().constructType(outputClass)
+                    : mapper.getTypeFactory().constructParametricType(outputClass, parametrizedClasses);
+
+            if (input instanceof byte[]) {
+                return mapper.readValue((byte[]) input, type);
+            } else {
+                return mapper.readValue(input.toString(), type);
+            }
         }
     }
 }

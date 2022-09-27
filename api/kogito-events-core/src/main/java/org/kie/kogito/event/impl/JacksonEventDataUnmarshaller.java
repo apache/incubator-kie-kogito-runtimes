@@ -17,11 +17,11 @@ package org.kie.kogito.event.impl;
 
 import java.io.IOException;
 
-import org.kie.kogito.event.EventDataUnmarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonEventDataUnmarshaller implements EventDataUnmarshaller<Object> {
+public class JacksonEventDataUnmarshaller implements EventUnmarshaller<Object> {
 
     private ObjectMapper objectMapper;
 
@@ -30,7 +30,7 @@ public class JacksonEventDataUnmarshaller implements EventDataUnmarshaller<Objec
     }
 
     @Override
-    public <T> T unmarshall(Object input, Class<T> outputClass) throws IOException {
-        return JacksonMarshallUtils.unmarshall(objectMapper, input, outputClass);
+    public <T> T unmarshall(Object input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
+        return JacksonMarshallUtils.unmarshall(objectMapper, input, outputClass, parametrizedClasses);
     }
 }

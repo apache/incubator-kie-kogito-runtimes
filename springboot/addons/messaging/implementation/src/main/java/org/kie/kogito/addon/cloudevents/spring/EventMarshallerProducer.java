@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import org.kie.kogito.event.EventDataMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class EventMarshallerProducer {
     ObjectMapper mapper;
 
     @Bean
-    public EventDataMarshaller<String> stringEventMarshaller() {
+    public EventMarshaller<String> stringEventMarshaller() {
         return new StringEventMarshaller(mapper);
     }
 }

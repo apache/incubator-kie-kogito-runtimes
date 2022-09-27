@@ -27,9 +27,9 @@ import org.kie.kogito.Model;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.DataEventFactory;
-import org.kie.kogito.event.EventDataUnmarshaller;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.EventReceiver;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
-            EventDataUnmarshaller<Object> eventUnmarshaller,
+            EventUnmarshaller<Object> eventUnmarshaller,
             CloudEventUnmarshaller<Object> cloudEventUnmarshaller) {
         init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, cloudEventUnmarshaller, Collections.emptySet());
     }
@@ -69,7 +69,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             boolean useCloudEvents,
             ProcessService processService,
             ExecutorService executorService,
-            EventDataUnmarshaller<Object> eventUnmarshaller,
+            EventUnmarshaller<Object> eventUnmarshaller,
             CloudEventUnmarshaller<Object> cloudEventUnmarshaller,
             Set<String> correlations) {
         this.trigger = trigger;

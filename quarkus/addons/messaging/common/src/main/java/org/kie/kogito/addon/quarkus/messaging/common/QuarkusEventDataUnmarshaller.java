@@ -18,12 +18,12 @@ package org.kie.kogito.addon.quarkus.messaging.common;
 import java.io.IOException;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.event.EventDataUnmarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.impl.JacksonMarshallUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class QuarkusEventDataUnmarshaller implements EventDataUnmarshaller<Message<?>> {
+public class QuarkusEventDataUnmarshaller implements EventUnmarshaller<Message<?>> {
 
     private ObjectMapper objectMapper;
 
@@ -32,7 +32,7 @@ public class QuarkusEventDataUnmarshaller implements EventDataUnmarshaller<Messa
     }
 
     @Override
-    public <T> T unmarshall(Message<?> input, Class<T> outputClass) throws IOException {
-        return JacksonMarshallUtils.unmarshall(objectMapper, input.getPayload(), outputClass);
+    public <T> T unmarshall(Message<?> input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
+        return JacksonMarshallUtils.unmarshall(objectMapper, input.getPayload(), outputClass, parametrizedClasses);
     }
 }

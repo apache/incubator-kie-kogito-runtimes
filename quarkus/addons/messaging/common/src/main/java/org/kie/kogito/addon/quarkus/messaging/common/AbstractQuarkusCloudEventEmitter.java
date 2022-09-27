@@ -24,8 +24,8 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.messaging.common.message.MessageDecoratorProvider;
 import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.EventDataMarshaller;
 import org.kie.kogito.event.EventEmitter;
+import org.kie.kogito.event.EventMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     ConfigBean configBean;
 
     @Inject
-    EventDataMarshaller<M> marshaller;
+    EventMarshaller<M> marshaller;
 
     @Inject
     MessageDecoratorProvider messageDecorator;

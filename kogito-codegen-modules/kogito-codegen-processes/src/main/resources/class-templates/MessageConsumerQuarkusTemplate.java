@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.correlation.CompositeCorrelation;
-import org.kie.kogito.event.EventDataUnmarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.process.Process;

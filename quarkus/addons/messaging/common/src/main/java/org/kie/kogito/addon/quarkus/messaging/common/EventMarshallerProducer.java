@@ -19,7 +19,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.kie.kogito.event.EventDataMarshaller;
+import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
 import org.kie.kogito.event.impl.NoOpEventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
@@ -36,19 +36,19 @@ public class EventMarshallerProducer {
 
     @Produces
     @DefaultBean
-    public EventDataMarshaller<String> stringEventMarshaller() {
+    public EventMarshaller<String> stringEventMarshaller() {
         return new StringEventMarshaller(mapper);
     }
 
     @Produces
     @DefaultBean
-    public EventDataMarshaller<byte[]> byteArrayEventMarshaller() {
+    public EventMarshaller<byte[]> byteArrayEventMarshaller() {
         return new ByteArrayEventMarshaller(mapper);
     }
 
     @Produces
     @DefaultBean
-    public EventDataMarshaller<Object> defaultEventMarshaller() {
+    public EventMarshaller<Object> defaultEventMarshaller() {
         return new NoOpEventMarshaller();
     }
 }

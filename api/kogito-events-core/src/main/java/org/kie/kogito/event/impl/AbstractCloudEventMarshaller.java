@@ -35,7 +35,7 @@ public abstract class AbstractCloudEventMarshaller<T> implements CloudEventUnmar
     }
 
     @Override
-    public <V> V unmarshall(CloudEventData data, Class<V> outputClass) throws IOException {
+    public <V> V unmarshall(CloudEventData data, Class<V> outputClass, Class<?>... parametrizedClasses) throws IOException {
         if (JsonNode.class.isAssignableFrom(outputClass)) {
             return (V) (data instanceof JsonCloudEventData ? ((JsonCloudEventData) data).getNode() : objectMapper.readTree(data.toBytes()));
         } else {

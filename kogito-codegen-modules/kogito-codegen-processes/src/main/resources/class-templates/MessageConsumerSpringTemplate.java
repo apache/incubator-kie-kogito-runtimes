@@ -25,7 +25,7 @@ import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.kie.kogito.event.impl.AbstractMessageConsumer;
-import org.kie.kogito.event.EventDataUnmarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventExecutorServiceFactory;
 import org.kie.kogito.event.EventReceiver;
@@ -45,7 +45,7 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
             EventReceiver eventReceiver,
             ProcessService processService,
             EventExecutorServiceFactory executorServiceFactory,
-            EventDataUnmarshaller<Object> eventDataUnmarshaller,
+            EventUnmarshaller<Object> eventDataUnmarshaller,
             CloudEventUnmarshaller<Object> cloudEventUnmarshaller) {
         super(application,
               process,
