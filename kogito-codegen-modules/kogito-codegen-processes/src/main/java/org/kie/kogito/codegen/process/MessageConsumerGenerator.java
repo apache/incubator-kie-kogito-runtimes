@@ -17,7 +17,7 @@ package org.kie.kogito.codegen.process;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,6 +31,7 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.correlation.Correlation;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,6 +51,7 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.WildcardType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
@@ -161,9 +163,11 @@ public class MessageConsumerGenerator {
 
         if (!trigger.dataOnly()) {
             template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class)
-                    .setType(parseClassOrInterfaceType(UnaryOperator.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(Object.class.getCanonicalName()))))
+                    .setType(parseClassOrInterfaceType(Function.class.getCanonicalName()).setTypeArguments(
+                            NodeList.nodeList(parseClassOrInterfaceType(DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(new WildcardType())),
+                                    parseClassOrInterfaceType(Object.class.getCanonicalName()))))
                     .setBody(new BlockStmt().addStatement(new ReturnStmt(
-                            new MethodReferenceExpr(new NameExpr(ServerlessWorkflowUtils.class.getSimpleName()), NodeList.nodeList(), "dataOnlyIsFalse"))));
+                            new MethodReferenceExpr(new NameExpr(ServerlessWorkflowUtils.class.getCanonicalName()), NodeList.nodeList(), "dataOnlyIsFalse"))));
         }
     }
 

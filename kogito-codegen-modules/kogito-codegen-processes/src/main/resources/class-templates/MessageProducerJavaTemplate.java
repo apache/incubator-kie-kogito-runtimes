@@ -24,7 +24,7 @@ import org.kie.kogito.event.impl.StringEventMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MessageProducer extends org.kie.kogito.services.event.impl.AbstractMessageProducer<java.lang.String>{
+public class MessageProducer extends org.kie.kogito.event.impl.AbstractMessageProducer<java.lang.String>{
 
 
     Optional<Boolean> useCloudEvents = Optional.of(true);
