@@ -26,12 +26,12 @@ public class AgePersonService {
         return new AgePerson(name, age, income);
     }
 
-    public AgePerson fullFrom(String name, int age, double income, long creationDate,
-            String cardId, double discount, int count, Boolean enabled, long birthDate) {
-        Date receivedCreation = new Date(creationDate);
-        Date receivedBirth = new Date(birthDate);
-        AgePerson agePerson = new AgePerson(name, age, income, receivedCreation);
-        agePerson.setBasicDataPerson(new BasicDataPerson(cardId, discount, count, enabled, receivedBirth));
+    public AgePerson createFrom(String name, int intValue, double income, long dateValue,
+            String cardId, double discount, Boolean enabled) {
+        Date receivedCreation = new Date(dateValue);
+        Date receivedBirth = new Date(dateValue);
+        AgePerson agePerson = new AgePerson(name, intValue, income, receivedCreation);
+        agePerson.setBasicDataPerson(new BasicDataPerson(cardId, discount, intValue, enabled, receivedBirth));
         return agePerson;
     }
 }

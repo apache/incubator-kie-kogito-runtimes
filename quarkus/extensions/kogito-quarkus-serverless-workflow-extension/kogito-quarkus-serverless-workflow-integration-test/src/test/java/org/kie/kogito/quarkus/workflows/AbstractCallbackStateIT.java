@@ -81,8 +81,8 @@ abstract class AbstractCallbackStateIT {
 
         JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap.size()).isEqualTo(1);
-        assertThat(workflowDataMap.get("query")).isEqualTo(SUCCESSFUL_QUERY);
+        assertThat(workflowDataMap).hasSize(1);
+        assertThat(workflowDataMap).containsEntry("query", SUCCESSFUL_QUERY);
 
         // double check that the process instance is there.
         assertProcessInstanceExists(callbackProcessGetByIdUrl, processInstanceId);
@@ -114,9 +114,10 @@ abstract class AbstractCallbackStateIT {
 
         JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap.size()).isEqualTo(2);
-        assertThat(workflowDataMap.get("query")).isEqualTo(GENERATE_ERROR_QUERY);
-        assertThat(workflowDataMap.get("lastExecutedState")).isEqualTo("FinalizeWithError");
+        assertThat(workflowDataMap)
+                .hasSize(2)
+                .containsEntry("query", GENERATE_ERROR_QUERY)
+                .containsEntry("lastExecutedState", "FinalizeWithError");
 
         // the process instance should not be there since an end state was reached.
         assertProcessInstanceNotExists(callbackProcessGetByIdUrl, processInstanceId);

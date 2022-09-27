@@ -113,16 +113,17 @@ class PojoServiceIT {
 
         JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap.size()).isEqualTo(9);
-        assertThat(workflowDataMap.get("name")).isEqualTo("javieritoPerson");
-        assertThat(workflowDataMap.get("creationDate")).isEqualTo(creationDate.getTime());
-        assertThat(workflowDataMap.get("age")).isEqualTo(1);
-        assertThat(workflowDataMap.get("income")).isEqualTo(20000.5f);
-        assertThat(workflowDataMap.get("cardId")).isEqualTo("cardID");
-        assertThat(workflowDataMap.get("discount")).isEqualTo(100.01f);
-        assertThat(workflowDataMap.get("count")).isEqualTo(count);
-        assertThat(workflowDataMap.get("enabled")).isEqualTo(enabled);
-        assertThat(workflowDataMap.get("birthDate")).isEqualTo(birthDate.getTime());
+        assertThat(workflowDataMap)
+                .hasSize(9)
+                .containsEntry("name", "javieritoPerson")
+                .containsEntry("creationDate", creationDate.getTime())
+                .containsEntry("age", 1)
+                .containsEntry("income", 20000.5f)
+                .containsEntry("cardId", "cardID")
+                .containsEntry("discount", 100.01f)
+                .containsEntry("count", count)
+                .containsEntry("enabled", enabled)
+                .containsEntry("birthDate", birthDate.getTime());
     }
 
     private void doIt(String flowName) throws Exception {
@@ -141,7 +142,7 @@ class PojoServiceIT {
                 .body("workflowdata.age", nullValue());
         JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
-        assertThat(workflowDataMap.size()).isEqualTo(1);
-        assertThat(workflowDataMap.get("name")).isEqualTo("javieritoPerson");
+        assertThat(workflowDataMap).hasSize(1);
+        assertThat(workflowDataMap).containsEntry("name", "javieritoPerson");
     }
 }

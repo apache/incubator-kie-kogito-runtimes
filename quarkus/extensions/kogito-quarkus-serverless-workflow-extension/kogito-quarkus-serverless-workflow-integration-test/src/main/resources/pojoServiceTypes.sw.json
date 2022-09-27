@@ -7,7 +7,7 @@
   "functions": [
     {
       "name": "getPerson",
-      "operation": "service:org.kie.kogito.workflows.services.AgePersonService::fullFrom",
+      "operation": "service:org.kie.kogito.workflows.services.AgePersonService::createFrom",
       "type": "custom"
     },
     {
@@ -27,14 +27,12 @@
             "refName": "getPerson",
             "arguments": {
               "name": ".name",
-              "age": 1,
+              "intValue": 1,
               "income": 20000.50,
-              "creationDate": ".creationDate",
+              "dateValue": ".creationDate",
               "cardId": ".basicDataPerson.cardId",
               "discount": ".basicDataPerson.discount",
-              "count": ".basicDataPerson.count",
-              "enabled": ".basicDataPerson.enabled",
-              "birthDate": ".basicDataPerson.birthDate"
+              "enabled": ".basicDataPerson.enabled"
             }
           },
           "actionDataFilter": {
