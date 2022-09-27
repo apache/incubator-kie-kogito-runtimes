@@ -59,7 +59,7 @@ public class DecisionCodegenTest {
         assertThat(emptyCodeGenerator.isEnabled()).isFalse();
 
         Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
-        assertThat(emptyGeneratedFiles.size()).isZero();
+        assertThat(emptyGeneratedFiles).isEmpty();
 
         DecisionCodegen codeGenerator = getDecisionCodegen("src/test/resources/decision/models/vacationDays", contextBuilder);
 
@@ -67,7 +67,7 @@ public class DecisionCodegenTest {
         assertThat(codeGenerator.isEnabled()).isTrue();
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertThat(generatedFiles.size()).isPositive();
+        assertThat(generatedFiles).hasSizeGreaterThan(0);
     }
 
     @ParameterizedTest

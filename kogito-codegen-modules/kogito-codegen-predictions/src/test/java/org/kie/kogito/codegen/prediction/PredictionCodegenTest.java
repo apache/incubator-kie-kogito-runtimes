@@ -93,7 +93,7 @@ class PredictionCodegenTest {
         assertThat(emptyCodeGenerator.isEnabled()).isFalse();
 
         Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
-        assertThat(emptyGeneratedFiles.size()).isZero();
+        assertThat(emptyGeneratedFiles).isEmpty();
 
         PredictionCodegen codeGenerator = PredictionCodegen.ofCollectedResources(
                 context, CollectedResourceProducer.fromFiles(BASE_PATH, REGRESSION_FULL_SOURCE.toFile()));
@@ -102,7 +102,7 @@ class PredictionCodegenTest {
         assertThat(codeGenerator.isEnabled()).isTrue();
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertThat(generatedFiles.size()).isPositive();
+        assertThat(generatedFiles).hasSizeGreaterThan(0);
     }
 
     @ParameterizedTest

@@ -86,7 +86,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         });
         logger.debug("About to start ###### " + new Date());
 
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         // then wait 5 times 5oo ms as that is period configured on the process
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(2);
@@ -105,7 +105,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
                 list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(5);
 
@@ -133,7 +133,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
                 list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         countDownListener.waitTillCompleted();
         assertThat(list).hasSize(1);
 
@@ -151,7 +151,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
                 list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(6);
 
@@ -170,7 +170,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
             }
         });
 
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
 
         countDownListener.waitTillCompleted();
 
@@ -288,7 +288,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
                 list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         // Timer in the process takes 500ms, so after 1 second, there should be 2 process IDs in the list.
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("MultipleStartEvents")).isEqualTo(2);
@@ -376,7 +376,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
             }
         });
 
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         // Timer in the process takes 1000ms, so after 2 seconds, there should be 2 process IDs in the list.
         countDownListener.waitTillCompleted();
 
@@ -445,7 +445,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
                 list.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
         });
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         // Timer in the process takes 500ms, so after 1 second, there should be 2 process IDs in the list.
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("MultipleStartEvents")).isEqualTo(2);

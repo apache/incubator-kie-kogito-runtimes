@@ -652,7 +652,7 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
 
         });
 
-        assertThat(list.size()).isZero();
+        assertThat(list).isEmpty();
         countDownListener.waitTillCompleted();
         assertThat(list).hasSize(5);
     }
@@ -763,8 +763,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).isTrue().withFailMessage("Event was not passed to Event Subprocess.");
         workItem = (KogitoWorkItem) caughtEventObjectHolder[0];
         Object throwObj = workItem.getParameter(ExceptionService.exceptionParameterName);
-        assertThat(throwObj).isInstanceOf(Throwable.class).withFailMessage("KogitoWorkItem doesn't contain Throwable.");
-        assertThat(((Throwable) throwObj).getMessage().endsWith(input)).withFailMessage("Exception message does not match service input.");
+        assertThat(throwObj).withFailMessage("KogitoWorkItem doesn't contain Throwable.").isInstanceOf(Throwable.class);
+        assertThat(((Throwable) throwObj).getMessage()).withFailMessage("Exception message does not match service input.").endsWith(input);
 
         // Complete process
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
@@ -854,8 +854,8 @@ public class StandaloneBPMNProcessTest extends JbpmBpmn2TestCase {
         assertThat(caughtEventObjectHolder[0] != null && caughtEventObjectHolder[0] instanceof KogitoWorkItem).isTrue().withFailMessage("Event was not passed to Event Subprocess.");
         KogitoWorkItem workItem = (KogitoWorkItem) caughtEventObjectHolder[0];
         Object throwObj = workItem.getParameter(ExceptionService.exceptionParameterName);
-        assertThat(throwObj).isInstanceOf(Throwable.class).withFailMessage("KogitoWorkItem doesn't contain Throwable.");
-        assertThat(((Throwable) throwObj).getMessage().endsWith(input)).withFailMessage("Exception message does not match service input.");
+        assertThat(throwObj).withFailMessage("KogitoWorkItem doesn't contain Throwable.").isInstanceOf(Throwable.class);
+        assertThat(((Throwable) throwObj).getMessage()).withFailMessage("Exception message does not match service input.").endsWith(input);
 
         // Complete process
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE).withFailMessage("Process instance is not active.");

@@ -49,7 +49,6 @@ class SpringMetricsFilterRegisterTest {
 
         if (httpInterceptorUseDefault) {
             List<HandlerInterceptor> values = registerCaptor.getAllValues();
-            assertThat(values).isNotEmpty();
             assertThat(values).hasSize(1);
             assertThat(values.get(0)).isInstanceOf(SpringbootMetricsInterceptor.class);
         } else {

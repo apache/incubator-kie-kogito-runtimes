@@ -68,12 +68,10 @@ class QuarkusMetricsInterceptorTest {
         verify(metricsInterceptor, times(1)).filter(matchedUrl.capture(), statusCodeCaptor.capture());
 
         List<String> endpoints = matchedUrl.getAllValues();
-        assertThat(endpoints).isNotEmpty();
         assertThat(endpoints).hasSize(1);
         assertThat(endpoints.get(0)).isEqualTo(expectedMatchedUrl);
 
         List<Integer> statusCodes = statusCodeCaptor.getAllValues();
-        assertThat(statusCodes).isNotEmpty();
         assertThat(statusCodes).hasSize(1);
         assertThat(statusCodes.get(0)).isEqualTo(statusCode);
     }

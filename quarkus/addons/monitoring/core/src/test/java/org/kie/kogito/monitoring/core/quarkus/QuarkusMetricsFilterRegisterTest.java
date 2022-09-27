@@ -56,7 +56,6 @@ class QuarkusMetricsFilterRegisterTest {
 
         if (httpInterceptorUseDefault) {
             List<Object> values = registerCaptor.getAllValues();
-            assertThat(values).isNotEmpty();
             assertThat(values).hasSize(1);
             assertThat(values.get(0)).isInstanceOf(QuarkusMetricsInterceptor.class);
         } else {

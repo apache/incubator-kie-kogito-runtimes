@@ -68,7 +68,7 @@ public class RuleCodegenTest {
         assertThat(emptyCodeGenerator.isEnabled()).isFalse();
 
         Collection<GeneratedFile> emptyGeneratedFiles = emptyCodeGenerator.generate();
-        assertThat(emptyGeneratedFiles.size()).isZero();
+        assertThat(emptyGeneratedFiles).isEmpty();
 
         RuleCodegen codeGenerator = getIncrementalRuleCodegenFromFiles(
                 contextBuilder,
@@ -78,7 +78,7 @@ public class RuleCodegenTest {
         assertThat(codeGenerator.isEnabled()).isTrue();
 
         Collection<GeneratedFile> generatedFiles = codeGenerator.generate();
-        assertThat(generatedFiles.size()).isPositive();
+        assertThat(generatedFiles).hasSizeGreaterThan(0);
     }
 
     @ParameterizedTest

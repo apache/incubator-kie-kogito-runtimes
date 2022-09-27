@@ -971,9 +971,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertThat(processInstance).isNull();
-        assertThat(variablevalues).hasSize(2);
-        assertThat(variablevalues.contains("SCRIPT1"));
-        assertThat(variablevalues.contains("SCRIPT2"));
+        assertThat(variablevalues).hasSize(2).contains("SCRIPT1", "SCRIPT2");
     }
 
     @Test
@@ -1665,7 +1663,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotNull();
-            assertThat(e.getMessage().contains("has no incoming connection"));
+            assertThat(e.getMessage()).contains("has no incoming connection");
         }
 
     }
@@ -1862,7 +1860,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 "MessageIntermediateEvent", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertThat(messageContent.toString()).hasToString("MYVALUE");
+        assertThat(messageContent).hasToString("MYVALUE");
 
     }
 
@@ -2182,7 +2180,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDateInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage().contains("Could not parse date 'abcdef'"));
+            assertThat(e.getMessage()).contains("Could not parse date 'abcdef'");
         }
     }
 
@@ -2192,7 +2190,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDurationInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'"));
+            assertThat(e.getMessage()).contains("Could not parse delay 'abcdef'");
         }
     }
 
@@ -2202,7 +2200,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventCycleInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'"));
+            assertThat(e.getMessage()).contains("Could not parse delay 'abcdef'");
         }
     }
 
@@ -2237,7 +2235,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isZero();
+        assertThat(processInstances).isEmpty();
     }
 
     @Test
@@ -2271,7 +2269,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             return false;
         });
         assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isZero();
+        assertThat(processInstances).isEmpty();
     }
 
     @Test
