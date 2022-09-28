@@ -15,19 +15,10 @@
  */
 package org.kie.kogito.event;
 
-import org.kie.kogito.event.impl.CloudEventWrapDataEvent;
-import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import io.cloudevents.CloudEvent;
-import io.cloudevents.CloudEventData;
 
-public class DataEventFactory {
-
-    public static <T> DataEvent<T> from(T event) {
-        return new ProcessDataEvent<T>(event);
-    }
-
-    public static <T> DataEvent<T> from(CloudEvent event, Unmarshaller<CloudEventData, T> unmarshaller) {
-        return new CloudEventWrapDataEvent<T>(event, unmarshaller);
-    }
+public interface CloudEventFactory {
+    CloudEvent build(Object data, String trigger, KogitoProcessInstance pi);
 }
