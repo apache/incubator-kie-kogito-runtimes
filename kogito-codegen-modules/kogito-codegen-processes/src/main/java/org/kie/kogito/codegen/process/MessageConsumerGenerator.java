@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.process;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -51,7 +51,6 @@ import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.WildcardType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
@@ -162,10 +161,10 @@ public class MessageConsumerGenerator {
         }
 
         if (!trigger.dataOnly()) {
+            ClassOrInterfaceType dataTypeClass = parseClassOrInterfaceType(trigger.getDataType());
             template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class)
                     .setType(parseClassOrInterfaceType(Function.class.getCanonicalName()).setTypeArguments(
-                            NodeList.nodeList(parseClassOrInterfaceType(DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(new WildcardType())),
-                                    parseClassOrInterfaceType(Object.class.getCanonicalName()))))
+                            NodeList.nodeList(parseClassOrInterfaceType(DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(dataTypeClass)), dataTypeClass)))
                     .setBody(new BlockStmt().addStatement(new ReturnStmt(
                             new MethodReferenceExpr(new NameExpr(ServerlessWorkflowUtils.class.getCanonicalName()), NodeList.nodeList(), "dataOnlyIsFalse"))));
         }
@@ -179,10 +178,9 @@ public class MessageConsumerGenerator {
                 .map(Correlation::getKey)
                 .map(f -> new StringLiteralExpr(f))
                 .collect(Collectors.toSet()));
-        MethodCallExpr streamOf =
-                new MethodCallExpr(new NameExpr(Stream.class.getCanonicalName()), "of").setArguments(arguments).setTypeArguments(new ClassOrInterfaceType().setName(String.class.getCanonicalName()));
-        MethodCallExpr collect = new MethodCallExpr(streamOf, "collect").addArgument(new MethodCallExpr(new NameExpr(Collectors.class.getCanonicalName()), "toSet"));
-        fd.getVariable(0).setInitializer(collect);
+        MethodCallExpr setOf =
+                new MethodCallExpr(new NameExpr(Set.class.getCanonicalName()), "of").setArguments(arguments);
+        fd.getVariable(0).setInitializer(setOf);
     }
 
     private void initializeProcessField(FieldDeclaration fd) {

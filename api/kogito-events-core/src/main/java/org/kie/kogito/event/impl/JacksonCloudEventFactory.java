@@ -26,26 +26,49 @@ import org.kie.kogito.event.CloudEventFactory;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.cloudevents.core.data.PojoCloudEventData;
+import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
+import io.cloudevents.jackson.JsonCloudEventData;
 
 public class JacksonCloudEventFactory implements CloudEventFactory {
 
+    private ToBytes<Object> toBytes;
+
+    public JacksonCloudEventFactory(ToBytes<Object> toBytes) {
+        this.toBytes = toBytes;
+    }
+
+    private void withExtension(CloudEventBuilder builder, String name, String value) {
+        if (value != null) {
+            builder.withExtension(name, value);
+        }
+    }
+
     @Override
     public CloudEvent build(Object data, String trigger, KogitoProcessInstance pi) {
-        io.cloudevents.core.v1.CloudEventBuilder builder = CloudEventBuilder.v1().withType(trigger).withSource(URI.create(String.format("/Kogito/%s/%s", pi.getProcessId(), pi.getId())))
-                .withTime(OffsetDateTime.now()).withId(UUID.randomUUID().toString())
-                .withExtension(CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID, pi.getParentProcessInstanceId())
-                .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, pi.getRootProcessId())
-                .withExtension(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID, pi.getRootProcessInstanceId())
-                .withExtension(CloudEventExtensionConstants.PROCESS_REFERENCE_ID, pi.getReferenceId())
-                .withExtension(CloudEventExtensionConstants.BUSINESS_KEY, pi.getBusinessKey())
-                .withExtension(CloudEventExtensionConstants.PROCESS_INSTANCE_ID, pi.getId())
-                .withExtension(CloudEventExtensionConstants.PROCESS_ID, pi.getProcessId())
-                .withExtension(CloudEventExtensionConstants.PROCESS_INSTANCE_STATE, pi.getState())
-                .withExtension(CloudEventExtensionConstants.PROCESS_TYPE, pi.getProcess().getType())
-                .withExtension(CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION, pi.getProcess().getVersion());
+        CloudEventBuilder builder = CloudEventBuilder.v1().withType(trigger).withSource(URI.create(String.format("/Kogito/%s/%s", pi.getProcessId(), pi.getId())))
+                .withTime(OffsetDateTime.now()).withId(UUID.randomUUID().toString());
 
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID, pi.getParentProcessInstanceId());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, pi.getRootProcessId());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID, pi.getRootProcessInstanceId());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_REFERENCE_ID, pi.getReferenceId());
+        withExtension(builder, CloudEventExtensionConstants.BUSINESS_KEY, pi.getBusinessKey());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_INSTANCE_ID, pi.getId());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_ID, pi.getProcessId());
+        builder.withExtension(CloudEventExtensionConstants.PROCESS_INSTANCE_STATE, pi.getState());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_TYPE, pi.getProcess().getType());
+        withExtension(builder, CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION, pi.getProcess().getVersion());
+
+        if (data instanceof JsonNode) {
+            builder.withData(JsonCloudEventData.wrap((JsonNode) data));
+        } else {
+            builder.withData(PojoCloudEventData.wrap(data, toBytes));
+        }
         //setting correlation as extension attributes
         pi.unwrap().correlation()
                 .stream()

@@ -36,20 +36,20 @@ import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<M> {
+public class ProcessEventDispatcher<M extends Model, D> implements EventDispatcher<M, D> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventDispatcher.class);
 
     private final Set<String> correlationKeys;
 
     private final ProcessService processService;
-    private final Optional<Function<Object, M>> modelConverter;
+    private final Optional<Function<D, M>> modelConverter;
     private final Process<M> process;
     private final ExecutorService executor;
-    private final Function<DataEvent<?>, Object> dataResolver;
+    private final Function<DataEvent<D>, D> dataResolver;
 
-    public ProcessEventDispatcher(Process<M> process, Optional<Function<Object, M>> modelConverter, ProcessService processService, ExecutorService executor, Set<String> correlationKeys,
-            Function<DataEvent<?>, Object> dataResolver) {
+    public ProcessEventDispatcher(Process<M> process, Optional<Function<D, M>> modelConverter, ProcessService processService, ExecutorService executor, Set<String> correlationKeys,
+            Function<DataEvent<D>, D> dataResolver) {
         this.process = process;
         this.modelConverter = modelConverter;
         this.processService = processService;
@@ -59,7 +59,7 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
     }
 
     @Override
-    public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, DataEvent<?> event) {
+    public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, DataEvent<D> event) {
         if (shouldSkipMessage(trigger, event)) {
             LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
             return CompletableFuture.completedFuture(null);
@@ -102,7 +102,7 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
         }
     }
 
-    private ProcessInstance<M> handleMessageWithReference(String trigger, DataEvent<?> event, String instanceId) {
+    private ProcessInstance<M> handleMessageWithReference(String trigger, DataEvent<D> event, String instanceId) {
         LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
                 instanceId,
                 trigger);
@@ -118,17 +118,15 @@ public class ProcessEventDispatcher<M extends Model> implements EventDispatcher<
                 });
     }
 
-    private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<?> event) {
+    private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<D> event) {
         return processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
     }
 
-    private ProcessInstance<M> startNewInstance(String trigger, DataEvent<?> event) {
+    private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
         return modelConverter.map(m -> {
-            final String businessKey = event.getKogitoBusinessKey();
-            final String fromNode = event.getKogitoStartFromNode();
-            final String referenceId = event.getKogitoProcessInstanceId();//keep reference with the caller starting the instance (usually the caller process instance)
             LOGGER.info("Starting new process instance with signal '{}'", trigger);
-            return processService.createProcessInstance(process, businessKey, m.apply(dataResolver.apply(event)), fromNode, trigger, referenceId, compositeCorrelation(event).orElse(null));
+            return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)), event.getKogitoStartFromNode(), trigger,
+                    event.getKogitoProcessInstanceId(), compositeCorrelation(event).orElse(null));
         }).orElse(null);
     }
 

@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -36,6 +37,13 @@ public class EventMarshallerProducer {
     @Inject
     ObjectMapper mapper;
 
+    private EventMarshaller<byte[]> byteMarshaller;
+
+    @PostConstruct
+    void init() {
+        byteMarshaller = new ByteArrayEventMarshaller(mapper);
+    }
+
     @Produces
     @DefaultBean
     public EventMarshaller<String> stringEventMarshaller() {
@@ -45,7 +53,7 @@ public class EventMarshallerProducer {
     @Produces
     @DefaultBean
     public EventMarshaller<byte[]> byteArrayEventMarshaller() {
-        return new ByteArrayEventMarshaller(mapper);
+        return byteMarshaller;
     }
 
     @Produces
@@ -57,7 +65,7 @@ public class EventMarshallerProducer {
     @Produces
     @DefaultBean
     public CloudEventFactory cloudEventFactory() {
-        return new JacksonCloudEventFactory();
+        return new JacksonCloudEventFactory(byteMarshaller::marshall);
     }
 
 }
