@@ -149,7 +149,7 @@ class EventDrivenDecisionControllerTest {
 
     private static DMNRuntime runtime;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper objectMapper = CloudEventUtils.Mapper.mapper();
 
     private EventDrivenDecisionController controller;
     private TestEventReceiver testEventReceiver;
