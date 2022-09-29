@@ -20,6 +20,7 @@ pipeline {
         KOGITO_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
         SONARCLOUD_TOKEN = credentials('SONARCLOUD_TOKEN')
         MAVEN_OPTS = '-Xms1024m -Xmx4g'
+        SONAR_REPORT_DIR = 'target/jacoco'
     }
     stages {
         stage('Checkout') {
@@ -43,7 +44,13 @@ pipeline {
                 script {
                     getMavenCommand()
                         .withOptions(['-e', '-nsu'])
-                        .withProfiles(['sonarcloud-analysis'])
+                        .withProfiles(['generate-jacoco'])
+                        .run('validate')
+                }
+                script {
+                    getMavenCommand()
+                        .withOptions(['-e', '-nsu'])
+                        .withProfiles(['upload-to-sonar'])
                         .run('validate')
                 }
             }
