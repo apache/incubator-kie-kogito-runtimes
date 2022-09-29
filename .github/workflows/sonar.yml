@@ -10,12 +10,6 @@ jobs:
   sonar:
     runs-on: ubuntu-latest
     steps:
-      - name: echo SONARCLOUD_TOKEN
-        run: echo "SONARCLOUD_TOKEN= ${{ env.SONARCLOUD_TOKEN }}"
-        env:
-          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-      - name: echo SONARCLOUD_TOKEN
-        run: echo "SONARCLOUD_TOKEN= ${{ secrets.SONARCLOUD_TOKEN }}"
       - uses: actions/checkout@v2
       - name: Java and Maven Setup
         uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
