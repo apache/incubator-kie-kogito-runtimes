@@ -79,7 +79,7 @@ abstract class AbstractCallbackStateIT {
         String processInput = buildProcessInput(SUCCESSFUL_QUERY);
         String processInstanceId = newProcessInstanceAndGetId(callbackProcessPostUrl, processInput);
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
         assertThat(workflowDataMap).hasSize(1);
         assertThat(workflowDataMap).containsEntry("query", SUCCESSFUL_QUERY);
@@ -112,7 +112,7 @@ abstract class AbstractCallbackStateIT {
         String lastExecutedState = result.getString("workflowdata.lastExecutedState");
         assertThat(lastExecutedState).isEqualTo("FinalizeWithError");
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
         assertThat(workflowDataMap)
                 .hasSize(2)

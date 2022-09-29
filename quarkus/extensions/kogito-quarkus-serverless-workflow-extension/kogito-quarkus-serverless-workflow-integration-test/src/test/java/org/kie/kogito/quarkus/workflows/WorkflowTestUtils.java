@@ -169,7 +169,7 @@ public class WorkflowTestUtils {
                         .statusCode(404));
     }
 
-    public static JsonPath waitForKogitoProcessInstanceEvent(KafkaTestClient kafkaClient) throws Exception {
+    public static JsonPath waitForKogitoProcessInstanceEvent(KafkaTestClient kafkaClient, boolean shutdownAfterConsume) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final AtomicReference<String> cloudEvent = new AtomicReference<>();
 
@@ -179,7 +179,9 @@ public class WorkflowTestUtils {
         });
         // give some time to consume the event
         assertThat(countDownLatch.await(TIME_OUT_SECONDS, TimeUnit.SECONDS)).isTrue();
-        kafkaClient.shutdown();
+        if (shutdownAfterConsume) {
+            kafkaClient.shutdown();
+        }
         return new JsonPath(cloudEvent.get());
     }
 

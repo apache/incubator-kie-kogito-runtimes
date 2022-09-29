@@ -111,7 +111,7 @@ class PojoServiceIT {
                 .body("workflowdata.enabled", is(enabled))
                 .body("workflowdata.birthDate", is(birthDate.getTime()));
 
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
         assertThat(workflowDataMap)
                 .hasSize(9)
@@ -140,7 +140,7 @@ class PojoServiceIT {
                 .body("id", notNullValue())
                 .body("workflowdata.name", is("javieritoPerson"))
                 .body("workflowdata.age", nullValue());
-        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient);
+        JsonPath processInstanceEventContent = waitForKogitoProcessInstanceEvent(kafkaClient, true);
         Map workflowDataMap = processInstanceEventContent.getMap("data.variables.workflowdata");
         assertThat(workflowDataMap).hasSize(1);
         assertThat(workflowDataMap).containsEntry("name", "javieritoPerson");
