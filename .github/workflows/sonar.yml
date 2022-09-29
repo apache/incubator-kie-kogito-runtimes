@@ -1,3 +1,5 @@
+# Securing secrets on GHA: https://nathandavison.com/blog/github-actions-and-the-threat-of-malicious-pull-requests
+
 name: Upload to sonar
 
 on:
