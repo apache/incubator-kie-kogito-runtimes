@@ -16,19 +16,17 @@
 package $Package$;
 
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kie.kogito.Application;
 import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.process.Process;
@@ -73,8 +71,8 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     @javax.annotation.PostConstruct
     void init() {
         executor = factory.getExecutorService("$Trigger$"); 
-        init(application,
-             process,
+        init(
+                process,
              "$Trigger$",
              eventReceiver,
              $DataType$.class,

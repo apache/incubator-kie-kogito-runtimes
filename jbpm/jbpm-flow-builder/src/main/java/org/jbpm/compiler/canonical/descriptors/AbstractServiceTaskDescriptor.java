@@ -78,7 +78,7 @@ public abstract class AbstractServiceTaskDescriptor implements TaskDescriptor {
 
     protected abstract void handleParametersForServiceCall(final BlockStmt executeWorkItemBody, final MethodCallExpr callService);
 
-    protected Expression handleServiceCallResult(final BlockStmt executeWorkItemBody, final MethodCallExpr callService) {
+    protected Expression handleServiceCallResult(final MethodCallExpr callService) {
         return callService;
     }
 

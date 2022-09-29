@@ -53,7 +53,7 @@ public class StartNodeInstance extends NodeInstanceImpl {
         triggerCompleted();
     }
 
-    public void signalEvent(String type, Object event) {
+    public void signalEvent(Object event) {
         String variableName = (String) getStartNode().getMetaData(TRIGGER_MAPPING_INPUT);
         if (variableName != null) {
             Map<String, Object> outputSet = Collections.singletonMap(variableName, event);

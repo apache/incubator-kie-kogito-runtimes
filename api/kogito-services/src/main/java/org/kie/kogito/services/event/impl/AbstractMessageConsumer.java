@@ -57,11 +57,10 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             ProcessService processService,
             ExecutorService executorService,
             EventUnmarshaller<Object> eventUnmarshaller) {
-        init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
+        init(process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
     }
 
-    public void init(Application application,
-            Process<M> process,
+    public void init(Process<M> process,
             String trigger,
             EventReceiver eventReceiver,
             Class<D> dataClass,

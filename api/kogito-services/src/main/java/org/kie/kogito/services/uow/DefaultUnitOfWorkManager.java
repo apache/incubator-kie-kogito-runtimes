@@ -77,12 +77,12 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
     }
 
     protected void onEnd(UnitOfWork unit) {
-        this.dissociate(unit);
+        this.dissociate();
         listeners.forEach(l -> l.onAfterEndEvent(new UnitOfWorkEndEvent(unit)));
     }
 
     protected void onAbort(UnitOfWork unit) {
-        this.dissociate(unit);
+        this.dissociate();
         listeners.forEach(l -> l.onAfterAbortEvent(new UnitOfWorkAbortEvent(unit)));
     }
 
@@ -90,7 +90,7 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
         currentUnitOfWork.set(unit);
     }
 
-    protected void dissociate(UnitOfWork unit) {
+    protected void dissociate() {
         currentUnitOfWork.set(null);
     }
 

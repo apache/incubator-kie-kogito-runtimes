@@ -52,7 +52,7 @@ public class MVELReturnValueEvaluatorBuilder extends AbstractMVELBuilder
         try {
             MVELDialect dialect = (MVELDialect) context.getDialect("mvel");
 
-            MVELAnalysisResult analysis = getAnalysis(context, descr, dialect, text, variables);
+            MVELAnalysisResult analysis = getAnalysis(context, dialect, text, variables);
 
             if (analysis == null) {
                 // not possible to get the analysis results

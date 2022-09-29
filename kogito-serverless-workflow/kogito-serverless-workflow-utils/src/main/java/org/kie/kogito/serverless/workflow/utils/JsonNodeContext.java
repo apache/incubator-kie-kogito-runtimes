@@ -62,11 +62,11 @@ public class JsonNodeContext implements AutoCloseable {
     private static Map<String, JsonNode> addVariablesFromContext(ObjectNode context, KogitoProcessContext processInfo) {
         KogitoNodeInstance nodeInstance = processInfo.getNodeInstance();
         if (nodeInstance instanceof ContextableInstance) {
-            return getVariablesFromContext(context, (ContextableInstance) nodeInstance);
+            return getVariablesFromContext((ContextableInstance) nodeInstance);
         } else if (nodeInstance != null) {
             NodeInstanceContainer container = nodeInstance.getNodeInstanceContainer();
             if (container instanceof ContextableInstance && container instanceof KogitoNodeInstance) {
-                return getVariablesFromContext(context, (ContextableInstance) container);
+                return getVariablesFromContext((ContextableInstance) container);
             }
         }
         return Collections.emptyMap();
@@ -79,7 +79,7 @@ public class JsonNodeContext implements AutoCloseable {
         return scope.getVariables().stream().filter(v -> v.getName().equals(varName)).findAny().orElseThrow().getMetaData(Metadata.EVAL_VARIABLE) != null;
     }
 
-    private static Map<String, JsonNode> getVariablesFromContext(ObjectNode context, ContextableInstance node) {
+    private static Map<String, JsonNode> getVariablesFromContext(ContextableInstance node) {
         VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
         return variableScope.getVariables().entrySet().stream().filter(e -> isEvalVariable(e.getKey(), (KogitoNodeInstance) node))
                 .collect(Collectors.toMap(Entry::getKey, entry -> JsonObjectUtils.fromValue(entry.getValue())));

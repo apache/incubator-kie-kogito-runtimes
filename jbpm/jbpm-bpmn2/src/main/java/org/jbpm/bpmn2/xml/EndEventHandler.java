@@ -75,14 +75,14 @@ public class EndEventHandler extends AbstractNodeHandler {
             String nodeName = xmlNode.getNodeName();
             if ("terminateEventDefinition".equals(nodeName)) {
                 setThrowVariable(ioSpecification, node);
-                handleTerminateNode(node, element, uri, localName, parser);
+                handleTerminateNode(node, element);
                 break;
             } else if ("signalEventDefinition".equals(nodeName)) {
                 setThrowVariable(ioSpecification, node);
-                handleSignalNode(node, element, uri, localName, parser);
+                handleSignalNode(node, element, parser);
             } else if ("messageEventDefinition".equals(nodeName)) {
                 setThrowVariable(ioSpecification, node);
-                handleMessageNode(node, element, uri, localName, parser);
+                handleMessageNode(node, element, parser);
             } else if ("errorEventDefinition".equals(nodeName)) {
                 FaultNode faultNode = new FaultNode();
                 faultNode.setId(node.getId());
@@ -93,7 +93,7 @@ public class EndEventHandler extends AbstractNodeHandler {
                 setThrowVariable(ioSpecification, node);
                 faultNode.setFaultVariable((String) node.getMetaData().get(Metadata.VARIABLE));
                 super.handleNode(node, element, uri, localName, parser);
-                handleErrorNode(node, element, uri, localName, parser);
+                handleErrorNode(node, element, parser);
                 break;
             } else if ("escalationEventDefinition".equals(nodeName)) {
                 FaultNode faultNode = new FaultNode();
@@ -104,11 +104,11 @@ public class EndEventHandler extends AbstractNodeHandler {
                 setThrowVariable(ioSpecification, node);
                 faultNode.setFaultVariable((String) node.getMetaData().get(Metadata.VARIABLE));
                 super.handleNode(node, element, uri, localName, parser);
-                handleEscalationNode(node, element, uri, localName, parser);
+                handleEscalationNode(node, element, parser);
                 break;
             } else if ("compensateEventDefinition".equals(nodeName)) {
                 setThrowVariable(ioSpecification, node);
-                handleThrowCompensationEventNode(node, element, uri, localName, parser);
+                handleThrowCompensationEventNode(node, element);
                 break;
             }
             xmlNode = xmlNode.getNextSibling();
@@ -120,8 +120,7 @@ public class EndEventHandler extends AbstractNodeHandler {
         return node;
     }
 
-    public void handleTerminateNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser) throws SAXException {
+    public void handleTerminateNode(final Node node, final Element element) throws SAXException {
         ((EndNode) node).setTerminate(true);
 
         EndNode endNode = (EndNode) node;
@@ -140,8 +139,8 @@ public class EndEventHandler extends AbstractNodeHandler {
         }
     }
 
-    public void handleSignalNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser) throws SAXException {
+    public void handleSignalNode(final Node node, final Element element,
+            final Parser parser) throws SAXException {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -173,8 +172,8 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void handleMessageNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser) throws SAXException {
+    public void handleMessageNode(final Node node, final Element element,
+            final Parser parser) throws SAXException {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -206,8 +205,8 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void handleErrorNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser) throws SAXException {
+    public void handleErrorNode(final Node node, final Element element,
+            final Parser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -238,8 +237,8 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public void handleEscalationNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser) throws SAXException {
+    public void handleEscalationNode(final Node node, final Element element,
+            final Parser parser) throws SAXException {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {

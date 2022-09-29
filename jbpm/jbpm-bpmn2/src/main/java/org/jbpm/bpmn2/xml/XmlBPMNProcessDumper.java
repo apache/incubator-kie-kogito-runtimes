@@ -200,7 +200,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         }
         // TODO: package, version
         xmlDump.append(">" + EOL + EOL);
-        visitHeader(process, xmlDump, metaDataType);
+        visitHeader(process, xmlDump);
 
         List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
@@ -328,7 +328,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         }
     }
 
-    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump, int metaDataType) {
+    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump) {
         Map<String, Object> metaData = getMetaData(process.getMetaData());
         Set<String> imports = ((org.jbpm.process.core.Process) process).getImports();
         Map<String, String> globals = ((org.jbpm.process.core.Process) process).getGlobals();

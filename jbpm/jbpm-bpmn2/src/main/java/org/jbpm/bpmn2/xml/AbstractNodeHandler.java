@@ -443,7 +443,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
             if ("dataOutputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -458,7 +458,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         while (xmlNode != null) {
             String nodeName = xmlNode.getNodeName();
             if ("dataInputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -475,9 +475,9 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                 ioSpec.getDataInputs().addAll(readDataInput(parser, xmlNode));
                 ioSpec.getDataOutputs().addAll(readDataOutput(parser, xmlNode));
             } else if ("dataInputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> getVariableDataSpec(parser, id), id -> ioSpec.getDataInput().get(id)).ifPresent(e -> ioSpec.getDataInputAssociation().add(e));
             } else if ("dataOutputAssociation".equals(nodeName)) {
-                readDataAssociation(parser, (Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
+                readDataAssociation((Element) xmlNode, id -> ioSpec.getDataOutput().get(id), id -> getVariableDataSpec(parser, id)).ifPresent(e -> ioSpec.getDataOutputAssociation().add(e));
             }
             xmlNode = xmlNode.getNextSibling();
         }
@@ -543,11 +543,11 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return !elements.isEmpty() ? Optional.of(elements.get(0)) : Optional.empty();
     }
 
-    protected Optional<DataAssociation> readDataAssociation(Parser parser, org.w3c.dom.Element element, Function<String, DataDefinition> sourceResolver,
+    protected Optional<DataAssociation> readDataAssociation(org.w3c.dom.Element element, Function<String, DataDefinition> sourceResolver,
             Function<String, DataDefinition> targetResolver) {
         List<DataDefinition> sources = readSources(element, sourceResolver);
         DataDefinition target = readTarget(element, targetResolver);
-        List<Assignment> assignments = readAssignments(element, target,
+        List<Assignment> assignments = readAssignments(element,
                 src -> {
                     if (".".equals(src)) {
                         return sources.get(0);
@@ -607,7 +607,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         }
     }
 
-    private List<Assignment> readAssignments(Element parent, DataDefinition dst, Function<String, DataDefinition> sourceResolver, Function<String, DataDefinition> targetResolver) {
+    private List<Assignment> readAssignments(Element parent, Function<String, DataDefinition> sourceResolver, Function<String, DataDefinition> targetResolver) {
         List<Assignment> assignments = new ArrayList<>();
         readChildrenElementsByTag(parent, "assignment").forEach(element -> {
             Optional<Element> from = readSingleChildElementByTag(element, "from");
@@ -864,8 +864,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return error.getId();
     }
 
-    protected void handleThrowCompensationEventNode(final Node node, final Element element,
-            final String uri, final String localName, final Parser parser) {
+    protected void handleThrowCompensationEventNode(final Node node, final Element element) {
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         if (!(node instanceof ActionNode || node instanceof EndNode)) {
             throw new IllegalArgumentException("Node is neither an ActionNode nor an EndNode but a " + node.getClass().getSimpleName());

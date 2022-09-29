@@ -80,7 +80,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                 break;
             } else if ("errorEventDefinition".equals(nodeName)) {
                 // reuse already created EventNode
-                handleErrorNode(node, element, uri, localName, parser, attachedTo, cancelActivity);
+                handleErrorNode(node, element, uri, localName, parser, attachedTo);
                 node.setMetaData(EVENT_TYPE, "error");
                 break;
             } else if ("timerEventDefinition".equals(nodeName)) {
@@ -90,7 +90,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
                 break;
             } else if ("compensateEventDefinition".equals(nodeName)) {
                 // reuse already created EventNode
-                handleCompensationNode(node, element, uri, localName, parser, attachedTo, cancelActivity);
+                handleCompensationNode(node, element, uri, localName, parser, attachedTo);
                 node.setMetaData(EVENT_TYPE, "compensation");
                 break;
             } else if ("signalEventDefinition".equals(nodeName)) {
@@ -164,8 +164,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     protected void handleErrorNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser, final String attachedTo,
-            final boolean cancelActivity) throws SAXException {
+            final String localName, final Parser parser, final String attachedTo) throws SAXException {
         super.handleNode(node, element, uri, localName, parser);
         BoundaryEventNode eventNode = (BoundaryEventNode) node;
         eventNode.setMetaData("AttachedTo", attachedTo);
@@ -280,8 +279,7 @@ public class BoundaryEventHandler extends AbstractNodeHandler {
     }
 
     protected void handleCompensationNode(final Node node, final Element element, final String uri,
-            final String localName, final Parser parser, final String attachedTo,
-            final boolean cancelActivity) throws SAXException {
+            final String localName, final Parser parser, final String attachedTo) throws SAXException {
         BoundaryEventNode eventNode = (BoundaryEventNode) parser.getCurrent();
 
         super.handleNode(node, element, uri, localName, parser);

@@ -88,13 +88,13 @@ public class XmlWorkflowProcessDumper {
             }
         }
         xmlDump.append(">" + EOL + EOL);
-        visitHeader(process, xmlDump, includeMeta);
+        visitHeader(process, xmlDump);
         visitNodes(process, xmlDump, includeMeta);
         visitConnections(process.getNodes(), xmlDump, includeMeta);
         xmlDump.append("</process>");
     }
 
-    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump, boolean includeMeta) {
+    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump) {
         xmlDump.append("  <header>" + EOL);
         visitImports(((org.jbpm.process.core.Process) process).getImports(), xmlDump);
         visitGlobals(((org.jbpm.process.core.Process) process).getGlobals(), xmlDump);

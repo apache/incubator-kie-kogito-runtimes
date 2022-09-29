@@ -59,7 +59,7 @@ public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
                 StartNode startNode = getCompositeNode().findStartNode();
                 if (resolveVariables(((EventSubProcessNode) getEventBasedNode()).getEvents()).contains(type) || type.equals("timerTriggered")) {
                     NodeInstance nodeInstance = getNodeInstance(startNode);
-                    ((StartNodeInstance) nodeInstance).signalEvent(type, event);
+                    ((StartNodeInstance) nodeInstance).signalEvent(event);
                 }
             }
         }

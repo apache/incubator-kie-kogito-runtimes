@@ -60,7 +60,7 @@ public class UserTaskHandler extends TaskHandler {
             String nodeName = xmlNode.getNodeName();
             // ioSpec and data{Input,Output}Spec handled in super.handleNode(...)
             if ("potentialOwner".equals(nodeName)) {
-                String owner = readPotentialOwner(xmlNode, humanTaskNode);
+                String owner = readPotentialOwner(xmlNode);
                 if (owner != null) {
                     owners.add(owner);
                 }
@@ -83,7 +83,7 @@ public class UserTaskHandler extends TaskHandler {
         return super.end(uri, localName, parser);
     }
 
-    protected String readPotentialOwner(org.w3c.dom.Node xmlNode, HumanTaskNode humanTaskNode) {
+    protected String readPotentialOwner(org.w3c.dom.Node xmlNode) {
         org.w3c.dom.Node node = xmlNode.getFirstChild();
         if (node != null) {
             node = node.getFirstChild();
