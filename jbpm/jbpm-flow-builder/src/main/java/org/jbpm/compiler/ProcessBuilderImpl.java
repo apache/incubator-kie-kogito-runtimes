@@ -447,19 +447,21 @@ public class ProcessBuilderImpl implements org.drools.compiler.compiler.ProcessB
 
         StringBuilder result =
                 new StringBuilder("rule \"RuleFlow-Start-" + process.getId() + "\" @Propagation(EAGER) \n" +
-                                          (trigger.getHeader() == null ? "" : "        " + trigger.getHeader() + " \n") +
-                                          "    when\n" +
-                                          "        " + trigger.getConstraint() + "\n" +
-                                          "    then\n");
+                        (trigger.getHeader() == null ? "" : "        " + trigger.getHeader() + " \n") +
+                        "    when\n" +
+                        "        " + trigger.getConstraint() + "\n" +
+                        "    then\n");
         Map<String, String> inMappings = trigger.getInMappings();
         if (inMappings != null && !inMappings.isEmpty()) {
             result.append("        java.util.Map params = new java.util.HashMap();\n");
             for (Map.Entry<String, String> entry : inMappings.entrySet()) {
                 result.append("        params.put(\"").append(entry.getValue()).append("\", ").append(entry.getKey()).append(");\n");
             }
-            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"").append(process.getId()).append("\", params, \"conditional\");\n").append("end\n\n");
+            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"")
+                    .append(process.getId()).append("\", params, \"conditional\");\n").append("end\n\n");
         } else {
-            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"").append(process.getId()).append("\", null, \"conditional\");\n").append("end\n\n");
+            result.append("        ((org.jbpm.process.instance.ProcessRuntimeImpl)((org.drools.core.common.InternalWorkingMemory)kcontext.getKieRuntime()).getProcessRuntime()).startProcess(\"")
+                    .append(process.getId()).append("\", null, \"conditional\");\n").append("end\n\n");
         }
         return result.toString();
     }
