@@ -24,15 +24,12 @@ import java.util.UUID;
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.event.CloudEventFactory;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
-import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
-import io.cloudevents.jackson.JsonCloudEventData;
 
 public class JacksonCloudEventFactory implements CloudEventFactory {
 
@@ -64,11 +61,7 @@ public class JacksonCloudEventFactory implements CloudEventFactory {
         withExtension(builder, CloudEventExtensionConstants.PROCESS_TYPE, pi.getProcess().getType());
         withExtension(builder, CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION, pi.getProcess().getVersion());
 
-        if (data instanceof JsonNode) {
-            builder.withData(JsonCloudEventData.wrap((JsonNode) data));
-        } else {
-            builder.withData(PojoCloudEventData.wrap(data, toBytes));
-        }
+        CloudEventUtils.withData(builder, data, toBytes);
         //setting correlation as extension attributes
         pi.unwrap().correlation()
                 .stream()

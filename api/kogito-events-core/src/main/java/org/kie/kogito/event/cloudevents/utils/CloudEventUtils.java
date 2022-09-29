@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -43,6 +45,8 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventExtension;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
+import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
+import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 import io.cloudevents.rw.CloudEventRWException;
@@ -227,6 +231,30 @@ public final class CloudEventUtils {
                     .orElse(null);
         } catch (IntrospectionException | RuntimeException e) {
             throw new IllegalArgumentException("Error getting attribute " + name, e);
+        }
+    }
+
+    public static void withExtension(CloudEventBuilder builder, String k, Object v) {
+        if (v instanceof Number) {
+            builder.withExtension(k, (Number) v);
+        } else if (v instanceof Boolean) {
+            builder.withExtension(k, (Boolean) v);
+        } else if (v instanceof byte[]) {
+            builder.withExtension(k, (byte[]) v);
+        } else if (v instanceof URI) {
+            builder.withExtension(k, (URI) v);
+        } else if (v instanceof OffsetDateTime) {
+            builder.withExtension(k, (OffsetDateTime) v);
+        } else {
+            builder.withExtension(k, v.toString());
+        }
+    }
+
+    public static void withData(CloudEventBuilder builder, Object data, ToBytes<Object> toBytes) {
+        if (data instanceof JsonNode) {
+            builder.withData(JsonCloudEventData.wrap((JsonNode) data));
+        } else {
+            builder.withData(PojoCloudEventData.wrap(data, toBytes));
         }
     }
 }

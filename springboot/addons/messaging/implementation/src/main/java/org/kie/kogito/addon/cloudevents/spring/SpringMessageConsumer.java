@@ -20,12 +20,8 @@ import java.util.concurrent.ExecutorService;
 
 import org.kie.kogito.Application;
 import org.kie.kogito.Model;
-import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.CloudEventUnmarshaller;
-import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventExecutorServiceFactory;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.impl.AbstractMessageConsumer;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
@@ -37,15 +33,6 @@ public abstract class SpringMessageConsumer<M extends Model, D> extends Abstract
     Application application;
 
     @Autowired
-    EventUnmarshaller<Object> eventDataUnmarshaller;
-
-    @Autowired
-    CloudEventUnmarshaller<Object> cloudEventUnmarshaller;
-
-    @Autowired
-    ConfigBean configBean;
-
-    @Autowired
     ProcessService processService;
 
     @Autowired
@@ -55,10 +42,7 @@ public abstract class SpringMessageConsumer<M extends Model, D> extends Abstract
 
     protected void init(Process<M> process, String trigger, Class<D> objectClass, EventReceiver eventReceiver) {
         executor = factory.getExecutorService(trigger);
-        init(application, process, trigger, eventReceiver, objectClass, processService, executor,
-                configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o), ced -> cloudEventUnmarshaller.unmarshall(ced, objectClass))
-                        : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o, objectClass)),
-                Collections.emptySet());
+        init(application, process, trigger, eventReceiver, objectClass, processService, executor, Collections.emptySet());
     }
 
     public void close() {

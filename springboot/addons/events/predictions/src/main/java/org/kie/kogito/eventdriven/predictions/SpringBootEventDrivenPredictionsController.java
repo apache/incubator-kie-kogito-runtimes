@@ -31,7 +31,7 @@ public class SpringBootEventDrivenPredictionsController extends EventDrivenPredi
     @Autowired
     public SpringBootEventDrivenPredictionsController(PredictionModels predictionModels, ConfigBean config, EventEmitter eventEmitter, EventReceiver eventReceiver,
             CloudEventUnmarshaller<Object> eventUnmarshaller) {
-        super(predictionModels, config, eventEmitter, eventReceiver, eventUnmarshaller);
+        super(predictionModels, config, eventEmitter, eventReceiver);
     }
 
     @PostConstruct

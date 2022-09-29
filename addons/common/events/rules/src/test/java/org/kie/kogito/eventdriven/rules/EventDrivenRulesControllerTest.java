@@ -19,7 +19,6 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 
@@ -35,10 +34,9 @@ class EventDrivenRulesControllerTest {
         ConfigBean configMock = mock(ConfigBean.class);
         EventEmitter eventEmitterMock = mock(EventEmitter.class);
         EventReceiver eventReceiverMock = mock(EventReceiver.class);
-        CloudEventUnmarshaller<Object> eventUnmarshaller = mock(CloudEventUnmarshaller.class);
 
         // option #1: parameters via constructor + parameterless setup
-        EventDrivenRulesController controller1 = new EventDrivenRulesController(Collections.emptySet(), configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);
+        EventDrivenRulesController controller1 = new EventDrivenRulesController(Collections.emptySet(), configMock, eventEmitterMock, eventReceiverMock);
         controller1.subscribe();
         verify(eventReceiverMock).subscribe(any(), any());
 
@@ -46,7 +44,7 @@ class EventDrivenRulesControllerTest {
 
         // option #2: parameterless via constructor + parameters via setup (introduced for Quarkus CDI)
         EventDrivenRulesController controller2 = new EventDrivenRulesController();
-        controller2.init(Collections.emptySet(), configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);
+        controller2.init(Collections.emptySet(), configMock, eventEmitterMock, eventReceiverMock);
         controller2.subscribe();
         verify(eventReceiverMock).subscribe(any(), any());
     }

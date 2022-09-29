@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.event;
 
+import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventContext;
 
 /**
@@ -63,4 +64,6 @@ public interface DataEvent<T> extends CloudEventContext {
     String getKogitoProcessInstanceVersion();
 
     String getKogitoProcessType();
+
+    CloudEvent asCloudEvent();
 }

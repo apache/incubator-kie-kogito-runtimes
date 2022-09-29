@@ -26,8 +26,8 @@ public interface EventReceiver {
     /**
      * Subscribe an event consumer for a receiver
      * 
-     * @param consumer consumer function that accepts the model object and return a completion state with the result of the consumption.
-     * @param converted function responsible for converting the object received from the external event source into a model object.
+     * @param consumer consumer function that accepts the data event object and return a completion state with the result of the consumption.
+     * @param dataClass the model object class wrapped into the data event
      */
-    <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> unmarshaller);
+    <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> dataClass);
 }

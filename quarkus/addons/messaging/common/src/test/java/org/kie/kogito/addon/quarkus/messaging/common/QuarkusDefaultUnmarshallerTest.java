@@ -43,12 +43,12 @@ import static org.mockito.Mockito.when;
 public class QuarkusDefaultUnmarshallerTest {
 
     private ObjectMapper objectMapper;
-    private QuarkusCloudEventUnmarshaller unmarshaller;
+    private ByteArrayQuarkusCloudEventUnmarshaller unmarshaller;
 
     @BeforeEach
     void setup() {
         objectMapper = ObjectMapperFactory.get().registerModule(JsonFormat.getCloudEventJacksonModule());
-        unmarshaller = new QuarkusCloudEventUnmarshaller(objectMapper);
+        unmarshaller = new ByteArrayQuarkusCloudEventUnmarshaller(objectMapper);
     }
 
     private byte[] getStructureCE(String specVersion, String type, String source, JsonNode data) throws JsonProcessingException {

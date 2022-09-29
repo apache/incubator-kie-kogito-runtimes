@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JacksonMarshallUtils {
 
-    public static <T> T unmarshall(ObjectMapper mapper, Object input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
+    public static <T, S> T unmarshall(ObjectMapper mapper, S input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
         if (input == null) {
             return null;
         }

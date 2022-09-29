@@ -35,9 +35,9 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.Unmarshaller;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.event.impl.JacksonCloudEventUnmarshaller;
@@ -449,16 +449,15 @@ class EventDrivenDecisionControllerTest {
 
     private static class TestEventReceiver implements EventReceiver {
 
-        private Subscription<Object, Object> subscription;
+        private Subscription subscription;
 
         public void accept(String message) throws IOException {
             subscription.getConsumer().apply(subscription.getConverter().unmarshall(message));
         }
 
         @Override
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> converter) {
-            subscription = new Subscription(consumer, converter);
+        public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> className) {
+            subscription = new Subscription<>(consumer, objectMapper.read);
         }
     }
 }

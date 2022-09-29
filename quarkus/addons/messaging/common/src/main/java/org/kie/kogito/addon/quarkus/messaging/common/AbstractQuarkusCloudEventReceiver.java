@@ -23,20 +23,38 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import javax.inject.Inject;
+
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.cloudevents.Subscription;
+import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.Unmarshaller;
+import org.kie.kogito.event.EventUnmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver {
+public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventReceiver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractQuarkusCloudEventReceiver.class);
 
-    private Collection<Subscription<Object, Message>> consumers = new CopyOnWriteArrayList<>();
+    private Collection<Subscription<DataEvent<?>, Message<I>>> consumers = new CopyOnWriteArrayList<>();
 
-    public CompletionStage<?> produce(final Message<?> message) {
+    //Injection does not work with generic
+    private EventUnmarshaller<I> eventDataUnmarshaller;
+    private CloudEventUnmarshaller<Message<I>> cloudEventUnmarshaller;
+
+    @Inject
+    ConfigBean configBean;
+
+    protected void init(EventUnmarshaller<I> eventDataUnmarshaller, CloudEventUnmarshaller<Message<I>> cloudEventUnmarshaller) {
+        this.eventDataUnmarshaller = eventDataUnmarshaller;
+        this.cloudEventUnmarshaller = cloudEventUnmarshaller;
+    }
+
+    protected CompletionStage<?> produce(final Message<I> message) {
         LOGGER.debug("Received message {}", message);
         return produce(message, (v, e) -> {
             LOGGER.debug("Acking message {}", message);
@@ -47,12 +65,12 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
         });
     }
 
-    private CompletionStage<?> produce(final Message message, BiConsumer<Object, Throwable> callback) {
+    private CompletionStage<?> produce(final Message<I> message, BiConsumer<Object, Throwable> callback) {
         CompletionStage<?> result = CompletableFuture.completedFuture(null);
         CompletionStage<?> future = result;
-        for (Subscription<Object, Message> subscription : consumers) {
+        for (Subscription<DataEvent<?>, Message<I>> subscription : consumers) {
             try {
-                Object object = subscription.getConverter().unmarshall(message);
+                DataEvent<?> object = subscription.getConverter().unmarshall(message);
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException e) {
                 LOGGER.info("Error converting event. Exception message is {}", e.getMessage());
@@ -66,7 +84,10 @@ public abstract class AbstractQuarkusCloudEventReceiver implements EventReceiver
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <S, T> void subscribe(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> info) {
-        consumers.add(new Subscription(consumer, info));
+    public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> objectClass) {
+        Subscription subscription = new Subscription<DataEvent<T>, Message<I>>(consumer,
+                configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o), ced -> cloudEventUnmarshaller.unmarshall(ced, objectClass))
+                        : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o.getPayload(), objectClass)));
+        consumers.add(subscription);
     }
 }

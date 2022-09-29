@@ -26,7 +26,6 @@ import org.kie.kogito.Model;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.EventReceiver;
-import org.kie.kogito.event.Unmarshaller;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
@@ -46,11 +45,10 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             Class<D> dataClass,
             ProcessService processService,
             ExecutorService executorService,
-            Unmarshaller<Object, DataEvent<D>> unmarshaller,
             Set<String> correlations) {
         this.trigger = trigger;
         this.eventDispatcher = new ProcessEventDispatcher<>(process, getModelConverter(), processService, executorService, correlations, getDataResolver());
-        eventReceiver.subscribe(this::consume, unmarshaller);
+        eventReceiver.subscribe(this::consume, dataClass);
         logger.info("Consumer for {} started", trigger);
     }
 

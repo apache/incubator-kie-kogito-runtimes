@@ -26,11 +26,11 @@ import io.cloudevents.CloudEventData;
 import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 
-public abstract class AbstractCloudEventMarshaller<T> implements CloudEventUnmarshaller<T> {
+public abstract class AbstractCloudEventUnmarshaller<T> implements CloudEventUnmarshaller<T> {
 
     protected final ObjectMapper objectMapper;
 
-    public AbstractCloudEventMarshaller(ObjectMapper objectMapper) {
+    public AbstractCloudEventUnmarshaller(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

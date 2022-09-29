@@ -29,6 +29,7 @@ import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.event.cloudevents.SpecVersionDeserializer;
 import org.kie.kogito.event.cloudevents.SpecVersionSerializer;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -39,7 +40,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import io.cloudevents.CloudEvent;
 import io.cloudevents.SpecVersion;
+import io.cloudevents.core.builder.CloudEventBuilder;
 
 /**
  * This is an abstract implementation of the {@link DataEvent} that contains basic common attributes referring to
@@ -453,6 +456,15 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
                 break;
         }
         extensionAttributes.put(name, value);
+    }
+
+    @Override
+    public CloudEvent asCloudEvent() {
+        CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(specVersion).withSource(source).withType(type).withId(id).withSubject(subject).withTime(time)
+                .withDataContentType(dataContentType).withDataSchema(dataSchema);
+        CloudEventUtils.withData(builder, data, ObjectMapperFactory.get()::writeValueAsBytes);
+        extensionAttributes.forEach((k, v) -> CloudEventUtils.withExtension(builder, k, v));
+        return builder.build();
     }
 
     @Override

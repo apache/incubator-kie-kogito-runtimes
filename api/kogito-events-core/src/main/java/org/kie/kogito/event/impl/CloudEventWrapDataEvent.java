@@ -174,4 +174,9 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
     public String getKogitoProcessType() {
         return (String) getExtension(CloudEventExtensionConstants.PROCESS_TYPE);
     }
+
+    @Override
+    public CloudEvent asCloudEvent() {
+        return cloudEvent;
+    }
 }

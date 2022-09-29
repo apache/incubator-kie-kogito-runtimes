@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
-
-import java.io.IOException;
+package org.kie.kogito.addon.quarkus.messaging.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.cloudevents.CloudEvent;
+public class StringQuarkusCloudEventUnmarshaller extends AbstractQuarkusCloudEventUnmarshaller<String> {
 
-public class JacksonCloudEventUnmarshaller extends AbstractCloudEventUnmarshaller<Object> {
-
-    public JacksonCloudEventUnmarshaller(ObjectMapper objectMapper) {
+    protected StringQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper) {
         super(objectMapper);
     }
 
     @Override
-    public CloudEvent unmarshall(Object event) throws IOException {
-        return JacksonMarshallUtils.unmarshall(objectMapper, event, CloudEvent.class);
+    protected byte[] toBytes(String data) {
+        return data.getBytes();
     }
+
 }

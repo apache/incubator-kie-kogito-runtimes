@@ -20,7 +20,6 @@ import javax.inject.Inject;
 
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionModels;
-import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 
@@ -41,12 +40,9 @@ public class QuarkusEventDrivenDecisionController extends EventDrivenDecisionCon
     @Inject
     EventReceiver eventReceiver;
 
-    @Inject
-    CloudEventUnmarshaller<Object> eventUnmarshaller;
-
     @PostConstruct
     private void onPostConstruct() {
-        init(decisionModels, config, eventEmitter, eventReceiver, eventUnmarshaller);
+        init(decisionModels, config, eventEmitter, eventReceiver);
         subscribe();
     }
 }

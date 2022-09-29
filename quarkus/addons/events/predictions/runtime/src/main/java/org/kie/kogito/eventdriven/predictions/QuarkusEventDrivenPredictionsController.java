@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.prediction.PredictionModels;
@@ -41,12 +40,9 @@ public class QuarkusEventDrivenPredictionsController extends EventDrivenPredicti
     @Inject
     EventReceiver eventReceiver;
 
-    @Inject
-    CloudEventUnmarshaller<Object> eventUnmarshaller;
-
     @PostConstruct
     private void onPostConstruct() {
-        init(predictionModels, config, eventEmitter, eventReceiver, eventUnmarshaller);
+        init(predictionModels, config, eventEmitter, eventReceiver);
         subscribe();
     }
 }
