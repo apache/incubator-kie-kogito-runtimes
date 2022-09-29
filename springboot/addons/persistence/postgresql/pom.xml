@@ -13,9 +13,6 @@
   <description>PostgreSQL persistence for Springboot</description>
   <artifactId>kogito-addons-springboot-persistence-postgresql</artifactId>
 
-  <properties>
-    <spring.flyway.baseline-on-migrate>true</spring.flyway.baseline-on-migrate>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
