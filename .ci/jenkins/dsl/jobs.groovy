@@ -26,7 +26,7 @@ Map getMultijobPRConfig(Folder jobFolder) {
                 env : [
                     // Sonarcloud analysis only on main branch
                     // As we have only Community edition
-                    DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
+                    DISABLE_SONARCLOUD: true,
                 ]
             ], [
                 id: 'kogito-apps',
