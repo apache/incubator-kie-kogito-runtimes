@@ -22,8 +22,8 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.Unmarshaller;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 
 import io.cloudevents.CloudEvent;
@@ -33,10 +33,10 @@ import io.cloudevents.SpecVersion;
 public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
 
     private final CloudEvent cloudEvent;
-    private final Unmarshaller<CloudEventData, T> unmarshaller;
+    private final Converter<CloudEventData, T> unmarshaller;
     private final AtomicReference<T> data;
 
-    public CloudEventWrapDataEvent(CloudEvent cloudEvent, Unmarshaller<CloudEventData, T> unmarshaller) {
+    public CloudEventWrapDataEvent(CloudEvent cloudEvent, Converter<CloudEventData, T> unmarshaller) {
         this.cloudEvent = cloudEvent;
         this.unmarshaller = unmarshaller;
         data = new AtomicReference<>();
@@ -108,7 +108,7 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
             try {
                 result = unmarshaller.unmarshall(cloudEventData);
             } catch (IOException io) {
-                new UncheckedIOException(io);
+                throw new UncheckedIOException(io);
             }
             data.set(result);
         }

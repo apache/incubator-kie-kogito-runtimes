@@ -20,7 +20,9 @@ import java.io.IOException;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
 
-public interface CloudEventUnmarshaller<T> extends EventUnmarshaller<CloudEventData> {
+public interface CloudEventUnmarshaller<I, O> {
 
-    CloudEvent unmarshall(T event, Class<?> dataClass) throws IOException;
+    CloudEvent unmarshall(I event) throws IOException;
+
+    O unmarshall(CloudEventData ced) throws IOException;
 }

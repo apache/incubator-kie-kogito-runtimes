@@ -34,11 +34,14 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.event.impl.CloudEventConverter;
+import org.kie.kogito.event.impl.JacksonCloudEventUnmarshallerFactory;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -182,7 +185,7 @@ class EventDrivenDecisionControllerTest {
         EventReceiver eventReceiverMock = mock(EventReceiver.class);
 
         // option #1: parameters via constructor + parameterless setup
-        EventDrivenDecisionController controller1 = new EventDrivenDecisionController(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);
+        EventDrivenDecisionController controller1 = new EventDrivenDecisionController(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
         controller1.subscribe();
         verify(eventReceiverMock).subscribe(any(), any());
 
@@ -190,7 +193,7 @@ class EventDrivenDecisionControllerTest {
 
         // option #2: parameterless via constructor + parameters via setup (introduced for Quarkus CDI)
         EventDrivenDecisionController controller2 = new EventDrivenDecisionController();
-        controller2.init(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock, eventUnmarshaller);
+        controller2.init(decisionModelsMock, configMock, eventEmitterMock, eventReceiverMock);
         controller2.subscribe();
         verify(eventReceiverMock).subscribe(any(), any());
     }
@@ -446,14 +449,15 @@ class EventDrivenDecisionControllerTest {
     private static class TestEventReceiver implements EventReceiver {
 
         private Subscription subscription;
+        private CloudEventUnmarshallerFactory unmarshaller = new JacksonCloudEventUnmarshallerFactory(objectMapper);
 
         public void accept(String message) throws IOException {
             subscription.getConsumer().apply(subscription.getConverter().unmarshall(message));
         }
 
         @Override
-        public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> className) {
-            subscription = new Subscription<>(consumer, objectMapper.read);
+        public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
+            subscription = new Subscription(consumer, new CloudEventConverter<>(clazz, unmarshaller));
         }
     }
 }

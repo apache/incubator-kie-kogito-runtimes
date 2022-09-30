@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public class ObjectQuarkusCloudEventUnmarshaller extends AbstractQuarkusCloudEventUnmarshaller<Object> {
-
-    protected ObjectQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper) {
-        super(objectMapper);
-    }
-
-    @Override
-    protected byte[] toBytes(Object data) {
-        return data.toString().getBytes();
-    }
+public interface CloudEventUnmarshallerFactory<T> {
+    <S> CloudEventUnmarshaller<T, S> unmarshaller(Class<S> targetClass);
 }

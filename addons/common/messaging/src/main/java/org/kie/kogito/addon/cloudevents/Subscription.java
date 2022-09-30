@@ -18,13 +18,13 @@ package org.kie.kogito.addon.cloudevents;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
-import org.kie.kogito.event.Unmarshaller;
+import org.kie.kogito.event.Converter;
 
 public class Subscription<T, S> {
     private final Function<T, CompletionStage<?>> consumer;
-    private final Unmarshaller<S, T> converter;
+    private final Converter<S, T> converter;
 
-    public Subscription(Function<T, CompletionStage<?>> consumer, Unmarshaller<S, T> converter) {
+    public Subscription(Function<T, CompletionStage<?>> consumer, Converter<S, T> converter) {
         this.consumer = consumer;
         this.converter = converter;
     }
@@ -33,7 +33,7 @@ public class Subscription<T, S> {
         return consumer;
     }
 
-    public Unmarshaller<S, T> getConverter() {
+    public Converter<S, T> getConverter() {
         return converter;
     }
 }

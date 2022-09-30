@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.messaging.common.AbstractQuarkusCloudEventReceiver ;
-import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
 
 import io.quarkus.runtime.Startup;
@@ -38,16 +38,14 @@ public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$T
     EventUnmarshaller<$Type$> eventDataUnmarshaller;
 
     @Inject
-    CloudEventUnmarshaller<Message<$Type$>> cloudEventUnmarshaller;
+    CloudEventUnmarshallerFactory<Message<$Type$>> cloudEventUnmarshaller;
 
 	
     @Incoming("$Trigger$")
     public CompletionStage<?> onEvent(Message<$Type$> message) {
         return produce(message);
     }
-    
-
-    
+      
     @PostConstruct
     void init() {
     	init (eventDataUnmarshaller, cloudEventUnmarshaller);

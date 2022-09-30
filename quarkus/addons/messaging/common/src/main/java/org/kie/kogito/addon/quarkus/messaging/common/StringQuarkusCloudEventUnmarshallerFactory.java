@@ -15,17 +15,22 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
+import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class StringQuarkusCloudEventUnmarshaller extends AbstractQuarkusCloudEventUnmarshaller<String> {
+public class StringQuarkusCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<Message<String>> {
 
-    protected StringQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper) {
-        super(objectMapper);
+    private final ObjectMapper objectMapper;
+
+    protected StringQuarkusCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    protected byte[] toBytes(String data) {
-        return data.getBytes();
+    public <S> CloudEventUnmarshaller<Message<String>, S> unmarshaller(Class<S> targetClass) {
+        return new JacksonQuarkusCloudEventUnmarshaller<String, S>(objectMapper, targetClass, o -> o.getBytes());
     }
-
 }

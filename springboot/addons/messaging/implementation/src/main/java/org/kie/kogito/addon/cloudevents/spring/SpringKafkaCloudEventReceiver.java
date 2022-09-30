@@ -27,12 +27,13 @@ import javax.annotation.PostConstruct;
 
 import org.kie.kogito.addon.cloudevents.Subscription;
 import org.kie.kogito.conf.ConfigBean;
-import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
+import org.kie.kogito.event.impl.CloudEventConverter;
+import org.kie.kogito.event.impl.DataEventConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     EventUnmarshaller<Object> eventDataUnmarshaller;
 
     @Autowired
-    CloudEventUnmarshaller<Object> cloudEventUnmarshaller;
+    CloudEventUnmarshallerFactory<Object> cloudEventUnmarshaller;
 
     @Autowired
     ConfigBean configBean;
@@ -65,8 +66,8 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
 
         consumers.add(
-                new Subscription(consumer, configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o, clazz), ced -> cloudEventUnmarshaller.unmarshall(ced, clazz))
-                        : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o, clazz))));
+                new Subscription(consumer, configBean.useCloudEvents() ? new CloudEventConverter<>(clazz, cloudEventUnmarshaller)
+                        : new DataEventConverter<>(clazz, eventDataUnmarshaller)));
     }
 
     @KafkaListener(topics = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.INCOMING + ":" + KogitoEventStreams.INCOMING + "}")

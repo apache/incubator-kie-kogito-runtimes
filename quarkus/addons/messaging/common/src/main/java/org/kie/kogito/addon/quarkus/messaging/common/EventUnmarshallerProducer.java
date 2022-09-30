@@ -20,7 +20,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.event.impl.JacksonEventDataUnmarshaller;
 
@@ -54,19 +54,19 @@ public class EventUnmarshallerProducer {
 
     @Produces
     @DefaultBean
-    public CloudEventUnmarshaller<Message<Object>> objectCloudEventConverter() {
-        return new ObjectQuarkusCloudEventUnmarshaller(objectMapper);
+    public CloudEventUnmarshallerFactory<Message<Object>> objectCloudEventConverter() {
+        return new ObjectQuarkusCloudEventUnmarshallerFactory(objectMapper);
     }
 
     @Produces
     @DefaultBean
-    public CloudEventUnmarshaller<Message<String>> stringCloudEventConverter() {
-        return new StringQuarkusCloudEventUnmarshaller(objectMapper);
+    public CloudEventUnmarshallerFactory<Message<String>> stringCloudEventConverter() {
+        return new StringQuarkusCloudEventUnmarshallerFactory(objectMapper);
     }
 
     @Produces
     @DefaultBean
-    public CloudEventUnmarshaller<Message<byte[]>> bytesCloudEventConverter() {
-        return new ByteArrayQuarkusCloudEventUnmarshaller(objectMapper);
+    public CloudEventUnmarshallerFactory<Message<byte[]>> bytesCloudEventConverter() {
+        return new ByteArrayQuarkusCloudEventUnmarshallerFactory(objectMapper);
     }
 }

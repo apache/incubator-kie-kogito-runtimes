@@ -43,12 +43,12 @@ import static org.mockito.Mockito.when;
 public class QuarkusDefaultUnmarshallerTest {
 
     private ObjectMapper objectMapper;
-    private ByteArrayQuarkusCloudEventUnmarshaller unmarshaller;
+    private ByteArrayQuarkusCloudEventUnmarshallerFactory unmarshaller;
 
     @BeforeEach
     void setup() {
         objectMapper = ObjectMapperFactory.get().registerModule(JsonFormat.getCloudEventJacksonModule());
-        unmarshaller = new ByteArrayQuarkusCloudEventUnmarshaller(objectMapper);
+        unmarshaller = new ByteArrayQuarkusCloudEventUnmarshallerFactory(objectMapper);
     }
 
     private byte[] getStructureCE(String specVersion, String type, String source, JsonNode data) throws JsonProcessingException {
@@ -74,7 +74,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testStructureCloudEvent() throws IOException {
         Message<byte[]> message = getMessage(getStructureCE("1.0", "type", "/path", getPayload("Javierito")), null);
-        CloudEvent ce = unmarshaller.unmarshall(message, JsonNode.class);
+        CloudEvent ce = unmarshaller.unmarshaller(JsonNode.class).unmarshall(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V1, ce.getSpecVersion());
@@ -84,7 +84,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testBynaryCloudEvent() throws IOException {
         Message<byte[]> message = getMessage(objectMapper.writeValueAsBytes(getPayload("Javierito")), getMetadata("0.3", "type", "/path"));
-        CloudEvent ce = unmarshaller.unmarshall(message, JsonNode.class);
+        CloudEvent ce = unmarshaller.unmarshaller(JsonNode.class).unmarshall(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V03, ce.getSpecVersion());
@@ -94,7 +94,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testBynaryCEWithoutPayload() throws IOException {
         Message<byte[]> message = getMessage(null, getMetadata("0.3", "type", "/path"));
-        CloudEvent ce = unmarshaller.unmarshall(message, JsonNode.class);
+        CloudEvent ce = unmarshaller.unmarshaller(JsonNode.class).unmarshall(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V03, ce.getSpecVersion());

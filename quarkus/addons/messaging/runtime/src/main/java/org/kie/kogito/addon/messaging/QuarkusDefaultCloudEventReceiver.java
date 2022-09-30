@@ -24,5 +24,5 @@ import io.quarkus.arc.DefaultBean;
 
 @DefaultBean
 @ApplicationScoped
-public class QuarkusDefaultCloudEventReceiver extends AbstractQuarkusCloudEventReceiver {
+public class QuarkusDefaultCloudEventReceiver extends AbstractQuarkusCloudEventReceiver<Object> {
 }

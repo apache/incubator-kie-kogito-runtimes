@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.impl.JacksonCloudEventUnmarshaller;
+import org.kie.kogito.event.impl.JacksonCloudEventUnmarshallerFactory;
 import org.kie.kogito.event.impl.JacksonEventDataUnmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,11 +33,11 @@ public class EventUnmarshallerProducer {
 
     @Bean
     public EventUnmarshaller<Object> getEventDataConverter() {
-        return new JacksonEventDataUnmarshaller(objectMapper);
+        return new JacksonEventDataUnmarshaller<>(objectMapper);
     }
 
     @Bean
-    public CloudEventUnmarshaller<Object> getCloudEventConverter() {
-        return new JacksonCloudEventUnmarshaller(objectMapper);
+    public CloudEventUnmarshallerFactory<Object> getCloudEventConverter() {
+        return new JacksonCloudEventUnmarshallerFactory<Object>(objectMapper);
     }
 }

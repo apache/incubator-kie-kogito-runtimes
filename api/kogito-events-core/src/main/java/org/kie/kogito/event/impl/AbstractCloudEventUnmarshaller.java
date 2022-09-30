@@ -26,18 +26,22 @@ import io.cloudevents.CloudEventData;
 import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 
-public abstract class AbstractCloudEventUnmarshaller<T> implements CloudEventUnmarshaller<T> {
+public abstract class AbstractCloudEventUnmarshaller<I, O> implements CloudEventUnmarshaller<I, O> {
 
     protected final ObjectMapper objectMapper;
+    protected final Class<O> outputClass;
 
-    public AbstractCloudEventUnmarshaller(ObjectMapper objectMapper) {
+    public AbstractCloudEventUnmarshaller(ObjectMapper objectMapper, Class<O> outputClass) {
         this.objectMapper = objectMapper;
+        this.outputClass = outputClass;
     }
 
     @Override
-    public <V> V unmarshall(CloudEventData data, Class<V> outputClass, Class<?>... parametrizedClasses) throws IOException {
-        if (JsonNode.class.isAssignableFrom(outputClass)) {
-            return (V) (data instanceof JsonCloudEventData ? ((JsonCloudEventData) data).getNode() : objectMapper.readTree(data.toBytes()));
+    public O unmarshall(CloudEventData data) throws IOException {
+        if (data == null) {
+            return null;
+        } else if (JsonNode.class.isAssignableFrom(outputClass)) {
+            return (O) (data instanceof JsonCloudEventData ? ((JsonCloudEventData) data).getNode() : objectMapper.readTree(data.toBytes()));
         } else {
             return PojoCloudEventDataMapper.from(objectMapper, outputClass).map(data).getValue();
         }

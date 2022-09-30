@@ -29,32 +29,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.smallrye.reactive.messaging.ce.CloudEventMetadata;
 
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.withExtension;
 
-public abstract class AbstractQuarkusCloudEventUnmarshaller<T> extends AbstractCloudEventUnmarshaller<Message<T>> {
+public class JacksonQuarkusCloudEventUnmarshaller<T, O> extends AbstractCloudEventUnmarshaller<Message<T>, O> {
 
-    protected AbstractQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper) {
-        super(objectMapper);
+    private final ToBytes<T> toBytes;
+
+    protected JacksonQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper, Class<O> clazz, ToBytes<T> toBytes) {
+        super(objectMapper, clazz);
+        this.toBytes = toBytes;
     }
 
     @Override
-    public CloudEvent unmarshall(Message<T> message, Class<?> dataClass) throws IOException {
+    public CloudEvent unmarshall(Message<T> message) throws IOException {
         Optional<CloudEventMetadata> metadata = message.getMetadata(CloudEventMetadata.class);
-        return metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload(), dataClass) : JacksonMarshallUtils.unmarshall(objectMapper, message.getPayload(), CloudEvent.class);
+        return metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : JacksonMarshallUtils.unmarshall(objectMapper, message.getPayload(), CloudEvent.class);
     }
 
-    protected abstract byte[] toBytes(T data);
-
-    private CloudEvent binaryCE(CloudEventMetadata<?> meta, T payload, Class<?> dataClass) throws IOException {
+    private CloudEvent binaryCE(CloudEventMetadata<?> meta, T payload) throws IOException {
         CloudEventBuilder builder =
                 CloudEventBuilder.fromSpecVersion(SpecVersion.parse(meta.getSpecVersion()))
                         .withType(meta.getType())
                         .withSource(meta.getSource())
                         .withId(meta.getId());
         if (payload != null) {
-            builder.withData(CloudEventUtils.fromClass(dataClass, payload, this::toBytes));
+            builder.withData(CloudEventUtils.fromClass(outputClass, payload, toBytes));
         }
         meta.getDataContentType().ifPresent(builder::withDataContentType);
         meta.getDataSchema().ifPresent(builder::withDataSchema);

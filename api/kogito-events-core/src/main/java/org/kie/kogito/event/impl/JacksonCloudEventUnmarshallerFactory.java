@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.impl.CloudEventWrapDataEvent;
-import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 
-import io.cloudevents.CloudEvent;
-import io.cloudevents.CloudEventData;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class DataEventFactory {
+public class JacksonCloudEventUnmarshallerFactory<T> implements CloudEventUnmarshallerFactory<T> {
+    private final ObjectMapper objectMapper;
 
-    public static <T> DataEvent<T> from(T event) {
-        return new ProcessDataEvent<T>(event);
+    public JacksonCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    public static <T> DataEvent<T> from(CloudEvent event, Converter<CloudEventData, T> unmarshaller) {
-        return new CloudEventWrapDataEvent<T>(event, unmarshaller);
+    @Override
+    public <S> CloudEventUnmarshaller<T, S> unmarshaller(Class<S> targetClass) {
+        return new JacksonCloudEventUnmarshaller<T, S>(objectMapper, targetClass);
     }
 }
