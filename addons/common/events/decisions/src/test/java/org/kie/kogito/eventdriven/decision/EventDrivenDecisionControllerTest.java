@@ -34,13 +34,11 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
-import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.event.impl.JacksonCloudEventUnmarshaller;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -156,7 +154,6 @@ class EventDrivenDecisionControllerTest {
     private EventEmitter eventEmitterMock;
     private DecisionModel decisionModelSpy;
     private DecisionModels decisionModelsMock;
-    private CloudEventUnmarshaller<Object> eventUnmarshaller;
 
     @BeforeAll
     static void beforeAll() {
@@ -169,12 +166,11 @@ class EventDrivenDecisionControllerTest {
         testEventReceiver = new TestEventReceiver();
         decisionModelsMock = mock(DecisionModels.class);
         eventEmitterMock = mock(EventEmitter.class);
-        eventUnmarshaller = new JacksonCloudEventUnmarshaller(CloudEventUtils.Mapper.mapper());
 
         // by default there's no execution id supplier, if needed it will be overridden in the specific test
         mockDecisionModel();
 
-        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, testEventReceiver, eventUnmarshaller);
+        controller = new EventDrivenDecisionController(decisionModelsMock, mock(ConfigBean.class), eventEmitterMock, testEventReceiver);
         controller.subscribe();
     }
 

@@ -28,7 +28,7 @@ public class JacksonCloudEventUnmarshaller extends AbstractCloudEventUnmarshalle
     }
 
     @Override
-    public CloudEvent unmarshall(Object event) throws IOException {
+    public CloudEvent unmarshall(Object event, Class<?> dataClass) throws IOException {
         return JacksonMarshallUtils.unmarshall(objectMapper, event, CloudEvent.class);
     }
 }

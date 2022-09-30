@@ -86,7 +86,7 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> objectClass) {
         Subscription subscription = new Subscription<DataEvent<T>, Message<I>>(consumer,
-                configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o), ced -> cloudEventUnmarshaller.unmarshall(ced, objectClass))
+                configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o, objectClass), ced -> cloudEventUnmarshaller.unmarshall(ced, objectClass))
                         : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o.getPayload(), objectClass)));
         consumers.add(subscription);
     }

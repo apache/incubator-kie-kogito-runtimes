@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.event.impl.AbstractCloudEventUnmarshaller;
 import org.kie.kogito.event.impl.JacksonMarshallUtils;
 
@@ -39,21 +40,21 @@ public abstract class AbstractQuarkusCloudEventUnmarshaller<T> extends AbstractC
     }
 
     @Override
-    public CloudEvent unmarshall(Message<T> message) throws IOException {
+    public CloudEvent unmarshall(Message<T> message, Class<?> dataClass) throws IOException {
         Optional<CloudEventMetadata> metadata = message.getMetadata(CloudEventMetadata.class);
-        return metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : JacksonMarshallUtils.unmarshall(objectMapper, message.getPayload(), CloudEvent.class);
+        return metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload(), dataClass) : JacksonMarshallUtils.unmarshall(objectMapper, message.getPayload(), CloudEvent.class);
     }
 
     protected abstract byte[] toBytes(T data);
 
-    private CloudEvent binaryCE(CloudEventMetadata<?> meta, T payload) throws IOException {
+    private CloudEvent binaryCE(CloudEventMetadata<?> meta, T payload, Class<?> dataClass) throws IOException {
         CloudEventBuilder builder =
                 CloudEventBuilder.fromSpecVersion(SpecVersion.parse(meta.getSpecVersion()))
                         .withType(meta.getType())
                         .withSource(meta.getSource())
                         .withId(meta.getId());
         if (payload != null) {
-            builder.withData(toBytes(payload));
+            builder.withData(CloudEventUtils.fromClass(dataClass, payload, this::toBytes));
         }
         meta.getDataContentType().ifPresent(builder::withDataContentType);
         meta.getDataSchema().ifPresent(builder::withDataSchema);

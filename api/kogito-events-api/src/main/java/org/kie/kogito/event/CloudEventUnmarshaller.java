@@ -22,5 +22,5 @@ import io.cloudevents.CloudEventData;
 
 public interface CloudEventUnmarshaller<T> extends EventUnmarshaller<CloudEventData> {
 
-    CloudEvent unmarshall(T event) throws IOException;
+    CloudEvent unmarshall(T event, Class<?> dataClass) throws IOException;
 }

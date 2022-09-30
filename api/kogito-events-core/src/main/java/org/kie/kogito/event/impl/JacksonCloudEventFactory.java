@@ -61,7 +61,7 @@ public class JacksonCloudEventFactory implements CloudEventFactory {
         withExtension(builder, CloudEventExtensionConstants.PROCESS_TYPE, pi.getProcess().getType());
         withExtension(builder, CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION, pi.getProcess().getVersion());
 
-        CloudEventUtils.withData(builder, data, toBytes);
+        builder.withData(CloudEventUtils.fromObject(data, toBytes));
         //setting correlation as extension attributes
         pi.unwrap().correlation()
                 .stream()

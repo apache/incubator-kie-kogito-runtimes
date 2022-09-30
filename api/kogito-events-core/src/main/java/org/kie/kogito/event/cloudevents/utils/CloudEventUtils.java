@@ -42,8 +42,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
 import io.cloudevents.CloudEventExtension;
 import io.cloudevents.core.builder.CloudEventBuilder;
+import io.cloudevents.core.data.BytesCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.cloudevents.jackson.JsonCloudEventData;
@@ -250,11 +252,15 @@ public final class CloudEventUtils {
         }
     }
 
-    public static void withData(CloudEventBuilder builder, Object data, ToBytes<Object> toBytes) {
-        if (data instanceof JsonNode) {
-            builder.withData(JsonCloudEventData.wrap((JsonNode) data));
-        } else {
-            builder.withData(PojoCloudEventData.wrap(data, toBytes));
+    public static <T> CloudEventData fromObject(T data, ToBytes<T> toBytes) {
+        return data instanceof JsonNode ? JsonCloudEventData.wrap((JsonNode) data) : PojoCloudEventData.wrap(data, toBytes);
+    }
+
+    public static <T> CloudEventData fromClass(Class<?> dataClass, T data, ToBytes<T> toBytes) throws IOException {
+        try {
+            return dataClass.isAssignableFrom(data.getClass()) ? fromObject(data, toBytes) : BytesCloudEventData.wrap(toBytes.convert(data));
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 }

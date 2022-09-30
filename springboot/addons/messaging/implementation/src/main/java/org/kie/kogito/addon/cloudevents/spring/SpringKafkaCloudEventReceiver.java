@@ -64,8 +64,9 @@ public class SpringKafkaCloudEventReceiver implements EventReceiver {
     @Override
     public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> clazz) {
 
-        consumers.add(new Subscription(consumer, configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o), ced -> cloudEventUnmarshaller.unmarshall(ced, clazz))
-                : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o, clazz))));
+        consumers.add(
+                new Subscription(consumer, configBean.useCloudEvents() ? o -> DataEventFactory.from(cloudEventUnmarshaller.unmarshall(o, clazz), ced -> cloudEventUnmarshaller.unmarshall(ced, clazz))
+                        : o -> DataEventFactory.from(eventDataUnmarshaller.unmarshall(o, clazz))));
     }
 
     @KafkaListener(topics = "${kogito.addon.cloudevents.kafka." + KogitoEventStreams.INCOMING + ":" + KogitoEventStreams.INCOMING + "}")

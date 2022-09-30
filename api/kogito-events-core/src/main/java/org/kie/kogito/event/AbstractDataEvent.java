@@ -462,7 +462,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     public CloudEvent asCloudEvent() {
         CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(specVersion).withSource(source).withType(type).withId(id).withSubject(subject).withTime(time)
                 .withDataContentType(dataContentType).withDataSchema(dataSchema);
-        CloudEventUtils.withData(builder, data, ObjectMapperFactory.get()::writeValueAsBytes);
+        builder.withData(CloudEventUtils.fromObject(data, ObjectMapperFactory.get()::writeValueAsBytes));
         extensionAttributes.forEach((k, v) -> CloudEventUtils.withExtension(builder, k, v));
         return builder.build();
     }
