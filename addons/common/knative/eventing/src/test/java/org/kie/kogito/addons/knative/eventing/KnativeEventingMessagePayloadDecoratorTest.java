@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.addon.cloudevents.message.MessagePayloadDecorator;
 import org.kie.kogito.addon.cloudevents.message.MessagePayloadDecoratorProvider;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
-import org.kie.kogito.services.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
