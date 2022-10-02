@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.impl;
 
-import io.cloudevents.CloudEvent;
+import java.io.IOException;
+
+import org.kie.kogito.event.Converter;
+
 import io.cloudevents.CloudEventData;
+import io.cloudevents.core.data.BytesCloudEventData;
 
-public interface CloudEventUnmarshaller<I, O> {
-
-    Converter<I, CloudEvent> cloudEvent();
-
-    Converter<I, CloudEventData> binaryCloudEvent();
-
-    Converter<CloudEventData, O> data();
+public class ByteArrayCloudEventDataConverter implements Converter<byte[], CloudEventData> {
+    @Override
+    public CloudEventData unmarshall(byte[] value) throws IOException {
+        return BytesCloudEventData.wrap(value);
+    }
 }

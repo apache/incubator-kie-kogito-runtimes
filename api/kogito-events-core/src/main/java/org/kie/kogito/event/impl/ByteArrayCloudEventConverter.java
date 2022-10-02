@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.impl;
+
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.CloudEvent;
-import io.cloudevents.CloudEventData;
 
-public interface CloudEventUnmarshaller<I, O> {
+public class ByteArrayCloudEventConverter extends AbstractCloudEventConverter<byte[]> {
 
-    Converter<I, CloudEvent> cloudEvent();
+    private ObjectMapper objectMapper;
 
-    Converter<I, CloudEventData> binaryCloudEvent();
+    public ByteArrayCloudEventConverter(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
-    Converter<CloudEventData, O> data();
+    @Override
+    protected CloudEvent toValue(byte[] value) throws IOException {
+        return objectMapper.readValue(value, CloudEvent.class);
+    }
+
 }

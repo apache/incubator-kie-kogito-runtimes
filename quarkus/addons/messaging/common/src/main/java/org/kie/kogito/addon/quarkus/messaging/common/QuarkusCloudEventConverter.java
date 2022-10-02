@@ -20,49 +20,46 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
+import org.kie.kogito.event.CloudEventUnmarshaller;
+import org.kie.kogito.event.Converter;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.event.impl.AbstractCloudEventUnmarshaller;
-import org.kie.kogito.event.impl.JacksonMarshallUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
-import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.smallrye.reactive.messaging.ce.CloudEventMetadata;
 
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.withExtension;
+public class QuarkusCloudEventConverter<I, T> implements
+        Converter<Message<I>, DataEvent<T>> {
 
-public class JacksonQuarkusCloudEventUnmarshaller<T, O> extends AbstractCloudEventUnmarshaller<Message<T>, O> {
+    private final CloudEventUnmarshaller<I, T> unmarshaller;
 
-    private final ToBytes<T> toBytes;
-
-    protected JacksonQuarkusCloudEventUnmarshaller(ObjectMapper objectMapper, Class<O> clazz, ToBytes<T> toBytes) {
-        super(objectMapper, clazz);
-        this.toBytes = toBytes;
+    public QuarkusCloudEventConverter(CloudEventUnmarshaller<I, T> unmarshaller) {
+        this.unmarshaller = unmarshaller;
     }
 
     @Override
-    public CloudEvent unmarshall(Message<T> message) throws IOException {
+    public DataEvent<T> unmarshall(Message<I> message) throws IOException {
         Optional<CloudEventMetadata> metadata = message.getMetadata(CloudEventMetadata.class);
-        return metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : JacksonMarshallUtils.unmarshall(objectMapper, message.getPayload(), CloudEvent.class);
+        return DataEventFactory.from(metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : unmarshaller.cloudEvent().unmarshall(message.getPayload()), unmarshaller.data());
     }
 
-    private CloudEvent binaryCE(CloudEventMetadata<?> meta, T payload) throws IOException {
+    private CloudEvent binaryCE(CloudEventMetadata<?> meta, I payload) throws IOException {
         CloudEventBuilder builder =
                 CloudEventBuilder.fromSpecVersion(SpecVersion.parse(meta.getSpecVersion()))
                         .withType(meta.getType())
                         .withSource(meta.getSource())
                         .withId(meta.getId());
         if (payload != null) {
-            builder.withData(CloudEventUtils.fromClass(outputClass, payload, toBytes));
+            builder.withData(unmarshaller.binaryCloudEvent().unmarshall(payload));
         }
         meta.getDataContentType().ifPresent(builder::withDataContentType);
         meta.getDataSchema().ifPresent(builder::withDataSchema);
         meta.getTimeStamp().map(ZonedDateTime::toOffsetDateTime).ifPresent(builder::withTime);
         meta.getSubject().ifPresent(builder::withSubject);
-        meta.getExtensions().forEach((k, v) -> withExtension(builder, k, v));
+        meta.getExtensions().forEach((k, v) -> CloudEventUtils.withExtension(builder, k, v));
         return builder.build();
     }
 }

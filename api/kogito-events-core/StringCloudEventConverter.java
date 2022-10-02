@@ -15,20 +15,23 @@
  */
 package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.CloudEventUnmarshaller;
-import org.kie.kogito.event.CloudEventUnmarshallerFactory;
+import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonCloudEventUnmarshallerFactory<T> implements CloudEventUnmarshallerFactory<T> {
-    private final ObjectMapper objectMapper;
+import io.cloudevents.CloudEvent;
 
-    public JacksonCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+public class StringCloudEventConverter extends AbstractCloudEventConverter<String> {
 
-    @Override
-    public <S> CloudEventUnmarshaller<T, S> unmarshaller(Class<S> targetClass) {
-        return new JacksonCloudEventUnmarshaller<T, S>(objectMapper, targetClass);
-    }
+	private ObjectMapper objectMapper;
+	
+	public StringCloudEventConverter(ObjectMapper objectMapper) {
+		this.objectMapper = objectMapper;
+	}
+	
+	@Override
+	protected CloudEvent toValue(String value) throws IOException {
+		return objectMapper.readValue(value, CloudEvent.class);
+	}
+
 }

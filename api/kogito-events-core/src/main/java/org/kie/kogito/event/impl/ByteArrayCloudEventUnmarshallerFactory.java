@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common;
+package org.kie.kogito.event.impl;
 
-import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ByteArrayQuarkusCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<Message<byte[]>> {
+public class ByteArrayCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<byte[]> {
 
     private final ObjectMapper objectMapper;
 
-    protected ByteArrayQuarkusCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
+    public ByteArrayCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public <S> CloudEventUnmarshaller<Message<byte[]>, S> unmarshaller(Class<S> targetClass) {
-        return new JacksonQuarkusCloudEventUnmarshaller<byte[], S>(objectMapper, targetClass, o -> o);
+    public <S> CloudEventUnmarshaller<byte[], S> unmarshaller(Class<S> targetClass) {
+        return new DefaultCloudEventUnmarshaller(new ByteArrayCloudEventConverter(objectMapper),
+                JsonNode.class.isAssignableFrom(targetClass) ? new JsonNodeCloudEventDataConverter(objectMapper) : new POJOCloudEventDataConverter<>(objectMapper, targetClass),
+                new ByteArrayCloudEventDataConverter());
     }
 }

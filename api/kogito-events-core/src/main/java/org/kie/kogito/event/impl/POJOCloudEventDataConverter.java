@@ -17,33 +17,31 @@ package org.kie.kogito.event.impl;
 
 import java.io.IOException;
 
-import org.kie.kogito.event.CloudEventUnmarshaller;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.CloudEventData;
+import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 
-public abstract class AbstractCloudEventUnmarshaller<I, O> implements CloudEventUnmarshaller<I, O> {
+public class POJOCloudEventDataConverter<O> extends AbstractCloudEventDataConverter<O> {
 
-    protected final ObjectMapper objectMapper;
-    protected final Class<O> outputClass;
+    private ObjectMapper objectMapper;
+    private Class<O> outputClass;
 
-    public AbstractCloudEventUnmarshaller(ObjectMapper objectMapper, Class<O> outputClass) {
+    public POJOCloudEventDataConverter(ObjectMapper objectMapper, Class<O> outputClass) {
         this.objectMapper = objectMapper;
         this.outputClass = outputClass;
     }
 
     @Override
-    public O unmarshall(CloudEventData data) throws IOException {
-        if (data == null) {
-            return null;
-        } else if (JsonNode.class.isAssignableFrom(outputClass)) {
-            return (O) (data instanceof JsonCloudEventData ? ((JsonCloudEventData) data).getNode() : objectMapper.readTree(data.toBytes()));
+    protected O toValue(CloudEventData value) throws IOException {
+        if (value instanceof PojoCloudEventData) {
+            return PojoCloudEventDataMapper.from(objectMapper, outputClass).map(value).getValue();
+        } else if (value instanceof JsonCloudEventData) {
+            return objectMapper.convertValue(((JsonCloudEventData) value).getNode(), outputClass);
         } else {
-            return PojoCloudEventDataMapper.from(objectMapper, outputClass).map(data).getValue();
+            return objectMapper.readValue(value.toBytes(), outputClass);
         }
     }
 }

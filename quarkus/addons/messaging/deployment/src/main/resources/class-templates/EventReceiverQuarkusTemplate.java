@@ -38,7 +38,7 @@ public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$T
     EventUnmarshaller<$Type$> eventDataUnmarshaller;
 
     @Inject
-    CloudEventUnmarshallerFactory<Message<$Type$>> cloudEventUnmarshaller;
+    CloudEventUnmarshallerFactory<$Type$> cloudEventUnmarshaller;
 
 	
     @Incoming("$Trigger$")

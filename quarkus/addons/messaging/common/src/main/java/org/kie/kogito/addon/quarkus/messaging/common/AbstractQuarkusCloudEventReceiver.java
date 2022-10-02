@@ -32,7 +32,6 @@ import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.EventUnmarshaller;
-import org.kie.kogito.event.impl.CloudEventConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,12 +43,12 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
 
     //Injection does not work with generic
     private EventUnmarshaller<I> eventDataUnmarshaller;
-    private CloudEventUnmarshallerFactory<Message<I>> cloudEventUnmarshaller;
+    private CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller;
 
     @Inject
     ConfigBean configBean;
 
-    protected void init(EventUnmarshaller<I> eventDataUnmarshaller, CloudEventUnmarshallerFactory<Message<I>> cloudEventUnmarshaller) {
+    protected void init(EventUnmarshaller<I> eventDataUnmarshaller, CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller) {
         this.eventDataUnmarshaller = eventDataUnmarshaller;
         this.cloudEventUnmarshaller = cloudEventUnmarshaller;
     }
@@ -85,9 +84,8 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void subscribe(Function<DataEvent<T>, CompletionStage<?>> consumer, Class<T> objectClass) {
-
         Subscription subscription = new Subscription<DataEvent<T>, Message<I>>(consumer,
-                configBean.useCloudEvents() ? new CloudEventConverter<>(objectClass, cloudEventUnmarshaller)
+                configBean.useCloudEvents() ? new QuarkusCloudEventConverter<>(cloudEventUnmarshaller.unmarshaller(objectClass))
                         : new QuarkusDataEventConverter<>(objectClass, eventDataUnmarshaller));
         consumers.add(subscription);
     }

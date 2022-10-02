@@ -41,7 +41,7 @@ import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.kie.kogito.event.impl.CloudEventConverter;
-import org.kie.kogito.event.impl.JacksonCloudEventUnmarshallerFactory;
+import org.kie.kogito.event.impl.ObjectCloudEventUnmarshallerFactory;
 import org.mockito.ArgumentCaptor;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -449,7 +449,7 @@ class EventDrivenDecisionControllerTest {
     private static class TestEventReceiver implements EventReceiver {
 
         private Subscription subscription;
-        private CloudEventUnmarshallerFactory unmarshaller = new JacksonCloudEventUnmarshallerFactory(objectMapper);
+        private CloudEventUnmarshallerFactory unmarshaller = new ObjectCloudEventUnmarshallerFactory(objectMapper);
 
         public void accept(String message) throws IOException {
             subscription.getConsumer().apply(subscription.getConverter().unmarshall(message));

@@ -15,25 +15,23 @@
  */
 package org.kie.kogito.event.impl;
 
-import java.io.IOException;
-
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
-import org.kie.kogito.event.Converter;
-import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.DataEventFactory;
 
-public class CloudEventConverter<T, S> implements Converter<T, DataEvent<S>> {
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-    private final CloudEventUnmarshaller<T, S> unmarshaller;
+public class ObjectCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<Object> {
+    private final ObjectMapper objectMapper;
 
-    public CloudEventConverter(Class<S> objectClass, CloudEventUnmarshallerFactory<T> factory) {
-        this.unmarshaller = factory.unmarshaller(objectClass);
+    public ObjectCloudEventUnmarshallerFactory(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public DataEvent<S> unmarshall(T value) throws IOException {
-        return DataEventFactory.from(unmarshaller.cloudEvent().unmarshall(value), unmarshaller.data());
+    public <S> CloudEventUnmarshaller<Object, S> unmarshaller(Class<S> targetClass) {
+        return new DefaultCloudEventUnmarshaller(new ObjectCloudEventConverter(objectMapper),
+                JsonNode.class.isAssignableFrom(targetClass) ? new JsonNodeCloudEventDataConverter(objectMapper) : new POJOCloudEventDataConverter<>(objectMapper, targetClass),
+                new ObjectCloudEventDataConverter());
     }
-
 }
