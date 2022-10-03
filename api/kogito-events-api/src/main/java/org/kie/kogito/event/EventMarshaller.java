@@ -17,7 +17,7 @@ package org.kie.kogito.event;
 
 /**
  * This interface is one of the extension point for customers to incorporate more event formats.
- * It is responsible for converting kogiyo business objects into the format expected by the external service.
+ * It is responsible for converting Kogito business objects into the format expected by the external service.
  * 
  * @param <R> The expected output type that will be consumed by the external service
  */

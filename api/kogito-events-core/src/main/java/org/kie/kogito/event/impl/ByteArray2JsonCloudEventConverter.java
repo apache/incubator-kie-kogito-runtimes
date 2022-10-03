@@ -21,17 +21,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.CloudEvent;
 
-public class ObjectCloudEventConverter extends AbstractCloudEventConverter<Object> {
+public class ByteArray2JsonCloudEventConverter extends AbstractCloudEventConverter<byte[]> {
 
     private ObjectMapper objectMapper;
 
-    public ObjectCloudEventConverter(ObjectMapper objectMapper) {
+    public ByteArray2JsonCloudEventConverter(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     @Override
-    protected CloudEvent toValue(Object value) throws IOException {
-        return objectMapper.readValue(value.toString(), CloudEvent.class);
+    protected CloudEvent toValue(byte[] value) throws IOException {
+        return objectMapper.readValue(value, CloudEvent.class);
     }
 
 }

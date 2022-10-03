@@ -32,6 +32,6 @@ public class StringCloudEventUnmarshallerFactory implements CloudEventUnmarshall
     public <S> CloudEventUnmarshaller<String, S> unmarshaller(Class<S> targetClass) {
         return new DefaultCloudEventUnmarshaller<>(new StringCloudEventConverter(objectMapper),
                 JacksonMarshallUtils.getDataConverter(targetClass, objectMapper),
-                new StringCloudEventDataConverter());
+                new String2JsonCloudEventDataConverter());
     }
 }

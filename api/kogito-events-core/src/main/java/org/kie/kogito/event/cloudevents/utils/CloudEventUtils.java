@@ -252,6 +252,9 @@ public final class CloudEventUtils {
     }
 
     public static <T> CloudEventData fromObject(T data, ToBytes<T> toBytes) {
+        if (data == null) {
+            return null;
+        }
         return data instanceof JsonNode ? JsonCloudEventData.wrap((JsonNode) data) : PojoCloudEventData.wrap(data, toBytes);
     }
 }

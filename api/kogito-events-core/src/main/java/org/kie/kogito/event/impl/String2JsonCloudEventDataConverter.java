@@ -17,21 +17,14 @@ package org.kie.kogito.event.impl;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.kie.kogito.event.Converter;
 
-import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
+import io.cloudevents.core.data.BytesCloudEventData;
 
-public class StringCloudEventConverter extends AbstractCloudEventConverter<String> {
-
-	private ObjectMapper objectMapper;
-	
-	public StringCloudEventConverter(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
-	}
-	
-	@Override
-	protected CloudEvent toValue(String value) throws IOException {
-		return objectMapper.readValue(value, CloudEvent.class);
-	}
-
+public class String2JsonCloudEventDataConverter implements Converter<String, CloudEventData> {
+    @Override
+    public CloudEventData convert(String value) throws IOException {
+        return value == null ? null : BytesCloudEventData.wrap(value.getBytes());
+    }
 }

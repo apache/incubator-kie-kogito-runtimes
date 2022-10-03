@@ -61,9 +61,9 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     @Override
     public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, DataEvent<D> event) {
         if (shouldSkipMessage(trigger, event)) {
-        	if (LOGGER.isInfoEnabled()) {
-        		LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
-        	}
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+            }
             return CompletableFuture.completedFuture(null);
         }
 
@@ -77,7 +77,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
             return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
         }
         if (LOGGER.isInfoEnabled()) {
-        	LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
+            LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
         }
         return CompletableFuture.completedFuture(null);
     }

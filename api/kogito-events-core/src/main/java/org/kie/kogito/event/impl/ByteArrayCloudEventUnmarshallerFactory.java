@@ -30,7 +30,7 @@ public class ByteArrayCloudEventUnmarshallerFactory implements CloudEventUnmarsh
 
     @Override
     public <S> CloudEventUnmarshaller<byte[], S> unmarshaller(Class<S> targetClass) {
-        return new DefaultCloudEventUnmarshaller<>(new ByteArrayCloudEventConverter(objectMapper),
+        return new DefaultCloudEventUnmarshaller<>(new ByteArray2JsonCloudEventConverter(objectMapper),
                 JacksonMarshallUtils.getDataConverter(targetClass, objectMapper),
                 new ByteArrayCloudEventDataConverter());
     }

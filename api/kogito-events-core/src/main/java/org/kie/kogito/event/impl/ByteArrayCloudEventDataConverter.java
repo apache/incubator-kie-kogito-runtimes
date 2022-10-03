@@ -25,6 +25,6 @@ import io.cloudevents.core.data.BytesCloudEventData;
 public class ByteArrayCloudEventDataConverter implements Converter<byte[], CloudEventData> {
     @Override
     public CloudEventData convert(byte[] value) throws IOException {
-        return BytesCloudEventData.wrap(value);
+        return value == null ? null : BytesCloudEventData.wrap(value);
     }
 }

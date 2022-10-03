@@ -28,7 +28,7 @@ class JacksonMarshallUtils {
         return JsonNode.class.isAssignableFrom(targetClass) ? (Converter<CloudEventData, O>) new JsonNodeCloudEventDataConverter(objectMapper)
                 : new POJOCloudEventDataConverter<>(objectMapper, targetClass);
     }
-    
-    private JacksonMarshallUtils () {
+
+    private JacksonMarshallUtils() {
     }
 }

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
+import io.cloudevents.jackson.JsonCloudEventData;
 
 /**
  * This class must always have exact FQCN as <code>org.kie.kogito.eventdriven.rules.EventDrivenRulesController</code>
@@ -182,7 +183,7 @@ public class EventDrivenRulesController {
                     .map(KogitoRulesExtension::getRuleUnitQuery)
                     .orElse(null);
 
-            this.validRequest = requestExtension != null
+            this.validRequest = isValidCloudEvent(requestCloudEvent) && requestExtension != null
                     && ruleUnitId != null && !ruleUnitId.isEmpty()
                     && queryName != null && !queryName.isEmpty();
         }
@@ -222,7 +223,17 @@ public class EventDrivenRulesController {
         public void setQueryResult(Object queryResult) {
             this.queryResult = queryResult;
         }
+    }
 
+    private static boolean isValidCloudEvent(CloudEvent event) {
+        if (event == null || event.getData() == null) {
+            return false;
+        }
+        if (event.getData() instanceof JsonCloudEventData) {
+            JsonCloudEventData jced = (JsonCloudEventData) event.getData();
+            return jced.getNode() != null && !jced.getNode().isNull();
+        }
+        return true;
     }
 
 }
