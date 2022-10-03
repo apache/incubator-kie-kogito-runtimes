@@ -143,7 +143,7 @@ public class DefaultUnitOfWorkManagerTest {
 
         // after execution the pi should be 0 as this is the initial value of counter which will indicate
         // it was invoked before dummyWork that increments it
-        assertThat(counter.get()).isEqualTo(1);
+        assertThat(counter).hasValue(1);
         assertThat(picounter).hasValue(0);
     }
 }
