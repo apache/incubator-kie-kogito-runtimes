@@ -24,7 +24,7 @@ import io.cloudevents.core.data.BytesCloudEventData;
 
 public class StringCloudEventDataConverter implements Converter<String, CloudEventData> {
     @Override
-    public CloudEventData unmarshall(String value) throws IOException {
+    public CloudEventData convert(String value) throws IOException {
         return BytesCloudEventData.wrap(value.getBytes());
     }
 }

@@ -15,29 +15,20 @@
  */
 package org.kie.kogito.event.impl;
 
-import java.io.IOException;
-import java.util.Objects;
+import org.kie.kogito.event.Converter;
 
-import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonMarshallUtils {
+import io.cloudevents.CloudEventData;
 
-    public static <T, S> T unmarshall(ObjectMapper mapper, S input, Class<T> outputClass, Class<?>... parametrizedClasses) throws IOException {
-        if (input == null) {
-            return null;
-        }
-        if (outputClass.isAssignableFrom(input.getClass())) {
-            return outputClass.cast(input);
-        } else {
-            final JavaType type = Objects.isNull(parametrizedClasses) ? mapper.getTypeFactory().constructType(outputClass)
-                    : mapper.getTypeFactory().constructParametricType(outputClass, parametrizedClasses);
+class JacksonMarshallUtils {
 
-            if (input instanceof byte[]) {
-                return mapper.readValue((byte[]) input, type);
-            } else {
-                return mapper.readValue(input.toString(), type);
-            }
-        }
+    static <O> Converter<CloudEventData, O> getDataConverter(Class<O> targetClass, ObjectMapper objectMapper) {
+        return JsonNode.class.isAssignableFrom(targetClass) ? (Converter<CloudEventData, O>) new JsonNodeCloudEventDataConverter(objectMapper)
+                : new POJOCloudEventDataConverter<>(objectMapper, targetClass);
+    }
+    
+    private JacksonMarshallUtils () {
     }
 }

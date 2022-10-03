@@ -69,7 +69,7 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
         CompletionStage<?> future = result;
         for (Subscription<DataEvent<?>, Message<I>> subscription : consumers) {
             try {
-                DataEvent<?> object = subscription.getConverter().unmarshall(message);
+                DataEvent<?> object = subscription.getConverter().convert(message);
                 future = future.thenCompose(f -> subscription.getConsumer().apply(object));
             } catch (IOException e) {
                 LOGGER.info("Error converting event. Exception message is {}", e.getMessage());

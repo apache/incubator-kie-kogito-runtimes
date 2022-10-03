@@ -24,10 +24,13 @@ import io.cloudevents.CloudEventData;
 public class DataEventFactory {
 
     public static <T> DataEvent<T> from(T event) {
-        return new ProcessDataEvent<T>(event);
+        return new ProcessDataEvent<>(event);
     }
 
     public static <T> DataEvent<T> from(CloudEvent event, Converter<CloudEventData, T> unmarshaller) {
-        return new CloudEventWrapDataEvent<T>(event, unmarshaller);
+        return new CloudEventWrapDataEvent<>(event, unmarshaller);
+    }
+
+    private DataEventFactory() {
     }
 }

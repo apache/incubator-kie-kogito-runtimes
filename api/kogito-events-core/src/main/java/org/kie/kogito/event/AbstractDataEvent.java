@@ -46,8 +46,8 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 
 /**
  * This is an abstract implementation of the {@link DataEvent} that contains basic common attributes referring to
- * kogito processes metadata. This class can be extended mainly by Services that need to publish events to be
- * indexed by the Data-Index service.
+ * kogito processes metadata. This class is intended to be used only for applications consuming events published
+ * by Kogito that wants to deserialize the cloud event in one shot.
  *
  * @param <T> the payload
  */

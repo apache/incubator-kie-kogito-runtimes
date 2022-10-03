@@ -45,7 +45,6 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
 import io.cloudevents.CloudEventExtension;
 import io.cloudevents.core.builder.CloudEventBuilder;
-import io.cloudevents.core.data.BytesCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.cloudevents.jackson.JsonCloudEventData;
@@ -225,13 +224,13 @@ public final class CloudEventUtils {
                         try {
                             return p.getReadMethod().invoke(instance);
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException(e);
+                            throw new IllegalArgumentException("Error getting attribute " + name, e);
                         }
                     })
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
-        } catch (IntrospectionException | RuntimeException e) {
+        } catch (IntrospectionException e) {
             throw new IllegalArgumentException("Error getting attribute " + name, e);
         }
     }
@@ -247,20 +246,12 @@ public final class CloudEventUtils {
             builder.withExtension(k, (URI) v);
         } else if (v instanceof OffsetDateTime) {
             builder.withExtension(k, (OffsetDateTime) v);
-        } else {
+        } else if (v != null) {
             builder.withExtension(k, v.toString());
         }
     }
 
     public static <T> CloudEventData fromObject(T data, ToBytes<T> toBytes) {
         return data instanceof JsonNode ? JsonCloudEventData.wrap((JsonNode) data) : PojoCloudEventData.wrap(data, toBytes);
-    }
-
-    public static <T> CloudEventData fromClass(Class<?> dataClass, T data, ToBytes<T> toBytes) throws IOException {
-        try {
-            return dataClass.isAssignableFrom(data.getClass()) ? fromObject(data, toBytes) : BytesCloudEventData.wrap(toBytes.convert(data));
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
     }
 }

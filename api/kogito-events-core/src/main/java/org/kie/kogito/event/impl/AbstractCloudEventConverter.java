@@ -23,7 +23,7 @@ import io.cloudevents.CloudEvent;
 
 public abstract class AbstractCloudEventConverter<I> implements Converter<I, CloudEvent> {
     @Override
-    public CloudEvent unmarshall(I value) throws IOException {
+    public CloudEvent convert(I value) throws IOException {
         if (value == null) {
             return null;
         } else if (value instanceof CloudEvent) {

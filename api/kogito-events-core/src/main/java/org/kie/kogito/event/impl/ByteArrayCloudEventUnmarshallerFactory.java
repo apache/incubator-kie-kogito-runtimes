@@ -18,7 +18,6 @@ package org.kie.kogito.event.impl;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ByteArrayCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<byte[]> {
@@ -31,8 +30,8 @@ public class ByteArrayCloudEventUnmarshallerFactory implements CloudEventUnmarsh
 
     @Override
     public <S> CloudEventUnmarshaller<byte[], S> unmarshaller(Class<S> targetClass) {
-        return new DefaultCloudEventUnmarshaller(new ByteArrayCloudEventConverter(objectMapper),
-                JsonNode.class.isAssignableFrom(targetClass) ? new JsonNodeCloudEventDataConverter(objectMapper) : new POJOCloudEventDataConverter<>(objectMapper, targetClass),
+        return new DefaultCloudEventUnmarshaller<>(new ByteArrayCloudEventConverter(objectMapper),
+                JacksonMarshallUtils.getDataConverter(targetClass, objectMapper),
                 new ByteArrayCloudEventDataConverter());
     }
 }

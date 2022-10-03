@@ -41,9 +41,9 @@ public class QuarkusCloudEventConverter<I, T> implements
     }
 
     @Override
-    public DataEvent<T> unmarshall(Message<I> message) throws IOException {
+    public DataEvent<T> convert(Message<I> message) throws IOException {
         Optional<CloudEventMetadata> metadata = message.getMetadata(CloudEventMetadata.class);
-        return DataEventFactory.from(metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : unmarshaller.cloudEvent().unmarshall(message.getPayload()), unmarshaller.data());
+        return DataEventFactory.from(metadata.isPresent() ? binaryCE(metadata.get(), message.getPayload()) : unmarshaller.cloudEvent().convert(message.getPayload()), unmarshaller.data());
     }
 
     private CloudEvent binaryCE(CloudEventMetadata<?> meta, I payload) throws IOException {
@@ -53,7 +53,7 @@ public class QuarkusCloudEventConverter<I, T> implements
                         .withSource(meta.getSource())
                         .withId(meta.getId());
         if (payload != null) {
-            builder.withData(unmarshaller.binaryCloudEvent().unmarshall(payload));
+            builder.withData(unmarshaller.binaryCloudEvent().convert(payload));
         }
         meta.getDataContentType().ifPresent(builder::withDataContentType);
         meta.getDataSchema().ifPresent(builder::withDataSchema);

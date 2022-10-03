@@ -35,7 +35,7 @@ public class QuarkusDataEventConverter<I, T> implements
     }
 
     @Override
-    public DataEvent<T> unmarshall(Message<I> value) throws IOException {
+    public DataEvent<T> convert(Message<I> value) throws IOException {
         return DataEventFactory.from(unmarshaller.unmarshall(value.getPayload(), objectClass));
     }
 }

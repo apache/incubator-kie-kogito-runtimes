@@ -32,8 +32,8 @@ public class CloudEventConverter<T, S> implements Converter<T, DataEvent<S>> {
     }
 
     @Override
-    public DataEvent<S> unmarshall(T value) throws IOException {
-        return DataEventFactory.from(unmarshaller.cloudEvent().unmarshall(value), unmarshaller.data());
+    public DataEvent<S> convert(T value) throws IOException {
+        return DataEventFactory.from(unmarshaller.cloudEvent().convert(value), unmarshaller.data());
     }
 
 }

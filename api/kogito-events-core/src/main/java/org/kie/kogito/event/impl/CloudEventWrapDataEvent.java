@@ -106,7 +106,7 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
         T result = data.get();
         if (result == null) {
             try {
-                result = unmarshaller.unmarshall(cloudEventData);
+                result = unmarshaller.convert(cloudEventData);
             } catch (IOException io) {
                 throw new UncheckedIOException(io);
             }

@@ -452,7 +452,7 @@ class EventDrivenDecisionControllerTest {
         private CloudEventUnmarshallerFactory unmarshaller = new ObjectCloudEventUnmarshallerFactory(objectMapper);
 
         public void accept(String message) throws IOException {
-            subscription.getConsumer().apply(subscription.getConverter().unmarshall(message));
+            subscription.getConsumer().apply(subscription.getConverter().convert(message));
         }
 
         @Override

@@ -33,7 +33,7 @@ public class DataEventConverter<T, S> implements Converter<T, DataEvent<S>> {
     }
 
     @Override
-    public DataEvent<S> unmarshall(T value) throws IOException {
+    public DataEvent<S> convert(T value) throws IOException {
         return DataEventFactory.from(unmarshaller.unmarshall(value, objectClass));
     }
 }

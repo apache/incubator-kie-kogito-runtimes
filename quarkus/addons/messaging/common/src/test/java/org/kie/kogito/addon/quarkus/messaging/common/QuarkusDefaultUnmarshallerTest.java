@@ -76,7 +76,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testStructureCloudEvent() throws IOException {
         Message<byte[]> message = getMessage(getStructureCE("1.0", "type", "/path", getPayload("Javierito")), null);
-        DataEvent<JsonNode> ce = converter.unmarshall(message);
+        DataEvent<JsonNode> ce = converter.convert(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V1, ce.getSpecVersion());
@@ -86,7 +86,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testBynaryCloudEvent() throws IOException {
         Message<byte[]> message = getMessage(objectMapper.writeValueAsBytes(getPayload("Javierito")), getMetadata("0.3", "type", "/path"));
-        DataEvent<JsonNode> ce = converter.unmarshall(message);
+        DataEvent<JsonNode> ce = converter.convert(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V03, ce.getSpecVersion());
@@ -96,7 +96,7 @@ public class QuarkusDefaultUnmarshallerTest {
     @Test
     void testBynaryCEWithoutPayload() throws IOException {
         Message<byte[]> message = getMessage(null, getMetadata("0.3", "type", "/path"));
-        DataEvent<JsonNode> ce = converter.unmarshall(message);
+        DataEvent<JsonNode> ce = converter.convert(message);
         assertEquals("type", ce.getType());
         assertEquals("/path", ce.getSource().toString());
         assertEquals(SpecVersion.V03, ce.getSpecVersion());

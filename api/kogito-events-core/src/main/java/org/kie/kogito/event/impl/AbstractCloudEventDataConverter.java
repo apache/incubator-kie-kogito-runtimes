@@ -24,7 +24,7 @@ import io.cloudevents.CloudEventData;
 public abstract class AbstractCloudEventDataConverter<O> implements Converter<CloudEventData, O> {
 
     @Override
-    public O unmarshall(CloudEventData value) throws IOException {
+    public O convert(CloudEventData value) throws IOException {
         return value == null ? null : toValue(value);
     }
 
