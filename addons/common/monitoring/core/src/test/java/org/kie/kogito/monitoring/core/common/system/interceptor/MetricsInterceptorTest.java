@@ -46,14 +46,12 @@ class MetricsInterceptorTest {
         verify(systemMetricsCollector, times(1)).registerStatusCodeRequest(endpointCaptor.capture(), statusCodeCaptor.capture());
 
         List<String> endpoints = endpointCaptor.getAllValues();
-        assertThat(endpoints).isNotEmpty();
-        assertThat(endpoints).hasSize(1);
-        assertThat(endpoints.get(0)).isEqualTo(expectedEndpoint);
+        assertThat(endpoints).isNotEmpty().hasSize(1);
+        assertThat(endpoints).containsExactly(expectedEndpoint);
 
         List<String> statusCodes = statusCodeCaptor.getAllValues();
-        assertThat(statusCodes).isNotEmpty();
-        assertThat(statusCodes).hasSize(1);
+        assertThat(statusCodes).isNotEmpty().hasSize(1);
         String statusCodeString = String.valueOf(statusCode);
-        assertThat(statusCodes.get(0)).isEqualTo(statusCodeString);
+        assertThat(statusCodes).containsExactly(statusCodeString);
     }
 }

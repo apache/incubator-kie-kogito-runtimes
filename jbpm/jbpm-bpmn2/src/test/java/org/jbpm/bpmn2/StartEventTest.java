@@ -481,8 +481,7 @@ public class StartEventTest extends JbpmBpmn2TestCase {
         kruntime.signalEvent("MySignal", "NewValue");
         countDownListener.waitTillCompleted();
         assertThat(getNumberOfProcessInstances("Minimal")).isEqualTo(1);
-        assertThat(list).isNotNull();
-        assertThat(list).hasSize(1);
+        assertThat(list).isNotNull().hasSize(1);
         String var = getProcessVarValue(list.get(0), "x");
         assertThat(var).isEqualTo("NEWVALUE");
     }

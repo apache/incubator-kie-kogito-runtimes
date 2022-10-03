@@ -52,7 +52,7 @@ class SpringMetricsFilterRegisterTest {
             assertThat(values).hasSize(1);
             assertThat(values.get(0)).isInstanceOf(SpringbootMetricsInterceptor.class);
         } else {
-            assertThat(registerCaptor.getAllValues().isEmpty());
+            assertThat(registerCaptor.getAllValues()).isEmpty();
         }
     }
 

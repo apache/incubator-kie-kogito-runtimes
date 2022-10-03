@@ -59,7 +59,7 @@ class QuarkusMetricsFilterRegisterTest {
             assertThat(values).hasSize(1);
             assertThat(values.get(0)).isInstanceOf(QuarkusMetricsInterceptor.class);
         } else {
-            assertThat(registerCaptor.getAllValues().isEmpty());
+            assertThat(registerCaptor.getAllValues()).isEmpty();
         }
     }
 

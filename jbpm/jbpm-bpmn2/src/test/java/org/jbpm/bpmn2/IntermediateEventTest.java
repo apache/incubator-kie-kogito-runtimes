@@ -997,8 +997,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-        assertThat(workItem).isInstanceOf(KogitoWorkItem.class);
+        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1019,8 +1018,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-        assertThat(workItem).isInstanceOf(KogitoWorkItem.class);
+        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
@@ -1687,8 +1685,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1714,8 +1711,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
 
@@ -1760,8 +1756,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Inside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1963,8 +1958,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         countDownListener.waitTillCompleted();
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(3);
+        assertThat(workItems).isNotNull().hasSize(3);
 
         for (KogitoWorkItem wi : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -2219,8 +2213,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances).hasSize(1);
+        assertThat(processInstances).isNotNull().hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2234,8 +2227,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances).isEmpty();
+        assertThat(processInstances).isNotNull().isEmpty();
     }
 
     @Test
@@ -2253,8 +2245,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances).hasSize(1);
+        assertThat(processInstances).isNotNull().hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2268,8 +2259,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances).isEmpty();
+        assertThat(processInstances).isNotNull().isEmpty();
     }
 
     @Test
