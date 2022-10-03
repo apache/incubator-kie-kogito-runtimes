@@ -53,7 +53,7 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
                 .forEach(pathItem -> getMediaTypes(pathItem).stream()
                         .filter(mediaType -> mediaType.getSchema() != null)
                         .filter(mediaType -> "#/components/schemas/JsonNodeModelInput".equals(mediaType.getSchema().getRef()))
-                        .forEach(mediaType -> mediaType.setSchema(null)));
+                        .forEach(mediaType -> mediaType.setSchema(OASFactory.createSchema().type(Schema.SchemaType.OBJECT))));
     }
 
     private static void addWorkflowdataSchemaReferences(OpenAPI openAPI) {
