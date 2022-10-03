@@ -20,20 +20,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.kie.efesto.common.api.model.GeneratedResources;
 import org.kie.pmml.commons.model.KiePMMLModel;
 
 public class PMMLResource {
+
     private final List<KiePMMLModel> kiePmmlModels;
     private final Path path;
     private final String modelPath;
 
     private final Map<String, byte[]> compiledClasses;
 
-    public PMMLResource(List<KiePMMLModel> kiePmmlModels, Path path, String modelPath, Map<String, byte[]> compiledClasses) {
+    private final Map<String, GeneratedResources> generatedResourcesMap;
+
+    public PMMLResource(List<KiePMMLModel> kiePmmlModels,
+            Path path,
+            String modelPath,
+            Map<String, byte[]> compiledClasses,
+            Map<String, GeneratedResources> generatedResourcesMap) {
         this.kiePmmlModels = kiePmmlModels;
         this.path = path;
         this.modelPath = modelPath;
         this.compiledClasses = compiledClasses;
+        this.generatedResourcesMap = generatedResourcesMap;
     }
 
     public List<KiePMMLModel> getKiePmmlModels() {
@@ -52,4 +61,7 @@ public class PMMLResource {
         return Collections.unmodifiableMap(compiledClasses);
     }
 
+    public Map<String, GeneratedResources> getGeneratedResourcesMap() {
+        return Collections.unmodifiableMap(generatedResourcesMap);
+    }
 }
