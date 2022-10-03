@@ -76,22 +76,19 @@ public class PredictionCodegenFactory implements GeneratorFactory {
         LOGGER.debug("ofCollectedResources {}", resources);
         if (context.hasClassAvailable(DMN_JPMML_CLASS)) {
             LOGGER.debug("jpmml libraries available on classpath, skipping kogito-pmml parsing and compilation");
-            return ofPredictions(context, Collections.emptyList()/* , Collections.emptySet() */);
+            return ofPredictions(context, Collections.emptyList());
         }
         Collection<PMMLResource> pmmlResources = resources.stream()
                 .filter(r -> r.resource().getResourceType() == ResourceType.PMML)
                 .flatMap(r -> parsePredictions(context.getClassLoader(), r.basePath(),
                         Collections.singletonList(r.resource())).stream())
                 .collect(toList());
-        return ofPredictions(context, pmmlResources/* , indexFiles */);
+        return ofPredictions(context, pmmlResources);
     }
 
-    private static PredictionCodegen ofPredictions(KogitoBuildContext context, Collection<PMMLResource> resources/*
-                                                                                                                  * ,
-                                                                                                                  * Set<IndexFile> indexFiles
-                                                                                                                  */) {
+    private static PredictionCodegen ofPredictions(KogitoBuildContext context, Collection<PMMLResource> resources) {
         LOGGER.debug("ofPredictions {} {}", context, resources);
-        return new PredictionCodegen(context, resources/* , indexFiles */);
+        return new PredictionCodegen(context, resources);
     }
 
     static Collection<PMMLResource> parsePredictions(ClassLoader classLoader, Path path,

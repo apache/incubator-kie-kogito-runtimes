@@ -42,8 +42,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.kie.efesto.common.api.constants.Constants.INDEXFILE_DIRECTORY_PROPERTY;
-import static org.kie.efesto.common.api.utils.JSONUtils.getGeneratedResourcesObject;
-import static org.kie.efesto.common.api.utils.JSONUtils.writeGeneratedResourcesObject;
+import static org.kie.efesto.common.core.utils.JSONUtils.getGeneratedResourcesObject;
+import static org.kie.efesto.common.core.utils.JSONUtils.writeGeneratedResourcesObject;
 import static org.kie.kogito.codegen.api.Generator.REST_TYPE;
 import static org.kie.pmml.commons.utils.KiePMMLModelUtils.getSanitizedClassName;
 

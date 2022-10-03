@@ -63,9 +63,9 @@ class PredictionCodegenUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void checkModel(KogitoBuildContext.Builder contextBuilder) {
         KiePMMLModel hasSourcesMap = new KiePMMLModelWithSources("fileName", "modelName", "kmodulePackageName",
-                                                                 Collections.emptyList(), Collections.emptyList(),
-                                                                 Collections.emptyList(), Collections.emptyMap(),
-                                                                 true);
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyMap(),
+                true);
         IllegalStateException thrown = assertThrows(
                 IllegalStateException.class,
                 () -> PredictionCodegenUtils.checkModel(hasSourcesMap),
@@ -73,7 +73,7 @@ class PredictionCodegenUtilsTest {
         assertTrue(thrown.getMessage().contains("Unexpected HasSourcesMap instance"));
 
         KiePMMLModel noModelName = getKiePMMLModelInternal("fileName", null, Collections.emptyList(),
-                                                           Collections.emptyList());
+                Collections.emptyList());
         thrown = assertThrows(
                 IllegalStateException.class,
                 () -> PredictionCodegenUtils.checkModel(noModelName),
@@ -81,7 +81,7 @@ class PredictionCodegenUtilsTest {
         assertTrue(thrown.getMessage().contains("Model name should not be empty"));
 
         KiePMMLModel emptyModelName = getKiePMMLModelInternal("fileName", "", Collections.emptyList(),
-                                                              Collections.emptyList());
+                Collections.emptyList());
         thrown = assertThrows(
                 IllegalStateException.class,
                 () -> PredictionCodegenUtils.checkModel(emptyModelName),
@@ -97,10 +97,10 @@ class PredictionCodegenUtilsTest {
         Map<String, byte[]> compiledClasses = new HashMap<>();
         IntStream.range(0, 3).forEach(i -> compiledClasses.put("generated.package.Class" + i, new byte[0]));
         PMMLResource resource = new PMMLResource(Collections.singletonList(kiePMMLModel),
-                                                 Path.of(modelPath),
-                                                 modelPath,
-                                                 compiledClasses,
-                                                 Collections.emptyMap());
+                Path.of(modelPath),
+                modelPath,
+                compiledClasses,
+                Collections.emptyMap());
         PredictionCodegenUtils.generateModelBaseFiles(files, resource);
         assertThat(files).hasSize(compiledClasses.size());
         compiledClasses.keySet().forEach(fullClassName -> {
@@ -110,15 +110,15 @@ class PredictionCodegenUtilsTest {
                             .findFirst();
             assertThat(generatedFile).isPresent();
             assertThat(generatedFile
-                               .get()
-                               .type()
-                               .name())
-                    .isEqualTo(COMPILED_CLASS.name());
+                    .get()
+                    .type()
+                    .name())
+                            .isEqualTo(COMPILED_CLASS.name());
             assertThat(generatedFile
-                               .get()
-                               .type()
-                               .category())
-                    .isEqualTo(GeneratedFileType.Category.COMPILED_CLASS);
+                    .get()
+                    .type()
+                    .category())
+                            .isEqualTo(GeneratedFileType.Category.COMPILED_CLASS);
         });
     }
 
@@ -127,7 +127,7 @@ class PredictionCodegenUtilsTest {
     void generateModelRESTFiles(KogitoBuildContext.Builder contextBuilder) {
         final Collection<GeneratedFile> files = new ArrayList<>();
         PredictionCodegenUtils.generateModelRESTFiles(files, kiePMMLModel, contextBuilder.build(),
-                                                      "ApplicatonCanonicalName");
+                "ApplicatonCanonicalName");
         assertThat(files).hasSize(2);
         assertThat(files.stream().anyMatch(file -> file.type().name().equals(REST.name()))).isTrue();
         assertThat(files.stream().anyMatch(file -> file.type().name().equals(STATIC_HTTP_RESOURCE.name()))).isTrue();
