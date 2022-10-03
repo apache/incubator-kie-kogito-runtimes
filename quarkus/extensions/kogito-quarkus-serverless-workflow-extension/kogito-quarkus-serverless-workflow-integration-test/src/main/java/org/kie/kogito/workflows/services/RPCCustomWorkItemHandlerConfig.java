@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.quarkus.messaging.common.http;
+package org.kie.kogito.workflows.services;
 
-import io.cloudevents.CloudEvent;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-public class CloudEventResourceException extends RuntimeException {
+import org.kie.kogito.process.impl.CachedWorkItemHandlerConfig;
 
-    private static final long serialVersionUID = 1L;
+@ApplicationScoped
+public class RPCCustomWorkItemHandlerConfig extends CachedWorkItemHandlerConfig {
 
-    public CloudEventResourceException(CloudEvent event, Exception ex) {
-        super(String.format("CloudEvent '%s' data is not a valid JSON.", event.getType()), ex);
+    @Inject
+    RPCCustomWorkItemHandler handler;
+
+    @PostConstruct
+    void init() {
+        register(handler.getName(), handler);
     }
 }

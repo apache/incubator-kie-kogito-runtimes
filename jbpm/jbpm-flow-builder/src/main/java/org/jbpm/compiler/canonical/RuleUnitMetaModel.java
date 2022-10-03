@@ -15,13 +15,13 @@
  */
 package org.jbpm.compiler.canonical;
 
+import org.drools.ruleunits.api.DataObserver;
+import org.drools.ruleunits.api.DataStore;
+import org.drools.ruleunits.api.DataStream;
+import org.drools.ruleunits.api.SingletonStore;
 import org.drools.ruleunits.impl.AssignableChecker;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
-import org.kie.kogito.rules.DataObserver;
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.SingletonStore;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -38,6 +38,7 @@ import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parseExpression;
+import static org.drools.util.ClassUtils.rawType;
 
 public class RuleUnitMetaModel {
 
@@ -95,7 +96,7 @@ public class RuleUnitMetaModel {
     }
 
     public AssignExpr assignVar(RuleUnitVariable v) {
-        ClassOrInterfaceType type = new ClassOrInterfaceType(null, v.getType().getCanonicalName());
+        ClassOrInterfaceType type = new ClassOrInterfaceType(null, rawType(v.getType()).getCanonicalName());
         return new AssignExpr(
                 new VariableDeclarationExpr(type, localVarName(v)),
                 get(v),
@@ -110,7 +111,7 @@ public class RuleUnitMetaModel {
             String targetUnitVar, String sourceProcVar) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
-        String appendMethod = appendMethodOf(v.getType());
+        String appendMethod = appendMethodOf(rawType(v.getType()));
         blockStmt.addStatement(assignVar(v));
         blockStmt.addStatement(
                 iterate(new VariableDeclarator()
@@ -133,7 +134,7 @@ public class RuleUnitMetaModel {
     public Statement injectScalar(String targetUnitVar, Expression sourceExpression) {
         BlockStmt blockStmt = new BlockStmt();
         RuleUnitVariable v = ruleUnitDescription.getVar(targetUnitVar);
-        String appendMethod = appendMethodOf(v.getType());
+        String appendMethod = appendMethodOf(rawType(v.getType()));
         blockStmt.addStatement(assignVar(v));
         blockStmt.addStatement(
                 new MethodCallExpr()

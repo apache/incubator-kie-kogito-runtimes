@@ -26,12 +26,13 @@ public class StateNode extends CompositeContextNode implements Constrainable {
 
     private static final long serialVersionUID = 510l;
 
-    private Map<ConnectionRef, Constraint> constraints = new HashMap<ConnectionRef, Constraint>();
+    private Map<ConnectionRef, Constraint> constraints = new HashMap<>();
 
     public void setConstraints(Map<ConnectionRef, Constraint> constraints) {
         this.constraints = constraints;
     }
 
+    @Override
     public void setConstraint(final Connection connection, final Constraint constraint) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
@@ -43,6 +44,7 @@ public class StateNode extends CompositeContextNode implements Constrainable {
                 connection.getTo().getId(), connection.getToType()), constraint);
     }
 
+    @Override
     public void addConstraint(ConnectionRef connectionRef, Constraint constraint) {
         if (connectionRef == null) {
             throw new IllegalArgumentException(
@@ -55,10 +57,12 @@ public class StateNode extends CompositeContextNode implements Constrainable {
         return constraints.get(connectionRef);
     }
 
+    @Override
     public Map<ConnectionRef, Constraint> getConstraints() {
         return constraints;
     }
 
+    @Override
     public Constraint getConstraint(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
