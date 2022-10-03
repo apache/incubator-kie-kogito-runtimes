@@ -47,7 +47,7 @@ public class JacksonCloudEventFactory implements CloudEventFactory {
 
     @Override
     public CloudEvent build(Object data, String trigger, KogitoProcessInstance pi) {
-        CloudEventBuilder builder = CloudEventBuilder.v1().withType(trigger).withSource(URI.create(String.format("/Kogito/%s/%s", pi.getProcessId(), pi.getId())))
+        CloudEventBuilder builder = CloudEventBuilder.v1().withType(trigger).withSource(URI.create("/process/" + pi.getProcessId()))
                 .withTime(OffsetDateTime.now()).withId(UUID.randomUUID().toString());
 
         withExtension(builder, CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID, pi.getParentProcessInstanceId());
