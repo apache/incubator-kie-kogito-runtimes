@@ -56,6 +56,8 @@ public class ForallHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
+
         final ForallDescr forallDescr = (ForallDescr) parser.getCurrent();
 
         final Object parent = parser.getParent();

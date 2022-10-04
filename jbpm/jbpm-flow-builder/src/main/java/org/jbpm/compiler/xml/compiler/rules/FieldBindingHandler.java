@@ -56,6 +56,8 @@ public class FieldBindingHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
+
         final BindingDescr fieldBindingDescr = (BindingDescr) parser.getCurrent();
 
         final PatternDescr patternDescr = (PatternDescr) parser.getParent();

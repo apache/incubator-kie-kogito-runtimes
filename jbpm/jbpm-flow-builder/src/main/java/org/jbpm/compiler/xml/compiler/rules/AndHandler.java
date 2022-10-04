@@ -51,6 +51,8 @@ public class AndHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
+
         final AndDescr andDescr = (AndDescr) parser.getCurrent();
 
         final Object parent = parser.getParent();

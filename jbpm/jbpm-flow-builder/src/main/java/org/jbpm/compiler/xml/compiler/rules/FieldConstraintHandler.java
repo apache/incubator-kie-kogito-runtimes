@@ -59,6 +59,8 @@ public class FieldConstraintHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
+
         final ConnectiveDescr c = (ConnectiveDescr) parser.getCurrent();
 
         Object p = parser.getParent();

@@ -45,6 +45,7 @@ public class CollectHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
         final CollectDescr collectDescr = (CollectDescr) parser.getCurrent();
 
         final Object parent = parser.getParent();

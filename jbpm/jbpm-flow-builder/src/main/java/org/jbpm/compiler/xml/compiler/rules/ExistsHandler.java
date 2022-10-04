@@ -50,6 +50,8 @@ public class ExistsHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
+
         final ExistsDescr existsDescr = (ExistsDescr) parser.getCurrent();
 
         if ((existsDescr.getDescrs().size() != 1) && (existsDescr.getDescrs().get(0).getClass() != PatternDescr.class)) {

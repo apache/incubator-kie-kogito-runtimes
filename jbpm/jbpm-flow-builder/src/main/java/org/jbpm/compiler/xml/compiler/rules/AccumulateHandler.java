@@ -46,6 +46,7 @@ public class AccumulateHandler extends BaseAbstractHandler
             final String localName,
             final Parser parser) throws SAXException {
 
+        parser.endElementBuilder();
         final AccumulateDescr accumulateDescr = (AccumulateDescr) parser.getCurrent();
 
         final Object parent = parser.getParent();

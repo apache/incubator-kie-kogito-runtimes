@@ -84,6 +84,7 @@ public class ConnectionHandler extends BaseAbstractHandler implements Handler {
 
     public Object end(final String uri, final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
         return parser.getCurrent();
     }
 

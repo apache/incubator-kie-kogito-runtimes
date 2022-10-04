@@ -65,6 +65,7 @@ public class ImportHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
+        parser.endElementBuilder();
         return null;
     }
 
