@@ -30,10 +30,6 @@
 
   <description>PostgreSQL Persistence support for Quarkus</description>
 
-  <properties>
-    <quarkus.datasource.jdbc>false</quarkus.datasource.jdbc>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>

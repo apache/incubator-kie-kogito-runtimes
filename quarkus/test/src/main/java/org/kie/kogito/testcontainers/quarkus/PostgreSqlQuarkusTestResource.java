@@ -30,9 +30,6 @@ public class PostgreSqlQuarkusTestResource extends ConditionalQuarkusTestResourc
     public static final String QUARKUS_DATASOURCE_JDBC_URL = "quarkus.datasource.jdbc.url";
     public static final String QUARKUS_DATASOURCE_USERNAME = "quarkus.datasource.username";
     public static final String QUARKUS_DATASOURCE_PASSWORD = "quarkus.datasource.password";
-    public static final String QUARKUS_FLYWAY_MIGRATE_AT_START = "quarkus.flyway.migrate-at-start";
-    public static final String QUARKUS_FLYWAY_BASELINE_ON_MIGRATE = "quarkus.flyway.baseline-on-migrate";
-    public static final String QUARKUS_FLYWAY_CLEAN_AT_START = "quarkus.flyway.clean-at-start";
 
     public PostgreSqlQuarkusTestResource() {
         super(new KogitoPostgreSqlContainer());
@@ -45,9 +42,6 @@ public class PostgreSqlQuarkusTestResource extends ConditionalQuarkusTestResourc
         properties.put(QUARKUS_DATASOURCE_JDBC_URL, getTestResource().getJdbcUrl());
         properties.put(QUARKUS_DATASOURCE_USERNAME, getTestResource().getUsername());
         properties.put(QUARKUS_DATASOURCE_PASSWORD, getTestResource().getPassword());
-        properties.put(QUARKUS_FLYWAY_MIGRATE_AT_START, "true");
-        properties.put(QUARKUS_FLYWAY_BASELINE_ON_MIGRATE, "true");
-        properties.put(QUARKUS_FLYWAY_CLEAN_AT_START, "true");
         return properties;
     }
 
