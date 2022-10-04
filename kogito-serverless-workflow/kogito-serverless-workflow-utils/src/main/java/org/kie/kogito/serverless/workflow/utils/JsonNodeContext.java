@@ -44,7 +44,7 @@ public class JsonNodeContext implements AutoCloseable {
         Map<String, JsonNode> map = Collections.emptyMap();
         if (jsonNode.isObject()) {
             ObjectNode objectNode = (ObjectNode) jsonNode;
-            map = addVariablesFromContext(objectNode, context);
+            map = addVariablesFromContext(context);
             map.forEach(objectNode::set);
         }
         return new JsonNodeContext(jsonNode, map.keySet());
@@ -59,7 +59,7 @@ public class JsonNodeContext implements AutoCloseable {
         this.keys = keys;
     }
 
-    private static Map<String, JsonNode> addVariablesFromContext(ObjectNode context, KogitoProcessContext processInfo) {
+    private static Map<String, JsonNode> addVariablesFromContext(KogitoProcessContext processInfo) {
         KogitoNodeInstance nodeInstance = processInfo.getNodeInstance();
         if (nodeInstance instanceof ContextableInstance) {
             return getVariablesFromContext((ContextableInstance) nodeInstance);

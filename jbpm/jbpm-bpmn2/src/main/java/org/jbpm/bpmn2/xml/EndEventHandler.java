@@ -120,7 +120,7 @@ public class EndEventHandler extends AbstractNodeHandler {
         return node;
     }
 
-    public void handleTerminateNode(final Node node, final Element element) throws SAXException {
+    public void handleTerminateNode(final Node node, final Element element) {
         ((EndNode) node).setTerminate(true);
 
         EndNode endNode = (EndNode) node;
@@ -140,7 +140,7 @@ public class EndEventHandler extends AbstractNodeHandler {
     }
 
     public void handleSignalNode(final Node node, final Element element,
-            final Parser parser) throws SAXException {
+            final Parser parser) {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -173,7 +173,7 @@ public class EndEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     public void handleMessageNode(final Node node, final Element element,
-            final Parser parser) throws SAXException {
+            final Parser parser) {
         EndNode endNode = (EndNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -206,7 +206,7 @@ public class EndEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     public void handleErrorNode(final Node node, final Element element,
-            final Parser parser) throws SAXException {
+            final Parser parser) {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {
@@ -238,7 +238,7 @@ public class EndEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     public void handleEscalationNode(final Node node, final Element element,
-            final Parser parser) throws SAXException {
+            final Parser parser) {
         FaultNode faultNode = (FaultNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {

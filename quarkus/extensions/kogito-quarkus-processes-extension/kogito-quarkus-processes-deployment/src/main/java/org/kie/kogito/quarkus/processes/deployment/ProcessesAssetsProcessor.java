@@ -244,7 +244,6 @@ public class ProcessesAssetsProcessor {
                     context,
                     aggregatedIndex,
                     generatedBeans,
-                    resourcePatterns,
                     liveReload.isLiveReload()));
         }
 
@@ -267,8 +266,7 @@ public class ProcessesAssetsProcessor {
             KogitoBuildContext context,
             IndexView index,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
-            BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
-            boolean useDebugSymbols) throws IOException {
+            boolean useDebugSymbols) {
 
         Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context);
 
