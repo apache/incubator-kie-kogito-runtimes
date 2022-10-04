@@ -66,7 +66,6 @@ pipeline {
                     mavenCompareQuarkusDependencies(kogitoRuntimesRepo, 'kogito-quarkus-bom')
                     mavenCompareQuarkusDependencies(kogitoRuntimesRepo, 'kogito-build-no-bom-parent')
                     mavenSetProperty(kogitoRuntimesRepo, 'version.io.quarkus', '999-SNAPSHOT')
-                    mavenSetProperty(kogitoRuntimesRepo, 'version.io.quarkus.quarkus-test', '999-SNAPSHOT')
                 }
             }
             post {
@@ -268,7 +267,7 @@ void getOrCreateGitBranch(String branch) {
 String getReproducer() {
     String kogitoBranch = useIntegrationBranch() ? getIntegrationBranch() : getKogitoBranch()
     String droolsBranch = useIntegrationBranch() ? getIntegrationBranch() : getDroolsBranch()
-    String repoducer = """
+    String reproducer = """
 git clone --branch ${droolsBranch} --depth 1 https://github.com/kiegroup/drools.git
 git clone --branch ${kogitoBranch} --depth 1 https://github.com/kiegroup/kogito-runtimes.git
 git clone --branch ${kogitoBranch} --depth 1 https://github.com/kiegroup/kogito-apps.git
@@ -281,7 +280,6 @@ mvn -f drools/pom.xml -pl :drools-build-parent versions:compare-dependencies -Dr
 mvn -f drools/pom.xml -e versions:set-property -Dproperty=version.io.quarkus -DnewVersion=999-SNAPSHOT -DallowSnapshots=true -DgenerateBackupPoms=false
 mvn -f kogito-runtimes/pom.xml -pl :kogito-dependencies-bom -pl :kogito-build-parent -pl :kogito-quarkus-bom -pl :kogito-build-no-bom-parent versions:compare-dependencies -DremotePom=io.quarkus:quarkus-bom:999-SNAPSHOT -DupdatePropertyVersions=true -DupdateDependencies=true -DgenerateBackupPoms=false
 mvn -f kogito-runtimes/pom.xml -e versions:set-property -Dproperty=version.io.quarkus -DnewVersion=999-SNAPSHOT -DallowSnapshots=true -DgenerateBackupPoms=false
-mvn -f kogito-runtimes/pom.xml -e versions:set-property -Dproperty=version.io.quarkus.quarkus-test -DnewVersion=999-SNAPSHOT -DallowSnapshots=true -DgenerateBackupPoms=false
 """
     }
     reproducer += """
