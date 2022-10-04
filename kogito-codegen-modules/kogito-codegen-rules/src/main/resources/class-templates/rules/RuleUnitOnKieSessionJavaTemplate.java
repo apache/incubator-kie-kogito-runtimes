@@ -22,9 +22,9 @@ import org.drools.kiesession.rulebase.InternalKnowledgeBase;
 import org.drools.ruleunits.impl.sessions.RuleUnitStatefulKnowledgeSessionImpl;
 
 import org.kie.api.runtime.KieSession;
-import org.kie.kogito.drools.core.unit.AbstractRuleUnit;
-import org.kie.kogito.rules.RuleUnits;
+import org.drools.ruleunits.impl.factory.AbstractRuleUnit;
 import org.kie.kogito.rules.RuleEventListenerConfig;
+import org.kie.kogito.rules.RuleUnits;
 
 public class $Name$ extends AbstractRuleUnit<$ModelName$> {
 
@@ -33,7 +33,7 @@ public class $Name$ extends AbstractRuleUnit<$ModelName$> {
     private final org.kie.kogito.Application app;
 
     public $Name$(org.kie.kogito.Application app) {
-        super($ModelName$.class.getCanonicalName(), app.get(RuleUnits.class));
+        super($ModelName$.class, app.get(RuleUnits.class));
         this.app = app;
     }
 

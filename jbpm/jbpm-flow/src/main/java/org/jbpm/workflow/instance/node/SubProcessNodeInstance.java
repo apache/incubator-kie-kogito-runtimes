@@ -58,7 +58,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
     private static final Logger logger = LoggerFactory.getLogger(SubProcessNodeInstance.class);
 
     // NOTE: ContextInstances are not persisted as current functionality (exception scope) does not require it
-    private Map<String, ContextInstance> contextInstances = new HashMap<String, ContextInstance>();
+    private Map<String, ContextInstance> contextInstances = new HashMap<>();
     private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
 
     private String processInstanceId;
@@ -117,7 +117,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
             if (getProcessInstance().getCorrelationKey() != null) {
                 // in case there is correlation key on parent instance pass it along to child so it can be easily correlated 
                 // since correlation key must be unique for active instances it appends processId and timestamp
-                List<String> businessKeys = new ArrayList<String>();
+                List<String> businessKeys = new ArrayList<>();
                 businessKeys.add(getProcessInstance().getCorrelationKey());
                 businessKeys.add(processId);
                 businessKeys.add(String.valueOf(System.currentTimeMillis()));
@@ -172,6 +172,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         this.processInstanceId = processInstanceId;
     }
 
+    @Override
     public void addEventListeners() {
         super.addEventListeners();
         addProcessListener();
@@ -181,6 +182,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         getProcessInstance().addEventListener("processInstanceCompleted:" + processInstanceId, this, true);
     }
 
+    @Override
     public void removeEventListeners() {
         super.removeEventListeners();
         getProcessInstance().removeEventListener("processInstanceCompleted:" + processInstanceId, this, true);
@@ -235,6 +237,7 @@ public class SubProcessNodeInstance extends StateBasedNodeInstance implements Ev
         triggerCompleted();
     }
 
+    @Override
     public String getNodeName() {
         org.kie.api.definition.process.Node node = getNode();
         if (node == null) {
