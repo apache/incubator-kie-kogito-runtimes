@@ -924,7 +924,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         try {
             List<Process> processes = xmlReader.read(new StringReader(processXml));
             return processes.get(0);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             t.printStackTrace();
             return null;
         }
