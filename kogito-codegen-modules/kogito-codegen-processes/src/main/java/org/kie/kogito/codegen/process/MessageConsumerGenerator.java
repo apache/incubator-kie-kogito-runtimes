@@ -54,9 +54,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
-import static org.kie.kogito.codegen.core.CodegenUtils.isApplicationField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isObjectMapperField;
-import static org.kie.kogito.codegen.core.CodegenUtils.isProcessField;
 
 public class MessageConsumerGenerator {
 
@@ -129,7 +126,7 @@ public class MessageConsumerGenerator {
         // legacy: force initialize fields
         if (!context.hasDI()) {
             template.findAll(FieldDeclaration.class,
-                    CodegenUtils::isProcessField).forEach(fd -> initializeProcessField(fd));
+                    CodegenUtils::isProcessField).forEach(this::initializeProcessField);
             template.findAll(FieldDeclaration.class,
                     CodegenUtils::isApplicationField).forEach(this::initializeApplicationField);
             template.findAll(FieldDeclaration.class,
