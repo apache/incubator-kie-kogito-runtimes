@@ -24,6 +24,6 @@ public class Constants {
     public static final String HTTP_INTERCEPTOR_USE_DEFAULT = "kogito.monitoring.interceptor.useDefault";
 
     private Constants() {
-        throw new IllegalStateException("Utility class");
+
     }
 }
