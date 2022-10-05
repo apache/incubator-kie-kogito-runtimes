@@ -182,15 +182,15 @@ class PredictionCodegenGenerateTest {
     }
 
     static AbstractIntegerAssert<?> commonVerifyTotalFiles(Collection<GeneratedFile> generatedFiles,
-                                                           int expectedTotalFiles,
-                                                           int expectedRestEndpoints,
-                                                           boolean hasREST) {
+            int expectedTotalFiles,
+            int expectedRestEndpoints,
+            boolean hasREST) {
         int expectedGeneratedFilesSize = expectedTotalFiles - (hasREST ? 0 : expectedRestEndpoints * 2);
         return assertThat(expectedGeneratedFilesSize).isEqualTo(generatedFiles.size());
     }
 
     static AbstractIntegerAssert<?> commonVerifyCompiledClasses(Collection<GeneratedFile> generatedFiles,
-                                                                int expectedCompiledClasses) {
+            int expectedCompiledClasses) {
         return assertThat(expectedCompiledClasses).isEqualTo(generatedFiles.stream()
                 .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.COMPILED_CLASS) &&
                         generatedFile.type().equals(COMPILED_CLASS))
@@ -198,7 +198,7 @@ class PredictionCodegenGenerateTest {
     }
 
     static AbstractIntegerAssert<?> commonVerifyReflectResource(Collection<GeneratedFile> generatedFiles,
-                                                                boolean assertReflect) {
+            boolean assertReflect) {
         int expectedReflectResource = assertReflect ? 1 : 0;
         return assertThat(expectedReflectResource).isEqualTo(generatedFiles.stream()
                 .filter(generatedFile -> generatedFile.category().equals(GeneratedFileType.Category.INTERNAL_RESOURCE) &&

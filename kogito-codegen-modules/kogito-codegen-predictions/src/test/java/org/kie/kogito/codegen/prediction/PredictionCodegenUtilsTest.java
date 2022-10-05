@@ -62,9 +62,9 @@ class PredictionCodegenUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void checkModelHasSourcesMap(KogitoBuildContext.Builder contextBuilder) {
         KiePMMLModel hasSourcesMap = new KiePMMLModelWithSources("fileName", "modelName", "kmodulePackageName",
-                                                                 Collections.emptyList(), Collections.emptyList(),
-                                                                 Collections.emptyList(), Collections.emptyMap(),
-                                                                 true);
+                Collections.emptyList(), Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyMap(),
+                true);
 
         commonVerifyExceptionThrownCheckModel(hasSourcesMap, "Unexpected HasSourcesMap instance");
     }
@@ -74,7 +74,7 @@ class PredictionCodegenUtilsTest {
     void checkModelNoModelName(KogitoBuildContext.Builder contextBuilder) {
 
         KiePMMLModel noModelName = getKiePMMLModelInternal("fileName", null, Collections.emptyList(),
-                                                           Collections.emptyList());
+                Collections.emptyList());
         commonVerifyExceptionThrownCheckModel(noModelName, "Model name should not be empty");
     }
 
@@ -82,7 +82,7 @@ class PredictionCodegenUtilsTest {
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
     void checkModelEmptyModelName(KogitoBuildContext.Builder contextBuilder) {
         KiePMMLModel emptyModelName = getKiePMMLModelInternal("fileName", "", Collections.emptyList(),
-                                                              Collections.emptyList());
+                Collections.emptyList());
         commonVerifyExceptionThrownCheckModel(emptyModelName, "Model name should not be empty");
     }
 
@@ -124,7 +124,7 @@ class PredictionCodegenUtilsTest {
     void generateModelRESTFiles(KogitoBuildContext.Builder contextBuilder) {
         final Collection<GeneratedFile> files = new ArrayList<>();
         PredictionCodegenUtils.generateModelRESTFiles(files, kiePMMLModel, contextBuilder.build(),
-                                                      "ApplicationCanonicalName");
+                "ApplicationCanonicalName");
         assertThat(files).hasSize(2);
         assertThat(files).extracting(file -> file.type().name()).contains(STATIC_HTTP_RESOURCE.name(), REST.name());
     }

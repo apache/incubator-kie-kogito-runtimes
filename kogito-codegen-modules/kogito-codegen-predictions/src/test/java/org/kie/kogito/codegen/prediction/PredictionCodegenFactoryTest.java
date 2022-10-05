@@ -127,10 +127,8 @@ class PredictionCodegenFactoryTest {
         codeGenerator.generate();
     }
 
-    private void commonVerifyExceptionThrownByBuildMockedGenerateExecutable(KogitoBuildContext.Builder contextBuilder
-            , KiePMMLModel pmmlModel) {
+    private void commonVerifyExceptionThrownByBuildMockedGenerateExecutable(KogitoBuildContext.Builder contextBuilder, KiePMMLModel pmmlModel) {
         KogitoBuildContext context = contextBuilder.build();
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
-                                                                                  buildMockedGenerateExecutable(context, pmmlModel));
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> buildMockedGenerateExecutable(context, pmmlModel));
     }
 }
