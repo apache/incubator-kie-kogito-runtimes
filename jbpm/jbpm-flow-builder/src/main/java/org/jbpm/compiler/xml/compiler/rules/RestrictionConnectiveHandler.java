@@ -23,7 +23,6 @@ import org.drools.drl.ast.descr.RestrictionConnectiveDescr;
 import org.jbpm.compiler.xml.Handler;
 import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -37,8 +36,8 @@ public class RestrictionConnectiveHandler extends BaseAbstractHandler
         implements
         Handler {
 
-    public final static String AND = "and-";
-    public final static String OR = "or-";
+    public static final String AND = "and-";
+    public static final String OR = "or-";
 
     public RestrictionConnectiveHandler() {
     }
@@ -64,8 +63,7 @@ public class RestrictionConnectiveHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
-
+        parser.endElementBuilder();
         Object op = parser.getParent();
         ConnectiveDescr c = (ConnectiveDescr) parser.getCurrent();
 
