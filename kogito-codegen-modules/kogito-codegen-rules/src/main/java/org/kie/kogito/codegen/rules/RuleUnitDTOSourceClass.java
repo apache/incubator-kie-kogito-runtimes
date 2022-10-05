@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.rules;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
+import org.drools.ruleunits.api.SingletonStore;
 import org.kie.internal.ruleunit.RuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitVariable;
-import org.kie.kogito.rules.SingletonStore;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -30,6 +30,8 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+
+import static org.drools.util.ClassUtils.rawType;
 
 public class RuleUnitDTOSourceClass implements RuleFileGenerator {
 
@@ -98,7 +100,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
             this.ruleUnitVariable = ruleUnitVariable;
             this.isDataSource = ruleUnitVariable.isDataSource();
             this.ruleUnitHelper = ruleUnitHelper;
-            this.isSingletonStore = ruleUnitHelper.isAssignableFrom(SingletonStore.class, ruleUnitVariable.getType());
+            this.isSingletonStore = ruleUnitHelper.isAssignableFrom(SingletonStore.class, rawType(ruleUnitVariable.getType()));
         }
 
         private FieldDeclaration createField() {
@@ -126,7 +128,7 @@ public class RuleUnitDTOSourceClass implements RuleFileGenerator {
                 return new ClassOrInterfaceType(null, "java.util.List")
                         .setTypeArguments(new ClassOrInterfaceType(null, genericType));
             } else {
-                return new ClassOrInterfaceType(null, ruleUnitVariable.getType().getCanonicalName());
+                return new ClassOrInterfaceType(null, rawType(ruleUnitVariable.getType()).getCanonicalName());
             }
         }
 

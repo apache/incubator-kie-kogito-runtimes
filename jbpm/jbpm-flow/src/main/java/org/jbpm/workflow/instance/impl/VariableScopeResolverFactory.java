@@ -28,12 +28,13 @@ public class VariableScopeResolverFactory extends ImmutableDefaultFactory {
     private static final long serialVersionUID = 510l;
 
     private VariableScopeInstance variableScope;
-    private Map<String, Object> extraParameters = new HashMap<String, Object>();
+    private Map<String, Object> extraParameters = new HashMap<>();
 
     public VariableScopeResolverFactory(VariableScopeInstance variableScope) {
         this.variableScope = variableScope;
     }
 
+    @Override
     public boolean isResolveable(String name) {
         boolean found = variableScope.getVariable(name) != null;
         if (!found) {
@@ -43,6 +44,7 @@ public class VariableScopeResolverFactory extends ImmutableDefaultFactory {
         return found;
     }
 
+    @Override
     public VariableResolver getVariableResolver(String name) {
         if (extraParameters.containsKey(name)) {
             return new SimpleValueResolver(extraParameters.get(name));

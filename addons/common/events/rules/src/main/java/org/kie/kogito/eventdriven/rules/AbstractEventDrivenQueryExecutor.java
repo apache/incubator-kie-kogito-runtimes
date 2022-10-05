@@ -16,47 +16,48 @@
 package org.kie.kogito.eventdriven.rules;
 
 import java.util.Optional;
+import java.util.function.Function;
 
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.drools.ruleunits.impl.InternalRuleUnit;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnitQuery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.cloudevents.CloudEvent;
 
-public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R> implements EventDrivenQueryExecutor {
+public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> implements EventDrivenQueryExecutor {
 
     private RuleUnit<D> ruleUnit;
     private String queryName;
-    private Class<? extends RuleUnitQuery<R>> queryClass;
+    private Function<RuleUnitInstance<D>, Object> queryFunction;
     private Class<D> dataClass;
     private ObjectMapper mapper;
 
     protected AbstractEventDrivenQueryExecutor() {
     }
 
-    protected AbstractEventDrivenQueryExecutor(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass, ObjectMapper mapper) {
+    protected AbstractEventDrivenQueryExecutor(RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> dataClass, ObjectMapper mapper) {
         this.ruleUnit = ruleUnit;
         this.queryName = queryName;
-        this.queryClass = queryClass;
+        this.queryFunction = queryFunction;
         this.dataClass = dataClass;
         this.mapper = mapper;
     }
 
-    protected void setup(RuleUnit<D> ruleUnit, String queryName, Class<? extends RuleUnitQuery<R>> queryClass, Class<D> dataClass, ObjectMapper mapper) {
+    protected void setup(RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> dataClass, ObjectMapper mapper) {
         this.ruleUnit = ruleUnit;
         this.queryName = queryName;
-        this.queryClass = queryClass;
+        this.queryFunction = queryFunction;
         this.dataClass = dataClass;
         this.mapper = mapper;
     }
 
     @Override
     public String getRuleUnitId() {
-        return ruleUnit.id();
+        return ((InternalRuleUnit) ruleUnit).getRuleUnitDataClass().getCanonicalName();
     }
 
     @Override
@@ -77,9 +78,9 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData, R
                 : CloudEventUtils.decodeData(input, dataClass, mapper);
     }
 
-    private R internalExecuteQuery(D input) {
+    private Object internalExecuteQuery(D input) {
         RuleUnitInstance<D> instance = ruleUnit.createInstance(input);
-        R response = instance.executeQuery(queryClass);
+        Object response = queryFunction.apply(instance);
         instance.dispose();
         return response;
     }

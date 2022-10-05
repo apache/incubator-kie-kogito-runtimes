@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Supplier;
 
+import org.drools.ruleunits.api.RuleUnitData;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.AbstractContext;
@@ -31,7 +32,6 @@ import org.jbpm.workflow.core.Node;
 import org.kie.api.definition.process.Connection;
 import org.kie.api.runtime.KieRuntime;
 import org.kie.kogito.decision.DecisionModel;
-import org.kie.kogito.rules.RuleUnitData;
 
 /**
  * Default implementation of a RuleSet node.
@@ -184,7 +184,7 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
 
     private RuleType ruleType;
 
-    private Map<String, Object> parameters = new HashMap<String, Object>();
+    private Map<String, Object> parameters = new HashMap<>();
 
     private Supplier<DecisionModel> decisionModel;
     private Supplier<KieRuntime> kieRuntime;
@@ -230,6 +230,7 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
         this.kieRuntime = kieRuntime;
     }
 
+    @Override
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -244,6 +245,7 @@ public class RuleSetNode extends StateBasedNode implements ContextContainer {
         }
     }
 
+    @Override
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {

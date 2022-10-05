@@ -36,6 +36,8 @@ import org.mvel2.templates.TemplateCompiler;
 import org.mvel2.templates.TemplateRegistry;
 import org.mvel2.templates.TemplateRuntime;
 
+import static org.drools.util.ClassUtils.rawType;
+
 public class AbstractJavaProcessBuilder {
 
     protected static final TemplateRegistry RULE_REGISTRY = new SimpleTemplateRegistry();
@@ -88,7 +90,7 @@ public class AbstractJavaProcessBuilder {
 
         final List globalTypes = new ArrayList(globals.length);
         for (int i = 0, length = globals.length; i < length; i++) {
-            globalTypes.add(context.getPkg().getGlobals().get(globals[i]).getCanonicalName());
+            globalTypes.add(rawType(context.getPkg().getGlobals().get(globals[i])).getCanonicalName());
         }
 
         map.put("globals",
@@ -108,7 +110,7 @@ public class AbstractJavaProcessBuilder {
             final Set<String> unboundIdentifiers,
             final ContextResolver contextResolver) {
         Map map = createVariableContext(className, text, context, globals);
-        List<String> variables = new ArrayList<String>();
+        List<String> variables = new ArrayList<>();
         final List variableTypes = new ArrayList(globals.length);
         for (String variableName : unboundIdentifiers) {
             VariableScope variableScope = (VariableScope) contextResolver.resolveContext(VariableScope.VARIABLE_SCOPE, variableName);
@@ -149,8 +151,8 @@ public class AbstractJavaProcessBuilder {
 
     protected void collectTypes(String key, AnalysisResult analysis, ProcessBuildContext context) {
         if (context.getProcess() != null) {
-            Set<String> referencedTypes = new HashSet<String>();
-            Set<String> unqualifiedClasses = new HashSet<String>();
+            Set<String> referencedTypes = new HashSet<>();
+            Set<String> unqualifiedClasses = new HashSet<>();
 
             JavaAnalysisResult javaAnalysis = (JavaAnalysisResult) analysis;
             LOCAL_VAR: for (JavaLocalDeclarationDescr localDeclDescr : javaAnalysis.getLocalVariablesMap().values()) {

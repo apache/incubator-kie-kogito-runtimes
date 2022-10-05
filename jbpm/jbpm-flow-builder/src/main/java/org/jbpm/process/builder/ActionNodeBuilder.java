@@ -30,6 +30,7 @@ import org.kie.api.definition.process.Process;
 
 public class ActionNodeBuilder extends ExtendedNodeBuilder {
 
+    @Override
     public void build(Process process,
             ProcessDescr processDescr,
             ProcessBuildContext context,
@@ -45,7 +46,7 @@ public class ActionNodeBuilder extends ExtendedNodeBuilder {
         dialect.getActionBuilder().build(context, action, actionDescr, actionNode);
 
         WorkflowProcess wfProcess = (WorkflowProcess) process;
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("imports", wfProcess.getImports());
         parameters.put("classloader", context.getConfiguration().getClassLoader());
 

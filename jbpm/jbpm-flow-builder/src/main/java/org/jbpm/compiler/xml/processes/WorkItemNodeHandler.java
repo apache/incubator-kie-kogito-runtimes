@@ -33,6 +33,7 @@ import org.xml.sax.SAXException;
 
 public class WorkItemNodeHandler extends AbstractNodeHandler {
 
+    @Override
     public void handleNode(final Node node, final Element element, final String uri,
             final String localName, final Parser parser)
             throws SAXException {
@@ -100,7 +101,7 @@ public class WorkItemNodeHandler extends AbstractNodeHandler {
         if (work != null) {
             xmlDump.append("      <work name=\"" + work.getName() + "\" >" + EOL);
             List<ParameterDefinition> parameterDefinitions =
-                    new ArrayList<ParameterDefinition>(work.getParameterDefinitions());
+                    new ArrayList<>(work.getParameterDefinitions());
             Collections.sort(parameterDefinitions, new Comparator<ParameterDefinition>() {
                 public int compare(ParameterDefinition o1,
                         ParameterDefinition o2) {
