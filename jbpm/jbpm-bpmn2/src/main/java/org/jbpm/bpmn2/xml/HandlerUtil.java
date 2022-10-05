@@ -32,7 +32,7 @@ import org.jbpm.ruleflow.core.RuleFlowProcess;
 public final class HandlerUtil {
 
     private HandlerUtil() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static Map<String, Message> messages(Parser parser) {

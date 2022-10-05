@@ -52,7 +52,7 @@ public class DecisionValidation {
     public static final Logger LOG = LoggerFactory.getLogger(DecisionValidation.class);
 
     private DecisionValidation() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static enum ValidationOption {

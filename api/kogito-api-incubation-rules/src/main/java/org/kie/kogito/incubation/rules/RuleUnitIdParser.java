@@ -22,7 +22,6 @@ import org.kie.kogito.incubation.common.LocalId;
 public class RuleUnitIdParser {
 
     private RuleUnitIdParser() {
-        throw new IllegalStateException("Utility class");
 
     }
 

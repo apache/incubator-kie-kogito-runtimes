@@ -38,7 +38,7 @@ public class WidMVELEvaluator {
     }
 
     private WidMVELEvaluator() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static Object eval(final String expression) {

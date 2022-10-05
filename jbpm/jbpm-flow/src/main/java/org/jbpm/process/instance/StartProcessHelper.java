@@ -29,7 +29,7 @@ import org.kie.api.runtime.process.ProcessInstance;
 public final class StartProcessHelper {
 
     private StartProcessHelper() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static final String PROCESS_COMPARATOR_CLASS_KEY = "jbpm.process.name.comparator";

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class JobIdResolver {
 
     private JobIdResolver() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static final MessageFormat format = new MessageFormat("{0}:");

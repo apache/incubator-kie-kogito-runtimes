@@ -23,7 +23,7 @@ import org.kie.kogito.ExecutionIdSupplier;
 public class DecisionExecutionIdUtils {
 
     private DecisionExecutionIdUtils() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static final String EXECUTION_ID_KEY = "__kogito_execution_id__";

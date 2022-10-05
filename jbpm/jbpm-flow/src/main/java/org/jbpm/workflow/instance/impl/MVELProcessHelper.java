@@ -46,7 +46,7 @@ public class MVELProcessHelper {
             };
 
     private MVELProcessHelper() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static MVELEvaluator evaluator() {

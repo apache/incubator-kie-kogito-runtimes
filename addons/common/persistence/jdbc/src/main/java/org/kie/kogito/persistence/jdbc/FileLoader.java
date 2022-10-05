@@ -21,7 +21,7 @@ import java.util.List;
 public class FileLoader {
 
     private FileLoader() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     static List<String> getQueryFromFile(final String dbType, final String scriptName) {

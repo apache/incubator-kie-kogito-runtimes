@@ -23,7 +23,7 @@ public class DDLRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(DDLRunner.class);
 
     private DDLRunner() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static void init(Repository repository, boolean autoDDL) {

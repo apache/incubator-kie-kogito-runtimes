@@ -35,7 +35,7 @@ final class MvelSubstitutions {
 final class MVEL_Target {
 
     private MVEL_Target() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     @Substitute

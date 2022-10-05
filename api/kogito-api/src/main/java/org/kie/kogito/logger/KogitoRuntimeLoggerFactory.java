@@ -22,7 +22,7 @@ import org.kie.api.logger.KieRuntimeLogger;
 public class KogitoRuntimeLoggerFactory {
 
     private KogitoRuntimeLoggerFactory() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static KieLoggers knowledgeRuntimeLoggerFactoryService;

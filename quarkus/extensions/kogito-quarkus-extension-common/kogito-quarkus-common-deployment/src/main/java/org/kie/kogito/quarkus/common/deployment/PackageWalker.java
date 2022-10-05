@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class PackageWalker {
 
     private PackageWalker() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static List<File> getAllSiblings(Collection<File> filesToCompile) {

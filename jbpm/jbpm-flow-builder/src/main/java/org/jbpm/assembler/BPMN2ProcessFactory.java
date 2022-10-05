@@ -21,7 +21,7 @@ import org.kie.internal.builder.KnowledgeBuilder;
 public class BPMN2ProcessFactory {
 
     private BPMN2ProcessFactory() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static class LazyHolder {

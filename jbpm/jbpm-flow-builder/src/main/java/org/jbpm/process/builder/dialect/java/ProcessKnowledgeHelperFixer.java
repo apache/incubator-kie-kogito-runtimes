@@ -24,7 +24,7 @@ import org.mvel2.MacroProcessor;
 public class ProcessKnowledgeHelperFixer {
 
     private ProcessKnowledgeHelperFixer() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static final Map macros;

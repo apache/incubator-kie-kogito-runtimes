@@ -453,7 +453,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     public static class Null {
         private Null() {
-            throw new IllegalStateException("Utility class");
+
         }
 
         public static final Null instance = new Null();

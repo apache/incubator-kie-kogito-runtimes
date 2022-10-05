@@ -24,7 +24,7 @@ import org.kie.kogito.uow.UnitOfWorkManager;
 public class UnitOfWorkExecutor {
 
     private UnitOfWorkExecutor() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static <T> T executeInUnitOfWork(UnitOfWorkManager uowManager, Supplier<T> supplier) {

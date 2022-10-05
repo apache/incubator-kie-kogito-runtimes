@@ -24,7 +24,7 @@ import org.kie.kogito.incubation.common.LocalId;
  */
 public final class ProcessIdParser {
     private ProcessIdParser() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static <T extends LocalId> T parse(String id, Class<T> expected) {

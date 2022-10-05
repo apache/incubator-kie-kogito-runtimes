@@ -23,6 +23,6 @@ public class Constants {
     public static final String CONTAINER_NAME_PREFIX = "container.image.";
 
     private Constants() {
-        throw new IllegalStateException("Utility class");
+
     }
 }

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class WorkItemRepository {
 
     private WorkItemRepository() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static final Logger logger = LoggerFactory.getLogger(WorkItemRepository.class);

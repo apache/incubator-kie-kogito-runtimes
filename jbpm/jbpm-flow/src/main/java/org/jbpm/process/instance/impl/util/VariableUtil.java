@@ -29,7 +29,7 @@ import org.kie.api.runtime.process.NodeInstance;
 public class VariableUtil {
 
     private VariableUtil() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static String resolveVariable(String s, NodeInstance nodeInstance) {

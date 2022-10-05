@@ -25,7 +25,7 @@ import org.jbpm.process.builder.dialect.mvel.MVELProcessDialect;
 public class ProcessDialectRegistry {
 
     private ProcessDialectRegistry() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     private static ConcurrentMap<String, ProcessDialect> dialects;

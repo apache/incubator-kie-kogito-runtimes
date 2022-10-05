@@ -34,7 +34,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 public class WorkflowProcessInstanceUpgrader {
 
     private WorkflowProcessInstanceUpgrader() {
-        throw new IllegalStateException("Utility class");
+
     }
 
     public static void upgradeProcessInstance(KogitoProcessRuntime kruntime, String processInstanceId, String processId,

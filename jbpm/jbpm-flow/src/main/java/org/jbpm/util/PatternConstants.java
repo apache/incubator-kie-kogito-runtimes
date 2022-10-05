@@ -23,6 +23,6 @@ public class PatternConstants {
     public static final Pattern SIMPLE_TIME_DATE_MATCHER = Pattern.compile("([+-])?\\s*((\\d+)[Ww])?\\s*((\\d+)[Dd])?\\s*((\\d+)[Hh])?\\s*((\\d+)[Mm])?\\s*((\\d+)[Ss])?");
 
     private PatternConstants() {
-        throw new IllegalStateException("Utility class");
+
     }
 }
