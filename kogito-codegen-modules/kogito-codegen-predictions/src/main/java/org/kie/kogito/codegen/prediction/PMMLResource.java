@@ -41,8 +41,8 @@ public class PMMLResource {
         this.kiePmmlModels = kiePmmlModels;
         this.path = path;
         this.modelPath = modelPath;
-        this.compiledClasses = compiledClasses;
-        this.generatedResourcesMap = generatedResourcesMap;
+        this.compiledClasses = Collections.unmodifiableMap(compiledClasses);
+        this.generatedResourcesMap = Collections.unmodifiableMap(generatedResourcesMap);
     }
 
     public List<KiePMMLModel> getKiePmmlModels() {
@@ -58,10 +58,10 @@ public class PMMLResource {
     }
 
     public Map<String, byte[]> getCompiledClasses() {
-        return Collections.unmodifiableMap(compiledClasses);
+        return compiledClasses;
     }
 
     public Map<String, GeneratedResources> getGeneratedResourcesMap() {
-        return Collections.unmodifiableMap(generatedResourcesMap);
+        return generatedResourcesMap;
     }
 }

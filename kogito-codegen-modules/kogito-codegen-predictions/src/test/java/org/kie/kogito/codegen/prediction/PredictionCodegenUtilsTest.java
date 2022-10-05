@@ -37,11 +37,10 @@ import org.kie.pmml.commons.model.KiePMMLModel;
 import org.kie.pmml.commons.model.KiePMMLModelWithSources;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.drools.codegen.common.GeneratedFileType.COMPILED_CLASS;
 import static org.drools.codegen.common.GeneratedFileType.STATIC_HTTP_RESOURCE;
 import static org.drools.model.codegen.execmodel.GeneratedFile.Type.REST;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.kie.kogito.pmml.CommonTestUtility.getKiePMMLModelInternal;
 import static org.kie.kogito.pmml.CommonTestUtility.getRandomMiningFields;
 import static org.kie.kogito.pmml.CommonTestUtility.getRandomOutputField;
@@ -61,32 +60,30 @@ class PredictionCodegenUtilsTest {
 
     @ParameterizedTest
     @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
-    void checkModel(KogitoBuildContext.Builder contextBuilder) {
+    void checkModelHasSourcesMap(KogitoBuildContext.Builder contextBuilder) {
         KiePMMLModel hasSourcesMap = new KiePMMLModelWithSources("fileName", "modelName", "kmodulePackageName",
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyMap(),
-                true);
-        IllegalStateException thrown = assertThrows(
-                IllegalStateException.class,
-                () -> PredictionCodegenUtils.checkModel(hasSourcesMap),
-                "Expected checkModel() to throw, but it didn't");
-        assertTrue(thrown.getMessage().contains("Unexpected HasSourcesMap instance"));
+                                                                 Collections.emptyList(), Collections.emptyList(),
+                                                                 Collections.emptyList(), Collections.emptyMap(),
+                                                                 true);
+
+        commonVerifyExceptionThrownCheckModel(hasSourcesMap, "Unexpected HasSourcesMap instance");
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void checkModelNoModelName(KogitoBuildContext.Builder contextBuilder) {
 
         KiePMMLModel noModelName = getKiePMMLModelInternal("fileName", null, Collections.emptyList(),
-                Collections.emptyList());
-        thrown = assertThrows(
-                IllegalStateException.class,
-                () -> PredictionCodegenUtils.checkModel(noModelName),
-                "Expected checkModel() to throw, but it didn't");
-        assertTrue(thrown.getMessage().contains("Model name should not be empty"));
+                                                           Collections.emptyList());
+        commonVerifyExceptionThrownCheckModel(noModelName, "Model name should not be empty");
+    }
 
+    @ParameterizedTest
+    @MethodSource("org.kie.kogito.codegen.api.utils.KogitoContextTestUtils#contextBuilders")
+    void checkModelEmptyModelName(KogitoBuildContext.Builder contextBuilder) {
         KiePMMLModel emptyModelName = getKiePMMLModelInternal("fileName", "", Collections.emptyList(),
-                Collections.emptyList());
-        thrown = assertThrows(
-                IllegalStateException.class,
-                () -> PredictionCodegenUtils.checkModel(emptyModelName),
-                "Expected checkModel() to throw, but it didn't");
-        assertTrue(thrown.getMessage().contains("Model name should not be empty"));
+                                                              Collections.emptyList());
+        commonVerifyExceptionThrownCheckModel(emptyModelName, "Model name should not be empty");
     }
 
     @ParameterizedTest
@@ -104,7 +101,7 @@ class PredictionCodegenUtilsTest {
         PredictionCodegenUtils.generateModelBaseFiles(files, resource);
         assertThat(files).hasSize(compiledClasses.size());
         compiledClasses.keySet().forEach(fullClassName -> {
-            assertThat(files.stream().anyMatch(file -> file.path().toString().equals(fullClassName))).isTrue();
+            assertThat(files).extracting(file -> file.path().toString()).contains(fullClassName);
             Optional<GeneratedFile> generatedFile =
                     files.stream().filter(file -> file.path().toString().equals(fullClassName))
                             .findFirst();
@@ -127,9 +124,12 @@ class PredictionCodegenUtilsTest {
     void generateModelRESTFiles(KogitoBuildContext.Builder contextBuilder) {
         final Collection<GeneratedFile> files = new ArrayList<>();
         PredictionCodegenUtils.generateModelRESTFiles(files, kiePMMLModel, contextBuilder.build(),
-                "ApplicatonCanonicalName");
+                                                      "ApplicationCanonicalName");
         assertThat(files).hasSize(2);
-        assertThat(files.stream().anyMatch(file -> file.type().name().equals(REST.name()))).isTrue();
-        assertThat(files.stream().anyMatch(file -> file.type().name().equals(STATIC_HTTP_RESOURCE.name()))).isTrue();
+        assertThat(files).extracting(file -> file.type().name()).contains(STATIC_HTTP_RESOURCE.name(), REST.name());
+    }
+
+    private void commonVerifyExceptionThrownCheckModel(KiePMMLModel pmmlModel, String message) {
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> PredictionCodegenUtils.checkModel(pmmlModel)).withMessageContaining(message);
     }
 }
