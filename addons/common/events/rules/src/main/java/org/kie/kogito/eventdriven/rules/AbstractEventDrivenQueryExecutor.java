@@ -15,44 +15,36 @@
  */
 package org.kie.kogito.eventdriven.rules;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitData;
 import org.drools.ruleunits.api.RuleUnitInstance;
 import org.drools.ruleunits.impl.InternalRuleUnit;
-import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.event.DataEvent;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.cloudevents.CloudEvent;
-
-public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> implements EventDrivenQueryExecutor {
+public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> implements EventDrivenQueryExecutor<D> {
 
     private RuleUnit<D> ruleUnit;
     private String queryName;
     private Function<RuleUnitInstance<D>, Object> queryFunction;
-    private Class<D> dataClass;
-    private ObjectMapper mapper;
+    private Class<D> objectClass;
 
     protected AbstractEventDrivenQueryExecutor() {
     }
 
-    protected AbstractEventDrivenQueryExecutor(RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> dataClass, ObjectMapper mapper) {
-        this.ruleUnit = ruleUnit;
-        this.queryName = queryName;
-        this.queryFunction = queryFunction;
-        this.dataClass = dataClass;
-        this.mapper = mapper;
+    protected AbstractEventDrivenQueryExecutor(EventDrivenRulesController controller, RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction,
+            Class<D> objectClass) {
+        setup(controller, ruleUnit, queryName, queryFunction, objectClass);
+
     }
 
-    protected void setup(RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> dataClass, ObjectMapper mapper) {
+    protected void setup(EventDrivenRulesController controller, RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> objectClass) {
         this.ruleUnit = ruleUnit;
         this.queryName = queryName;
         this.queryFunction = queryFunction;
-        this.dataClass = dataClass;
-        this.mapper = mapper;
+        this.objectClass = objectClass;
+        controller.subscribe(this);
     }
 
     @Override
@@ -66,21 +58,33 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
     }
 
     @Override
-    public Object executeQuery(CloudEvent input) {
-        return decodeData(input)
-                .map(this::internalExecuteQuery)
-                .orElseThrow(IllegalArgumentException::new);
+    public Class<D> getObjectClass() {
+        return objectClass;
     }
 
-    private Optional<D> decodeData(CloudEvent input) {
-        return mapper == null
-                ? CloudEventUtils.decodeData(input, dataClass)
-                : CloudEventUtils.decodeData(input, dataClass, mapper);
+    @Override
+    public Object executeQuery(DataEvent<D> input) {
+        return internalExecuteQuery(input.getData());
     }
 
     private Object internalExecuteQuery(D input) {
+<<<<<<< Upstream, based on main
         try (RuleUnitInstance<D> instance = ruleUnit.createInstance(input)) {
             return queryFunction.apply(instance);
+=======
+        RuleUnitInstance<D> instance = ruleUnit.createInstance(input);
+        try {
+            return queryFunction.apply(instance);
+        } finally {
+            instance.dispose();
+>>>>>>> 33ea2ab [KOGITO-8081] EventDrivenRule to use unmarshaller set by emitter
         }
     }
+
+    @Override
+    public String toString() {
+        return "AbstractEventDrivenQueryExecutor [ruleUnit=" + ruleUnit + ", queryName=" + queryName + ", objectClass="
+                + objectClass + "]";
+    }
+
 }

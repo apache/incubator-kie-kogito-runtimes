@@ -16,7 +16,5 @@
 package org.kie.kogito.eventdriven.rules;
 
 public enum RulesResponseError {
-    BAD_REQUEST,
-    QUERY_NOT_FOUND,
     INTERNAL_EXECUTION_ERROR
 }
