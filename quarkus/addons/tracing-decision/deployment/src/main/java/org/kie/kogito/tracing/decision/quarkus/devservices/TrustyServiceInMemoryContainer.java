@@ -41,15 +41,19 @@ public class TrustyServiceInMemoryContainer extends GenericContainer<TrustyServi
     private final int fixedExposedPort;
     private final boolean useSharedNetwork;
 
+    private int portToUseInTest;
+
     private String hostName = null;
 
     public TrustyServiceInMemoryContainer(final DockerImageName dockerImageName,
             final int fixedExposedPort,
             final String serviceName,
-            final boolean useSharedNetwork) {
+            final boolean useSharedNetwork,
+            final int portToUseInTest) {
         super(dockerImageName);
         this.fixedExposedPort = fixedExposedPort;
         this.useSharedNetwork = useSharedNetwork;
+        this.portToUseInTest = portToUseInTest;
 
         // Only adds the label in dev mode.
         if (serviceName != null) {
@@ -86,7 +90,11 @@ public class TrustyServiceInMemoryContainer extends GenericContainer<TrustyServi
     }
 
     private int getPortToUse() {
-        return useSharedNetwork ? PORT : getMappedPort(PORT);
+        LOGGER.info("portToUseInTest " + portToUseInTest);
+        if (portToUseInTest > 0) {
+            return useSharedNetwork ? portToUseInTest : getMappedPort(portToUseInTest);
+        } else {
+            return useSharedNetwork ? PORT : getMappedPort(PORT);
+        }
     }
-
 }
