@@ -20,7 +20,6 @@ import java.util.function.Function;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitData;
 import org.drools.ruleunits.api.RuleUnitInstance;
-import org.drools.ruleunits.impl.InternalRuleUnit;
 import org.kie.kogito.event.DataEvent;
 
 public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> implements EventDrivenQueryExecutor<D> {
@@ -36,7 +35,6 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
     protected AbstractEventDrivenQueryExecutor(EventDrivenRulesController controller, RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction,
             Class<D> objectClass) {
         setup(controller, ruleUnit, queryName, queryFunction, objectClass);
-
     }
 
     protected void setup(EventDrivenRulesController controller, RuleUnit<D> ruleUnit, String queryName, Function<RuleUnitInstance<D>, Object> queryFunction, Class<D> objectClass) {
@@ -44,12 +42,12 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
         this.queryName = queryName;
         this.queryFunction = queryFunction;
         this.objectClass = objectClass;
-        controller.subscribe(this);
+        controller.subscribe(this, objectClass);
     }
 
     @Override
     public String getRuleUnitId() {
-        return ((InternalRuleUnit) ruleUnit).getRuleUnitDataClass().getCanonicalName();
+        return objectClass.getCanonicalName();
     }
 
     @Override
@@ -58,26 +56,13 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
     }
 
     @Override
-    public Class<D> getObjectClass() {
-        return objectClass;
-    }
-
-    @Override
     public Object executeQuery(DataEvent<D> input) {
         return internalExecuteQuery(input.getData());
     }
 
     private Object internalExecuteQuery(D input) {
-<<<<<<< Upstream, based on main
         try (RuleUnitInstance<D> instance = ruleUnit.createInstance(input)) {
             return queryFunction.apply(instance);
-=======
-        RuleUnitInstance<D> instance = ruleUnit.createInstance(input);
-        try {
-            return queryFunction.apply(instance);
-        } finally {
-            instance.dispose();
->>>>>>> 33ea2ab [KOGITO-8081] EventDrivenRule to use unmarshaller set by emitter
         }
     }
 
@@ -86,5 +71,4 @@ public abstract class AbstractEventDrivenQueryExecutor<D extends RuleUnitData> i
         return "AbstractEventDrivenQueryExecutor [ruleUnit=" + ruleUnit + ", queryName=" + queryName + ", objectClass="
                 + objectClass + "]";
     }
-
 }

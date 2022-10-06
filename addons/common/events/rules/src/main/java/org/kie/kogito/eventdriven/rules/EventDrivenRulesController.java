@@ -62,8 +62,8 @@ public class EventDrivenRulesController {
         this.eventReceiver = eventReceiver;
     }
 
-    public <D> void subscribe(EventDrivenQueryExecutor<D> queryExecutor) {
-        eventReceiver.subscribe(new RequestHandler<>(queryExecutor), queryExecutor.getObjectClass());
+    public <D> void subscribe(EventDrivenQueryExecutor<D> queryExecutor, Class<D> objectClass) {
+        eventReceiver.subscribe(new RequestHandler<>(queryExecutor), objectClass);
     }
 
     private class RequestHandler<T> implements Function<DataEvent<T>, CompletionStage<?>> {
@@ -76,31 +76,25 @@ public class EventDrivenRulesController {
 
         @Override
         public CompletionStage<?> apply(DataEvent<T> event) {
-            LOG.debug("Processing event {}", event);
-            if (validateRequest(event)) {
-                buildResponseCloudEvent(event, queryExecutor.executeQuery(event)).ifPresent(c -> eventEmitter.emit(c, c.getType(), Optional.empty()));
+            KogitoRulesExtension extension = ExtensionProvider.getInstance().parseExtension(KogitoRulesExtension.class, event);
+            if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, extension)) {
+                buildResponseCloudEvent(event, queryExecutor.executeQuery(event), extension).ifPresentOrElse(c -> eventEmitter.emit(c, c.getType(), Optional.empty()),
+                        () -> LOG.info("Extension {} does not match this query executor {}", extension, queryExecutor));
             } else {
-                LOG.info("Event {} with extension {} is not recognized by executor {}. Ignored it", event, queryExecutor);
+                LOG.warn("Event {} does not have expected information, discarding it", event);
             }
             return CompletableFuture.completedStage(null);
         }
 
-        private boolean validateRequest(DataEvent<T> event) {
-            KogitoRulesExtension extension = ExtensionProvider.getInstance().parseExtension(KogitoRulesExtension.class, event);
-            return extension != null && Objects.equals(queryExecutor.getRuleUnitId(), extension.getRuleUnitId()) && Objects.equals(queryExecutor.getQueryName(), extension.getRuleUnitQuery())
-                    && REQUEST_EVENT_TYPE.equals(event.getType());
-        }
-
-        private Optional<CloudEvent> buildResponseCloudEvent(DataEvent<T> event, Object payload) {
-            KogitoRulesExtension extension = new KogitoRulesExtension();
-            extension.setRuleUnitId(queryExecutor.getRuleUnitId());
-            extension.setRuleUnitQuery(queryExecutor.getQueryName());
-            return CloudEventUtils.build(UUID.randomUUID().toString(),
-                    CloudEventUtils.buildDecisionSource(config.getServiceUrl(), toKebabCase(queryExecutor.getQueryName())),
-                    RESPONSE_EVENT_TYPE,
-                    event.getSubject(),
-                    payload,
-                    extension);
+        private Optional<CloudEvent> buildResponseCloudEvent(DataEvent<T> event, Object payload, KogitoRulesExtension extension) {
+            return Objects.equals(queryExecutor.getRuleUnitId(), extension.getRuleUnitId()) && Objects.equals(queryExecutor.getQueryName(), extension.getRuleUnitQuery())
+                    ? CloudEventUtils.build(UUID.randomUUID().toString(),
+                            CloudEventUtils.buildDecisionSource(config.getServiceUrl(), toKebabCase(queryExecutor.getQueryName())),
+                            RESPONSE_EVENT_TYPE,
+                            event.getSubject(),
+                            payload,
+                            extension)
+                    : Optional.empty();
         }
 
         private String toKebabCase(String inputString) {

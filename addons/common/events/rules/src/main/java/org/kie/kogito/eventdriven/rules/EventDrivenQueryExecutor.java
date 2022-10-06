@@ -24,7 +24,4 @@ public interface EventDrivenQueryExecutor<D> {
     String getQueryName();
 
     Object executeQuery(DataEvent<D> input);
-
-    Class<D> getObjectClass();
-
 }
