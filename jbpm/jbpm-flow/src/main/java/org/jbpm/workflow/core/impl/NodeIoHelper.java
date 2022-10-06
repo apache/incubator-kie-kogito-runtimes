@@ -95,9 +95,7 @@ public class NodeIoHelper {
                 producer.accept(mapping.getTarget().getLabel(), dataSet.get(mapping.getSources().get(0).getLabel()));
             } else {
 
-                mapping.getAssignments().forEach(a -> {
-                    this.handleAssignment(a, sourceResolver, targetResolver, producer);
-                });
+                mapping.getAssignments().forEach(a -> this.handleAssignment(a, sourceResolver, targetResolver, producer));
 
             }
         } catch (Throwable th) {
@@ -121,7 +119,7 @@ public class NodeIoHelper {
             Function<String, Object> sourceResolver,
             Function<String, Object> targetResolver) {
 
-        Function<String, Object> varResolverWrapper = (varRef) -> {
+        Function<String, Object> varResolverWrapper = varRef -> {
             switch (varRef) {
                 case "nodeInstance":
                     return nodeInstanceImpl;

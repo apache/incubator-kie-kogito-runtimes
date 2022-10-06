@@ -82,9 +82,7 @@ public class StartEventHandler extends AbstractNodeHandler {
             startNode.getMetaData().put(TRIGGER_MAPPING, data.getLabel());
             startNode.getMetaData().put(MAPPING_VARIABLE, data.getLabel());
         });
-        findSourceMappingVar(startNode.getIoSpecification().getDataOutputAssociation()).ifPresent(data -> {
-            startNode.getMetaData().put(TRIGGER_MAPPING_INPUT, data.getLabel());
-        });
+        findSourceMappingVar(startNode.getIoSpecification().getDataOutputAssociation()).ifPresent(data -> startNode.getMetaData().put(TRIGGER_MAPPING_INPUT, data.getLabel()));
 
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         while (xmlNode != null) {

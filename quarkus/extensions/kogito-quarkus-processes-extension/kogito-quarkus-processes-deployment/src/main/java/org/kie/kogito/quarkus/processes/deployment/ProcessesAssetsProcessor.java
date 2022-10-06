@@ -302,9 +302,7 @@ public class ProcessesAssetsProcessor {
         DotName dotName = DotName.createSimple(superClass.getName());
         Type type = Type.create(dotName, Type.Kind.CLASS);
         reflectiveHierarchyClass.produce(new ReflectiveHierarchyBuildItem.Builder().type(type).build());
-        asList(superClass.getDeclaredClasses()).forEach(c -> {
-            addInnerClasses(c, reflectiveHierarchyClass);
-        });
+        asList(superClass.getDeclaredClasses()).forEach(c -> addInnerClasses(c, reflectiveHierarchyClass));
     }
 
     private Collection<GeneratedFile> generateJsonSchema(KogitoBuildContext context, IndexView index, Map<String, byte[]> generatedClasses) throws IOException {

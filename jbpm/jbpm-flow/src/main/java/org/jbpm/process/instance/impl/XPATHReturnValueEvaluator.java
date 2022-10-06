@@ -33,7 +33,6 @@ import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
-import javax.xml.xpath.XPathVariableResolver;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
@@ -91,12 +90,7 @@ public class XPATHReturnValueEvaluator
                         }
                     }
                 });
-        xpathEvaluator.setXPathVariableResolver(new XPathVariableResolver() {
-
-            public Object resolveVariable(QName variableName) {
-                return context.getVariable(variableName.getLocalPart());
-            }
-        });
+        xpathEvaluator.setXPathVariableResolver(variableName -> context.getVariable(variableName.getLocalPart()));
 
         xpathEvaluator.setNamespaceContext(new NamespaceContext() {
             private static final String DROOLS_NAMESPACE_URI = "http://www.jboss.org/drools";

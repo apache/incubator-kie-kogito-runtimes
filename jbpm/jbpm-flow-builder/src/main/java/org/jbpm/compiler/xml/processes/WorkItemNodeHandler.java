@@ -17,7 +17,6 @@ package org.jbpm.compiler.xml.processes;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -102,13 +101,7 @@ public class WorkItemNodeHandler extends AbstractNodeHandler {
             xmlDump.append("      <work name=\"" + work.getName() + "\" >" + EOL);
             List<ParameterDefinition> parameterDefinitions =
                     new ArrayList<>(work.getParameterDefinitions());
-            Collections.sort(parameterDefinitions, new Comparator<ParameterDefinition>() {
-                public int compare(ParameterDefinition o1,
-                        ParameterDefinition o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-
-            });
+            Collections.sort(parameterDefinitions, (o1, o2) -> o1.getName().compareTo(o2.getName()));
             for (ParameterDefinition paramDefinition : parameterDefinitions) {
                 DataType dataType = paramDefinition.getType();
                 xmlDump.append("        <parameter name=\"" + paramDefinition.getName() + "\" >" + EOL + "  ");

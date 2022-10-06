@@ -18,7 +18,6 @@ package org.jbpm.workflow.instance.node;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -179,17 +178,13 @@ public class JoinInstance extends NodeInstanceImpl {
         Collection<NodeInstance> activeNodeInstancesOrig = nodeInstanceContainer.getNodeInstances();
         List<NodeInstance> activeNodeInstances = new ArrayList<>(activeNodeInstancesOrig);
         // sort active instances in the way that lookFor nodeInstance will be last to not finish too early
-        Collections.sort(activeNodeInstances, new Comparator<NodeInstance>() {
-
-            @Override
-            public int compare(NodeInstance o1, NodeInstance o2) {
-                if (o1.getNodeId() == lookFor.getId()) {
-                    return 1;
-                } else if (o2.getNodeId() == lookFor.getId()) {
-                    return -1;
-                }
-                return 0;
+        Collections.sort(activeNodeInstances, (o1, o2) -> {
+            if (o1.getNodeId() == lookFor.getId()) {
+                return 1;
+            } else if (o2.getNodeId() == lookFor.getId()) {
+                return -1;
             }
+            return 0;
         });
 
         for (NodeInstance nodeInstance : activeNodeInstances) {

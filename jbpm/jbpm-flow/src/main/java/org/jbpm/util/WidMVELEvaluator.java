@@ -42,13 +42,8 @@ public class WidMVELEvaluator {
                 WID_PARSER_CONTEXT);
 
         if (KiePolicyHelper.isPolicyEnabled()) {
-            return AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    return MVEL.executeExpression(compiler.compile(),
-                            new HashMap());
-                }
-            }, KiePolicyHelper.getAccessContext());
+            return AccessController.doPrivileged((PrivilegedAction<Object>) () -> MVEL.executeExpression(compiler.compile(),
+                    new HashMap()), KiePolicyHelper.getAccessContext());
         } else {
             return MVEL.executeExpression(compiler.compile(),
                     new HashMap());

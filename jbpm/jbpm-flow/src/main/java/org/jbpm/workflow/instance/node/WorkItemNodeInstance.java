@@ -236,7 +236,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
 
         workItem.setStartDate(new Date());
 
-        Function<String, Object> varResolver = (varRef) -> {
+        Function<String, Object> varResolver = varRef -> {
             if (resolvedParameters.containsKey(varRef)) {
                 return resolvedParameters.get(varRef);
             }

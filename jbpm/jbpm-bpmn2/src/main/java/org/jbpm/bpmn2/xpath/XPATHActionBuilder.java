@@ -34,11 +34,7 @@ public class XPATHActionBuilder
     private static final Map macros = new HashMap(5);
     static {
         macros.put("insert",
-                new Macro() {
-                    public String doMacro() {
-                        return "kcontext.getKieRuntime().insert";
-                    }
-                });
+                (Macro) () -> "kcontext.getKieRuntime().insert");
 
         //        macros.put( "insertLogical",
         //                    new Macro() {

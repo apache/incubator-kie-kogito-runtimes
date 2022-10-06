@@ -40,11 +40,7 @@ public class MVELActionBuilder extends AbstractMVELBuilder implements ActionBuil
     private static final Map<String, Macro> macros = new HashMap<>(5);
     static {
         macros.put("insert",
-                new Macro() {
-                    public String doMacro() {
-                        return "kcontext.getKieRuntime().insert";
-                    }
-                });
+                () -> "kcontext.getKieRuntime().insert");
     }
 
     public MVELActionBuilder() {
@@ -123,7 +119,7 @@ public class MVELActionBuilder extends AbstractMVELBuilder implements ActionBuil
             }
         }
 
-        MVELCompilationUnit unit = dialect.getMVELCompilationUnit(text,
+        MVELCompilationUnit unit = MVELDialect.getMVELCompilationUnit(text,
                 analysis,
                 null,
                 null,

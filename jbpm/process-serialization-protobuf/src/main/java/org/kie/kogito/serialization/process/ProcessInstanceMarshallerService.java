@@ -134,7 +134,7 @@ public class ProcessInstanceMarshallerService {
     }
 
     public Consumer<AbstractProcessInstance<?>> createdReloadFunction(Supplier<byte[]> dataSupplier) {
-        return (processInstance) -> {
+        return processInstance -> {
             byte[] data = dataSupplier.get();
             if (data == null) {
                 LOGGER.warn("Process Instance {} cannot be found", processInstance.id());

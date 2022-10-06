@@ -107,8 +107,8 @@ public abstract class AbstractMarshallerGenerator<T> implements MarshallerGenera
         Predicate<String> typeExclusions = ExclusionTypeUtils.createTypeExclusions();
 
         // filter types that don't require to create a marshaller
-        Predicate<Descriptor> packagePredicate = (msg) -> !msg.getFileDescriptor().getPackage().equals("kogito");
-        Predicate<Descriptor> jacksonPredicate = (msg) -> !typeExclusions.test(packageFromOption(msg.getFileDescriptor(), msg) + "." + msg.getName());
+        Predicate<Descriptor> packagePredicate = msg -> !msg.getFileDescriptor().getPackage().equals("kogito");
+        Predicate<Descriptor> jacksonPredicate = msg -> !typeExclusions.test(packageFromOption(msg.getFileDescriptor(), msg) + "." + msg.getName());
 
         Predicate<Descriptor> predicate = packagePredicate.and(jacksonPredicate);
 

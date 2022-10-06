@@ -20,8 +20,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -106,11 +104,7 @@ public class UIWorkItemHandlerDialog extends JDialog {
         panel.add(resultValueTextField, c);
 
         addResultButton = new JButton("Add");
-        addResultButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                addResult();
-            }
-        });
+        addResultButton.addActionListener(event -> addResult());
         c = new GridBagConstraints();
         c.gridx = 4;
         c.gridy = 1;
@@ -118,11 +112,7 @@ public class UIWorkItemHandlerDialog extends JDialog {
         panel.add(addResultButton, c);
 
         completeButton = new JButton("Complete");
-        completeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                complete();
-            }
-        });
+        completeButton.addActionListener(event -> complete());
         c = new GridBagConstraints();
         c.gridy = 2;
         c.weightx = 1;
@@ -132,11 +122,7 @@ public class UIWorkItemHandlerDialog extends JDialog {
         panel.add(completeButton, c);
 
         abortButton = new JButton("Abort");
-        abortButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                abort();
-            }
-        });
+        abortButton.addActionListener(event -> abort());
         c = new GridBagConstraints();
         c.gridx = 4;
         c.gridy = 2;

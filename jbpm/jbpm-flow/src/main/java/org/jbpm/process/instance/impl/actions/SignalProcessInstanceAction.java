@@ -40,7 +40,7 @@ public class SignalProcessInstanceAction implements Action, Serializable {
 
     private final String signalNameTemplate;
     private String variableNameExpression;
-    private Function<KogitoProcessContext, Object> eventDataSupplier = (kcontext) -> null;
+    private Function<KogitoProcessContext, Object> eventDataSupplier = kcontext -> null;
     private String scope = UNSET_SCOPE;
     private String inputVariable;
 

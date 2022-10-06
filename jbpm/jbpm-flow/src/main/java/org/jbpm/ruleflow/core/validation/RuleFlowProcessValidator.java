@@ -1084,12 +1084,8 @@ public class RuleFlowProcessValidator implements ProcessValidator {
                 .filter(node -> node instanceof Mappable)
                 .forEach(node -> {
                     Mappable m = (Mappable) node;
-                    m.getInAssociations().forEach(da -> {
-                        validateDataAssignmentsIn(errors, process, node, da);
-                    });
-                    m.getOutAssociations().forEach(da -> {
-                        validateDataAssignmentsOut(errors, process, node, da);
-                    });
+                    m.getInAssociations().forEach(da -> validateDataAssignmentsIn(errors, process, node, da));
+                    m.getOutAssociations().forEach(da -> validateDataAssignmentsOut(errors, process, node, da));
                 });
     }
 

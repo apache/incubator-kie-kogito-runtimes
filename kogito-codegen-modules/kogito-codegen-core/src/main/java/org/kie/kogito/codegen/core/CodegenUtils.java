@@ -92,9 +92,7 @@ public class CodegenUtils {
             }
         });
 
-        argumentIds.forEach((placeholder, id) -> {
-            node.setArgument(id, expressions.get(placeholder));
-        });
+        argumentIds.forEach((placeholder, id) -> node.setArgument(id, expressions.get(placeholder)));
     }
 
     //Defaults the "to be interpolated type" to $Type$.

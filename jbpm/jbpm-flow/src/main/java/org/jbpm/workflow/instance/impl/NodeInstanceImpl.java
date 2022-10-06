@@ -638,7 +638,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     protected Object resolveValue(String expression) {
-        return resolveValue(expression, (replacements) -> {
+        return resolveValue(expression, replacements -> {
             String expr = expression;
             for (Map.Entry<String, Object> replacement : replacements.entrySet()) {
                 expr = expr.replace("#{" + replacement.getKey() + "}", replacement.getValue() != null ? replacement.getValue().toString() : "");
@@ -648,7 +648,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     }
 
     protected Object resolveFirstValue(String expression) {
-        return resolveValue(expression, (replacements) -> replacements.isEmpty() ? null : replacements.values().iterator().next());
+        return resolveValue(expression, replacements -> replacements.isEmpty() ? null : replacements.values().iterator().next());
     }
 
     // resolve expression based on variables or mvel expressions

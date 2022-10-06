@@ -106,7 +106,7 @@ public class MVELReturnValueEvaluatorBuilder extends AbstractMVELBuilder
             }
         }
 
-        MVELCompilationUnit unit = dialect.getMVELCompilationUnit(text,
+        MVELCompilationUnit unit = MVELDialect.getMVELCompilationUnit(text,
                 analysis,
                 null,
                 null,

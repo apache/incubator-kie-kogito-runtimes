@@ -360,17 +360,13 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         nodeImpl.setIoSpecification(ioSpecification);
         if (node instanceof EventNode) {
             EventNode eventNode = (EventNode) node;
-            findSourceMappingVar(ioSpecification.getDataOutputAssociation()).ifPresent(var -> {
-                eventNode.setInputVariableName(var.getLabel());
-            });
+            findSourceMappingVar(ioSpecification.getDataOutputAssociation()).ifPresent(var -> eventNode.setInputVariableName(var.getLabel()));
             findTargetMappingVar(ioSpecification.getDataOutputAssociation()).ifPresent(var -> {
                 eventNode.getMetaData().put(MAPPING_VARIABLE, var.getLabel());
                 eventNode.setVariableName(var.getLabel());
             });
         } else if (node instanceof TimerNode || node instanceof StateNode || node instanceof CatchLinkNode) {
-            findTargetMappingVar(ioSpecification.getDataOutputAssociation()).ifPresent(data -> {
-                nodeImpl.getMetaData().put(MAPPING_VARIABLE, data.getLabel());
-            });
+            findTargetMappingVar(ioSpecification.getDataOutputAssociation()).ifPresent(data -> nodeImpl.getMetaData().put(MAPPING_VARIABLE, data.getLabel()));
         }
     }
 
@@ -386,9 +382,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
                     mapping.getMetaData().put(VARIABLE, data.getExpression());
                 }
             });
-            findTargetMappingVar(ioSpecification.getDataInputAssociation()).ifPresent(data -> {
-                mapping.getMetaData().put(MAPPING_VARIABLE_INPUT, data.getLabel());
-            });
+            findTargetMappingVar(ioSpecification.getDataInputAssociation()).ifPresent(data -> mapping.getMetaData().put(MAPPING_VARIABLE_INPUT, data.getLabel()));
         }
     }
 
@@ -723,9 +717,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             forEachNode.setOutputRef(dataOutput.getLabel());
             forEachNode.addContextVariable(dataOutput.getId(), dataOutput.getLabel(), fromType(dataOutput.getType(), currentThread().getContextClassLoader()));
 
-            forEachNode.getIoSpecification().getDataOutputAssociation().stream().filter(e -> e.getTarget().getId().equals(dataOutput.getId())).forEach(da -> {
-                da.setTarget(dataOutput);
-            });
+            forEachNode.getIoSpecification().getDataOutputAssociation().stream().filter(e -> e.getTarget().getId().equals(dataOutput.getId())).forEach(da -> da.setTarget(dataOutput));
         }
 
         if (multiInstanceSpecification.hasLoopDataInputRef()) {
@@ -749,9 +741,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             // we determine the output ref and locate the source. if set the target we get the variable at that level.
             DataDefinition dataOutputRef = multiInstanceSpecification.getLoopDataOutputRef();
             nodeTarget.getMetaData().put("MICollectionOutput", dataOutputRef.getLabel());
-            forEachNode.getIoSpecification().getDataOutputAssociation().stream().filter(e -> e.getSources().get(0).getId().equals(dataOutputRef.getId())).findAny().ifPresent(e -> {
-                forEachNode.setOutputCollectionExpression(e.getTarget().getLabel());
-            });
+            forEachNode.getIoSpecification().getDataOutputAssociation().stream().filter(e -> e.getSources().get(0).getId().equals(dataOutputRef.getId())).findAny()
+                    .ifPresent(e -> forEachNode.setOutputCollectionExpression(e.getTarget().getLabel()));
 
             // another correction colletion output is not being stored in the composite context multiinstance
             // we use foreach_output

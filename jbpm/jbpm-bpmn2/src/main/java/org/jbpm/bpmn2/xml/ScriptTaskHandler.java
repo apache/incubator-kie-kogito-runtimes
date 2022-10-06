@@ -66,9 +66,7 @@ public class ScriptTaskHandler extends AbstractNodeHandler {
         action.setDialect(SUPPORTED_SCRIPT_FORMATS.getOrDefault(language, "java"));
         action.setConsequence("");
         final DroolsConsequenceAction scriptAction = action;
-        readSingleChildElementByTag(element, "script").ifPresent(script -> {
-            scriptAction.setConsequence(script.getTextContent());
-        });
+        readSingleChildElementByTag(element, "script").ifPresent(script -> scriptAction.setConsequence(script.getTextContent()));
 
         actionNode.setMetaData("DataInputs", new HashMap<String, String>());
         actionNode.setMetaData("DataOutputs", new HashMap<String, String>());

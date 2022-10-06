@@ -17,7 +17,6 @@ package org.jbpm.compiler.xml.processes;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -266,11 +265,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         if (timers != null && !timers.isEmpty()) {
             xmlDump.append("      <timers>" + EOL);
             List<Timer> timerList = new ArrayList<>(timers.keySet());
-            Collections.sort(timerList, new Comparator<Timer>() {
-                public int compare(Timer o1, Timer o2) {
-                    return (int) (o2.getId() - o1.getId());
-                }
-            });
+            Collections.sort(timerList, (o1, o2) -> (int) (o2.getId() - o1.getId()));
             for (Timer timer : timerList) {
                 xmlDump.append("        <timer id=\"" + timer.getId() + "\" ");
                 if (timer.getDelay() != null) {

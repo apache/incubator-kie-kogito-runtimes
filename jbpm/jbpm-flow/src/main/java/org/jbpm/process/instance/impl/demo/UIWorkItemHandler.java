@@ -20,8 +20,6 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -35,8 +33,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
@@ -76,11 +72,7 @@ public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
                 }
             }
         });
-        workItemsList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                selectButton.setEnabled(getSelectedWorkItem() != null);
-            }
-        });
+        workItemsList.addListSelectionListener(e -> selectButton.setEnabled(getSelectedWorkItem() != null));
         reloadWorkItemsList();
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1;
@@ -91,11 +83,7 @@ public class UIWorkItemHandler extends JFrame implements KogitoWorkItemHandler {
 
         selectButton = new JButton("Select");
         selectButton.setEnabled(false);
-        selectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                select();
-            }
-        });
+        selectButton.addActionListener(event -> select());
         c = new GridBagConstraints();
         c.gridy = 1;
         c.weightx = 1;

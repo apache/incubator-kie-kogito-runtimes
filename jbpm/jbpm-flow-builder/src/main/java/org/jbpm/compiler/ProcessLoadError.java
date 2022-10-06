@@ -35,7 +35,7 @@ public class ProcessLoadError extends DroolsError {
     }
 
     public int[] getLines() {
-        return this.lines;
+        return lines;
     }
 
     public String getMessage() {
