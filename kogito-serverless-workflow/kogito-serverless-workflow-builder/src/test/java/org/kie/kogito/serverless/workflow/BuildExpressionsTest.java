@@ -40,7 +40,7 @@ class BuildExpressionsTest {
         functionDefinition.setName("pepe");
         Functions functions = new Functions(Collections.singletonList(functionDefinition));
         when(flow.getFunctions()).thenReturn(functions);
-        
+
         assertThat(ExpressionHandlerUtils.replaceExpr(flow, "\"fn:pepe\"")).isEqualTo("\"fn:pepe\"");
         assertThat(ExpressionHandlerUtils.replaceExpr(flow, "fn:pepe")).isEqualTo(".pepe");
         assertThat(ExpressionHandlerUtils.replaceExpr(flow, "${fn:pepe}")).isEqualTo(".pepe");

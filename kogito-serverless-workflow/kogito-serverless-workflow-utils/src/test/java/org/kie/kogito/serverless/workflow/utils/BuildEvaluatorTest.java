@@ -42,11 +42,11 @@ public class BuildEvaluatorTest {
 
     @Test
     void testSecret() {
-    	assertThat(BuildEvaluator.eval("$SECRET.key")).isEqualTo("value");
+        assertThat(BuildEvaluator.eval("$SECRET.key")).isEqualTo("value");
     }
 
     @Test
     void testPlain() {
-    	assertThat(BuildEvaluator.eval("key")).isEqualTo("key");
+        assertThat(BuildEvaluator.eval("key")).isEqualTo("key");
     }
 }

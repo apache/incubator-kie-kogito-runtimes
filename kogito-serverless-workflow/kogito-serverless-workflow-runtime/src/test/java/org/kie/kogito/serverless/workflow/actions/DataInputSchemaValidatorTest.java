@@ -56,7 +56,7 @@ public class DataInputSchemaValidatorTest {
 
     @Test
     void testEmptyInput() throws IOException {
-    	assertThatIllegalArgumentException().isThrownBy(() -> validator.validate(Collections.emptyMap()));
+        assertThatIllegalArgumentException().isThrownBy(() -> validator.validate(Collections.emptyMap()));
     }
 
     private ObjectNode createNode(JsonNode x, JsonNode y) {

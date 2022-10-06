@@ -34,21 +34,21 @@ public class KogitoProcessContextResolverTest {
 
     @Test
     void testGetInstanceId() {
-    	assertThat(KogitoProcessContextResolver.get().readKey(context, "instanceId")).isEqualTo("value-id");
+        assertThat(KogitoProcessContextResolver.get().readKey(context, "instanceId")).isEqualTo("value-id");
     }
 
     @Test
     void testGetId() {
-    	assertThat(KogitoProcessContextResolver.get().readKey(context, "id")).isEqualTo("value-process-id");
+        assertThat(KogitoProcessContextResolver.get().readKey(context, "id")).isEqualTo("value-process-id");
     }
 
     @Test
     void testGetName() {
-    	assertThat(KogitoProcessContextResolver.get().readKey(context, "name")).isEqualTo("value-name");
+        assertThat(KogitoProcessContextResolver.get().readKey(context, "name")).isEqualTo("value-name");
     }
 
     @Test
     void testGetNonExistentKey() {
-    	assertThatIllegalArgumentException().isThrownBy(() -> KogitoProcessContextResolver.get().readKey(context, "nonexistent"));
+        assertThatIllegalArgumentException().isThrownBy(() -> KogitoProcessContextResolver.get().readKey(context, "nonexistent"));
     }
 }

@@ -107,14 +107,16 @@ class JsonPathExpressionHandlerTest {
     void testCollectFromArrayCollectionRecursive() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jsonpath", "$..property1");
         assertThat(parsedExpression.isValid()).isTrue();
-        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext())).isEqualTo(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3", "accessible_value", "accessible_value", "accessible_value"));
+        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext()))
+                .isEqualTo(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3", "accessible_value", "accessible_value", "accessible_value"));
     }
 
     @Test
     void testCollectFromArrayCollection() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jsonpath", "$.arrayOfObjects[*].property1");
         assertThat(parsedExpression.isValid()).isTrue();
-        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext())).as("Unexpected contents of the collected values.").isEqualTo(Arrays.asList("p1-value1", "p1-value2", "p1-value3"));
+        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext())).as("Unexpected contents of the collected values.")
+                .isEqualTo(Arrays.asList("p1-value1", "p1-value2", "p1-value3"));
 
     }
 

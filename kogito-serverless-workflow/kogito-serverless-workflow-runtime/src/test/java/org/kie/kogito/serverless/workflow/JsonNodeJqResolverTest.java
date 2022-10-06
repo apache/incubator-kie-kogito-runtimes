@@ -64,7 +64,7 @@ class JsonNodeJqResolverTest {
         final JsonNodeResolver resolver = new JsonNodeResolver("jq", ObjectMapperFactory.get().createArrayNode().add(ObjectMapperFactory.get().createObjectNode().put("leftElement", ".fahrenheit"))
                 .add(ObjectMapperFactory.get().createObjectNode().put("rightElement", ".subtractValue")), "pepe");
         final JsonNode processedNode = (JsonNode) resolver.apply(workItem);
-        
+
         assertThat(processedNode.isArray()).isTrue();
         assertThat(processedNode.findValue("leftElement").asInt()).isEqualTo(32);
         assertThat(processedNode.findValue("rightElement").asInt()).isEqualTo(3);
@@ -76,7 +76,7 @@ class JsonNodeJqResolverTest {
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
         final JsonNodeResolver resolver = new JsonNodeResolver("jq", ".fahrenheit", "pepe");
         final JsonNode processedNode = (JsonNode) resolver.apply(workItem);
-        
+
         assertThat(processedNode.isValueNode()).isTrue();
         assertThat(processedNode.asInt()).isEqualTo(32);
     }
@@ -87,7 +87,7 @@ class JsonNodeJqResolverTest {
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
         final JsonNodeResolver resolver = new JsonNodeResolver("jq", "{leftElement:.fahrenheit}", "pepe");
         final JsonNode processedNode = (JsonNode) resolver.apply(workItem);
-        
+
         assertThat(processedNode.isObject()).isTrue();
         assertThat(processedNode.findValue("leftElement").asInt()).isEqualTo(32);
     }
@@ -98,7 +98,7 @@ class JsonNodeJqResolverTest {
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
         final JsonNodeResolver resolver = new JsonNodeResolver("jq", "{leftElement:\".fahrenheit\"}", "pepe");
         final JsonNode processedNode = (JsonNode) resolver.apply(workItem);
-        
+
         assertThat(processedNode.isObject()).isTrue();
         assertThat(processedNode.findValue("leftElement").asText()).isEqualTo(".fahrenheit");
     }
@@ -107,7 +107,7 @@ class JsonNodeJqResolverTest {
     void verifyStringNode() throws JsonMappingException, JsonProcessingException {
         final JsonNode inputModel = mapper.readTree("{ \"fahrenheit\": \"32\", \"subtractValue\": \"3\" }");
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
-        
+
         assertThat(new ObjectResolver("jq", "pepa", "pepe").apply(workItem).toString()).isEqualTo("pepa");
         assertThat(new ObjectResolver("jq", "pepa_1", "pepe").apply(workItem).toString()).isEqualTo("pepa_1");
         assertThat(new ObjectResolver("jq", "pepa.1", "pepe").apply(workItem).toString()).isEqualTo("pepa.1");

@@ -141,7 +141,8 @@ class JqExpressionHandlerTest {
     void testCollectFromArrayCollectionRecursive() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", "..|.property1?//empty");
         assertThat(parsedExpression.isValid()).isTrue();
-        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext())).isEqualTo(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3", "accessible_value1", "accessible_value2", "accessible_value3"));
+        assertThat(parsedExpression.eval(getObjectNode(), Collection.class, getContext()))
+                .isEqualTo(Arrays.asList("value1", "p1-value1", "p1-value2", "p1-value3", "accessible_value1", "accessible_value2", "accessible_value3"));
     }
 
     @Test

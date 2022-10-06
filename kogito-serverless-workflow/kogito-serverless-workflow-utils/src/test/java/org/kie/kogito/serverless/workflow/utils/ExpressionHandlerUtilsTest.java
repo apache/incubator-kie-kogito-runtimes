@@ -35,7 +35,7 @@ public class ExpressionHandlerUtilsTest {
 
     @Test
     void testTrimExpression() {
-    	assertThat(trimExpr("${.pepe}")).isEqualTo(".pepe");
+        assertThat(trimExpr("${.pepe}")).isEqualTo(".pepe");
         assertThat(trimExpr("${ {name:.pepe} }")).isEqualTo("{name:.pepe}");
     }
 
@@ -43,7 +43,7 @@ public class ExpressionHandlerUtilsTest {
     @MethodSource("provideExpressionsToTestWithWorkflow")
     public void testPrepareExpressionFromContextAndWorkflow(String expr, String result, Workflow workflow) {
         String resolvedExpr = ExpressionHandlerUtils.replaceExpr(workflow, expr);
-        
+
         assertThat(resolvedExpr).isEqualTo(result);
     }
 
