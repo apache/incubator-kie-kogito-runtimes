@@ -182,7 +182,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertThat(process.getNodes()).hasSize(4);
 
         Node node = process.getNodes()[1];
-        assertThat("kafka").isEqualTo(((StartNode) node).getMetaData(Metadata.TRIGGER_REF));
+        assertThat(((StartNode) node).getMetaData(Metadata.TRIGGER_REF)).isEqualTo("kafka");
         node = process.getNodes()[0];
         assertThat(node).isInstanceOf(EndNode.class);
         node = process.getNodes()[3];

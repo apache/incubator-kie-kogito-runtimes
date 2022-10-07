@@ -148,7 +148,7 @@ class JqExpressionHandlerTest {
     @Test
     void testNonValidExpression() {
         Expression parsedExpression = ExpressionHandlerFactory.get("jq", ".-");
-        assertThat(parsedExpression.isValid()).as("Exception was not thrown for invalid expression.").isEqualTo(false);
+        assertThat(parsedExpression.isValid()).as("Exception was not thrown for invalid expression.").isFalse();
     }
 
     @Test

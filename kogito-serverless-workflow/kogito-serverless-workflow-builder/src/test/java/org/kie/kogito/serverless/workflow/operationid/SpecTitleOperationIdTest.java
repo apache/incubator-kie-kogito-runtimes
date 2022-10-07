@@ -48,7 +48,7 @@ class SpecTitleOperationIdTest {
         assertThat(id.getFileName()).isEqualTo("external-service");
         assertThat(id.getPackageName()).isEqualTo("externalservice");
         assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("external-service_sendRequest");
-        assertThat(id.getUri().toString()).isEqualTo("specs/external-service.yaml");
+        assertThat(id.getUri()).hasToString("specs/external-service.yaml");
         assertThat(id.getService()).isNull();
     }
 }

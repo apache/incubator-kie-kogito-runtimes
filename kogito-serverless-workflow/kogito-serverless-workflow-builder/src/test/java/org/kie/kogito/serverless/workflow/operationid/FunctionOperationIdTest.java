@@ -50,7 +50,7 @@ class FunctionOperationIdTest {
         assertThat(id.getFileName()).isEqualTo("Test_function1");
         assertThat(id.getPackageName()).isEqualTo("testfunction");
         assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("Test_function1_sendRequest");
-        assertThat(id.getUri().toString()).isEqualTo("specs/external-service.yaml");
+        assertThat(id.getUri()).hasToString("specs/external-service.yaml");
         assertThat(id.getService()).isNull();
     }
 }

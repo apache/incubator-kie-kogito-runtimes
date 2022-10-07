@@ -50,7 +50,7 @@ class FileNameWorkflowOperationIdTest {
         assertThat(ServerlessWorkflowUtils.getOpenApiClassName(id.getFileName(), id.getOperation())).isEqualTo("Pepe1_doSomething");
         assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("PePE1_doSomething");
         assertThat(id.getPackageName()).isEqualTo("pepe");
-        assertThat(id.getUri().toString()).isEqualTo("http://myserver.com/spec/PePE1.yaml");
+        assertThat(id.getUri()).hasToString("http://myserver.com/spec/PePE1.yaml");
         assertThat(id.getService()).isNull();
     }
 
@@ -63,7 +63,7 @@ class FileNameWorkflowOperationIdTest {
         assertThat(id.getFileName()).isEqualTo("PePE1.yaml");
         assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("PePE1_doSomething");
         assertThat(id.getPackageName()).isEqualTo("pepe");
-        assertThat(id.getUri().toString()).isEqualTo("http://myserver.com/spec/PePE1.yaml");
+        assertThat(id.getUri()).hasToString("http://myserver.com/spec/PePE1.yaml");
         assertThat(id.getService()).isEqualTo("service");
     }
 }

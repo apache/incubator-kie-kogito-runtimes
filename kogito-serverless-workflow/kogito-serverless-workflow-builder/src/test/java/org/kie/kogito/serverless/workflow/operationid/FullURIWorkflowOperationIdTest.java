@@ -49,7 +49,7 @@ class FullURIWorkflowOperationIdTest {
         assertThat(id.getFileName()).isEqualTo("/spec/PePE1.yaml");
         assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("/spec/PePE1_doSomething");
         assertThat(id.getPackageName()).isEqualTo("specpepe");
-        assertThat(id.getUri().toString()).isEqualTo("http://myserver.com/spec/PePE1.yaml");
+        assertThat(id.getUri()).hasToString("http://myserver.com/spec/PePE1.yaml");
         assertThat(id.getService()).isNull();
     }
 

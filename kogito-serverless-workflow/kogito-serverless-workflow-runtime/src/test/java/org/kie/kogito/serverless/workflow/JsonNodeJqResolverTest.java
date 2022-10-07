@@ -108,8 +108,8 @@ class JsonNodeJqResolverTest {
         final JsonNode inputModel = mapper.readTree("{ \"fahrenheit\": \"32\", \"subtractValue\": \"3\" }");
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
 
-        assertThat(new ObjectResolver("jq", "pepa", "pepe").apply(workItem).toString()).isEqualTo("pepa");
-        assertThat(new ObjectResolver("jq", "pepa_1", "pepe").apply(workItem).toString()).isEqualTo("pepa_1");
-        assertThat(new ObjectResolver("jq", "pepa.1", "pepe").apply(workItem).toString()).isEqualTo("pepa.1");
+        assertThat(new ObjectResolver("jq", "pepa", "pepe").apply(workItem)).hasToString("pepa");
+        assertThat(new ObjectResolver("jq", "pepa_1", "pepe").apply(workItem)).hasToString("pepa_1");
+        assertThat(new ObjectResolver("jq", "pepa.1", "pepe").apply(workItem)).hasToString("pepa.1");
     }
 }

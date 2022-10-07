@@ -93,6 +93,6 @@ class JsonNodeJsonPathResolverTest {
         final JsonNode inputModel = mapper.readTree("{ \"fahrenheit\": \"32\", \"subtractValue\": \"3\" }");
         when(workItem.getParameter("pepe")).thenReturn(inputModel);
         final ObjectResolver resolver = new ObjectResolver("jsonpath", "pepa", "pepe");
-        assertThat(resolver.apply(workItem).toString()).isEqualTo("pepa");
+        assertThat(resolver.apply(workItem)).hasToString("pepa");
     }
 }
