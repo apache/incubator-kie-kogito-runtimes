@@ -48,7 +48,8 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     public AbstractMessageConsumer() {
     }
 
-    public AbstractMessageConsumer(Application application, Process<M> process,
+    public AbstractMessageConsumer(Application application,
+            Process<M> process,
             String trigger,
             EventReceiver eventReceiver,
             Class<D> dataClass,
@@ -59,7 +60,8 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
         init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
     }
 
-    public void init(Application application, Process<M> process,
+    public void init(Application application,
+            Process<M> process,
             String trigger,
             EventReceiver eventReceiver,
             Class<D> dataClass,

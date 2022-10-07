@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -76,15 +74,15 @@ public class $Type$MessageConsumer extends AbstractMessageConsumer<$Type$, $Data
     void init() {
         executor = factory.getExecutorService("$Trigger$"); 
         init(application,
-              process,
-              "$Trigger$",
-              eventReceiver,
-              $DataType$.class,
-              configBean.useCloudEvents(),
-              processService,
-              executor,
-              eventUnmarshaller,
-              correlation, );
+             process,
+             "$Trigger$",
+             eventReceiver,
+             $DataType$.class,
+             configBean.useCloudEvents(),
+             processService,
+             executor,
+             eventUnmarshaller,
+             correlation);
     }
 
     @javax.annotation.PreDestroy
