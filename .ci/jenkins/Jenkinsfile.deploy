@@ -102,6 +102,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand()
+                        .withOptions(['-T 1C'])
                         .withProperty('maven.test.failure.ignore', true)
                         .skipTests(params.SKIP_TESTS)
                         .run('clean install')
