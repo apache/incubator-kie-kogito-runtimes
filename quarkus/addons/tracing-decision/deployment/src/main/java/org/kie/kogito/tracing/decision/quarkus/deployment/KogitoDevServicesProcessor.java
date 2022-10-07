@@ -240,7 +240,7 @@ public class KogitoDevServicesProcessor {
                         config.fixedExposedPort,
                         launchMode.getLaunchMode() == LaunchMode.DEVELOPMENT ? config.serviceName : null,
                         useSharedNetwork,
-                        config.portToUseInTest);
+                        config.portUsedByTest);
 
                 LOGGER.debug(String.format("TrustyService DataSource Kind: %s", devServicesConfig.getDataSourceKind()));
                 LOGGER.debug(String.format("TrustyService DataSource Username: %s", devServicesConfig.getDataSourceUserName()));
@@ -313,7 +313,7 @@ public class KogitoDevServicesProcessor {
         /**
          * In test mode, pick a random port
          */
-        private final int portToUseInTest;
+        private final int portUsedByTest;
 
         public TrustyServiceDevServiceConfig(final KogitoDevServicesBuildTimeConfig config) {
             this.devServicesEnabled = config.enabled.orElse(true);
@@ -321,7 +321,7 @@ public class KogitoDevServicesProcessor {
             this.fixedExposedPort = config.port.orElse(0);
             this.shared = config.shared;
             this.serviceName = config.serviceName;
-            this.portToUseInTest = config.portToUseInTest;
+            this.portUsedByTest = config.portUsedByTest;
         }
 
         @Override

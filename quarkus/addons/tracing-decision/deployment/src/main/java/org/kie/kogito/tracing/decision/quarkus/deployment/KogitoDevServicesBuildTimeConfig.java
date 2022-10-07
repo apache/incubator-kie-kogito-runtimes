@@ -74,6 +74,6 @@ public class KogitoDevServicesBuildTimeConfig {
      * Optional random port the dev service will listen to in tests.
      */
     @ConfigItem(defaultValue = "-1")
-    public Integer portToUseInTest;
+    public Integer portUsedByTest;
 
 }
