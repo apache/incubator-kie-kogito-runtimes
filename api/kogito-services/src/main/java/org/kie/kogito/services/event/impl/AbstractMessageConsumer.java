@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import org.kie.kogito.Application;
 import org.kie.kogito.Model;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.event.EventReceiver;
@@ -47,7 +48,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     public AbstractMessageConsumer() {
     }
 
-    public AbstractMessageConsumer(Process<M> process,
+    public AbstractMessageConsumer(Application application, Process<M> process,
             String trigger,
             EventReceiver eventReceiver,
             Class<D> dataClass,
@@ -55,10 +56,10 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
             ProcessService processService,
             ExecutorService executorService,
             EventUnmarshaller<Object> eventUnmarshaller) {
-        init(process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
+        init(application, process, trigger, eventReceiver, dataClass, useCloudEvents, processService, executorService, eventUnmarshaller, null);
     }
 
-    public void init(Process<M> process,
+    public void init(Application application, Process<M> process,
             String trigger,
             EventReceiver eventReceiver,
             Class<D> dataClass,
