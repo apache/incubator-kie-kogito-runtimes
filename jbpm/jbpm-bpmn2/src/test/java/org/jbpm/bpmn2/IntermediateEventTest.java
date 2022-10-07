@@ -1027,7 +1027,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertThat(nodeInstanceId).isNotNull();
         assertThat(deploymentId).isNull();
     }
-        assert contextContainer instanceof NodeContainer
 
     @Test
     public void testMessageBoundaryEventOnTask() throws Exception {
