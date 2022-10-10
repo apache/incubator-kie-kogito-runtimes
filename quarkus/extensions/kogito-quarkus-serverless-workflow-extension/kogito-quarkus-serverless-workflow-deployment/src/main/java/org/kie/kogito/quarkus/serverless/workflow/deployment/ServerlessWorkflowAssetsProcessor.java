@@ -99,9 +99,8 @@ public class ServerlessWorkflowAssetsProcessor {
 
     private static ServerlessWorkflowOASFilter.SchemaInfo workflowToSchemaInfo(Workflow workflow) {
         return OpenApiModelSchemaGenerator.generateOpenAPIModelSchema(workflow)
-                .map(openAPI -> 
-                    new ServerlessWorkflowOASFilter.SchemaInfo(workflow.getId(), openAPI, OpenApiModelSchemaUtil.getInputModelRef(workflow.getId()))
-                ).orElse(null);
+                .map(openAPI -> new ServerlessWorkflowOASFilter.SchemaInfo(workflow.getId(), openAPI, OpenApiModelSchemaUtil.getInputModelRef(workflow.getId())))
+                .orElse(null);
     }
 
     private static Stream<Workflow> getWorkflows(KogitoBuildContext kogitoBuildContext) {
