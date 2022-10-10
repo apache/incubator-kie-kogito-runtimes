@@ -51,13 +51,13 @@
         <junit.version>4.13.1</junit.version>
         <junit.plugin.version>1.24</junit.plugin.version>
         <surefire.pluginVersion>2.22.0</surefire.pluginVersion>
+        <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 
         <logback.configration>logback-test.xml</logback.configration>
         <logdir>${project.build.directory}/log</logdir>
         <test.loglevel>ERROR</test.loglevel>
         <log.logback.version>1.2.9</log.logback.version>
         <log.slf4j.version>1.7.25</log.slf4j.version>
-        <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
