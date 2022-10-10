@@ -913,26 +913,11 @@ limitations under the License.
         </plugins>
       </build>
     </profile>
-    <!--
-      Creates JaCoCo XML reports and invokes the Sonar scanner, which uploads code quality data into the SonarCloud.
+    <!-- 
+      Generate jacoco files for all modules in <root_dir>/target.jacoco/
     -->
     <profile>
-      <id>sonarcloud-analysis</id>
-      <properties>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.javascript.node.maxspace>4096</sonar.javascript.node.maxspace>
-        <sonar.java.source>${maven.compiler.release}</sonar.java.source>
-        <!--suppress UnresolvedMavenProperty -->
-        <sonar.login>${env.SONARCLOUD_TOKEN}</sonar.login>
-        <sonar.organization>kiegroup</sonar.organization>
-        <!-- KOGITO-4895 keep it here in exact form <sonar.exclusions></sonar.exclusions>,
-          if removed exclusions are not scoped to a particular defining module.
-        -->
-        <sonar.exclusions></sonar.exclusions>
-        <enforcer.skip>true</enforcer.skip>
-        <checkstyle.skip>true</checkstyle.skip>
-      </properties>
+      <id>generate-jacoco</id>
       <build>
         <plugins>
           <plugin>
@@ -960,8 +945,8 @@ limitations under the License.
                   <target>
                     <echo message="Generating JaCoCo Reports"/>
                     <taskdef name="report" classname="org.jacoco.ant.ReportTask"/>
-                    <mkdir dir="${project.reporting.outputDirectory}/jacoco"/>
                     <mkdir dir="${project.root.dir}/target"/>
+                    <mkdir dir="${project.root.dir}/target/jacoco/${project.artifactId}/"/>
                     <report>
                       <executiondata>
                         <fileset dir="${project.root.dir}/target">
@@ -1011,7 +996,7 @@ limitations under the License.
                         </group>
                       </structure>
                       <!-- The same report is generated in each module -->
-                      <xml destfile="${project.reporting.outputDirectory}/jacoco/jacoco.xml"/>
+                      <xml destfile="${project.root.dir}/target/jacoco/${project.artifactId}/jacoco.xml"/>
                     </report>
                   </target>
                 </configuration>
@@ -1026,6 +1011,31 @@ limitations under the License.
               </dependency>
             </dependencies>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- 
+      Upload files to sonar. It uploads the files under environment var SONAR_REPORT_DIR
+    -->
+    <profile>
+      <id>upload-to-sonar</id>
+      <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${env.SONAR_REPORT_DIR}/${project.artifactId}/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.javascript.node.maxspace>4096</sonar.javascript.node.maxspace>
+        <sonar.java.source>${maven.compiler.release}</sonar.java.source>
+        <!--suppress UnresolvedMavenProperty -->
+        <sonar.login>${env.SONARCLOUD_TOKEN}</sonar.login>
+        <sonar.organization>kiegroup</sonar.organization>
+        <!-- KOGITO-4895 keep it here in exact form <sonar.exclusions></sonar.exclusions>,
+          if removed exclusions are not scoped to a particular defining module.
+        -->
+        <sonar.exclusions></sonar.exclusions>
+        <enforcer.skip>true</enforcer.skip>
+        <checkstyle.skip>true</checkstyle.skip>
+      </properties>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>

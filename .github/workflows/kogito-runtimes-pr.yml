@@ -44,8 +44,17 @@ jobs:
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           github-token: "${{ secrets.GITHUB_TOKEN }}"
+        env:
+          BUILD_MVN_OPTS_CURRENT: -Prun-code-coverage
       - name: Surefire Report
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
         with:
           report_paths: '**/*-reports/TEST-*.xml'
+      - name: Generate code coverage report
+        run: mvn -f kiegroup_kogito_runtimes/kogito-runtimes/pom.xml validate -Pgenerate-jacoco -e -nsu -fae -ntp
+      - name: Upload code coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: sonarcloud-report.zip
+          path: kiegroup_kogito_runtimes/kogito-runtimes/target/jacoco
