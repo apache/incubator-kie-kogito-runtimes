@@ -29,7 +29,6 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
-import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +96,7 @@ public final class OpenApiModelSchemaGenerator {
 
     public static Optional<OpenAPI> generateOpenAPIModelSchema(Workflow workflow) {
         return generateInputModel(workflow).map(inputModel -> OASFactory.createOpenAPI()
-                .components(OASFactory.createComponents().addSchema(workflow.getId() + '_' + SWFConstants.DEFAULT_WORKFLOW_VAR, inputModel))
+                .components(OASFactory.createComponents().addSchema(workflow.getId(), inputModel))
                 .openapi(workflow.getId() + '_' + "workflowmodelschema"));
     }
 

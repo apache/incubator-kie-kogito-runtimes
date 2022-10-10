@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.parser.schema;
 
-import org.kie.kogito.serverless.workflow.SWFConstants;
-
 public final class OpenApiModelSchemaUtil {
 
     private OpenApiModelSchemaUtil() {
@@ -29,6 +27,6 @@ public final class OpenApiModelSchemaUtil {
      *      Location And Formats</a>
      */
     public static String getInputModelRef(String workflowId) {
-        return "#/components/schemas/" + workflowId + '_' + SWFConstants.DEFAULT_WORKFLOW_VAR;
+        return "#/components/schemas/" + workflowId;
     }
 }
