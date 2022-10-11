@@ -358,11 +358,11 @@ class PMMLOASUtilsTest {
         assertThat(toValidate).isNotNull();
         JsonNode typeNode = toValidate.get(TYPE);
         assertThat(typeNode).isNotNull();
-        assertThat(typeNode instanceof TextNode).isTrue();
+        assertThat(typeNode).isInstanceOf(TextNode.class);
         assertThat(((TextNode) typeNode).asText()).isEqualTo(OBJECT);
         JsonNode propertiesNode = toValidate.get(PROPERTIES);
         assertThat(propertiesNode).isNotNull();
-        assertThat(propertiesNode instanceof ObjectNode).isTrue();
+        assertThat(propertiesNode).isInstanceOf(ObjectNode.class);
         assertThat(propertiesNode.size()).isEqualTo(0);
     }
 
@@ -370,31 +370,31 @@ class PMMLOASUtilsTest {
         String className = number.getClass().getSimpleName();
         switch (className) {
             case "Integer":
-                assertThat(toValidate instanceof IntNode).isTrue();
+                assertThat(toValidate).isInstanceOf(IntNode.class);
                 assertThat(((IntNode) toValidate).intValue()).isEqualTo(number);
                 break;
             case "Float":
-                assertThat(toValidate instanceof FloatNode).isTrue();
+                assertThat(toValidate).isInstanceOf(FloatNode.class);
                 assertThat(((FloatNode) toValidate).floatValue()).isEqualTo(number);
                 break;
             case "Double":
-                assertThat(toValidate instanceof DoubleNode).isTrue();
+                assertThat(toValidate).isInstanceOf(DoubleNode.class);
                 assertThat(((DoubleNode) toValidate).doubleValue()).isEqualTo(number);
                 break;
             case "BigInteger":
-                assertThat(toValidate instanceof BigIntegerNode).isTrue();
+                assertThat(toValidate).isInstanceOf(BigIntegerNode.class);
                 assertThat(((BigIntegerNode) toValidate).bigIntegerValue()).isEqualTo(number);
                 break;
             case "Short":
-                assertThat(toValidate instanceof ShortNode).isTrue();
+                assertThat(toValidate).isInstanceOf(ShortNode.class);
                 assertThat(((ShortNode) toValidate).shortValue()).isEqualTo(number);
                 break;
             case "Long":
-                assertThat(toValidate instanceof LongNode).isTrue();
+                assertThat(toValidate).isInstanceOf(LongNode.class);
                 assertThat(((LongNode) toValidate).longValue()).isEqualTo(number);
                 break;
             case "BigDecimal":
-                assertThat(toValidate instanceof DecimalNode).isTrue();
+                assertThat(toValidate).isInstanceOf(DecimalNode.class);
                 assertThat(((DecimalNode) toValidate).decimalValue()).isEqualTo(number);
                 break;
             default:

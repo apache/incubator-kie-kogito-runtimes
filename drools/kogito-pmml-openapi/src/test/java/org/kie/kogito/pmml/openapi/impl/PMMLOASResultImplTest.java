@@ -230,10 +230,10 @@ class PMMLOASResultImplTest {
         assertThat(((ArrayNode) enumNode).size()).isEqualTo(ResultCode.values().length);
         List<JsonNode> enumElements = StreamSupport
                 .stream(enumNode.spliterator(), false)
-                .collect(Collectors.toList());        
+                .collect(Collectors.toList());
         assertThat(enumElements).allSatisfy(node -> assertThat(node).isInstanceOf(TextNode.class));
-        assertThat(ResultCode.values()).extracting(resultCode -> resultCode.getName()).allSatisfy(name -> assertThat(enumElements).extracting(enumElement-> enumElement.asText()).contains(name));
-        
+        assertThat(ResultCode.values()).extracting(resultCode -> resultCode.getName()).allSatisfy(name -> assertThat(enumElements).extracting(enumElement -> enumElement.asText()).contains(name));
+
         JsonNode resultObjectNameNode = propertiesNode.get(RESULT_OBJECT_NAME);
         assertThat(resultObjectNameNode).isNotNull();
         assertThat(resultObjectNameNode).isInstanceOf(ObjectNode.class);

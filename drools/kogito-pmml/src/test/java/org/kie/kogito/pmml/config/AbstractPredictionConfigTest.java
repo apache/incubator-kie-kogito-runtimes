@@ -29,7 +29,7 @@ class AbstractPredictionConfigTest {
     @Test
     void predictionEventListenersWithoutPredictionEventListenerConfigs() {
         AbstractPredictionConfig abstractPredictionConfig = getAbstractPredictionConfig(null);
-        assertThat(abstractPredictionConfig.predictionEventListeners()).isNull();;
+        assertThat(abstractPredictionConfig.predictionEventListeners()).isNull();
     }
 
     @Test

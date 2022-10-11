@@ -36,7 +36,7 @@ class PMMLUtilsTest {
         assertThat(retrieved.getModelName()).isEqualTo(modelName);
         final Map<String, ParameterInfo> parameterInfos = retrieved.getMappedRequestParams();
         assertThat(parameterInfos).hasSameSizeAs(parameters);
-        
+
         assertThat(parameters).allSatisfy((key, value) -> {
             assertThat(parameterInfos).containsKey(key);
             ParameterInfo parameterInfo = parameterInfos.get(key);
