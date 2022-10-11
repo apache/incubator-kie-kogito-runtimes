@@ -210,7 +210,7 @@ class PMMLOASUtilsTest {
     void addIntervals() {
         ObjectNode typeFieldNode = JsonUtil.objectNode();
         PMMLOASUtils.addIntervals(typeFieldNode, Collections.emptyList());
-        assertThat(typeFieldNode.size()).isEqualTo(0);
+        assertThat(typeFieldNode).isEmpty();
         //
         Interval interval = new Interval(-34.23, null);
         PMMLOASUtils.addIntervals(typeFieldNode, Collections.singletonList(interval));
@@ -252,8 +252,8 @@ class PMMLOASUtilsTest {
         List<JsonNode> nodeList = StreamSupport
                 .stream(intervalsNode.spliterator(), false)
                 .collect(Collectors.toList());
-        assertThat(nodeList).allSatisfy(node -> assertThat(node).isInstanceOf(TextNode.class));
-        intervals.forEach(intervalValue -> {
+        assertThat(nodeList).allMatch(node -> node instanceof TextNode);
+        assertThat(intervals).allSatisfy(intervalValue -> {
             String leftMargin = intervalValue.getLeftMargin() != null ? intervalValue.getLeftMargin().toString() : "-" + INFINITY_SYMBOL;
             String rightMargin = intervalValue.getRightMargin() != null ? intervalValue.getRightMargin().toString() : INFINITY_SYMBOL;
             String expected = String.format("%s %s", leftMargin, rightMargin);
@@ -267,9 +267,11 @@ class PMMLOASUtilsTest {
         DATA_TYPE dataType = DATA_TYPE.DOUBLE;
         ObjectNode setNode = PMMLOASUtils.createSetNode();
         ObjectNode propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
-        assertThat(propertiesNode.isEmpty()).isTrue();
+        assertThat(propertiesNode).isEmpty();
+
         PMMLOASUtils.addToSetNode(fieldName, dataType, Collections.emptyList(), setNode);
         assertThat(propertiesNode.get(fieldName)).isNotNull();
+
         ObjectNode fieldNameNode = (ObjectNode) propertiesNode.get(fieldName);
         assertThat(fieldNameNode.get(TYPE)).isNotNull();
         assertThat(fieldNameNode.get(TYPE).asText()).isEqualTo(NUMBER);
@@ -282,7 +284,8 @@ class PMMLOASUtilsTest {
                 .collect(Collectors.toList());
         setNode = PMMLOASUtils.createSetNode();
         propertiesNode = (ObjectNode) setNode.get(PROPERTIES);
-        assertThat(propertiesNode.isEmpty()).isTrue();
+        assertThat(propertiesNode).isEmpty();
+
         PMMLOASUtils.addToSetNode(fieldName, dataType, allowedValues, setNode);
         assertThat(propertiesNode.get(fieldName)).isNotNull();
         fieldNameNode = (ObjectNode) propertiesNode.get(fieldName);
@@ -291,11 +294,11 @@ class PMMLOASUtilsTest {
         assertThat(fieldNameNode.get(FORMAT)).isNotNull();
         assertThat(fieldNameNode.get(FORMAT).asText()).isEqualTo(DOUBLE);
         ArrayNode availableValuesNode = (ArrayNode) fieldNameNode.get(ENUM);
-        assertThat(availableValuesNode.size()).isEqualTo(allowedValues.size());
+        assertThat(availableValuesNode).hasSameSizeAs(allowedValues);
         List<JsonNode> nodeList = StreamSupport
                 .stream(availableValuesNode.spliterator(), false)
                 .collect(Collectors.toList());
-        assertThat(nodeList).allSatisfy(availableValueNode -> assertThat(availableValueNode).isInstanceOf(TextNode.class));
+        assertThat(nodeList).allMatch(node -> node instanceof TextNode);
         assertThat(allowedValues).allSatisfy(allowedValue -> assertThat(nodeList)
                 .anyMatch(availableValueNode -> availableValueNode.asText().equals(allowedValue)));
     }
@@ -304,14 +307,13 @@ class PMMLOASUtilsTest {
     void conditionallyCreateEnumNode() {
         ObjectNode parentNode = JsonUtil.objectNode();
         ArrayNode created = PMMLOASUtils.conditionallyCreateEnumNode(parentNode);
-        assertThat(created).isNotNull();
-        assertThat(created.size()).isEqualTo(0);
+        assertThat(created).isNotNull().isEmpty();
+
         JsonNode jsonNode = parentNode.get(ENUM);
-        assertThat(jsonNode).isNotNull();
-        assertThat(jsonNode).isEqualTo(created);
+        assertThat(jsonNode).isNotNull().isEqualTo(created);
+
         ArrayNode notCreated = PMMLOASUtils.conditionallyCreateEnumNode(parentNode);
-        assertThat(notCreated).isNotNull();
-        assertThat(notCreated).isEqualTo(created);
+        assertThat(notCreated).isNotNull().isEqualTo(created);
     }
 
     @Test
@@ -357,13 +359,12 @@ class PMMLOASUtilsTest {
     private void commonValidateSetNode(ObjectNode toValidate) {
         assertThat(toValidate).isNotNull();
         JsonNode typeNode = toValidate.get(TYPE);
-        assertThat(typeNode).isNotNull();
-        assertThat(typeNode).isInstanceOf(TextNode.class);
+
+        assertThat(typeNode).isNotNull().isInstanceOf(TextNode.class);
         assertThat(((TextNode) typeNode).asText()).isEqualTo(OBJECT);
+
         JsonNode propertiesNode = toValidate.get(PROPERTIES);
-        assertThat(propertiesNode).isNotNull();
-        assertThat(propertiesNode).isInstanceOf(ObjectNode.class);
-        assertThat(propertiesNode.size()).isEqualTo(0);
+        assertThat(propertiesNode).isNotNull().isInstanceOf(ObjectNode.class).isEmpty();
     }
 
     private void commonValidateNumericNode(NumericNode toValidate, Number number) {

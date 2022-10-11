@@ -93,11 +93,11 @@ class PMMLOASResultImplTest {
         ObjectNode resultVariablesNode = (ObjectNode) outputSetPropertiesNode.get(RESULT_VARIABLES);
         assertThat(resultVariablesNode.get(PROPERTIES)).isNotNull();
         ObjectNode resultVariablesPropertiesNode = (ObjectNode) resultVariablesNode.get(PROPERTIES);
-        assertThat(resultVariablesPropertiesNode.size()).isEqualTo(toAdd.size());
+        assertThat(resultVariablesPropertiesNode).hasSameSizeAs(toAdd);
         List<JsonNode> nodeList = StreamSupport
                 .stream(resultVariablesPropertiesNode.spliterator(), false)
                 .collect(Collectors.toList());
-        assertThat(nodeList).allSatisfy(resultNode -> assertThat(resultNode).isInstanceOf(ObjectNode.class));
+        assertThat(nodeList).allMatch(resultNode -> resultNode instanceof ObjectNode);
         assertThat(toAdd).allSatisfy(outputField -> assertThat(resultVariablesPropertiesNode.get(outputField.getName())).isNotNull());
 
     }
@@ -227,11 +227,11 @@ class PMMLOASResultImplTest {
         JsonNode enumNode = resultCodeNode.get(ENUM);
         assertThat(enumNode).isNotNull();
         assertThat(enumNode).isInstanceOf(ArrayNode.class);
-        assertThat(((ArrayNode) enumNode).size()).isEqualTo(ResultCode.values().length);
+        assertThat(((ArrayNode) enumNode)).hasSameSizeAs(ResultCode.values());
         List<JsonNode> enumElements = StreamSupport
                 .stream(enumNode.spliterator(), false)
                 .collect(Collectors.toList());
-        assertThat(enumElements).allSatisfy(node -> assertThat(node).isInstanceOf(TextNode.class));
+        assertThat(enumElements).allMatch(node -> node instanceof TextNode);
         assertThat(ResultCode.values()).extracting(resultCode -> resultCode.getName()).allSatisfy(name -> assertThat(enumElements).extracting(enumElement -> enumElement.asText()).contains(name));
 
         JsonNode resultObjectNameNode = propertiesNode.get(RESULT_OBJECT_NAME);

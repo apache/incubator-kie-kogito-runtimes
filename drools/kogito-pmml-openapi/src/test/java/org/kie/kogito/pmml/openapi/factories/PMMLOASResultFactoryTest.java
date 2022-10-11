@@ -57,12 +57,13 @@ class PMMLOASResultFactoryTest {
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
         final PMMLOASResult retrieved = PMMLOASResultFactory.getPMMLOASResult(kiePMMLModel);
         assertThat(retrieved).isNotNull();
+
         final ObjectNode jsonNodes = retrieved.jsonSchemaNode();
-        assertThat(jsonNodes).isNotNull();
-        assertThat(jsonNodes.isEmpty()).isFalse();
+        assertThat(jsonNodes).isNotNull().isNotEmpty();
         assertThat(jsonNodes.get(DEFINITIONS)).isNotNull();
+
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
-        assertThat(definitionsNode.isEmpty()).isFalse();
+        assertThat(definitionsNode).isNotEmpty();
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
         assertThat(definitionsNode.get(RESULT_SET)).isNull();
         assertThat(definitionsNode.get(OUTPUT_SET)).isNotNull();
@@ -77,10 +78,11 @@ class PMMLOASResultFactoryTest {
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
         final PMMLOASResult retrieved = PMMLOASResultFactory.getPMMLOASResult(kiePMMLModel);
         assertThat(retrieved).isNotNull();
+
         final ObjectNode jsonNodes = retrieved.jsonSchemaNode();
-        assertThat(jsonNodes).isNotNull();
-        assertThat(jsonNodes.isEmpty()).isFalse();
+        assertThat(jsonNodes).isNotNull().isNotEmpty();
         assertThat(jsonNodes.get(DEFINITIONS)).isNotNull();
+
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
         assertThat(definitionsNode.isEmpty()).isFalse();
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
@@ -99,12 +101,13 @@ class PMMLOASResultFactoryTest {
         final KiePMMLModel kiePMMLModel = getKiePMMLModelInternal(miningFields, outputFields);
         final PMMLOASResult retrieved = PMMLOASResultFactory.getPMMLOASResult(kiePMMLModel);
         assertThat(retrieved).isNotNull();
+
         final ObjectNode jsonNodes = retrieved.jsonSchemaNode();
-        assertThat(jsonNodes).isNotNull();
-        assertThat(jsonNodes.isEmpty()).isFalse();
+        assertThat(jsonNodes).isNotNull().isNotEmpty();
         assertThat(jsonNodes.get(DEFINITIONS)).isNotNull();
+
         final JsonNode definitionsNode = jsonNodes.get(DEFINITIONS);
-        assertThat(definitionsNode.isEmpty()).isFalse();
+        assertThat(definitionsNode).isNotEmpty();
         commonValidateInputSet(definitionsNode.get(INPUT_SET), miningFields);
         commonValidateResultSet(definitionsNode.get(RESULT_SET), predictedFields);
         assertThat(definitionsNode.get(OUTPUT_SET)).isNotNull();
@@ -120,16 +123,16 @@ class PMMLOASResultFactoryTest {
         assertThat(toValidate.get(PROPERTIES)).isNotNull();
         final ArrayNode requiredNode = (ArrayNode) toValidate.get(REQUIRED);
         List<MiningField> requiredMiningFields = miningFields.stream().filter(PMMLOASUtils::isRequired).collect(Collectors.toList());
-        assertThat(requiredNode.size()).isEqualTo(requiredMiningFields.size());
+        assertThat(requiredNode).hasSameSizeAs(requiredMiningFields);
+
         final List<JsonNode> requiredJsonNodes = getFromArrayNode(requiredNode);
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
         List<MiningField> active = miningFields.stream().filter(miningField -> !PMMLOASUtils.isPredicted(miningField)).collect(Collectors.toList());
-        assertThat(propertiesNode.size()).isEqualTo(active.size());
-        for (MiningField miningField : requiredMiningFields) {
-            JsonNode required = getFromJsonNodeList(requiredJsonNodes, miningField.getName());
-            assertThat(required).isNotNull();
-        }
-        for (MiningField miningField : active) {
+        assertThat(propertiesNode).hasSameSizeAs(active);
+
+        assertThat(requiredMiningFields).allMatch(miningField -> getFromJsonNodeList(requiredJsonNodes, miningField.getName()) != null);
+
+        assertThat(active).allSatisfy(miningField -> {
             JsonNode property = propertiesNode.get(miningField.getName());
             assertThat(property).isNotNull();
             final ObjectNode typeFieldNode = (ObjectNode) property;
@@ -137,7 +140,7 @@ class PMMLOASResultFactoryTest {
             final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
             String mappedType = PMMLOASUtils.getMappedType(miningField.getDataType());
             assertThat(typeNode.asText()).isEqualTo(mappedType);
-        }
+        });
     }
 
     private void commonValidateResultSet(final JsonNode toValidate, final List<MiningField> miningFields) {
@@ -145,7 +148,7 @@ class PMMLOASResultFactoryTest {
         assertThat(toValidate.get(TYPE).asText()).isEqualTo(OBJECT);
         assertThat(toValidate.get(PROPERTIES)).isNotNull();
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        for (MiningField miningField : miningFields) {
+        assertThat(miningFields).allSatisfy(miningField -> {
             JsonNode property = propertiesNode.get(miningField.getName());
             assertThat(property).isNotNull();
             final ObjectNode typeFieldNode = (ObjectNode) property;
@@ -153,7 +156,7 @@ class PMMLOASResultFactoryTest {
             final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
             String mappedType = PMMLOASUtils.getMappedType(miningField.getDataType());
             assertThat(typeNode.asText()).isEqualTo(mappedType);
-        }
+        });
     }
 
     private void commonValidateOutputSet(final JsonNode toValidate, final List<OutputField> outputFields) {
@@ -161,7 +164,7 @@ class PMMLOASResultFactoryTest {
         assertThat(toValidate.get(TYPE).asText()).isEqualTo(OBJECT);
         assertThat(toValidate.get(PROPERTIES)).isNotNull();
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        for (OutputField outputField : outputFields) {
+        assertThat(outputFields).allSatisfy(outputField -> {
             JsonNode property = propertiesNode.get(outputField.getName());
             assertThat(property).isNotNull();
             final ObjectNode typeFieldNode = (ObjectNode) property;
@@ -169,6 +172,6 @@ class PMMLOASResultFactoryTest {
             final TextNode typeNode = (TextNode) typeFieldNode.get(TYPE);
             String mappedType = PMMLOASUtils.getMappedType(outputField.getDataType());
             assertThat(typeNode.asText()).isEqualTo(mappedType);
-        }
+        });
     }
 }
