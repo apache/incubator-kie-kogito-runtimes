@@ -94,10 +94,11 @@ class PMMLOASResultImplTest {
         assertThat(resultVariablesNode.get(PROPERTIES)).isNotNull();
         ObjectNode resultVariablesPropertiesNode = (ObjectNode) resultVariablesNode.get(PROPERTIES);
         assertThat(resultVariablesPropertiesNode).hasSameSizeAs(toAdd);
+
         List<JsonNode> nodeList = StreamSupport
                 .stream(resultVariablesPropertiesNode.spliterator(), false)
                 .collect(Collectors.toList());
-        assertThat(nodeList).allMatch(resultNode -> resultNode instanceof ObjectNode);
+        assertThat(nodeList).isNotEmpty().allMatch(resultNode -> resultNode instanceof ObjectNode);
         assertThat(toAdd).allSatisfy(outputField -> assertThat(resultVariablesPropertiesNode.get(outputField.getName())).isNotNull());
 
     }

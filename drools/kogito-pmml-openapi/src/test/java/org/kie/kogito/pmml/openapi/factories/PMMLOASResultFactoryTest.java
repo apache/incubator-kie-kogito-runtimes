@@ -148,7 +148,7 @@ class PMMLOASResultFactoryTest {
         assertThat(toValidate.get(TYPE).asText()).isEqualTo(OBJECT);
         assertThat(toValidate.get(PROPERTIES)).isNotNull();
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        assertThat(miningFields).allSatisfy(miningField -> {
+        assertThat(miningFields).isNotEmpty().allSatisfy(miningField -> {
             JsonNode property = propertiesNode.get(miningField.getName());
             assertThat(property).isNotNull();
             final ObjectNode typeFieldNode = (ObjectNode) property;
@@ -164,7 +164,7 @@ class PMMLOASResultFactoryTest {
         assertThat(toValidate.get(TYPE).asText()).isEqualTo(OBJECT);
         assertThat(toValidate.get(PROPERTIES)).isNotNull();
         final ObjectNode propertiesNode = (ObjectNode) toValidate.get(PROPERTIES);
-        assertThat(outputFields).allSatisfy(outputField -> {
+        assertThat(outputFields).isNotEmpty().allSatisfy(outputField -> {
             JsonNode property = propertiesNode.get(outputField.getName());
             assertThat(property).isNotNull();
             final ObjectNode typeFieldNode = (ObjectNode) property;
