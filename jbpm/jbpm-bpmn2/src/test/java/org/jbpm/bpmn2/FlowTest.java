@@ -59,11 +59,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class FlowTest extends JbpmBpmn2TestCase {
 
@@ -83,7 +80,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("BPMN2-ExclusiveGatewayWithNoConditionsDefined.bpmn2");
             fail("Should fail as XOR gateway does not have conditions defined");
         } catch (RuntimeException e) {
-            assertTrue(e.getMessage().contains("does not have a constraint for Connection"));
+            assertThat(e.getMessage()).contains("does not have a constraint for Connection");
         }
 
     }
@@ -255,7 +252,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -277,7 +274,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(3, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(3);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -300,7 +297,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(3, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(3);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -323,7 +320,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
 
@@ -332,7 +329,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         }
 
         activeWorkItems = workItemHandler.getWorkItems();
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
 
@@ -357,7 +354,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -380,7 +377,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(4, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(4);
 
         for (KogitoWorkItem wi : activeWorkItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -403,7 +400,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(3, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(3);
 
         for (int i = 0; i < 2; i++) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(
@@ -434,7 +431,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(1, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(1);
         kruntime.getKogitoWorkItemManager().completeWorkItem(
                 activeWorkItems.get(0).getStringId(), null);
 
@@ -442,7 +439,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         activeWorkItems = workItemHandler.getWorkItems();
-        assertEquals(2, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(2);
         kruntime.getKogitoWorkItemManager().completeWorkItem(
                 activeWorkItems.get(0).getStringId(), null);
         assertProcessInstanceActive(processInstance);
@@ -469,7 +466,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         List<KogitoWorkItem> activeWorkItems = workItemHandler.getWorkItems();
 
-        assertEquals(4, activeWorkItems.size());
+        assertThat(activeWorkItems).hasSize(4);
 
         for (int i = 0; i < 3; i++) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(
@@ -532,19 +529,19 @@ public class FlowTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Process_1", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertEquals(12, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("XORGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("ANDGateway-diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("ORGateway-diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI2"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ORGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("XORGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ANDGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI6"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(12);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-converging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -583,19 +580,19 @@ public class FlowTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Process_1", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertEquals(12, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XORGateway-converging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ANDGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ORGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("testWI3"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("testWI2"));
-        assertEquals(4, (int) nodeInstanceExecutionCounter.get("ORGateway-converging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XORGateway-diverging"));
-        assertEquals(4, (int) nodeInstanceExecutionCounter.get("ANDGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI6"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(12);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI3")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI2")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-converging")).isEqualTo(4);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-converging")).isEqualTo(4);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -637,8 +634,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(2);
         // complete work items within OR gateway
         for (KogitoWorkItem KogitoWorkItem : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
@@ -646,27 +642,26 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(1, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(1);
         // complete last KogitoWorkItem after AND gateway
         for (KogitoWorkItem KogitoWorkItem : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
         }
         assertProcessInstanceCompleted(processInstance);
 
-        assertEquals(12, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("XORGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("ANDGateway-diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("ORGateway-diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI2"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ORGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("XORGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ANDGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI6"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(12);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-converging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -708,8 +703,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(2);
         // complete work items within OR gateway
         for (KogitoWorkItem KogitoWorkItem : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
@@ -717,8 +711,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(2);
         // complete work items within OR gateway
         for (KogitoWorkItem KogitoWorkItem : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
@@ -726,27 +719,26 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(1, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(1);
         // complete last KogitoWorkItem after AND gateway
         for (KogitoWorkItem KogitoWorkItem : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
         }
         assertProcessInstanceCompleted(processInstance);
 
-        assertEquals(12, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XORGateway-converging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ANDGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("ORGateway-diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("testWI3"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("testWI2"));
-        assertEquals(4, (int) nodeInstanceExecutionCounter.get("ORGateway-converging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XORGateway-diverging"));
-        assertEquals(4, (int) nodeInstanceExecutionCounter.get("ANDGateway-converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("testWI6"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(12);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI3")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI2")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ORGateway-converging")).isEqualTo(4);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XORGateway-diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("ANDGateway-converging")).isEqualTo(4);
+        assertThat((int) nodeInstanceExecutionCounter.get("testWI6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -766,8 +758,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(2);
 
         for (KogitoWorkItem wi : workItems) {
             assertProcessInstanceActive(processInstance);
@@ -809,8 +800,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull();
+        assertThat(workItems).hasSize(2);
 
         for (KogitoWorkItem wi : workItems) {
             assertProcessInstanceActive(processInstance);
@@ -824,17 +815,17 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(10, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("OR diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow2"));
-        assertEquals(3, (int) nodeInstanceExecutionCounter.get("OR converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow6"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XOR diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XOR converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(10);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("OR diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("OR converging")).isEqualTo(3);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XOR diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XOR converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -868,8 +859,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull().hasSize(2);
 
         for (KogitoWorkItem wi : workItems) {
             assertProcessInstanceActive(processInstance);
@@ -883,20 +873,20 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(13, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Sub Process 1"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("sb-start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("sb-end"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("OR diverging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow2"));
-        assertEquals(3, (int) nodeInstanceExecutionCounter.get("OR converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("tareaWorkflow6"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("Script"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XOR diverging"));
-        assertEquals(2, (int) nodeInstanceExecutionCounter.get("XOR converging"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("End"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(13);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("Sub Process 1")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("sb-start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("sb-end")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("OR diverging")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("OR converging")).isEqualTo(3);
+        assertThat((int) nodeInstanceExecutionCounter.get("tareaWorkflow6")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("Script")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XOR diverging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("XOR converging")).isEqualTo(2);
+        assertThat((int) nodeInstanceExecutionCounter.get("End")).isEqualTo(1);
     }
 
     @Test
@@ -916,22 +906,22 @@ public class FlowTest extends JbpmBpmn2TestCase {
                 "MultiInstanceLoopCharacteristicsProcess", params);
 
         List<KogitoWorkItem> workItems = workItemHandler.getWorkItems();
-        assertEquals(4, workItems.size());
+        assertThat(workItems).hasSize(4);
 
         Collection<NodeInstance> nodeInstances = ((WorkflowProcessInstanceImpl) processInstance)
                 .getNodeInstances();
-        assertEquals(1, nodeInstances.size());
+        assertThat(nodeInstances).hasSize(1);
         NodeInstance nodeInstance = nodeInstances.iterator().next();
-        assertTrue(nodeInstance instanceof ForEachNodeInstance);
+        assertThat(nodeInstance).isInstanceOf(ForEachNodeInstance.class);
 
         Collection<NodeInstance> nodeInstancesChild = ((ForEachNodeInstance) nodeInstance)
                 .getNodeInstances();
-        assertEquals(2, nodeInstancesChild.size());
+        assertThat(nodeInstancesChild).hasSize(2);
 
         for (NodeInstance child : nodeInstancesChild) {
-            assertTrue(child instanceof CompositeContextNodeInstance);
-            assertEquals(2, ((CompositeContextNodeInstance) child)
-                    .getNodeInstances().size());
+            assertThat(child).isInstanceOf(CompositeContextNodeInstance.class);
+            assertThat(((CompositeContextNodeInstance) child)
+                    .getNodeInstances()).hasSize(2);
         }
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(
@@ -942,19 +932,19 @@ public class FlowTest extends JbpmBpmn2TestCase {
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         nodeInstances = ((WorkflowProcessInstanceImpl) processInstance)
                 .getNodeInstances();
-        assertEquals(1, nodeInstances.size());
+        assertThat(nodeInstances).hasSize(1);
         nodeInstance = nodeInstances.iterator().next();
-        assertTrue(nodeInstance instanceof ForEachNodeInstance);
+        assertThat(nodeInstance).isInstanceOf(ForEachNodeInstance.class);
 
         nodeInstancesChild = ((ForEachNodeInstance) nodeInstance)
                 .getNodeInstances();
-        assertEquals(2, nodeInstancesChild.size());
+        assertThat(nodeInstancesChild).hasSize(2);
 
         Iterator<NodeInstance> childIterator = nodeInstancesChild
                 .iterator();
 
-        assertTrue(childIterator.next() instanceof CompositeContextNodeInstance);
-        assertTrue(childIterator.next() instanceof ForEachJoinNodeInstance);
+        assertThat(childIterator.next()).isInstanceOf(CompositeContextNodeInstance.class);
+        assertThat(childIterator.next()).isInstanceOf(ForEachJoinNodeInstance.class);
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(
                 workItems.get(2).getStringId(), null);
@@ -997,8 +987,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull();
+        assertThat(workItems).hasSize(2);
 
         KogitoWorkItem remainingWork = null;
         for (KogitoWorkItem wi : workItems) {
@@ -1016,20 +1006,20 @@ public class FlowTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(13, nodeInstanceExecutionCounter.size());
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Start"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("HT Form1"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("and1"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("HT Form2"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("xor1"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("xor2"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("HT Form3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Koniec"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("xor 3"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("HT Form4"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("xor4"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("Koniec2"));
-        assertEquals(1, (int) nodeInstanceExecutionCounter.get("or1"));
+        assertThat(nodeInstanceExecutionCounter).hasSize(13);
+        assertThat((int) nodeInstanceExecutionCounter.get("Start")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("HT Form1")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("and1")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("HT Form2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("xor1")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("xor2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("HT Form3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("Koniec")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("xor 3")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("HT Form4")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("xor4")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("Koniec2")).isEqualTo(1);
+        assertThat((int) nodeInstanceExecutionCounter.get("or1")).isEqualTo(1);
     }
 
     @Test
@@ -1094,27 +1084,24 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         KogitoProcessInstance processInstance = kruntime.startProcess("miprocess", params);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertNotNull(workItems);
-        assertEquals(2, workItems.size());
+        assertThat(workItems).isNotNull();
+        assertThat(workItems).hasSize(2);
 
         myOutList = (List<String>) kruntime.getKieSession().execute(new GetProcessVariableCommand(processInstance.getStringId(), "mioutput"));
-        assertNull(myOutList);
+        assertThat(myOutList).isNull();
 
         Map<String, Object> results = new HashMap<>();
         results.put("reply", "Hello John");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItems.get(0).getStringId(), results);
         myOutList = (List<String>) kruntime.getKieSession().execute(new GetProcessVariableCommand(processInstance.getStringId(), "mioutput"));
-        assertNull(myOutList);
+        assertThat(myOutList).isNull();
 
         results = new HashMap<>();
         results.put("reply", "Hello Mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItems.get(1).getStringId(), results);
 
         myOutList = (List<String>) kruntime.getKieSession().execute(new GetProcessVariableCommand(processInstance.getStringId(), "mioutput"));
-        assertNotNull(myOutList);
-        assertEquals(2, myOutList.size());
-        assertTrue(myOutList.contains("Hello John"));
-        assertTrue(myOutList.contains("Hello Mary"));
+        assertThat(myOutList).isNotNull().hasSize(2).contains("Hello John", "Hello Mary");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1132,11 +1119,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("Second Item");
         params.put("list", myList);
         params.put("listOut", myListOut);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MultiInstanceLoopCharacteristicsProcessWithOutput", params);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(2, myListOut.size());
+        assertThat(myListOut).hasSize(2);
 
     }
 
@@ -1151,11 +1138,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("Second Item");
         params.put("list", myList);
         params.put("listOut", myListOut);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MultiInstanceLoopCharacteristicsProcessWithOutput", params);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(1, myListOut.size());
+        assertThat(myListOut).hasSize(1);
 
     }
 
@@ -1173,11 +1160,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
         params.put("list", myList);
         params.put("listOut", myListOut);
         params.put("scriptList", scriptList);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess("MultiInstanceLoopCharacteristicsProcessWithOutput", params);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(2, myListOut.size());
-        assertEquals(2, scriptList.size());
+        assertThat(myListOut).hasSize(2);
+        assertThat(scriptList).hasSize(2);
 
     }
 
@@ -1195,11 +1182,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("Second Item");
         params.put("list", myList);
         params.put("listOut", myListOut);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MultiInstanceLoopCharacteristicsTask", params);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(2, myListOut.size());
+        assertThat(myListOut).hasSize(2);
 
     }
 
@@ -1217,11 +1204,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("Second Item");
         params.put("list", myList);
         params.put("listOut", myListOut);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MultiInstanceLoopCharacteristicsTask", params);
         assertProcessInstanceCompleted(processInstance);
-        assertEquals(1, myListOut.size());
+        assertThat(myListOut).hasSize(1);
 
     }
 
@@ -1242,13 +1229,13 @@ public class FlowTest extends JbpmBpmn2TestCase {
         myList.add("rejected");
         params.put("list", myList);
         params.put("listOut", myListOut);
-        assertEquals(0, myListOut.size());
+        assertThat(myListOut).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess(
                 "MultiInstanceLoopCharacteristicsTask", params);
         assertProcessInstanceCompleted(processInstance);
         // only two approved outcomes are required to complete multiinstance and since there was reject in between we should have
         // three elements in the list
-        assertEquals(3, myListOut.size());
+        assertThat(myListOut).hasSize(3);
 
     }
 
@@ -1281,11 +1268,11 @@ public class FlowTest extends JbpmBpmn2TestCase {
             }
         });
 
-        assertEquals(0, list.size());
+        assertThat(list).isEmpty();
 
         countDownListener.waitTillCompleted();
 
-        assertEquals(1, list.size());
+        assertThat(list).hasSize(1);
         System.clearProperty("jbpm.enable.multi.con");
 
     }
@@ -1315,13 +1302,13 @@ public class FlowTest extends JbpmBpmn2TestCase {
             }
         });
 
-        assertEquals(0, list.size());
+        assertThat(list).isEmpty();
         KogitoProcessInstance processInstance = kruntime.startProcess("BPMN2-MultiConnEnabled");
         assertProcessInstanceActive(processInstance);
         kruntime.signalEvent("signal", null, processInstance.getStringId());
         assertProcessInstanceCompleted(processInstance);
 
-        assertEquals(1, list.size());
+        assertThat(list).hasSize(1);
         System.clearProperty("jbpm.enable.multi.con");
 
     }
@@ -1359,12 +1346,12 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("UserTask");
-        assertEquals(KogitoProcessInstance.STATE_ACTIVE, processInstance.getState());
+        assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
         KogitoWorkItem KogitoWorkItem = workItemHandler.getWorkItem();
-        assertNotNull(KogitoWorkItem);
-        assertEquals("john", KogitoWorkItem.getParameter("ActorId"));
+        assertThat(KogitoWorkItem).isNotNull();
+        assertThat(KogitoWorkItem.getParameter("ActorId")).isEqualTo("john");
         Map<String, Object> results = new HashMap<>();
         ((HumanTaskWorkItemImpl) KogitoWorkItem).setActualOwner("mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(),
@@ -1372,8 +1359,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task",
                 workItemHandler);
         KogitoWorkItem = workItemHandler.getWorkItem();
-        assertNotNull(KogitoWorkItem);
-        assertEquals("mary", KogitoWorkItem.getParameter("SwimlaneActorId"));
+        assertThat(KogitoWorkItem).isNotNull();
+        assertThat(KogitoWorkItem.getParameter("SwimlaneActorId")).isEqualTo("mary");
         kruntime.getKogitoWorkItemManager().completeWorkItem(KogitoWorkItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
     }
@@ -1433,8 +1420,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.startProcessInstance(instance.getStringId());
 
         KogitoWorkItem workItem1 = handler1.getWorkItem();
-        assertNotNull(workItem1);
-        assertNull(handler1.getWorkItem());
+        assertThat(workItem1).isNotNull();
+        assertThat(handler1.getWorkItem()).isNull();
         //first safe state: task1 completed
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem1.getStringId(), null);
         kruntime.getProcessEventManager().addEventListener(countDownListener);
@@ -1447,8 +1434,8 @@ public class FlowTest extends JbpmBpmn2TestCase {
         //Both sides of the join are completed. But on the process instance, there are two
         //JoinInstance for the same Join, and since it is an AND join, it never reaches task2
         //It fails after the next assertion
-        assertNotNull(workItem2);
-        assertNull(handler2.getWorkItem());
+        assertThat(workItem2).isNotNull();
+        assertThat(handler2.getWorkItem()).isNull();
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem2.getStringId(), null);
         assertProcessInstanceCompleted(instance);
