@@ -22,6 +22,7 @@ import java.util.Set;
 import org.drools.compiler.compiler.AnalysisResult;
 import org.drools.compiler.compiler.BoundIdentifiers;
 import org.drools.compiler.rule.builder.PackageBuildContext;
+import org.drools.drl.ast.descr.BaseDescr;
 import org.drools.mvel.builder.MVELAnalysisResult;
 import org.drools.mvel.builder.MVELDialect;
 import org.jbpm.process.builder.ProcessBuildContext;
@@ -82,6 +83,7 @@ public class AbstractMVELBuilder {
     }
 
     protected MVELAnalysisResult getAnalysis(final PackageBuildContext context,
+            final BaseDescr descr,
             MVELDialect dialect,
             final String text,
             Map<String, Class<?>> variables) {

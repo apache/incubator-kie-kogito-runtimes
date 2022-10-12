@@ -26,6 +26,7 @@ import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
 
@@ -59,7 +60,7 @@ public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
                 StartNode startNode = getCompositeNode().findStartNode();
                 if (resolveVariables(((EventSubProcessNode) getEventBasedNode()).getEvents()).contains(type) || type.equals("timerTriggered")) {
                     NodeInstance nodeInstance = getNodeInstance(startNode);
-                    ((StartNodeInstance) nodeInstance).signalEvent(event);
+                    ((StartNodeInstance) nodeInstance).signalEvent(type, event);
                 }
             }
         }
@@ -79,9 +80,9 @@ public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
                         faultName = (String) startNode.getMetaData("FaultCode");
                     }
                     if (getNodeInstanceContainer() instanceof ProcessInstance) {
-                        ((ProcessInstance) getProcessInstance()).setState(ProcessInstance.STATE_ABORTED, faultName);
+                        ((ProcessInstance) getProcessInstance()).setState(KogitoProcessInstance.STATE_ABORTED, faultName);
                     } else {
-                        ((NodeInstanceContainer) getNodeInstanceContainer()).setState(ProcessInstance.STATE_ABORTED);
+                        ((NodeInstanceContainer) getNodeInstanceContainer()).setState(KogitoProcessInstance.STATE_ABORTED);
                     }
 
                 }

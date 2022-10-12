@@ -60,7 +60,7 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
         VariableScope variableScopeNode = (VariableScope) node.getDefaultContext(VariableScope.VARIABLE_SCOPE);
 
         if (variableScope != null) {
-            visitVariableScope(getNodeId(node), variableScopeNode, body, new HashSet<>());
+            visitVariableScope(getNodeId(node), variableScopeNode, body, new HashSet<>(), node.getClass().getName());
         }
 
         visitCustomFields(node, variableScope).forEach(body::addStatement);

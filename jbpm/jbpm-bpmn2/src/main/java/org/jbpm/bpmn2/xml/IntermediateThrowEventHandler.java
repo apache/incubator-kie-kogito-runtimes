@@ -82,22 +82,22 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
             if ("signalEventDefinition".equals(nodeName)) {
                 // reuse already created ActionNode
                 setThrowVariable(ioSpecification, node);
-                handleSignalNode(node, element, parser);
+                handleSignalNode(node, element, uri, localName, parser);
                 break;
             } else if ("messageEventDefinition".equals(nodeName)) {
                 // reuse already created ActionNode
                 setThrowVariable(ioSpecification, node);
-                handleMessageNode(node, element, parser);
+                handleMessageNode(node, element, uri, localName, parser);
                 break;
             } else if ("escalationEventDefinition".equals(nodeName)) {
                 // reuse already created ActionNode
                 setThrowVariable(ioSpecification, node);
-                handleEscalationNode(node, element, parser);
+                handleEscalationNode(node, element, uri, localName, parser);
                 break;
             } else if ("compensateEventDefinition".equals(nodeName)) {
                 // reuse already created ActionNode
                 setThrowVariable(ioSpecification, node);
-                handleThrowCompensationEventNode(node, element);
+                handleThrowCompensationEventNode(node, element, uri, localName, parser);
                 break;
             } else if ("linkEventDefinition".equals(nodeName)) {
                 ThrowLinkNode linkNode = new ThrowLinkNode();
@@ -191,6 +191,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
     }
 
     public void handleSignalNode(final Node node, final Element element,
+            final String uri, final String localName,
             final Parser parser) throws SAXException {
         ActionNode actionNode = (ActionNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -230,6 +231,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     public void handleMessageNode(final Node node, final Element element,
+            final String uri, final String localName,
             final Parser parser) throws SAXException {
         ActionNode actionNode = (ActionNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();
@@ -267,6 +269,7 @@ public class IntermediateThrowEventHandler extends AbstractNodeHandler {
 
     @SuppressWarnings("unchecked")
     public void handleEscalationNode(final Node node, final Element element,
+            final String uri, final String localName,
             final Parser parser) throws SAXException {
         ActionNode actionNode = (ActionNode) node;
         org.w3c.dom.Node xmlNode = element.getFirstChild();

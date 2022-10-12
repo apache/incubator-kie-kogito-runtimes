@@ -322,7 +322,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeScripts(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (!actions.isEmpty()) {
             for (DroolsAction action : actions) {
                 writeScript(action, type, xmlDump);
             }
@@ -543,7 +543,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return !elements.isEmpty() ? Optional.of(elements.get(0)) : Optional.empty();
     }
 
-    protected Optional<DataAssociation> readDataAssociation(org.w3c.dom.Element element, Function<String, DataDefinition> sourceResolver,
+    protected Optional<DataAssociation> readDataAssociation(Element element, Function<String, DataDefinition> sourceResolver,
             Function<String, DataDefinition> targetResolver) {
         List<DataDefinition> sources = readSources(element, sourceResolver);
         DataDefinition target = readTarget(element, targetResolver);
@@ -697,8 +697,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         nodeTarget.getMetaData().put("UniqueId", uniqueId + ":1");
         forEachNode.setMetaData("UniqueId", uniqueId);
         forEachNode.addNode(nodeTarget);
-        forEachNode.linkIncomingConnections(NodeImpl.CONNECTION_DEFAULT_TYPE, nodeTarget.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE);
-        forEachNode.linkOutgoingConnections(nodeTarget.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE, NodeImpl.CONNECTION_DEFAULT_TYPE);
+        forEachNode.linkIncomingConnections(Node.CONNECTION_DEFAULT_TYPE, nodeTarget.getId(), Node.CONNECTION_DEFAULT_TYPE);
+        forEachNode.linkOutgoingConnections(nodeTarget.getId(), Node.CONNECTION_DEFAULT_TYPE, Node.CONNECTION_DEFAULT_TYPE);
         return forEachNode;
     }
 
@@ -864,7 +864,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         return error.getId();
     }
 
-    protected void handleThrowCompensationEventNode(final Node node, final Element element) {
+    protected void handleThrowCompensationEventNode(final Node node, final Element element,
+            final String uri, final String localName, final Parser parser) {
         org.w3c.dom.Node xmlNode = element.getFirstChild();
         if (!(node instanceof ActionNode || node instanceof EndNode)) {
             throw new IllegalArgumentException("Node is neither an ActionNode nor an EndNode but a " + node.getClass().getSimpleName());

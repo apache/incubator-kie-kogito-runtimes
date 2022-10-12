@@ -57,7 +57,7 @@ public class HumanTaskNodeHandler extends WorkItemNodeHandler {
             writeMetaData(workItemNode, xmlDump);
         }
         Work work = workItemNode.getWork();
-        visitWork(work, xmlDump);
+        visitWork(work, xmlDump, includeMeta);
         visitInMappings(workItemNode.getInMappings(), xmlDump);
         visitOutMappings(workItemNode.getOutMappings(), xmlDump);
         for (String eventType : workItemNode.getActionTypes()) {

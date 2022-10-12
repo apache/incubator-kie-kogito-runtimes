@@ -63,7 +63,7 @@ public class WorkItemNodeHandler extends AbstractNodeHandler {
             writeMetaData(workItemNode, xmlDump);
         }
         Work work = workItemNode.getWork();
-        visitWork(work, xmlDump);
+        visitWork(work, xmlDump, includeMeta);
         visitInMappings(workItemNode.getInMappings(), xmlDump);
         visitOutMappings(workItemNode.getOutMappings(), xmlDump);
         for (String eventType : workItemNode.getActionTypes()) {
@@ -97,7 +97,7 @@ public class WorkItemNodeHandler extends AbstractNodeHandler {
         }
     }
 
-    protected void visitWork(Work work, StringBuilder xmlDump) {
+    protected void visitWork(Work work, StringBuilder xmlDump, boolean includeMeta) {
         if (work != null) {
             xmlDump.append("      <work name=\"" + work.getName() + "\" >" + EOL);
             List<ParameterDefinition> parameterDefinitions =

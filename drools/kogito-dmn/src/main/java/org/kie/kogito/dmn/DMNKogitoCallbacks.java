@@ -16,8 +16,12 @@
 package org.kie.kogito.dmn;
 
 import java.io.Reader;
+import java.util.function.BiFunction;
 
 import org.kie.dmn.api.core.DMNRuntime;
+import org.kie.kogito.ExecutionIdSupplier;
+import org.kie.kogito.KogitoGAV;
+import org.kie.kogito.decision.DecisionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +53,9 @@ public final class DMNKogitoCallbacks {
         }
     }
 
-    public static void beforeAbstractDecisionModelsInit() {
+    public static void beforeAbstractDecisionModelsInit(ExecutionIdSupplier executionIdSupplier,
+            BiFunction<DecisionModel, KogitoGAV, DecisionModel> decisionModelTransformerInit,
+            Reader[] readers) {
         if (isGraalVMNIRuntime()) {
             LOG.warn("AbstractDecisionModels.init() called.");
         } else {
@@ -57,7 +63,7 @@ public final class DMNKogitoCallbacks {
         }
     }
 
-    public static void afterAbstractDecisionModelsInit() {
+    public static void afterAbstractDecisionModelsInit(DMNRuntime dmnRuntime) {
         if (isGraalVMNIRuntime()) {
             LOG.warn("AbstractDecisionModels.init() done.");
         } else {

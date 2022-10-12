@@ -26,7 +26,7 @@ public class BroadcastEventTypeFilter extends EventTypeFilter {
 
     private static final long serialVersionUID = 510l;
 
-    public boolean acceptsEvent(String type) {
+    public boolean acceptsEvent(String type, Object event) {
         if (type == null) {
             return false;
         }

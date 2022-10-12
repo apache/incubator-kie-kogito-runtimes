@@ -78,7 +78,7 @@ public abstract class AbstractVisitor {
         return !e.getKey().startsWith("BPMN.") && (e.getKey().startsWith("custom") || ExpressionUtils.isTypeSupported(e.getValue()));
     }
 
-    protected void visitVariableScope(String field, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables) {
+    protected void visitVariableScope(String field, VariableScope variableScope, BlockStmt body, Set<String> visitedVariables, String contextClass) {
         if (variableScope != null && !variableScope.getVariables().isEmpty()) {
             for (Variable variable : variableScope.getVariables()) {
                 if (!visitedVariables.add(variable.getName())) {

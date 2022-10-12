@@ -200,7 +200,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         }
         // TODO: package, version
         xmlDump.append(">" + EOL + EOL);
-        visitHeader(process, xmlDump);
+        visitHeader(process, xmlDump, metaDataType);
 
         List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
@@ -328,7 +328,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         }
     }
 
-    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump) {
+    protected void visitHeader(WorkflowProcess process, StringBuilder xmlDump, int metaDataType) {
         Map<String, Object> metaData = getMetaData(process.getMetaData());
         Set<String> imports = ((org.jbpm.process.core.Process) process).getImports();
         Map<String, String> globals = ((org.jbpm.process.core.Process) process).getGlobals();
@@ -505,7 +505,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                 }
             } else if (node instanceof EventNode) {
                 List<EventFilter> filters = ((EventNode) node).getEventFilters();
-                if (filters.size() > 0) {
+                if (!filters.isEmpty()) {
                     String messageRef = ((EventTypeFilter) filters.get(0)).getType();
                     if (messageRef.startsWith("Message-")) {
                         messageRef = messageRef.substring(8);
