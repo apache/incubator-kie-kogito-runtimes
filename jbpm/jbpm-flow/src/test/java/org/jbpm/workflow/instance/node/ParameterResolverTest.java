@@ -25,7 +25,7 @@ import org.jbpm.util.PatternConstants;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterResolverTest extends AbstractBaseTest {
 
@@ -48,8 +48,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(1, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(1);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -67,8 +67,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(1, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(1);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -86,8 +86,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -105,8 +105,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -124,8 +124,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -143,8 +143,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -162,8 +162,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(1, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(1);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -180,8 +180,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(1, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(1);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -199,8 +199,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
     @Test
@@ -218,8 +218,8 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertEquals(2, foundVariables.size());
-        assertEquals(Arrays.asList(expected), foundVariables);
+        assertThat(foundVariables).hasSize(2);
+        assertThat(foundVariables).isEqualTo(Arrays.asList(expected));
     }
 
 }

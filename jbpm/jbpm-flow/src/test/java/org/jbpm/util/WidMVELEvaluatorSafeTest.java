@@ -19,8 +19,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 @Disabled("This test causes problems to surefire (see same issue with org.drools.core.util.MVELSafeHelperTest) It works when executed by itself.")
 public class WidMVELEvaluatorSafeTest extends WidMVELEvaluatorTest {
 
@@ -39,7 +37,7 @@ public class WidMVELEvaluatorSafeTest extends WidMVELEvaluatorTest {
             tsm = new TestSecurityManager();
             System.setSecurityManager(tsm);
         } catch (Exception e) {
-            fail("unable to initiate security manager : " + e.getMessage());
+            org.assertj.core.api.Assertions.fail("", "unable to initiate security manager : " + e.getMessage());
         }
     }
 
