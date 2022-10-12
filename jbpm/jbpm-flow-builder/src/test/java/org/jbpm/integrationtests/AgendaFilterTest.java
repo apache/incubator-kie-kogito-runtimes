@@ -35,11 +35,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AgendaFilterTest extends AbstractBaseTest {
 
@@ -115,7 +111,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
         if (builder.hasErrors()) {
-            fail(builder.getErrors().toString());
+            org.assertj.core.api.Assertions.fail("", builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
@@ -126,7 +122,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         message.setStatus(Message.HELLO);
         kruntime.getKieSession().insert(message);
         kruntime.startProcess("process-test");
-        assertEquals("Goodbye cruel world", message.getMessage());
+        assertThat(message.getMessage()).isEqualTo("Goodbye cruel world");
     }
 
     public static class Message {
@@ -246,7 +242,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
         if (builder.hasErrors()) {
-            fail(builder.getErrors().toString());
+            org.assertj.core.api.Assertions.fail("", builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
@@ -293,11 +289,11 @@ public class AgendaFilterTest extends AbstractBaseTest {
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
-        assertNotNull(kruntime);
+        assertThat(kruntime).isNotNull();
 
-        assertFalse(kruntime.getKieSession().getAgendaEventListeners().isEmpty());
-        assertTrue(kruntime.getProcessEventManager().getProcessEventListeners().isEmpty());
-        assertTrue(kruntime.getKieSession().getRuleRuntimeEventListeners().isEmpty());
+        assertThat(kruntime.getKieSession().getAgendaEventListeners().isEmpty()).isFalse();
+        assertThat(kruntime.getProcessEventManager().getProcessEventListeners().isEmpty()).isTrue();
+        assertThat(kruntime.getKieSession().getRuleRuntimeEventListeners().isEmpty()).isTrue();
 
         kruntime.getKieSession().dispose();
     }
