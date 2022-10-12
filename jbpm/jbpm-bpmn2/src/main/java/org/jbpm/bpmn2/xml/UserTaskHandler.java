@@ -67,7 +67,7 @@ public class UserTaskHandler extends TaskHandler {
             }
             xmlNode = xmlNode.getNextSibling();
         }
-        if (owners.size() > 0) {
+        if (!owners.isEmpty()) {
             StringBuilder owner = new StringBuilder(owners.get(0));
             for (int i = 1; i < owners.size(); i++) {
                 owner.append(",").append(owners.get(i));

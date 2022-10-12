@@ -97,7 +97,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     public static final String INPUT_TYPES = "BPMN.InputTypes";
     public static final String OUTPUT_TYPES = "BPMN.OutputTypes";
 
-    protected final static String EOL = System.getProperty("line.separator");
+    protected static final String EOL = System.getProperty("line.separator");
 
     public AbstractNodeHandler() {
         initValidParents();
@@ -322,7 +322,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeScripts(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (!actions.isEmpty()) {
             for (DroolsAction action : actions) {
                 writeScript(action, type, xmlDump);
             }
@@ -697,8 +697,8 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
         nodeTarget.getMetaData().put("UniqueId", uniqueId + ":1");
         forEachNode.setMetaData("UniqueId", uniqueId);
         forEachNode.addNode(nodeTarget);
-        forEachNode.linkIncomingConnections(NodeImpl.CONNECTION_DEFAULT_TYPE, nodeTarget.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE);
-        forEachNode.linkOutgoingConnections(nodeTarget.getId(), NodeImpl.CONNECTION_DEFAULT_TYPE, NodeImpl.CONNECTION_DEFAULT_TYPE);
+        forEachNode.linkIncomingConnections(Node.CONNECTION_DEFAULT_TYPE, nodeTarget.getId(), Node.CONNECTION_DEFAULT_TYPE);
+        forEachNode.linkOutgoingConnections(nodeTarget.getId(), Node.CONNECTION_DEFAULT_TYPE, Node.CONNECTION_DEFAULT_TYPE);
         return forEachNode;
     }
 
