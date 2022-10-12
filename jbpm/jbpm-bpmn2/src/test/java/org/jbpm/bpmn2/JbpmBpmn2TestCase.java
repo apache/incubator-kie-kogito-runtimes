@@ -243,7 +243,7 @@ public abstract class JbpmBpmn2TestCase {
 
     public void assertNotNodeTriggered(String processInstanceId, String... nodeNames) {
         List<String> names = getNotTriggeredNodes(nodeNames);
-        assertThat(Arrays.equals(names.toArray(), nodeNames)).isTrue();
+        assertThat(names).containsExactly(nodeNames);
     }
 
     public int getNumberOfProcessInstances(String processId) {

@@ -46,12 +46,12 @@ public class CompilationTest extends JbpmBpmn2TestCase {
         String filename = "BPMN2-GatewaySplit-SequenceConditions.bpmn2";
         kruntime = createKogitoProcessRuntime(filename);
 
-        assertThat(javaProcessDialect.getActionDescrs().isEmpty()).as("No " + ActionDescr.class.getSimpleName() + " instances caught for testing!").isFalse();
+        assertThat(javaProcessDialect.getActionDescrs()).as("No " + ActionDescr.class.getSimpleName() + " instances caught for testing!").isNotEmpty();
         for (BaseDescr descr : javaProcessDialect.getActionDescrs()) {
             assertThat(descr.getResource()).as(descr.getClass().getSimpleName() + " has a null resource field").isNotNull();
         }
 
-        assertThat(javaProcessDialect.getReturnValueDescrs().isEmpty()).as("No " + ReturnValueDescr.class.getSimpleName() + " instances caught for testing!").isFalse();
+        assertThat(javaProcessDialect.getReturnValueDescrs()).as("No " + ReturnValueDescr.class.getSimpleName() + " instances caught for testing!").isNotEmpty();
         for (BaseDescr descr : javaProcessDialect.getReturnValueDescrs()) {
             assertThat(descr.getResource()).as(descr.getClass().getSimpleName() + " has a null resource field").isNotNull();
         }

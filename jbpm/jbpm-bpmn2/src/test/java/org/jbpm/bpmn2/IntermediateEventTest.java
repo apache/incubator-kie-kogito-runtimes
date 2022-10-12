@@ -155,7 +155,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 handler.getWorkItem().getStringId(), null);
 
         assertProcessInstanceFinished(processInstance, kruntime);
-        assertThat(eventAfterNodeLeftTriggered.get()).isTrue();
+        assertThat(eventAfterNodeLeftTriggered).isTrue();
     }
 
     @Test
@@ -996,7 +996,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
 
-        assertThat(nodeId > 0).isTrue();
+        assertThat(nodeId).isPositive();
         assertThat(nodeInstanceId).isNotNull();
     }
 
@@ -1017,7 +1017,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
         String deploymentId = ((InternalKogitoWorkItem) workItem).getDeploymentId();
 
-        assertThat(nodeId > 0).isTrue();
+        assertThat(nodeId).isPositive();
         assertThat(nodeInstanceId).isNotNull();
         assertThat(deploymentId).isNull();
     }
