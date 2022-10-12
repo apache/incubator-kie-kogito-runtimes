@@ -435,7 +435,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
                 localName);
 
         if (handler == null) {
-            if (this.configurationStack.size() >= 1) {
+            if (!this.configurationStack.isEmpty()) {
                 endElementBuilder();
             }
             return;
@@ -449,6 +449,10 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public static class Null {
+        private Null() {
+
+        }
+
         public static final Null instance = new Null();
     }
 
@@ -604,7 +608,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     public Object getParent() {
         try {
-            return this.parents.size() > 0 ? this.parents.getLast() : null;
+            return !this.parents.isEmpty() ? this.parents.getLast() : null;
         } catch (NoSuchElementException e) {
             return null;
         }
