@@ -19,9 +19,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -239,9 +237,8 @@ public class DeadlineHelperTest {
                 "[users:Pepe,Pepa|groups:Admin,Managers]@[1m]");
         assertThat(reassigments).hasSize(1);
         DeadlineInfo<Reassignment> reassignment = reassigments.iterator().next();
-        assertThat(reassignment.getNotification().getPotentialUsers()).isEqualTo(new HashSet<>(Arrays.asList("Pepe", "Pepa")));
-        assertThat(reassignment.getNotification()
-                .getPotentialGroups()).isEqualTo(new HashSet<>(Arrays.asList("Admin", "Managers")));
+        assertThat(reassignment.getNotification().getPotentialUsers()).containsExactlyInAnyOrder("Pepe", "Pepa");
+        assertThat(reassignment.getNotification().getPotentialGroups()).containsExactlyInAnyOrder("Admin", "Managers");
         assertThat(reassignment.getScheduleInfo().iterator().next().getDuration()).isEqualTo(Duration.ofMinutes(1));
     }
 

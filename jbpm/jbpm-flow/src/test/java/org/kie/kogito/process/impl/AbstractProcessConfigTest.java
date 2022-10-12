@@ -17,7 +17,6 @@ package org.kie.kogito.process.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
@@ -54,13 +53,13 @@ public class AbstractProcessConfigTest {
         workItemConfig1.register(name1, workItem1);
         workItemConfig2.register(name2, workItem2);
         ProcessConfig config = new MockProcessConfig(List.of(workItemConfig1, workItemConfig2));
-        assertThat(config.workItemHandlers().names()).isEqualTo(Set.of(name1, name2));
+        assertThat(config.workItemHandlers().names()).containsExactlyInAnyOrder(name1, name2);
         assertThat(config.workItemHandlers().forName(name1)).isSameAs(workItem1);
         assertThat(config.workItemHandlers().forName(name2)).isSameAs(workItem2);
         final String name3 = "Javierito3";
         final KogitoWorkItemHandler workItem3 = mock(KogitoWorkItemHandler.class);
         workItemConfig2.register(name3, workItem3);
-        assertThat(config.workItemHandlers().names()).isEqualTo(Set.of(name1, name2, name3));
+        assertThat(config.workItemHandlers().names()).containsExactlyInAnyOrder(name1, name2, name3);
         assertThat(config.workItemHandlers().forName(name3)).isSameAs(workItem3);
     }
 
