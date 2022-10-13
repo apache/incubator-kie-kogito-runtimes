@@ -138,8 +138,7 @@ public class WorkItemTest extends AbstractBaseTest {
                 parameters);
 
         Object numberVariable = ((WorkflowProcessInstance) processInstance).getVariable("MyObject");
-        assertThat(numberVariable).isNotNull();
-        assertThat(numberVariable).isEqualTo("test");
+        assertThat(numberVariable).isNotNull().isEqualTo("test");
 
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -175,8 +174,7 @@ public class WorkItemTest extends AbstractBaseTest {
                 parameters);
 
         Object numberVariable = ((WorkflowProcessInstance) processInstance).getVariable("MyObject");
-        assertThat(numberVariable).isNotNull();
-        assertThat(numberVariable).isEqualTo("one");
+        assertThat(numberVariable).isNotNull().isEqualTo("one");
 
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         parameters = new HashMap<String, Object>();
@@ -189,8 +187,7 @@ public class WorkItemTest extends AbstractBaseTest {
                 parameters);
 
         numberVariable = ((WorkflowProcessInstance) processInstance).getVariable("MyObject");
-        assertThat(numberVariable).isNotNull();
-        assertThat(numberVariable).isEqualTo("two");
+        assertThat(numberVariable).isNotNull().isEqualTo("two");
 
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }

@@ -88,10 +88,9 @@ public class RuleFlowProcessValidatorTest {
         process.addNode(dynamicNode);
 
         ProcessValidationError[] errors = validator.validateProcess(process);
-        assertThat(errors).isNotNull();
         // in non-dynamic processes all check should be triggered
         // they should also include process level checks (start node, end node etc)
-        assertThat(errors).hasSize(6);
+        assertThat(errors).isNotNull().hasSize(6);
         assertThat(errors[0].getMessage()).isEqualTo("Process has no start node.");
         assertThat(errors[1].getMessage()).isEqualTo("Process has no end node.");
         assertThat(errors[2].getMessage()).isEqualTo("Node 'MyDynamicNode' [1] Dynamic has no incoming connection");
@@ -112,9 +111,8 @@ public class RuleFlowProcessValidatorTest {
         process.addNode(dynamicNode);
 
         ProcessValidationError[] errors = validator.validateProcess(process);
-        assertThat(errors).isNotNull();
         // if dynamic process no longer triggering incoming / outgoing connection errors for dynamic nodes
-        assertThat(errors).isEmpty();
+        assertThat(errors).isNotNull().isEmpty();
 
         // empty completion expression to trigger validation error
         process.removeNode(dynamicNode);
@@ -125,9 +123,8 @@ public class RuleFlowProcessValidatorTest {
         process.addNode(dynamicNode2);
 
         ProcessValidationError[] errors2 = validator.validateProcess(process);
-        assertThat(errors2).isNotNull();
         // autocomplete set to false and empty completion condition triggers error
-        assertThat(errors2).hasSize(1);
+        assertThat(errors2).isNotNull().hasSize(1);
         assertThat(errors2[0].getMessage()).isEqualTo("Node 'MyDynamicNode' [1] Dynamic has no completion condition set");
     }
 

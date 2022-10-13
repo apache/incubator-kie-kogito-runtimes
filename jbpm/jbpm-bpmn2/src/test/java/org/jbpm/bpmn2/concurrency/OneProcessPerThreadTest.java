@@ -70,10 +70,10 @@ public class OneProcessPerThreadTest {
             });
 
             startThreads(kruntime);
-            assertThat(workItems).isEqualTo(THREAD_COUNT);
+            assertThat(workItems).hasSize(THREAD_COUNT);
         } catch (Throwable t) {
             t.printStackTrace();
-            org.assertj.core.api.Assertions.fail("", "Should not raise any exception: " + t.getMessage());
+            fail("", "Should not raise any exception: " + t.getMessage());
         }
 
         int i = 0;

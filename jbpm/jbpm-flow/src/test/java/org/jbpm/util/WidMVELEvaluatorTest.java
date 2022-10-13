@@ -81,9 +81,7 @@ public class WidMVELEvaluatorTest extends AbstractBaseTest {
         assertThat(widsMap).hasSize(2);
 
         Map<String, Object> firstWid = widsMap.get(0);
-        assertThat(firstWid).isNotNull();
-
-        assertThat(firstWid.get("name")).isEqualTo("MyFirstWorkItem");
+        assertThat(firstWid).isNotNull().containsEntry("name", "MyFirstWorkItem");
 
         Map<String, DataType> firstWidParams = (Map<String, DataType>) firstWid.get("parameters");
         assertThat(firstWidParams).isNotNull().hasSize(6);
@@ -92,9 +90,7 @@ public class WidMVELEvaluatorTest extends AbstractBaseTest {
         assertThat(firstWidParamValues).isNotNull().hasSize(1);
 
         Map<String, Object> secondWid = widsMap.get(1);
-        assertThat(secondWid).isNotNull();
-
-        assertThat(secondWid.get("name")).isEqualTo("MySecondWorkItem");
+        assertThat(secondWid).isNotNull().containsEntry("name", "MySecondWorkItem");
 
         Map<String, DataType> secondWidParams = (Map<String, DataType>) secondWid.get("parameters");
         assertThat(secondWidParams).isNotNull().hasSize(6);

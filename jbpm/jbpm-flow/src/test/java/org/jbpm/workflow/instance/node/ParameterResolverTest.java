@@ -65,8 +65,7 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertThat(foundVariables).hasSize(1);
-        assertThat(foundVariables).containsExactly(expected);
+        assertThat(foundVariables).hasSize(1).containsExactly(expected);
     }
 
     @Test
@@ -84,8 +83,7 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertThat(foundVariables).hasSize(2);
-        assertThat(foundVariables).containsExactly(expected);
+        assertThat(foundVariables).hasSize(2).containsExactly(expected);
     }
 
     @Test
@@ -139,8 +137,7 @@ public class ParameterResolverTest extends AbstractBaseTest {
             foundVariables.add(paramName);
         }
 
-        assertThat(foundVariables).hasSize(2);
-        assertThat(foundVariables).containsExactly(expected);
+        assertThat(foundVariables).hasSize(2).containsExactly(expected);
     }
 
     @Test

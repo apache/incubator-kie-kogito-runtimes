@@ -56,8 +56,7 @@ public class KnowledgeBuilderTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newByteArrayResource(str.getBytes()), ResourceType.DRF);
 
         Collection<KiePackage> pkgs = builder.getKnowledgePackages();
-        assertThat(pkgs).isNotNull();
-        assertThat(pkgs).hasSize(2);
+        assertThat(pkgs).isNotNull().hasSize(2);
 
         KiePackage test1 = getKnowledgePackage(pkgs, "org.test1");
         Collection<Process> processes = test1.getProcesses();

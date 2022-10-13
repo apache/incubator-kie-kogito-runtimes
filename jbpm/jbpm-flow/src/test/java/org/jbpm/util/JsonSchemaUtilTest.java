@@ -91,7 +91,8 @@ public class JsonSchemaUtilTest {
         InputStream in = new ByteArrayInputStream(example.getBytes());
         Map<String, Object> schemaMap = JsonSchemaUtil.load(in);
         in.close();
-        assertThat(schemaMap.get("type")).isEqualTo("object");
+        assertThat(schemaMap).containsEntry("type", "object");
+
         Map<String, Object> properties = (Map<String, Object>) schemaMap.get("properties");
         assertThat(properties).hasSize(2);
         assertThat((Boolean) ((Map) properties.get("approved")).get("output")).isTrue();

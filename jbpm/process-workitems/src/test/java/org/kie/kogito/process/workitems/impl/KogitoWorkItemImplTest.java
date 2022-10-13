@@ -68,7 +68,8 @@ public class KogitoWorkItemImplTest {
     private void assertEqualsWI(KogitoWorkItem workItem, Object expected, String parameter) {
         assertThat(workItem.getParameter(parameter)).isEqualTo(expected);
         Map<String, Object> map = new HashMap<>(workItem.getParameters());
-        assertThat(map.get(parameter)).isEqualTo(expected);
+
+        assertThat(map).containsEntry(parameter, expected);
         assertThat(map.entrySet().stream().filter(p -> p.getKey().equals(parameter))
                 .findFirst().orElseThrow(IllegalStateException::new).getValue()).isEqualTo(expected);
     }

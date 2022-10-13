@@ -182,7 +182,7 @@ public class EscalationEventTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("non-interrupting-escalation");
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isEqualTo(2);
+        assertThat(workItems).hasSize(2);
 
         KogitoWorkItem johnsWork = workItems.get(0);
         KogitoWorkItem marysWork = workItems.get(1);

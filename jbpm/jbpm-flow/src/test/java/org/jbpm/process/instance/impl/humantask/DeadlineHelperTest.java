@@ -36,8 +36,8 @@ public class DeadlineHelperTest {
                 "[subject:5secs|body:NotCompleted repeated notification every 5secs]@[R/PT5S]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
-        assertThat(deadlineInfo.getNotification().get("body")).isEqualTo("NotCompleted repeated notification every 5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("body", "NotCompleted repeated notification every 5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -59,7 +59,7 @@ public class DeadlineHelperTest {
                 "[subject:5secs]@[R/PT5S/" + future.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -80,7 +80,7 @@ public class DeadlineHelperTest {
                 "[subject:5secs]@[R/PT5S/" + future.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) + "]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -91,7 +91,7 @@ public class DeadlineHelperTest {
 
         ExpirationTime time = DeadlineHelper.getExpirationTime(scheduleInfo);
         assertThat(time.repeatInterval()).isNull();
-        assertThat(time.repeatLimit()).isEqualTo(0);
+        assertThat(time.repeatLimit()).isZero();
         assertThat(ZonedDateTime.now().plus(Duration.ofSeconds(5)).isAfter(time.get())).isTrue();
     }
 
@@ -101,7 +101,7 @@ public class DeadlineHelperTest {
                 "[subject:5secs]@[R2/PT5S/2021-03-18T18:55:01+01:00]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -122,7 +122,7 @@ public class DeadlineHelperTest {
                 "[subject:5secs]@[R1/2021-03-18T18:55:01+01:00/2021-03-18T18:55:06+01:00]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -143,7 +143,7 @@ public class DeadlineHelperTest {
                 "[subject:5secs]@[R26/2021-03-18T18:55:01+01:00/PT2M]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("5secs");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "5secs");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -164,18 +164,18 @@ public class DeadlineHelperTest {
                 "[subject:exact date]@[2021-03-18T18:55:01+01:00]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("exact date");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "exact date");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
         assertThat(scheduleInfo.getDuration()).isNull();
-        assertThat(scheduleInfo.getNumRepetitions()).isEqualTo(0);
+        assertThat(scheduleInfo.getNumRepetitions()).isZero();
         assertThat(scheduleInfo.getEndDate()).isEqualTo(ZonedDateTime.parse("2021-03-18T18:55:01+01:00"));
         assertThat(scheduleInfo.getStartDate()).isNull();
 
         ExpirationTime time = DeadlineHelper.getExpirationTime(scheduleInfo);
         assertThat(time.repeatInterval()).isNull();
-        assertThat(time.repeatLimit()).isEqualTo(0);
+        assertThat(time.repeatLimit()).isZero();
         assertEqualsDate(ZonedDateTime.parse("2021-03-18T18:55:01+01:00"), time.get());
     }
 
@@ -185,7 +185,7 @@ public class DeadlineHelperTest {
                 "[subject:more than 1 year]@[R/P1Y3WT1H]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("more than 1 year");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "more than 1 year");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(1);
         ScheduleInfo scheduleInfo = scheduling.iterator().next();
@@ -207,7 +207,7 @@ public class DeadlineHelperTest {
                 "[subject:1 and 4 hour]@[PT1H,PT4H]");
         assertThat(deadlines).hasSize(1);
         DeadlineInfo<Map<String, Object>> deadlineInfo = deadlines.iterator().next();
-        assertThat(deadlineInfo.getNotification().get("subject")).isEqualTo("1 and 4 hour");
+        assertThat(deadlineInfo.getNotification()).containsEntry("subject", "1 and 4 hour");
         Collection<ScheduleInfo> scheduling = deadlineInfo.getScheduleInfo();
         assertThat(scheduling).hasSize(2);
         assertThat(scheduling.stream().filter(s -> s.getDuration().equals(Duration.ofHours(1)) || s.getDuration()

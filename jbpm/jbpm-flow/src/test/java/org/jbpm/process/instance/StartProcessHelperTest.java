@@ -56,8 +56,7 @@ public class StartProcessHelperTest extends AbstractBaseTest {
 
         String foundProcessId = StartProcessHelper.findLatestProcessByName(processes, "Hello");
 
-        assertThat(foundProcessId).isNotNull();
-        assertThat(foundProcessId).isEqualTo("5");
+        assertThat(foundProcessId).isNotNull().isEqualTo("5");
     }
 
     @Test
@@ -79,13 +78,11 @@ public class StartProcessHelperTest extends AbstractBaseTest {
 
         String foundProcessId = StartProcessHelper.findLatestProcessByName(processes, "Hello");
 
-        assertThat(foundProcessId).isNotNull();
-        assertThat(foundProcessId).isEqualTo("5");
+        assertThat(foundProcessId).isNotNull().isEqualTo("5");
 
         foundProcessId = StartProcessHelper.findLatestProcessByName(processes, "DifferentProcess");
 
-        assertThat(foundProcessId).isNotNull();
-        assertThat(foundProcessId).isEqualTo("10");
+        assertThat(foundProcessId).isNotNull().isEqualTo("10");
     }
 
     @Test
@@ -105,8 +102,7 @@ public class StartProcessHelperTest extends AbstractBaseTest {
 
         String foundProcessId = StartProcessHelper.findLatestProcessByName(processes, "Hello");
 
-        assertThat(foundProcessId).isNotNull();
-        assertThat(foundProcessId).isEqualTo("2");
+        assertThat(foundProcessId).isNotNull().isEqualTo("2");
     }
 
     private List<Process> buildProcessCollection(String processName, int limit) {

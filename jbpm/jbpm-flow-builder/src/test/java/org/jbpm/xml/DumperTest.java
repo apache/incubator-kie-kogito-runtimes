@@ -133,17 +133,13 @@ public class DumperTest {
         DumperTestHelper.DrlFile("test_EnumDeclaration.drl");
 
         String out = DumperTestHelper.dump("test_EnumDeclaration.drl");
-        assertThat(out).contains("declare enum Planets");
-        assertThat(out).contains("MERCURY");
-        assertThat(out).contains("7.1492e7");
+        assertThat(out).contains("declare enum Planets", "MERCURY", "7.1492e7");
     }
 
     @Test
     public void testRoundTripAccumulate() throws Exception {
         String out = DumperTestHelper.dump("test_Accumulate.drl");
-        assertThat(out).contains("$sum : count( $s1 )");
-        assertThat(out).doesNotContain("null : count( $s2 )");
-        assertThat(out).contains("count( $s2 )");
+        assertThat(out).contains("$sum : count( $s1 )", "count( $s2 )").doesNotContain("null : count( $s2 )");
     }
 
     private void checkRoundtrip(String drl) throws DroolsParserException {

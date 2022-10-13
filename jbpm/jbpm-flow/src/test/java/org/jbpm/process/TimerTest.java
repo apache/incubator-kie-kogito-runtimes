@@ -85,7 +85,7 @@ public class TimerTest extends AbstractBaseTest {
         counter = 0;
         desc = ProcessInstanceJobDescription.of(DurationExpirationTime.after(500), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
-        assertThat(counter).isEqualTo(0);
+        assertThat(counter).isZero();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -96,7 +96,7 @@ public class TimerTest extends AbstractBaseTest {
         counter = 0;
         desc = ProcessInstanceJobDescription.of(DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
         jobId = jobService.scheduleProcessInstanceJob(desc);
-        assertThat(counter).isEqualTo(0);
+        assertThat(counter).isZero();
         try {
             Thread.sleep(700);
         } catch (InterruptedException e) {

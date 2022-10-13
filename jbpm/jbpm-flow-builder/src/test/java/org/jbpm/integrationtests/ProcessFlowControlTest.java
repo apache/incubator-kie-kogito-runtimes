@@ -47,7 +47,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
         logger.error(builder.getErrors().toString());
 
-        assertThat(builder.getErrors().getErrors().length).isEqualTo(0);
+        assertThat(builder.getErrors().getErrors()).isEmpty();
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<Integer> inList = new ArrayList<>();
@@ -158,7 +158,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         assertThat(agenda.sizeOfRuleFlowGroup("flowgroup-1")).isEqualTo(4);
 
         // Check they aren't in the Agenda
-        assertThat(((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size()).isEqualTo(0);
+        assertThat(((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size()).isZero();
 
         // Check we have 0 activation cancellation events
         assertThat(activations).isEmpty();
@@ -166,8 +166,8 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         ((InternalAgenda) kruntime.getKieSession().getAgenda()).clearAndCancelRuleFlowGroup("flowgroup-1");
 
         // Check the AgendaGroup and RuleFlowGroup  are now empty
-        assertThat(((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size()).isEqualTo(0);
-        assertThat(agenda.sizeOfRuleFlowGroup("flowgroup-1")).isEqualTo(0);
+        assertThat(((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size()).isZero();
+        assertThat(agenda.sizeOfRuleFlowGroup("flowgroup-1")).isZero();
 
         // Check we have four activation cancellation events
         assertThat(activations).hasSize(4);
@@ -239,7 +239,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
     public void testLoadingRuleFlowNoPackageName() {
         // loading a ruleflow with errors (null package name cause 3 errors)
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("error_ruleflow.rfm")));
-        assertThat(builder.getErrors().getErrors().length).isEqualTo(3);
+        assertThat(builder.getErrors().getErrors()).hasSize(3);
     }
 
 }

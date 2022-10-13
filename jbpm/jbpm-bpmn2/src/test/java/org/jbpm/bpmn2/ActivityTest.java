@@ -412,8 +412,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertThat(workItem).isNotNull();
 
         Object value = workItem.getParameter("TaskName");
-        assertThat(value).isNotNull();
-        assertThat(value).isEqualTo("test string");
+        assertThat(value).isNotNull().isEqualTo("test string");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
 
@@ -431,27 +430,22 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
         assertNodeTriggered(processInstance.getStringId(), "Task1");
         Object var1 = getProcessVarValue(processInstance, "var1");
-        assertThat(var1).isNotNull();
-        assertThat(var1.toString()).isEqualTo("10");
+        assertThat(var1).isNotNull().hasToString("10");
 
         assertNodeTriggered(processInstance.getStringId(), "Task2");
         Object var2 = getProcessVarValue(processInstance, "var2");
-        assertThat(var2).isNotNull();
-        assertThat(var2.toString()).isEqualTo("20");
+        assertThat(var2).isNotNull().hasToString("20");
 
         assertNodeTriggered(processInstance.getStringId(), "Task3");
         Object var3 = getProcessVarValue(processInstance, "var3");
-        assertThat(var3).isNotNull();
-        assertThat(var3.toString()).isEqualTo("30");
+        assertThat(var3).isNotNull().hasToString("30");
 
         assertNodeTriggered(processInstance.getStringId(), "SubProcess");
         Object var4 = getProcessVarValue(processInstance, "var4");
-        assertThat(var4).isNotNull();
-        assertThat(var4.toString()).isEqualTo("40");
+        assertThat(var4).isNotNull().hasToString("40");
 
         Object var5 = getProcessVarValue(processInstance, "var5");
-        assertThat(var5).isNotNull();
-        assertThat(var5.toString()).isEqualTo("50");
+        assertThat(var5).isNotNull().hasToString("50");
 
         org.kie.kogito.internal.process.runtime.KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
@@ -1115,13 +1109,11 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
 
         data = (List<String>) kruntime.getKieSession().getGlobal("data");
-        assertThat(data).isNotNull();
-        assertThat(data).isEqualTo(1);
+        assertThat(data).isNotNull().hasSize(1);
         assertThat(data.get(0)).isEqualTo("JOHN");
 
         String nameVar = getProcessVarValue(processInstance, "name");
-        assertThat(nameVar).isNotNull();
-        assertThat(nameVar).isEqualTo("john");
+        assertThat(nameVar).isNotNull().isEqualTo("john");
 
     }
 
@@ -1145,7 +1137,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("ParentProcess", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertThat(instances).isEqualTo(2);
+        assertThat(instances).hasSize(2);
         // assert variables of parent process, first in start (input transformation, then on end output transformation)
         assertThat(((KogitoWorkflowProcessInstance) instances.get(0)).getVariable("x")).isEqualTo("oldValue");
         assertThat(((KogitoWorkflowProcessInstance) instances.get(0)).getVariable("y")).isEqualTo("NEW VALUE");
@@ -1217,8 +1209,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         String description = processInstance.getDescription();
-        assertThat(description).isNotNull();
-        assertThat(description).isEqualTo("my process with description");
+        assertThat(description).isNotNull().isEqualTo("my process with description");
     }
 
     @Test
@@ -1231,8 +1222,7 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         String description = processInstance.getDescription();
-        assertThat(description).isNotNull();
-        assertThat(description).isEqualTo("variable name for process");
+        assertThat(description).isNotNull().isEqualTo("variable name for process");
     }
 
     @Test

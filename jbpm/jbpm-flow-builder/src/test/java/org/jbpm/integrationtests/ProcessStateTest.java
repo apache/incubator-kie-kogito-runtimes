@@ -594,17 +594,13 @@ public class ProcessStateTest extends AbstractBaseTest {
         assertThat(nodeInstances).hasSize(1);
         StateNodeInstance stateInstance = (StateNodeInstance) nodeInstances.iterator().next();
         assertThat(stateInstance.getNodeName()).isEqualTo("State");
-        assertThat(list).hasSize(2);
-        assertThat(list).contains("Action1a");
-        assertThat(list).contains("Action2a");
+        assertThat(list).hasSize(2).contains("Action1a", "Action2a");
 
         processInstance.signalEvent("signal", "End");
         nodeInstances = processInstance.getNodeInstances();
         assertThat(nodeInstances).isEmpty();
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(list).hasSize(4);
-        assertThat(list).contains("Action3a");
-        assertThat(list).contains("Action4a");
+        assertThat(list).hasSize(4).contains("Action3a", "Action4a");
     }
 
     @Test
@@ -668,9 +664,7 @@ public class ProcessStateTest extends AbstractBaseTest {
             TimeUnit.SECONDS.sleep(4);
         } catch (InterruptedException e) {
         }
-        assertThat(list).hasSize(4);
-        assertThat(list).contains("Timer1a");
-        assertThat(list).contains("Timer2a");
+        assertThat(list).hasSize(4).contains("Timer1a", "Timer2a");
 
         processInstance.signalEvent("signal", "End");
         nodeInstances = processInstance.getNodeInstances();

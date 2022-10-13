@@ -54,7 +54,7 @@ public class IncrementalCompilationTest {
         IncrementalResults addResults = ((InternalKieBuilder) kieBuilder).createFileSet("src/main/resources/p1.bpmn2").build();
 
         //I'd expect the 4 previous errors to be cleared
-        assertThat(addResults.getAddedMessages()).hasSize(0);
+        assertThat(addResults.getAddedMessages()).isEmpty();
         assertThat(addResults.getRemovedMessages()).hasSize(3);
     }
 

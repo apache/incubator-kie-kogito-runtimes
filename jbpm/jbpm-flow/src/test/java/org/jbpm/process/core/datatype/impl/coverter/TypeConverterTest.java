@@ -43,6 +43,6 @@ public class TypeConverterTest {
         ObjectDataType data = new ObjectDataType("java.util.Date");
         // date converted is used
         Date readValue = (Date) data.readValue(sdf.format(now));
-        assertThat(readValue.toString()).isEqualTo(now.toString());
+        assertThat(readValue).hasToString(now.toString());
     }
 }

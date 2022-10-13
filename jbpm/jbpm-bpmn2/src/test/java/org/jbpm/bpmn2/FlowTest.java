@@ -799,8 +799,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         for (KogitoWorkItem wi : workItems) {
             assertProcessInstanceActive(processInstance);
@@ -986,8 +985,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertProcessInstanceActive(processInstance);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         KogitoWorkItem remainingWork = null;
         for (KogitoWorkItem wi : workItems) {
@@ -1083,8 +1081,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
         KogitoProcessInstance processInstance = kruntime.startProcess("miprocess", params);
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems).hasSize(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         myOutList = (List<String>) kruntime.getKieSession().execute(new GetProcessVariableCommand(processInstance.getStringId(), "mioutput"));
         assertThat(myOutList).isNull();

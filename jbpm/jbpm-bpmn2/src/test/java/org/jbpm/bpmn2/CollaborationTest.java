@@ -50,7 +50,7 @@ public class CollaborationTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("collaboration/Collaboration-StartMessage.bpmn2");
 
         kruntime.signalEvent("Message-collaboration", new Message("2", "example"));
-        assertThat(getNumberOfProcessInstances("collaboration.StartMessage")).isEqualTo(0);
+        assertThat(getNumberOfProcessInstances("collaboration.StartMessage")).isZero();
     }
 
     @Test

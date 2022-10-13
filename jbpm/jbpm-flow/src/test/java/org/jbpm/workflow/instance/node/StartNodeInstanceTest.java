@@ -72,8 +72,7 @@ public class StartNodeInstanceTest extends AbstractBaseTest {
         MockNodeInstance mockNodeInstance = mockNodeFactory.getMockNodeInstance();
         List<NodeInstance> triggeredBy =
                 mockNodeInstance.getTriggers().get(Node.CONNECTION_DEFAULT_TYPE);
-        assertThat(triggeredBy).isNotNull();
-        assertThat(triggeredBy).hasSize(1);
+        assertThat(triggeredBy).isNotNull().hasSize(1);
         assertThat(triggeredBy.get(0).getNodeId()).isSameAs(startNode.getId());
     }
 }

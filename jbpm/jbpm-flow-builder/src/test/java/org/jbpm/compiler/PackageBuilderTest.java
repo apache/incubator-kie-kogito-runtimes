@@ -57,8 +57,7 @@ public class PackageBuilderTest extends AbstractBaseTest {
         assertThat(pkg2).isNotNull();
 
         flows = pkg2.getRuleFlows();
-        assertThat(flows).isNotNull();
-        assertThat(flows).hasSize(1).containsKey("0");
+        assertThat(flows).isNotNull().hasSize(1).containsKey("0");
         p = (Process) flows.get("0");
         assertThat(p).isInstanceOf(WorkflowProcessImpl.class);
     }

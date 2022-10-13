@@ -63,8 +63,8 @@ public class MultipleProcessesPerThreadTest {
             t.printStackTrace();
         }
 
-        assertThat(Status.SUCCESS).as("Hello World process thread did not complete successfully").isSameAs(hello.status);
-        assertThat(Status.SUCCESS).as("User Task process thread did not complete successfully").isSameAs(user.status);
+        assertThat(hello.status).as("Hello World process thread did not complete successfully").isSameAs(Status.SUCCESS);
+        assertThat(user.status).as("User Task process thread did not complete successfully").isSameAs(Status.SUCCESS);
     }
 
     private static class HelloWorldProcessThread implements Runnable {

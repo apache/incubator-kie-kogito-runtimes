@@ -69,8 +69,8 @@ public class DataTest extends JbpmBpmn2TestCase {
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation");
         Definitions def = (Definitions) processInstance.getProcess()
                 .getMetaData().get("Definitions");
-        assertThat(def.getDataStores()).isNotNull();
-        assertThat(def.getDataStores()).hasSize(1);
+        assertThat(def.getDataStores()).isNotNull().hasSize(1);
+
         DataStore dataStore = def.getDataStores().get(0);
         assertThat(dataStore.getId()).isEqualTo("employee");
         assertThat(dataStore.getName()).isEqualTo("employeeStore");
@@ -83,8 +83,8 @@ public class DataTest extends JbpmBpmn2TestCase {
         kruntime = createKogitoProcessRuntime("BPMN2-Association.bpmn2");
         KogitoProcessInstance processInstance = kruntime.startProcess("Evaluation");
         List<Association> associations = (List<Association>) processInstance.getProcess().getMetaData().get(ProcessHandler.ASSOCIATIONS);
-        assertThat(associations).isNotNull();
-        assertThat(associations).hasSize(1);
+        assertThat(associations).isNotNull().hasSize(1);
+
         Association assoc = associations.get(0);
         assertThat(assoc.getId()).isEqualTo("_1234");
         assertThat(assoc.getSourceRef()).isEqualTo("_1");
