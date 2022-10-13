@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
@@ -36,7 +37,9 @@ import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.ruleflow.core.factory.SupportsAction;
+import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
 import org.jbpm.workflow.core.node.Join;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
@@ -63,7 +66,11 @@ import io.serverlessworkflow.api.transitions.Transition;
 import io.serverlessworkflow.api.workflow.Errors;
 
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.eventBasedSplitNode;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.joinExclusiveNode;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.messageNode;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.timerNode;
+import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.resolveEventTimeout;
 
 public abstract class StateHandler<S extends State> {
 
@@ -458,6 +465,29 @@ public abstract class StateHandler<S extends State> {
         return workflow.getEvents().getEventDefs().stream()
                 .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("No event for " + eventName));
+    }
+
+    protected final MakeNodeResult makeTimeoutNode(RuleFlowNodeContainerFactory<?, ?> factory, Supplier<MakeNodeResult> notTimerBranch, int type) {
+        String eventTimeout = resolveEventTimeout(state, workflow);
+        if (eventTimeout != null) {
+            // Create the event based exclusive split node.
+            SplitFactory<?> splitNode = eventBasedSplitNode(factory.splitNode(parserContext.newId()), type);
+            // Create the join node for joining the event fired and the timer fired branches.
+            JoinFactory<?> joinNode = joinExclusiveNode(factory.joinNode(parserContext.newId()));
+            // Create the event fired branch, normal path if the event arrives in time.
+            NodeFactory<?, ?> eventFiredBranchLastNode = connect(splitNode, notTimerBranch.get());
+            // Connect the event fired branch last node with the join node.
+            connect(eventFiredBranchLastNode, joinNode);
+            // Create the timer fired branch
+            TimerNodeFactory<?> eventTimeoutTimerNode = timerNode(factory.timerNode(parserContext.newId()), eventTimeout);
+            connect(splitNode, eventTimeoutTimerNode);
+            // Connect the timer fired branch last node with the join node
+            connect(eventTimeoutTimerNode, joinNode);
+            return new MakeNodeResult(splitNode, joinNode);
+        } else {
+            // No timeouts, standard case.
+            return notTimerBranch.get();
+        }
     }
 
     protected EndNodeFactory<?> endNodeFactory(RuleFlowNodeContainerFactory<?, ?> factory, End end) {

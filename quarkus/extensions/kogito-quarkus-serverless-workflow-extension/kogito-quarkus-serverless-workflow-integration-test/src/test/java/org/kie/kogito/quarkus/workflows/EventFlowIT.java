@@ -62,6 +62,11 @@ class EventFlowIT {
         doIt("nonStartMultipleEvent", "quiet", "never");
     }
 
+    @Test
+    void testNotStartingMultipleEventTimeout() {
+        doIt("nonStartMultipleEventTimeout", "eventTimeout1", "eventTimeout2");
+    }
+
     private void doIt(String flowName, String... eventTypes) {
         String id = given()
                 .contentType(ContentType.JSON)
