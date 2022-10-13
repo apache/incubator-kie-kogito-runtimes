@@ -40,12 +40,12 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
 
     @Override
     public void filterOpenAPI(OpenAPI openAPI) {
-        inputModelSchemaInfos.stream()
-                .filter(schemaInfo -> schemaInfo.openAPI != null)
-                .forEach(schemaInfo -> {
-                    MergeUtil.merge(openAPI, schemaInfo.openAPI);
-                    addWorkflowdataSchemaRefs(schemaInfo, openAPI);
-                });
+        for (SchemaInfo inputModelSchemaInfo : inputModelSchemaInfos) {
+            if (inputModelSchemaInfo.openAPI != null) {
+                MergeUtil.merge(openAPI, inputModelSchemaInfo.openAPI);
+                addWorkflowdataSchemaRefs(inputModelSchemaInfo, openAPI);
+            }
+        }
 
         removeJsonModelInfoSchemaReferences(openAPI);
     }
