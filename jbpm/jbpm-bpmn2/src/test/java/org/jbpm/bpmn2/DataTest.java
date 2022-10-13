@@ -225,7 +225,7 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                    	Element coIdParamObj = (Element) workItem.getParameter("coId");
+                        Element coIdParamObj = (Element) workItem.getParameter("coId");
                         assertThat(coIdParamObj.getNodeName()).isEqualTo("mydoc");
                         assertThat(coIdParamObj.getFirstChild().getNodeName()).isEqualTo("mynode");
                         assertThat(coIdParamObj.getFirstChild().getFirstChild().getNodeName()).isEqualTo("user");
