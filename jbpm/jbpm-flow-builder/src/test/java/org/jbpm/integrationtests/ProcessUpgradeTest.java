@@ -96,7 +96,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertThat(kruntime.getKieSession().getProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKieSession().getProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -137,7 +137,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
         assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
 
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -235,7 +235,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         assertThat(processInstance.getProcessId()).isEqualTo("org.test.ruleflow2");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
@@ -304,7 +304,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.test.ruleflow");
 
-        assertThat(kruntime.getKieSession().getProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKieSession().getProcessInstances()).hasSize(1);
 
         String process2 =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -357,7 +357,7 @@ public class ProcessUpgradeTest extends AbstractBaseTest {
         assertThat(processInstance.getProcessId()).isEqualTo("org.test.ruleflow2");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(processInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 

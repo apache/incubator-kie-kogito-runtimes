@@ -109,13 +109,13 @@ public class ProcessStartTest extends AbstractBaseTest {
         List<Message> myList = new ArrayList<>();
         ksession.setGlobal("myList", myList);
 
-        assertThat(myList.size()).isEqualTo(0);
+        assertThat(myList).isEmpty();
 
         Person jack = new Person();
         jack.setName("Jack");
         ksession.insert(jack);
         ksession.fireAllRules();
-        assertThat(myList.size()).isEqualTo(2);
+        assertThat(myList).hasSize(2);
         assertThat(String.valueOf(myList.get(0))).isEqualTo("Jack");
         assertThat(String.valueOf(myList.get(1))).isEqualTo("SomeString");
     }
@@ -181,11 +181,11 @@ public class ProcessStartTest extends AbstractBaseTest {
         List<Message> myList = new ArrayList<Message>();
         kruntime.getKieSession().setGlobal("myList", myList);
 
-        assertThat(myList.size()).isEqualTo(0);
+        assertThat(myList).isEmpty();
 
         kruntime.signalEvent("myEvent", "Jack");
         kruntime.getKieSession().fireAllRules();
-        assertThat(myList.size()).isEqualTo(2);
+        assertThat(myList).hasSize(2);
         assertThat(String.valueOf(myList.get(0))).isEqualTo("Jack");
         assertThat(String.valueOf(myList.get(1))).isEqualTo("SomeString");
     }

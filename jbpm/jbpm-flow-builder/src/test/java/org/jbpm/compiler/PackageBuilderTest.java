@@ -48,7 +48,7 @@ public class PackageBuilderTest extends AbstractBaseTest {
 
         Map<String, Process> flows = pkg.getRuleFlows();
         assertThat(flows).isNotNull();
-        assertThat(flows.size()).isEqualTo(1);
+        assertThat(flows).hasSize(1);
 
         assertThat(flows.containsKey("0")).isTrue();
 
@@ -61,7 +61,7 @@ public class PackageBuilderTest extends AbstractBaseTest {
 
         flows = pkg2.getRuleFlows();
         assertThat(flows).isNotNull();
-        assertThat(flows.size()).isEqualTo(1);
+        assertThat(flows).hasSize(1);
         assertThat(flows.containsKey("0")).isTrue();
         p = (Process) flows.get("0");
         assertThat(p instanceof WorkflowProcessImpl).isTrue();

@@ -109,7 +109,7 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.dynamic");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(list.size()).isEqualTo(4);
+        assertThat(list).hasSize(4);
     }
 
     @Test
@@ -176,12 +176,12 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Work", testHandler);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.dynamic");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         KogitoWorkItem workItem = testHandler.getWorkItem();
         assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).hasSize(3);
     }
 
     @Test
@@ -229,10 +229,10 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("TaskName", "Dynamic Task");
         assertThat(handler.getWorkItem()).isNull();
-        assertThat(dynamicContext.getNodeInstances().size()).isEqualTo(0);
+        assertThat(dynamicContext.getNodeInstances()).isEmpty();
         DynamicUtils.addDynamicWorkItem(dynamicContext, kruntime.getKieRuntime(), "Human Task", parameters);
         assertThat(handler.getWorkItem()).isNotNull();
-        assertThat(dynamicContext.getNodeInstances().size()).isEqualTo(1);
+        assertThat(dynamicContext.getNodeInstances()).hasSize(1);
         logger.close();
     }
 
@@ -315,10 +315,10 @@ public class ProcessDynamicNodeTest extends AbstractBaseTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("x", "NewValue");
         assertThat(handler.getWorkItem()).isNull();
-        assertThat(dynamicContext.getNodeInstances().size()).isEqualTo(0);
+        assertThat(dynamicContext.getNodeInstances()).isEmpty();
         DynamicUtils.addDynamicSubProcess(dynamicContext, kruntime.getKieRuntime(), "org.drools.subflow", parameters);
         assertThat(handler.getWorkItem()).isNotNull();
-        assertThat(dynamicContext.getNodeInstances().size()).isEqualTo(1);
+        assertThat(dynamicContext.getNodeInstances()).hasSize(1);
         logger.close();
     }
 

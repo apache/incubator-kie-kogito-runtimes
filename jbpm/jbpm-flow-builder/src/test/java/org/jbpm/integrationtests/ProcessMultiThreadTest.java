@@ -68,7 +68,7 @@ public class ProcessMultiThreadTest extends AbstractBaseTest {
             if (!success) {
                 fail("Multithread test failed. Look at the stack traces for details. ");
             }
-            assertThat(list.size()).isEqualTo(2);
+            assertThat(list).hasSize(2);
             assertThat(list.get(0)).isNotEqualTo(list.get(1));
             assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         } catch (Exception e) {

@@ -64,7 +64,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
         FactHandle handle = kruntime.getKieSession().insert(inList);
         kruntime.startProcess("ConstraintDialects");
-        assertThat(outList.size()).isEqualTo(4);
+        assertThat(outList).hasSize(4);
         assertThat(outList.get(0)).isEqualTo("MVELCodeConstraint was here");
         assertThat(outList.get(1)).isEqualTo("JavaCodeConstraint was here");
         assertThat(outList.get(2)).isEqualTo("MVELRuleConstraint was here");
@@ -75,7 +75,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         kruntime.getKieSession().update(handle,
                 inList);
         kruntime.startProcess("ConstraintDialects");
-        assertThat(outList.size()).isEqualTo(3);
+        assertThat(outList).hasSize(3);
         assertThat(outList.get(0)).isEqualTo("JavaCodeConstraint was here");
         assertThat(outList.get(1)).isEqualTo("MVELRuleConstraint was here");
         assertThat(outList.get(2)).isEqualTo("JavaRuleConstraint was here");
@@ -85,7 +85,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         kruntime.getKieSession().update(handle,
                 inList);
         kruntime.startProcess("ConstraintDialects");
-        assertThat(outList.size()).isEqualTo(2);
+        assertThat(outList).hasSize(2);
         assertThat(outList.get(0)).isEqualTo("JavaCodeConstraint was here");
         assertThat(outList.get(1)).isEqualTo("JavaRuleConstraint was here");
 
@@ -94,7 +94,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         kruntime.getKieSession().update(handle,
                 inList);
         kruntime.startProcess("ConstraintDialects");
-        assertThat(outList.size()).isEqualTo(1);
+        assertThat(outList).hasSize(1);
         assertThat(outList.get(0)).isEqualTo("JavaRuleConstraint was here");
 
         outList.clear();
@@ -117,11 +117,11 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
                 list);
 
         kruntime.getKieSession().fireAllRules();
-        assertThat(list.size()).isEqualTo(0);
+        assertThat(list).isEmpty();
 
         final KogitoProcessInstance processInstance = kruntime.startProcess("0");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(list.size()).isEqualTo(4);
+        assertThat(list).hasSize(4);
         assertThat(list.get(0)).isEqualTo("Rule1");
         list.subList(1, 2).contains("Rule2");
         list.subList(1, 2).contains("Rule3");
@@ -161,7 +161,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         assertThat(((InternalAgendaGroup) agenda.getAgendaGroup("MAIN")).size()).isEqualTo(0);
 
         // Check we have 0 activation cancellation events
-        assertThat(activations.size()).isEqualTo(0);
+        assertThat(activations).isEmpty();
 
         ((InternalAgenda) kruntime.getKieSession().getAgenda()).clearAndCancelRuleFlowGroup("flowgroup-1");
 
@@ -170,7 +170,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         assertThat(agenda.sizeOfRuleFlowGroup("flowgroup-1")).isEqualTo(0);
 
         // Check we have four activation cancellation events
-        assertThat(activations.size()).isEqualTo(4);
+        assertThat(activations).hasSize(4);
     }
 
     @Test
@@ -184,11 +184,11 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
                 list);
 
         kruntime.getKieSession().fireAllRules();
-        assertThat(list.size()).isEqualTo(0);
+        assertThat(list).isEmpty();
 
         final KogitoProcessInstance processInstance = kruntime.startProcess("0");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(list.size()).isEqualTo(4);
+        assertThat(list).hasSize(4);
         assertThat(list.get(0)).isEqualTo("Rule1");
         list.subList(1, 2).contains("Rule2");
         list.subList(1, 2).contains("Rule3");
@@ -230,7 +230,7 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
 
         kruntime.startProcess("ActionDialects");
 
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list).hasSize(2);
         assertThat(list.get(0)).isEqualTo("mvel was here");
         assertThat(list.get(1)).isEqualTo("java was here");
     }

@@ -120,7 +120,7 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("SomeValue");
     }
 
@@ -228,7 +228,7 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("SomeValue");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -304,7 +304,7 @@ public class ProcessExceptionHandlerTest extends AbstractBaseTest {
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.exception");
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 

@@ -38,7 +38,7 @@ public class ActionNodeTest extends AbstractBaseTest {
 
         kruntime.startProcess("process name");
 
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("action node was here");
     }
 }

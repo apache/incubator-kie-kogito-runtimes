@@ -93,7 +93,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
         params.put("collection", collection);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.ForEach", params);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(myList.size()).isEqualTo(3);
+        assertThat(myList).hasSize(3);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
         params.put("collection", collection);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.ForEach", params);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(myList.size()).isEqualTo(10000);
+        assertThat(myList).hasSize(10000);
     }
 
     @Test
@@ -344,7 +344,7 @@ public class ProcessForEachTest extends AbstractBaseTest {
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         processInstance.signalEvent("MyEvent", null);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
-        assertThat(myList.size()).isEqualTo(3);
+        assertThat(myList).hasSize(3);
     }
 
 }

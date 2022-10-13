@@ -76,7 +76,7 @@ public class ProcessEventListenerTest extends AbstractBaseTest {
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         assertThat(((VariableScopeInstance) ((org.jbpm.process.instance.ProcessInstance) processInstance)
                 .getContextInstance(VariableScope.VARIABLE_SCOPE)).getVariable("MyVar")).isEqualTo("MyValue");
-        assertThat(processEventList.size()).isEqualTo(26);
+        assertThat(processEventList).hasSize(26);
         for (ProcessEvent e : processEventList) {
             logger.debug(e.toString());
         }

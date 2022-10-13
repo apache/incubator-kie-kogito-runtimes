@@ -57,17 +57,17 @@ public class KnowledgeBuilderTest extends AbstractBaseTest {
 
         Collection<KiePackage> pkgs = builder.getKnowledgePackages();
         assertThat(pkgs).isNotNull();
-        assertThat(pkgs.size()).isEqualTo(2);
+        assertThat(pkgs).hasSize(2);
 
         KiePackage test1 = getKnowledgePackage(pkgs, "org.test1");
         Collection<Process> processes = test1.getProcesses();
-        assertThat(processes.size()).isEqualTo(1);
+        assertThat(processes).hasSize(1);
         Process process = getProcess(processes, "flow1");
         assertThat(process.getName()).isEqualTo("flow1");
 
         KiePackage test2 = getKnowledgePackage(pkgs, "org.test2");
         processes = test2.getProcesses();
-        assertThat(processes.size()).isEqualTo(1);
+        assertThat(processes).hasSize(1);
         process = getProcess(processes, "flow2");
         assertThat(process.getName()).isEqualTo("flow2");
 

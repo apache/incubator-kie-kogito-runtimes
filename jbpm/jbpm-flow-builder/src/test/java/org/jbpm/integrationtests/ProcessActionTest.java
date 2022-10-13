@@ -102,9 +102,9 @@ public class ProcessActionTest extends AbstractBaseTest {
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
         KogitoWorkItem workItem = handler.getWorkItem();
         assertThat(workItem).isNotNull();
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
-        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).hasSize(3);
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
@@ -157,7 +157,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance kogitoProcessInstance = kruntime.startProcess("org.drools.actions");
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list).hasSize(2);
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);
@@ -219,7 +219,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance kogitoProcessInstance = kruntime.startProcess("org.drools.actions");
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list).hasSize(2);
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);
@@ -275,7 +275,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         params.put("person", person);
         KogitoProcessInstance kogitoProcessInstance =
                 kruntime.startProcess("org.drools.actions", params);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("John Doe");
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -329,7 +329,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         params.put("person", person);
         KogitoProcessInstance kogitoProcessInstance =
                 kruntime.startProcess("org.drools.actions", params);
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("John Doe");
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -397,11 +397,11 @@ public class ProcessActionTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance kogitoProcessInstance =
                 kruntime.startProcess("org.drools.actions1");
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("Action1");
         list.clear();
         kogitoProcessInstance = kruntime.startProcess("org.drools.actions2");
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).hasSize(1);
         assertThat(list.get(0)).isEqualTo("Action2");
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
@@ -455,7 +455,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         List<String> list = new ArrayList<String>();
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance kogitoProcessInstance = kruntime.startProcess("org.drools.actions");
-        assertThat(list.size()).isEqualTo(2);
+        assertThat(list).hasSize(2);
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);

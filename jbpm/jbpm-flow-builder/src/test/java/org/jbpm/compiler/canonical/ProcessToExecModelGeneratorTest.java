@@ -83,7 +83,7 @@ public class ProcessToExecModelGeneratorTest {
         assertThat(processMetadata.getProcessVersion()).isEqualTo("1.0");
         assertThat(processMetadata.getProcessClassName()).isEqualTo("com.myspace.demo.OrdersProcess");
         assertThat(processMetadata.getGeneratedClassModel()).isNotNull();
-        assertThat(processMetadata.getWorkItems().size()).isEqualTo(1);
+        assertThat(processMetadata.getWorkItems()).hasSize(1);
     }
 
     public static Stream<Arguments> invalidVariables() {

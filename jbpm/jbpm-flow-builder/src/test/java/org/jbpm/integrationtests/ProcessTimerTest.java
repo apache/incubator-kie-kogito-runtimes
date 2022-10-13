@@ -65,7 +65,7 @@ public class ProcessTimerTest extends AbstractBaseTest {
                         "\n" +
                         "</process>");
         builder.add(new ReaderResource(source), ResourceType.DRF);
-        assertThat(builder.getErrors().size()).isEqualTo(2);
+        assertThat(builder.getErrors()).hasSize(2);
         for (KnowledgeBuilderError error : builder.getErrors()) {
             logger.error(error.toString());
         }
@@ -115,7 +115,7 @@ public class ProcessTimerTest extends AbstractBaseTest {
         kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Human Task", new DoNothingWorkItemHandler());
 
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.timer");
-        assertThat(myList.size()).isEqualTo(0);
+        assertThat(myList).isEmpty();
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
 
         await("dead").atMost(5, SECONDS)
@@ -126,7 +126,7 @@ public class ProcessTimerTest extends AbstractBaseTest {
         } catch (InterruptedException e) {
             // do nothing
         }
-        assertThat(myList.size()).isEqualTo(1);
+        assertThat(myList).hasSize(1);
 
         kruntime.getKieSession().dispose();
     }

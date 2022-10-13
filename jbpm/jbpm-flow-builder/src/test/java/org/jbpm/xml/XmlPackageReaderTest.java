@@ -206,7 +206,7 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.HashMap");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.*");
 
@@ -224,12 +224,12 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.HashMap");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.*");
 
         final List globals = packageDescr.getGlobals();
-        assertThat(globals.size()).isEqualTo(2);
+        assertThat(globals).hasSize(2);
         final GlobalDescr x = (GlobalDescr) globals.get(0);
         final GlobalDescr yada = (GlobalDescr) globals.get(1);
         assertThat(x.getType()).isEqualTo("com.sample.X");
@@ -247,12 +247,12 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.HashMap");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.*");
 
         final List globals = packageDescr.getGlobals();
-        assertThat(globals.size()).isEqualTo(2);
+        assertThat(globals).hasSize(2);
         final GlobalDescr x = (GlobalDescr) globals.get(0);
         final GlobalDescr yada = (GlobalDescr) globals.get(1);
         assertThat(x.getType()).isEqualTo("com.sample.X");
@@ -296,7 +296,7 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.List");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.Person");
 
@@ -372,12 +372,12 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.HashMap");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.*");
 
         final List globals = packageDescr.getGlobals();
-        assertThat(globals.size()).isEqualTo(2);
+        assertThat(globals).hasSize(2);
         final GlobalDescr x = (GlobalDescr) globals.get(0);
         final GlobalDescr yada = (GlobalDescr) globals.get(1);
         assertThat(x.getType()).isEqualTo("com.sample.X");
@@ -413,12 +413,12 @@ public class XmlPackageReaderTest {
         assertThat(packageDescr.getName()).isEqualTo("com.sample");
 
         final List imports = packageDescr.getImports();
-        assertThat(imports.size()).isEqualTo(2);
+        assertThat(imports).hasSize(2);
         assertThat(((ImportDescr) imports.get(0)).getTarget()).isEqualTo("java.util.HashMap");
         assertThat(((ImportDescr) imports.get(1)).getTarget()).isEqualTo("org.drools.mvel.compiler.*");
 
         final List globals = packageDescr.getGlobals();
-        assertThat(globals.size()).isEqualTo(2);
+        assertThat(globals).hasSize(2);
         final GlobalDescr x = (GlobalDescr) globals.get(0);
         final GlobalDescr yada = (GlobalDescr) globals.get(1);
         assertThat(x.getType()).isEqualTo("com.sample.X");
@@ -441,7 +441,7 @@ public class XmlPackageReaderTest {
         assertThat(queryDescr.getName()).isEqualTo("my query");
 
         final AndDescr lhs = queryDescr.getLhs();
-        assertThat(lhs.getDescrs().size()).isEqualTo(1);
+        assertThat(lhs.getDescrs()).hasSize(1);
         final PatternDescr patternDescr = (PatternDescr) lhs.getDescrs().get(0);
         assertThat(patternDescr.getObjectType()).isEqualTo("Foo");
 

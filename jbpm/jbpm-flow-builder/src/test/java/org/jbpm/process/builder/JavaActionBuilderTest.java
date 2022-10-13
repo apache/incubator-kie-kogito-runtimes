@@ -77,7 +77,7 @@ public class JavaActionBuilderTest extends AbstractBaseTest {
         dialect.getActionBuilder().build(context, action, actionDescr, actionNode);
         dialect.addProcess(context);
         javaDialect.compileAll();
-        assertThat(javaDialect.getResults().size()).isEqualTo(0);
+        assertThat(javaDialect.getResults()).isEmpty();
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 

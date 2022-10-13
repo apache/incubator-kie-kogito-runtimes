@@ -90,13 +90,13 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         kruntime.getKieSession().insert(p);
         kruntime.startProcess("org.test.ruleflow");
 
-        assertThat(kruntime.getKieSession().getProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKieSession().getProcessInstances()).hasSize(1);
 
         kruntime.getKieSession().fireAllRules();
 
-        assertThat(((List<Object>) kruntime.getKieSession().getGlobal("list")).size()).isEqualTo(1);
+        assertThat(((List<Object>) kruntime.getKieSession().getGlobal("list"))).hasSize(1);
         assertThat(((List<Object>) kruntime.getKieSession().getGlobal("list")).get(0)).isEqualTo(p);
-        assertThat(kruntime.getKieSession().getProcessInstances().size()).isEqualTo(0);
+        assertThat(kruntime.getKieSession().getProcessInstances()).isEmpty();
     }
 
     @Test
@@ -154,16 +154,16 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         variables.put("myVariable", "ThisIsMyValue");
         kruntime.startProcess("org.test.ruleflow", variables);
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         assertThat(handler.getWorkItem()).isNotNull();
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         VariableScopeInstance variableScopeInstance =
                 (VariableScopeInstance) ((ProcessInstance) kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
         assertThat(variableScopeInstance.getVariable("myVariable")).isEqualTo("ThisIsMyValue");
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(0);
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
     }
 
     @Test
@@ -255,12 +255,12 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         parameters.put("list", list);
         KogitoProcessInstance kogitoProcessInstance = kruntime.startProcess("com.sample.ruleflow", parameters);
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         //complete all user tasks instances
         for (int i = 0; i < list.size() * 2; i++) {
             completeWorkItems(kruntime, handler);
         }
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(0);
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
         assertThat(kogitoProcessInstance.getState()).isEqualTo(ProcessInstance.STATE_COMPLETED);
     }
 
@@ -343,16 +343,16 @@ public class ProcessMarshallingTest extends AbstractBaseTest {
         variables.put("myPerson", myPerson);
         kruntime.startProcess("org.test.ruleflow", variables);
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         assertThat(handler.getWorkItem()).isNotNull();
 
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(1);
+        assertThat(kruntime.getKogitoProcessInstances()).hasSize(1);
         VariableScopeInstance variableScopeInstance =
                 (VariableScopeInstance) ((ProcessInstance) kruntime.getKogitoProcessInstances().iterator().next()).getContextInstance(VariableScope.VARIABLE_SCOPE);
         assertThat(variableScopeInstance.getVariable("myVariable")).isEqualTo("ThisIsMyValue");
         assertThat(variableScopeInstance.getVariable("myPerson")).isEqualTo(myPerson);
 
         kruntime.getKogitoWorkItemManager().completeWorkItem(handler.getWorkItem().getStringId(), null);
-        assertThat(kruntime.getKogitoProcessInstances().size()).isEqualTo(0);
+        assertThat(kruntime.getKogitoProcessInstances()).isEmpty();
     }
 }
