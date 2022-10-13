@@ -41,7 +41,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataTest extends JbpmBpmn2TestCase {
 
@@ -167,8 +166,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                     @Override
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("hello world",
-                                workItem.getParameter("coId"));
+                        assertThat(workItem.getParameter("coId")).isEqualTo("hello world");
                     }
                 });
         Document document = DocumentBuilderFactory
@@ -198,7 +196,7 @@ public class DataTest extends JbpmBpmn2TestCase {
                     @Override
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("hello", workItem.getParameter("coId"));
+                        assertThat(workItem.getParameter("coId")).isEqualTo("hello");
                     }
 
                 });
@@ -227,18 +225,11 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        Object coIdParamObj = workItem.getParameter("coId");
-                        assertEquals("mydoc", ((Element) coIdParamObj).getNodeName());
-                        assertEquals("mynode", ((Element) workItem.getParameter("coId")).getFirstChild().getNodeName());
-                        assertEquals("user",
-                                ((Element) workItem.getParameter("coId"))
-                                        .getFirstChild().getFirstChild()
-                                        .getNodeName());
-                        assertEquals("hello world",
-                                ((Element) workItem.getParameter("coId"))
-                                        .getFirstChild().getFirstChild()
-                                        .getAttributes().getNamedItem("hello")
-                                        .getNodeValue());
+                    	Element coIdParamObj = (Element) workItem.getParameter("coId");
+                        assertThat(coIdParamObj.getNodeName()).isEqualTo("mydoc");
+                        assertThat(coIdParamObj.getFirstChild().getNodeName()).isEqualTo("mynode");
+                        assertThat(coIdParamObj.getFirstChild().getFirstChild().getNodeName()).isEqualTo("user");
+                        assertThat(coIdParamObj.getFirstChild().getFirstChild().getAttributes().getNamedItem("hello").getNodeValue()).isEqualTo("hello world");
                     }
 
                 });
@@ -267,7 +258,7 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("hello", workItem.getParameter("coId"));
+                        assertThat(workItem.getParameter("coId")).isEqualTo("hello");
                     }
 
                 });
@@ -290,7 +281,7 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("hello", workItem.getParameter("coId"));
+                        assertThat(workItem.getParameter("coId")).isEqualTo("hello");
                     }
 
                 });
@@ -312,11 +303,8 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("id", ((org.w3c.dom.Node) workItem
-                                .getParameter("coId")).getNodeName());
-                        assertEquals("some text", ((org.w3c.dom.Node) workItem
-                                .getParameter("coId")).getFirstChild()
-                                        .getTextContent());
+                        assertThat(((org.w3c.dom.Node) workItem.getParameter("coId")).getNodeName()).isEqualTo("id");
+                        assertThat(((org.w3c.dom.Node) workItem.getParameter("coId")).getFirstChild().getTextContent()).isEqualTo("some text");
                     }
 
                 });
@@ -342,8 +330,7 @@ public class DataTest extends JbpmBpmn2TestCase {
 
                     public void executeWorkItem(KogitoWorkItem workItem,
                             KogitoWorkItemManager mgr) {
-                        assertEquals("foo", ((Element) workItem
-                                .getParameter("Comment")).getNodeName());
+                        assertThat(((Element) workItem.getParameter("Comment")).getNodeName()).isEqualTo("foo");
                         // assertEquals("mynode", ((Element)
                         // workItem.getParameter("Comment")).getFirstChild().getNodeName());
                         // assertEquals("user", ((Element)

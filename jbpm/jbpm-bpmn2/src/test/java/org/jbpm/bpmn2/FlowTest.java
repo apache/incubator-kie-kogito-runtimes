@@ -60,7 +60,6 @@ import org.w3c.dom.Element;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FlowTest extends JbpmBpmn2TestCase {
 
@@ -1051,7 +1050,7 @@ public class FlowTest extends JbpmBpmn2TestCase {
 
                 String prevNodeName = nodeIdNodeNameMap.put(uniqId, nodeName);
                 if (prevNodeName != null) {
-                    assertEquals(uniqId + " is used for more than one node instance: ", prevNodeName, nodeName);
+                    assertThat(prevNodeName).as(uniqId + " is used for more than one node instance: ").isEqualTo(nodeName);
                 }
             }
 

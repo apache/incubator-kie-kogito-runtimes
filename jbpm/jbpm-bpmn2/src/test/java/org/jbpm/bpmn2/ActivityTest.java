@@ -82,11 +82,8 @@ import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcessInstance;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ActivityTest extends JbpmBpmn2TestCase {
 
@@ -382,19 +379,18 @@ public class ActivityTest extends JbpmBpmn2TestCase {
         kruntime.getKieSession().execute((ExecutableCommand<Void>) context -> {
 
             KogitoProcessInstance processInstance1 = kruntime.getProcessInstance(pId);
-            assertNotNull(processInstance1);
+            assertThat(processInstance1).isNotNull();
             NodeInstance nodeInstance = ((KogitoNodeInstanceContainer) processInstance1)
                     .getNodeInstance(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
 
-            assertNotNull(nodeInstance);
-            assertTrue(nodeInstance instanceof WorkItemNodeInstance);
+            assertThat(nodeInstance).isNotNull().isInstanceOf(WorkItemNodeInstance.class);
             String deploymentId = ((WorkItemNodeInstance) nodeInstance).getWorkItem().getDeploymentId();
             String nodeInstanceId = ((WorkItemNodeInstance) nodeInstance).getWorkItem().getNodeInstanceStringId();
             long nodeId = ((WorkItemNodeInstance) nodeInstance).getWorkItem().getNodeId();
 
-            assertEquals(((InternalKogitoWorkItem) workItem).getDeploymentId(), deploymentId);
-            assertEquals(((InternalKogitoWorkItem) workItem).getNodeId(), nodeId);
-            assertEquals(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId(), nodeInstanceId);
+            assertThat(deploymentId).isEqualTo(((InternalKogitoWorkItem) workItem).getDeploymentId());
+            assertThat(nodeId).isEqualTo(((InternalKogitoWorkItem) workItem).getNodeId());
+            assertThat(nodeInstanceId).isEqualTo(((InternalKogitoWorkItem) workItem).getNodeInstanceStringId());
 
             return null;
         });
@@ -815,12 +811,12 @@ public class ActivityTest extends JbpmBpmn2TestCase {
 
                     @Override
                     public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
-                        assertEquals("SimpleService", workItem.getParameter("Interface"));
-                        assertEquals("hello", workItem.getParameter("Operation"));
-                        assertEquals("java.lang.String", workItem.getParameter("ParameterType"));
-                        assertEquals("##WebService", workItem.getParameter("implementation"));
-                        assertEquals("hello", workItem.getParameter("operationImplementationRef"));
-                        assertEquals("SimpleService", workItem.getParameter("interfaceImplementationRef"));
+                        assertThat(workItem.getParameter("Interface")).isEqualTo("SimpleService");
+                        assertThat(workItem.getParameter("Operation")).isEqualTo("hello");
+                        assertThat(workItem.getParameter("ParameterType")).isEqualTo("java.lang.String");
+                        assertThat(workItem.getParameter("implementation")).isEqualTo("##WebService");
+                        assertThat(workItem.getParameter("operationImplementationRef")).isEqualTo("hello");
+                        assertThat(workItem.getParameter("interfaceImplementationRef")).isEqualTo("SimpleService");
                         super.executeWorkItem(workItem, manager);
                     }
 
@@ -1699,8 +1695,8 @@ public class ActivityTest extends JbpmBpmn2TestCase {
                     @Override
                     public void build(PackageBuildContext context, Assignment assignment,
                             List<DataDefinition> sourceExpr, DataDefinition targetExpr) {
-                        assertEquals("from_expression", assignment.getFrom().getExpression());
-                        assertEquals("to_expression", assignment.getTo().getExpression());
+                        assertThat(assignment.getFrom().getExpression()).isEqualTo("from_expression");
+                        assertThat(assignment.getTo().getExpression()).isEqualTo("to_expression");
                     }
                 };
             }
