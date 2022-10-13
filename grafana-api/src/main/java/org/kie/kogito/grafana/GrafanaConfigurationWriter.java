@@ -46,7 +46,6 @@ import static org.kie.kogito.grafana.utils.GrafanaDashboardUtils.isOperationDash
 public class GrafanaConfigurationWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(GrafanaConfigurationWriter.class);
-    private static final Random rand = new Random();
 
     private static final String AUDIT_LINK_NAME = "Audit UI";
     private static final String AUDIT_LINK_URL_PLACEHOLDER = "${{urlPlaceholder}}";
@@ -203,7 +202,7 @@ public class GrafanaConfigurationWriter {
 
     private static String customizeTemplate(String template, String handlerName, String artifactId, String version) {
         template = template.replaceAll("\\$handlerName\\$", handlerName);
-        template = template.replaceAll("\\$id\\$", String.valueOf(rand.nextInt()));
+        template = template.replaceAll("\\$id\\$", String.valueOf(new Random().nextInt()));
         template = template.replaceAll("\\$uid\\$", UUID.randomUUID().toString());
         template = template.replaceAll("\\$gavArtifactId\\$", artifactId);
         template = template.replaceAll("\\$gavVersion\\$", version);
