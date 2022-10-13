@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.Validate;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemHandler;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItemManager;
@@ -62,6 +63,7 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
         }
 
         try {
+            Validate.notNull(c);
             Object instance = c.getDeclaredConstructor().newInstance();
             Class<?>[] classes = null;
             Object[] params = null;

@@ -593,13 +593,11 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
             } else if (node instanceof EventNode) {
                 EventNode eventNode = (EventNode) node;
                 String type = (String) eventNode.getMetaData("EscalationEvent");
-                if (type != null) {
-                    if (!escalations.contains(type)) {
-                        escalations.add(type);
-                        xmlDump.append(
-                                "  <escalation id=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(type) + "\" escalationCode=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(type)
-                                        + "\" />" + EOL);
-                    }
+                if (type != null && !escalations.contains(type)) {
+                    escalations.add(type);
+                    xmlDump.append(
+                            "  <escalation id=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(type) + "\" escalationCode=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(type)
+                                    + "\" />" + EOL);
                 }
             }
             if (node instanceof CompositeNode) {

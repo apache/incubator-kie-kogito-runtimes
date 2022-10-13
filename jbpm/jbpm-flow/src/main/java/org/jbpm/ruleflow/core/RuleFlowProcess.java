@@ -153,11 +153,8 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
                                 return start;
                             }
                         }
-                    } else if (start.getTimer() != null) {
-
-                        if ("timer".equals(trigger)) {
-                            return start;
-                        }
+                    } else if (start.getTimer() != null && "timer".equals(trigger)) {
+                        return start;
                     }
                 }
             }

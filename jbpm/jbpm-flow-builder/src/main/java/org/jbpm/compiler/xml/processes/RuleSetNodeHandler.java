@@ -52,10 +52,8 @@ public class RuleSetNodeHandler extends AbstractNodeHandler {
         RuleSetNode ruleSetNode = (RuleSetNode) node;
         writeNode("ruleSet", ruleSetNode, xmlDump, includeMeta);
         RuleSetNode.RuleType ruleType = ruleSetNode.getRuleType();
-        if (ruleType != null) {
-            if (!ruleType.isDecision()) {
-                xmlDump.append("ruleFlowGroup=\"" + ruleType.getName() + "\" ");
-            }
+        if (ruleType != null && !ruleType.isDecision()) {
+            xmlDump.append("ruleFlowGroup=\"" + ruleType.getName() + "\" ");
         }
         xmlDump.append(" implementation=\"" + ruleSetNode.getLanguage() + "\" ");
         if (ruleSetNode.getTimers() != null || (includeMeta && containsMetaData(ruleSetNode))) {

@@ -25,7 +25,7 @@ public interface KogitoProcessEventListener extends ProcessEventListener {
      * @param event
      */
     default void beforeWorkItemTransition(ProcessWorkItemTransitionEvent event) {
-    };
+    }
 
     /**
      * This listener method is invoked right after a work item transition.

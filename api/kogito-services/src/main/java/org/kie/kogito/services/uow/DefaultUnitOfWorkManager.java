@@ -91,7 +91,7 @@ public class DefaultUnitOfWorkManager implements UnitOfWorkManager {
     }
 
     protected void dissociate(UnitOfWork unit) {
-        currentUnitOfWork.set(null);
+        currentUnitOfWork.remove();
     }
 
     @Override

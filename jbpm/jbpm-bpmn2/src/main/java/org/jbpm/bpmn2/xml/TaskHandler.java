@@ -92,11 +92,10 @@ public class TaskHandler extends AbstractNodeHandler {
 
     protected void setParameter(Work work, String label, Collection<DataAssociation> dataAssociations) {
         for (DataAssociation dataAssociation : dataAssociations) {
-            if (!dataAssociation.getAssignments().isEmpty()) {
-                if (label.equals(dataAssociation.getAssignments().get(0).getTo().getLabel())) {
-                    DataDefinition from = dataAssociation.getAssignments().get(0).getFrom();
-                    work.setParameter(label, from.hasExpression() ? from.getExpression() : from.getLabel());
-                }
+            if (!dataAssociation.getAssignments().isEmpty() && label.equals(dataAssociation.getAssignments().get(0).getTo().getLabel())) {
+                DataDefinition from = dataAssociation.getAssignments().get(0).getFrom();
+                work.setParameter(label, from.hasExpression() ? from.getExpression() : from.getLabel());
+
             }
         }
     }

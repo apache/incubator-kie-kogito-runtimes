@@ -109,10 +109,8 @@ public class CompositeNode extends StateBasedNode implements NodeContainer, Even
     @Override
     public boolean acceptsEvent(String type, Object event, Function<String, Object> varResolver) {
         for (org.kie.api.definition.process.Node node : internalGetNodes()) {
-            if (node instanceof EventNodeInterface) {
-                if (((EventNodeInterface) node).acceptsEvent(type, event, varResolver)) {
-                    return true;
-                }
+            if (node instanceof EventNodeInterface && ((EventNodeInterface) node).acceptsEvent(type, event, varResolver)) {
+                return true;
             }
         }
         return false;

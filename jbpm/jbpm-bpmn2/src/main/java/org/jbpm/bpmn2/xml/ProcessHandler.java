@@ -389,13 +389,11 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 
                 if (source instanceof EventNode) {
                     for (EventFilter eventFilter : ((EventNode) source).getEventFilters()) {
-                        if (eventFilter instanceof EventTypeFilter) {
-                            if ("Compensation".equals(((EventTypeFilter) eventFilter).getType())) {
-                                // While this isn't explicitly stated in the spec,
-                                // BPMN Method & Style, 2nd Ed. (Silver), states this on P. 131
-                                throw new ProcessParsingValidationException(
-                                        "A Compensation Boundary Event can only be *associated* with a compensation activity via an Association, not via a Sequence Flow element.");
-                            }
+                        if (eventFilter instanceof EventTypeFilter && "Compensation".equals(((EventTypeFilter) eventFilter).getType())) {
+                            // While this isn't explicitly stated in the spec,
+                            // BPMN Method & Style, 2nd Ed. (Silver), states this on P. 131
+                            throw new ProcessParsingValidationException(
+                                    "A Compensation Boundary Event can only be *associated* with a compensation activity via an Association, not via a Sequence Flow element.");
                         }
                     }
                 }

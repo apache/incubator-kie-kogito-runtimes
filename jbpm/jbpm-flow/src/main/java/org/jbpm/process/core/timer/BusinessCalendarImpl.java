@@ -71,7 +71,7 @@ public class BusinessCalendarImpl implements BusinessCalendar {
 
     private Properties businessCalendarConfiguration;
 
-    private static final long HOUR_IN_MILLIS = 60 * 60 * 1000;
+    private static final long HOUR_IN_MILLIS = 60L * 60 * 1000;
 
     private int daysPerWeek;
     private int hoursInDay;

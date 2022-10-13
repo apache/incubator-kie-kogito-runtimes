@@ -104,7 +104,7 @@ public class XmlDumper extends ReflectiveVisitor
         } else {
             if (descr.getIdentifier() != null) {
                 localString.append("<pattern identifier=\"" + descr.getIdentifier() + "\" object-type=\"" + descr.getObjectType() + "\" >" + XmlDumper.eol);
-                ;
+
             } else {
                 localString.append("<pattern object-type=\"" + descr.getObjectType() + "\" >" + XmlDumper.eol);
             }

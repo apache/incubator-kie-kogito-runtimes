@@ -55,7 +55,6 @@ public class MVELDataTransformer implements DataTransformer {
                     } catch (ClassNotFoundException e) {
                         logger.warn("Unable to load class {} due to {}", clazz, e.getException());
                     }
-                    ;
                 }
             }
         }
