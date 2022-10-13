@@ -291,9 +291,9 @@ public class AgendaFilterTest extends AbstractBaseTest {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         assertThat(kruntime).isNotNull();
 
-        assertThat(kruntime.getKieSession().getAgendaEventListeners().isEmpty()).isFalse();
-        assertThat(kruntime.getProcessEventManager().getProcessEventListeners().isEmpty()).isTrue();
-        assertThat(kruntime.getKieSession().getRuleRuntimeEventListeners().isEmpty()).isTrue();
+        assertThat(kruntime.getKieSession().getAgendaEventListeners()).isNotEmpty();
+        assertThat(kruntime.getProcessEventManager().getProcessEventListeners()).isEmpty();
+        assertThat(kruntime.getKieSession().getRuleRuntimeEventListeners()).isEmpty();
 
         kruntime.getKieSession().dispose();
     }

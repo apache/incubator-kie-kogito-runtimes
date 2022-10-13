@@ -41,7 +41,7 @@ public class TestXml extends AbstractBaseTest {
         reader.read(new InputStreamReader(TestXml.class.getResourceAsStream("XmlTest.xml")));
         List<Process> processes = reader.getProcess();
         assertThat(processes).isNotNull().hasSize(1);
-        
+
         RuleFlowProcess process = (RuleFlowProcess) processes.get(0);
         assertThat(process).isNotNull();
 

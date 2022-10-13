@@ -201,21 +201,21 @@ public class ProcessFlowControlTest extends AbstractBaseTest {
         // adding ruleflow before adding package
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("ruleflow.rfm")));
         builder.addPackageFromDrl(new InputStreamReader(getClass().getResourceAsStream("ruleflow.drl")));
-        assertThat(builder.getPackages().length > 0).isTrue();
+        assertThat(builder.getPackages()).isNotEmpty();
     }
 
     @Test
     public void testLoadingRuleFlowInPackage2() throws Exception {
         // only adding ruleflow
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("ruleflow.rfm")));
-        assertThat(builder.getPackages().length > 0).isTrue();
+        assertThat(builder.getPackages()).isNotEmpty();
     }
 
     @Test
     public void testLoadingRuleFlowInPackage3() throws Exception {
         // only adding ruleflow without any generated rules
         builder.addRuleFlow(new InputStreamReader(getClass().getResourceAsStream("empty_ruleflow.rfm")));
-        assertThat(builder.getPackages().length > 0).isTrue();
+        assertThat(builder.getPackages()).isNotEmpty();
     }
 
     @Test

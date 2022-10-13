@@ -339,7 +339,7 @@ public class ProcessStateTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.state");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.isEmpty()).isTrue();
+        assertThat(list).isEmpty();
         Person person = new Person("John Doe", 30);
         kruntime.getKieSession().insert(person);
         kruntime.getKieSession().fireAllRules();
@@ -403,7 +403,7 @@ public class ProcessStateTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.state");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.isEmpty()).isTrue();
+        assertThat(list).isEmpty();
         Person person = new Person("John Doe", 20);
         kruntime.getKieSession().insert(person);
         kruntime.getKieSession().fireAllRules();
@@ -468,7 +468,7 @@ public class ProcessStateTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.state");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.isEmpty()).isTrue();
+        assertThat(list).isEmpty();
         Person person = new Person("John Doe", 30);
         kruntime.getKieSession().insert(person);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
@@ -532,7 +532,7 @@ public class ProcessStateTest extends AbstractBaseTest {
         kruntime.getKieSession().setGlobal("list", list);
         KogitoProcessInstance processInstance = kruntime.startProcess("org.drools.state");
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_ACTIVE);
-        assertThat(list.isEmpty()).isTrue();
+        assertThat(list).isEmpty();
         Person person = new Person("John Doe", 30);
         kruntime.getKieSession().insert(person);
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
@@ -595,15 +595,16 @@ public class ProcessStateTest extends AbstractBaseTest {
         StateNodeInstance stateInstance = (StateNodeInstance) nodeInstances.iterator().next();
         assertThat(stateInstance.getNodeName()).isEqualTo("State");
         assertThat(list).hasSize(2);
-        assertThat(list.contains("Action1a")).isTrue();
-        assertThat(list.contains("Action2a")).isTrue();
+        assertThat(list).contains("Action1a");
+        assertThat(list).contains("Action2a");
+
         processInstance.signalEvent("signal", "End");
         nodeInstances = processInstance.getNodeInstances();
         assertThat(nodeInstances).isEmpty();
         assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         assertThat(list).hasSize(4);
-        assertThat(list.contains("Action3a")).isTrue();
-        assertThat(list.contains("Action4a")).isTrue();
+        assertThat(list).contains("Action3a");
+        assertThat(list).contains("Action4a");
     }
 
     @Test
@@ -668,8 +669,9 @@ public class ProcessStateTest extends AbstractBaseTest {
         } catch (InterruptedException e) {
         }
         assertThat(list).hasSize(4);
-        assertThat(list.contains("Timer1a")).isTrue();
-        assertThat(list.contains("Timer2a")).isTrue();
+        assertThat(list).contains("Timer1a");
+        assertThat(list).contains("Timer2a");
+
         processInstance.signalEvent("signal", "End");
         nodeInstances = processInstance.getNodeInstances();
         assertThat(nodeInstances).isEmpty();

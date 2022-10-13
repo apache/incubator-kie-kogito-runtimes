@@ -47,13 +47,10 @@ public class PackageBuilderTest extends AbstractBaseTest {
         assertThat(pkg).isNotNull();
 
         Map<String, Process> flows = pkg.getRuleFlows();
-        assertThat(flows).isNotNull();
-        assertThat(flows).hasSize(1);
-
-        assertThat(flows.containsKey("0")).isTrue();
+        assertThat(flows).isNotNull().hasSize(1).containsKey("0");
 
         Process p = (Process) flows.get("0");
-        assertThat(p instanceof WorkflowProcessImpl).isTrue();
+        assertThat(p).isInstanceOf(WorkflowProcessImpl.class);
 
         //now serialization
         InternalKnowledgePackage pkg2 = (InternalKnowledgePackage) DroolsStreamUtils.streamIn(DroolsStreamUtils.streamOut(pkg));
@@ -61,10 +58,9 @@ public class PackageBuilderTest extends AbstractBaseTest {
 
         flows = pkg2.getRuleFlows();
         assertThat(flows).isNotNull();
-        assertThat(flows).hasSize(1);
-        assertThat(flows.containsKey("0")).isTrue();
+        assertThat(flows).hasSize(1).containsKey("0");
         p = (Process) flows.get("0");
-        assertThat(p instanceof WorkflowProcessImpl).isTrue();
+        assertThat(p).isInstanceOf(WorkflowProcessImpl.class);
     }
 
     @Test
@@ -72,20 +68,20 @@ public class PackageBuilderTest extends AbstractBaseTest {
         InternalKnowledgePackage pkg = CoreComponentFactory.get().createKnowledgePackage("boo");
         Process rf = new MockRuleFlow("1");
         pkg.addProcess(rf);
-        assertThat(pkg.getRuleFlows().containsKey("1")).isTrue();
+        assertThat(pkg.getRuleFlows()).containsKey("1");
         assertThat(pkg.getRuleFlows().get("1")).isSameAs(rf);
 
         Process rf2 = new MockRuleFlow("2");
         pkg.addProcess(rf2);
-        assertThat(pkg.getRuleFlows().containsKey("1")).isTrue();
+        assertThat(pkg.getRuleFlows()).containsKey("1");
         assertThat(pkg.getRuleFlows().get("1")).isSameAs(rf);
-        assertThat(pkg.getRuleFlows().containsKey("2")).isTrue();
+        assertThat(pkg.getRuleFlows()).containsKey("1");
         assertThat(pkg.getRuleFlows().get("2")).isSameAs(rf2);
 
         pkg.removeRuleFlow("1");
-        assertThat(pkg.getRuleFlows().containsKey("2")).isTrue();
+        assertThat(pkg.getRuleFlows()).containsKey("2");
         assertThat(pkg.getRuleFlows().get("2")).isSameAs(rf2);
-        assertThat(pkg.getRuleFlows().containsKey("1")).isFalse();
+        assertThat(pkg.getRuleFlows()).doesNotContainKey("1");
 
     }
 

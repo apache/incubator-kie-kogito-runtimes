@@ -161,7 +161,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);
-        assertThat(factHandles.isEmpty()).isFalse();
+        assertThat(factHandles).isNotEmpty();
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
@@ -223,7 +223,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);
-        assertThat(factHandles.isEmpty()).isFalse();
+        assertThat(factHandles).isNotEmpty();
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 
@@ -459,7 +459,7 @@ public class ProcessActionTest extends AbstractBaseTest {
         assertThat(list.get(0)).isEqualTo("SomeText");
         assertThat(list.get(1)).isEqualTo("MyActionNode");
         Collection<FactHandle> factHandles = kruntime.getKieSession().getFactHandles(object -> object instanceof Message);
-        assertThat(factHandles.isEmpty()).isFalse();
+        assertThat(factHandles).isNotEmpty();
         assertThat(kogitoProcessInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
     }
 

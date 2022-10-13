@@ -72,7 +72,7 @@ public class XmlPackageReaderTest {
         RuleDescr obj = (RuleDescr) packageDescr.getRules().get(0);
 
         Object patternobj = obj.getLhs().getDescrs().get(0);
-        assertThat(patternobj instanceof PatternDescr).isTrue();
+        assertThat(patternobj).isInstanceOf(PatternDescr.class);
         final PatternDescr patterncheese = (PatternDescr) patternobj;
         assertThat(patterncheese.getIdentifier()).isEqualTo("cheese");
         assertThat(patterncheese.getObjectType()).isEqualTo("Cheese");
@@ -83,7 +83,7 @@ public class XmlPackageReaderTest {
         assertThat(accumulatedescr.getResultCode()).isEqualTo("new Integer( total ) );");
 
         patternobj = obj.getLhs().getDescrs().get(1);
-        assertThat(patternobj instanceof PatternDescr).isTrue();
+        assertThat(patternobj).isInstanceOf(PatternDescr.class);
 
         final PatternDescr patternmax = (PatternDescr) patternobj;
         assertThat(patternmax.getIdentifier()).isEqualTo("max");
@@ -111,7 +111,7 @@ public class XmlPackageReaderTest {
         RuleDescr obj = (RuleDescr) packageDescr.getRules().get(1);
 
         Object patternobj = obj.getLhs().getDescrs().get(0);
-        assertThat(patternobj instanceof PatternDescr).isTrue();
+        assertThat(patternobj).isInstanceOf(PatternDescr.class);
         final PatternDescr patterncheese = (PatternDescr) patternobj;
         assertThat(patterncheese.getIdentifier()).isEqualTo("cheese");
         assertThat(patterncheese.getObjectType()).isEqualTo("Cheese");
@@ -160,10 +160,10 @@ public class XmlPackageReaderTest {
 
         RuleDescr obj = (RuleDescr) packageDescr.getRules().get(0);
         Object existdescr = obj.getLhs().getDescrs().get(0);
-        assertThat(existdescr instanceof ExistsDescr).isTrue();
+        assertThat(existdescr).isInstanceOf(ExistsDescr.class);
 
         Object patternDescriptor = ((ExistsDescr) existdescr).getDescrs().get(0);
-        assertThat(patternDescriptor instanceof PatternDescr).isTrue();
+        assertThat(patternDescriptor).isInstanceOf(PatternDescr.class);
         assertThat(((PatternDescr) patternDescriptor).getObjectType()).isEqualTo("Person");
 
         Object notDescr = obj.getLhs().getDescrs().get(1);
@@ -171,7 +171,7 @@ public class XmlPackageReaderTest {
         assertThat(NotDescr.class.getName()).isEqualTo(notDescr.getClass().getName());
         existdescr = ((NotDescr) notDescr).getDescrs().get(0);
         patternDescriptor = ((ExistsDescr) existdescr).getDescrs().get(0);
-        assertThat(patternDescriptor instanceof PatternDescr).isTrue();
+        assertThat(patternDescriptor).isInstanceOf(PatternDescr.class);
         assertThat(((PatternDescr) patternDescriptor).getObjectType()).isEqualTo("Cheese");
     }
 
