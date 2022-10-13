@@ -36,6 +36,7 @@ import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class ProcessActionTest extends AbstractBaseTest {
 
@@ -213,7 +214,7 @@ public class ProcessActionTest extends AbstractBaseTest {
                         "</process>");
         builder.add(new ReaderResource(source), ResourceType.DRF);
         if (builder.hasErrors()) {
-            org.assertj.core.api.Assertions.fail("", builder.getErrors().toString());
+            fail(builder.getErrors().toString());
         }
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
         List<String> list = new ArrayList<String>();

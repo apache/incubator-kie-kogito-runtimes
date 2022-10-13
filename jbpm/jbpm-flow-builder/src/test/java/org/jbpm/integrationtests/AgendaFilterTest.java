@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class AgendaFilterTest extends AbstractBaseTest {
 
@@ -111,7 +112,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
         if (builder.hasErrors()) {
-            org.assertj.core.api.Assertions.fail("", builder.getErrors().toString());
+            fail(builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
@@ -242,7 +243,7 @@ public class AgendaFilterTest extends AbstractBaseTest {
         builder.add(ResourceFactory.newByteArrayResource(rf.getBytes()), ResourceType.DRF);
 
         if (builder.hasErrors()) {
-            org.assertj.core.api.Assertions.fail("", builder.getErrors().toString());
+            fail(builder.getErrors().toString());
         }
 
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();

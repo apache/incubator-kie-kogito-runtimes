@@ -48,6 +48,7 @@ import org.kie.kogito.process.workitems.KogitoWorkItemHandlerNotFoundException;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class WorkItemTest extends AbstractBaseTest {
 
@@ -74,7 +75,7 @@ public class WorkItemTest extends AbstractBaseTest {
         try {
             processInstance = kruntime.startProcess("org.drools.actions",
                     parameters);
-            org.assertj.core.api.Assertions.fail("", "should fail if WorkItemHandler for" + workName + "is not registered");
+            fail("should fail if WorkItemHandler for" + workName + "is not registered");
         } catch (Throwable e) {
 
         }
@@ -107,7 +108,7 @@ public class WorkItemTest extends AbstractBaseTest {
 
         try {
             kruntime.abortProcessInstance(processInstanceId);
-            org.assertj.core.api.Assertions.fail("", "should fail if WorkItemHandler for" + workName + "is not registered");
+            fail("should fail if WorkItemHandler for" + workName + "is not registered");
         } catch (KogitoWorkItemHandlerNotFoundException wihnfe) {
 
         }

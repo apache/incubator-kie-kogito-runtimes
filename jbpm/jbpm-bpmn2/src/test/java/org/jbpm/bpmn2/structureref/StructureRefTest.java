@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 
 public class StructureRefTest extends JbpmBpmn2TestCase {
 

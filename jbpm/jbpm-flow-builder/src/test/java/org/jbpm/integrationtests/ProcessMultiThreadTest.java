@@ -73,7 +73,7 @@ public class ProcessMultiThreadTest extends AbstractBaseTest {
             assertThat(processInstance.getState()).isEqualTo(KogitoProcessInstance.STATE_COMPLETED);
         } catch (Exception e) {
             e.printStackTrace();
-            org.assertj.core.api.Assertions.fail("", "Should not raise any exception: " + e.getMessage());
+            fail("Should not raise any exception: " + e.getMessage());
         }
     }
 

@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Base test case for the jbpm-bpmn2 module.
@@ -213,7 +214,7 @@ public abstract class JbpmBpmn2TestCase {
             for (int i = 1; i < names.size(); i++) {
                 s += ", " + names.get(i);
             }
-            org.assertj.core.api.Assertions.fail("", "Node(s) not active: " + s);
+            fail("Node(s) not active: " + s);
         }
     }
 
@@ -237,7 +238,7 @@ public abstract class JbpmBpmn2TestCase {
             for (int i = 1; i < names.size(); i++) {
                 s += ", " + names.get(i);
             }
-            org.assertj.core.api.Assertions.fail("", "Node(s) not executed: " + s);
+            fail("Node(s) not executed: " + s);
         }
     }
 
@@ -299,7 +300,7 @@ public abstract class JbpmBpmn2TestCase {
             for (int i = 1; i < names.size(); i++) {
                 s += ", " + names.get(i);
             }
-            org.assertj.core.api.Assertions.fail("", "Process Variable(s) do not exist: " + s);
+            fail("Process Variable(s) do not exist: " + s);
         }
 
     }
@@ -337,7 +338,7 @@ public abstract class JbpmBpmn2TestCase {
             for (int i = 1; i < names.size(); i++) {
                 s += ", " + names.get(i);
             }
-            org.assertj.core.api.Assertions.fail("", "Node(s) do not exist: " + s);
+            fail("Node(s) do not exist: " + s);
         }
     }
 
@@ -348,7 +349,7 @@ public abstract class JbpmBpmn2TestCase {
         for (Node node : instance.getNodeContainer().getNodes()) {
             if (node.getName().equals(nodeName)) {
                 if (node.getIncomingConnections().size() != num) {
-                    org.assertj.core.api.Assertions.fail("", "Expected incomming connections: " + num + " - found "
+                    fail("Expected incomming connections: " + num + " - found "
                             + node.getIncomingConnections().size());
                 } else {
                     break;
@@ -364,7 +365,7 @@ public abstract class JbpmBpmn2TestCase {
         for (Node node : instance.getNodeContainer().getNodes()) {
             if (node.getName().equals(nodeName)) {
                 if (node.getOutgoingConnections().size() != num) {
-                    org.assertj.core.api.Assertions.fail("", "Expected outgoing connections: " + num + " - found "
+                    fail("Expected outgoing connections: " + num + " - found "
                             + node.getOutgoingConnections().size());
                 } else {
                     break;
@@ -376,7 +377,7 @@ public abstract class JbpmBpmn2TestCase {
     public void assertVersionEquals(KogitoProcessInstance process, String version) {
         WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
         if (!instance.getWorkflowProcess().getVersion().equals(version)) {
-            org.assertj.core.api.Assertions.fail("", "Expected version: " + version + " - found "
+            fail("Expected version: " + version + " - found "
                     + instance.getWorkflowProcess().getVersion());
         }
     }
@@ -384,7 +385,7 @@ public abstract class JbpmBpmn2TestCase {
     public void assertProcessNameEquals(KogitoProcessInstance process, String name) {
         WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
         if (!instance.getWorkflowProcess().getName().equals(name)) {
-            org.assertj.core.api.Assertions.fail("", "Expected name: " + name + " - found "
+            fail("Expected name: " + name + " - found "
                     + instance.getWorkflowProcess().getName());
         }
     }
@@ -393,7 +394,7 @@ public abstract class JbpmBpmn2TestCase {
             String packageName) {
         WorkflowProcessInstanceImpl instance = (WorkflowProcessInstanceImpl) process;
         if (!instance.getWorkflowProcess().getPackageName().equals(packageName)) {
-            org.assertj.core.api.Assertions.fail("", "Expected package name: " + packageName + " - found "
+            fail("Expected package name: " + packageName + " - found "
                     + instance.getWorkflowProcess().getPackageName());
         }
     }

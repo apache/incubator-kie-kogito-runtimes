@@ -33,6 +33,8 @@ import org.kie.internal.builder.KnowledgeBuilderResult;
 import org.kie.internal.builder.KnowledgeBuilderResults;
 import org.kie.internal.builder.ResultSeverity;
 
+import static org.assertj.core.api.Assertions.fail;
+
 public class DroolsDeclaredTypeSequenceFlowExpressionTest {
 
     @Test
@@ -59,14 +61,14 @@ public class DroolsDeclaredTypeSequenceFlowExpressionTest {
         if (kbuilder.hasErrors()) {
             KnowledgeBuilderErrors kbErrors = kbuilder.getErrors();
             for (KnowledgeBuilderError nextError : kbErrors) {
-                org.assertj.core.api.Assertions.fail("", nextError.getMessage());
+                fail(nextError.getMessage());
             }
         }
 
         if (kbuilder.hasResults(ResultSeverity.WARNING)) {
             KnowledgeBuilderResults kbResults = kbuilder.getResults(ResultSeverity.WARNING);
             for (KnowledgeBuilderResult nextResult : kbResults) {
-                org.assertj.core.api.Assertions.fail("", nextResult.getMessage());
+                fail(nextResult.getMessage());
             }
         }
     }

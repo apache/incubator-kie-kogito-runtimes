@@ -102,7 +102,10 @@ public class ActivityGenerationModelTest extends JbpmBpmn2TestCase {
     public void testProcessEmptyScript() throws Exception {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource("BPMN2-ProcessEmptyScript.bpmn2")).get(0);
 
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> ProcessToExecModelGenerator.INSTANCE.generate((WorkflowProcess) process.get()));
+        WorkflowProcess workflowProcess = (WorkflowProcess) process.get();
+        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> {
+            ProcessToExecModelGenerator.INSTANCE.generate(workflowProcess);
+        });
 
     }
 

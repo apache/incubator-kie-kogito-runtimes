@@ -73,7 +73,7 @@ public class OneProcessPerThreadTest {
             assertThat(workItems).hasSize(THREAD_COUNT);
         } catch (Throwable t) {
             t.printStackTrace();
-            fail("", "Should not raise any exception: " + t.getMessage());
+            fail("Should not raise any exception: " + t.getMessage());
         }
 
         int i = 0;
@@ -97,7 +97,7 @@ public class OneProcessPerThreadTest {
             try {
                 t[i].start();
             } catch (Throwable fault) {
-                org.assertj.core.api.Assertions.fail("", "Unable to complete test: " + fault.getMessage());
+                fail("Unable to complete test: " + fault.getMessage());
             }
         }
         for (int i = 0; i < t.length; i++) {

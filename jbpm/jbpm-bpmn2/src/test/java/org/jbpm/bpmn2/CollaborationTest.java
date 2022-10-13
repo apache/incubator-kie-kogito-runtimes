@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 public class CollaborationTest extends JbpmBpmn2TestCase {
 
