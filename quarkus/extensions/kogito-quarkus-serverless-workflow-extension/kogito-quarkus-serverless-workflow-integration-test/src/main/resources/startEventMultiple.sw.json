@@ -1,0 +1,90 @@
+{
+  "id": "startMultipleEvent",
+  "version": "1.0",
+  "expressionLang": "jsonpath",
+  "name": "Workflow event test",
+  "description": "An test of multiple  starting event",
+  "start": "waitForEvent",
+  "events": [
+    {
+      "name": "event1",
+      "source": "",
+      "type": "startEvent1",
+      "dataOnly" : "false"
+    },
+    {
+      "name": "event2",
+      "source": "",
+      "type": "startEvent2"
+    },
+    {
+      "name": "event3",
+      "source": "",
+      "type": "startEvent3"
+    }
+  ],
+  "functions": [
+    {
+      "name": "printMessage",
+      "type": "custom",
+      "operation": "sysout"
+    }
+  ],
+  "states": [
+    {
+      "name": "waitForEvent",
+      "type": "event",
+       "onEvents": [
+        {
+          "eventRefs": [
+            "event1"
+          ],
+          "eventDataFilter": {
+            "data": ".data"
+          },
+          "actions": [ 
+          {
+            "name": "printAfterEvent",
+            "functionRef": {
+              "refName": "printMessage",
+              "arguments": {
+                 "message": "$[*]"
+              }
+            }
+          }
+          ]
+        },
+         {
+          "eventRefs": [
+            "event2", "event3"
+          ],
+          "eventDataFilter" : {
+             "useData": false
+          },
+          "actions": [ 
+          {
+            "name": "printAfterEvent",
+            "functionRef": {
+              "refName": "printMessage",
+              "arguments": {
+                 "message": "$[*]"
+              }
+            }
+          }
+          ]
+        }
+       ],
+      "exclusive": false,
+      "transition": "sleepForTest" 
+     
+    },
+    {
+      "name": "sleepForTest",
+      "type": "sleep",
+      "duration": "2s",
+      "end": {
+        "terminate": "true"
+      }
+    }
+  ]
+}

@@ -32,10 +32,12 @@ import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.*;
+import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusIntegrationTest
 class EventFlowIT {
@@ -87,6 +89,41 @@ class EventFlowIT {
     @Test
     void testNotStartingMultipleEventExclusive2() throws IOException {
         doIt("nonStartMultipleEventExclusive", "event2Exclusive");
+    }
+
+    @Test
+    void testMultipleStartingEvents() {
+        checkSize("startMultipleEvent", 0);
+
+        for (String eventType : new String[] { "startEvent1", "startEvent2", "startEvent3" }) {
+            given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .body(generateCloudEvent(null, eventType))
+                    .post("/" + eventType)
+                    .then()
+                    .statusCode(202);
+        }
+        await()
+                .atMost(2, SECONDS)
+                .untilAsserted(() -> checkSize("startMultipleEvent", 1));
+
+        await()
+                .atLeast(1, SECONDS)
+                .atMost(5, SECONDS)
+                .with().pollInterval(1, SECONDS)
+                .untilAsserted(() -> checkSize("startMultipleEvent", 0));
+    }
+
+    private ValidatableResponse checkSize(String flowName, int size) {
+        return given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .get("/" + flowName)
+                .then()
+                .statusCode(200)
+                .body("size()", is(size));
     }
 
     @Test
