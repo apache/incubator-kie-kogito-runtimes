@@ -36,7 +36,7 @@ public abstract class AbstractMessageConsumer<M extends Model, D> {
     protected static final Logger logger = LoggerFactory.getLogger(AbstractMessageConsumer.class);
 
     private String trigger;
-    private EventDispatcher<M, D> eventDispatcher;
+    private EventDispatcher<Void, D> eventDispatcher;
 
     protected void init(Application application,
             Process<M> process,

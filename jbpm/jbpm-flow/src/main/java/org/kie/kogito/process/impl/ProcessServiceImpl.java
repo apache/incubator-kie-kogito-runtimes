@@ -382,6 +382,15 @@ public class ProcessServiceImpl implements ProcessService {
                         }));
     }
 
+    @Override
+    public <T extends Model> void signalProcess(Process<T> process, Object data, String signalName) {
+        UnitOfWorkExecutor.executeInUnitOfWork(application.unitOfWorkManager(),
+                () -> {
+                    process.send(Sig.of(signalName, data));
+                    return null;
+                });
+    }
+
     //Schema
     @Override
     public <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,

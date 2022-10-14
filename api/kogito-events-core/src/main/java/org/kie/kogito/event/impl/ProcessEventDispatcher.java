@@ -31,12 +31,11 @@ import org.kie.kogito.correlation.SimpleCorrelation;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventDispatcher;
 import org.kie.kogito.process.Process;
-import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessEventDispatcher<M extends Model, D> implements EventDispatcher<M, D> {
+public class ProcessEventDispatcher<M extends Model, D> implements EventDispatcher<Void, D> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEventDispatcher.class);
 
@@ -59,7 +58,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
     }
 
     @Override
-    public CompletableFuture<ProcessInstance<M>> dispatch(String trigger, DataEvent<D> event) {
+    public CompletableFuture<Void> dispatch(String trigger, DataEvent<D> event) {
         if (shouldSkipMessage(trigger, event)) {
             if (LOGGER.isInfoEnabled()) {
                 LOGGER.info("Ignoring message for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
@@ -74,7 +73,7 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
 
         //if the trigger is for a start event (model converter is set only for start node)
         if (modelConverter.isPresent()) {
-            return CompletableFuture.supplyAsync(() -> startNewInstance(trigger, event), executor);
+            return CompletableFuture.supplyAsync(() -> signalProcess(trigger, event), executor);
         }
         if (LOGGER.isInfoEnabled()) {
             LOGGER.info("No matches found for trigger {} in process {}. Skipping consumed message {}", trigger, process.id(), event);
@@ -105,32 +104,32 @@ public class ProcessEventDispatcher<M extends Model, D> implements EventDispatch
         }
     }
 
-    private ProcessInstance<M> handleMessageWithReference(String trigger, DataEvent<D> event, String instanceId) {
+    private Void handleMessageWithReference(String trigger, DataEvent<D> event, String instanceId) {
         LOGGER.debug("Received message with reference id '{}' going to use it to send signal '{}'",
                 instanceId,
                 trigger);
-        return process.instances()
+        process.instances()
                 .findById(instanceId)
-                .map(instance -> {
-                    signalProcessInstance(trigger, instance.id(), event);
-                    return instance;
-                })
-                .orElseGet(() -> {
-                    LOGGER.info("Process instance with id '{}' not found for triggering signal '{}'", instanceId, trigger);
-                    return startNewInstance(trigger, event);
-                });
+                .ifPresentOrElse(instance -> signalProcessInstance(trigger, instance.id(), event),
+                        () -> {
+                            LOGGER.info("Process instance with id '{}' not found for triggering signal '{}'", instanceId, trigger);
+                            signalProcess(trigger, event);
+                        });
+        return null;
     }
 
-    private Optional<M> signalProcessInstance(String trigger, String id, DataEvent<D> event) {
-        return processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
+    private void signalProcessInstance(String trigger, String id, DataEvent<D> event) {
+        LOGGER.info("Signalling process instanceid {} with signal '{}'", id, trigger);
+        processService.signalProcessInstance((Process) process, id, dataResolver.apply(event), "Message-" + trigger);
     }
 
-    private ProcessInstance<M> startNewInstance(String trigger, DataEvent<D> event) {
-        return modelConverter.map(m -> {
-            LOGGER.info("Starting new process instance with signal '{}'", trigger);
-            return processService.createProcessInstance(process, event.getKogitoBusinessKey(), m.apply(dataResolver.apply(event)), event.getKogitoStartFromNode(), trigger,
-                    event.getKogitoProcessInstanceId(), compositeCorrelation(event).orElse(null));
-        }).orElse(null);
+    private Void signalProcess(String trigger, DataEvent<D> event) {
+        modelConverter.ifPresent(m -> {
+            LOGGER.info("Signalling process {} with signal '{}'", process.id(), trigger);
+            processService.signalProcess(process, dataResolver.apply(event), trigger);
+        });
+        return null;
+
     }
 
     private boolean isEventTypeNotMatched(String trigger, DataEvent<?> event) {

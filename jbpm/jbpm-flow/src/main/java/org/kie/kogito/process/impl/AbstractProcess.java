@@ -166,9 +166,13 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
 
     @Override
     public <S> void send(Signal<S> signal) {
+<<<<<<< Upstream, based on main
         try (Stream<ProcessInstance<T>> stream = instances.stream()) {
             stream.forEach(pi -> pi.send(signal));
         }
+=======
+        services.getSignalManager().signalEvent(signal.channel(), signal.payload());
+>>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     public Process<T> configure() {
@@ -188,11 +192,11 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
         if (this.activated) {
             return;
         }
+        this.processRuntime = createProcessRuntime().getKogitoProcessRuntime();
         WorkflowProcessImpl p = (WorkflowProcessImpl) get();
         configure();
         List<StartNode> startNodes = p.getTimerStart();
         if (startNodes != null && !startNodes.isEmpty()) {
-            this.processRuntime = createProcessRuntime().getKogitoProcessRuntime();
             for (StartNode startNode : startNodes) {
                 if (startNode != null && startNode.getTimer() != null) {
                     String timerId = processRuntime.getJobsService().scheduleProcessJob(ProcessJobDescription.of(configureTimerInstance(startNode.getTimer()), this));

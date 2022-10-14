@@ -68,7 +68,7 @@ public class LightProcessRuntimeContext implements ProcessRuntimeContext {
 
     @Override
     public boolean isActive() {
-        return false;
+        return true;
     }
 
     @Override

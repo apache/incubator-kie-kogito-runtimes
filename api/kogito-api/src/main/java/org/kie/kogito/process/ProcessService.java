@@ -146,6 +146,8 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> signalProcessInstance(Process<T> process, String id, Object data, String signalName);
 
+    <T extends Model> void signalProcess(Process<T> process, Object data, String signalName);
+
     //Schema
     <T extends Model> Map<String, Object> getSchemaAndPhases(Process<T> process,
             String id,
