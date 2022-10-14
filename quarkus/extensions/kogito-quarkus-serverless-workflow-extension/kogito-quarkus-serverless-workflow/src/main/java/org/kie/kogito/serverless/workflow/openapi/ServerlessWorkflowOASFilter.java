@@ -88,10 +88,11 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
     private static void addWorkflowdataSchemaRefs(SchemaInfo schemaInfo, OpenAPI openAPI) {
         Schema schema = OASFactory.createSchema().ref(schemaInfo.inputModelRef);
 
-        openAPI.getPaths()
-                .getPathItems()
-                .values().stream()
-                .filter(pathItem -> pathItemHasWorkflowId(pathItem, schemaInfo.workflowId)).map(ServerlessWorkflowOASFilter::getMediaTypes).forEach(schema::setSchema);
+        for (PathItem pathItem : openAPI.getPaths().getPathItems().values()) {
+            if (pathItemHasWorkflowId(pathItem, schemaInfo.workflowId)) {
+                getMediaTypes(pathItem).forEach(mediaType -> mediaType.setSchema(schema));
+            }
+        }
     }
 
     private static Collection<MediaType> getMediaTypes(PathItem pathItem) {
