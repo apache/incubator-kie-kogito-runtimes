@@ -490,12 +490,9 @@ public abstract class StateHandler<S extends State> {
     }
 
     private void createTimerNode(RuleFlowNodeContainerFactory<?, ?> factory, SplitFactory<?> splitNode, JoinFactory<?> joinNode, String eventTimeout) {
-        // Create the timer fired branch
         TimerNodeFactory<?> eventTimeoutTimerNode = timerNode(factory.timerNode(parserContext.newId()), eventTimeout);
         connect(splitNode, eventTimeoutTimerNode);
-        // Connect the timer fired branch last node with the join node
         connect(eventTimeoutTimerNode, joinNode);
-
     }
 
     private static final boolean isPreparedBranch(MakeNodeResult notTimerBranch, int splitType) {
