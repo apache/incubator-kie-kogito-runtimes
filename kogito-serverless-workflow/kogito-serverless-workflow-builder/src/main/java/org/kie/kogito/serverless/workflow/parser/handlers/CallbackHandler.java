@@ -43,7 +43,7 @@ public class CallbackHandler extends CompositeContextNodeHandler<CallbackState> 
             currentNode = connect(currentNode, getActionNode(embeddedSubProcess, state.getAction()));
         }
         currentNode = connect(currentNode, makeTimeoutNode(embeddedSubProcess,
-                () -> filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)), Split.TYPE_XAND));
+                filterAndMergeNode(embeddedSubProcess, state.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, state.getEventRef(), inputVar, outputVar)), Split.TYPE_XAND));
         connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
         handleErrors(factory, embeddedSubProcess);
         return new MakeNodeResult(embeddedSubProcess);

@@ -47,7 +47,7 @@ public class EventHandler extends CompositeContextNodeHandler<EventState> {
     @Override
     public MakeNodeResult makeNode(RuleFlowNodeContainerFactory<?, ?> factory) {
         return makeTimeoutNode(factory,
-                () -> joinNodes(factory, state.getOnEvents().stream().map(onEvent -> processOnEvent(factory, onEvent)).collect(Collectors.toList())), Split.TYPE_AND);
+                joinNodes(factory, state.getOnEvents().stream().map(onEvent -> processOnEvent(factory, onEvent)).collect(Collectors.toList())), Split.TYPE_AND);
     }
 
     private MakeNodeResult processOnEvent(RuleFlowNodeContainerFactory<?, ?> factory, OnEvents onEvent) {
