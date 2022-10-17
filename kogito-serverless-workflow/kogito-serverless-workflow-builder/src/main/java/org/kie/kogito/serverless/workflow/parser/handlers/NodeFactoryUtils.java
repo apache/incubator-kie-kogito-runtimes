@@ -101,7 +101,7 @@ public class NodeFactoryUtils {
     }
 
     public static <T extends RuleFlowNodeContainerFactory<T, ?>> SplitFactory<T> eventBasedSplitNode(SplitFactory<T> nodeFactory, int type) {
-        return nodeFactory.name("ExclusiveSplit_" + nodeFactory.getNode().getId())
+        return nodeFactory.name("EventSplit_" + nodeFactory.getNode().getId())
                 .type(type)
                 .metaData(UNIQUE_ID, Long.toString(nodeFactory.getNode().getId()))
                 .metaData("EventBased", "true");

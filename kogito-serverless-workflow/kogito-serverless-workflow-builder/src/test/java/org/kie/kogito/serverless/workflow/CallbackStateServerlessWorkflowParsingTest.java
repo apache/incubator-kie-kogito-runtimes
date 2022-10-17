@@ -99,7 +99,7 @@ class CallbackStateServerlessWorkflowParsingTest extends AbstractServerlessWorkf
         assertHasName(stateActionNode, "callbackFunction");
         ActionNode afterStateActionMergeNode = assertClassAndGetNode(callbackState, 2, ActionNode.class);
         Split stateSplitNode = assertClassAndGetNode(callbackState, 5, Split.class);
-        assertHasName(stateSplitNode, "ExclusiveSplit_" + stateSplitNode.getId());
+        assertHasName(stateSplitNode, "EventSplit_" + stateSplitNode.getId());
         Join stateJoinNode = assertClassAndGetNode(callbackState, 6, Join.class);
         assertHasName(stateJoinNode, "ExclusiveJoin_" + stateJoinNode.getId());
         EventNode stateEventNode = assertClassAndGetNode(callbackState, 3, EventNode.class);

@@ -469,26 +469,22 @@ public abstract class StateHandler<S extends State> {
     protected final MakeNodeResult makeTimeoutNode(RuleFlowNodeContainerFactory<?, ?> factory, MakeNodeResult notTimerBranch, int type) {
         String eventTimeout = resolveEventTimeout(state, workflow);
         if (eventTimeout != null) {
-
             SplitFactory<?> splitNode;
             JoinFactory<?> joinNode;
             if (isPreparedBranch(notTimerBranch, type)) {
-                createTimerNode(factory, (SplitFactory) notTimerBranch.getIncomingNode(), (JoinFactory) notTimerBranch.getOutgoingNode(), eventTimeout);
+                // reusing existing split-join branch
+                createTimerNode(factory, (SplitFactory<?>) notTimerBranch.getIncomingNode(), (JoinFactory<?>) notTimerBranch.getOutgoingNode(), eventTimeout);
                 return notTimerBranch;
             } else {
-                // Create the event based exclusive split node.
+                // creating a split-join branch for the timer
                 splitNode = eventBasedSplitNode(factory.splitNode(parserContext.newId()), type);
-                // Create the join node for joining the event fired and the timer fired branches.
                 joinNode = joinExclusiveNode(factory.joinNode(parserContext.newId()));
-                //Create the event fired branch, normal path if the event arrives in time.
-                NodeFactory<?, ?> eventFiredBranchLastNode = connect(splitNode, notTimerBranch);
-                // Connect the event fired branch last node with the join node.
-                connect(eventFiredBranchLastNode, joinNode);
+                connect(connect(splitNode, notTimerBranch), joinNode);
                 createTimerNode(factory, splitNode, joinNode, eventTimeout);
                 return new MakeNodeResult(splitNode, joinNode);
             }
         } else {
-            // No timeouts, standard case.
+            // No timeouts, returning the existing branch.
             return notTimerBranch;
         }
     }
@@ -505,8 +501,8 @@ public abstract class StateHandler<S extends State> {
     private static final boolean isPreparedBranch(MakeNodeResult notTimerBranch, int splitType) {
         NodeFactory<?, ?> incoming = notTimerBranch.getIncomingNode();
         NodeFactory<?, ?> outgoing = notTimerBranch.getOutgoingNode();
-        return incoming instanceof SplitFactory && outgoing instanceof JoinFactory && ((SplitFactory) incoming).getSplit().getType() == splitType
-                && ((JoinFactory) outgoing).getJoin().getType() == Join.TYPE_XOR;
+        return incoming instanceof SplitFactory && outgoing instanceof JoinFactory && ((SplitFactory<?>) incoming).getSplit().getType() == splitType
+                && ((JoinFactory<?>) outgoing).getJoin().getType() == Join.TYPE_XOR;
     }
 
     protected EndNodeFactory<?> endNodeFactory(RuleFlowNodeContainerFactory<?, ?> factory, End end) {
