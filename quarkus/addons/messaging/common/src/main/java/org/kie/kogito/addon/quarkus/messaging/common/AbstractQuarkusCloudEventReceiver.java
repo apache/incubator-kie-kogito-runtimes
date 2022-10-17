@@ -41,18 +41,15 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
 
     private Collection<Subscription<DataEvent<?>, Message<I>>> consumers = new CopyOnWriteArrayList<>();
 
-    //Injection does not work with generic
-    private EventUnmarshaller<I> eventDataUnmarshaller;
-    private CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller;
+    @Inject
+    EventUnmarshaller<I> eventDataUnmarshaller;
+    
+    @Inject
+    CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller;
 
     @Inject
     ConfigBean configBean;
-
-    protected void init(EventUnmarshaller<I> eventDataUnmarshaller, CloudEventUnmarshallerFactory<I> cloudEventUnmarshaller) {
-        this.eventDataUnmarshaller = eventDataUnmarshaller;
-        this.cloudEventUnmarshaller = cloudEventUnmarshaller;
-    }
-
+    
     protected CompletionStage<?> produce(final Message<I> message) {
         LOGGER.debug("Received message {}", message);
         return produce(message, (v, e) -> {
