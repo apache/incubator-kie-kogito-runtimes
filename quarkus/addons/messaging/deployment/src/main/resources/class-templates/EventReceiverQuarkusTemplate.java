@@ -33,14 +33,6 @@ import io.quarkus.runtime.Startup;
 @Startup
 @ApplicationScoped
 public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$Type$> {
-
-    @Inject
-    EventUnmarshaller<$Type$> eventDataUnmarshaller;
-
-    @Inject
-    CloudEventUnmarshallerFactory<$Type$> cloudEventUnmarshaller;
-
-	
     @Incoming("$Trigger$")
     public CompletionStage<?> onEvent(Message<$Type$> message) {
         return produce(message);
@@ -48,6 +40,5 @@ public class $Trigger$EventReceiver extends AbstractQuarkusCloudEventReceiver<$T
       
     @PostConstruct
     void init() {
-    	init (eventDataUnmarshaller, cloudEventUnmarshaller);
     }
 }

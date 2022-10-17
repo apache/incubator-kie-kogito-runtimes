@@ -37,10 +37,13 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
     ConfigBean configBean;
 
     @Inject
-    EventMarshaller<M> marshaller;
-
-    @Inject
     MessageDecoratorProvider messageDecorator;
+
+    private EventMarshaller<M> marshaller;
+
+    protected void init(EventMarshaller<M> marshaller) {
+        this.marshaller = marshaller;
+    }
 
     @Override
     public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {

@@ -139,6 +139,6 @@ public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor
     }
 
     private EventGenerator buildEventGenerator(KogitoBuildContext context, ChannelInfo channelInfo) {
-        return channelInfo.isInput() ? new EventGenerator(context, channelInfo, "EventReceiver") : new EventGenerator(context, channelInfo, "EventEmitter");
+        return channelInfo.isInput() ? new EventReceiverGenerator(context, channelInfo) : new EventEmitterGenerator(context, channelInfo);
     }
 }

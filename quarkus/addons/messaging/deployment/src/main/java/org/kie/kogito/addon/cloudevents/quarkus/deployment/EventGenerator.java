@@ -24,13 +24,22 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.SuperExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
+import static com.github.javaparser.StaticJavaParser.parseType;
 import static org.kie.kogito.codegen.core.CodegenUtils.interpolateTypes;
 
-public class EventGenerator implements ClassGenerator {
+public abstract class EventGenerator implements ClassGenerator {
 
     private final TemplatedGenerator template;
     private final CompilationUnit generator;
@@ -39,16 +48,19 @@ public class EventGenerator implements ClassGenerator {
     private final ChannelInfo channelInfo;
     private final String packageName;
     private final String className;
+    private final ClassOrInterfaceDeclaration clazz;
+    private final KogitoBuildContext context;
 
     public EventGenerator(KogitoBuildContext context, ChannelInfo channelInfo, String templateName) {
         className = StringUtils.ucFirst(polishClassName(channelInfo, templateName));
+        this.context = context;
         this.packageName = context.getPackageName();
         this.channelInfo = channelInfo;
         template = TemplatedGenerator.builder()
                 .withTargetTypeName(className)
                 .build(context, templateName);
         generator = template.compilationUnitOrThrow("Cannot generate " + templateName);
-        ClassOrInterfaceDeclaration clazz = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
+        clazz = generator.findFirst(ClassOrInterfaceDeclaration.class).orElseThrow(() -> new InvalidTemplateException(template, "Cannot find class declaration"));
         clazz.setName(className);
         String annotationName = null;
         if (!channelInfo.isDefault()) {
@@ -59,6 +71,16 @@ public class EventGenerator implements ClassGenerator {
         clazz.findAll(StringLiteralExpr.class)
                 .forEach(str -> str.setString(str.asString().replace("$Trigger$", channelInfo.getChannelName())));
         clazz.findAll(ClassOrInterfaceType.class).forEach(cls -> interpolateTypes(cls, channelInfo.getClassName()));
+    }
+
+    protected FieldDeclaration generateMarshallerField(String fieldName, String setMethodName, Class<?> fieldClass) {
+        FieldDeclaration field =
+                clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
+        context.getDependencyInjectionAnnotator().withInjection(field);
+        clazz.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("init")).flatMap(MethodDeclaration::getBody).ifPresent(body -> body.addStatement(new MethodCallExpr(
+                new SuperExpr(), setMethodName).addArgument(new FieldAccessExpr(new ThisExpr(), fieldName))));
+        channelInfo.getMarshaller().ifPresent(unmarshallerName -> context.getDependencyInjectionAnnotator().withNamedInjection(field, unmarshallerName));
+        return field;
     }
 
     @Override
