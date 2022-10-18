@@ -21,8 +21,7 @@ import org.kie.kogito.event.EventMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class StringEventMarshallerTest {
 
@@ -31,15 +30,13 @@ class StringEventMarshallerTest {
     @Test
     void testDataMarshaller() {
         DummyEvent dataEvent = new DummyEvent("pepe");
-        assertEquals(
-                "{\"dummyField\":\"pepe\"}",
-                marshaller.marshall(dataEvent));
+        assertThat(marshaller.marshall(dataEvent)).isEqualTo("{\"dummyField\":\"pepe\"}");
     }
 
     @Test
     void testEventMarshaller() {
         DummyEvent dataEvent = new DummyEvent("pepe");
         String jsonString = marshaller.marshall(dataEvent);
-        assertTrue(jsonString.contains("\"dummyField\":\"pepe\""));
+        assertThat(jsonString).contains("\"dummyField\":\"pepe\"");
     }
 }

@@ -30,8 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.jackson.JsonCloudEventData;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DataEventFactoryTest {
 
@@ -43,8 +42,8 @@ public class DataEventFactoryTest {
         DataEvent<JsonNode> dataEvent = DataEventFactory.from(builder.build(), ced -> objectMapper.readTree(ced.toBytes()));
         JsonNode deserialized = objectMapper.readTree(objectMapper.writeValueAsBytes(dataEvent));
         JsonNode data = deserialized.get("data");
-        assertNotNull(data);
-        assertEquals("Javierito", data.get("name").asText());
-        assertEquals("type", deserialized.get("type").asText());
+        assertThat(data).isNotNull();
+        assertThat(data.get("name").asText()).isEqualTo("Javierito");
+        assertThat(deserialized.get("type").asText()).isEqualTo("type");
     }
 }
