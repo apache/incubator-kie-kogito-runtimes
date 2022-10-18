@@ -125,7 +125,7 @@ public class DMNResultMetricsBuilderTest {
         // Duration type
         assertThat(registry.find(SupportedDecisionTypes.fromInternalToStandard(Duration.class).replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max()).isGreaterThanOrEqualTo(5);
         // BigDecimal type
-        assertThat(registry.find(SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class) + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max()).isGreaterThanOrEqualTo(1);
+        assertThat(registry.find(SupportedDecisionTypes.fromInternalToStandard(BigDecimal.class) + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max()).isPositive();
         // Years And Months Duration type
         assertThat(registry.find(SupportedDecisionTypes.fromInternalToStandard(Period.class).replace(" ", "_") + DecisionConstants.DECISIONS_NAME_SUFFIX).summary().max()).isGreaterThanOrEqualTo(5);
         // LocalDate type
