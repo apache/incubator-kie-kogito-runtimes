@@ -55,14 +55,18 @@ public class ActionNodeInstance extends NodeInstanceImpl {
 
             KogitoProcessContextImpl context = ContextFactory.fromNode(this);
             context.setContextData(data);
-            executeAction(action, context);
 
+            logger.error("hhhhhhh -> will call execute action");
+            executeAction(action, context);
+            logger.error("hhhhhhh -> called execute action");
         } catch (WorkflowRuntimeException wre) {
+            logger.error("hhhhhhh -> exception: " + wre);
             throw wre;
         } catch (Exception e) {
             // for the case that one of the following throws an exception
             // - the ProcessContext() constructor 
-            // - or context.setNodeInstance(this) 
+            // - or context.setNodeInstance(this)
+            logger.error("hhhhhhh -> exception: " + e);
             throw new WorkflowRuntimeException(this, getProcessInstance(), "Unable to execute Action: " + e.getMessage(), e);
         }
         triggerCompleted();
