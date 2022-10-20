@@ -32,6 +32,7 @@ import org.kie.kogito.decision.DecisionModels;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoExtension;
@@ -83,7 +84,7 @@ public class EventDrivenDecisionController {
             getDecisionModel(kogitoExtension.getDmnModelNamespace(), kogitoExtension.getDmnModelName())
                     .map(model -> processRequest(model, event, kogitoExtension))
                     .flatMap(result -> buildResponseCloudEvent(result, event, kogitoExtension))
-                    .ifPresentOrElse(e -> eventEmitter.emit(e, e.getType(), Optional.empty()), () -> LOG.warn("Discarding request because not model is found for {}", kogitoExtension));
+                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e)), () -> LOG.warn("Discarding request because not model is found for {}", kogitoExtension));
         } else {
             LOG.warn("Event {} is not valid. Ignoring it", event);
         }

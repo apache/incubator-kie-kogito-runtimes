@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.test;
+package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.CloudEventFactory;
-import org.kie.kogito.event.EventEmitter;
-import org.kie.kogito.event.impl.AbstractMessageProducer;
+import org.kie.kogito.event.CloudEventMarshaller;
 
-@org.springframework.stereotype.Component()
-public class MessageProducer extends AbstractMessageProducer<$DataType$> {
+import io.cloudevents.CloudEvent;
 
-    @org.springframework.beans.factory.annotation.Autowired()
-    MessageProducer(EventEmitter emitter) {
-        super(emitter,"$Trigger$");
+public class NoOpCloudEventMarshaller implements CloudEventMarshaller<Object> {
+
+    @Override
+    public Object marshall(CloudEvent event) {
+        return event;
     }
 }

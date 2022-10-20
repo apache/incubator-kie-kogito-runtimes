@@ -15,11 +15,14 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 import org.kie.kogito.conf.ConfigBean;
+import org.kie.kogito.event.CloudEventDataFactory;
+import org.kie.kogito.event.CloudEventMarshaller;
+import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.KogitoEventStreams;
@@ -45,20 +48,27 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
     @Autowired
     EventMarshaller<M> marshaller;
     @Autowired
+    CloudEventMarshaller<M> ceMarshaller;
+    @Autowired
+    CloudEventDataFactory eventDataFactory;
+    @Autowired
     ConfigBean configBean;
     @Autowired
     ObjectMapper mapper;
 
     @Override
-    public <T> CompletionStage<Void> emit(T e, String type, Optional<Function<T, Object>> processDecorator) {
-        return emitter
-                .send(
-                        env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + type,
-                                defaultTopicName),
-                        marshaller.marshall(configBean.useCloudEvents() ? processDecorator.map(d -> d
-                                .apply(e)).orElse(e) : e))
-                .completable()
-                .thenApply(r -> null); // discard return to comply with the signature
+    public CompletionStage<?> emit(DataEvent<?> event) {
+        try {
+            return emitter
+                    .send(
+                            env.getProperty("kogito.addon.cloudevents.kafka." + KogitoEventStreams.OUTGOING + "." + event.getType(),
+                                    defaultTopicName),
+                            marshaller.marshall(configBean.useCloudEvents() ? ceMarshaller.marshall(event.asCloudEvent(eventDataFactory)) : marshaller.marshall(event.getData())))
+                    .completable()
+                    .thenApply(r -> null);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
 }

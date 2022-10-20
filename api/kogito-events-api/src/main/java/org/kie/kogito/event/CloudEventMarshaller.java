@@ -15,9 +15,10 @@
  */
 package org.kie.kogito.event;
 
+import java.io.IOException;
+
 import io.cloudevents.CloudEvent;
 
-public interface CloudEventMarshaller<T> {
-
-    public T marshall(CloudEvent event);
+public interface CloudEventMarshaller<R> {
+    R marshall(CloudEvent event) throws IOException;
 }

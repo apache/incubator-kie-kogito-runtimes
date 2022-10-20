@@ -15,10 +15,8 @@
  */
 package org.kie.kogito.event;
 
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import io.cloudevents.CloudEventData;
 
-import io.cloudevents.CloudEvent;
-
-public interface CloudEventFactory {
-    CloudEvent build(Object data, String trigger, KogitoProcessInstance pi);
+public interface CloudEventDataFactory {
+    <T> CloudEventData buildCEData(T event);
 }

@@ -15,23 +15,17 @@
  */
 package org.kie.kogito.event;
 
-import java.util.Optional;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 /**
  * Generic event emitter. Implementation is responsible to interact with the external event service and
- * transform the model object into the format expected by the external service.
+ * transform the data event into the format expected by the external service.
  */
 public interface EventEmitter {
     /**
-     * Publish the model object, properly transformed, into an external event service.
+     * Publish the cloud event object, properly transformed, into an external event service.
      * 
-     * @param e model object being emitted
-     * @param type type of object to emit. Usually cloud event type
-     * @param processDecorator Converts the model into the desired event object. Usually a cloud event
+     * @param dataEvent The DataEvent
      */
-    <T> CompletionStage<Void> emit(T e,
-            String type,
-            Optional<Function<T, Object>> processDecorator);
+    CompletionStage<?> emit(DataEvent<?> dataEvent);
 }

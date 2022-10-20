@@ -26,6 +26,7 @@ import java.util.concurrent.CompletionStage;
 import org.kie.api.pmml.PMML4Result;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoPredictionsExtension;
@@ -76,7 +77,7 @@ public class EventDrivenPredictionsController {
         if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, extension)) {
             getPredictionModel(extension.getPmmlFileName(), extension.getPmmlModelName()).map(model -> model.evaluateAll(model.newContext(event.getData())))
                     .flatMap(result -> this.buildResponseCloudEvent(result, event, extension))
-                    .ifPresentOrElse(e -> eventEmitter.emit(e, e.getType(), Optional.empty()), () -> LOG.warn("Discarding request because not model is found for {}", extension));
+                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e)), () -> LOG.warn("Discarding request because not model is found for {}", extension));
         } else {
             LOG.warn("Event {} is not valid. Ignoring it", event);
         }

@@ -15,16 +15,19 @@
  */
 package org.kie.kogito.addon.quarkus.messaging.common;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.kie.kogito.event.CloudEventFactory;
+import org.kie.kogito.event.CloudEventDataFactory;
+import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.EventMarshaller;
+import org.kie.kogito.event.impl.ByteArrayCloudEventMarshaller;
 import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
-import org.kie.kogito.event.impl.JacksonCloudEventFactory;
+import org.kie.kogito.event.impl.JacksonCloudEventDataFactory;
+import org.kie.kogito.event.impl.NoOpCloudEventMarshaller;
 import org.kie.kogito.event.impl.NoOpEventMarshaller;
+import org.kie.kogito.event.impl.StringCloudEventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,13 +40,6 @@ public class EventMarshallerProducer {
     @Inject
     ObjectMapper mapper;
 
-    private EventMarshaller<byte[]> byteMarshaller;
-
-    @PostConstruct
-    void init() {
-        byteMarshaller = new ByteArrayEventMarshaller(mapper);
-    }
-
     @Produces
     @DefaultBean
     public EventMarshaller<String> stringEventMarshaller() {
@@ -53,7 +49,7 @@ public class EventMarshallerProducer {
     @Produces
     @DefaultBean
     public EventMarshaller<byte[]> byteArrayEventMarshaller() {
-        return byteMarshaller;
+        return new ByteArrayEventMarshaller(mapper);
     }
 
     @Produces
@@ -64,8 +60,25 @@ public class EventMarshallerProducer {
 
     @Produces
     @DefaultBean
-    public CloudEventFactory cloudEventFactory() {
-        return new JacksonCloudEventFactory(byteMarshaller::marshall);
+    public CloudEventMarshaller<String> stringCloudEventMarshaller() {
+        return new StringCloudEventMarshaller(mapper);
     }
 
+    @Produces
+    @DefaultBean
+    public CloudEventMarshaller<byte[]> byteArrayCloudEventMarshaller() {
+        return new ByteArrayCloudEventMarshaller(mapper);
+    }
+
+    @Produces
+    @DefaultBean
+    public CloudEventMarshaller<Object> defaultCloudEventMarshaller() {
+        return new NoOpCloudEventMarshaller();
+    }
+
+    @Produces
+    @DefaultBean
+    public CloudEventDataFactory defaulfCloudEventFactory() {
+        return new JacksonCloudEventDataFactory(mapper);
+    }
 }

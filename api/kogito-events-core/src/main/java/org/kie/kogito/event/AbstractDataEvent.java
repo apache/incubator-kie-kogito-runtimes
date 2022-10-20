@@ -29,7 +29,6 @@ import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.event.cloudevents.SpecVersionDeserializer;
 import org.kie.kogito.event.cloudevents.SpecVersionSerializer;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -121,7 +120,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoParentProcessInstanceId;
 
-    @JsonProperty(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE)
+    @JsonProperty(CloudEventExtensionConstants.PROCESS_INSTANCE_STATE)
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     protected String kogitoProcessInstanceState;
 
@@ -174,11 +173,12 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         this.type = type;
         this.time = ZonedDateTime.now().toOffsetDateTime();
         this.data = body;
-        this.kogitoProcessInstanceId = kogitoProcessInstanceId;
-        this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
-        this.kogitoProcessId = kogitoProcessId;
-        this.kogitoRootProcessId = kogitoRootProcessId;
-        this.kogitoAddons = kogitoAddons;
+        setKogitoProcessInstanceId(kogitoProcessInstanceId);
+        ;
+        setKogitoRootProcessInstanceId(kogitoRootProcessInstanceId);
+        setKogitoProcessId(kogitoProcessId);
+        setKogitoRootProcessId(kogitoRootProcessId);
+        setKogitoAddons(kogitoAddons);
         this.subject = subject;
         this.dataContentType = dataContentType;
         this.dataSchema = dataSchema != null ? URI.create(dataSchema) : null;
@@ -328,30 +328,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         this.data = data;
     }
 
-    public void setKogitoProcessInstanceId(String kogitoProcessInstanceId) {
-        this.kogitoProcessInstanceId = kogitoProcessInstanceId;
-    }
-
-    public void setKogitoRootProcessInstanceId(String kogitoRootProcessInstanceId) {
-        this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
-    }
-
-    public void setKogitoProcessId(String kogitoProcessId) {
-        this.kogitoProcessId = kogitoProcessId;
-    }
-
-    public void setKogitoRootProcessId(String kogitoRootProcessId) {
-        this.kogitoRootProcessId = kogitoRootProcessId;
-    }
-
-    public void setKogitoAddons(String kogitoAddons) {
-        this.kogitoAddons = kogitoAddons;
-    }
-
-    public void setExtensionAttributes(Map<String, Object> extensionAttributes) {
-        this.extensionAttributes = extensionAttributes;
-    }
-
     @Override
     public String getKogitoParentProcessInstanceId() {
         return kogitoParentProcessInstanceId;
@@ -372,10 +348,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return this.kogitoBusinessKey;
     }
 
-    public void setKogitoStartFromNode(String kogitoStartFromNode) {
-        this.kogitoStartFromNode = kogitoStartFromNode;
-    }
-
     @Override
     public String getKogitoStartFromNode() {
         return this.kogitoStartFromNode;
@@ -391,28 +363,64 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         return kogitoProcessType;
     }
 
+    public void setKogitoProcessInstanceId(String kogitoProcessInstanceId) {
+        this.kogitoProcessInstanceId = kogitoProcessInstanceId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_INSTANCE_ID, kogitoProcessInstanceId);
+    }
+
+    public void setKogitoRootProcessInstanceId(String kogitoRootProcessInstanceId) {
+        this.kogitoRootProcessInstanceId = kogitoRootProcessInstanceId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_INSTANCE_ID, kogitoRootProcessInstanceId);
+    }
+
+    public void setKogitoProcessId(String kogitoProcessId) {
+        this.kogitoProcessId = kogitoProcessId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_ID, kogitoProcessId);
+    }
+
+    public void setKogitoRootProcessId(String kogitoRootProcessId) {
+        this.kogitoRootProcessId = kogitoRootProcessId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_ROOT_PROCESS_ID, kogitoRootProcessId);
+    }
+
+    public void setKogitoAddons(String kogitoAddons) {
+        this.kogitoAddons = kogitoAddons;
+        extensionAttributes.put(CloudEventExtensionConstants.ADDONS, kogitoAddons);
+    }
+
+    public void setKogitoStartFromNode(String kogitoStartFromNode) {
+        this.kogitoStartFromNode = kogitoStartFromNode;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_START_FROM_NODE, kogitoStartFromNode);
+    }
+
     public void setKogitoProcessInstanceVersion(String kogitoProcessInstanceVersion) {
         this.kogitoProcessInstanceVersion = kogitoProcessInstanceVersion;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_INSTANCE_VERSION, kogitoProcessInstanceVersion);
     }
 
     public void setKogitoParentProcessInstanceId(String kogitoParentProcessInstanceId) {
         this.kogitoParentProcessInstanceId = kogitoParentProcessInstanceId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID, kogitoParentProcessInstanceId);
     }
 
     public void setKogitoProcessInstanceState(String kogitoProcessInstanceState) {
         this.kogitoProcessInstanceState = kogitoProcessInstanceState;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_INSTANCE_STATE, kogitoProcessInstanceState);
     }
 
     public void setKogitoReferenceId(String kogitoReferenceId) {
         this.kogitoReferenceId = kogitoReferenceId;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_REFERENCE_ID, kogitoReferenceId);
     }
 
     public void setKogitoBusinessKey(String kogitoBusinessKey) {
         this.kogitoBusinessKey = kogitoBusinessKey;
+        extensionAttributes.put(CloudEventExtensionConstants.BUSINESS_KEY, kogitoBusinessKey);
     }
 
     public void setKogitoProcessType(String kogitoProcessType) {
         this.kogitoProcessType = kogitoProcessType;
+        extensionAttributes.put(CloudEventExtensionConstants.PROCESS_TYPE, kogitoProcessType);
     }
 
     @JsonAnySetter
@@ -442,7 +450,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
             case CloudEventExtensionConstants.PROCESS_PARENT_PROCESS_INSTANCE_ID:
                 this.kogitoParentProcessInstanceId = (String) value;
                 break;
-            case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID:
+            case CloudEventExtensionConstants.PROCESS_INSTANCE_STATE:
                 this.kogitoProcessInstanceState = (String) value;
                 break;
             case CloudEventExtensionConstants.PROCESS_START_FROM_NODE:
@@ -459,10 +467,10 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public CloudEvent asCloudEvent() {
+    public CloudEvent asCloudEvent(CloudEventDataFactory factory) {
         CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(specVersion).withSource(source).withType(type).withId(id).withSubject(subject).withTime(time)
                 .withDataContentType(dataContentType).withDataSchema(dataSchema);
-        builder.withData(CloudEventUtils.fromObject(data, ObjectMapperFactory.get()::writeValueAsBytes));
+        builder.withData(factory.buildCEData(data));
         extensionAttributes.forEach((k, v) -> CloudEventUtils.withExtension(builder, k, v));
         return builder.build();
     }

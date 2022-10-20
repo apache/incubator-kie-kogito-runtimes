@@ -92,7 +92,7 @@ public abstract class AbstractQuarkusCloudEventReceiver<I> implements EventRecei
         } else if (eventDataUnmarshaller != null) {
             return new QuarkusDataEventConverter<>(objectClass, eventDataUnmarshaller);
         } else {
-            throw new IllegalStateException("Both CloudEventUnmarshaller and DataEventMarshaller are null");
+            throw new IllegalStateException("No unmarshaller set for receiver " + this);
         }
     }
 }

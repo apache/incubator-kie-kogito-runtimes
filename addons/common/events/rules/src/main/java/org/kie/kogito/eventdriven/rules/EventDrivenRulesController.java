@@ -24,6 +24,7 @@ import java.util.function.Function;
 
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.EventReceiver;
 import org.kie.kogito.event.cloudevents.extension.KogitoRulesExtension;
@@ -78,7 +79,7 @@ public class EventDrivenRulesController {
         public CompletionStage<?> apply(DataEvent<T> event) {
             KogitoRulesExtension extension = ExtensionProvider.getInstance().parseExtension(KogitoRulesExtension.class, event);
             if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, extension)) {
-                buildResponseCloudEvent(event, queryExecutor.executeQuery(event), extension).ifPresentOrElse(c -> eventEmitter.emit(c, c.getType(), Optional.empty()),
+                buildResponseCloudEvent(event, queryExecutor.executeQuery(event), extension).ifPresentOrElse(c -> eventEmitter.emit(DataEventFactory.from(c)),
                         () -> LOG.info("Extension {} does not match this query executor {}", extension, queryExecutor));
             } else {
                 LOG.warn("Event {} does not have expected information, discarding it", event);

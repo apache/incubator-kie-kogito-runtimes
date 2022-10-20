@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.event.impl;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.DummyEvent;
 import org.kie.kogito.event.EventMarshaller;
@@ -29,7 +31,7 @@ class StringEventMarshallerTest {
     private EventMarshaller<String> marshaller = new StringEventMarshaller(new ObjectMapper());;
 
     @Test
-    void testDataMarshaller() {
+    void testDataMarshaller() throws IOException {
         DummyEvent dataEvent = new DummyEvent("pepe");
         assertEquals(
                 "{\"dummyField\":\"pepe\"}",
@@ -37,7 +39,7 @@ class StringEventMarshallerTest {
     }
 
     @Test
-    void testEventMarshaller() {
+    void testEventMarshaller() throws IOException {
         DummyEvent dataEvent = new DummyEvent("pepe");
         String jsonString = marshaller.marshall(dataEvent);
         assertTrue(jsonString.contains("\"dummyField\":\"pepe\""));

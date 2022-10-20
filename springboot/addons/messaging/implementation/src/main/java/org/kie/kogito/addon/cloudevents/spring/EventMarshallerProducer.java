@@ -15,10 +15,11 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import org.kie.kogito.event.CloudEventFactory;
+import org.kie.kogito.event.CloudEventDataFactory;
+import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.EventMarshaller;
-import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
-import org.kie.kogito.event.impl.JacksonCloudEventFactory;
+import org.kie.kogito.event.impl.JacksonCloudEventDataFactory;
+import org.kie.kogito.event.impl.StringCloudEventMarshaller;
 import org.kie.kogito.event.impl.StringEventMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,12 @@ public class EventMarshallerProducer {
     }
 
     @Bean
-    public CloudEventFactory cloudEventFactory() {
-        return new JacksonCloudEventFactory(new ByteArrayEventMarshaller(mapper)::marshall);
+    public CloudEventMarshaller<String> stringCloudEventMarshaller() {
+        return new StringCloudEventMarshaller(mapper);
+    }
+
+    @Bean
+    public CloudEventDataFactory defaulfCloudEventFactory() {
+        return new JacksonCloudEventDataFactory(mapper);
     }
 }
