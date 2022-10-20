@@ -81,6 +81,7 @@ public class JsonObjectUtils {
         }
     }
 
+    // see: https://issues.redhat.com/browse/KOGITO-8161 why we are not using the CloudEvent SDK
     public static JsonNode fromValue(DataEvent<JsonNode> dataEvent) {
         ObjectNode node = ObjectMapperFactory.listenerAware().createObjectNode();
         if (dataEvent.getData() != null) {
