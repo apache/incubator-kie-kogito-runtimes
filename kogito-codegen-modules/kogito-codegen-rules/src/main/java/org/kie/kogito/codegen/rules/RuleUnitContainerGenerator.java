@@ -67,7 +67,8 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
             switchEntry.getLabels().add(new StringLiteralExpr(ruleUnit.getRuleUnitDescription().getCanonicalName()));
             ObjectCreationExpr ruleUnitConstructor = new ObjectCreationExpr()
                     .setType(ruleUnit.targetCanonicalName())
-                    .addArgument("application");
+                    .addArgument("this")
+                    .addArgument("this::configureReteEvaluator");
             CastExpr castExpr = new CastExpr(parseType("RuleUnit<T>"), ruleUnitConstructor);
             switchEntry.getStatements().add(new ReturnStmt(castExpr));
             switchStmt.getEntries().add(switchEntry);

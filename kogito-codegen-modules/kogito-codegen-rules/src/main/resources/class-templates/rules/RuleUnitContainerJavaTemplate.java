@@ -15,8 +15,13 @@
  */
 package $Package$;
 
+import java.util.function.Function;
+
+import org.drools.core.common.ReteEvaluator;
 import org.drools.ruleunits.api.RuleUnit;
 import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.impl.sessions.RuleUnitExecutorImpl;
+import org.kie.kogito.rules.RuleEventListenerConfig;
 
 public class RuleUnits extends org.kie.kogito.drools.core.unit.AbstractRuleUnits implements org.kie.kogito.rules.RuleUnits {
 
@@ -30,9 +35,20 @@ public class RuleUnits extends org.kie.kogito.drools.core.unit.AbstractRuleUnits
         String fqcn = clazz.getCanonicalName();
         switch(fqcn) {
             case "$RuleUnit$":
-                return (RuleUnit<T>) new $RuleUnit$RuleUnit(application.get(RuleUnits.class));
+                return (RuleUnit<T>) new $RuleUnit$RuleUnit(this, this::configureReteEvaluator);
             default:
                 throw new java.lang.UnsupportedOperationException();
         }
+    }
+
+    private ReteEvaluator configureReteEvaluator(ReteEvaluator reteEvaluator) {
+        org.kie.kogito.Config config = application.config();
+        if (config != null) {
+            RuleEventListenerConfig ruleEventListenerConfig = config.get(org.kie.kogito.rules.RuleConfig.class).ruleEventListeners();
+            ruleEventListenerConfig.agendaListeners().forEach(reteEvaluator.getActivationsManager().getAgendaEventSupport()::addEventListener);
+            ruleEventListenerConfig.ruleRuntimeListeners().forEach(reteEvaluator.getRuleRuntimeEventSupport()::addEventListener);
+        }
+        ((RuleUnitExecutorImpl)reteEvaluator).setRuleUnits(this);
+        return reteEvaluator;
     }
 }
