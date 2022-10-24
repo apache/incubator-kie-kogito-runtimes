@@ -55,8 +55,10 @@ public class ProcessMeta extends KogitoProcessExtension {
             meta.setKogitoReferenceId(pi.getReferenceId());
             meta.setKogitoBusinessKey(pi.getBusinessKey());
             meta.setKogitoProcessType(pi.getProcess().getType());
-            pi.unwrap().correlation().map(c -> c instanceof CompositeCorrelation ? ((CompositeCorrelation) c).getValue() : Collections.singleton(c))
-                    .ifPresent(correlations -> correlations.forEach(c -> meta.addExtension(c.getKey(), c.asString())));
+            if (pi.unwrap() != null) {
+                pi.unwrap().correlation().map(c -> c instanceof CompositeCorrelation ? ((CompositeCorrelation) c).getValue() : Collections.singleton(c))
+                        .ifPresent(correlations -> correlations.forEach(c -> meta.addExtension(c.getKey(), c.asString())));
+            }
         }
         return meta;
     }
@@ -79,5 +81,4 @@ public class ProcessMeta extends KogitoProcessExtension {
                 return null;
         }
     }
-
 }
