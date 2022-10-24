@@ -27,5 +27,5 @@ public interface EventEmitter {
      * 
      * @param dataEvent The DataEvent
      */
-    CompletionStage<?> emit(DataEvent<?> dataEvent);
+    CompletionStage<Void> emit(DataEvent<?> dataEvent);
 }

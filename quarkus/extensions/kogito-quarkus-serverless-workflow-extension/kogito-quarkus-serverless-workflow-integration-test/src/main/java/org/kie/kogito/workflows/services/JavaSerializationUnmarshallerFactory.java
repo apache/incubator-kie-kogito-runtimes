@@ -18,11 +18,10 @@ package org.kie.kogito.workflows.services;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 
-public class JavaSerializationUnmarshallerFactory implements CloudEventUnmarshallerFactory<byte[]> {
+public class JavaSerializationUnmarshallerFactory implements CloudEventUnmarshallerFactory<Object> {
 
     @Override
-    public <S> CloudEventUnmarshaller<byte[], S> unmarshaller(Class<S> targetClass) {
+    public <S> CloudEventUnmarshaller<Object, S> unmarshaller(Class<S> targetClass) {
         return new JavaSerializationUnmarshaller<>(targetClass);
     }
-
 }

@@ -57,7 +57,7 @@ public class SpringKafkaCloudEventEmitter<M> implements EventEmitter {
     ObjectMapper mapper;
 
     @Override
-    public CompletionStage<?> emit(DataEvent<?> event) {
+    public CompletionStage<Void> emit(DataEvent<?> event) {
         try {
             return emitter
                     .send(

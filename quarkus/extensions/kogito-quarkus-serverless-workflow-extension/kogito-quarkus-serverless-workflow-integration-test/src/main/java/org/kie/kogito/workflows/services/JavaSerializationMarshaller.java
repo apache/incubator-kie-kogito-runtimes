@@ -18,12 +18,14 @@ package org.kie.kogito.workflows.services;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Set;
 
 import org.kie.kogito.event.CloudEventMarshaller;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
 
-public class JavaSerializationMarshaller<T> implements CloudEventMarshaller<byte[]> {
+public class JavaSerializationMarshaller implements CloudEventMarshaller<byte[]> {
 
     @Override
     public byte[] marshall(CloudEvent dataEvent) throws IOException {
@@ -37,8 +39,21 @@ public class JavaSerializationMarshaller<T> implements CloudEventMarshaller<byte
             writeOptional(out, dataEvent.getSubject());
             writeOptional(out, dataEvent.getDataSchema());
             writeOptional(out, dataEvent.getDataContentType());
-            byte[] dataBytes = dataEvent.getData().toBytes();
-            out.write(dataBytes, 0, dataBytes.length);
+
+            Set<String> extensionNames = dataEvent.getExtensionNames();
+            out.writeShort(extensionNames.size());
+            for (String extensionName : extensionNames) {
+                out.writeUTF(extensionName);
+                writeOptional(out, dataEvent.getExtension(extensionName));
+            }
+            CloudEventData data = dataEvent.getData();
+            if (data != null) {
+                out.writeBoolean(true);
+                byte[] dataBytes = data.toBytes();
+                out.write(dataBytes, 0, dataBytes.length);
+            } else {
+                out.writeBoolean(false);
+            }
         }
         return bytes.toByteArray();
     }

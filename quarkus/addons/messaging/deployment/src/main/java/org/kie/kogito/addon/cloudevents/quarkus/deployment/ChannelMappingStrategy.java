@@ -43,8 +43,8 @@ public class ChannelMappingStrategy {
     private static final String INCOMING_DEFAULT_CHANNEL = KOGITO_INCOMING_PREFIX + "defaultName";
     private static final String OUTGOING_DEFAULT_CHANNEL = KOGITO_OUTGOING_PREFIX + "defaultName";
 
-    private static final String MARSHALLER_PREFIX = KOGITO_MESSAGING_PREFIX + ".marshaller.";
-    private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + ".unmarshaller.";
+    private static final String MARSHALLER_PREFIX = KOGITO_MESSAGING_PREFIX + "marshaller.";
+    private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
 
     private static Config config = ConfigProvider.getConfig();
 

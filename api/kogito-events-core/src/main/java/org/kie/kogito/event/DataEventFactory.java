@@ -23,8 +23,10 @@ import java.util.UUID;
 
 import org.kie.kogito.correlation.CompositeCorrelation;
 import org.kie.kogito.event.impl.CloudEventWrapDataEvent;
+import org.kie.kogito.event.impl.JacksonMarshallUtils;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
@@ -47,8 +49,8 @@ public class DataEventFactory {
         return new CloudEventWrapDataEvent<>(event, unmarshaller);
     }
 
-    public static <T> DataEvent<T> from(CloudEvent event) {
-        return new CloudEventWrapDataEvent<>(event);
+    public static <T> DataEvent<T> from(CloudEvent event, Class<T> clazz) {
+        return new CloudEventWrapDataEvent<>(event, JacksonMarshallUtils.getDataConverter(clazz, ObjectMapperFactory.get()));
     }
 
     private DataEventFactory() {

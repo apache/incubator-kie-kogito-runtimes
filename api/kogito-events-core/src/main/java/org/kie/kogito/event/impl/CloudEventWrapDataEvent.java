@@ -27,8 +27,6 @@ import org.kie.kogito.event.CloudEventDataFactory;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
@@ -39,27 +37,6 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
     private final CloudEvent cloudEvent;
     private final Converter<CloudEventData, T> unmarshaller;
     private final AtomicReference<T> data;
-
-    private static final class NullUnmarshallerFactory {
-        private static final Logger logger = LoggerFactory.getLogger(NullUnmarshallerFactory.class);
-        private static final Converter<CloudEventData, Void> nullMarshaller = t -> {
-            logger.info("Null unmarshaller invoked");
-            return null;
-        };
-
-        @SuppressWarnings("unchecked")
-        public static final <T> Converter<CloudEventData, T> getNullMarshaller() {
-            return (Converter<CloudEventData, T>) nullMarshaller;
-        }
-
-        private NullUnmarshallerFactory() {
-
-        }
-    }
-
-    public CloudEventWrapDataEvent(CloudEvent cloudEvent) {
-        this(cloudEvent, NullUnmarshallerFactory.getNullMarshaller());
-    }
 
     public CloudEventWrapDataEvent(CloudEvent cloudEvent, Converter<CloudEventData, T> unmarshaller) {
         Objects.requireNonNull(unmarshaller, "A cloudevent data wrapper should be associated to an unmarshaller");

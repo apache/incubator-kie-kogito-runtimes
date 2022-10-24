@@ -37,6 +37,8 @@ import org.kie.kogito.prediction.PredictionModels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 
@@ -77,7 +79,7 @@ public class EventDrivenPredictionsController {
         if (CloudEventUtils.isValidRequest(event, REQUEST_EVENT_TYPE, extension)) {
             getPredictionModel(extension.getPmmlFileName(), extension.getPmmlModelName()).map(model -> model.evaluateAll(model.newContext(event.getData())))
                     .flatMap(result -> this.buildResponseCloudEvent(result, event, extension))
-                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e)), () -> LOG.warn("Discarding request because not model is found for {}", extension));
+                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e, JsonNode.class)), () -> LOG.warn("Discarding request because not model is found for {}", extension));
         } else {
             LOG.warn("Event {} is not valid. Ignoring it", event);
         }

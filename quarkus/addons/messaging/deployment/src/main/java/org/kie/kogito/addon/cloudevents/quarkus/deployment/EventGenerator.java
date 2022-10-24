@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.drools.util.StringUtils;
+import org.kie.kogito.addon.quarkus.messaging.common.ChannelFormat;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
@@ -76,11 +77,15 @@ public abstract class EventGenerator implements ClassGenerator {
     protected FieldDeclaration generateMarshallerField(String fieldName, String setMethodName, Class<?> fieldClass) {
         FieldDeclaration field =
                 clazz.addField(parseClassOrInterfaceType(fieldClass.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseType(channelInfo.getClassName()))), fieldName);
-        context.getDependencyInjectionAnnotator().withInjection(field);
         clazz.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("init")).flatMap(MethodDeclaration::getBody).ifPresent(body -> body.addStatement(new MethodCallExpr(
                 new SuperExpr(), setMethodName).addArgument(new FieldAccessExpr(new ThisExpr(), fieldName))));
-        channelInfo.getMarshaller().ifPresent(unmarshallerName -> context.getDependencyInjectionAnnotator().withNamedInjection(field, unmarshallerName));
+        channelInfo.getMarshaller().ifPresentOrElse(marshallerName -> setMarshaller(marshallerName, field), () -> context.getDependencyInjectionAnnotator().withInjection(field));
         return field;
+    }
+
+    private void setMarshaller(String marshallerName, FieldDeclaration field) {
+        context.getDependencyInjectionAnnotator().withNamedInjection(field, marshallerName);
+        field.addAnnotation(ChannelFormat.class);
     }
 
     @Override

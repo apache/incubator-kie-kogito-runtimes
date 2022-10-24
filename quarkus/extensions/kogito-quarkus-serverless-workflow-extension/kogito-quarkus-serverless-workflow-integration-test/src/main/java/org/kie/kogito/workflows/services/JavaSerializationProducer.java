@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.Converter;
+package org.kie.kogito.workflows.services;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Named;
 
-import io.cloudevents.CloudEventData;
+import org.kie.kogito.addon.quarkus.messaging.common.ChannelFormat;
+import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 
-public class JacksonMarshallUtils {
+@ApplicationScoped
+public class JavaSerializationProducer {
 
-    public static <O> Converter<CloudEventData, O> getDataConverter(Class<O> targetClass, ObjectMapper objectMapper) {
-        return JsonNode.class.isAssignableFrom(targetClass) ? (Converter<CloudEventData, O>) new JsonNodeCloudEventDataConverter(objectMapper)
-                : new POJOCloudEventDataConverter<>(objectMapper, targetClass);
+    @Produces
+    @Named("java")
+    @ChannelFormat
+    public CloudEventUnmarshallerFactory<Object> getJavaCloudEventUnmarshallerFactory() {
+        return new JavaSerializationUnmarshallerFactory();
     }
 
-    private JacksonMarshallUtils() {
-    }
 }

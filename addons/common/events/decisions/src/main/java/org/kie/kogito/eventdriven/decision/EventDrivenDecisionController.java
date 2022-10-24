@@ -40,6 +40,8 @@ import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.provider.ExtensionProvider;
 
@@ -84,7 +86,7 @@ public class EventDrivenDecisionController {
             getDecisionModel(kogitoExtension.getDmnModelNamespace(), kogitoExtension.getDmnModelName())
                     .map(model -> processRequest(model, event, kogitoExtension))
                     .flatMap(result -> buildResponseCloudEvent(result, event, kogitoExtension))
-                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e)), () -> LOG.warn("Discarding request because not model is found for {}", kogitoExtension));
+                    .ifPresentOrElse(e -> eventEmitter.emit(DataEventFactory.from(e, JsonNode.class)), () -> LOG.warn("Discarding request because not model is found for {}", kogitoExtension));
         } else {
             LOG.warn("Event {} is not valid. Ignoring it", event);
         }

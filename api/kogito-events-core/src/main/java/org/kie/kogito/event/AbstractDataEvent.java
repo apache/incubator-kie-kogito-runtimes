@@ -174,7 +174,6 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
         this.time = ZonedDateTime.now().toOffsetDateTime();
         this.data = body;
         setKogitoProcessInstanceId(kogitoProcessInstanceId);
-        ;
         setKogitoRootProcessInstanceId(kogitoRootProcessInstanceId);
         setKogitoProcessId(kogitoProcessId);
         setKogitoRootProcessId(kogitoRootProcessId);

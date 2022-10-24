@@ -24,14 +24,16 @@ import java.time.OffsetDateTime;
 
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.Converter;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
+import io.vertx.core.buffer.Buffer;
 
-public class JavaSerializationUnmarshaller<T> implements CloudEventUnmarshaller<byte[], T> {
+public class JavaSerializationUnmarshaller<T> implements CloudEventUnmarshaller<Object, T> {
 
     private Class<T> javaDataClass;
 
@@ -40,40 +42,48 @@ public class JavaSerializationUnmarshaller<T> implements CloudEventUnmarshaller<
     }
 
     @Override
-    public Converter<byte[], CloudEvent> cloudEvent() {
+    public Converter<Object, CloudEvent> cloudEvent() {
         return this::cloudEvent;
     }
 
-    private CloudEvent cloudEvent(byte[] buffer) throws IOException {
-        try (DataInputStream is = new DataInputStream(new ByteArrayInputStream(buffer))) {
+    private CloudEvent cloudEvent(Object object) throws IOException {
+        Buffer buffer = (Buffer) object;
+        try (DataInputStream is = new DataInputStream(new ByteArrayInputStream(buffer.getBytes()))) {
             CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(SpecVersion.parse(is.readUTF()));
             builder.withId(is.readUTF());
             builder.withType(is.readUTF());
             builder.withSource(URI.create(is.readUTF()));
-            boolean isPresent = is.readBoolean();
-            if (isPresent) {
+            if (is.readBoolean()) {
                 builder.withTime(OffsetDateTime.parse(is.readUTF()));
             }
-            isPresent = is.readBoolean();
-            if (isPresent) {
+            if (is.readBoolean()) {
                 builder.withSubject(is.readUTF());
             }
-            isPresent = is.readBoolean();
-            if (isPresent) {
+            if (is.readBoolean()) {
                 builder.withDataSchema(URI.create(is.readUTF()));
             }
-            isPresent = is.readBoolean();
-            if (isPresent) {
+            if (is.readBoolean()) {
                 builder.withDataContentType(is.readUTF());
             }
-            builder.withData(is.readAllBytes());
+
+            int numExtensions = is.readShort();
+
+            while (numExtensions-- > 0) {
+                String extName = is.readUTF();
+                if (is.readBoolean()) {
+                    builder.withExtension(extName, is.readUTF());
+                }
+            }
+            if (is.readBoolean()) {
+                builder.withData(is.readAllBytes());
+            }
             return builder.build();
         }
     }
 
     @Override
-    public Converter<byte[], CloudEventData> binaryCloudEvent() {
-        return bytes -> PojoCloudEventData.wrap(fromBytes(bytes), JavaSerializationCloudEventDataFactory::convert);
+    public Converter<Object, CloudEventData> binaryCloudEvent() {
+        return bytes -> PojoCloudEventData.wrap(fromBytes(((Buffer) bytes).getBytes()), JavaSerializationCloudEventDataFactory::convert);
     }
 
     @Override
@@ -89,13 +99,17 @@ public class JavaSerializationUnmarshaller<T> implements CloudEventUnmarshaller<
             }
         }
         return fromBytes(data.toBytes());
-
     }
 
     private T fromBytes(byte[] bytes) throws IOException {
         try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
             try {
-                return javaDataClass.cast(is.readObject());
+                Object value = is.readObject();
+                if (javaDataClass.isInstance(value)) {
+                    return javaDataClass.cast(value);
+                } else {
+                    return ObjectMapperFactory.listenerAware().convertValue(value, javaDataClass);
+                }
             } catch (ClassNotFoundException e) {
                 throw new IllegalStateException(e);
             }
