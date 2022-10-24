@@ -17,11 +17,10 @@ package org.kie.kogito.event;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 
-import org.kie.kogito.correlation.CompositeCorrelation;
+import org.kie.kogito.event.cloudevents.extension.ProcessMeta;
 import org.kie.kogito.event.impl.CloudEventWrapDataEvent;
 import org.kie.kogito.event.impl.JacksonMarshallUtils;
 import org.kie.kogito.event.process.ProcessDataEvent;
@@ -30,14 +29,8 @@ import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
+import io.cloudevents.CloudEventExtension;
 import io.cloudevents.SpecVersion;
-
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ABORTED;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_PENDING;
-import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_SUSPENDED;
 
 public class DataEventFactory {
 
@@ -53,55 +46,28 @@ public class DataEventFactory {
         return new CloudEventWrapDataEvent<>(event, JacksonMarshallUtils.getDataConverter(clazz, ObjectMapperFactory.get()));
     }
 
-    private DataEventFactory() {
+    public static <T> DataEvent<T> from(T eventData, String trigger, KogitoProcessInstance pi) {
+        return from(eventData, trigger, URI.create("/process/" + pi.getProcessId()), Optional.empty(), ProcessMeta.fromKogitoProcessInstance(pi));
     }
 
-    public static <T> DataEvent<T> from(T eventData, String trigger, KogitoProcessInstance pi) {
+    public static <T> DataEvent<T> from(T eventData, String type, URI source, Optional<String> subject, CloudEventExtension... extensions) {
         ProcessDataEvent<T> ce = new ProcessDataEvent<>(eventData);
         ce.setSpecVersion(SpecVersion.V1);
         ce.setId(UUID.randomUUID().toString());
-        ce.setType(trigger);
-        ce.setSource(URI.create("/process/" + pi.getProcessId()));
+        ce.setType(type);
+        ce.setSource(source);
         ce.setTime(OffsetDateTime.now());
         ce.setId(UUID.randomUUID().toString());
-
-        ce.setKogitoParentProcessInstanceId(pi.getParentProcessInstanceId());
-
-        ce.setKogitoRootProcessId(pi.getRootProcessId());
-        ce.setKogitoParentProcessInstanceId(pi.getRootProcessInstanceId());
-        ce.setKogitoReferenceId(pi.getReferenceId());
-        ce.setKogitoBusinessKey(pi.getBusinessKey());
-        ce.setKogitoProcessInstanceId(pi.getId());
-        ce.setKogitoProcessId(pi.getProcessId());
-        ce.setKogitoProcessType(pi.getProcess().getType());
-        ce.setKogitoProcessInstanceVersion(pi.getProcess().getVersion());
-        ce.setKogitoProcessInstanceState(fromState(pi.getState()));
-
-        //setting correlation as extension attributes
-        pi.unwrap().correlation()
-                .stream()
-                .map(c -> CompositeCorrelation.class.isInstance(c) ? CompositeCorrelation.class.cast(c).getValue() : Collections.singleton(c))
-                .flatMap(Set::stream)
-                .forEach(c -> ce.addExtensionAttribute(c.getKey(), c.getValue()));
+        subject.ifPresent(ce::setSubject);
+        for (CloudEventExtension extension : extensions) {
+            for (String key : extension.getKeys()) {
+                ce.addExtensionAttribute(key, extension.getValue(key));
+            }
+        }
         return ce;
     }
 
-    private static String fromState(int state) {
-        switch (state) {
-            case STATE_ABORTED:
-                return "Aborted";
-            case STATE_ACTIVE:
-                return "Active";
-            case STATE_COMPLETED:
-                return "Completed";
-            case STATE_ERROR:
-                return "Error";
-            case STATE_PENDING:
-                return "Pending";
-            case STATE_SUSPENDED:
-                return "Suspended";
-            default:
-                return null;
-        }
+    private DataEventFactory() {
     }
+
 }

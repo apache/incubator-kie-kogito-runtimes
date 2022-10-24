@@ -44,14 +44,13 @@ import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 
 /**
- * This is an abstract implementation of the {@link DataEvent} that contains basic common attributes referring to
- * kogito processes metadata. This class is intended to be used only for applications consuming events published
- * by Kogito that wants to deserialize the cloud event in one shot.
+ * This is an implementation of the {@link DataEvent} that contains basic common attributes referring to
+ * kogito processes metadata.
  *
- * @param <T> the payload
+ * @param <T> the payload class type
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class AbstractDataEvent<T> implements DataEvent<T> {
+public class AbstractDataEvent<T> implements DataEvent<T> {
 
     /**
      * String prefix for Kogito CloudEvents type fields.
