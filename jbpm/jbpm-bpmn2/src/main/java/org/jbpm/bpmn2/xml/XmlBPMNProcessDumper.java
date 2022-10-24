@@ -17,6 +17,7 @@ package org.jbpm.bpmn2.xml;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -925,7 +926,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
             List<Process> processes = xmlReader.read(new StringReader(processXml));
             return processes.get(0);
         } catch (Exception t) {
-            t.printStackTrace();
+            logger.warn("processXml is empty", t);
             return null;
         }
     }

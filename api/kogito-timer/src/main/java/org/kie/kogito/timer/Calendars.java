@@ -16,7 +16,6 @@
 package org.kie.kogito.timer;
 
 public interface Calendars {
-    static final long serialVersionUID = -332085070627193383L;
 
     Calendar get(String identifier);
 
