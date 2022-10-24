@@ -115,7 +115,7 @@ class CloudEventUtilsTest {
 
     @Test
     void testBuildFailure() throws Exception {
-        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA, TEST_DATA_CLASS).isPresent()).isFalse());
+        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA, TEST_DATA_CLASS)).isNotPresent());
     }
 
     @Test
@@ -127,7 +127,7 @@ class CloudEventUtilsTest {
 
     @Test
     void testBuildWithExtensionFailure() throws Exception {
-        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA_CLASS.getSimpleName(), TEST_SUBJECT, TEST_DATA, TEST_EXTENSION).isPresent()).isFalse());
+        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.build(TEST_ID, TEST_URI, TEST_DATA_CLASS.getSimpleName(), TEST_SUBJECT, TEST_DATA, TEST_EXTENSION)).isNotPresent());
     }
 
     @Test
@@ -150,7 +150,7 @@ class CloudEventUtilsTest {
 
     @Test
     void testEncodeFailure() throws Exception {
-        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.encode(TEST_CLOUDEVENT).isPresent()).isFalse());
+        runWithMockedCloudEventUtilsMapper(() -> assertThat(CloudEventUtils.encode(TEST_CLOUDEVENT)).isNotPresent());
     }
 
     @Test
