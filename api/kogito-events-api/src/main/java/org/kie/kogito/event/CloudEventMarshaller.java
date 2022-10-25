@@ -16,8 +16,10 @@
 package org.kie.kogito.event;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
 
 /**
  * This interface is one of the extension point for customers to incorporate more event formats.
@@ -27,5 +29,20 @@ import io.cloudevents.CloudEvent;
  * @param <R> The expected output type that will be consumed by the external service
  */
 public interface CloudEventMarshaller<R> {
+    /**
+     * Convert cloud event into the type expected by the external service
+     * 
+     * @param event Cloud event to be converted
+     * @return object to be sent to the external service
+     * @throws IOException if there is a conversion problem.
+     */
     R marshall(CloudEvent event) throws IOException;
+
+    /**
+     * Convert Kogito business object into a CloudEventData for marshaling
+     * 
+     * @param <T> the Kogito business object type
+     * @return A CloudEventData that will be marshaled.
+     */
+    <T> Function<T, CloudEventData> cloudEventDataFactory();
 }

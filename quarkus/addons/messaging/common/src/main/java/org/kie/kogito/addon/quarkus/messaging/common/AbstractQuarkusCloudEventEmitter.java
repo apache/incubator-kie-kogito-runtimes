@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.kie.kogito.addon.quarkus.messaging.common.message.MessageDecoratorProvider;
-import org.kie.kogito.event.CloudEventDataFactory;
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.EventEmitter;
@@ -37,9 +36,6 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
 
     @Inject
     MessageDecoratorProvider messageDecorator;
-
-    @Inject
-    CloudEventDataFactory cloudEventDataFactory;
 
     private CloudEventMarshaller<M> cloudEventMarshaller;
 
@@ -67,7 +63,7 @@ public abstract class AbstractQuarkusCloudEventEmitter<M> implements EventEmitte
 
     private <T> M getPayload(DataEvent<T> event) throws IOException {
         if (cloudEventMarshaller != null) {
-            return cloudEventMarshaller.marshall(event.asCloudEvent(cloudEventDataFactory::buildCEData));
+            return cloudEventMarshaller.marshall(event.asCloudEvent(cloudEventMarshaller.cloudEventDataFactory()));
         } else if (eventMarshaller != null) {
             return eventMarshaller.marshall(event.getData());
         } else {

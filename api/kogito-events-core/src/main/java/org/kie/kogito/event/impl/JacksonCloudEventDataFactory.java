@@ -18,7 +18,7 @@ package org.kie.kogito.event.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonCloudEventDataFactory extends AbstractCloudEventDataFactory {
+public class JacksonCloudEventDataFactory<T> extends AbstractCloudEventDataFactory<T> {
 
     private final ObjectMapper mapper;
 
@@ -27,7 +27,7 @@ public class JacksonCloudEventDataFactory extends AbstractCloudEventDataFactory 
     }
 
     @Override
-    protected <T> byte[] toBytes(T event) throws JsonProcessingException {
+    protected byte[] toBytes(T event) throws JsonProcessingException {
         return mapper.writeValueAsBytes(event);
     }
 }

@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.kie.kogito.event.CloudEventMarshaller;
 
@@ -65,5 +66,10 @@ public class JavaSerializationMarshaller implements CloudEventMarshaller<byte[]>
         } else {
             out.writeBoolean(false);
         }
+    }
+
+    @Override
+    public <T> Function<T, CloudEventData> cloudEventDataFactory() {
+        return new JavaSerializationCloudEventDataFactory<>();
     }
 }

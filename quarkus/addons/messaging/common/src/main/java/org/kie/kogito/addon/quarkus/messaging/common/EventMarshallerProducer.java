@@ -19,12 +19,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.kie.kogito.event.CloudEventDataFactory;
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.impl.ByteArrayCloudEventMarshaller;
 import org.kie.kogito.event.impl.ByteArrayEventMarshaller;
-import org.kie.kogito.event.impl.JacksonCloudEventDataFactory;
 import org.kie.kogito.event.impl.NoOpCloudEventMarshaller;
 import org.kie.kogito.event.impl.NoOpEventMarshaller;
 import org.kie.kogito.event.impl.StringCloudEventMarshaller;
@@ -73,12 +71,6 @@ public class EventMarshallerProducer {
     @Produces
     @DefaultBean
     public CloudEventMarshaller<Object> defaultCloudEventMarshaller() {
-        return new NoOpCloudEventMarshaller();
-    }
-
-    @Produces
-    @DefaultBean
-    public CloudEventDataFactory defaulfCloudEventFactory() {
-        return new JacksonCloudEventDataFactory(mapper);
+        return new NoOpCloudEventMarshaller(mapper);
     }
 }

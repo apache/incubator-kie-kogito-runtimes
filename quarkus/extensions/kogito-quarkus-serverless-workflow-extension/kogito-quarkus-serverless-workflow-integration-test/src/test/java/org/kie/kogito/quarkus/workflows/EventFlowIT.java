@@ -26,11 +26,8 @@ import java.util.UUID;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.CloudEventDataFactory;
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.impl.ByteArrayCloudEventMarshaller;
-import org.kie.kogito.event.impl.JacksonCloudEventDataFactory;
-import org.kie.kogito.workflows.services.JavaSerializationCloudEventDataFactory;
 import org.kie.kogito.workflows.services.JavaSerializationMarshaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,10 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class EventFlowIT {
 
     private static Map<String, CloudEventMarshaller<byte[]>> marshallers;
-    private static Map<String, CloudEventDataFactory> factories;
 
     private static CloudEventMarshaller<byte[]> defaultMarshaller;
-    private static CloudEventDataFactory defaultFactory;
 
     @BeforeAll
     static void init() {
@@ -62,8 +57,6 @@ class EventFlowIT {
         ObjectMapper mapper = new ObjectMapper().registerModule(JsonFormat.getCloudEventJacksonModule());
         marshallers = Map.of("quiet", new JavaSerializationMarshaller());
         defaultMarshaller = new ByteArrayCloudEventMarshaller(mapper);
-        defaultFactory = new JacksonCloudEventDataFactory(mapper);
-        factories = Map.of("quiet", new JavaSerializationCloudEventDataFactory());
     }
 
     @Test
@@ -152,17 +145,18 @@ class EventFlowIT {
     }
 
     private byte[] generateCloudEvent(String id, String type) throws IOException {
-        return marshallers.getOrDefault(type, defaultMarshaller).marshall(generateCloudEvent(id, type, factories.getOrDefault(type, defaultFactory)));
+        CloudEventMarshaller<byte[]> marshaller = marshallers.getOrDefault(type, defaultMarshaller);
+        return marshaller.marshall(buildCloudEvent(id, type, marshaller));
     }
 
-    private CloudEvent generateCloudEvent(String id, String type, CloudEventDataFactory dataFactory) {
+    private CloudEvent buildCloudEvent(String id, String type, CloudEventMarshaller<byte[]> marshaller) {
         return CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withSource(URI.create(""))
                 .withType(type)
                 .withTime(OffsetDateTime.now())
                 .withExtension("kogitoprocrefid", id)
-                .withData(dataFactory.buildCEData(Collections.singletonMap(type, "This has been injected by the event")))
+                .withData(marshaller.cloudEventDataFactory().apply(Collections.singletonMap(type, "This has been injected by the event")))
                 .build();
     }
 

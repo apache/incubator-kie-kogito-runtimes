@@ -22,8 +22,8 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
-import org.kie.kogito.event.CloudEventDataFactory;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -179,7 +179,7 @@ public class CloudEventWrapDataEvent<T> implements DataEvent<T> {
     }
 
     @Override
-    public CloudEvent asCloudEvent(CloudEventDataFactory factory) {
+    public CloudEvent asCloudEvent(Function<T, CloudEventData> factory) {
         return cloudEvent;
     }
 

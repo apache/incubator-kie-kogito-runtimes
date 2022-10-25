@@ -21,10 +21,10 @@ import java.io.ObjectOutputStream;
 
 import org.kie.kogito.event.impl.AbstractCloudEventDataFactory;
 
-public class JavaSerializationCloudEventDataFactory extends AbstractCloudEventDataFactory {
+public class JavaSerializationCloudEventDataFactory<T> extends AbstractCloudEventDataFactory<T> {
 
     @Override
-    protected <T> byte[] toBytes(T object) throws IOException {
+    protected byte[] toBytes(T object) throws IOException {
         return object instanceof byte[] ? (byte[]) object : convert(object);
     }
 

@@ -46,7 +46,6 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
                 metaData.get(ProcessInstanceEventBody.PROCESS_ID_META_DATA),
                 metaData.get(ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA),
                 addons);
-
         addExtensionAttribute(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE, metaData.get(UserTaskInstanceEventBody.UT_STATE_META_DATA));
         addExtensionAttribute(CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID, metaData.get(metaData.get(UserTaskInstanceEventBody.UT_ID_META_DATA)));
     }
@@ -62,13 +61,15 @@ public class UserTaskInstanceDataEvent extends AbstractDataEvent<UserTaskInstanc
     @Override
     @JsonAnySetter
     public void addExtensionAttribute(String name, Object value) {
-        switch (name) {
-            case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE:
-                this.kogitoUserTaskinstanceState = (String) value;
-                break;
-            case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID:
-                this.kogitoUserTaskinstanceId = (String) value;
+        if (value != null) {
+            switch (name) {
+                case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_STATE:
+                    this.kogitoUserTaskinstanceState = (String) value;
+                    break;
+                case CloudEventExtensionConstants.PROCESS_USER_TASK_INSTANCE_ID:
+                    this.kogitoUserTaskinstanceId = (String) value;
+            }
+            super.addExtensionAttribute(name, value);
         }
-        super.addExtensionAttribute(name, value);
     }
 }

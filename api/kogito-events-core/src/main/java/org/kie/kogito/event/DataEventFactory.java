@@ -38,8 +38,8 @@ public class DataEventFactory {
         return new ProcessDataEvent<>(event);
     }
 
-    public static <T> DataEvent<T> from(CloudEvent event, Converter<CloudEventData, T> unmarshaller) {
-        return new CloudEventWrapDataEvent<>(event, unmarshaller);
+    public static <T> DataEvent<T> from(CloudEvent event, Converter<CloudEventData, T> dataUnmarshaller) {
+        return new CloudEventWrapDataEvent<>(event, dataUnmarshaller);
     }
 
     public static <T> DataEvent<T> from(CloudEvent event, Class<T> clazz) {
