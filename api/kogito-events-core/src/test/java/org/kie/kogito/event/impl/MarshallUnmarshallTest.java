@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.DummyEvent;
+<<<<<<< Upstream, based on main
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.EventUnmarshaller;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
@@ -55,4 +56,36 @@ class MarshallUnmarshallTest {
     private <T> void testIt(Object event, EventMarshaller<T> marshaller, EventUnmarshaller<T> unmarshaller) throws IOException {
         assertEquals(event, unmarshaller.unmarshall(marshaller.marshall(event), event.getClass()));
     }
+=======
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.kie.kogito.event.impl.DataEventTestUtils.testEventMarshalling;
+
+class MarshallUnmarshallTest {
+
+    private static ObjectMapper mapper;
+
+    @BeforeAll
+    static void init() {
+        mapper = ObjectMapperFactory.get();
+    }
+
+    @Test
+    void testStringMarshaller() throws IOException {
+        testEventMarshalling(new DummyEvent("pepe"), new StringEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
+    }
+
+    @Test
+    void testObjectMarshaller() throws IOException {
+        testEventMarshalling(new DummyEvent("pepe"), new NoOpEventMarshaller(), new JacksonEventDataUnmarshaller<>(mapper));
+    }
+
+    @Test
+    void testByteArrayMarshaller() throws IOException {
+        testEventMarshalling(new DummyEvent("pepe"), new ByteArrayEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
+    }
+
+>>>>>>> e1832a8 [KOGITO-6653] Adding avro unmarshaller
 }

@@ -32,6 +32,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventContext;
@@ -49,7 +52,6 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.cloudevents.jackson.JsonCloudEventData;
-import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 import io.cloudevents.rw.CloudEventRWException;
 
@@ -57,11 +59,53 @@ import static io.cloudevents.core.CloudEventUtils.mapData;
 
 public final class CloudEventUtils {
 
+    public static final String SPEC_VERSION = "specversion";
+    public static final String TYPE = "type";
+    public static final String SOURCE = "source";
+    public static final String TIME = "time";
+    public static final String SUBJECT = "subject";
+    public static final String DATA = "data";
+    public static final String ID = "id";
+    public static final String CONTENT_TYPE = "datacontenttype";
+    public static final String DATA_SCHEMA = "dataschema";
+
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
     public static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
             .orElseThrow(IllegalStateException::new);
 
     private CloudEventUtils() {
+    }
+
+    // see: https://issues.redhat.com/browse/KOGITO-8161 why we are not using the CloudEvent SDK
+    public static JsonNode fromValue(DataEvent<JsonNode> dataEvent) {
+        ObjectNode node = ObjectMapperFactory.listenerAware().createObjectNode();
+        if (dataEvent.getData() != null) {
+            node.set(DATA, dataEvent.getData());
+        }
+        node.put(ID, dataEvent.getId());
+        if (dataEvent.getSource() != null) {
+            node.put(SOURCE, dataEvent.getSource().toString());
+        }
+        if (dataEvent.getSpecVersion() != null) {
+            node.put(SPEC_VERSION, dataEvent.getSpecVersion().toString());
+        }
+        node.put(TYPE, dataEvent.getType());
+        if (dataEvent.getDataContentType() != null) {
+            node.put(CONTENT_TYPE, dataEvent.getDataContentType());
+        }
+        if (dataEvent.getDataSchema() != null) {
+            node.put(DATA_SCHEMA, dataEvent.getDataContentType());
+        }
+        if (dataEvent.getSubject() != null) {
+            node.put(SUBJECT, dataEvent.getDataContentType());
+        }
+        if (dataEvent.getTime() != null) {
+            node.put(TIME, dataEvent.getTime().toString());
+        }
+        for (String extensionName : dataEvent.getExtensionNames()) {
+            node.set(extensionName, JsonObjectUtils.fromValue(dataEvent.getExtension(extensionName)));
+        }
+        return node;
     }
 
     public static <E> Optional<CloudEvent> build(String id, URI source, E data, Class<E> dataType) {
@@ -201,19 +245,12 @@ public final class CloudEventUtils {
                 .orElse(UNKNOWN_SOURCE_URI_STRING));
     }
 
-    // This trick allows to inject a mocked ObjectMapper in the unit tests via Mockito#mockStatic
     public static final class Mapper {
-
-        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
-                .registerModule(JsonFormat.getCloudEventJacksonModule())
-                .registerModule(new JavaTimeModule());
-
         private Mapper() {
-
         }
 
         public static ObjectMapper mapper() {
-            return OBJECT_MAPPER;
+            return ObjectMapperFactory.get();
         }
     }
 

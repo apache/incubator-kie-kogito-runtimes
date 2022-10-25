@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+<<<<<<< Upstream, based on main
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
@@ -73,4 +74,40 @@ class CloudEventMarshallUnmarshallTest {
         assertEquals(event.getTime(), targetEvent.getTime());
         assertEquals(event.getData(), targetEvent.getData());
     }
+=======
+import org.kie.kogito.event.DummyCloudEvent;
+import org.kie.kogito.event.DummyEvent;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cloudevents.jackson.JsonFormat;
+
+import static org.kie.kogito.event.impl.DataEventTestUtils.testCloudEventMarshalling;
+
+class CloudEventMarshallUnmarshallTest {
+
+    private static ObjectMapper mapper;
+
+    @BeforeAll
+    static void init() {
+        mapper = ObjectMapperFactory.get().registerModule(JsonFormat.getCloudEventJacksonModule());
+    }
+
+    @Test
+    void testStringMarshaller() throws IOException {
+        testCloudEventMarshalling(new DummyCloudEvent(new DummyEvent("pepe"), "pepa"), DummyEvent.class, new StringCloudEventMarshaller(mapper), new StringCloudEventUnmarshallerFactory(mapper));
+    }
+
+    @Test
+    void testObjectMarshaller() throws IOException {
+        testCloudEventMarshalling(new DummyCloudEvent(new DummyEvent("pepe"), "pepa"), DummyEvent.class, new NoOpCloudEventMarshaller(mapper), new ObjectCloudEventUnmarshallerFactory(mapper));
+    }
+
+    @Test
+    void testByteArrayMarshaller() throws IOException {
+        testCloudEventMarshalling(new DummyCloudEvent(new DummyEvent("pepe"), "pepa"), DummyEvent.class, new ByteArrayCloudEventMarshaller(mapper), new ByteArrayCloudEventUnmarshallerFactory(mapper));
+    }
+
+>>>>>>> e1832a8 [KOGITO-6653] Adding avro unmarshaller
 }
