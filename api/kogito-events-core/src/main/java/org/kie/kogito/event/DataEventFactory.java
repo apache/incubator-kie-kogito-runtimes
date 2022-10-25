@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.kie.kogito.event.cloudevents.extension.ProcessMeta;
+import org.kie.kogito.event.impl.CloudEventDataConverterFactory;
 import org.kie.kogito.event.impl.CloudEventWrapDataEvent;
-import org.kie.kogito.event.impl.JacksonMarshallUtils;
 import org.kie.kogito.event.process.ProcessDataEvent;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
@@ -43,7 +43,7 @@ public class DataEventFactory {
     }
 
     public static <T> DataEvent<T> from(CloudEvent event, Class<T> clazz) {
-        return new CloudEventWrapDataEvent<>(event, JacksonMarshallUtils.getDataConverter(clazz, ObjectMapperFactory.get()));
+        return new CloudEventWrapDataEvent<>(event, CloudEventDataConverterFactory.getDataConverter(clazz, ObjectMapperFactory.get()));
     }
 
     public static <T> DataEvent<T> from(T eventData, String trigger, KogitoProcessInstance pi) {
