@@ -17,6 +17,13 @@ package org.kie.kogito.event;
 
 import io.cloudevents.CloudEventData;
 
+/**
+ * This interface is one of the extension point for customers to incorporate more event formats.
+ * It is responsible for converting the Kogito business object into a CloudEventData when building a CloudEvent for marshalling.
+ * Default implementation uses Jackson.
+ * 
+ * @param <T> Kogito business object type.
+ */
 public interface CloudEventDataFactory {
     <T> CloudEventData buildCEData(T event);
 }

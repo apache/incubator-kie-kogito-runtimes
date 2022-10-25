@@ -28,8 +28,8 @@ public interface EventMarshaller<R> {
      * Converts Kogito business object into external service one
      * 
      * @param <T> Kogito business object type
-     * @param event Kogito business object, typically, but not necessarily, a DataEvent instance.
+     * @param event Kogito business object.
      * @return
      */
-    <T> R marshall(T dataEvent) throws IOException;
+    <T> R marshall(T event) throws IOException;
 }

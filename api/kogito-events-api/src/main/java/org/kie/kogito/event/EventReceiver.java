@@ -22,6 +22,9 @@ import java.util.function.Function;
  * Event receiver interface.
  * 
  * Implementation are responsible for interacting with the external event publisher and transforming the events received into the model object.
+ * 
+ * @see EventUnmarshaller
+ * @see CloudEventUnmarshaller
  */
 public interface EventReceiver {
 

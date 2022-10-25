@@ -18,12 +18,15 @@ package org.kie.kogito.event;
 import java.util.concurrent.CompletionStage;
 
 /**
- * Generic event emitter. Implementation is responsible to interact with the external event service and
- * transform the data event into the format expected by the external service.
+ * It is responsible to interact with the external event service for event publishing.
+ * One of its task is to transform the data event into the format expected by the external service.
+ * 
+ * @see EventMarshaller
+ * @see CloudEventMarshaller
  */
 public interface EventEmitter {
     /**
-     * Publish the cloud event object, properly transformed, into an external event service.
+     * Publish the data event object into an external event service.
      * 
      * @param dataEvent The DataEvent
      */
