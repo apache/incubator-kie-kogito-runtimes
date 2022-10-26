@@ -48,19 +48,6 @@ public class KogitoProcessExtension implements CloudEventExtension {
     private String kogitoBusinessKey;
     private String kogitoProcessType;
 
-    public String getKogitoProcessType() {
-        return kogitoProcessType;
-    }
-
-    public void setKogitoProcessType(String kogitoProcessType) {
-        this.kogitoProcessType = kogitoProcessType;
-        this.addExtension(CloudEventExtensionConstants.PROCESS_TYPE, kogitoProcessType);
-    }
-
-    public String getKogitoBusinessKey() {
-        return kogitoBusinessKey;
-    }
-
     public KogitoProcessExtension() {
         this.innerValues = new HashMap<>();
     }
@@ -164,8 +151,17 @@ public class KogitoProcessExtension implements CloudEventExtension {
         this.addExtension(CloudEventExtensionConstants.BUSINESS_KEY, this.kogitoBusinessKey);
     }
 
-    public String getBusinessKey() {
+    public String getKogitoBusinessKey() {
         return this.kogitoBusinessKey;
+    }
+
+    public String getKogitoProcessType() {
+        return kogitoProcessType;
+    }
+
+    public void setKogitoProcessType(String kogitoProcessType) {
+        this.kogitoProcessType = kogitoProcessType;
+        this.addExtension(CloudEventExtensionConstants.PROCESS_TYPE, kogitoProcessType);
     }
 
     /**
