@@ -34,7 +34,8 @@ public interface CloudEventMarshaller<R> {
      * 
      * @param event Cloud event to be converted
      * @return object to be sent to the external service
-     * @throws IOException if there is a conversion problem.
+     * @throws IOException if there is a conversion problem. This method must NOT report event formatting issues through a runtime exception, it must use IOException. This way the caller
+     *         can differentiate between unexpected issues and event formatting ones.
      */
     R marshall(CloudEvent event) throws IOException;
 

@@ -33,7 +33,7 @@ import io.vertx.core.buffer.Buffer;
 
 public class JavaSerializationUnmarshaller<T> implements CloudEventUnmarshaller<Object, T> {
 
-    private Class<T> javaDataClass;
+    private final Class<T> javaDataClass;
 
     public JavaSerializationUnmarshaller(Class<T> javaDataClass) {
         this.javaDataClass = javaDataClass;

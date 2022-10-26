@@ -58,7 +58,7 @@ class CloudEventMarshallUnmarshallTest {
         testIt(new DummyCloudEvent(new DummyEvent("pepe"), "pepa"), new ByteArrayCloudEventMarshaller(mapper), new ByteArrayCloudEventUnmarshallerFactory(mapper));
     }
 
-    private <T, V> void testIt(DataEvent<DummyEvent> event, CloudEventMarshaller<T> marshaller, CloudEventUnmarshallerFactory<T> unmarshallerFactory) throws IOException {
+    private <T> void testIt(DataEvent<DummyEvent> event, CloudEventMarshaller<T> marshaller, CloudEventUnmarshallerFactory<T> unmarshallerFactory) throws IOException {
         CloudEventUnmarshaller<T, DummyEvent> unmarshaller = unmarshallerFactory.unmarshaller(DummyEvent.class);
         DataEvent<DummyEvent> targetEvent =
                 DataEventFactory.from(unmarshaller.cloudEvent().convert(marshaller.marshall(event.asCloudEvent(marshaller.cloudEventDataFactory()))), unmarshaller.data());

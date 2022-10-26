@@ -41,7 +41,7 @@ public abstract class AbstractCloudEventDataConverter<O> implements Converter<Cl
 
     protected Optional<O> isTargetInstanceAlready(CloudEventData value) {
         if (value instanceof PojoCloudEventData) {
-            Object pojo = ((PojoCloudEventData) value).getValue();
+            Object pojo = ((PojoCloudEventData<?>) value).getValue();
             if (targetClass.isAssignableFrom(pojo.getClass())) {
                 return Optional.of(targetClass.cast(pojo));
             }

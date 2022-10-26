@@ -52,7 +52,7 @@ import io.cloudevents.core.builder.CloudEventBuilder;
  * @param <T> the payload class type
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AbstractDataEvent<T> implements DataEvent<T> {
+public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     /**
      * String prefix for Kogito CloudEvents type fields.
