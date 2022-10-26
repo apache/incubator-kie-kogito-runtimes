@@ -49,9 +49,6 @@ import org.kie.kogito.uow.UnitOfWork;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
@@ -64,7 +61,7 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
     @ParameterizedTest
     @MethodSource("processes")
     public void testBasicBusinessRuleUnit(String bpmnPath) throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList(bpmnPath));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("org/kie/kogito/codegen/tests/BusinessRuleUnit.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -80,14 +77,14 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKey("person");
-        assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
+        assertThat(result.toMap()).hasSize(1).containsKey("person")
+                .containsKey("person").hasFieldOrPropertyWithValue("adult", true);
     }
 
     @ParameterizedTest
     @MethodSource("processes")
     public void testBasicBusinessRuleUnitWithAgendaListener(String bpmnPath) throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList(bpmnPath));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("org/kie/kogito/codegen/tests/BusinessRuleUnit.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -99,7 +96,6 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
             public void afterMatchFired(AfterMatchFiredEvent event) {
                 counter.incrementAndGet();
             }
-
         });
         Process<? extends Model> p = app.get(Processes.class).processById("BusinessRuleUnit");
 
@@ -111,16 +107,16 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKey("person");
-        assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
+        assertThat(result.toMap()).hasSize(1).containsKey("person")
+                .containsKey("person").hasFieldOrPropertyWithValue("adult", true);
 
-        assertThat(counter.get()).isEqualTo(1);
+        assertThat(counter.get()).isOne();
     }
 
     @ParameterizedTest
     @MethodSource("processes")
     public void testBasicBusinessRuleUnitControlledByUnitOfWork(String bpmnPath) throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList(bpmnPath));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("org/kie/kogito/codegen/tests/BusinessRuleUnit.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -133,7 +129,6 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
             public void beforeProcessStarted(ProcessStartedEvent event) {
                 startedProcesses.add(((KogitoProcessInstance) event.getProcessInstance()).getStringId());
             }
-
         });
         UnitOfWork uow = app.unitOfWorkManager().newUnitOfWork();
         uow.start();
@@ -148,8 +143,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         assertThat(processInstance.status()).isEqualTo(ProcessInstance.STATE_COMPLETED);
         Model result = (Model) processInstance.variables();
-        assertThat(result.toMap()).hasSize(1).containsKey("person");
-        assertThat(result.toMap().get("person")).isNotNull().hasFieldOrPropertyWithValue("adult", true);
+        assertThat(result.toMap()).hasSize(1).containsKey("person")
+                .containsKey("person").hasFieldOrPropertyWithValue("adult", true);
 
         uow.end();
         assertThat(startedProcesses).hasSize(1);
@@ -157,7 +152,7 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
     @Test
     public void ioMapping() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleP.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Example.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -175,30 +170,29 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson");
         assertThat((Collection) result.get("emptyList")).isEmpty();
 
         instance.start();
 
         result = instance.variables().toMap();
-        assertEquals("hello", result.get("emptyString"));
+        assertThat(result).containsEntry("emptyString", "hello");
 
         Person yoko = new Person("Yoko", 86);
         yoko.setAdult(true);
-        assertEquals(yoko, result.get("emptyPerson"));
+        assertThat(result).containsEntry("emptyPerson", yoko);
 
         Person paul = new Person("Paul", 77);
         paul.setAdult(true);
         Person ringo = new Person("Ringo", 79);
         ringo.setAdult(true);
-        assertEquals(asList(paul, ringo), result.get("emptyList"));
-
+        assertThat(result).containsEntry("emptyList", asList(paul, ringo));
     }
 
     @Test
     public void ioMappingAutoGeneratedRuleUnit() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleGenerated.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Generated.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -216,8 +210,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson");
 
         instance.start();
 
@@ -225,13 +219,12 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         Person yoko = new Person("Yoko", 86);
         yoko.setAdult(true);
-        assertEquals(yoko, result.get("singlePerson"));
-
+        assertThat(result).containsEntry("singlePerson", yoko);
     }
 
     @Test
     public void testSettingOtherVariableFromAutoGeneratedRuleUnit() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleGenerated.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Generated.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -247,8 +240,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson");
 
         instance.start();
 
@@ -256,14 +249,13 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         Person john = new Person("John", 50);
         john.setAdult(true);
-        assertEquals(john, result.get("singlePerson"));
-        assertEquals("Now the life starts again", result.get("singleString"));
-
+        assertThat(result).containsEntry("singlePerson", john)
+                .containsEntry("singleString", "Now the life starts again");
     }
 
     @Test
     public void testRemovingOtherVariableFromAutoGeneratedRuleUnit() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleGenerated.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Generated.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -279,8 +271,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson");
 
         instance.start();
 
@@ -288,9 +280,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         Person john = new Person("John", 60);
         john.setAdult(true);
-        assertEquals(john, result.get("singlePerson"));
-        assertNull(result.get("singleString"));
-
+        assertThat(result).containsEntry("singlePerson", john);
+        assertThat(result).doesNotContainKey("singleString");
     }
 
     @Test
@@ -306,7 +297,7 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
     @Test
     @DisplayName("Should throw an exception when a null collection variable is mapped as input of a datasource")
     public void inputMappingNullCollection() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleP.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Example.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -323,9 +314,9 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
-        assertNull(result.get("emptyList"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson")
+                .doesNotContainKey("emptyList");
 
         instance.start();
 
@@ -336,7 +327,7 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
     @Test
     @DisplayName("Should throw an exception when a null collection variable is mapped as output of a datasource")
     public void outputMappingNullCollection() throws Exception {
-        Map<AbstractCodegenIT.TYPE, List<String>> resourcesTypeMap = new HashMap<>();
+        Map<TYPE, List<String>> resourcesTypeMap = new HashMap<>();
         resourcesTypeMap.put(TYPE.PROCESS, Collections.singletonList("ruletask/ExampleP.bpmn"));
         resourcesTypeMap.put(TYPE.RULES, Collections.singletonList("ruletask/Example.drl"));
         Application app = generateCode(resourcesTypeMap);
@@ -353,9 +344,9 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
         Model variables = instance.variables();
         Map<String, Object> result = variables.toMap();
 
-        assertNull(result.get("emptyString"));
-        assertNull(result.get("emptyPerson"));
-        assertNull(result.get("emptyList"));
+        assertThat(result).doesNotContainKey("emptyString")
+                .doesNotContainKey("emptyPerson")
+                .doesNotContainKey("emptyList");
 
         instance.start();
 
@@ -365,7 +356,7 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
     @Test
     public void malformedShouldThrowException() {
-        assertThrows(ProcessCodegenException.class, () -> {
+        assertThatExceptionOfType(ProcessCodegenException.class).isThrownBy(() -> {
             generateCodeProcessesOnly("ruletask/BusinessRuleTaskMalformed.bpmn2");
         });
     }
