@@ -57,7 +57,6 @@ public class DataEventFactory {
         ce.setType(type);
         ce.setSource(source);
         ce.setTime(OffsetDateTime.now());
-        ce.setId(UUID.randomUUID().toString());
         subject.ifPresent(ce::setSubject);
         for (CloudEventExtension extension : extensions) {
             for (String key : extension.getKeys()) {
