@@ -30,7 +30,7 @@ class CloudEventMarshallUnmarshallTest {
     private static AvroUtils avroUtils;
 
     @BeforeAll
-    static void init() {
+    static void init() throws IOException {
         avroUtils = new AvroUtils();
     }
 

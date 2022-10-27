@@ -15,6 +15,37 @@
  */
 package org.kie.kogito.event.avro;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
+import org.apache.avro.io.BinaryDecoder;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.util.Utf8;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.dataformat.avro.AvroMapper;
+import com.fasterxml.jackson.dataformat.avro.AvroSchema;
+
+import io.cloudevents.CloudEvent;
+import io.cloudevents.SpecVersion;
+import io.cloudevents.core.builder.CloudEventBuilder;
+
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.CONTENT_TYPE;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA_SCHEMA;
@@ -25,53 +56,24 @@ import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.SUBJECT;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.TIME;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.TYPE;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.ByteBuffer;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.avro.Schema;
-import org.apache.avro.Schema.Type;
-import org.apache.avro.SchemaBuilder;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.generic.GenericRecordBuilder;
-import org.apache.avro.io.BinaryDecoder;
-import org.apache.avro.io.BinaryEncoder;
-import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.io.EncoderFactory;
-import org.apache.avro.reflect.ReflectData;
-import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
-
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.dataformat.avro.AvroMapper;
-import com.fasterxml.jackson.dataformat.avro.AvroSchema;
-
-import io.cloudevents.CloudEvent;
-import io.cloudevents.SpecVersion;
-import io.cloudevents.core.builder.CloudEventBuilder;
-import io.cloudevents.jackson.JsonFormat;
-
 public class AvroUtils {
 
-    static final String EXTENSIONS = "extensions";
-    static final String SCHEMA_NAME = "CloudEvent";
+    private static final String ATTRIBUTES = "attribute";
+    private static final Utf8 SPEC_VERSION_UTF = new Utf8(SPEC_VERSION);
+    private static final Utf8 TYPE_UTF = new Utf8(TYPE);
+    private static final Utf8 SOURCE_UTF = new Utf8(SOURCE);
+    private static final Utf8 ID_UTF = new Utf8(ID);
+    private static final Utf8 CONTENT_TYPE_UTF = new Utf8(CONTENT_TYPE);
+    private static final Utf8 DATA_SCHEMA_UTF = new Utf8(DATA_SCHEMA);
+    private static final Utf8 TIME_UTF = new Utf8(TIME);
+    private static final Utf8 SUBJECT_UTF = new Utf8(SUBJECT);
 
-    private final AvroMapper avroMapper;
     private final Schema ceSchema;
+    private final AvroMapper avroMapper;
 
-    public AvroUtils() {
-        this(getAvroMapper());
-    }
-
-    public AvroUtils(AvroMapper mapper) {
-        this.avroMapper = mapper;
+    public AvroUtils() throws IOException {
         this.ceSchema = getCloudEventSchema();
+        this.avroMapper = getAvroMapper();
     }
 
     public byte[] writeObject(Object obj) throws IOException {
@@ -94,52 +96,48 @@ public class AvroUtils {
         GenericRecordBuilder builder = new GenericRecordBuilder(ceSchema);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(bytes, null);
-        builder.set(SPEC_VERSION, event.getSpecVersion().toString());
-        if (event.getData() != null) {
-            builder.set(DATA, ByteBuffer.wrap(event.getData().toBytes()));
-        }
-        if (event.getDataSchema() != null) {
-            builder.set(DATA_SCHEMA, event.getDataSchema().toString());
-        }
-        builder.set(ID, event.getId());
-        builder.set(SOURCE, event.getSource().toString());
-        if (event.getSubject() != null) {
-            builder.set(SUBJECT, event.getSubject());
-        }
-        if (event.getDataContentType() != null) {
-            builder.set(CONTENT_TYPE, event.getDataContentType());
-        }
-        if (event.getTime() != null) {
-            builder.set(TIME, event.getTime().toString());
-        }
-        builder.set(TYPE, event.getType());
-        builder.set(AvroUtils.EXTENSIONS, event.getExtensionNames().stream().collect(Collectors.toMap(k -> k, k -> event.getExtension(k))));
+        Map<String, Object> attrsMap = event.getAttributeNames().stream().filter(k -> event.getAttribute(k) != null).collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getAttribute(k))));
+        // Cloud Event Avro spec https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/avro-format.md  does not have extension, so passing extensions as attributes
+        attrsMap.putAll(event.getExtensionNames().stream().collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getExtension(k)))));
+        builder.set(ATTRIBUTES, attrsMap);
+        builder.set(DATA, ByteBuffer.wrap(event.getData().toBytes()));
         writer.write(builder.build(), encoder);
         encoder.flush();
         return bytes.toByteArray();
+    }
+
+    private Object fromJavaObject(Object value) {
+        if (value instanceof Number || value instanceof Boolean || value instanceof String || value instanceof ByteBuffer) {
+            return value;
+        } else if (value instanceof byte[]) {
+            return ByteBuffer.wrap((byte[]) value);
+        } else {
+            return value.toString();
+        }
     }
 
     public CloudEvent readCloudEvent(byte[] bytes) throws IOException {
         GenericDatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(ceSchema);
         BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
         GenericRecord record = reader.read(null, decoder);
-        CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(SpecVersion.parse(record.get(SPEC_VERSION).toString()))
-                .withType(record.get(TYPE).toString())
-                .withSource(URI.create(record.get(SOURCE).toString()))
-                .withId(record.get(ID).toString());
-        Object value = record.get(CONTENT_TYPE);
+        Map<Utf8, Object> attrs = (Map) record.get(ATTRIBUTES);
+        CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(SpecVersion.parse(attrs.remove(SPEC_VERSION_UTF).toString()))
+                .withType(attrs.remove(TYPE_UTF).toString())
+                .withSource(URI.create(attrs.remove(SOURCE_UTF).toString()))
+                .withId(attrs.remove(ID_UTF).toString());
+        Object value = attrs.remove(CONTENT_TYPE_UTF);
         if (value != null) {
             builder.withDataContentType(value.toString());
         }
-        value = record.get(DATA_SCHEMA);
+        value = attrs.remove(DATA_SCHEMA_UTF);
         if (value != null) {
             builder.withDataSchema(URI.create(value.toString()));
         }
-        value = record.get(TIME);
+        value = attrs.remove(TIME_UTF);
         if (value != null) {
             builder.withTime(OffsetDateTime.parse(value.toString()));
         }
-        value = record.get(SUBJECT);
+        value = attrs.get(SUBJECT_UTF);
         if (value != null) {
             builder.withSubject(value.toString());
         }
@@ -147,7 +145,7 @@ public class AvroUtils {
         if (value instanceof ByteBuffer) {
             builder.withData(((ByteBuffer) value).array());
         }
-        ((Map<Object, Object>) record.get(EXTENSIONS)).forEach((k, v) -> CloudEventUtils.withExtension(builder, k.toString(), v));
+        attrs.forEach((k, v) -> CloudEventUtils.withExtension(builder, k.toString(), v));
         return builder.build();
     }
 
@@ -159,39 +157,18 @@ public class AvroUtils {
         return ReflectData.get().getSchema(clazz);
     }
 
+    private static Schema getCloudEventSchema() throws IOException {
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("spec.avsc")) {
+            if (is == null) {
+                throw new IOException("cannot load cloud event schema");
+            }
+            return new Schema.Parser().parse(is);
+        }
+    }
+
     private static final AvroMapper getAvroMapper() {
         AvroMapper mapper = new AvroMapper();
-        mapper.registerModule(JsonFormat.getCloudEventJacksonModule()).findAndRegisterModules();
+        mapper.findAndRegisterModules();
         return mapper;
-    }
-
-    private static Schema nullableString() {
-        return nullableType(Schema.Type.STRING);
-    }
-
-    private static Schema nullableType(Schema.Type type) {
-        return Schema.createUnion(Schema.create(Schema.Type.NULL), Schema.create(type));
-    }
-
-    private static Schema getCloudEventSchema() {
-        return SchemaBuilder.builder().record(SCHEMA_NAME).fields()
-                .name(SPEC_VERSION).type(Schema.create(Schema.Type.STRING)).noDefault()
-                .name(DATA).type(nullableType(Type.BYTES)).withDefault(null)
-                .name(ID).type(Schema.create(Schema.Type.STRING)).noDefault()
-                .name(DATA_SCHEMA).type(nullableString()).withDefault(null)
-                .name(SOURCE).type(Schema.create(Schema.Type.STRING)).noDefault()
-                .name(SUBJECT).type(nullableString()).withDefault(null)
-                .name(CONTENT_TYPE).type(nullableString()).withDefault(null)
-                .name(TIME).type(nullableString()).withDefault(null)
-                .name(TYPE).type(Schema.create(Schema.Type.STRING)).noDefault()
-                .name(EXTENSIONS).type(Schema.createMap(Schema.createUnion(
-                        Schema.create(Type.STRING),
-                        Schema.create(Type.BOOLEAN),
-                        Schema.create(Type.INT),
-                        Schema.create(Type.DOUBLE),
-                        Schema.create(Type.FLOAT),
-                        Schema.create(Type.LONG))))
-                .noDefault()
-                .endRecord();
     }
 }
