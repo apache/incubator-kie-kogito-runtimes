@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.event.avro;
 
-import java.io.IOException;
-
 import org.kie.kogito.event.CloudEventUnmarshaller;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
 import org.kie.kogito.event.impl.DefaultCloudEventUnmarshaller;
@@ -37,7 +35,7 @@ public class AvroCloudEventUnmarshallerFactory implements CloudEventUnmarshaller
         return new DefaultCloudEventUnmarshaller<>(avroUtils::readCloudEvent, new AvroCloudEventDataConverter<>(avroUtils, targetClass), this::getCloudEventData);
     }
 
-    private <S> CloudEventData getCloudEventData(byte[] bytes) throws IOException {
+    private CloudEventData getCloudEventData(byte[] bytes) {
         return bytes == null ? null : BytesCloudEventData.wrap(bytes);
     }
 }

@@ -92,7 +92,7 @@ public class AvroUtils {
     }
 
     public byte[] writeCloudEvent(CloudEvent event) throws IOException {
-        GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<GenericRecord>(ceSchema);
+        GenericDatumWriter<GenericRecord> writer = new GenericDatumWriter<>(ceSchema);
         GenericRecordBuilder builder = new GenericRecordBuilder(ceSchema);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(bytes, null);
@@ -117,10 +117,10 @@ public class AvroUtils {
     }
 
     public CloudEvent readCloudEvent(byte[] bytes) throws IOException {
-        GenericDatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(ceSchema);
+        GenericDatumReader<GenericRecord> reader = new GenericDatumReader<>(ceSchema);
         BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
         GenericRecord record = reader.read(null, decoder);
-        Map<Utf8, Object> attrs = (Map) record.get(ATTRIBUTES);
+        Map<Utf8, Object> attrs = (Map<Utf8, Object>) record.get(ATTRIBUTES);
         CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(SpecVersion.parse(attrs.remove(SPEC_VERSION_UTF).toString()))
                 .withType(attrs.remove(TYPE_UTF).toString())
                 .withSource(URI.create(attrs.remove(SOURCE_UTF).toString()))
