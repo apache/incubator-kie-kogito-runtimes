@@ -15,15 +15,15 @@
  */
 package org.kie.kogito.event.avro;
 
+import static org.kie.kogito.event.impl.DataEventTestUtils.testCloudEventMarshalling;
+import static org.kie.kogito.event.impl.DataEventTestUtils.testEventMarshalling;
+
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.DummyCloudEvent;
-import org.kie.kogito.event.DummyEvent;
-
-import static org.kie.kogito.event.impl.DataEventTestUtils.testCloudEventMarshalling;
-import static org.kie.kogito.event.impl.DataEventTestUtils.testEventMarshalling;
+import org.kie.kogito.event.impl.TestCloudEvent;
+import org.kie.kogito.event.impl.TestEvent;
 
 class CloudEventMarshallUnmarshallTest {
 
@@ -36,11 +36,21 @@ class CloudEventMarshallUnmarshallTest {
 
     @Test
     void testCloudEventMarshaller() throws IOException {
-        testCloudEventMarshalling(new DummyCloudEvent(new DummyEvent("pepe"), "pepa"), DummyEvent.class, new AvroCloudEventMarshaller(avroUtils), new AvroCloudEventUnmarshallerFactory(avroUtils));
+        testCloudEventMarshalling(new TestCloudEvent(new TestEvent("pepe"), "pepa"), TestEvent.class, new AvroCloudEventMarshaller(avroUtils), new AvroCloudEventUnmarshallerFactory(avroUtils));
     }
 
     @Test
     void testEventMarshaller() throws IOException {
-        testEventMarshalling(new DummyEvent("pepe"), new AvroEventMarshaller(avroUtils), new AvroEventUnmarshaller(avroUtils));
+        testEventMarshalling(new TestEvent("pepe"), new AvroEventMarshaller(avroUtils), new AvroEventUnmarshaller(avroUtils));
+    }
+    
+    @Test
+    void testJsonNodeCloudEventMarshaller() throws IOException {
+        testCloudEventMarshalling(new TestCloudEvent(new TestEvent("pepe"), "pepa"), TestEvent.class, new AvroCloudEventMarshaller(avroUtils), new AvroCloudEventUnmarshallerFactory(avroUtils));
+    }
+
+    @Test
+    void testJsonNodeEventMarshaller() throws IOException {
+        testEventMarshalling(new TestEvent("pepe"), new AvroEventMarshaller(avroUtils), new AvroEventUnmarshaller(avroUtils));
     }
 }

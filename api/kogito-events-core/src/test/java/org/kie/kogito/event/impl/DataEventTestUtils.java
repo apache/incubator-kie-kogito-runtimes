@@ -24,6 +24,9 @@ import org.kie.kogito.event.DataEvent;
 import org.kie.kogito.event.DataEventFactory;
 import org.kie.kogito.event.EventMarshaller;
 import org.kie.kogito.event.EventUnmarshaller;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -55,5 +58,17 @@ public class DataEventTestUtils {
 
     public static <T> void testEventMarshalling(Object event, EventMarshaller<T> marshaller, EventUnmarshaller<T> unmarshaller) throws IOException {
         assertEquals(event, unmarshaller.unmarshall(marshaller.marshall(event), event.getClass()));
+    }
+
+    public static DataEvent<JsonNode> getJsonNodeCloudEvent() {
+        return new TestCloudEvent<>(ObjectMapperFactory.get().createObjectNode().put("name", "pepe"), "pepa");
+    }
+
+    public static TestEvent getRawEvent() {
+        return new TestEvent("pepe");
+    }
+
+    public static DataEvent<TestEvent> getPojoCloudEvent() {
+        return new TestCloudEvent<>(getRawEvent(), "pepa");
     }
 }

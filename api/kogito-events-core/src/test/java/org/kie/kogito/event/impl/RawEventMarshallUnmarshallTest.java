@@ -19,14 +19,13 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.DummyEvent;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.kie.kogito.event.impl.DataEventTestUtils.testEventMarshalling;
 
-class MarshallUnmarshallTest {
+class RawEventMarshallUnmarshallTest {
 
     private static ObjectMapper mapper;
 
@@ -37,16 +36,16 @@ class MarshallUnmarshallTest {
 
     @Test
     void testStringMarshaller() throws IOException {
-        testEventMarshalling(new DummyEvent("pepe"), new StringEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
+        testEventMarshalling(new TestEvent("pepe"), new StringEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
     }
 
     @Test
     void testObjectMarshaller() throws IOException {
-        testEventMarshalling(new DummyEvent("pepe"), new NoOpEventMarshaller(), new JacksonEventDataUnmarshaller<>(mapper));
+        testEventMarshalling(new TestEvent("pepe"), new NoOpEventMarshaller(), new JacksonEventDataUnmarshaller<>(mapper));
     }
 
     @Test
     void testByteArrayMarshaller() throws IOException {
-        testEventMarshalling(new DummyEvent("pepe"), new ByteArrayEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
+        testEventMarshalling(new TestEvent("pepe"), new ByteArrayEventMarshaller(mapper), new JacksonEventDataUnmarshaller<>(mapper));
     }
 }
