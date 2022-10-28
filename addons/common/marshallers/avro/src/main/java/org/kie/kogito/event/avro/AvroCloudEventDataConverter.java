@@ -19,19 +19,17 @@ import java.io.IOException;
 
 import org.kie.kogito.event.impl.AbstractCloudEventDataConverter;
 
-import io.cloudevents.CloudEventData;
-
 public class AvroCloudEventDataConverter<O> extends AbstractCloudEventDataConverter<O> {
 
     private final AvroIO avroUtils;
 
     protected AvroCloudEventDataConverter(AvroIO avroUtils, Class<O> targetClass) {
-        super(targetClass);
+        super(avroUtils.getObjectMapper(), targetClass);
         this.avroUtils = avroUtils;
     }
 
     @Override
-    protected O toValue(CloudEventData value) throws IOException {
-        return avroUtils.readObject(value.toBytes(), targetClass);
+    protected O toValue(byte[] value) throws IOException {
+        return avroUtils.readObject(value, targetClass);
     }
 }

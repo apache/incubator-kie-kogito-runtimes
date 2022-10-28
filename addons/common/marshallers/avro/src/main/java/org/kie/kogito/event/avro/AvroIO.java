@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.event.avro;
 
+import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,16 +37,23 @@ import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.avro.util.Utf8;
 import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.avro.AvroMapper;
 import com.fasterxml.jackson.dataformat.avro.AvroSchema;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
-
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
+import io.cloudevents.jackson.JsonCloudEventData;
 
 public class AvroIO {
 
@@ -57,6 +66,10 @@ public class AvroIO {
     public AvroIO() throws IOException {
         this.ceSchema = getCloudEventSchema();
         this.avroMapper = getAvroMapper();
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return avroMapper;
     }
 
     public byte[] writeObject(Object obj) throws IOException {
@@ -83,7 +96,14 @@ public class AvroIO {
         // Cloud Event Avro spec https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/avro-format.md  does not have extension, so passing extensions as attributes
         attrsMap.putAll(event.getExtensionNames().stream().collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getExtension(k)))));
         builder.set(ATTRIBUTES, attrsMap);
-        builder.set(DATA, ByteBuffer.wrap(event.getData().toBytes()));
+
+        CloudEventData data = event.getData();
+
+        if (data instanceof JsonCloudEventData) {
+            builder.set(DATA, ObjectMapperFactory.get().convertValue(((JsonCloudEventData) data).getNode(), Map.class));
+        } else if (data != null) {
+            builder.set(DATA, ByteBuffer.wrap(data.toBytes()));
+        }
         writer.write(builder.build(), encoder);
         encoder.flush();
         return bytes.toByteArray();
@@ -115,6 +135,8 @@ public class AvroIO {
         Object data = record.get(DATA);
         if (data instanceof ByteBuffer) {
             builder.withData(((ByteBuffer) data).array());
+        } else if (data instanceof Map) {
+            builder.withData(JsonCloudEventData.wrap(avroMapper.convertValue(data, JsonNode.class)));
         }
         attrs.forEach((k, v) -> CloudEventUtils.withExtension(builder, k.toString(), v));
         return builder.build();
@@ -139,7 +161,12 @@ public class AvroIO {
 
     private static final AvroMapper getAvroMapper() {
         AvroMapper mapper = new AvroMapper();
-        mapper.findAndRegisterModules();
+        mapper.findAndRegisterModules().registerModule(new SimpleModule().addSerializer(Utf8.class, new JsonSerializer<Utf8>() {
+            @Override
+            public void serialize(Utf8 value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                gen.writeString(value.toString());
+            }
+        }));
         return mapper;
     }
 }
