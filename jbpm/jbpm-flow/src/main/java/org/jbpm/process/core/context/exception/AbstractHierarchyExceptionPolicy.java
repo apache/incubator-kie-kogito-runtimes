@@ -16,17 +16,28 @@
 package org.jbpm.process.core.context.exception;
 
 public abstract class AbstractHierarchyExceptionPolicy implements ExceptionHandlerPolicy {
+
+    protected static final int FULL_VALUE = 200;
+
     @Override
-    public boolean test(String errorCode, Throwable exception) {
-        boolean found = verify(errorCode, exception);
-        Throwable rootCause = exception.getCause();
-        while (!found && rootCause != null) {
-            found = verify(errorCode, rootCause);
-            rootCause = rootCause.getCause();
+    public int test(String errorCode, Throwable exception) {
+        int count = count(errorCode, exception, 1);
+        if (count == 0) {
+            Throwable rootCause = exception.getCause();
+            for (int step = 2; count == 0 && rootCause != null; step++) {
+                count = count(errorCode, exception, step);
+                rootCause = rootCause.getCause();
+            }
         }
-        return found;
+        return count;
     }
 
-    protected abstract boolean verify(String errorCode, Throwable exception);
+    protected int count(String errorCode, Throwable exception, int step) {
+        return verify(errorCode, exception) ? FULL_VALUE - step : 0;
+    }
+
+    protected boolean verify(String errorCode, Throwable exception) {
+        return false;
+    }
 
 }

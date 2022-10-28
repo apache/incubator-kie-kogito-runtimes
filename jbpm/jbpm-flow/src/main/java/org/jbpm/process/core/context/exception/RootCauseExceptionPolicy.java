@@ -17,17 +17,19 @@ package org.jbpm.process.core.context.exception;
 
 public class RootCauseExceptionPolicy extends AbstractHierarchyExceptionPolicy {
     @Override
-    protected boolean verify(String errorCode, Throwable exception) {
+    protected int count(String errorCode, Throwable exception, int step) {
         Class<?> exceptionClass = exception.getClass();
-        boolean found = isException(errorCode, exceptionClass);
-        while (!found && !exceptionClass.equals(Object.class)) {
+        int count = isException(errorCode, exceptionClass);
+        if (count == 0) {
             exceptionClass = exceptionClass.getSuperclass();
-            found = isException(errorCode, exceptionClass);
+            for (int divisor = 2; count == 0 && !exceptionClass.equals(Object.class); divisor++, exceptionClass = exceptionClass.getSuperclass()) {
+                count = isException(errorCode, exceptionClass) / divisor;
+            }
         }
-        return found;
+        return count / step;
     }
 
-    private boolean isException(String errorCode, Class<?> exceptionClass) {
-        return errorCode.equals(exceptionClass.getName());
+    private int isException(String errorCode, Class<?> exceptionClass) {
+        return errorCode.equals(exceptionClass.getName()) ? FULL_VALUE : 0;
     }
 }
