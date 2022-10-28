@@ -35,6 +35,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventContext;
@@ -44,6 +45,7 @@ import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData.ToBytes;
 import io.cloudevents.jackson.JsonCloudEventData;
+import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
 import io.cloudevents.rw.CloudEventRWException;
 
@@ -195,11 +197,17 @@ public final class CloudEventUtils {
     }
 
     public static final class Mapper {
+
+        private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+                .registerModule(JsonFormat.getCloudEventJacksonModule())
+                .registerModule(new JavaTimeModule());
+
         private Mapper() {
+
         }
 
         public static ObjectMapper mapper() {
-            return ObjectMapperFactory.get();
+            return OBJECT_MAPPER;
         }
     }
 
