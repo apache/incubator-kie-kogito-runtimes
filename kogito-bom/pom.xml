@@ -298,14 +298,14 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
-      	<artifactId>kogito-addons-marshallers-avro</artifactId>
-      	<version>${project.version}</version>
+        <artifactId>kogito-addons-marshallers-avro</artifactId>
+        <version>${project.version}</version>
 	  </dependency>
 	  <dependency>
         <groupId>org.kie.kogito</groupId>
-      	<artifactId>kogito-addons-marshallers-avro</artifactId>
-      	<version>${project.version}</version>
-      	<classifier>sources</classifier>
+        <artifactId>kogito-addons-marshallers-avro</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
 	  </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>

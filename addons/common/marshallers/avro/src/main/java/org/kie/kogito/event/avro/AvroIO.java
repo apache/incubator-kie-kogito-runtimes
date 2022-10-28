@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.event.avro;
 
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +53,8 @@ import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.cloudevents.jackson.JsonCloudEventData;
 
+import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
+
 public class AvroIO {
 
     private static final String ATTRIBUTES = "attribute";
@@ -92,7 +92,7 @@ public class AvroIO {
         GenericRecordBuilder builder = new GenericRecordBuilder(ceSchema);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(bytes, null);
-        Map<String, Object> attrsMap = event.getAttributeNames().stream().filter(k -> event.getAttribute(k) != null).collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getAttribute(k))));
+        Map<String, Object> attrsMap = event.getAttributeNames().stream().collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getAttribute(k))));
         // Cloud Event Avro spec https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/avro-format.md  does not have extension, so passing extensions as attributes
         attrsMap.putAll(event.getExtensionNames().stream().collect(Collectors.toMap(k -> k, k -> fromJavaObject(event.getExtension(k)))));
         builder.set(ATTRIBUTES, attrsMap);

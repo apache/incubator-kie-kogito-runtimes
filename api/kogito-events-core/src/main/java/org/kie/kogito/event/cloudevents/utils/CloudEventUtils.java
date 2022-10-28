@@ -15,20 +15,12 @@
  */
 package org.kie.kogito.event.cloudevents.utils;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -151,19 +142,6 @@ public final class CloudEventUtils {
         }
     }
 
-    public static <K, V> Optional<Map<K, V>> decodeMapData(CloudEvent event, Class<K> keyClass, Class<V> valueClass) {
-        if (event == null || event.getData() == null) {
-            return Optional.empty();
-        }
-        try {
-            JavaType mapType = Mapper.mapper().getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
-            return Optional.ofNullable(Mapper.mapper().readValue(event.getData().toBytes(), mapType));
-        } catch (IOException e) {
-            LOG.error("Unable to decode CloudEvent data to Map<" + keyClass.getName() + "," + valueClass.getName() + ">", e);
-            return Optional.empty();
-        }
-    }
-
     public static Optional<String> urlEncodedStringFrom(String input) {
         return Optional.ofNullable(input)
                 .map(i -> {
@@ -222,25 +200,6 @@ public final class CloudEventUtils {
 
         public static ObjectMapper mapper() {
             return ObjectMapperFactory.get();
-        }
-    }
-
-    public static Object getAttribute(String name, Object instance) throws IllegalArgumentException {
-        try {
-            return Arrays.stream(Introspector.getBeanInfo(instance.getClass()).getPropertyDescriptors())
-                    .filter(p -> Objects.equals(p.getName(), name))
-                    .map(p -> {
-                        try {
-                            return p.getReadMethod().invoke(instance);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new IllegalArgumentException("Error getting attribute " + name, e);
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
-        } catch (IntrospectionException e) {
-            throw new IllegalArgumentException("Error getting attribute " + name, e);
         }
     }
 

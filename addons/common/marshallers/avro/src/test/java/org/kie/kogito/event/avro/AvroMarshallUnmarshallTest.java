@@ -29,7 +29,7 @@ import static org.kie.kogito.event.impl.DataEventTestUtils.getRawEvent;
 import static org.kie.kogito.event.impl.DataEventTestUtils.testCloudEventMarshalling;
 import static org.kie.kogito.event.impl.DataEventTestUtils.testEventMarshalling;
 
-class CloudEventMarshallUnmarshallTest {
+class AvroMarshallUnmarshallTest {
 
     private static AvroIO avroUtils;
 

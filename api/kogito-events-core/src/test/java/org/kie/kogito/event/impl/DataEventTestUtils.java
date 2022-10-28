@@ -33,18 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DataEventTestUtils {
 
     public static <T> void assertDataEventEquals(DataEvent<T> event, DataEvent<T> targetEvent) {
-        assertEquals(event.getId(), targetEvent.getId());
-        assertEquals(event.getType(), targetEvent.getType());
-        assertEquals(event.getSource(), targetEvent.getSource());
-        assertEquals(event.getSpecVersion(), targetEvent.getSpecVersion());
-        assertEquals(event.getSubject(), targetEvent.getSubject());
-        assertEquals(event.getDataContentType(), targetEvent.getDataContentType());
-        assertEquals(event.getDataSchema(), targetEvent.getDataSchema());
+        assertEquals(event.getAttributeNames(), targetEvent.getAttributeNames());
+        for (String attrName : event.getAttributeNames()) {
+            assertEquals(event.getAttribute(attrName), targetEvent.getAttribute(attrName));
+        }
         assertEquals(event.getExtensionNames(), targetEvent.getExtensionNames());
         for (String extensionName : event.getExtensionNames()) {
             assertEquals(event.getExtension(extensionName), targetEvent.getExtension(extensionName));
         }
-        assertEquals(event.getTime(), targetEvent.getTime());
         assertEquals(event.getData(), targetEvent.getData());
     }
 
@@ -64,7 +60,7 @@ public class DataEventTestUtils {
         return new TestCloudEvent<>(getJsonNode(), "pepa");
     }
 
-    public static JsonNode getJsonNode() {
+    private static JsonNode getJsonNode() {
         return ObjectMapperFactory.get().createObjectNode().put("name", "pepe");
     }
 
