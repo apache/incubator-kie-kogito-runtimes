@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -59,15 +60,7 @@ import static io.cloudevents.core.CloudEventUtils.mapData;
 
 public final class CloudEventUtils {
 
-    public static final String SPEC_VERSION = "specversion";
-    public static final String TYPE = "type";
-    public static final String SOURCE = "source";
-    public static final String TIME = "time";
-    public static final String SUBJECT = "subject";
     public static final String DATA = "data";
-    public static final String ID = "id";
-    public static final String CONTENT_TYPE = "datacontenttype";
-    public static final String DATA_SCHEMA = "dataschema";
 
     private static final Logger LOG = LoggerFactory.getLogger(CloudEventUtils.class);
     public static final String UNKNOWN_SOURCE_URI_STRING = urlEncodedStringFrom("__UNKNOWN_SOURCE__")
@@ -76,35 +69,13 @@ public final class CloudEventUtils {
     private CloudEventUtils() {
     }
 
-    // see: https://issues.redhat.com/browse/KOGITO-8161 why we are not using the CloudEvent SDK
     public static JsonNode fromValue(DataEvent<JsonNode> dataEvent) {
         ObjectNode node = ObjectMapperFactory.listenerAware().createObjectNode();
         if (dataEvent.getData() != null) {
             node.set(DATA, dataEvent.getData());
         }
-        node.put(ID, dataEvent.getId());
-        if (dataEvent.getSource() != null) {
-            node.put(SOURCE, dataEvent.getSource().toString());
-        }
-        if (dataEvent.getSpecVersion() != null) {
-            node.put(SPEC_VERSION, dataEvent.getSpecVersion().toString());
-        }
-        node.put(TYPE, dataEvent.getType());
-        if (dataEvent.getDataContentType() != null) {
-            node.put(CONTENT_TYPE, dataEvent.getDataContentType());
-        }
-        if (dataEvent.getDataSchema() != null) {
-            node.put(DATA_SCHEMA, dataEvent.getDataContentType());
-        }
-        if (dataEvent.getSubject() != null) {
-            node.put(SUBJECT, dataEvent.getDataContentType());
-        }
-        if (dataEvent.getTime() != null) {
-            node.put(TIME, dataEvent.getTime().toString());
-        }
-        for (String extensionName : dataEvent.getExtensionNames()) {
-            node.set(extensionName, JsonObjectUtils.fromValue(dataEvent.getExtension(extensionName)));
-        }
+        dataEvent.getAttributeNames().forEach(k -> node.set(k, JsonObjectUtils.fromValue(dataEvent.getAttribute(k))));
+        dataEvent.getExtensionNames().forEach(extensionName -> node.set(extensionName, JsonObjectUtils.fromValue(dataEvent.getExtension(extensionName))));
         return node;
     }
 
@@ -273,6 +244,24 @@ public final class CloudEventUtils {
         }
     }
 
+    public static void withAttribute(CloudEventBuilder builder, String k, Object v) {
+        if (v instanceof Integer) {
+            builder.withContextAttribute(k, (Integer) v);
+        } else if (v instanceof Boolean) {
+            builder.withContextAttribute(k, (Boolean) v);
+        } else if (v instanceof byte[]) {
+            builder.withContextAttribute(k, (byte[]) v);
+        } else if (v instanceof URI) {
+            builder.withContextAttribute(k, (URI) v);
+        } else if (v instanceof OffsetDateTime) {
+            builder.withContextAttribute(k, (OffsetDateTime) v);
+        } else if (v instanceof ByteBuffer) {
+            builder.withContextAttribute(k, ((ByteBuffer) v).array());
+        } else if (v != null) {
+            builder.withContextAttribute(k, v.toString());
+        }
+    }
+
     public static void withExtension(CloudEventBuilder builder, String k, Object v) {
         if (v instanceof Number) {
             builder.withExtension(k, (Number) v);
@@ -284,6 +273,8 @@ public final class CloudEventUtils {
             builder.withExtension(k, (URI) v);
         } else if (v instanceof OffsetDateTime) {
             builder.withExtension(k, (OffsetDateTime) v);
+        } else if (v instanceof ByteBuffer) {
+            builder.withExtension(k, ((ByteBuffer) v).array());
         } else if (v != null) {
             builder.withExtension(k, v.toString());
         }

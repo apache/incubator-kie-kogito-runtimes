@@ -18,9 +18,7 @@ package org.kie.kogito.event.avro;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.ByteBuffer;
-import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,32 +44,17 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.builder.CloudEventBuilder;
 
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.CONTENT_TYPE;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA_SCHEMA;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.ID;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.SOURCE;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.SPEC_VERSION;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.SUBJECT;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.TIME;
-import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.TYPE;
 
-public class AvroUtils {
+public class AvroIO {
 
     private static final String ATTRIBUTES = "attribute";
-    private static final Utf8 SPEC_VERSION_UTF = new Utf8(SPEC_VERSION);
-    private static final Utf8 TYPE_UTF = new Utf8(TYPE);
-    private static final Utf8 SOURCE_UTF = new Utf8(SOURCE);
-    private static final Utf8 ID_UTF = new Utf8(ID);
-    private static final Utf8 CONTENT_TYPE_UTF = new Utf8(CONTENT_TYPE);
-    private static final Utf8 DATA_SCHEMA_UTF = new Utf8(DATA_SCHEMA);
-    private static final Utf8 TIME_UTF = new Utf8(TIME);
-    private static final Utf8 SUBJECT_UTF = new Utf8(SUBJECT);
+    private static final Utf8 SPEC_VERSION_UTF = new Utf8("specversion");
 
     private final Schema ceSchema;
     private final AvroMapper avroMapper;
 
-    public AvroUtils() throws IOException {
+    public AvroIO() throws IOException {
         this.ceSchema = getCloudEventSchema();
         this.avroMapper = getAvroMapper();
     }
@@ -121,29 +104,17 @@ public class AvroUtils {
         BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
         GenericRecord record = reader.read(null, decoder);
         Map<Utf8, Object> attrs = (Map<Utf8, Object>) record.get(ATTRIBUTES);
-        CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(SpecVersion.parse(attrs.remove(SPEC_VERSION_UTF).toString()))
-                .withType(attrs.remove(TYPE_UTF).toString())
-                .withSource(URI.create(attrs.remove(SOURCE_UTF).toString()))
-                .withId(attrs.remove(ID_UTF).toString());
-        Object value = attrs.remove(CONTENT_TYPE_UTF);
-        if (value != null) {
-            builder.withDataContentType(value.toString());
-        }
-        value = attrs.remove(DATA_SCHEMA_UTF);
-        if (value != null) {
-            builder.withDataSchema(URI.create(value.toString()));
-        }
-        value = attrs.remove(TIME_UTF);
-        if (value != null) {
-            builder.withTime(OffsetDateTime.parse(value.toString()));
-        }
-        value = attrs.get(SUBJECT_UTF);
-        if (value != null) {
-            builder.withSubject(value.toString());
-        }
-        value = record.get(DATA);
-        if (value instanceof ByteBuffer) {
-            builder.withData(((ByteBuffer) value).array());
+        SpecVersion specVersion = SpecVersion.parse(attrs.remove(SPEC_VERSION_UTF).toString());
+        CloudEventBuilder builder = CloudEventBuilder.fromSpecVersion(specVersion);
+        specVersion.getAllAttributes().forEach(k -> {
+            Object v = attrs.remove(new Utf8(k));
+            if (v != null) {
+                CloudEventUtils.withAttribute(builder, k, v);
+            }
+        });
+        Object data = record.get(DATA);
+        if (data instanceof ByteBuffer) {
+            builder.withData(((ByteBuffer) data).array());
         }
         attrs.forEach((k, v) -> CloudEventUtils.withExtension(builder, k.toString(), v));
         return builder.build();

@@ -23,9 +23,9 @@ import io.cloudevents.CloudEventData;
 
 public class AvroCloudEventDataConverter<O> extends AbstractCloudEventDataConverter<O> {
 
-    private final AvroUtils avroUtils;
+    private final AvroIO avroUtils;
 
-    protected AvroCloudEventDataConverter(AvroUtils avroUtils, Class<O> targetClass) {
+    protected AvroCloudEventDataConverter(AvroIO avroUtils, Class<O> targetClass) {
         super(targetClass);
         this.avroUtils = avroUtils;
     }

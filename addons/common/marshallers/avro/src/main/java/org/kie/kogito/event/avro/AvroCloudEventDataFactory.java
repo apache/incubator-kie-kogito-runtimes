@@ -21,9 +21,9 @@ import org.kie.kogito.event.impl.AbstractCloudEventDataFactory;
 
 public class AvroCloudEventDataFactory<T> extends AbstractCloudEventDataFactory<T> {
 
-    private final AvroUtils avroUtils;
+    private final AvroIO avroUtils;
 
-    public AvroCloudEventDataFactory(AvroUtils avroUtils) {
+    public AvroCloudEventDataFactory(AvroIO avroUtils) {
         this.avroUtils = avroUtils;
     }
 

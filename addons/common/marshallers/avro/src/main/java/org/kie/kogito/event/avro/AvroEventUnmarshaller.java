@@ -21,9 +21,9 @@ import org.kie.kogito.event.EventUnmarshaller;
 
 public class AvroEventUnmarshaller implements EventUnmarshaller<byte[]> {
 
-    private final AvroUtils avroUtils;
+    private final AvroIO avroUtils;
 
-    public AvroEventUnmarshaller(AvroUtils avroUtils) {
+    public AvroEventUnmarshaller(AvroIO avroUtils) {
         super();
         this.avroUtils = avroUtils;
     }

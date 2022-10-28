@@ -25,9 +25,9 @@ import io.cloudevents.CloudEventData;
 
 public class AvroCloudEventMarshaller implements CloudEventMarshaller<byte[]> {
 
-    private final AvroUtils avroUtils;
+    private final AvroIO avroUtils;
 
-    public AvroCloudEventMarshaller(AvroUtils avroUtils) {
+    public AvroCloudEventMarshaller(AvroIO avroUtils) {
         this.avroUtils = avroUtils;
     }
 

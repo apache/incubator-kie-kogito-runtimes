@@ -24,9 +24,9 @@ import io.cloudevents.core.data.BytesCloudEventData;
 
 public class AvroCloudEventUnmarshallerFactory implements CloudEventUnmarshallerFactory<byte[]> {
 
-    private final AvroUtils avroUtils;
+    private final AvroIO avroUtils;
 
-    public AvroCloudEventUnmarshallerFactory(AvroUtils avroUtils) {
+    public AvroCloudEventUnmarshallerFactory(AvroIO avroUtils) {
         this.avroUtils = avroUtils;
     }
 

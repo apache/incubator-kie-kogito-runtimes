@@ -61,7 +61,11 @@ public class DataEventTestUtils {
     }
 
     public static DataEvent<JsonNode> getJsonNodeCloudEvent() {
-        return new TestCloudEvent<>(ObjectMapperFactory.get().createObjectNode().put("name", "pepe"), "pepa");
+        return new TestCloudEvent<>(getJsonNode(), "pepa");
+    }
+
+    public static JsonNode getJsonNode() {
+        return ObjectMapperFactory.get().createObjectNode().put("name", "pepe");
     }
 
     public static TestEvent getRawEvent() {
