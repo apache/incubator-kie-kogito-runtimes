@@ -75,7 +75,7 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
         return new KafkaConsumer<>(consumerConfig);
     }
 
-    private KafkaProducer<String, T> createDefaultProducer(String hosts, T data) {
+    private KafkaProducer<String, T> createDefaultProducer(String hosts) {
         Properties producerConfig = new Properties();
         producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
         producerConfig.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -113,7 +113,7 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
     }
 
     public void produce(T data, String topic) {
-        try (KafkaProducer<String, T> producer = createDefaultProducer(hosts, data)) {
+        try (KafkaProducer<String, T> producer = createDefaultProducer(hosts)) {
             LOGGER.info("Publishing event with data {} for topic {}", data, topic);
             ProducerRecord<String, T> record = new ProducerRecord<>(topic, data);
             waitForCompletion(producer.send(record));
