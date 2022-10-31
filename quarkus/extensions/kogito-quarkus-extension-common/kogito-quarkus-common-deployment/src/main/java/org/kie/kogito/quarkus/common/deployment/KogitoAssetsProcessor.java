@@ -334,6 +334,7 @@ public class KogitoAssetsProcessor {
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.UserTaskDeadlineDataEvent"));
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "org.kie.kogito.services.event.impl.UserTaskDeadlineEventBody"));
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "io.cloudevents.core.v1.CloudEventV1"));
+        reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "io.cloudevents.core.impl.BaseCloudEvent"));
         reflectiveClass.produce(new ReflectiveClassBuildItem(true, true, "io.cloudevents.core.v03.CloudEventV03"));
 
         if (context.getAddonsConfig().useMonitoring()) {

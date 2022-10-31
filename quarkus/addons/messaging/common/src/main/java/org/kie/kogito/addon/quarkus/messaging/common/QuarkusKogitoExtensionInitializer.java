@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.runtime.Startup;
@@ -44,7 +45,14 @@ public class QuarkusKogitoExtensionInitializer {
 
     @PostConstruct
     private void onPostConstruct() {
-        mapper.registerModule(JsonFormat.getCloudEventJacksonModule());
+        LOG.error("hhhh onPostConstruct -> will register module");
+
+        SimpleModule cloudEventJacksonModule = JsonFormat.getCloudEventJacksonModule();
+
+        mapper.registerModule(cloudEventJacksonModule);
+
+        LOG.error("hhhh onPostConstruct -> will module registered");
+
         KogitoExtension.register();
         KogitoPredictionsExtension.register();
         KogitoProcessExtension.register();
