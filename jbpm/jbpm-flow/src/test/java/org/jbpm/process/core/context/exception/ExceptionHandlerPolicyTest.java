@@ -71,6 +71,6 @@ class ExceptionHandlerPolicyTest {
     }
 
     private boolean test(String className, Throwable exception) {
-        return policies.stream().anyMatch(p -> p.test(className, exception) > 0);
+        return policies.stream().anyMatch(p -> p.test(className, exception));
     }
 }

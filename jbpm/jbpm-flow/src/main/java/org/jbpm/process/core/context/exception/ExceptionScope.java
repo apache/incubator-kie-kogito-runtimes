@@ -19,10 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.context.AbstractContext;
@@ -58,59 +54,17 @@ public class ExceptionScope extends AbstractContext {
         return result;
     }
 
-    private static class MatchPolicy implements Comparable<MatchPolicy> {
-        private final Entry<String, ExceptionHandler> exceptionHandler;
-        private final int handlerWeight;
-
-        public MatchPolicy(Entry<String, ExceptionHandler> exceptionHandler, int handlerWeight) {
-            this.exceptionHandler = exceptionHandler;
-            this.handlerWeight = handlerWeight;
-        }
-
-        @Override
-        public int compareTo(MatchPolicy o) {
-            return o.handlerWeight - this.handlerWeight;
-        }
-
-        public Entry<String, ExceptionHandler> getExceptionHandler() {
-            return exceptionHandler;
-        }
-
-        @Override
-        public int hashCode() {
-            return exceptionHandler.getKey().hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            MatchPolicy other = (MatchPolicy) obj;
-            return Objects.equals(exceptionHandler.getKey(), other.exceptionHandler.getKey());
-        }
-
-        @Override
-        public String toString() {
-            return "MatchPolicy [exceptionHandler=" + exceptionHandler + ", handlerWeight=" + handlerWeight + "]";
-        }
-    }
-
     protected ExceptionHandler getHandlerFromPolicies(Throwable exception) {
-        SortedSet<MatchPolicy> collector = new TreeSet<>();
-        for (Entry<String, ExceptionHandler> handler : exceptionHandlers.entrySet()) {
-            int handlerWeight = test(handler.getKey(), exception);
-            if (handlerWeight > 0) {
-                MatchPolicy match = new MatchPolicy(handler, handlerWeight);
-                if (!collector.add(match)) {
-                    logger.warn("There are two exception handlers with the same priority for exception {}. Rejected hit is {}. Weights are {}", exception, match, collector);
+        for (ExceptionHandlerPolicy policy : policies) {
+            for (Entry<String, ExceptionHandler> handler : exceptionHandlers.entrySet()) {
+                String className = handler.getKey();
+                if (className != null && policy.test(className, exception)) {
+                    logger.debug("Policy {} matches handler {}", policy.getClass().getSimpleName(), handler.getKey());
+                    return handler.getValue();
                 }
             }
         }
-        return collector.isEmpty() ? null : collector.first().getExceptionHandler().getValue();
+        return null;
     }
 
     public ExceptionHandler getExceptionHandler(Throwable exception) {
@@ -122,10 +76,6 @@ public class ExceptionScope extends AbstractContext {
             handler = exceptionHandlers.get(null);
         }
         return handler;
-    }
-
-    private int test(String className, Throwable exception) {
-        return className != null ? policies.stream().collect(Collectors.summingInt(p -> p.test(className, exception))) : 0;
     }
 
     public void removeExceptionHandler(String exception) {

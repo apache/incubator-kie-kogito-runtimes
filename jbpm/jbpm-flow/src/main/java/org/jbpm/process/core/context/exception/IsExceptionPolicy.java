@@ -15,8 +15,11 @@
  */
 package org.jbpm.process.core.context.exception;
 
-import java.util.function.BiPredicate;
+import static org.jbpm.process.core.context.exception.ExceptionHandlerPolicyUtils.isException;
 
-public interface ExceptionHandlerPolicy extends BiPredicate<String, Throwable> {
-
+public class IsExceptionPolicy implements ExceptionHandlerPolicy {
+    @Override
+    public boolean test(String errorCode, Throwable exception) {
+        return isException(errorCode, exception.getClass());
+    }
 }

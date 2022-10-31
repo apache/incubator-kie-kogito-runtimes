@@ -17,10 +17,10 @@ package org.jbpm.process.core.context.exception;
 
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
-public class ErrorCodeExceptionPolicy extends AbstractHierarchyExceptionPolicy {
+public class ErrorCodeExceptionPolicy extends AbstractRootCauseExceptionPolicy {
 
     @Override
-    protected boolean verify(String errorCode, Throwable exception) {
+    public boolean verify(String errorCode, Throwable exception) {
         return exception instanceof WorkItemExecutionException && getErrorCode(errorCode).equals(((WorkItemExecutionException) exception).getErrorCode());
     }
 

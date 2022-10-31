@@ -15,21 +15,18 @@
  */
 package org.jbpm.process.core.context.exception;
 
-public class RootCauseExceptionPolicy extends AbstractHierarchyExceptionPolicy {
-    @Override
-    protected int count(String errorCode, Throwable exception, int step) {
-        Class<?> exceptionClass = exception.getClass();
-        int count = isException(errorCode, exceptionClass);
-        if (count == 0) {
-            exceptionClass = exceptionClass.getSuperclass();
-            for (int divisor = 2; count == 0 && !exceptionClass.equals(Object.class); divisor++, exceptionClass = exceptionClass.getSuperclass()) {
-                count = isException(errorCode, exceptionClass) / divisor;
-            }
-        }
-        return count / step;
-    }
+import static org.jbpm.process.core.context.exception.ExceptionHandlerPolicyUtils.isException;
 
-    private int isException(String errorCode, Class<?> exceptionClass) {
-        return errorCode.equals(exceptionClass.getName()) ? FULL_VALUE : 0;
+public class IsChildExceptionPolicy extends AbstractRootCauseExceptionPolicy {
+
+    @Override
+    public boolean verify(String errorCode, Throwable exception) {
+        Class<?> exceptionClass = exception.getClass().getSuperclass();
+        boolean found = false;
+        while (!found && !exceptionClass.equals(Object.class)) {
+            found = isException(errorCode, exceptionClass);
+            exceptionClass = exceptionClass.getSuperclass();
+        }
+        return found;
     }
 }
