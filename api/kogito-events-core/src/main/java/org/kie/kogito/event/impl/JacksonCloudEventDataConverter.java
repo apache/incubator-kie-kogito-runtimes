@@ -15,20 +15,18 @@
  */
 package org.kie.kogito.event.impl;
 
-import org.kie.kogito.event.Converter;
+import java.io.IOException;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.cloudevents.CloudEventData;
+public class JacksonCloudEventDataConverter<O> extends AbstractCloudEventDataConverter<O> {
 
-class JacksonMarshallUtils {
-
-    static <O> Converter<CloudEventData, O> getDataConverter(Class<O> targetClass, ObjectMapper objectMapper) {
-        return JsonNode.class.isAssignableFrom(targetClass) ? (Converter<CloudEventData, O>) new JsonNodeCloudEventDataConverter(objectMapper)
-                : new POJOCloudEventDataConverter<>(objectMapper, targetClass);
+    public JacksonCloudEventDataConverter(ObjectMapper objectMapper, Class<O> outputClass) {
+        super(objectMapper, outputClass);
     }
 
-    private JacksonMarshallUtils() {
+    @Override
+    protected O toValue(byte[] value) throws IOException {
+        return objectMapper.readValue(value, targetClass);
     }
 }

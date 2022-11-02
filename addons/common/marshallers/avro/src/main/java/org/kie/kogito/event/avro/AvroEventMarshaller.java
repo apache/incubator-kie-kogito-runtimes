@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.event;
+package org.kie.kogito.event.avro;
 
-import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
+import java.io.IOException;
 
-import io.cloudevents.CloudEvent;
+import org.kie.kogito.event.EventMarshaller;
 
-public interface CloudEventFactory {
-    CloudEvent build(Object data, String trigger, KogitoProcessInstance pi);
+public class AvroEventMarshaller implements EventMarshaller<byte[]> {
+
+    private final AvroIO avroUtils;
+
+    public AvroEventMarshaller(AvroIO avroUtils) {
+        this.avroUtils = avroUtils;
+    }
+
+    @Override
+    public <T> byte[] marshall(T dataEvent) throws IOException {
+        return avroUtils.writeObject(dataEvent);
+    }
 }
