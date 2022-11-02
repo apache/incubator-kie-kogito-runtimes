@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.test;
 
-import org.kie.kogito.event.CloudEventFactory;
 import org.kie.kogito.event.EventEmitter;
 import org.kie.kogito.event.impl.AbstractMessageProducer;
 
@@ -23,7 +22,7 @@ import org.kie.kogito.event.impl.AbstractMessageProducer;
 public class MessageProducer extends AbstractMessageProducer<$DataType$> {
 
     @org.springframework.beans.factory.annotation.Autowired()
-    MessageProducer(EventEmitter emitter, CloudEventFactory eventFactory) {
-        super(emitter,"$Trigger$",eventFactory);
+    MessageProducer(EventEmitter emitter) {
+        super(emitter,"$Trigger$");
     }
 }
