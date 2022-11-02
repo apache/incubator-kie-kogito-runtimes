@@ -30,6 +30,7 @@ import org.kie.kogito.addon.cloudevents.Subscription;
 import org.kie.kogito.conf.ConfigBean;
 import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.decision.DecisionModels;
+import org.kie.kogito.dmn.DecisionTestUtils;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.event.CloudEventUnmarshallerFactory;
@@ -47,10 +48,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.core.provider.ExtensionProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.kie.kogito.dmn.DecisionTestUtils.DECISION_SERVICE_NODE_NAME;
+import static org.kie.kogito.dmn.DecisionTestUtils.MODEL_NAME;
+import static org.kie.kogito.dmn.DecisionTestUtils.MODEL_NAMESPACE;
 import static org.kie.kogito.eventdriven.decision.EventDrivenDecisionController.REQUEST_EVENT_TYPE;
 import static org.kie.kogito.eventdriven.decision.EventDrivenDecisionController.RESPONSE_EVENT_TYPE;
 import static org.kie.kogito.eventdriven.decision.EventDrivenDecisionController.RESPONSE_FULL_EVENT_TYPE;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -58,6 +64,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class EventDrivenDecisionControllerTest {
 
@@ -269,7 +276,7 @@ class EventDrivenDecisionControllerTest {
                     .parseExtension(KogitoExtension.class, emittedCloudEvent);
 
             if (kogitoExtension == null) {
-                org.assertj.core.api.Assertions.fail("", "No Kogito extension in emitted CloudEvent: " + emittedCloudEvent);
+                fail("No Kogito extension in emitted CloudEvent: " + emittedCloudEvent);
             }
 
             assertThat(kogitoExtension.getDmnModelName()).isEqualTo(requestData.getModelName());
