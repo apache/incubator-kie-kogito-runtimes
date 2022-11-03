@@ -402,15 +402,14 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
             return;
         }
         expected.remove("CorrelationSubscriptions");
-        assertThat(current).isNotNull();
-        assertThat(current.size()).isEqualTo(expected.keySet()
+        assertThat(current).hasSize((int) expected.keySet()
                 .stream()
                 .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
                 .count());
         expected.keySet()
                 .stream()
                 .filter(k -> ignoredKeys == null || !ignoredKeys.contains(k))
-                .forEach(k -> assertThat(current.get(k)).as("Metadata " + k).isEqualTo(expected.get(k)));
+                .forEach(k -> assertThat(current).as("Metadata " + k).containsEntry(k, expected.get(k)));
     }
 
     private static void assertConnections(Map<String, List<Connection>> expectedConnections, Map<String, List<Connection>> currentConnections) {

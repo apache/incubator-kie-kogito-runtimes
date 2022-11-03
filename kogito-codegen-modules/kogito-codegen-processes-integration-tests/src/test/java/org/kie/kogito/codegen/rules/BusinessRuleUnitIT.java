@@ -280,8 +280,8 @@ public class BusinessRuleUnitIT extends AbstractRulesCodegenIT {
 
         Person john = new Person("John", 60);
         john.setAdult(true);
-        assertThat(result).containsEntry("singlePerson", john);
-        assertThat(result).doesNotContainKey("singleString");
+        assertThat(result).containsEntry("singlePerson", john)
+                .doesNotContainKey("singleString");
     }
 
     @Test
