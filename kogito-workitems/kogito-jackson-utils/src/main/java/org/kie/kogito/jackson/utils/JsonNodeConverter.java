@@ -17,7 +17,6 @@ package org.kie.kogito.jackson.utils;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,8 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonNodeConverter implements Function<String, JsonNode> {
 
     private Supplier<ObjectMapper> objectMapper;
-
-    private Logger logger = Logger.getLogger(JsonNodeConverter.class.getName());
 
     public JsonNodeConverter() {
         this(ObjectMapperFactory::get);
@@ -40,7 +37,6 @@ public class JsonNodeConverter implements Function<String, JsonNode> {
     @Override
     public JsonNode apply(String t) {
         try {
-            logger.severe("hhhhh apply");
             return objectMapper.get().readTree(t);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Invalid value for json node " + t);

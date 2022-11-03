@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Objects;
-import java.util.function.Function;
 
 import org.jbpm.process.core.datatype.DataType;
 import org.jbpm.process.core.datatype.DataTypeUtils;
@@ -95,9 +94,7 @@ public class ObjectDataType implements DataType {
 
     @Override
     public Object readValue(String value) {
-        Function<String, ?> stringFunction = TypeConverterRegistry.get().forType(getStringType());
-
-        return stringFunction.apply(value);
+        return TypeConverterRegistry.get().forType(getStringType()).apply(value);
     }
 
     @Override
