@@ -16,23 +16,31 @@
 package org.kie.kogito.event.impl;
 
 import java.io.IOException;
+import java.util.function.Function;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.kie.kogito.event.CloudEventMarshaller;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
-import io.cloudevents.jackson.JsonCloudEventData;
 
-public class JsonNodeCloudEventDataConverter extends AbstractCloudEventDataConverter<JsonNode> {
+public class StringCloudEventMarshaller implements CloudEventMarshaller<String> {
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
 
-    public JsonNodeCloudEventDataConverter(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public StringCloudEventMarshaller(ObjectMapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override
-    protected JsonNode toValue(CloudEventData value) throws IOException {
-        return value instanceof JsonCloudEventData ? ((JsonCloudEventData) value).getNode() : objectMapper.readTree(value.toBytes());
+    public String marshall(CloudEvent event) throws IOException {
+        return mapper.writeValueAsString(event);
     }
+
+    @Override
+    public <T> Function<T, CloudEventData> cloudEventDataFactory() {
+        return new JacksonCloudEventDataFactory<>(mapper);
+    }
+
 }
