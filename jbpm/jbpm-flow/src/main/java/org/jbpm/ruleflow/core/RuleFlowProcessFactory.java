@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.ContextResolver;
@@ -84,8 +83,6 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
     public static final String ERROR_TYPE_PREFIX = "Error-";
     public static final String MESSAGE_TYPE_PREFIX = "Message-";
     public static final String TIMER_TYPE_PREFIX = "Timer-";
-
-    private Logger logger = Logger.getLogger(RuleFlowProcessFactory.class.getName());
 
     public static RuleFlowProcessFactory createProcess(String id) {
         return createProcess(id, true);
@@ -204,26 +201,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         Variable variable = new Variable();
         variable.setName(name);
         variable.setType(type);
-
-        if ("workflowdata".equals(name)) {
-            logger.severe("hhhhhh variable => type#class: " + type.getClass().getName());
-
-            if (type.verifyDataType(value)) {
-                logger.severe("hhhhhh variable => type.verifyDataType(value) is true");
-                logger.severe("hhhhhh variable => value: " + value);
-                variable.setValue(value);
-            } else {
-                logger.severe("hhhhhh variable => type.verifyDataType(value) is false");
-
-                Object value1 = type.readValue((String) value);
-                logger.severe("hhhhhh variable => value1: " + value1);
-
-                variable.setValue(value1);
-            }
-        } else {
-            variable.setValue(type.verifyDataType(value) ? value : type.readValue((String) value));
-        }
-
+        variable.setValue(type.verifyDataType(value) ? value : type.readValue((String) value));
         if (metaDataName != null && metaDataValue != null) {
             variable.setMetaData(metaDataName, metaDataValue);
         }
