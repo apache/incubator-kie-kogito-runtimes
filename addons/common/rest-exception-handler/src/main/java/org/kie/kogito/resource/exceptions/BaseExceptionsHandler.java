@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.resource.exceptions;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,6 +133,10 @@ public abstract class BaseExceptionsHandler<T> {
                 }, BaseExceptionsHandler.this::badRequest));
 
         mapper.put(IllegalArgumentException.class, new FunctionHolder<>(ex -> Collections.singletonMap(MESSAGE, ex.getMessage()), BaseExceptionsHandler.this::badRequest));
+
+        mapper.put(IOException.class, new FunctionHolder<>(ex -> Collections.singletonMap(MESSAGE, ex.getMessage()), BaseExceptionsHandler.this::internalError));
+
+        mapper.put(UncheckedIOException.class, new FunctionHolder<>(ex -> Collections.singletonMap(MESSAGE, ex.getMessage()), BaseExceptionsHandler.this::internalError));
     }
 
     protected abstract <R> T badRequest(R body);

@@ -15,17 +15,18 @@
  */
 package org.kie.kogito.addon.source.files;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.kie.kogito.codegen.process.ProcessCodegen;
+
+import com.google.common.base.Objects;
 
 public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
@@ -36,27 +37,40 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
     }
 
     @Override
+    public Optional<SourceFile> getSourceFilesByUri(String uri) {
+        List<SourceFile> allSourceFiles = new ArrayList<>();
+
+        sourceFiles.values().forEach(allSourceFiles::addAll);
+
+        allSourceFiles.removeIf(sourceFile -> !Objects.equal(sourceFile.getUri(), uri));
+
+        switch (allSourceFiles.size()) {
+            case 0:
+                return Optional.empty();
+            case 1:
+                return Optional.of(allSourceFiles.get(0));
+            default:
+                throw new IllegalStateException("Found more than one source file with the same URI.");
+        }
+    }
+
+    @Override
     public Collection<SourceFile> getProcessSourceFiles(String processId) {
         return sourceFiles.getOrDefault(processId, Set.of());
     }
 
     @Override
     public Optional<String> getProcessSourceFile(String processId) throws SourceFilesException {
-        return getProcessSourceFiles(processId).stream().map(SourceFile::getUri).filter(this::isValidDefinitionSource).findFirst().flatMap(this::readFileContentFromClassPath);
+        return getProcessSourceFiles(processId).stream()
+                .filter(this::isValidDefinitionSource)
+                .findFirst()
+                .map(SourceFile::getContents);
     }
 
-    private boolean isValidDefinitionSource(String uri) {
-        if (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream().noneMatch(uri::endsWith)) {
-            return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet().stream().anyMatch(uri::endsWith);
+    private boolean isValidDefinitionSource(SourceFile sourceFile) {
+        if (ProcessCodegen.SUPPORTED_BPMN_EXTENSIONS.stream().noneMatch(sourceFile.getUri()::endsWith)) {
+            return ProcessCodegen.SUPPORTED_SW_EXTENSIONS.keySet().stream().anyMatch(sourceFile.getUri()::endsWith);
         }
         return true;
-    }
-
-    private Optional<String> readFileContentFromClassPath(String relativeFileURI) {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("META-INF/resources" + relativeFileURI)) {
-            return Optional.of(IOUtils.toString(is, StandardCharsets.UTF_8.name()));
-        } catch (Exception ex) {
-            throw new SourceFilesException("Exception trying to read definition source file with relative URI:" + relativeFileURI, ex);
-        }
     }
 }
