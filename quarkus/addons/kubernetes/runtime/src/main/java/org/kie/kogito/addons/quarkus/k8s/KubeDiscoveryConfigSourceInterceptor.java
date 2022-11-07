@@ -61,8 +61,11 @@ public class KubeDiscoveryConfigSourceInterceptor implements ConfigSourceInterce
     }
 
     private boolean isValidURI(ConfigValue value) {
-        return value != null && !value.getValue().isBlank() && KubeConstants.SUPPORTED_PROTOCOLS
-                .stream()
-                .anyMatch(value.getValue()::startsWith);
+        if (value != null && value.getValue() != null) {
+            return !value.getValue().isBlank() && KubeConstants.SUPPORTED_PROTOCOLS
+                    .stream()
+                    .anyMatch(value.getValue()::startsWith);
+        }
+        return false;
     }
 }
