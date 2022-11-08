@@ -84,7 +84,7 @@ class CompensationIT extends AbstractCodegenIT {
 
         Model model = (Model) processInstance.variables();
         assertState(processInstance, ProcessInstance.STATE_COMPLETED);
-        assertThat(model.toMap()).doesNotContainKey("x");
+        assertThat(model.toMap().get("x")).isNull();
     }
 
 }
