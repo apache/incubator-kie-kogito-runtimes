@@ -47,7 +47,7 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
     }
 
     @Override
-    public Optional<String> getProcessSourceFile(String processId) throws SourceFilesException {
+    public Optional<byte[]> getProcessSourceFile(String processId) throws SourceFilesException {
         return getProcessSourceFiles(processId).stream()
                 .filter(this::isValidDefinitionSource)
                 .findFirst()

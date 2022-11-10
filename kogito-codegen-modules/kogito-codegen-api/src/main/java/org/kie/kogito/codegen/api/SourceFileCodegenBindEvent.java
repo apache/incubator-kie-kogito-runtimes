@@ -15,15 +15,17 @@
  */
 package org.kie.kogito.codegen.api;
 
+import java.util.Arrays;
+
 public final class SourceFileCodegenBindEvent {
 
     private final String processId;
 
     private final String sourceFile;
 
-    private final String fileContents;
+    private final byte[] fileContents;
 
-    public SourceFileCodegenBindEvent(String processId, String sourceFile, String fileContents) {
+    public SourceFileCodegenBindEvent(String processId, String sourceFile, byte[] fileContents) {
         this.processId = processId;
         this.sourceFile = sourceFile;
         this.fileContents = fileContents;
@@ -37,7 +39,7 @@ public final class SourceFileCodegenBindEvent {
         return sourceFile;
     }
 
-    public String getFileContents() {
+    public byte[] getFileContents() {
         return fileContents;
     }
 
@@ -46,7 +48,7 @@ public final class SourceFileCodegenBindEvent {
         return "SourceFileCodegenBindEvent{" +
                 "processId='" + processId + '\'' +
                 ", sourceFile='" + sourceFile + '\'' +
-                ", fileContents='" + fileContents + '\'' +
+                ", fileContents='" + Arrays.toString(fileContents) + '\'' +
                 '}';
     }
 }

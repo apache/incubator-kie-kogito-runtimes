@@ -28,6 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SourceFileCodegenBindListenerImplTest {
 
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
+
     public static Stream<Arguments> testOnSourceFileProcessBindEventSources() {
         return Stream.of(
                 Arguments.arguments("/dev/proj/other_resources/org/acme/process/a_process.bpmn", "org/acme/process/a_process.bpmn"),
@@ -42,12 +44,12 @@ class SourceFileCodegenBindListenerImplTest {
 
         String processId = "a_process";
 
-        SourceFileCodegenBindEvent event = new SourceFileCodegenBindEvent(processId, eventSourceFile, "");
+        SourceFileCodegenBindEvent event = new SourceFileCodegenBindEvent(processId, eventSourceFile, EMPTY_BYTE_ARRAY);
 
         FakeSourceFilesRecorder sourceFilesRecorder = new FakeSourceFilesRecorder();
 
         new SourceFileProcessBindListenerImpl(resourcePaths, sourceFilesRecorder).onSourceFileCodegenBind(event);
 
-        assertThat(sourceFilesRecorder.containsRecordFor(processId, new SourceFile(expectedSourceFile, ""))).isTrue();
+        assertThat(sourceFilesRecorder.containsRecordFor(processId, new SourceFile(expectedSourceFile, EMPTY_BYTE_ARRAY))).isTrue();
     }
 }

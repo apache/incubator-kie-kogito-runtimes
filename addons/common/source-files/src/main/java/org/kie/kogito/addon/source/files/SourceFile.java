@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addon.source.files;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class SourceFile {
@@ -23,7 +24,7 @@ public final class SourceFile {
     private String uri;
 
     // Serialization requires it not read-only
-    private String contents;
+    private byte[] contents;
 
     public SourceFile() {
         // Needed for serialization
@@ -36,7 +37,7 @@ public final class SourceFile {
      * @param uri the URI of the source file
      * @param contents the contents of the source file
      */
-    public SourceFile(String uri, String contents) {
+    public SourceFile(String uri, byte[] contents) {
         this.uri = Objects.requireNonNull(uri);
         this.contents = Objects.requireNonNull(contents);
     }
@@ -47,7 +48,7 @@ public final class SourceFile {
     }
 
     // Needed for serialization
-    public void setContents(String contents) {
+    public void setContents(byte[] contents) {
         this.contents = contents;
     }
 
@@ -55,7 +56,7 @@ public final class SourceFile {
         return uri;
     }
 
-    public String getContents() {
+    public byte[] getContents() {
         return contents;
     }
 
@@ -68,19 +69,19 @@ public final class SourceFile {
             return false;
         }
         SourceFile that = (SourceFile) o;
-        return uri.equals(that.uri) && contents.equals(that.contents);
+        return uri.equals(that.uri) && Arrays.equals(contents, that.contents);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uri, contents);
+        return Objects.hash(uri, Arrays.hashCode(contents));
     }
 
     @Override
     public String toString() {
         return "SourceFile{" +
                 "uri='" + uri + '\'' +
-                ", contents='" + contents + '\'' +
+                ", contents='" + Arrays.toString(contents) + '\'' +
                 '}';
     }
 }
