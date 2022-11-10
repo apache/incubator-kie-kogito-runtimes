@@ -15,11 +15,9 @@
  */
 package org.kie.kogito.addon.source.files;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,20 +35,10 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
     @Override
     public Optional<SourceFile> getSourceFilesByUri(String uri) {
-        List<SourceFile> allSourceFiles = new ArrayList<>();
-
-        sourceFiles.values().forEach(allSourceFiles::addAll);
-
-        allSourceFiles.removeIf(sourceFile -> !Objects.equals(sourceFile.getUri(), uri));
-
-        switch (allSourceFiles.size()) {
-            case 0:
-                return Optional.empty();
-            case 1:
-                return Optional.of(allSourceFiles.get(0));
-            default:
-                throw new IllegalStateException("Found more than one source file with the same URI.");
-        }
+        return sourceFiles.values().stream()
+                .flatMap(Collection::stream)
+                .filter(file -> Objects.equals(file.getUri(), uri))
+                .findFirst();
     }
 
     @Override
