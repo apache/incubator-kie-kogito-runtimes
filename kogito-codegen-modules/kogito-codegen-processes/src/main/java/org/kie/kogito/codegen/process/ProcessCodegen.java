@@ -162,7 +162,7 @@ public class ProcessCodegen extends AbstractGenerator {
                 .ifPresent(notifier -> processes.forEach(p -> {
                     String sourcePath = resource.getSourcePath();
                     try {
-                        notifier.notify(new SourceFileCodegenBindEvent(p.getId(), sourcePath, resource.getInputStream().readAllBytes()));
+                        notifier.notify(new SourceFileCodegenBindEvent(p.getId(), sourcePath, new String(resource.getInputStream().readAllBytes())));
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

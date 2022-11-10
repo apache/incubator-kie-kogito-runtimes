@@ -42,5 +42,5 @@ public interface SourceFilesProvider {
      * @param processId the process identifier
      * @return the source file content.
      */
-    Optional<byte[]> getProcessSourceFile(String processId);
+    Optional<String> getProcessSourceFile(String processId);
 }

@@ -46,7 +46,7 @@ public final class SourceFilesResource {
     public Response getSourceFileByUri(@QueryParam("uri") String uri) {
         return sourceFilesProvider.getSourceFilesByUri(uri)
                 .map(sourceFile -> {
-                    try (InputStream file = new ByteArrayInputStream(sourceFile.getContents())) {
+                    try (InputStream file = new ByteArrayInputStream(sourceFile.getContents().getBytes())) {
                         return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
                                 .header("Content-Disposition", "inline; filename=\"" + java.nio.file.Path.of(sourceFile.getUri()).getFileName() + "\"")
                                 .build();
@@ -67,9 +67,9 @@ public final class SourceFilesResource {
     @Path("{processId}/source")
     @Produces(MediaType.TEXT_PLAIN)
     public Response getSourceFileByProcessId(@PathParam("processId") String processId) {
-        Optional<byte[]> processSourceFileContent = sourceFilesProvider.getProcessSourceFile(processId);
+        Optional<String> processSourceFileContent = sourceFilesProvider.getProcessSourceFile(processId);
         if (processSourceFileContent.isPresent()) {
-            return Response.ok(new String(processSourceFileContent.orElseThrow())).build();
+            return Response.ok(processSourceFileContent.get()).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }

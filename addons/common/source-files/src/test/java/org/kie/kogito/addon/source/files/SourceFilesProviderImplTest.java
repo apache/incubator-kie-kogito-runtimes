@@ -28,16 +28,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SourceFilesProviderImplTest {
 
-    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
-
     private SourceFilesProviderImpl sourceFilesProvider;
 
-    private static byte[] readFileContent(String file) throws URISyntaxException, IOException {
+    private static String readFileContent(String file) throws URISyntaxException, IOException {
         Path path = Paths.get(Thread.currentThread().getContextClassLoader().getResource(file).toURI());
-        return Files.readAllBytes(path);
+        return Files.readString(path);
     }
 
-    private byte[] getTestFileContentByFilename(String fileName) throws URISyntaxException, IOException {
+    private String getTestFileContentByFilename(String fileName) throws URISyntaxException, IOException {
         return readFileContent("META-INF/resources/sources/" + fileName);
     }
 
@@ -102,7 +100,7 @@ class SourceFilesProviderImplTest {
     }
 
     private SourceFile emptySourceFile(String uri) {
-        return new SourceFile(uri, EMPTY_BYTE_ARRAY);
+        return new SourceFile(uri, "");
     }
 
     private SourceFile readSourceFile(String uri) throws URISyntaxException, IOException {
