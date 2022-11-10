@@ -21,12 +21,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import org.kie.kogito.codegen.process.ProcessCodegen;
-
-import com.google.common.base.Objects;
 
 public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
@@ -42,7 +41,7 @@ public final class SourceFilesProviderImpl implements SourceFilesProvider {
 
         sourceFiles.values().forEach(allSourceFiles::addAll);
 
-        allSourceFiles.removeIf(sourceFile -> !Objects.equal(sourceFile.getUri(), uri));
+        allSourceFiles.removeIf(sourceFile -> !Objects.equals(sourceFile.getUri(), uri));
 
         switch (allSourceFiles.size()) {
             case 0:
