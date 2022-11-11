@@ -46,29 +46,29 @@ class SourceFilesProviderImplTest {
 
     @Test
     void addSourceFile() {
-        sourceFilesProvider.addSourceFile("a_process", emptySourceFile("myworkflow.sw.json"));
+        sourceFilesProvider.addSourceFile("a_process", createEmptySourceFile("myworkflow.sw.json"));
 
         assertThat(sourceFilesProvider.getProcessSourceFiles("a_process"))
-                .contains(emptySourceFile("myworkflow.sw.json"));
+                .contains(createEmptySourceFile("myworkflow.sw.json"));
     }
 
     @Test
     void getSourceFilesByProcessId() {
-        sourceFilesProvider.addSourceFile("a_process", emptySourceFile("myworkflow.sw.json"));
-        sourceFilesProvider.addSourceFile("a_process", emptySourceFile("myworkflow.sw.yaml"));
+        sourceFilesProvider.addSourceFile("a_process", createEmptySourceFile("myworkflow.sw.json"));
+        sourceFilesProvider.addSourceFile("a_process", createEmptySourceFile("myworkflow.sw.yaml"));
 
-        sourceFilesProvider.addSourceFile("another_process", emptySourceFile("myanotherworkflow.sw.json"));
-        sourceFilesProvider.addSourceFile("another_process", emptySourceFile("myanotherworkflow.sw.yaml"));
+        sourceFilesProvider.addSourceFile("another_process", createEmptySourceFile("myanotherworkflow.sw.json"));
+        sourceFilesProvider.addSourceFile("another_process", createEmptySourceFile("myanotherworkflow.sw.yaml"));
 
         assertThat(sourceFilesProvider.getProcessSourceFiles("a_process"))
                 .containsExactlyInAnyOrder(
-                        emptySourceFile("myworkflow.sw.json"),
-                        emptySourceFile("myworkflow.sw.yaml"));
+                        createEmptySourceFile("myworkflow.sw.json"),
+                        createEmptySourceFile("myworkflow.sw.yaml"));
 
         assertThat(sourceFilesProvider.getProcessSourceFiles("another_process"))
                 .containsExactlyInAnyOrder(
-                        emptySourceFile("myanotherworkflow.sw.json"),
-                        emptySourceFile("myanotherworkflow.sw.yaml"));
+                        createEmptySourceFile("myanotherworkflow.sw.json"),
+                        createEmptySourceFile("myanotherworkflow.sw.yaml"));
     }
 
     @Test
@@ -99,7 +99,7 @@ class SourceFilesProviderImplTest {
         assertThat(sourceFilesProvider.getProcessSourceFile("invalidProcess")).isEmpty();
     }
 
-    private SourceFile emptySourceFile(String uri) {
+    private SourceFile createEmptySourceFile(String uri) {
         return new SourceFile(uri, "");
     }
 
