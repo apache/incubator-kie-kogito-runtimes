@@ -67,12 +67,12 @@ public class UserTaskHandler extends TaskHandler {
             }
             xmlNode = xmlNode.getNextSibling();
         }
-        if (owners.size() > 0) {
-            String owner = owners.get(0);
+        if (!owners.isEmpty()) {
+            StringBuilder owner = new StringBuilder(owners.get(0));
             for (int i = 1; i < owners.size(); i++) {
-                owner += "," + owners.get(i);
+                owner.append(",").append(owners.get(i));
             }
-            humanTaskNode.getWork().setParameter("ActorId", owner);
+            humanTaskNode.getWork().setParameter("ActorId", owner.toString());
         }
 
         return currentNode;

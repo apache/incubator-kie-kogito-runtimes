@@ -27,13 +27,15 @@ Map getMultijobPRConfig(Folder jobFolder) {
                     // Sonarcloud analysis only on main branch
                     // As we have only Community edition
                     DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
+                    // No parallel build for native
+                    BUILD_MVN_OPTS_CURRENT: !(jobFolder.isNative() || jobFolder.isMandrel() || jobFolder.isMandrelLTS()) ? '-T 1C' : '',
                 ]
             ], [
                 id: 'kogito-apps',
                 dependsOn: 'kogito-runtimes',
                 repository: 'kogito-apps',
                 env : [
-                    ADDITIONAL_TIMEOUT: jobFolder.isNative() || jobFolder.isMandrel() ? '360' : '210',
+                    ADDITIONAL_TIMEOUT: jobFolder.isNative() || jobFolder.isMandrel() || jobFolder.isMandrelLTS() ? '360' : '210',
                 ]
             ], [
                 id: 'kogito-examples',
@@ -49,7 +51,7 @@ KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConf
 setupDeployJob(Folder.PULLREQUEST_RUNTIMES_BDD)
 
 // Init branch
-setupInitBranchJob()
+createSetupBranchJob()
 
 // Nightly jobs
 setupSonarCloudJob()
@@ -63,6 +65,10 @@ setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
 setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL)
 setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
 setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
+
+// Jobs with integration branch
+setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN, true)
+setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS, true)
 
 // Release jobs
 setupDeployJob(Folder.RELEASE)
@@ -79,19 +85,21 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'kogito-runtimes', [
 // Methods
 /////////////////////////////////////////////////////////////////
 
-void setupSpecificNightlyJob(Folder specificNightlyFolder) {
+void setupSpecificNightlyJob(Folder specificNightlyFolder, boolean useIntegrationBranch = false) {
     String envName = specificNightlyFolder.environment.toName()
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'kogito-runtimes', specificNightlyFolder, "${jenkins_path}/Jenkinsfile.specific_nightly", "Kogito Runtimes Nightly ${envName}")
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, "kogito-runtimes${useIntegrationBranch ? '-integration-branch' : ''}", specificNightlyFolder, "${jenkins_path}/Jenkinsfile.specific_nightly", "Kogito Runtimes Nightly ${envName}")
     KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
     jobParams.triggers = [ cron : '@midnight' ]
     jobParams.env.putAll([
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
-        NOTIFICATION_JOB_NAME: "${envName} check"
+        NOTIFICATION_JOB_NAME: "${envName} check",
+        USE_INTEGRATION_BRANCH : useIntegrationBranch,
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
         parameters {
             stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
             stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+            stringParam('GIT_AUTHOR_CREDS_ID', "${GIT_AUTHOR_CREDENTIALS_ID}", 'Set the Git author creds id')
         }
     }
 }
@@ -112,8 +120,8 @@ void setupSonarCloudJob() {
     }
 }
 
-void setupInitBranchJob() {
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'kogito-runtimes', Folder.INIT_BRANCH, "${jenkins_path}/Jenkinsfile.init-branch", 'Kogito Runtimes Init branch')
+void createSetupBranchJob() {
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'kogito-runtimes', Folder.SETUP_BRANCH, "${jenkins_path}/Jenkinsfile.setup-branch", 'Kogito Runtimes Setup branch')
     KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
     jobParams.env.putAll([
         REPO_NAME: 'kogito-runtimes',
@@ -125,6 +133,8 @@ void setupInitBranchJob() {
         MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
         MAVEN_DEPENDENCIES_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
         MAVEN_DEPLOY_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
+
+        IS_MAIN_BRANCH: "${Utils.isMainBranch(this)}"
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
         parameters {

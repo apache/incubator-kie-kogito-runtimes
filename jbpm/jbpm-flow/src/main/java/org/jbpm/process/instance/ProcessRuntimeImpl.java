@@ -75,14 +75,10 @@ import org.kie.kogito.services.uow.CollectingUnitOfWorkFactory;
 import org.kie.kogito.services.uow.DefaultUnitOfWorkManager;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class ProcessRuntimeImpl extends AbstractProcessRuntime {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessRuntimeImpl.class);
 
     private InternalKnowledgeRuntime kruntime;
     private ProcessInstanceManager processInstanceManager;
@@ -357,7 +353,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
                     if (ruleName.startsWith("RuleFlow-Start-")) {
                         String processId = ruleName.replace("RuleFlow-Start-", "");
 
-                        startProcessWithParamsAndTrigger(processId, null, "conditional", true);
+                        startProcessWithParamsAndTrigger(processId, null, "conditional");
                     }
                 }
             }
@@ -376,7 +372,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
         });
     }
 
-    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type, boolean dispose) {
+    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type) {
 
         startProcess(processId, params, type);
     }
@@ -501,7 +497,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
 
         @Override
         public String[] getEventTypes() {
-            return null;
+            return new String[0];
         }
 
         @Override
@@ -532,7 +528,7 @@ public class ProcessRuntimeImpl extends AbstractProcessRuntime {
             }
 
             Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
-            startProcessWithParamsAndTrigger(processId, parameters, type, false);
+            startProcessWithParamsAndTrigger(processId, parameters, type);
 
         }
     }

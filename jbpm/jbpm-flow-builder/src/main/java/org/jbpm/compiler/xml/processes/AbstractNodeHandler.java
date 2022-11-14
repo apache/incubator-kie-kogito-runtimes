@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
 
 public abstract class AbstractNodeHandler extends BaseAbstractHandler implements Handler {
 
-    protected final static String EOL = System.getProperty("line.separator");
+    protected static final String EOL = System.getProperty("line.separator");
 
     public AbstractNodeHandler() {
         initValidParents();
@@ -229,7 +229,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeActions(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (actions != null && !actions.isEmpty()) {
             xmlDump.append("      <" + type + ">" + EOL);
             for (DroolsAction action : actions) {
                 writeAction(action, xmlDump);

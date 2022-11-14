@@ -38,7 +38,6 @@ import org.jbpm.test.util.NodeLeftCountDownProcessEventListener;
 import org.jbpm.test.util.ProcessCompletedCountDownProcessEventListener;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import org.kie.api.command.ExecutableCommand;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
 import org.kie.api.event.process.ProcessNodeTriggeredEvent;
@@ -396,7 +395,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testEventBasedSplit2() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener(2);
         kruntime = createKogitoProcessRuntime("BPMN2-EventBasedSplit2.bpmn2");
@@ -666,7 +664,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), completedNodes);
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
@@ -728,7 +726,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "User Task 2", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
@@ -762,7 +760,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(1);
+        assertThat(executednodes).hasSize(1);
 
     }
 
@@ -813,12 +811,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(4);
+        assertThat(executednodes).hasSize(4);
 
     }
 
     @Test
-    @Timeout(10)
     public void testEventSubprocessTimer() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("Script Task 1", 1);
         kruntime = createKogitoProcessRuntime("BPMN2-EventSubprocessTimer.bpmn2");
@@ -865,7 +862,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     @RequirePersistence
     public void testEventSubprocessTimerCycle() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("Script Task 1", 4);
@@ -937,12 +933,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
-        assertThat(executednodes.size()).isEqualTo(1);
+        assertThat(executednodes).hasSize(1);
 
     }
 
     @Test
-    @Timeout(10)
     public void testEventSubprocessMessageWithLocalVars() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 1);
 
@@ -971,9 +966,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         processInstance = kruntime.getProcessInstance(processInstance.getStringId());
         assertThat(processInstance).isNull();
-        assertThat(variablevalues.size()).isEqualTo(2);
-        assertThat(variablevalues.contains("SCRIPT1")).isTrue();
-        assertThat(variablevalues.contains("SCRIPT2")).isTrue();
+        assertThat(variablevalues).hasSize(2).contains("SCRIPT1", "SCRIPT2");
     }
 
     @Test
@@ -999,13 +992,11 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem).isTrue();
+        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
 
-        assertThat(nodeId).isNotNull();
         assertThat(nodeId > 0).isTrue();
         assertThat(nodeInstanceId).isNotNull();
     }
@@ -1021,14 +1012,12 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceCompleted(processInstance);
 
         KogitoWorkItem workItem = handler.getWorkItem();
-        assertThat(workItem).isNotNull();
-        assertThat(workItem instanceof KogitoWorkItem).isTrue();
+        assertThat(workItem).isNotNull().isInstanceOf(KogitoWorkItem.class);
 
         String nodeInstanceId = ((InternalKogitoWorkItem) workItem).getNodeInstanceStringId();
         long nodeId = ((InternalKogitoWorkItem) workItem).getNodeId();
         String deploymentId = ((InternalKogitoWorkItem) workItem).getDeploymentId();
 
-        assertThat(nodeId).isNotNull();
         assertThat(nodeId > 0).isTrue();
         assertThat(nodeInstanceId).isNotNull();
         assertThat(deploymentId).isNull();
@@ -1067,7 +1056,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventDuration() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
         kruntime = createKogitoProcessRuntime("BPMN2-TimerBoundaryEventDuration.bpmn2");
@@ -1097,7 +1085,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventDurationISO() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
         kruntime = createKogitoProcessRuntime("BPMN2-TimerBoundaryEventDurationISO.bpmn2");
@@ -1112,7 +1099,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventDateISO() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1131,7 +1117,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventCycle1() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1147,7 +1132,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventCycle2() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 3);
 
@@ -1164,7 +1148,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     @RequirePersistence(false)
     public void testTimerBoundaryEventCycleISO() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("TimerEvent", 2);
@@ -1179,7 +1162,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventInterrupting() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1198,7 +1180,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerBoundaryEventInterruptingOnTask() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1281,7 +1262,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerDuration() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1298,7 +1278,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerDateISO() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1319,7 +1298,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerDurationISO() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1336,7 +1314,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerCycle1() throws Exception {
         ProcessCompletedCountDownProcessEventListener countDownListener = new ProcessCompletedCountDownProcessEventListener();
 
@@ -1353,7 +1330,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerCycleISO() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 5);
 
@@ -1371,7 +1347,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateCatchEventTimerCycle2() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 3);
 
@@ -1449,7 +1424,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     @RequirePersistence(false)
     public void testIntermediateCatchEventTimerCycleWithError()
             throws Exception {
@@ -1476,7 +1450,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     @RequirePersistence
     public void testIntermediateCatchEventTimerCycleWithErrorWithPersistence() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 2);
@@ -1665,7 +1638,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotNull();
-            assertThat(e.getMessage().contains("has no incoming connection")).isTrue();
+            assertThat(e.getMessage()).contains("has no incoming connection");
         }
 
     }
@@ -1689,8 +1662,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1716,8 +1688,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceActive(processInstance);
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Outside", null, processInstance.getStringId());
 
@@ -1762,8 +1733,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 .anyMatch(m -> m.containsKey("AttachedToID") && m.containsKey("AttachedToName"));
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(2);
+        assertThat(workItems).isNotNull().hasSize(2);
 
         kruntime.signalEvent("Inside", null, processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
@@ -1862,7 +1832,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 "MessageIntermediateEvent", params);
         assertProcessInstanceCompleted(processInstance);
 
-        assertThat(messageContent.toString()).isEqualTo("MYVALUE");
+        assertThat(messageContent).hasToString("MYVALUE");
 
     }
 
@@ -1880,8 +1850,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertProcessInstanceFinished(processInstance, kruntime);
         assertNodeTriggered(processInstance.getStringId(), "StartProcess", "UserTask", "EndProcess", "event");
         String var = getProcessVarValue(processInstance, "x");
-        assertThat(var).isNotNull();
-        assertThat(var).isEqualTo("SOMEVALUE");
+        assertThat(var).isNotNull().isEqualTo("SOMEVALUE");
     }
 
     @Test
@@ -1897,8 +1866,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         kruntime.signalEvent("Message-HelloMessage", "SomeValue", processInstance.getStringId());
         assertProcessInstanceFinished(processInstance, kruntime);
         String var = getProcessVarValue(processInstance, "x");
-        assertThat(var).isNotNull();
-        assertThat(var).isEqualTo("SOMEVALUE");
+        assertThat(var).isNotNull().isEqualTo("SOMEVALUE");
     }
 
     @Test
@@ -1918,9 +1886,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
                 "Sub Process 1", "start-sub", "end-sub");
 
         String var = getProcessVarValue(processInstance, "x");
-        assertThat(var).isNotNull();
-        assertThat(var).isEqualTo("JOHN");
-
+        assertThat(var).isNotNull().isEqualTo("JOHN");
     }
 
     @Test
@@ -1951,7 +1917,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testTimerMultipleInstances() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("timer", 3);
         kruntime = createKogitoProcessRuntime("BPMN2-MultiInstanceLoopBoundaryTimer.bpmn2");
@@ -1965,8 +1930,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         countDownListener.waitTillCompleted();
 
         List<KogitoWorkItem> workItems = handler.getWorkItems();
-        assertThat(workItems).isNotNull();
-        assertThat(workItems.size()).isEqualTo(3);
+        assertThat(workItems).isNotNull().hasSize(3);
 
         for (KogitoWorkItem wi : workItems) {
             kruntime.getKogitoWorkItemManager().completeWorkItem(wi.getStringId(), null);
@@ -1976,7 +1940,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateTimerParallelGateway() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener1 = new NodeLeftCountDownProcessEventListener("Timer1", 1);
         NodeLeftCountDownProcessEventListener countDownListener2 = new NodeLeftCountDownProcessEventListener("Timer2", 1);
@@ -2002,7 +1965,6 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
     }
 
     @Test
-    @Timeout(10)
     public void testIntermediateTimerEventMI() throws Exception {
         NodeLeftCountDownProcessEventListener countDownListener = new NodeLeftCountDownProcessEventListener("After timer", 3);
         kruntime = createKogitoProcessRuntime("timer/BPMN2-IntermediateTimerEventMI.bpmn2");
@@ -2124,7 +2086,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
         assertNodeActive(processInstance.getStringId(), kruntime, "Complete work", "Wait");
 
         List<KogitoWorkItem> items = handler.getWorkItems();
-        assertThat(items.size()).isEqualTo(1);
+        assertThat(items).hasSize(1);
         KogitoWorkItem wi = items.get(0);
 
         Map<String, Object> result = new HashMap<>();
@@ -2182,7 +2144,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDateInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (RuntimeException e) {
-            assertThat(e.getMessage().contains("Could not parse date 'abcdef'")).isTrue();
+            assertThat(e.getMessage()).contains("Could not parse date 'abcdef'");
         }
     }
 
@@ -2192,7 +2154,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventDurationInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'")).isTrue();
+            assertThat(e.getMessage()).contains("Could not parse delay 'abcdef'");
         }
     }
 
@@ -2202,7 +2164,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             createKogitoProcessRuntime("timer/BPMN2-TimerBoundaryEventCycleInvalid.bpmn2");
             fail("Should fail as timer expression is not valid");
         } catch (Exception e) {
-            assertThat(e.getMessage().contains("Could not parse delay 'abcdef'")).isTrue();
+            assertThat(e.getMessage()).contains("Could not parse delay 'abcdef'");
         }
     }
 
@@ -2221,8 +2183,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
+        assertThat(processInstances).isNotNull().hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2236,8 +2197,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
+        assertThat(processInstances).isNotNull().isEmpty();
     }
 
     @Test
@@ -2255,8 +2215,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(1);
+        assertThat(processInstances).isNotNull().hasSize(1);
 
         // now activate condition
         Person person = new Person();
@@ -2270,12 +2229,10 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
             }
             return false;
         });
-        assertThat(processInstances).isNotNull();
-        assertThat(processInstances.size()).isEqualTo(0);
+        assertThat(processInstances).isNotNull().isEmpty();
     }
 
     @Test
-    @Timeout(10)
     public void testEventBasedSplitWithCronTimerAndSignal() throws Exception {
         System.setProperty("jbpm.enable.multi.con", "true");
         try {
@@ -2306,7 +2263,7 @@ public class IntermediateEventTest extends JbpmBpmn2TestCase {
 
             List<KogitoWorkItem> wi = handler.getWorkItems();
             assertThat(wi).isNotNull();
-            assertThat(wi.size()).isEqualTo(3);
+            assertThat(wi).hasSize(3);
 
             kruntime.abortProcessInstance(processInstance.getStringId());
         } finally {
