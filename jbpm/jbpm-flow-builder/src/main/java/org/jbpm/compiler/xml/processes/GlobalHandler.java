@@ -24,7 +24,6 @@ import org.jbpm.compiler.xml.Parser;
 import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.kie.api.definition.process.Process;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -35,11 +34,8 @@ public class GlobalHandler extends BaseAbstractHandler
         if ((this.validParents == null) && (this.validPeers == null)) {
             this.validParents = new HashSet();
             this.validParents.add(Process.class);
-
             this.validPeers = new HashSet();
             this.validPeers.add(null);
-            //this.validPeers.add( ImportDescr.class );            
-
             this.allowNesting = false;
         }
     }
@@ -61,7 +57,7 @@ public class GlobalHandler extends BaseAbstractHandler
 
         Map<String, String> map = process.getGlobals();
         if (map == null) {
-            map = new HashMap<String, String>();
+            map = new HashMap<>();
             process.setGlobals(map);
         }
         map.put(identifier, type);
@@ -72,7 +68,7 @@ public class GlobalHandler extends BaseAbstractHandler
     public Object end(final String uri,
             final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
+        parser.endElementBuilder();
         return null;
     }
 

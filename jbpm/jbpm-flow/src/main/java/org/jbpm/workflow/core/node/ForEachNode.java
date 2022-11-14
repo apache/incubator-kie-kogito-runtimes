@@ -234,15 +234,15 @@ public class ForEachNode extends CompositeContextNode {
         this.outputVariableName = varRef;
     }
 
-    public void addContextVariable(String varRef, String variableName, DataType type) {
-        this.addVariableToContext(getCompositeNode(), varRef, variableName, type);
+    public Variable addContextVariable(String varRef, String variableName, DataType type) {
+        return addVariableToContext(getCompositeNode(), varRef, variableName, type);
     }
 
-    private void addVariableToContext(CompositeContextNode compositeContextNode, String varRef, String variableName, DataType type) {
+    private Variable addVariableToContext(CompositeContextNode compositeContextNode, String varRef, String variableName, DataType type) {
         VariableScope variableScope = (VariableScope) compositeContextNode.getDefaultContext(VariableScope.VARIABLE_SCOPE);
         List<Variable> variables = variableScope.getVariables();
         if (variables == null) {
-            variables = new ArrayList<Variable>();
+            variables = new ArrayList<>();
             variableScope.setVariables(variables);
         }
         Variable variable = new Variable();
@@ -250,6 +250,7 @@ public class ForEachNode extends CompositeContextNode {
         variable.setName(variableName);
         variable.setType(type);
         variables.add(variable);
+        return variable;
     }
 
     public String getCollectionExpression() {

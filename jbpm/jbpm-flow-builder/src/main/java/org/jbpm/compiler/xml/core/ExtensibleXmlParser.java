@@ -91,8 +91,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /** Locator for errors. */
     private Locator locator;
 
-    // private Map repo;
-
     /** Stack of configurations. */
     private LinkedList configurationStack;
 
@@ -100,8 +98,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     private StringBuilder characters;
 
     private SemanticModules modules;
-
-    private boolean lastWasEndElement;
 
     private LinkedList parents;
 
@@ -346,6 +342,8 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /**
      * @see org.xml.sax.ContentHandler
      */
+
+    @Override
     public void setDocumentLocator(final Locator locator) {
         this.locator = locator;
     }
@@ -359,11 +357,11 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         return this.locator;
     }
 
+    @Override
     public void startDocument() {
         this.isValidating = true;
         this.current = null;
         this.peer = null;
-        this.lastWasEndElement = false;
         this.parents.clear();
         this.characters = null;
         this.configurationStack.clear();
@@ -382,6 +380,8 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
      *
      * @todo: better way to manage unhandled elements
      */
+
+    @Override
     public void startElement(final String uri,
             final String localName,
             final String qname,
@@ -424,6 +424,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
      * @see org.xml.sax.ContentHandler
      */
 
+    @Override
     public void endElement(final String uri,
             final String localName,
             final String qname) throws SAXException {
@@ -432,7 +433,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
                 localName);
 
         if (handler == null) {
-            if (this.configurationStack.size() >= 1) {
+            if (!this.configurationStack.isEmpty()) {
                 endElementBuilder();
             }
             return;
@@ -446,6 +447,10 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public static class Null {
+        private Null() {
+
+        }
+
         public static final Null instance = new Null();
     }
 
@@ -538,8 +543,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
         final Element element = this.document.createElement(tagName);
 
-        //final DefaultConfiguration config = new DefaultConfiguration( tagName );
-
         final int numAttrs = attrs.getLength();
 
         for (int i = 0; i < numAttrs; ++i) {
@@ -571,6 +574,8 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
      * @param len
      * @see org.xml.sax.ContentHandler
      */
+
+    @Override
     public void characters(final char[] chars,
             final int start,
             final int len) {
@@ -599,7 +604,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
     public Object getParent() {
         try {
-            return this.parents.size() > 0 ? this.parents.getLast() : null;
+            return !this.parents.isEmpty() ? this.parents.getLast() : null;
         } catch (NoSuchElementException e) {
             return null;
         }
@@ -647,6 +652,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         return this.current;
     }
 
+    @Override
     public InputSource resolveEntity(final String publicId,
             final String systemId) throws SAXException {
         try {
@@ -664,6 +670,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         return null;
     }
 
+    @Override
     public void startPrefixMapping(final String prefix,
             final String uri) throws SAXException {
         super.startPrefixMapping(prefix,
@@ -672,6 +679,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
                 uri);
     }
 
+    @Override
     public void endPrefixMapping(final String prefix) throws SAXException {
         super.endPrefixMapping(prefix);
         this.namespaces.remove(prefix);
@@ -681,14 +689,17 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
         return this.message.format(new Object[] { x.getSystemId(), x.getLineNumber(), x.getColumnNumber(), x.getMessage() });
     }
 
+    @Override
     public void warning(final SAXParseException x) {
         logger.warn(buildPrintMessage(x));
     }
 
+    @Override
     public void error(final SAXParseException x) {
         logger.error(buildPrintMessage(x));
     }
 
+    @Override
     public void fatalError(final SAXParseException x) throws SAXParseException {
         logger.error(buildPrintMessage(x));
         throw x;

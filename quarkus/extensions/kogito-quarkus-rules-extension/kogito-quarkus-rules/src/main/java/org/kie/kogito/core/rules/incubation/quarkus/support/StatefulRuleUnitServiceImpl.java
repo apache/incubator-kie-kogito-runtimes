@@ -21,15 +21,21 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.kie.kogito.incubation.common.*;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnitInstance;
+import org.drools.ruleunits.impl.RuleUnits;
+import org.kie.kogito.incubation.common.EmptyMetaDataContext;
+import org.kie.kogito.incubation.common.ExtendedDataContext;
+import org.kie.kogito.incubation.common.ExtendedReferenceContext;
+import org.kie.kogito.incubation.common.LocalId;
+import org.kie.kogito.incubation.common.MapDataContext;
+import org.kie.kogito.incubation.common.MetaDataContext;
+import org.kie.kogito.incubation.common.ReferenceContext;
 import org.kie.kogito.incubation.rules.InstanceQueryId;
 import org.kie.kogito.incubation.rules.RuleUnitId;
 import org.kie.kogito.incubation.rules.RuleUnitInstanceId;
 import org.kie.kogito.incubation.rules.services.StatefulRuleUnitService;
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
-import org.kie.kogito.rules.RuleUnits;
 
 class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
 
@@ -80,7 +86,7 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
         if (instance == null)
             throw new IllegalArgumentException("Unknown instance " + localId);
-        instance.dispose();
+        instance.close();
         return EmptyMetaDataContext.Instance;
     }
 
@@ -105,7 +111,6 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
             queryId = (InstanceQueryId) localId;
             ruleUnitInstanceId = queryId.ruleUnitInstanceId();
         } else {
-            // LocalDecisionId.parse(decisionId);
             throw new IllegalArgumentException(
                     "Not a valid instance query id " + localId);
         }
@@ -113,7 +118,7 @@ class StatefulRuleUnitServiceImpl implements StatefulRuleUnitService {
         RuleUnitInstance<?> instance = ruleUnits.getRegisteredInstance(ruleUnitInstanceId.ruleUnitInstanceId());
         if (instance == null)
             throw new IllegalArgumentException("Unknown instance " + localId);
-        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId());
+        List<Map<String, Object>> results = instance.executeQuery(queryId.queryId()).toList();
 
         return results.stream().map(r -> ExtendedDataContext.of(EmptyMetaDataContext.Instance, MapDataContext.of(r)));
 

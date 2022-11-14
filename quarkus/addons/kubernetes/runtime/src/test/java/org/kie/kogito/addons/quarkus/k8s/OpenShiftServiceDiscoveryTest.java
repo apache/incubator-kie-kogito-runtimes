@@ -17,9 +17,6 @@ package org.kie.kogito.addons.quarkus.k8s;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
 
@@ -33,6 +30,8 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.OpenShiftTestServer;
 import io.quarkus.test.kubernetes.client.WithOpenShiftTestServer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @QuarkusTest
 @WithOpenShiftTestServer
 public class OpenShiftServiceDiscoveryTest {
@@ -42,20 +41,14 @@ public class OpenShiftServiceDiscoveryTest {
     KubeResourceDiscovery kubeResourceDiscovery;
     private final String namespace = "serverless-workflow-greeting-quarkus";
 
-    @BeforeEach
-    public void removeResources() {
-        mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace).delete();
-        mockServer.getOpenshiftClient().routes().inNamespace(namespace).delete();
-    }
-
     @Test
     public void testNotFoundDeploymentConfig() {
         kubeResourceDiscovery = new KubeResourceDiscovery(mockServer.getOpenshiftClient());
-        DeploymentConfig deployment = mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace)
+        DeploymentConfig deploymentConfig = mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/deployment-config.yaml")).get();
-        deployment.getMetadata().setName("test");
-        mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace).create(deployment);
-        Assertions.assertEquals(Optional.empty(),
+        deploymentConfig.getMetadata().setName("test");
+        mockServer.getOpenshiftClient().resource(deploymentConfig).inNamespace(namespace).createOrReplace();
+        assertEquals(Optional.empty(),
                 kubeResourceDiscovery.query(new KubeURI("openshift:apps.openshift.io/v1/deploymentconfig/" + namespace + "/invalid")));
     }
 
@@ -68,16 +61,16 @@ public class OpenShiftServiceDiscoveryTest {
                 .deploymentConfigs()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/deployment-config.yaml")).get();
-        mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace).create(deploymentConfig);
+        mockServer.getOpenshiftClient().resource(deploymentConfig).inNamespace(namespace).createOrReplace();
 
         Service service = mockServer.getOpenshiftClient()
                 .services()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/deployment-config-service.yaml")).get();
-        mockServer.getOpenshiftClient().services().inNamespace(namespace).create(service);
+        mockServer.getOpenshiftClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.12:80", url.get());
+        assertEquals("http://10.10.10.12:80", url.get());
     }
 
     @Test
@@ -89,14 +82,14 @@ public class OpenShiftServiceDiscoveryTest {
                 .deploymentConfigs()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/deployment-config-no-service.yaml")).get();
-        DeploymentConfig createdDc = mockServer.getOpenshiftClient().deploymentConfigs().inNamespace(namespace).create(deploymentConfig);
+        DeploymentConfig createdDc = mockServer.getOpenshiftClient().resource(deploymentConfig).inNamespace(namespace).createOrReplace();
 
         ReplicationController rc = mockServer.getOpenshiftClient()
                 .replicationControllers()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/replication-controller-dc-no-svc.yaml")).get();
         rc.getMetadata().getOwnerReferences().get(0).setUid(createdDc.getMetadata().getUid());
-        ReplicationController createdRc = mockServer.getOpenshiftClient().replicationControllers().inNamespace(namespace).create(rc);
+        ReplicationController createdRc = mockServer.getOpenshiftClient().resource(rc).inNamespace(namespace).createOrReplace();
 
         Pod pod = mockServer.getOpenshiftClient()
                 .pods()
@@ -104,10 +97,10 @@ public class OpenShiftServiceDiscoveryTest {
                 .load(this.getClass().getClassLoader().getResourceAsStream("deploymentConfig/pod-deployment-config-no-service.yaml")).get();
         pod.getMetadata().setName("example-dc-no-service-1-phlx4");
         pod.getMetadata().getOwnerReferences().get(0).setUid(createdRc.getMetadata().getUid());
-        mockServer.getOpenshiftClient().pods().inNamespace(namespace).create(pod);
+        mockServer.getOpenshiftClient().resource(pod).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://172.17.25.190:8080", url.get());
+        assertEquals("http://172.17.25.190:8080", url.get());
     }
 
     @Test
@@ -118,9 +111,9 @@ public class OpenShiftServiceDiscoveryTest {
                 .routes()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("route/route.yaml")).get();
-        mockServer.getOpenshiftClient().routes().inNamespace(namespace).create(route);
+        mockServer.getOpenshiftClient().resource(route).inNamespace(namespace).createOrReplace();
 
-        Assertions.assertEquals(Optional.empty(),
+        assertEquals(Optional.empty(),
                 kubeResourceDiscovery.query(new KubeURI("openshift:route.openshift.io/v1/route/" + namespace + "/invalid")));
     }
 
@@ -133,10 +126,10 @@ public class OpenShiftServiceDiscoveryTest {
                 .routes()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("route/route.yaml")).get();
-        mockServer.getOpenshiftClient().routes().inNamespace(namespace).create(route);
+        mockServer.getOpenshiftClient().resource(route).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://test-route.org:80", url.get());
+        assertEquals("http://test-route.org:80", url.get());
     }
 
     @Test
@@ -148,9 +141,9 @@ public class OpenShiftServiceDiscoveryTest {
                 .routes()
                 .inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("route/route-tls.yaml")).get();
-        mockServer.getOpenshiftClient().routes().inNamespace(namespace).create(route);
+        mockServer.getOpenshiftClient().resource(route).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("https://secure-test-route-tls:443", url.get());
+        assertEquals("https://secure-test-route-tls:443", url.get());
     }
 }

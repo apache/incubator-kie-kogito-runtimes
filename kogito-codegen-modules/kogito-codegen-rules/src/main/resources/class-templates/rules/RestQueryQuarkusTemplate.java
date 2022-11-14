@@ -24,8 +24,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.kie.kogito.rules.RuleUnit;
-import org.kie.kogito.rules.RuleUnitInstance;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitInstance;
 
 import static java.util.stream.Collectors.toList;
 
@@ -47,8 +47,8 @@ public class $unit$Query$name$Endpoint {
     public List<$ReturnType$> executeQuery($UnitTypeDTO$ unitDTO) {
         RuleUnitInstance<$UnitType$> instance = ruleUnit.createInstance();
         // Do not return the result directly to allow post execution codegen (like monitoring)
-        List<$ReturnType$> response = instance.executeQuery($unit$Query$name$.class);
-        instance.dispose();
+        List<$ReturnType$> response = $unit$Query$name$.execute(instance);
+        instance.close();
         return response;
     }
 

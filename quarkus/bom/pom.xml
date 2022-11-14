@@ -32,15 +32,15 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>io.quarkiverse.jackson-jq</groupId>
-         <artifactId>quarkus-jackson-jq</artifactId>
-         <version>${version.io.quarkiverse.jackson-jq}</version>
-       </dependency>
-       <dependency>
-         <groupId>io.quarkiverse.jackson-jq</groupId>
-         <artifactId>quarkus-jackson-jq-deployment</artifactId>
-         <version>${version.io.quarkiverse.jackson-jq}</version>
-       </dependency>
+        <groupId>io.quarkiverse.jackson-jq</groupId>
+        <artifactId>quarkus-jackson-jq</artifactId>
+        <version>${version.io.quarkiverse.jackson-jq}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.quarkiverse.jackson-jq</groupId>
+        <artifactId>quarkus-jackson-jq-deployment</artifactId>
+        <version>${version.io.quarkiverse.jackson-jq}</version>
+      </dependency>
       <dependency>
         <groupId>io.quarkiverse.reactivemessaging.http</groupId>
         <artifactId>quarkus-reactive-messaging-http</artifactId>
@@ -52,16 +52,28 @@
         <version>${version.io.quarkiverse.reactivemessaging.http}</version>
       </dependency>
       <dependency>
-         <groupId>io.quarkiverse.openapi.generator</groupId>
-         <artifactId>quarkus-openapi-generator</artifactId>
-         <version>${version.io.quarkiverse.openapi.generator}</version>
+        <groupId>io.quarkiverse.openapi.generator</groupId>
+        <artifactId>quarkus-openapi-generator</artifactId>
+        <version>${version.io.quarkiverse.openapi.generator}</version>
       </dependency>
-        <dependency>
-         <groupId>io.quarkiverse.openapi.generator</groupId>
-         <artifactId>quarkus-openapi-generator-deployment</artifactId>
-         <version>${version.io.quarkiverse.openapi.generator}</version>
+      <dependency>
+        <groupId>io.quarkiverse.openapi.generator</groupId>
+        <artifactId>quarkus-openapi-generator-deployment</artifactId>
+        <version>${version.io.quarkiverse.openapi.generator}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <quarkus.http.test-port>0</quarkus.http.test-port>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>

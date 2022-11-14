@@ -84,39 +84,36 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
 
         Map<String, String> inputTypes = node.getIoSpecification().getInputTypes();
 
-        String subProcessModelClassName = ProcessToExecModelGenerator.extractModelClassName(subProcessId);
+        String subProcessModelClassName = metadata.getModelClassName() != null ? metadata.getModelClassName() : ProcessToExecModelGenerator.extractModelClassName(subProcessId);
+
         ModelMetaData subProcessModel = new ModelMetaData(subProcessId,
-                metadata.getPackageName(),
+                metadata.getModelPackageName() != null ? metadata.getModelPackageName() : metadata.getPackageName(),
                 subProcessModelClassName,
                 KogitoWorkflowProcess.PRIVATE_VISIBILITY,
                 VariableDeclarations.ofRawInfo(inputTypes),
                 false);
 
-        retValue.ifPresent(retValueExpression -> {
+        retValue.ifPresentOrElse(retValueExpression -> {
             retValueExpression.findAll(ClassOrInterfaceType.class)
                     .stream()
                     .filter(t -> t.getNameAsString().equals("$Type$"))
                     .forEach(t -> t.setName(subProcessModelClassName));
 
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                    .ifPresent(m -> m.setBody(bind(variableScope, node, subProcessModel)));
+                    .ifPresent(m -> m.setBody(bind(node, subProcessModel)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("createInstance"))
                     .ifPresent(m -> m.setBody(createInstance(node, metadata)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
-                    .ifPresent(m -> m.setBody(unbind(variableScope, node)));
-        });
+                    .ifPresent(m -> m.setBody(unbind(node)));
+            body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey(), retValueExpression));
+        }, () -> body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey())));
 
-        if (retValue.isPresent()) {
-            body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey(), retValue.get()));
-        } else {
-            body.addStatement(getFactoryMethod(getNodeId(node), getNodeKey()));
-        }
         addNodeMappings(node, body, getNodeId(node));
         visitMetaData(node.getMetaData(), body, getNodeId(node));
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
-    private BlockStmt bind(VariableScope variableScope, SubProcessNode subProcessNode, ModelMetaData subProcessModel) {
+    private BlockStmt bind(SubProcessNode subProcessNode, ModelMetaData subProcessModel) {
         BlockStmt actionBody = new BlockStmt();
         actionBody.addStatement(subProcessModel.newInstance("model"));
 
@@ -171,7 +168,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         return new BlockStmt().addStatement(new ReturnStmt(processInstanceSupplier));
     }
 
-    private BlockStmt unbind(VariableScope variableScope, SubProcessNode subProcessNode) {
+    private BlockStmt unbind(SubProcessNode subProcessNode) {
         BlockStmt actionBody = new BlockStmt();
 
         // process the outputs of the task

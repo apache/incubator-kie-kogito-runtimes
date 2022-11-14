@@ -75,6 +75,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
         return (CompensationScope) getDefaultContext(CompensationScope.COMPENSATION_SCOPE);
     }
 
+    @Override
     protected NodeContainer createNodeContainer() {
         return new WorkflowProcessNodeContainer();
     }
@@ -84,7 +85,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
     }
 
     public static List<Node> getStartNodes(Node[] nodes) {
-        List<Node> startNodes = new ArrayList<Node>();
+        List<Node> startNodes = new ArrayList<>();
         for (Node node : nodes) {
             if (node instanceof StartNode) {
                 startNodes.add(node);
@@ -99,7 +100,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
     }
 
     public static List<Node> getEndNodes(Node[] nodes) {
-        final List<Node> endNodes = new ArrayList<Node>();
+        final List<Node> endNodes = new ArrayList<>();
         for (Node node : nodes) {
             if (node instanceof EndNode || node instanceof FaultNode) {
                 endNodes.add(node);
@@ -178,6 +179,7 @@ public class RuleFlowProcess extends WorkflowProcessImpl {
 
         private static final long serialVersionUID = 510l;
 
+        @Override
         protected void validateAddNode(Node node) {
             super.validateAddNode(node);
             StartNode startNode = getStart(null, null);

@@ -17,9 +17,6 @@ package org.kie.kogito.addons.quarkus.k8s;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
 import org.kie.kogito.addons.quarkus.k8s.utils.ServiceUtils;
@@ -29,6 +26,8 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * This tests also covers the queryServiceByName method from {@link ServiceUtils}
@@ -42,11 +41,6 @@ public class KubeResourceDiscoveryTest {
     KubeResourceDiscovery kubeResourceDiscovery;
     private final String namespace = "serverless-workflow-greeting-quarkus";
 
-    @BeforeEach
-    public void removeResources() {
-        mockServer.getClient().services().inNamespace("serverless-workflow-greeting-quarkus").delete();
-    }
-
     @Test
     public void testServiceNodePort() {
         kubeResourceDiscovery = new KubeResourceDiscovery(mockServer.getClient());
@@ -55,10 +49,10 @@ public class KubeResourceDiscoveryTest {
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-node-port.yaml")).get();
 
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.10:80", url.get());
+        assertEquals("http://10.10.10.10:80", url.get());
     }
 
     @Test
@@ -71,10 +65,10 @@ public class KubeResourceDiscoveryTest {
         service.getMetadata().setName("custom-port-name-service");
         service.getSpec().getPorts().get(0).setName("my-custom-port");
         service.getSpec().getPorts().get(0).setPort(8089);
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.10:8089", url.get());
+        assertEquals("http://10.10.10.10:8089", url.get());
     }
 
     @Test
@@ -84,11 +78,10 @@ public class KubeResourceDiscoveryTest {
 
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-clusterip.yaml")).get();
-
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.10:80", url.get());
+        assertEquals("http://10.10.10.10:80", url.get());
     }
 
     @Test
@@ -98,11 +91,10 @@ public class KubeResourceDiscoveryTest {
 
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-external-name.yaml")).get();
-
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://my-public.domain.org:80", url.get());
+        assertEquals("http://my-public.domain.org:80", url.get());
     }
 
     @Test
@@ -111,9 +103,9 @@ public class KubeResourceDiscoveryTest {
 
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-clusterip.yaml")).get();
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
-        Assertions.assertEquals(Optional.empty(),
+        assertEquals(Optional.empty(),
                 kubeResourceDiscovery.query(new KubeURI("kubernetes:v1/service/" + namespace + "/service-1")));
     }
 
@@ -124,9 +116,9 @@ public class KubeResourceDiscoveryTest {
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-clusterip.yaml")).get();
         service.getSpec().setType(KubeConstants.LOAD_BALANCER_TYPE);
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
-        Assertions.assertEquals(Optional.empty(),
+        assertEquals(Optional.empty(),
                 kubeResourceDiscovery.query(new KubeURI("kubernetes:v1/service/" + namespace + "/process-quarkus-example-pod-clusterip-svc")));
     }
 
@@ -137,10 +129,9 @@ public class KubeResourceDiscoveryTest {
 
         Service service = mockServer.getClient().services().inNamespace("test")
                 .load(this.getClass().getClassLoader().getResourceAsStream("service/service-node-port.yaml")).get();
-
-        mockServer.getClient().services().inNamespace("test").create(service);
+        mockServer.getClient().resource(service).inNamespace("test").createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.10:80", url.get());
+        assertEquals("http://10.10.10.10:80", url.get());
     }
 }

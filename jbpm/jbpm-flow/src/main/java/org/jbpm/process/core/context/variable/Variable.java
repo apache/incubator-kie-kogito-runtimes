@@ -30,6 +30,7 @@ import org.drools.util.StringUtils;
 import org.jbpm.process.core.TypeObject;
 import org.jbpm.process.core.ValueObject;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.datatype.impl.coverter.CloneHelper;
 import org.jbpm.process.core.datatype.impl.type.UndefinedDataType;
 
 /**
@@ -56,7 +57,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     private String sanitizedName;
     private DataType type;
     private Object value;
-    private Map<String, Object> metaData = new HashMap<String, Object>();
+    private Map<String, Object> metaData = new HashMap<>();
 
     private List<String> tags = new ArrayList<>();
 
@@ -169,7 +170,7 @@ public class Variable implements TypeObject, ValueObject, Serializable {
     }
 
     public Object cloneValue() {
-        return type.clone(getValue());
+        return CloneHelper.get().clone(getValue());
     }
 
     public boolean hasTag(String tagName) {

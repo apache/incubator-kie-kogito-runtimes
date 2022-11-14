@@ -23,9 +23,7 @@ import org.jbpm.compiler.xml.core.BaseAbstractHandler;
 import org.jbpm.workflow.core.Connection;
 import org.jbpm.workflow.core.NodeContainer;
 import org.jbpm.workflow.core.impl.ConnectionImpl;
-import org.jbpm.workflow.core.impl.NodeImpl;
 import org.kie.api.definition.process.Node;
-import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -57,11 +55,11 @@ public class ConnectionHandler extends BaseAbstractHandler implements Handler {
 
         String fromType = attrs.getValue("fromType");
         if (fromType == null || fromType.trim().length() == 0) {
-            fromType = NodeImpl.CONNECTION_DEFAULT_TYPE;
+            fromType = org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
         }
         String toType = attrs.getValue("toType");
         if (toType == null || toType.trim().length() == 0) {
-            toType = NodeImpl.CONNECTION_DEFAULT_TYPE;
+            toType = org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE;
         }
 
         NodeContainer nodeContainer = (NodeContainer) parser.getParent();
@@ -85,7 +83,7 @@ public class ConnectionHandler extends BaseAbstractHandler implements Handler {
 
     public Object end(final String uri, final String localName,
             final Parser parser) throws SAXException {
-        final Element element = parser.endElementBuilder();
+        parser.endElementBuilder();
         return parser.getCurrent();
     }
 

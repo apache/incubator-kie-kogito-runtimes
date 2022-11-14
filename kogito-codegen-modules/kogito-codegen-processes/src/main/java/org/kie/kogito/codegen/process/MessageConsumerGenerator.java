@@ -17,9 +17,9 @@ package org.kie.kogito.codegen.process;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.UnaryOperator;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.TriggerMetaData;
@@ -31,7 +31,8 @@ import org.kie.kogito.codegen.api.template.InvalidTemplateException;
 import org.kie.kogito.codegen.api.template.TemplatedGenerator;
 import org.kie.kogito.codegen.core.BodyDeclarationComparator;
 import org.kie.kogito.correlation.Correlation;
-import org.kie.kogito.services.event.impl.AbstractMessageConsumer;
+import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.CompilationUnit;
@@ -95,6 +96,7 @@ public class MessageConsumerGenerator {
                 .withPackageName(processPackageName)
                 .build(context, "MessageConsumer");
         this.clazz = generator.compilationUnitOrThrow("Cannot generate message consumer");
+        clazz.addImport(modelfqcn);
     }
 
     public String className() {
@@ -159,10 +161,12 @@ public class MessageConsumerGenerator {
         }
 
         if (!trigger.dataOnly()) {
-            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class).addParameter(boolean.class, "useCloudEvent")
-                    .setType(parseClassOrInterfaceType(UnaryOperator.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(parseClassOrInterfaceType(Object.class.getCanonicalName()))))
+            ClassOrInterfaceType dataTypeClass = parseClassOrInterfaceType(trigger.getDataType());
+            template.addMethod("getDataResolver", Keyword.PROTECTED).addAnnotation(Override.class)
+                    .setType(parseClassOrInterfaceType(Function.class.getCanonicalName()).setTypeArguments(
+                            NodeList.nodeList(parseClassOrInterfaceType(DataEvent.class.getCanonicalName()).setTypeArguments(NodeList.nodeList(dataTypeClass)), dataTypeClass)))
                     .setBody(new BlockStmt().addStatement(new ReturnStmt(
-                            new MethodReferenceExpr(new NameExpr(AbstractMessageConsumer.class.getSimpleName()), NodeList.nodeList(), "eventResolver"))));
+                            new MethodReferenceExpr(new NameExpr(CloudEventUtils.class.getCanonicalName()), NodeList.nodeList(), "fromValue"))));
         }
     }
 
@@ -174,10 +178,9 @@ public class MessageConsumerGenerator {
                 .map(Correlation::getKey)
                 .map(f -> new StringLiteralExpr(f))
                 .collect(Collectors.toSet()));
-        MethodCallExpr streamOf =
-                new MethodCallExpr(new NameExpr(Stream.class.getCanonicalName()), "of").setArguments(arguments).setTypeArguments(new ClassOrInterfaceType().setName(String.class.getCanonicalName()));
-        MethodCallExpr collect = new MethodCallExpr(streamOf, "collect").addArgument(new MethodCallExpr(new NameExpr(Collectors.class.getCanonicalName()), "toSet"));
-        fd.getVariable(0).setInitializer(collect);
+        MethodCallExpr setOf =
+                new MethodCallExpr(new NameExpr(Set.class.getCanonicalName()), "of").setArguments(arguments);
+        fd.getVariable(0).setInitializer(setOf);
     }
 
     private void initializeProcessField(FieldDeclaration fd) {

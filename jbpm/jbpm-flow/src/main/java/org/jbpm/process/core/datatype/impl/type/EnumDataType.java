@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -103,13 +104,13 @@ public class EnumDataType implements DataType {
     public Map<String, Object> getValueMap(ClassLoader classLoader) {
         if (this.valueMap == null) {
             try {
-                this.valueMap = new HashMap<String, Object>();
+                this.valueMap = new HashMap<>();
                 if (className == null) {
-                    return null;
+                    return Collections.emptyMap();
                 }
                 Class<?> clazz = classLoader == null ? Class.forName(className) : Class.forName(className, true, classLoader);
                 if (!clazz.isEnum()) {
-                    return null;
+                    return Collections.emptyMap();
                 }
                 Object[] values = (Object[]) clazz.getMethod("values", null).invoke(clazz, null);
                 for (Object value : values) {

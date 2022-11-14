@@ -15,25 +15,33 @@
  */
 package $Package$;
 
-import org.kie.kogito.rules.RuleUnit;
+import org.drools.core.common.ReteEvaluator;
+import org.drools.ruleunits.api.RuleUnit;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.impl.InternalRuleUnit;
+import org.drools.ruleunits.impl.sessions.RuleUnitExecutorImpl;
+import org.kie.kogito.rules.RuleEventListenerConfig;
+import org.kie.kogito.app.Application;
 
 @javax.enterprise.context.ApplicationScoped
 public class RuleUnits extends org.kie.kogito.drools.core.unit.AbstractRuleUnits implements org.kie.kogito.rules.RuleUnits {
 
     @javax.inject.Inject
-    javax.enterprise.inject.Instance<org.kie.kogito.rules.RuleUnit<? extends org.kie.kogito.rules.RuleUnitData>> ruleUnits;
+    Application application;
 
-    private java.util.Map<String, org.kie.kogito.rules.RuleUnit<? extends org.kie.kogito.rules.RuleUnitData>> mappedRuleUnits = new java.util.HashMap<>();
-
-    @javax.annotation.PostConstruct
-    public void setup() {
-        for (org.kie.kogito.rules.RuleUnit<? extends org.kie.kogito.rules.RuleUnitData> ruleUnit : ruleUnits) {
-            mappedRuleUnits.put(ruleUnit.id(), ruleUnit);
+    @Override
+    protected <T extends RuleUnitData> RuleUnit<T> internalCreate(Class<T> clazz) {
+        String fqcn = clazz.getCanonicalName();
+        switch(fqcn) {
+            case "$RuleUnit$":
+                return (RuleUnit<T>) new $RuleUnit$RuleUnit(this);
+            default:
+                throw new java.lang.UnsupportedOperationException();
         }
     }
 
-    protected org.kie.kogito.rules.RuleUnit<?> create(String fqcn) {
-        return mappedRuleUnits.get(fqcn);
+    @Override
+    public void register(InternalRuleUnit<?> unit) {
+        registerRuleUnit(application, unit);
     }
-
 }

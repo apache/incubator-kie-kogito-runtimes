@@ -72,7 +72,6 @@ public class ProcessResourceGenerator {
     private final String resourceClazzName;
     private final String processClazzName;
     private final String processName;
-    private final String appCanonicalName;
     private KogitoWorkflowProcess process;
     private String processId;
     private String dataClazzName;
@@ -95,11 +94,10 @@ public class ProcessResourceGenerator {
         this.process = process;
         this.processId = process.getId();
         this.processName = processId.substring(processId.lastIndexOf('.') + 1);
-        this.appCanonicalName = appCanonicalName;
         String classPrefix = StringUtils.ucFirst(processName);
         this.resourceClazzName = classPrefix + "Resource";
         this.relativePath = process.getPackageName().replace(".", "/") + "/" + resourceClazzName + ".java";
-        this.modelfqcn = modelfqcn + "Output";
+        this.modelfqcn = modelfqcn;
         this.dataClazzName = modelfqcn.substring(modelfqcn.lastIndexOf('.') + 1);
         this.processClazzName = processfqcn;
     }
@@ -147,7 +145,8 @@ public class ProcessResourceGenerator {
                 .compilationUnitOrThrow();
         clazz.setPackageDeclaration(process.getPackageName());
         clazz.addImport(modelfqcn);
-
+        clazz.addImport(modelfqcn + "Output");
+        clazz.addImport(modelfqcn + "Input");
         ClassOrInterfaceDeclaration template = clazz
                 .findFirst(ClassOrInterfaceDeclaration.class)
                 .orElseThrow(() -> new NoSuchElementException("Compilation unit doesn't contain a class or interface declaration!"));
@@ -170,7 +169,7 @@ public class ProcessResourceGenerator {
                             .filter(e -> Objects.nonNull(e.getKey()))
                             .forEach(entry -> {
                                 String methodName = "signal_" + index.getAndIncrement();
-                                String outputType = modelfqcn;
+                                String outputType = modelfqcn + "Output";
                                 String signalName = entry.getKey();
                                 String signalType = entry.getValue();
 

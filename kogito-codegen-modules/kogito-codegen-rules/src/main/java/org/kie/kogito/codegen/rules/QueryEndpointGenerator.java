@@ -31,7 +31,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.ClassExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -76,7 +75,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
                 .orElseThrow(() -> new NoSuchElementException("ClassOrInterfaceDeclaration doesn't contain a field named ruleUnit!"));
         setUnitGeneric(ruleUnitDeclaration.getElementType());
 
-        String returnType = getReturnType(clazz);
+        String returnType = getReturnType();
         generateConstructors(clazz);
         generateQueryMethods(cu, clazz, returnType);
         clazz.getMembers().sort(new BodyDeclarationComparator());
@@ -117,7 +116,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
                 .orElseThrow(() -> new NoSuchElementException("A method declaration doesn't contain a body!"))
                 .getStatement(1);
         returnStatement.findAll(VariableDeclarator.class).forEach(decl -> setGeneric(decl.getType(), returnType));
-        returnStatement.findAll(ClassExpr.class).forEach(expr -> expr.setType(queryClassName));
+        returnStatement.findAll(MethodCallExpr.class).forEach(expr -> expr.setScope(new NameExpr(queryClassName)));
 
         MethodDeclaration queryMethodSingle = clazz.getMethodsByName("executeQueryFirst").get(0);
         queryMethodSingle.getParameter(0).setType(ruleUnit.getCanonicalName() + (hasDI ? "" : "DTO"));
@@ -183,7 +182,7 @@ public class QueryEndpointGenerator extends AbstractQueryEntrypointGenerator {
         return new BlockStmt(new NodeList<>(ts));
     }
 
-    private String getReturnType(ClassOrInterfaceDeclaration clazz) {
+    private String getReturnType() {
         if (query.model().getBindings().size() == 1) {
             Map.Entry<String, Class<?>> binding = query.model().getBindings().entrySet().iterator().next();
             return binding.getValue().getCanonicalName();

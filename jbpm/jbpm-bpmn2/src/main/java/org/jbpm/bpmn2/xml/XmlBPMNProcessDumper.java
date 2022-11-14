@@ -90,7 +90,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlBPMNProcessDumper.class);
 
-    private final static String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.getProperty("line.separator");
 
     private SemanticModule semanticModule;
     private int metaDataType = META_DATA_USING_DI;
@@ -145,9 +145,9 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                         "             xmlns:tns=\"http://www.jboss.org/drools\">" + EOL + EOL);
 
         // item definitions
-        this.visitedVariables = new HashSet<String>();
+        this.visitedVariables = new HashSet<>();
         VariableScope variableScope = (VariableScope) ((org.jbpm.process.core.Process) process).getDefaultContext(VariableScope.VARIABLE_SCOPE);
-        Set<String> dumpedItemDefs = new HashSet<String>();
+        Set<String> dumpedItemDefs = new HashSet<>();
         Map<String, ItemDefinition> itemDefs = (Map<String, ItemDefinition>) process.getMetaData().get("ItemDefinitions");
 
         if (itemDefs != null) {
@@ -167,7 +167,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
         visitInterfaces(process.getNodes(), xmlDump);
 
-        visitEscalations(process.getNodes(), xmlDump, new ArrayList<String>());
+        visitEscalations(process.getNodes(), xmlDump, new ArrayList<>());
         Definitions def = (Definitions) process.getMetaData().get("Definitions");
         visitErrors(def, xmlDump);
 
@@ -202,7 +202,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
         xmlDump.append(">" + EOL + EOL);
         visitHeader(process, xmlDump, metaDataType);
 
-        List<Node> processNodes = new ArrayList<Node>();
+        List<Node> processNodes = new ArrayList<>();
         for (org.kie.api.definition.process.Node procNode : process.getNodes()) {
             processNodes.add((Node) procNode);
         }
@@ -402,7 +402,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     }
 
     public static Map<String, Object> getMetaData(Map<String, Object> input) {
-        Map<String, Object> metaData = new HashMap<String, Object>();
+        Map<String, Object> metaData = new HashMap<>();
         for (Map.Entry<String, Object> entry : input.entrySet()) {
             String name = entry.getKey();
             if (entry.getKey().startsWith("custom")
@@ -505,7 +505,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                 }
             } else if (node instanceof EventNode) {
                 List<EventFilter> filters = ((EventNode) node).getEventFilters();
-                if (filters.size() > 0) {
+                if (!filters.isEmpty()) {
                     String messageRef = ((EventTypeFilter) filters.get(0)).getType();
                     if (messageRef.startsWith("Message-")) {
                         messageRef = messageRef.substring(8);
@@ -714,7 +714,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
     private void visitConnections(org.kie.api.definition.process.Node[] nodes, StringBuilder xmlDump, int metaDataType) {
         xmlDump.append("    <!-- connections -->" + EOL);
-        List<Connection> connections = new ArrayList<Connection>();
+        List<Connection> connections = new ArrayList<>();
         for (org.kie.api.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);
@@ -797,7 +797,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
     }
 
     private void visitConnectionsDi(org.kie.api.definition.process.Node[] nodes, StringBuilder xmlDump) {
-        List<Connection> connections = new ArrayList<Connection>();
+        List<Connection> connections = new ArrayList<>();
         for (org.kie.api.definition.process.Node node : nodes) {
             for (List<Connection> connectionList : node.getIncomingConnections().values()) {
                 connections.addAll(connectionList);

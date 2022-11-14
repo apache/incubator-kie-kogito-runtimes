@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.drools.core.process.AbstractProcessContext;
+import org.drools.ruleunits.api.RuleUnitData;
+import org.drools.ruleunits.api.RuleUnitInstance;
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.exception.ExceptionScope;
@@ -55,8 +57,6 @@ import org.kie.kogito.decision.DecisionModel;
 import org.kie.kogito.dmn.DmnDecisionModel;
 import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.rules.RuleUnitData;
-import org.kie.kogito.rules.RuleUnitInstance;
 
 /**
  * Runtime counterpart of a ruleset node.
@@ -171,13 +171,10 @@ public class RuleSetNodeInstance extends StateBasedNodeInstance implements Event
                 RuleUnitFactory<RuleUnitData> factory = ruleSetNode.getRuleUnitFactory();
                 AbstractProcessContext context = ContextFactory.fromNode(this);
                 RuleUnitData model = factory.bind(context);
-                RuleUnitInstance<RuleUnitData> instance = factory.unit().createInstance(model);
-                try {
+                try (RuleUnitInstance<RuleUnitData> instance = factory.unit().createInstance(model)) {
                     instance.fire();
                     factory.unbind(context, model);
                     triggerCompleted();
-                } finally {
-                    instance.dispose();
                 }
             } else {
                 throw new UnsupportedOperationException("Unsupported Rule Type: " + ruleType);

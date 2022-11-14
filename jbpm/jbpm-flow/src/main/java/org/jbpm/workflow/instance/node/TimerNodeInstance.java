@@ -34,13 +34,10 @@ import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.timer.TimerInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TimerNodeInstance extends StateBasedNodeInstance implements EventListener {
 
     private static final long serialVersionUID = 510l;
-    private static final Logger logger = LoggerFactory.getLogger(TimerNodeInstance.class);
     public static final String TIMER_TRIGGERED_EVENT = "timerTriggered";
 
     private String timerId;
@@ -80,6 +77,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         timerId = jobService.scheduleProcessInstanceJob(jobDescription);
     }
 
+    @Override
     public void signalEvent(String type, Object event) {
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timer = (TimerInstance) event;
@@ -89,10 +87,12 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
     }
 
+    @Override
     public String[] getEventTypes() {
         return new String[] { TIMER_TRIGGERED_EVENT };
     }
 
+    @Override
     public void triggerCompleted(boolean remove) {
         triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, remove);
     }
@@ -103,6 +103,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         super.cancel();
     }
 
+    @Override
     public void addEventListeners() {
         super.addEventListeners();
         if (getTimerInstances() == null) {
@@ -110,6 +111,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
     }
 
+    @Override
     public void removeEventListeners() {
         super.removeEventListeners();
         getProcessInstance().removeEventListener(TIMER_TRIGGERED_EVENT, this, false);

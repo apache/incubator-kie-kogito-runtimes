@@ -51,6 +51,10 @@ public class DecisionValidation {
 
     public static final Logger LOG = LoggerFactory.getLogger(DecisionValidation.class);
 
+    private DecisionValidation() {
+
+    }
+
     public static enum ValidationOption {
         /**
          * Perform DMN Validation and blocks if any Errors is found. This is the default.
@@ -106,7 +110,7 @@ public class DecisionValidation {
         }
         Optional<String> applicationProperty = context.getApplicationProperty(DecisionCodegen.VALIDATION_CONFIGURATION_KEY);
         if (!applicationProperty.isPresent()) {
-            return ValidationOption.ENABLED; // the default;
+            return ValidationOption.ENABLED; // the default
         }
         Optional<ValidationOption> configOption = Arrays.stream(ValidationOption.values())
                 .filter(e -> e.name().equalsIgnoreCase(applicationProperty.get()))

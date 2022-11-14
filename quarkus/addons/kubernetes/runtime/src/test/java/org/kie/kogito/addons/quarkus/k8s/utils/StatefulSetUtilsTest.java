@@ -17,8 +17,6 @@ package org.kie.kogito.addons.quarkus.k8s.utils;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.KubeResourceDiscovery;
@@ -34,6 +32,9 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This tests also covers the queryServiceByLabelOrSelector method from {@link ServiceUtils}
@@ -60,8 +61,8 @@ public class StatefulSetUtilsTest {
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();
         statefulSet.getMetadata().setName("test");
-        mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
-        Assertions.assertEquals(Optional.empty(),
+        mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
+        assertEquals(Optional.empty(),
                 kubeResourceDiscovery.query(new KubeURI("kubernetes:apps/v1/statefulset/" + namespace + "/invalid")));
     }
 
@@ -72,14 +73,14 @@ public class StatefulSetUtilsTest {
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset.yaml")).get();
-        mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
+        mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
 
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-service.yaml")).get();
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.11:80", url.get());
+        assertEquals("http://10.10.10.11:80", url.get());
     }
 
     @Test
@@ -93,7 +94,7 @@ public class StatefulSetUtilsTest {
                 .add(new ContainerPortBuilder().withName("test-port").withContainerPort(4000).build());
         statefulSet.getMetadata().getLabels().put("app-custom", "custom-port-statefulset");
         statefulSet.getMetadata().getLabels().remove("app");
-        mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
+        mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
 
         Service service = mockServer.getClient().services().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-service.yaml")).get();
@@ -104,10 +105,10 @@ public class StatefulSetUtilsTest {
                 .withPort(4009).build());
         service.getSpec().getSelector().put("app-custom", "custom-port-statefulset");
         service.getSpec().getSelector().remove("app");
-        mockServer.getClient().services().inNamespace(namespace).create(service);
+        mockServer.getClient().resource(service).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://10.10.10.11:4009", url.get());
+        assertEquals("http://10.10.10.11:4009", url.get());
     }
 
     @Test
@@ -117,16 +118,16 @@ public class StatefulSetUtilsTest {
 
         StatefulSet statefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();
-        StatefulSet createdDeployment = mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
+        StatefulSet createdDeployment = mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-pod-no-service.yaml")).get();
         pod.getMetadata().setName("pod-deployment-no-service");
         pod.getMetadata().getOwnerReferences().get(0).setUid(createdDeployment.getMetadata().getUid());
-        mockServer.getClient().pods().inNamespace(namespace).create(pod);
+        mockServer.getClient().resource(pod).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://172.17.0.11:8080", url.get());
+        assertEquals("http://172.17.0.11:8080", url.get());
     }
 
     @Test
@@ -138,16 +139,16 @@ public class StatefulSetUtilsTest {
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-no-service.yaml")).get();
         statefulSet.getMetadata().setName("example-statefulset-no-service-2-replicas");
         statefulSet.getStatus().setReplicas(2);
-        StatefulSet createdstatefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
+        StatefulSet createdstatefulSet = mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-pod-no-service.yaml")).get();
         pod.getMetadata().setName("pod-2-replicas");
         pod.getMetadata().getOwnerReferences().get(0).setUid(createdstatefulSet.getMetadata().getUid());
-        mockServer.getClient().pods().inNamespace(namespace).create(pod);
+        mockServer.getClient().resource(pod).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertTrue(url.isEmpty());
+        assertTrue(url.isEmpty());
     }
 
     @Test
@@ -160,7 +161,7 @@ public class StatefulSetUtilsTest {
         statefulSet.getMetadata().setName("custom-port-statefulset-1");
         statefulSet.getSpec().getTemplate().getSpec().getContainers().get(0).getPorts()
                 .add(new ContainerPortBuilder().withName("test-port").withContainerPort(4000).build());
-        StatefulSet createdStatefulSet = mockServer.getClient().apps().statefulSets().inNamespace(namespace).create(statefulSet);
+        StatefulSet createdStatefulSet = mockServer.getClient().resource(statefulSet).inNamespace(namespace).createOrReplace();
 
         Pod pod = mockServer.getClient().pods().inNamespace(namespace)
                 .load(this.getClass().getClassLoader().getResourceAsStream("statefulset/statefulset-pod-no-service.yaml")).get();
@@ -169,9 +170,9 @@ public class StatefulSetUtilsTest {
                 .add(new ContainerPortBuilder()
                         .withName("my-custom-port")
                         .withContainerPort(4010).build());
-        mockServer.getClient().pods().inNamespace(namespace).create(pod);
+        mockServer.getClient().resource(pod).inNamespace(namespace).createOrReplace();
 
         Optional<String> url = kubeResourceDiscovery.query(kubeURI);
-        Assert.assertEquals("http://172.17.0.11:4010", url.get());
+        assertEquals("http://172.17.0.11:4010", url.get());
     }
 }

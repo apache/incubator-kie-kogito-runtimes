@@ -32,6 +32,7 @@ import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.workflow.core.WorkflowProcess;
 import org.kie.api.definition.process.Process;
 import org.kie.api.runtime.rule.Agenda;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 /**
  * Default implementation of a process instance.
@@ -46,10 +47,10 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     private transient Process process;
     private String processXml;
     private int state = STATE_PENDING;
-    private Map<String, ContextInstance> contextInstances = new HashMap<String, ContextInstance>();
-    private Map<String, List<ContextInstance>> subContextInstances = new HashMap<String, List<ContextInstance>>();
+    private Map<String, ContextInstance> contextInstances = new HashMap<>();
+    private Map<String, List<ContextInstance>> subContextInstances = new HashMap<>();
     private transient InternalKnowledgeRuntime kruntime;
-    private Map<String, Object> metaData = new HashMap<String, Object>();
+    private Map<String, Object> metaData = new HashMap<>();
     private String outcome;
     private String parentProcessInstanceId;
     private String rootProcessInstanceId;
@@ -249,10 +250,10 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
     @Override
     public void start(String trigger) {
         synchronized (this) {
-            if (getState() != ProcessInstanceImpl.STATE_PENDING) {
+            if (getState() != KogitoProcessInstance.STATE_PENDING) {
                 throw new IllegalArgumentException("A process instance can only be started once");
             }
-            setState(ProcessInstanceImpl.STATE_ACTIVE);
+            setState(KogitoProcessInstance.STATE_ACTIVE);
             internalStart(trigger);
         }
     }
@@ -272,7 +273,7 @@ public abstract class ProcessInstanceImpl implements ProcessInstance,
 
     @Override
     public String[] getEventTypes() {
-        return null;
+        return new String[0];
     }
 
     @Override

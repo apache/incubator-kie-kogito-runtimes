@@ -24,6 +24,7 @@ import org.kie.kogito.codegen.core.AbstractApplicationSection;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
@@ -33,6 +34,7 @@ import com.github.javaparser.ast.stmt.SwitchEntry;
 import com.github.javaparser.ast.stmt.SwitchStmt;
 import com.github.javaparser.ast.stmt.ThrowStmt;
 
+import static com.github.javaparser.StaticJavaParser.parseType;
 import static org.kie.kogito.codegen.rules.RuleCodegen.TEMPLATE_RULE_FOLDER;
 
 public class RuleUnitContainerGenerator extends AbstractApplicationSection {
@@ -65,8 +67,9 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
             switchEntry.getLabels().add(new StringLiteralExpr(ruleUnit.getRuleUnitDescription().getCanonicalName()));
             ObjectCreationExpr ruleUnitConstructor = new ObjectCreationExpr()
                     .setType(ruleUnit.targetCanonicalName())
-                    .addArgument("application");
-            switchEntry.getStatements().add(new ReturnStmt(ruleUnitConstructor));
+                    .addArgument("this");
+            CastExpr castExpr = new CastExpr(parseType("RuleUnit<T>"), ruleUnitConstructor);
+            switchEntry.getStatements().add(new ReturnStmt(castExpr));
             switchStmt.getEntries().add(switchEntry);
         }
 
@@ -74,19 +77,17 @@ public class RuleUnitContainerGenerator extends AbstractApplicationSection {
         defaultEntry.getStatements().add(new ThrowStmt(new ObjectCreationExpr().setType(UnsupportedOperationException.class.getCanonicalName())));
         switchStmt.getEntries().add(defaultEntry);
 
-        return new BlockStmt().addStatement(switchStmt);
+        BlockStmt blockStmt = new BlockStmt();
+        blockStmt.addStatement("String fqcn = clazz.getCanonicalName();");
+        return blockStmt.addStatement(switchStmt);
     }
 
     @Override
     public CompilationUnit compilationUnit() {
         CompilationUnit compilationUnit = templatedGenerator.compilationUnitOrThrow("No CompilationUnit");
 
-        if (!context.hasDI()) {
-            // only in a non DI context
-            compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("create"))
-                    .ifPresent(m -> m.setBody(factoryByIdBody())); // ignore if missing
-        }
-
+        compilationUnit.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("internalCreate"))
+                .ifPresent(m -> m.setBody(factoryByIdBody())); // ignore if missing
         return compilationUnit;
     }
 }

@@ -41,7 +41,7 @@ import org.xml.sax.SAXParseException;
 
 public abstract class AbstractNodeHandler extends BaseAbstractHandler implements Handler {
 
-    protected final static String EOL = System.getProperty("line.separator");
+    protected static final String EOL = System.getProperty("line.separator");
 
     public AbstractNodeHandler() {
         initValidParents();
@@ -140,7 +140,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
             org.w3c.dom.Node xmlNode = nodeList.item(i);
             String nodeName = xmlNode.getNodeName();
             if (nodeName.equals(type)) {
-                List<DroolsAction> actions = new ArrayList<DroolsAction>();
+                List<DroolsAction> actions = new ArrayList<>();
                 NodeList subNodeList = xmlNode.getChildNodes();
                 for (int j = 0; j < subNodeList.getLength(); j++) {
                     Element subXmlNode = (Element) subNodeList.item(j);
@@ -228,7 +228,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     }
 
     protected void writeActions(final String type, List<DroolsAction> actions, final StringBuilder xmlDump) {
-        if (actions != null && actions.size() > 0) {
+        if (actions != null && !actions.isEmpty()) {
             xmlDump.append("      <" + type + ">" + EOL);
             for (DroolsAction action : actions) {
                 writeAction(action, xmlDump);
@@ -264,7 +264,7 @@ public abstract class AbstractNodeHandler extends BaseAbstractHandler implements
     public void writeTimers(final Map<Timer, DroolsAction> timers, final StringBuilder xmlDump) {
         if (timers != null && !timers.isEmpty()) {
             xmlDump.append("      <timers>" + EOL);
-            List<Timer> timerList = new ArrayList<Timer>(timers.keySet());
+            List<Timer> timerList = new ArrayList<>(timers.keySet());
             Collections.sort(timerList, new Comparator<Timer>() {
                 public int compare(Timer o1, Timer o2) {
                     return (int) (o2.getId() - o1.getId());

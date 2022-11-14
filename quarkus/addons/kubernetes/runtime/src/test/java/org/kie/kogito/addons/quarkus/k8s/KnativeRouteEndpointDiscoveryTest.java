@@ -22,24 +22,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.k8s.Endpoint;
 import org.kie.kogito.addons.k8s.KnativeRouteEndpointDiscovery;
 
 import io.fabric8.knative.client.KnativeClient;
-import io.fabric8.knative.mock.EnableKnativeMockClient;
 import io.fabric8.knative.serving.v1.Route;
 import io.fabric8.knative.serving.v1.RouteBuilder;
 import io.fabric8.knative.serving.v1.RouteStatus;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@EnableKnativeMockClient(crud = true)
+@QuarkusTest
+@WithKubernetesTestServer
 public class KnativeRouteEndpointDiscoveryTest {
 
-    static KnativeClient knativeClient;
+    @Inject
+    KubernetesClient kubernetesClient;
+    KnativeClient knativeClient;
+
+    @BeforeEach
+    public void setup() {
+        knativeClient = kubernetesClient.adapt(KnativeClient.class);
+    }
 
     @Test
     public void testBaseCase() {

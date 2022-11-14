@@ -28,9 +28,9 @@ public class WorkItemHandlerRuntimeException extends RuntimeException {
     /** Generated serial version uid */
     private static final long serialVersionUID = 1217036861831832336L;
 
-    public final static String WORKITEMHANDLERTYPE = "workItemHandlerType";
+    public static final String WORKITEMHANDLERTYPE = "workItemHandlerType";
 
-    private HashMap<String, Object> info = new HashMap<String, Object>();
+    private HashMap<String, Object> info = new HashMap<>();
 
     public WorkItemHandlerRuntimeException(Throwable cause, String message) {
         super(message, cause);

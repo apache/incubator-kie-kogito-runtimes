@@ -92,7 +92,7 @@ public abstract class AbstractProtoGeneratorTest<T> {
         Proto proto = generator.protoOfDataClasses("org.kie.kogito.test");
         assertThat(proto).isNotNull();
         // there is no messages as there is not classes
-        assertThat(proto.getMessages()).hasSize(0);
+        assertThat(proto.getMessages()).isEmpty();
     }
 
     @Test
@@ -695,9 +695,7 @@ public abstract class AbstractProtoGeneratorTest<T> {
         byte[] list = listFile.contents();
         final ObjectMapper mapper = new ObjectMapper();
         List<String> files = mapper.readValue(list, List.class);
-        assertThat(files).isNotEmpty();
-        assertThat(files)
-                .hasAtLeastOneElementOfType(String.class)
+        assertThat(files).isNotEmpty().hasAtLeastOneElementOfType(String.class)
                 .contains("protofile.0.proto")
                 .hasSize(5);
     }

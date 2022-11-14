@@ -26,15 +26,18 @@ import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.kie.api.definition.process.NodeContainer;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
+import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 
 public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
 
     private static final long serialVersionUID = 7095736653568661510L;
 
+    @Override
     protected EventSubProcessNode getCompositeNode() {
         return (EventSubProcessNode) getNode();
     }
 
+    @Override
     public NodeContainer getNodeContainer() {
         return getCompositeNode();
     }
@@ -77,9 +80,9 @@ public class EventSubProcessNodeInstance extends CompositeContextNodeInstance {
                         faultName = (String) startNode.getMetaData("FaultCode");
                     }
                     if (getNodeInstanceContainer() instanceof ProcessInstance) {
-                        ((ProcessInstance) getProcessInstance()).setState(ProcessInstance.STATE_ABORTED, faultName);
+                        ((ProcessInstance) getProcessInstance()).setState(KogitoProcessInstance.STATE_ABORTED, faultName);
                     } else {
-                        ((NodeInstanceContainer) getNodeInstanceContainer()).setState(ProcessInstance.STATE_ABORTED);
+                        ((NodeInstanceContainer) getNodeInstanceContainer()).setState(KogitoProcessInstance.STATE_ABORTED);
                     }
 
                 }

@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.AppPaths;
+import org.drools.codegen.common.DroolsModelBuildContext;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
 import org.drools.util.PortablePath;
@@ -70,7 +71,7 @@ public class KogitoQuarkusResourceUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoQuarkusResourceUtils.class);
 
     // since quarkus-maven-plugin is later phase of maven-resources-plugin,
-    // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath );
+    // need to manually late-provide the resource in the expected location for quarkus:dev phase --so not: writeGeneratedFile( f, resourcePath )
     private static final GeneratedFileWriter.Builder generatedFileWriterBuilder =
             new GeneratedFileWriter.Builder(
                     "target/classes",
@@ -100,11 +101,11 @@ public class KogitoQuarkusResourceUtils {
 
         if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_REST)) {
             LOGGER.info("Disabling REST generation because class '" + QuarkusKogitoBuildContext.QUARKUS_REST + "' is not available");
-            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_REST, "false");
+            context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_REST, "false");
         }
         if (!context.hasClassAvailable(QuarkusKogitoBuildContext.QUARKUS_DI)) {
             LOGGER.info("Disabling dependency injection generation because class '" + QuarkusKogitoBuildContext.QUARKUS_DI + "' is not available");
-            context.setApplicationProperty(KogitoBuildContext.KOGITO_GENERATE_DI, "false");
+            context.setApplicationProperty(DroolsModelBuildContext.KOGITO_GENERATE_DI, "false");
         }
         return context;
     }

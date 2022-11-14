@@ -48,7 +48,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     private Map<String, Context> contexts = new HashMap<>();
     private Map<String, Object> metaData = new HashMap<>();
 
-    protected Map<ConnectionRef, Constraint> constraints = new HashMap<ConnectionRef, Constraint>();
+    protected Map<ConnectionRef, Constraint> constraints = new HashMap<>();
 
     private IOSpecification ioSpecification;
     private MultiInstanceSpecification multiInstanceSpecification;
@@ -124,14 +124,14 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     }
 
     public String getUniqueId() {
-        String result = id + "";
+        StringBuilder result = new StringBuilder(id + "");
         NodeContainer nodeContainer = getParentContainer();
         while (nodeContainer instanceof CompositeNode) {
             CompositeNode composite = (CompositeNode) nodeContainer;
-            result = composite.getId() + ":" + result;
+            result.insert(0, composite.getId() + ":");
             nodeContainer = composite.getParentContainer();
         }
-        return result;
+        return result.toString();
     }
 
     public void setId(final long id) {
@@ -164,7 +164,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         validateAddIncomingConnection(type, connection);
         List<Connection> connections = this.incomingConnections.get(type);
         if (connections == null) {
-            connections = new ArrayList<Connection>();
+            connections = new ArrayList<>();
             this.incomingConnections.put(type, connections);
         }
         connections.add(connection);
@@ -182,7 +182,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public List<Connection> getIncomingConnections(String type) {
         List<Connection> result = incomingConnections.get(type);
         if (result == null) {
-            return new ArrayList<Connection>();
+            return new ArrayList<>();
         }
         return result;
     }
@@ -191,7 +191,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
         validateAddOutgoingConnection(type, connection);
         List<Connection> connections = this.outgoingConnections.get(type);
         if (connections == null) {
-            connections = new ArrayList<Connection>();
+            connections = new ArrayList<>();
             this.outgoingConnections.put(type, connections);
         }
         connections.add(connection);
@@ -209,7 +209,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public List<Connection> getOutgoingConnections(String type) {
         List<Connection> result = outgoingConnections.get(type);
         if (result == null) {
-            return new ArrayList<Connection>();
+            return new ArrayList<>();
         }
         return result;
     }
@@ -264,7 +264,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public Connection getFrom() {
         final List<Connection> list =
                 getIncomingConnections(Node.CONNECTION_DEFAULT_TYPE);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return null;
         }
         if (list.size() == 1) {
@@ -284,7 +284,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     public Connection getTo() {
         final List<Connection> list =
                 getOutgoingConnections(Node.CONNECTION_DEFAULT_TYPE);
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             return null;
         }
         if (list.size() == 1) {

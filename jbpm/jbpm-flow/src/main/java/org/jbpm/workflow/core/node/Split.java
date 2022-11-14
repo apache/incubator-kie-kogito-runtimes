@@ -59,7 +59,6 @@ public class Split extends NodeImpl implements Constrainable {
     private static final long serialVersionUID = 510l;
 
     private int type;
-    //    private Map<ConnectionRef, Constraint> constraints = new HashMap<ConnectionRef, Constraint>();
 
     public Split() {
         this.type = TYPE_UNDEFINED;
@@ -99,6 +98,7 @@ public class Split extends NodeImpl implements Constrainable {
                 "only supported with XOR or OR split types, not with: " + getType());
     }
 
+    @Override
     public Constraint getConstraint(final Connection connection) {
         if (connection == null) {
             throw new IllegalArgumentException("connection is null");
@@ -112,10 +112,12 @@ public class Split extends NodeImpl implements Constrainable {
                 "only supported with XOR or OR split types, not with: " + getType());
     }
 
+    @Override
     public Constraint internalGetConstraint(final ConnectionRef ref) {
         return this.constraints.get(ref);
     }
 
+    @Override
     public void setConstraint(final Connection connection,
             final Constraint constraint) {
         if (this.type == TYPE_OR || this.type == TYPE_XOR) {
@@ -134,6 +136,7 @@ public class Split extends NodeImpl implements Constrainable {
         }
     }
 
+    @Override
     public void addConstraint(ConnectionRef connectionRef, Constraint constraint) {
         if (connectionRef == null) {
             throw new IllegalArgumentException(
@@ -142,10 +145,12 @@ public class Split extends NodeImpl implements Constrainable {
         this.constraints.put(connectionRef, constraint);
     }
 
+    @Override
     public Map<ConnectionRef, Constraint> getConstraints() {
         return Collections.unmodifiableMap(this.constraints);
     }
 
+    @Override
     public void validateAddIncomingConnection(final String type, final Connection connection) {
         super.validateAddIncomingConnection(type, connection);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -161,6 +166,7 @@ public class Split extends NodeImpl implements Constrainable {
         }
     }
 
+    @Override
     public void validateAddOutgoingConnection(final String type, final Connection connection) {
         super.validateAddOutgoingConnection(type, connection);
         if (!Node.CONNECTION_DEFAULT_TYPE.equals(type)) {
@@ -170,6 +176,7 @@ public class Split extends NodeImpl implements Constrainable {
         }
     }
 
+    @Override
     public void removeOutgoingConnection(final String type, final Connection connection) {
         super.removeOutgoingConnection(type, connection);
         removeConstraint(connection);

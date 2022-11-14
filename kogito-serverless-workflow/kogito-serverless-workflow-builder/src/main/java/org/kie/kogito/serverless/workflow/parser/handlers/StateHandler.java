@@ -15,14 +15,14 @@
  */
 package org.kie.kogito.serverless.workflow.parser.handlers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.jbpm.process.core.context.exception.CompensationScope;
 import org.jbpm.process.core.context.variable.Variable;
@@ -36,7 +36,9 @@ import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.ruleflow.core.factory.EndNodeFactory;
 import org.jbpm.ruleflow.core.factory.JoinFactory;
 import org.jbpm.ruleflow.core.factory.NodeFactory;
+import org.jbpm.ruleflow.core.factory.SplitFactory;
 import org.jbpm.ruleflow.core.factory.SupportsAction;
+import org.jbpm.ruleflow.core.factory.TimerNodeFactory;
 import org.jbpm.workflow.core.node.Join;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
@@ -60,9 +62,14 @@ import io.serverlessworkflow.api.filters.StateDataFilter;
 import io.serverlessworkflow.api.interfaces.State;
 import io.serverlessworkflow.api.produce.ProduceEvent;
 import io.serverlessworkflow.api.transitions.Transition;
+import io.serverlessworkflow.api.workflow.Errors;
 
 import static org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.eventBasedSplitNode;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.joinExclusiveNode;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.messageNode;
+import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.timerNode;
+import static org.kie.kogito.serverless.workflow.utils.TimeoutsConfigResolver.resolveEventTimeout;
 
 public abstract class StateHandler<S extends State> {
 
@@ -221,25 +228,45 @@ public abstract class StateHandler<S extends State> {
         }
     }
 
-    protected final Iterable<ErrorDefinition> getErrorDefinitions(Error error) {
-        Predicate<? super ErrorDefinition> pred;
-        if (error.getErrorRef() != null) {
-            pred = e -> error.getErrorRef().equals(e.getName());
-        } else if (error.getErrorRefs() != null) {
-            pred = e -> error.getErrorRefs().contains(e.getName());
-        } else {
-            throw new IllegalStateException("errorRef or errorRefs should be defined in list of error definitions");
+    private boolean hasCode(ErrorDefinition errorDef) {
+        if (errorDef.getCode() == null) {
+            logger.error("Kogito requires code error to be set. Ignoring {}", errorDef.getName());
+            return false;
         }
-        return workflow.getErrors().getErrorDefs().stream().filter(pred).collect(Collectors.toList());
+        return true;
+    }
+
+    protected final Collection<ErrorDefinition> getErrorDefinitions(Error error) {
+        Errors errors = workflow.getErrors();
+        if (errors == null) {
+            throw new IllegalArgumentException("workflow should contain errors property");
+        }
+        List<ErrorDefinition> errorDefs = errors.getErrorDefs();
+        if (errorDefs == null) {
+            throw new IllegalArgumentException("workflow errors property must contain errorDefs property");
+        }
+
+        if (error.getErrorRef() != null) {
+            return getErrorsDefinitions(errorDefs, Arrays.asList(error.getErrorRef()));
+        } else if (error.getErrorRefs() != null) {
+            return getErrorsDefinitions(errorDefs, error.getErrorRefs());
+        } else {
+            throw new IllegalArgumentException("state errors should contain either errorRef or errorRefs property");
+        }
+    }
+
+    private Collection<ErrorDefinition> getErrorsDefinitions(List<ErrorDefinition> errorDefs, List<String> errorRefs) {
+        Collection<ErrorDefinition> result = new ArrayList<>();
+        for (String errorRef : errorRefs) {
+            result.add(errorDefs.stream().filter(errorDef -> errorDef.getName().equals(errorRef) && hasCode(errorDef)).findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot find any error definition for errorRef" + errorRef)));
+        }
+        return result;
     }
 
     protected final void handleErrors(RuleFlowNodeContainerFactory<?, ?> factory, RuleFlowNodeContainerFactory<?, ?> targetNode) {
         for (Error error : state.getOnErrors()) {
-            for (ErrorDefinition errorDef : getErrorDefinitions(error)) {
-                if (errorDef.getCode() == null) {
-                    logger.error("Kogito requires code error to be set. Ignoring {}", errorDef.getName());
-                    return;
-                }
+            getErrorDefinitions(error).forEach(errorDef -> {
                 String errorPrefix = RuleFlowProcessFactory.ERROR_TYPE_PREFIX + targetNode.getNode().getMetaData().get("UniqueId") + '-';
                 BoundaryEventNodeFactory<?> boundaryNode = factory.boundaryEventNode(parserContext.newId()).attachedTo(targetNode.getNode().getId())
                         .metaData(Metadata.EVENT_TYPE, Metadata.EVENT_TYPE_ERROR).metaData("HasErrorEvent", true).metaData(Metadata.ERROR_EVENT, errorDef.getCode())
@@ -251,7 +278,7 @@ public abstract class StateHandler<S extends State> {
                 } else {
                     handleTransitions(factory, error.getTransition(), boundaryNode.getNode().getId());
                 }
-            }
+            });
         }
     }
 
@@ -372,21 +399,17 @@ public abstract class StateHandler<S extends State> {
             toExpr = eventFilter.getToStateData();
             useData = eventFilter.isUseData();
         }
-        return filterAndMergeNode(embeddedSubProcess, varName, null, dataExpr, toExpr, useData, nodeSupplier);
-    }
-
-    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String fromStateExpr, String resultExpr, String toStateExpr, boolean shouldMerge,
-            FilterableNodeSupplier nodeSupplier) {
-        return filterAndMergeNode(embeddedSubProcess, getVarName(), fromStateExpr, resultExpr, toStateExpr, shouldMerge, nodeSupplier);
+        return filterAndMergeNode(embeddedSubProcess, varName, null, dataExpr, toExpr, useData, true, nodeSupplier);
     }
 
     protected boolean isTempVariable(String varName) {
         return !varName.equals(ServerlessWorkflowParser.DEFAULT_WORKFLOW_VAR);
     }
 
-    private final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionVarName, String fromStateExpr, String resultExpr, String toStateExpr,
-            boolean shouldMerge,
-            FilterableNodeSupplier nodeSupplier) {
+    protected final MakeNodeResult filterAndMergeNode(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, String actionVarName, String fromStateExpr, String resultExpr, String toStateExpr,
+            boolean useData,
+            boolean shouldMerge, FilterableNodeSupplier nodeSupplier) {
+
         if (isTempVariable(actionVarName)) {
             embeddedSubProcess.variable(actionVarName, new ObjectDataType(JsonNode.class.getCanonicalName()), Variable.VARIABLE_TAGS, Variable.INTERNAL_TAG);
         }
@@ -400,15 +423,16 @@ public abstract class StateHandler<S extends State> {
             startNode = currentNode = nodeSupplier.apply(embeddedSubProcess, DEFAULT_WORKFLOW_VAR, actionVarName);
         }
 
-        if (shouldMerge) {
-            if (resultExpr != null) {
-                currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow, resultExpr)
-                        .withVarNames(actionVarName, actionVarName).build()));
-            }
+        if (useData && resultExpr != null) {
+            currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(ExpressionActionSupplier.of(workflow, resultExpr)
+                    .withVarNames(actionVarName, actionVarName).build()));
+        }
+
+        if (useData) {
             if (toStateExpr != null) {
                 currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId())
                         .action(new CollectorActionSupplier(workflow.getExpressionLang(), toStateExpr, DEFAULT_WORKFLOW_VAR, actionVarName)));
-            } else {
+            } else if (shouldMerge) {
                 currentNode = connect(currentNode, embeddedSubProcess.actionNode(parserContext.newId()).action(new MergeActionSupplier(actionVarName, DEFAULT_WORKFLOW_VAR)));
             }
         }
@@ -440,6 +464,42 @@ public abstract class StateHandler<S extends State> {
         return workflow.getEvents().getEventDefs().stream()
                 .filter(wt -> wt.getName().equals(eventName))
                 .findFirst().orElseThrow(() -> new NoSuchElementException("No event for " + eventName));
+    }
+
+    protected final MakeNodeResult makeTimeoutNode(RuleFlowNodeContainerFactory<?, ?> factory, MakeNodeResult notTimerBranch, int type) {
+        String eventTimeout = resolveEventTimeout(state, workflow);
+        if (eventTimeout != null) {
+            SplitFactory<?> splitNode;
+            JoinFactory<?> joinNode;
+            if (isPreparedBranch(notTimerBranch, type)) {
+                // reusing existing split-join branch
+                createTimerNode(factory, (SplitFactory<?>) notTimerBranch.getIncomingNode(), (JoinFactory<?>) notTimerBranch.getOutgoingNode(), eventTimeout);
+                return notTimerBranch;
+            } else {
+                // creating a split-join branch for the timer
+                splitNode = eventBasedSplitNode(factory.splitNode(parserContext.newId()), type);
+                joinNode = joinExclusiveNode(factory.joinNode(parserContext.newId()));
+                connect(connect(splitNode, notTimerBranch), joinNode);
+                createTimerNode(factory, splitNode, joinNode, eventTimeout);
+                return new MakeNodeResult(splitNode, joinNode);
+            }
+        } else {
+            // No timeouts, returning the existing branch.
+            return notTimerBranch;
+        }
+    }
+
+    private void createTimerNode(RuleFlowNodeContainerFactory<?, ?> factory, SplitFactory<?> splitNode, JoinFactory<?> joinNode, String eventTimeout) {
+        TimerNodeFactory<?> eventTimeoutTimerNode = timerNode(factory.timerNode(parserContext.newId()), eventTimeout);
+        connect(splitNode, eventTimeoutTimerNode);
+        connect(eventTimeoutTimerNode, joinNode);
+    }
+
+    private static final boolean isPreparedBranch(MakeNodeResult notTimerBranch, int splitType) {
+        NodeFactory<?, ?> incoming = notTimerBranch.getIncomingNode();
+        NodeFactory<?, ?> outgoing = notTimerBranch.getOutgoingNode();
+        return incoming instanceof SplitFactory && outgoing instanceof JoinFactory && ((SplitFactory<?>) incoming).getSplit().getType() == splitType
+                && ((JoinFactory<?>) outgoing).getJoin().getType() == Join.TYPE_XOR;
     }
 
     protected EndNodeFactory<?> endNodeFactory(RuleFlowNodeContainerFactory<?, ?> factory, End end) {

@@ -18,12 +18,6 @@ package org.kie.kogito.codegen.rules;
 import org.drools.ruleunits.impl.AssignableChecker;
 import org.drools.ruleunits.impl.ReflectiveRuleUnitDescription;
 import org.kie.internal.ruleunit.RuleUnitDescription;
-import org.kie.internal.ruleunit.RuleUnitVariable;
-import org.kie.kogito.rules.DataStore;
-import org.kie.kogito.rules.DataStream;
-import org.kie.kogito.rules.SingletonStore;
-
-import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class RuleUnitHelper {
     private AssignableChecker defaultChecker;
@@ -56,46 +50,5 @@ public class RuleUnitHelper {
 
     public boolean isAssignableFrom(Class<?> source, Class<?> target) {
         return assignableChecker.isAssignableFrom(source, target);
-    }
-
-    BlockStmt fieldInitializer(RuleUnitVariable ruleUnitVariable, String genericType, boolean isDataSource) {
-        BlockStmt supplierBlock = new BlockStmt();
-
-        if (!isDataSource) {
-            if (ruleUnitVariable.setter() != null) {
-                supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
-            }
-        } else if (isAssignableFrom(DataStream.class, ruleUnitVariable.getType())) {
-            if (ruleUnitVariable.setter() != null) {
-                supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStream<%s> %s = org.kie.kogito.rules.DataSource.createStream();", genericType, ruleUnitVariable.getName()));
-                supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
-            }
-            supplierBlock.addStatement(String.format("this.%s.forEach( unit.%s()::append);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
-        } else if (isAssignableFrom(DataStore.class, ruleUnitVariable.getType())) {
-            if (ruleUnitVariable.setter() != null) {
-                supplierBlock.addStatement(String.format("org.kie.kogito.rules.DataStore<%s> %s = org.kie.kogito.rules.DataSource.createStore();", genericType, ruleUnitVariable.getName()));
-                supplierBlock.addStatement(String.format("unit.%s(%s);", ruleUnitVariable.setter(), ruleUnitVariable.getName()));
-            }
-            supplierBlock.addStatement(String.format("this.%s.forEach( unit.%s()::add);", ruleUnitVariable.getName(), ruleUnitVariable.getter()));
-        } else if (isAssignableFrom(SingletonStore.class, ruleUnitVariable.getType())) {
-            supplierBlock.addStatement(String.format("unit.%s().set(this.%s );", ruleUnitVariable.getter(), ruleUnitVariable.getName()));
-        } else {
-            throw new IllegalArgumentException("Unknown data source type " + ruleUnitVariable.getType());
-        }
-
-        return supplierBlock;
-    }
-
-    String createDataSourceMethodName(Class<?> dsClass) {
-        if (isAssignableFrom(DataStream.class, dsClass)) {
-            return "createStream";
-        }
-        if (isAssignableFrom(DataStore.class, dsClass)) {
-            return "createStore";
-        }
-        if (isAssignableFrom(SingletonStore.class, dsClass)) {
-            return "createSingleton";
-        }
-        throw new IllegalArgumentException("Unknown data source type " + dsClass.getCanonicalName());
     }
 }
