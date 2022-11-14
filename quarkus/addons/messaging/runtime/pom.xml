@@ -22,6 +22,10 @@
       <groupId>io.cloudevents</groupId>
       <artifactId>cloudevents-http-restful-ws</artifactId>
     </dependency>
+    <dependency>
+    	 <groupId>io.quarkus</groupId>
+    	<artifactId>quarkus-smallrye-reactive-messaging</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
