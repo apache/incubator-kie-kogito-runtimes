@@ -16,7 +16,7 @@
 
   <properties>
     <!-- this version property is used in plugins but also in dependencies too -->
-    <version.io.quarkus>2.14.0.Final</version.io.quarkus>
+    <version.io.quarkus>2.7.6.Final</version.io.quarkus>
     <version.io.quarkus.quarkus-test>${version.io.quarkus}</version.io.quarkus.quarkus-test>
     <version.org.springframework.boot>2.6.6</version.org.springframework.boot>
 
@@ -31,11 +31,11 @@
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.24.2</version.com.github.javaparser>
     <version.com.github.java-json-tools>2.2.14</version.com.github.java-json-tools>
-    <version.com.fasterxml.jackson.datatype>2.13.4</version.com.fasterxml.jackson.datatype>
+    <version.com.fasterxml.jackson.datatype>2.13.3</version.com.fasterxml.jackson.datatype>
     <version.com.github.erosb>1.14.1</version.com.github.erosb>
     <version.com.github.victools>4.18.0</version.com.github.victools>
     <version.com.github.tomakehurst.wiremock>2.33.2</version.com.github.tomakehurst.wiremock>
-    <version.com.google.protobuf>3.19.6</version.com.google.protobuf>
+    <version.com.google.protobuf>3.19.3</version.com.google.protobuf>
     <!-- currently required for integration test only -->
     <version.com.oracle.database.jdbc>21.3.0.0</version.com.oracle.database.jdbc>
     <version.com.sun.xml.bind.core>2.3.0.1</version.com.sun.xml.bind.core>
@@ -50,30 +50,30 @@
     <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
 
     <version.io.cloudevents>2.3.0</version.io.cloudevents>
-    <version.io.fabric8.kubernetes-client>6.2.0</version.io.fabric8.kubernetes-client>
-    <version.io.micrometer>1.9.5</version.io.micrometer>
+    <version.io.fabric8.kubernetes-client>5.12.2</version.io.fabric8.kubernetes-client>
+    <version.io.micrometer>1.8.3</version.io.micrometer>
     <version.io.serverlessworkflow>4.0.3.Final</version.io.serverlessworkflow>
     <!-- Aligned with Quarkus 2.7 (LTS) - see https://issues.redhat.com/browse/KOGITO-7971 -->
-    <version.io.smallrye-open-api>2.3.1</version.io.smallrye-open-api>
-    <version.org.awaitility>4.2.0</version.org.awaitility>
+    <version.io.smallrye-open-api>2.1.22</version.io.smallrye-open-api>
+    <version.org.awaitility>4.1.1</version.org.awaitility>
 
-    <version.io.smallrye.reactive.mutiny-vertx-web-client>2.27.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
+    <version.io.smallrye.reactive.mutiny-vertx-web-client>2.21.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
-    <version.io.vertx>4.3.4</version.io.vertx>
-    <version.io.grpc>1.50.2</version.io.grpc>
+    <version.io.vertx>4.2.7</version.io.vertx>
+    <version.io.grpc>1.43.2</version.io.grpc>
 
     <version.io.swagger.parser.v3>2.0.26</version.io.swagger.parser.v3>
 
     <version.org.apache.commons>3.12.0</version.org.apache.commons>
     <version.org.apache.xmlgraphics.batik>1.14</version.org.apache.xmlgraphics.batik>
 
-    <version.org.graalvm.nativeimage>22.2.0</version.org.graalvm.nativeimage>
+    <version.org.graalvm.nativeimage>21.3.2</version.org.graalvm.nativeimage>
 
     <version.org.infinispan>13.0.10.Final</version.org.infinispan>
-    <version.org.infinispan.protostream>4.5.0.Final</version.org.infinispan.protostream>
+    <version.org.infinispan.protostream>4.4.1.Final</version.org.infinispan.protostream>
     <!-- consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ -->
     <version.jakarta.ws.rs>2.1.6</version.jakarta.ws.rs>
-    <version.org.jboss.resteasy>4.7.7.Final</version.org.jboss.resteasy>
+    <version.org.jboss.resteasy>4.7.5.Final</version.org.jboss.resteasy>
     <version.org.keycloak>18.0.2</version.org.keycloak>
     <!-- It seems that the confluent kafka cannot replace wurstmeister/kafka so easily. See FAI-729 -->
     <version.wurstmeister.kafka>2.12-2.2.1</version.wurstmeister.kafka>
@@ -83,16 +83,16 @@
     <version.org.redis>2.0.4</version.org.redis>
     <version.org.postgres>13.4-alpine3.14</version.org.postgres>
 
-    <version.org.assertj>3.22.0</version.org.assertj>
+    <version.org.assertj>3.21.0</version.org.assertj>
     <version.org.json-unit-assertj>2.9.0</version.org.json-unit-assertj>
     <version.org.hamcrest>1.3</version.org.hamcrest> <!-- else old version coming from Mockito wins and breaks tests -->
     <version.org.junit.minor>8.2</version.org.junit.minor> <!-- so that org.junit.platform and org.junit can share the same minor version -->
     <version.org.junit>5.${version.org.junit.minor}</version.org.junit>
-    <version.org.junit.jupiter>5.9.1</version.org.junit.jupiter>
-    <version.org.junit.vintage>5.9.1</version.org.junit.vintage>
-    <version.org.junit.platform>1.9.1</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
+    <version.org.junit.jupiter>5.8.2</version.org.junit.jupiter>
+    <version.org.junit.vintage>5.8.2</version.org.junit.vintage>
+    <version.org.junit.platform>1.8.2</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.5.0</version.org.junit.pioneer>
-    <version.org.mockito>4.8.1</version.org.mockito>
+    <version.org.mockito>4.3.1</version.org.mockito>
     <version.org.testcontainers>1.17.3</version.org.testcontainers>
 
     <version.net.byte-buddy>1.12.9</version.net.byte-buddy>
@@ -104,7 +104,7 @@
 
     <version.maven>3.8.6</version.maven>
     <version.maven.plugin>3.6.0</version.maven.plugin>
-    <version.maven.invoker>3.2.0</version.maven.invoker>
+    <version.maven.invoker>3.1.0</version.maven.invoker>
 
     <version.plexus>1.6</version.plexus>
     <version.plexus.classworld>2.6.0</version.plexus.classworld>
