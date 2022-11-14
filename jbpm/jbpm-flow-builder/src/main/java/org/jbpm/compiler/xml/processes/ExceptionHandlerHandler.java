@@ -70,13 +70,10 @@ public class ExceptionHandlerHandler extends BaseAbstractHandler implements Hand
             org.w3c.dom.Node xmlNode = element.getFirstChild();
             if (xmlNode instanceof Element) {
                 Element actionXml = (Element) xmlNode;
-<<<<<<< HEAD
+
                 DroolsAction action = ActionNodeHandler.extractAction(actionXml);
                 (exceptionHandler).setAction(action);
-=======
-                DroolsAction action = AbstractNodeHandler.extractAction(actionXml);
-                ((ActionExceptionHandler) exceptionHandler).setAction(action);
->>>>>>> main
+
             }
         } else {
             throw new SAXParseException("Unknown exception handler type " + type, parser.getLocator());

@@ -25,7 +25,6 @@ import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.instance.ContextInstance;
 import org.jbpm.process.instance.ContextInstanceContainer;
 import org.jbpm.process.instance.ContextableInstance;
-import org.jbpm.process.instance.ProcessInstance;
 import org.jbpm.process.instance.impl.ContextInstanceFactory;
 import org.jbpm.process.instance.impl.ContextInstanceFactoryRegistry;
 import org.jbpm.workflow.core.node.CompositeContextNode;
