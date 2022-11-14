@@ -30,8 +30,6 @@ public class WorkItemHandlerRuntimeException extends RuntimeException {
 
     public static final String WORKITEMHANDLERTYPE = "workItemHandlerType";
 
-    private final HashMap<String, Object> info = new HashMap<>();
-
     public WorkItemHandlerRuntimeException(Throwable cause, String message) {
         super(message, cause);
     }
@@ -39,13 +37,4 @@ public class WorkItemHandlerRuntimeException extends RuntimeException {
     public WorkItemHandlerRuntimeException(Throwable cause) {
         super(cause);
     }
-
-    public void setInformation(String informationName, Object information) {
-        this.info.put(informationName, information);
-    }
-
-    public Map<String, Object> getInformationMap() {
-        return Collections.unmodifiableMap(this.info);
-    }
-
 }

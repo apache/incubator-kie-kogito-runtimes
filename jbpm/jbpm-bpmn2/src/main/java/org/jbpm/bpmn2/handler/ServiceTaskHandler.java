@@ -32,6 +32,12 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
 
     private String resultVarName;
 
+    private final HashMap<String, Object> info = new HashMap<>();
+
+    public void setInformation(String informationName, Object information) {
+        this.info.put(informationName, information);
+    }
+
     public ServiceTaskHandler() {
         this("Result");
     }
@@ -95,12 +101,12 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
             wihRe = new WorkItemHandlerRuntimeException(cause);
             wihRe.setStackTrace(cause.getStackTrace());
         }
-        wihRe.setInformation("Interface", service);
-        wihRe.setInformation("InterfaceImplementationRef", interfaceImplementationRef);
-        wihRe.setInformation("Operation", operation);
-        wihRe.setInformation("ParameterType", paramType);
-        wihRe.setInformation("Parameter", param);
-        wihRe.setInformation(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
+        setInformation("Interface", service);
+        setInformation("InterfaceImplementationRef", interfaceImplementationRef);
+        setInformation("Operation", operation);
+        setInformation("ParameterType", paramType);
+        setInformation("Parameter", param);
+        setInformation(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
         throw wihRe;
 
     }
