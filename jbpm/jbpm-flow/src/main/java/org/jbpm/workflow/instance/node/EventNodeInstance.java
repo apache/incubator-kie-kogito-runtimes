@@ -120,15 +120,15 @@ public class EventNodeInstance extends ExtendedNodeInstanceImpl implements Kogit
 
     protected void addTimerListener() {
 
-        (getProcessInstance()).addEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
-        (getProcessInstance()).addEventListener("timer", new VariableExternalEventListener("timer"), true);
-        (getProcessInstance()).addEventListener("slaViolation:" + getStringId(), new VariableExternalEventListener("slaViolation"), true);
+        getProcessInstance().addEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
+        getProcessInstance().addEventListener("timer", new VariableExternalEventListener("timer"), true);
+        getProcessInstance().addEventListener("slaViolation:" + getStringId(), new VariableExternalEventListener("slaViolation"), true);
     }
 
     public void removeTimerListeners() {
-        (getProcessInstance()).removeEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
-        (getProcessInstance()).removeEventListener("timer", new VariableExternalEventListener("timer"), true);
-        (getProcessInstance()).removeEventListener("slaViolation:" + getStringId(), new VariableExternalEventListener("slaViolation"), true);
+        getProcessInstance().removeEventListener("timerTriggered", new VariableExternalEventListener("timerTriggered"), false);
+        getProcessInstance().removeEventListener("timer", new VariableExternalEventListener("timer"), true);
+        getProcessInstance().removeEventListener("slaViolation:" + getStringId(), new VariableExternalEventListener("slaViolation"), true);
     }
 
     public EventNode getEventNode() {
