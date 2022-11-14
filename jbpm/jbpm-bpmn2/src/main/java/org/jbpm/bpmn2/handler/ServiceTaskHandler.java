@@ -32,12 +32,6 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
 
     private String resultVarName;
 
-    private final HashMap<String, Object> info = new HashMap<>();
-
-    public void setInformation(String informationName, Object information) {
-        this.info.put(informationName, information);
-    }
-
     public ServiceTaskHandler() {
         this("Result");
     }
@@ -92,23 +86,12 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
     private void handleException(Throwable cause, String service, String interfaceImplementationRef, String operation, String paramType, Object param) {
         logger.debug("Handling exception {} inside service {} or {} and operation {} with param type {} and value {}",
                 cause.getMessage(), service, interfaceImplementationRef, operation, paramType, param);
-        WorkItemHandlerRuntimeException wihRe;
-        if (cause instanceof InvocationTargetException) {
-            Throwable realCause = cause.getCause();
-            wihRe = new WorkItemHandlerRuntimeException(realCause);
-            wihRe.setStackTrace(realCause.getStackTrace());
-        } else {
-            wihRe = new WorkItemHandlerRuntimeException(cause);
-            wihRe.setStackTrace(cause.getStackTrace());
-        }
-        setInformation("Interface", service);
-        setInformation("InterfaceImplementationRef", interfaceImplementationRef);
-        setInformation("Operation", operation);
-        setInformation("ParameterType", paramType);
-        setInformation("Parameter", param);
-        setInformation(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
+        Throwable realCause = cause instanceof InvocationTargetException ? cause.getCause() : cause;
+        WorkItemHandlerRuntimeException wihRe = new WorkItemHandlerRuntimeException(realCause,
+                Map.of("Interface", service, "InterfaceImplementationRef", interfaceImplementationRef, "Operation", operation, "ParameterType", paramType,
+                        "Parameter", param, WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName()));
+        wihRe.setStackTrace(realCause.getStackTrace());
         throw wihRe;
-
     }
 
     public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
