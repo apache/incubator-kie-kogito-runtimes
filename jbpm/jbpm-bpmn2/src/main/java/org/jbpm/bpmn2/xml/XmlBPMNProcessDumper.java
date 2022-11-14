@@ -91,7 +91,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
 
     private static final Logger logger = LoggerFactory.getLogger(XmlBPMNProcessDumper.class);
 
-    private final static String EOL = System.getProperty("line.separator");
+    private static final String EOL = System.getProperty("line.separator");
 
     private SemanticModule semanticModule;
     private int metaDataType = META_DATA_USING_DI;
@@ -506,7 +506,7 @@ public class XmlBPMNProcessDumper implements XmlProcessDumper {
                 }
             } else if (node instanceof EventNode) {
                 List<EventFilter> filters = ((EventNode) node).getEventFilters();
-                if (filters.size() > 0) {
+                if (!filters.isEmpty()) {
                     String messageRef = ((EventTypeFilter) filters.get(0)).getType();
                     if (messageRef.startsWith("Message-")) {
                         messageRef = messageRef.substring(8);

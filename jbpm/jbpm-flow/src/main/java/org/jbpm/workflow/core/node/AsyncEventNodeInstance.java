@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
-import org.jbpm.workflow.core.impl.NodeImpl;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
 import org.kie.api.definition.process.Node;
@@ -36,8 +35,6 @@ import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.BaseWorkUnit;
 import org.kie.kogito.uow.WorkUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
 
@@ -48,7 +45,6 @@ import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
 public class AsyncEventNodeInstance extends EventNodeInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(AsyncEventNodeInstance.class);
     private final KogitoEventListener listener = new AsyncExternalEventListener();
     private String jobId = "";
 
@@ -164,7 +160,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
         NodeInstance actualInstance = instanceContainer.getNodeInstance(getNode());
         //trigger the actual node
-        triggerNodeInstance((org.jbpm.workflow.instance.NodeInstance) actualInstance, NodeImpl.CONNECTION_DEFAULT_TYPE);
+        triggerNodeInstance((org.jbpm.workflow.instance.NodeInstance) actualInstance, org.jbpm.workflow.core.Node.CONNECTION_DEFAULT_TYPE);
         clearAsyncStatus();
     }
 }

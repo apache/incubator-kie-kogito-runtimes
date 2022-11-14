@@ -107,8 +107,6 @@ import static org.kie.kogito.quarkus.common.deployment.KogitoQuarkusResourceUtil
  */
 public class ProcessesAssetsProcessor {
 
-    private static final DotName persistenceFactoryClass = DotName.createSimple("org.kie.kogito.persistence.KogitoProcessInstancesFactory");
-    private static final String PROCESS_SVG_SERVICE = "org.kie.kogito.svg.service.QuarkusProcessSvgService";
     private static final String PERSISTENCE_CAPABILITY = "org.kie.kogito.addons.persistence";
 
     @Inject
@@ -244,7 +242,6 @@ public class ProcessesAssetsProcessor {
                     context,
                     aggregatedIndex,
                     generatedBeans,
-                    resourcePatterns,
                     liveReload.isLiveReload()));
         }
 
@@ -267,10 +264,9 @@ public class ProcessesAssetsProcessor {
             KogitoBuildContext context,
             IndexView index,
             BuildProducer<GeneratedBeanBuildItem> generatedBeans,
-            BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns,
-            boolean useDebugSymbols) throws IOException {
+            boolean useDebugSymbols) {
 
-        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context, resourcePatterns);
+        Collection<GeneratedFile> persistenceGeneratedFiles = getGeneratedPersistenceFiles(index, context);
 
         validateGeneratedFileTypes(persistenceGeneratedFiles, asList(GeneratedFileType.Category.SOURCE, GeneratedFileType.Category.INTERNAL_RESOURCE, GeneratedFileType.Category.STATIC_HTTP_RESOURCE));
 
@@ -282,8 +278,7 @@ public class ProcessesAssetsProcessor {
     }
 
     private Collection<GeneratedFile> getGeneratedPersistenceFiles(IndexView index,
-            KogitoBuildContext context,
-            BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns) {
+            KogitoBuildContext context) {
 
         Collection<ClassInfo> modelClasses = index
                 .getAllKnownImplementors(DotName.createSimple(Model.class.getCanonicalName()));

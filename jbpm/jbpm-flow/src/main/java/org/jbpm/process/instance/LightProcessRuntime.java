@@ -60,13 +60,10 @@ import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.InMemoryJobService;
 import org.kie.kogito.signal.SignalManager;
 import org.kie.kogito.uow.UnitOfWorkManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.jbpm.ruleflow.core.Metadata.TRIGGER_MAPPING_INPUT;
 
 public class LightProcessRuntime extends AbstractProcessRuntime {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightProcessRuntime.class);
     private ProcessRuntimeContext runtimeContext;
     private final InternalKnowledgeRuntime knowledgeRuntime;
 
@@ -286,7 +283,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
 
         @Override
         public String[] getEventTypes() {
-            return null;
+            return new String[0];
         }
 
         @Override
@@ -316,7 +313,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
             }
 
             Map<String, Object> parameters = NodeIoHelper.processOutputs(trigger.getInAssociations(), key -> outputSet.get(key));
-            startProcessWithParamsAndTrigger(processId, parameters, type, false);
+            startProcessWithParamsAndTrigger(processId, parameters, type);
         }
     }
 
@@ -350,7 +347,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                     if (ruleName.startsWith("RuleFlow-Start-")) {
                         String processId = ruleName.replace("RuleFlow-Start-", "");
 
-                        startProcessWithParamsAndTrigger(processId, null, "conditional", true);
+                        startProcessWithParamsAndTrigger(processId, null, "conditional");
                     }
                 }
             }
@@ -370,7 +367,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
         });
     }
 
-    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type, boolean dispose) {
+    private void startProcessWithParamsAndTrigger(String processId, Map<String, Object> params, String type) {
 
         startProcess(processId, params, type);
     }
@@ -423,7 +420,7 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
     }
 
     public boolean isActive() {
-        // originally: kruntime.getEnvironment().get("Active");
+        // originally: kruntime.getEnvironment().get("Active")
         return runtimeContext.isActive();
     }
 
@@ -453,10 +450,6 @@ public class LightProcessRuntime extends AbstractProcessRuntime {
                 // when using ISO date/time period is not set
                 long[] repeatValues = DateTimeUtils.parseRepeatableDateTime(timer.getDelay());
                 if (repeatValues.length == 3) {
-                    int parsedReapedCount = (int) repeatValues[0];
-                    if (parsedReapedCount > -1) {
-                        parsedReapedCount = Integer.MAX_VALUE;
-                    }
                     return DurationExpirationTime.repeat(repeatValues[1], repeatValues[2]);
                 } else {
                     long delay = repeatValues[0];

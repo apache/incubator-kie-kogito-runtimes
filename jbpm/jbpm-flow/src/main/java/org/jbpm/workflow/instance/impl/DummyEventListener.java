@@ -19,7 +19,7 @@ import org.kie.kogito.internal.process.event.KogitoEventListener;
 
 public class DummyEventListener implements KogitoEventListener {
 
-    public final static DummyEventListener EMPTY_EVENT_LISTENER = new DummyEventListener();
+    public static final DummyEventListener EMPTY_EVENT_LISTENER = new DummyEventListener();
 
     private DummyEventListener() {
     }
@@ -30,7 +30,7 @@ public class DummyEventListener implements KogitoEventListener {
 
     @Override
     public String[] getEventTypes() {
-        return null;
+        return new String[0];
     }
 
 }
