@@ -121,12 +121,6 @@ public class ProcessTimerTest extends AbstractBaseTest {
         await("dead").atMost(5, SECONDS)
                 .with().pollInterval(500, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> assertThat(myList).hasSize(1));
-        try {
-            TimeUnit.MILLISECONDS.sleep(400);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
-        assertThat(myList).hasSize(1);
 
         kruntime.getKieSession().dispose();
     }
