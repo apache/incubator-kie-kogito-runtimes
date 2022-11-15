@@ -30,11 +30,26 @@ public class WorkItemHandlerRuntimeException extends RuntimeException {
 
     public static final String WORKITEMHANDLERTYPE = "workItemHandlerType";
 
+    private final Map<String, Object> info;
+
     public WorkItemHandlerRuntimeException(Throwable cause, String message) {
-        super(message, cause);
+        this(cause, message, Collections.emptyMap());
     }
 
     public WorkItemHandlerRuntimeException(Throwable cause) {
-        super(cause);
+        this(cause, Collections.emptyMap());
+    }
+
+    public WorkItemHandlerRuntimeException(Throwable cause, Map<String, Object> info) {
+        this(cause, null, info);
+    }
+
+    public WorkItemHandlerRuntimeException(Throwable cause, String message, Map<String, Object> info) {
+        super(message, cause);
+        this.info = info;
+    }
+
+    public Map<String, Object> getInformationMap() {
+        return Collections.unmodifiableMap(this.info);
     }
 }
