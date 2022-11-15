@@ -50,6 +50,7 @@
     <version.io.cloudevents>2.2.0</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>5.12.4</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.9.4</version.io.micrometer>
+    <version.io.prometheus.simpleclient>0.15.0</version.io.prometheus.simpleclient>
     <version.io.serverlessworkflow>2.0.0.Final</version.io.serverlessworkflow>
     <version.io.smallrye-open-api-core>2.2.1</version.io.smallrye-open-api-core>
     <version.io.smallrye.reactive.mutiny-vertx-web-client>2.27.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
@@ -85,6 +86,7 @@
     <version.org.junit.platform>1.9.1</version.org.junit.platform> <!-- otherwise Quarkus brings its own, silently disabling some tests -->
     <version.org.junit.pioneer>1.5.0</version.org.junit.pioneer>
     <version.org.mockito>4.8.1</version.org.mockito>
+    <version.net.bytebuddy>1.12.18</version.net.bytebuddy>
     <version.org.testcontainers>1.16.3</version.org.testcontainers>
 
     <version.org.mvel>2.4.12.Final</version.org.mvel>
