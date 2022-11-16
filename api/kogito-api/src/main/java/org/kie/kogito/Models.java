@@ -20,6 +20,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,8 +78,10 @@ public class Models {
             for (Map.Entry<String, PropertyDescriptor> e : descriptors.entrySet()) {
                 String k = e.getKey();
                 k = unprefixVar(k);
+                PropertyDescriptor pd = new PropertyDescriptor(k, m.getClass());
+                Method writeMethod = pd.getWriteMethod();
                 if (map.containsKey(k)) {
-                    e.getValue().getWriteMethod().invoke(m, map.get(k));
+                    writeMethod.invoke(m, map.get(k));
                 }
             }
             return m;
