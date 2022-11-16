@@ -65,16 +65,6 @@
         <version>${version.org.spockframework}</version>
         <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy</artifactId>
-        <version>${version.net.bytebuddy}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.bytebuddy</groupId>
-        <artifactId>byte-buddy-agent</artifactId>
-        <version>${version.net.bytebuddy}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
