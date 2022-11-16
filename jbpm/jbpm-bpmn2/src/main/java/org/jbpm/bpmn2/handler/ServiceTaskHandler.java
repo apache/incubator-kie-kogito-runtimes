@@ -87,9 +87,15 @@ public class ServiceTaskHandler implements KogitoWorkItemHandler {
         logger.debug("Handling exception {} inside service {} or {} and operation {} with param type {} and value {}",
                 cause.getMessage(), service, interfaceImplementationRef, operation, paramType, param);
         Throwable realCause = cause instanceof InvocationTargetException ? cause.getCause() : cause;
-        WorkItemHandlerRuntimeException wihRe = new WorkItemHandlerRuntimeException(realCause,
-                Map.of("Interface", service, "InterfaceImplementationRef", interfaceImplementationRef, "Operation", operation, "ParameterType", paramType,
-                        "Parameter", param, WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName()));
+        // Map.of does not accept null values, therefore we need to use the legacy way to build the map 
+        Map<String, Object> info = new HashMap<>();
+        info.put("Interface", service);
+        info.put("InterfaceImplementationRef", interfaceImplementationRef);
+        info.put("Operation", operation);
+        info.put("ParameterType", paramType);
+        info.put("Parameter", param);
+        info.put(WorkItemHandlerRuntimeException.WORKITEMHANDLERTYPE, this.getClass().getSimpleName());
+        WorkItemHandlerRuntimeException wihRe = new WorkItemHandlerRuntimeException(realCause, info);
         wihRe.setStackTrace(realCause.getStackTrace());
         throw wihRe;
     }

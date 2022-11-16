@@ -41,7 +41,8 @@ public class WorkItemHandlerRuntimeException extends RuntimeException {
     }
 
     public WorkItemHandlerRuntimeException(Throwable cause, Map<String, Object> info) {
-        this(cause, null, info);
+        super(cause);
+        this.info = info;
     }
 
     public WorkItemHandlerRuntimeException(Throwable cause, String message, Map<String, Object> info) {
