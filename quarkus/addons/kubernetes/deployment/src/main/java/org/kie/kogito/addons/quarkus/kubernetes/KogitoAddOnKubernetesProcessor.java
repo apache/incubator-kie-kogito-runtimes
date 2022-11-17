@@ -15,18 +15,35 @@
  */
 package org.kie.kogito.addons.quarkus.kubernetes;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.jboss.logmanager.Level;
 import org.kie.kogito.addons.quarkus.k8s.EndpointCallerProducer;
 import org.kie.kogito.addons.quarkus.k8s.EndpointDiscoveryProducer;
 import org.kie.kogito.addons.quarkus.k8s.config.ServiceDiscoveryConfigBuilder;
+import org.kie.kogito.addons.quarkus.k8s.functions.knative.KnativeServiceRegistryProducer;
+import org.kie.kogito.addons.quarkus.k8s.functions.knative.KnativeServiceRegistryRecorder;
+import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
+import org.kie.kogito.quarkus.serverless.workflow.WorkflowCodeGenUtils;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.LogCategoryBuildItem;
 import io.quarkus.deployment.builditem.RunTimeConfigBuilderBuildItem;
+import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
+
+import static io.quarkus.deployment.annotations.ExecutionTime.RUNTIME_INIT;
 
 class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
 
@@ -61,5 +78,46 @@ class KogitoAddOnKubernetesProcessor extends AnyEngineKogitoAddOnProcessor {
     @BuildStep
     public void produceLoggingCategories(BuildProducer<LogCategoryBuildItem> categories) {
         categories.produce(new LogCategoryBuildItem("okhttp3.OkHttpClient", Level.WARN));
+    }
+
+    @BuildStep
+    AdditionalBeanBuildItem producer() {
+        return new AdditionalBeanBuildItem(KnativeServiceRegistryProducer.class);
+    }
+
+    @BuildStep
+    WorkflowsBuildItem workflowsBuildItem(KogitoBuildContextBuildItem contextBuildItem) {
+        Path[] paths = contextBuildItem.getKogitoBuildContext().getAppPaths().getPaths();
+
+        Stream<Path> workflowFiles = CollectedResourceProducer.fromPaths(paths).stream()
+                .map(collectedResource -> collectedResource.resource().getSourcePath())
+                .map(Paths::get);
+
+        return new WorkflowsBuildItem(WorkflowCodeGenUtils.getWorkflows(workflowFiles));
+    }
+
+    @BuildStep
+    @Record(RUNTIME_INIT)
+    public void registerKnativeServices(WorkflowsBuildItem workflowsBuildItem, KnativeServiceRegistryRecorder knativeServiceRegistryRecorder) {
+        List<String> operations = workflowsBuildItem.getWorkflows().stream()
+                .map(Workflow::getFunctions)
+                .filter(Objects::nonNull)
+                .flatMap(functions -> functions.getFunctionDefs().stream())
+                .filter(functionDefinition -> functionDefinition.getType() == FunctionDefinition.Type.CUSTOM)
+                .map(FunctionDefinition::getOperation)
+                .filter(operation -> operation.startsWith("knative:"))
+                .map(operation -> operation.replace("knative:", ""))
+                .map(operation -> {
+                    int index = operation.lastIndexOf('?');
+
+                    if (index >= 0) {
+                        return operation.substring(0, index);
+                    } else {
+                        return operation;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        knativeServiceRegistryRecorder.registerKnativeServices(operations);
     }
 }

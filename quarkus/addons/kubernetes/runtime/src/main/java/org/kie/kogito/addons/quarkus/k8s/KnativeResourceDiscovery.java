@@ -20,6 +20,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +31,14 @@ import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+@ApplicationScoped
 public class KnativeResourceDiscovery {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getName());
 
-    private KnativeClient knativeClient;
+    private final KnativeClient knativeClient;
 
+    @Inject
     public KnativeResourceDiscovery(final KubernetesClient kubernetesClient) {
         logger.debug("Trying to adapt kubernetes client to knative");
         this.knativeClient = kubernetesClient.adapt(KnativeClient.class);
@@ -52,5 +57,9 @@ public class KnativeResourceDiscovery {
             logger.error("Failed to query Knative service", e);
             return Optional.empty();
         }
+    }
+
+    public String getCurrentNamespace() {
+        return knativeClient.getNamespace();
     }
 }
