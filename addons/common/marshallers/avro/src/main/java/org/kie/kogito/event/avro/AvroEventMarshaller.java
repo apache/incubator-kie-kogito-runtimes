@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.process.core.context.exception;
+package org.kie.kogito.event.avro;
 
-public abstract class AbstractHierarchyExceptionPolicy implements ExceptionHandlerPolicy {
-    @Override
-    public boolean test(String errorCode, Throwable exception) {
-        boolean found = verify(errorCode, exception);
-        Throwable rootCause = exception.getCause();
-        while (!found && rootCause != null) {
-            found = verify(errorCode, rootCause);
-            rootCause = rootCause.getCause();
-        }
-        return found;
+import java.io.IOException;
+
+import org.kie.kogito.event.EventMarshaller;
+
+public class AvroEventMarshaller implements EventMarshaller<byte[]> {
+
+    private final AvroIO avroUtils;
+
+    public AvroEventMarshaller(AvroIO avroUtils) {
+        this.avroUtils = avroUtils;
     }
 
-    protected abstract boolean verify(String errorCode, Throwable exception);
-
+    @Override
+    public <T> byte[] marshall(T dataEvent) throws IOException {
+        return avroUtils.writeObject(dataEvent);
+    }
 }

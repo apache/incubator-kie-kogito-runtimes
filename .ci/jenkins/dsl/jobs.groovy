@@ -38,9 +38,26 @@ Map getMultijobPRConfig(Folder jobFolder) {
                     ADDITIONAL_TIMEOUT: jobFolder.isNative() || jobFolder.isMandrel() || jobFolder.isMandrelLTS() ? '360' : '210',
                 ]
             ], [
-                id: 'kogito-examples',
-                dependsOn: 'kogito-runtimes',
-                repository: 'kogito-examples'
+                id: 'kogito-quarkus-examples',
+                repository: 'kogito-examples',
+                dependsOn: 'kogito-apps',
+                env : [
+                    KOGITO_EXAMPLES_SUBFOLDER_POM: 'kogito-quarkus-examples/',
+                ],
+            ], [
+                id: 'kogito-springboot-examples',
+                repository: 'kogito-examples',
+                dependsOn: 'kogito-apps',
+                env : [
+                    KOGITO_EXAMPLES_SUBFOLDER_POM: 'kogito-springboot-examples/',
+                ],
+            ], [
+                id: 'serverless-workflow-examples',
+                repository: 'kogito-examples',
+                dependsOn: 'kogito-apps',
+                env : [
+                    KOGITO_EXAMPLES_SUBFOLDER_POM: 'serverless-workflow-examples/',
+                ],
             ]
         ],
     ]
@@ -57,14 +74,14 @@ createSetupBranchJob()
 setupSonarCloudJob()
 setupDeployJob(Folder.NIGHTLY)
 
-setupSpecificNightlyJob(Folder.NIGHTLY_NATIVE)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_NATIVE)
 
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
 
-setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL)
-setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
 
 // Jobs with integration branch
 setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN, true)
@@ -102,6 +119,11 @@ void setupSpecificNightlyJob(Folder specificNightlyFolder, boolean useIntegratio
             stringParam('GIT_AUTHOR_CREDS_ID', "${GIT_AUTHOR_CREDENTIALS_ID}", 'Set the Git author creds id')
         }
     }
+}
+
+void setupSpecificBuildChainNightlyJob(Folder specificNightlyFolder) {
+    String envName = specificNightlyFolder.environment.toName()
+    KogitoJobUtils.createNightlyBuildChainBuildAndTestJobForCurrentRepo(this, specificNightlyFolder, true, envName)
 }
 
 void setupSonarCloudJob() {

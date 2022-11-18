@@ -91,8 +91,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     /** Locator for errors. */
     private Locator locator;
 
-    // private Map repo;
-
     /** Stack of configurations. */
     private LinkedList configurationStack;
 
@@ -545,8 +543,6 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
 
         final Element element = this.document.createElement(tagName);
 
-        //final DefaultConfiguration config = new DefaultConfiguration( tagName );
-
         final int numAttrs = attrs.getLength();
 
         for (int i = 0; i < numAttrs; ++i) {
@@ -629,8 +625,7 @@ public class ExtensibleXmlParser extends DefaultHandler implements Parser {
     }
 
     public Object removeParent() {
-        Object parent = this.parents.removeLast();
-        return parent;
+        return this.parents.removeLast();
     }
 
     public Collection getParents() {
