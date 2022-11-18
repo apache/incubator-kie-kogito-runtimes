@@ -73,7 +73,6 @@
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
     <version.org.mongo>4.7.2</version.org.mongo>
     <version.org.mongo-image>4.2.3</version.org.mongo-image> <!-- Version 4.3.0 is not existing ... -->
-    <version.org.mongo.springboot>4.2.3</version.org.mongo.springboot> <!-- https://issues.redhat.com/browse/KOGITO-5031 -->
     <version.org.mozilla.rhino>1.7.13</version.org.mozilla.rhino>
 
     <version.org.assertj>3.21.0</version.org.assertj>
@@ -580,13 +579,6 @@
         <artifactId>json-schema-validator</artifactId>
         <version>${version.com.github.java-json-tools}</version>
         <scope>test</scope>
-      </dependency>
-
-      <!-- mongoDB related -->
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-sync</artifactId>
-        <version>${version.org.mongo}</version>
       </dependency>
 
       <!-- Process SVG -->
