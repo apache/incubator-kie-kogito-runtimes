@@ -15,19 +15,14 @@
  */
 package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
-import org.kie.kogito.quarkus.addons.common.deployment.RequireCapabilityKogitoAddOnProcessor;
+import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 
-class KogitoAddOnMessagingProcessor extends RequireCapabilityKogitoAddOnProcessor {
+public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor {
 
     private static final String FEATURE = "kogito-addon-messaging-extension";
-
-    KogitoAddOnMessagingProcessor() {
-        super(KogitoCapability.PROCESSES);
-    }
 
     @BuildStep
     FeatureBuildItem feature() {
