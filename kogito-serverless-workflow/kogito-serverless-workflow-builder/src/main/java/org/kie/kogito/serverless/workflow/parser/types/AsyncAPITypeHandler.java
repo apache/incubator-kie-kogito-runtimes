@@ -24,10 +24,13 @@ import org.kie.kogito.serverless.workflow.operationid.WorkflowOperationId;
 import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandler;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
+import org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils;
+import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
 import org.kie.kogito.serverless.workflow.utils.AsyncApiResolverHolder;
 
 import com.asyncapi.v2.model.AsyncAPI;
 import com.asyncapi.v2.model.channel.ChannelItem;
+import com.asyncapi.v2.model.channel.operation.Operation;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -50,18 +53,35 @@ public class AsyncAPITypeHandler implements FunctionTypeHandler {
             RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
             FunctionRef functionRef, VariableInfo varInfo) {
         WorkflowOperationId operationId = context.operationIdFactory().from(workflow, functionDef, Optional.of(context));
-        return AsyncApiResolverHolder.get().flatMap(resolver -> resolver.getAsyncAPI(operationId.getFileName())).flatMap(asyncAPI -> buildNode(asyncAPI, operationId.getOperation()))
+        return AsyncApiResolverHolder.get().flatMap(resolver -> resolver.getAsyncAPI(operationId.getFileName()))
+                .flatMap(asyncAPI -> buildNode(workflow, context, embeddedSubProcess, functionDef, functionRef, varInfo, asyncAPI, operationId.getOperation()))
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find an async api with operation " + operationId.getOperation()));
     }
 
-    private Optional<NodeFactory<?, ?>> buildNode(AsyncAPI asyncAPI, String operationId) {
+    private Optional<NodeFactory<?, ?>> buildNode(Workflow workflow, ParserContext context, RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
+            FunctionRef functionRef, VariableInfo varInfo, AsyncAPI asyncAPI, String operationId) {
         for (Entry<String, ChannelItem> entry : asyncAPI.getChannels().entrySet()) {
-            if (entry.getValue().getPublish() != null) {
-
-            } else if (entry.getValue().getSubscribe() != null) {
-
+            if (isOperation(entry.getValue().getPublish(), operationId)) {
+                return Optional.of(buildPublishNode(workflow, context, embeddedSubProcess, functionDef, functionRef, varInfo, entry));
+            } else if (isOperation(entry.getValue().getSubscribe(), operationId)) {
+                return Optional.of(buildSubscribeNode(context, embeddedSubProcess, functionDef, varInfo, entry));
             }
         }
         return Optional.empty();
+    }
+
+    private NodeFactory<?, ?> buildSubscribeNode(ParserContext context, RuleFlowNodeContainerFactory<?, ?> factory, FunctionDefinition functionDef, VariableInfo varInfo,
+            Entry<String, ChannelItem> entry) {
+        return NodeFactoryUtils.consumeMessageNode(factory.eventNode(context.newId()), functionDef.getName(), entry.getKey(), varInfo.getInputVar(), varInfo.getOutputVar());
+    }
+
+    private NodeFactory<?, ?> buildPublishNode(Workflow workflow, ParserContext context, RuleFlowNodeContainerFactory<?, ?> factory, FunctionDefinition functionDef, FunctionRef functionRef,
+            VariableInfo varInfo, Entry<String, ChannelItem> entry) {
+        return NodeFactoryUtils.sendEventNode(factory.actionNode(context.newId()).action(new ProduceEventActionSupplier(workflow, functionRef.getArguments().toString())), functionDef.getName(),
+                entry.getKey(), varInfo.getInputVar());
+    }
+
+    private boolean isOperation(Operation operation, String operationId) {
+        return operation != null && operationId.equals(operation.getOperationId());
     }
 }

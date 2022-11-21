@@ -28,4 +28,7 @@ public class AsyncApiResolverHolder {
     public static void set(AsyncApiResolver resolver) {
         instance = Optional.of(resolver);
     }
+
+    private AsyncApiResolverHolder() {
+    }
 }
