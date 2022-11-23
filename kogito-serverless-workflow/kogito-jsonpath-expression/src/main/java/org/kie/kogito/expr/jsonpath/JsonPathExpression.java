@@ -39,8 +39,7 @@ public class JsonPathExpression implements Expression {
 
     public JsonPathExpression(String expr) {
         expr = replaceMagic(expr, ExpressionHandlerUtils.CONST_MAGIC);
-        expr = replaceMagic(expr, ExpressionHandlerUtils.SECRET_MAGIC); // TODO Auto-generated method stub
-
+        expr = replaceMagic(expr, ExpressionHandlerUtils.SECRET_MAGIC);
         expr = replaceMagic(expr, ExpressionHandlerUtils.CONTEXT_MAGIC);
         this.expr = expr;
     }
