@@ -49,7 +49,7 @@
                         <configuration>
                             <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
                             <capabilities>
-                                <provides>kogito-predictions</provides>
+                                <provides>org.kie.kogito.predictions</provides>
                             </capabilities>
                         </configuration>
                     </execution>
