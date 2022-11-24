@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addon.cloudevents.quarkus.deployment;
 
-import org.kie.kogito.quarkus.addons.common.deployment.AnyEngineKogitoAddOnProcessor;
+package org.kie.kogito.test.quarkus;
 
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.builditem.FeatureBuildItem;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor {
+import javax.inject.Qualifier;
 
-    private static final String FEATURE = "kogito-addon-messaging-extension";
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-    @BuildStep
-    FeatureBuildItem feature() {
-        return new FeatureBuildItem(FEATURE);
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target({ FIELD })
+public @interface QuarkusTestProperty {
 
+    String name();
+
+    String defaultValue() default "";
 }
