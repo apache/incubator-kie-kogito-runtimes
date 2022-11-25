@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-quarkus-integration-tests</artifactId>
-    <version>1.31.0.Final</version>
+    <version>1.31.1-SNAPSHOT</version>
   </parent>
   <artifactId>integration-tests-quarkus-processes-reactive</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Processes :: Reactive</name>
