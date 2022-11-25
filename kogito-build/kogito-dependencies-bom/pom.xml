@@ -49,7 +49,7 @@
     <version.org.eclipse.microprofile.openapi>2.0.1</version.org.eclipse.microprofile.openapi>
     <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
 
-    <version.io.cloudevents>2.3.0</version.io.cloudevents>
+    <version.io.cloudevents>2.4.0</version.io.cloudevents>
     <version.io.fabric8.kubernetes-client>6.2.0</version.io.fabric8.kubernetes-client>
     <version.io.micrometer>1.9.5</version.io.micrometer>
     <version.io.serverlessworkflow>4.0.3.Final</version.io.serverlessworkflow>
