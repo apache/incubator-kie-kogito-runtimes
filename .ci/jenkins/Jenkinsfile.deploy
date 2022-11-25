@@ -12,7 +12,7 @@ pipeline {
     }
 
     tools {
-        maven 'kie-maven-3.8.6'
+        maven 'kie-maven-3.8.1'
         jdk 'kie-jdk11'
     }
 
@@ -100,6 +100,8 @@ pipeline {
                 script {
                     getMavenCommand()
                         .withProperty('maven.test.failure.ignore', true)
+                        // `-Dquarkus.bootstrap.effective-model-builder` is a temporary fix due to quarkus resolver on tests
+                        // https://github.com/quarkusio/quarkus/issues/23205
                         .withProperty('quarkus.bootstrap.effective-model-builder', true)
                         .skipTests(params.SKIP_TESTS)
                         .run('clean install')

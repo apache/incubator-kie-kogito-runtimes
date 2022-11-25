@@ -18,11 +18,11 @@ package org.kie.kogito.cloud.kubernetes.client;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.fabric8.kubernetes.client.BaseClient;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.base.OperationSupport;
-import io.fabric8.kubernetes.client.okhttp.OkHttpClientFactory;
 
 import okhttp3.OkHttpClient;
 
@@ -55,7 +55,7 @@ public final class KogitoKubeConfig {
     }
 
     public OkHttpClient getHttpClient() {
-        return new OkHttpClientFactory().createHttpClient(this.kubernetesClient.getConfiguration()).getOkHttpClient();
+        return ((BaseClient) this.kubernetesClient).getHttpClient();
     }
 
     public URL getMasterUrl() {
