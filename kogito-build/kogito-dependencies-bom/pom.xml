@@ -66,7 +66,7 @@
     <version.org.infinispan>13.0.2.Final</version.org.infinispan>
     <version.org.infinispan.protostream>4.4.1.Final</version.org.infinispan.protostream>
     <version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>2.0.1.Final</version.org.jboss.spec.javax.ws.rs.jboss-jaxrs-api_2.1_spec>
-    <version.org.jboss.resteasy>4.7.5.Final</version.org.jboss.resteasy>
+    <version.org.jboss.resteasy>6.2.1.Final</version.org.jboss.resteasy>
     <version.org.kafka.springboot>2.8.1</version.org.kafka.springboot>
     <version.org.keycloak>17.0.1</version.org.keycloak>
     <version.org.confluent.kafka>5.4.3</version.org.confluent.kafka>
