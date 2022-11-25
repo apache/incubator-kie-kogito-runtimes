@@ -102,7 +102,7 @@
     <version.formatter.plugin>2.13.0</version.formatter.plugin>
     <version.impsort.plugin>1.5.0</version.impsort.plugin>
     <version.kr.motd.maven.os>1.6.0</version.kr.motd.maven.os>
-    <version.license.plugin>4.0.rc2</version.license.plugin>
+    <version.license.plugin>4.2.rc3</version.license.plugin>
     <version.native2ascii.plugin>1.0-beta-1</version.native2ascii.plugin>
     <version.org.xolstice.maven.protobuf>0.6.1</version.org.xolstice.maven.protobuf>
     <version.plugin.plugin>3.6.0</version.plugin.plugin>
