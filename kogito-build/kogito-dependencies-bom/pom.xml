@@ -21,7 +21,7 @@
     <version.org.springframework.boot>2.5.12</version.org.springframework.boot>
 
     <!-- dependencies versions -->
-    <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
+    <version.com.fasterxml.jackson>2.14.1</version.com.fasterxml.jackson>
     <version.com.jayway.jsonpath>2.6.0</version.com.jayway.jsonpath>
     <version.io.quarkiverse.reactivemessaging.http>1.0.0</version.io.quarkiverse.reactivemessaging.http>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
