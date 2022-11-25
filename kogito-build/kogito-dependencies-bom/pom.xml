@@ -46,7 +46,7 @@
     <version.javax.inject>1</version.javax.inject>
     <version.javax.validation>2.0.1.Final</version.javax.validation>
     <version.javax.xml.bind>2.3.1</version.javax.xml.bind>
-    <version.org.eclipse.microprofile.openapi>2.0.1</version.org.eclipse.microprofile.openapi>
+    <version.org.eclipse.microprofile.openapi>3.1</version.org.eclipse.microprofile.openapi>
     <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
 
     <version.io.cloudevents>2.3.0</version.io.cloudevents>
