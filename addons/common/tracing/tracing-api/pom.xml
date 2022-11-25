@@ -13,7 +13,7 @@
   <name>Kogito :: Add-Ons :: Tracing :: API</name>
 
   <properties>
-    <version.org.mockito>3.4.6</version.org.mockito>
+    <version.org.mockito>4.9.0</version.org.mockito>
   </properties>
 
   <dependencies>
