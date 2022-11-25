@@ -60,7 +60,7 @@
     <version.io.smallrye.reactive.mutiny-vertx-web-client>2.27.0</version.io.smallrye.reactive.mutiny-vertx-web-client>
 
     <version.io.vertx>4.3.4</version.io.vertx>
-    <version.io.grpc>1.50.2</version.io.grpc>
+    <version.io.grpc>1.51.0</version.io.grpc>
 
     <version.io.swagger.parser.v3>2.0.26</version.io.swagger.parser.v3>
 
