@@ -26,13 +26,6 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.prometheus</groupId>
-        <artifactId>simpleclient_bom</artifactId>
-        <version>${version.io.prometheus.simpleclient}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${version.org.springframework.boot}</version>

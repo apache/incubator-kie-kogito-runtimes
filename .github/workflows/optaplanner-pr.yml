@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [11]
-        maven-version: ['3.8.6']
+        maven-version: ['3.8.1']
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
@@ -41,8 +41,6 @@ jobs:
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
       - name: Build Chain
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
-        env:
-          BUILD_MVN_OPTS: '-Dproductized'
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
           starting-project: kiegroup/optaplanner

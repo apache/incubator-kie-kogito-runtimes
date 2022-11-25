@@ -61,7 +61,7 @@ public class AbstractProcessInstanceTest {
 
     @SuppressWarnings("unchecked")
     @BeforeEach
-    void setup() {
+    private void setup() {
         MockitoAnnotations.initMocks(this);
 
         AbstractProcess<TestModel> process = mock(AbstractProcess.class);

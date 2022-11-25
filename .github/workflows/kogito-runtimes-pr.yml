@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [11]
-        maven-version: ['3.8.6']
+        maven-version: ['3.8.1']
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
@@ -35,8 +35,6 @@ jobs:
         uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@1.13.x
       - name: Java and Maven Setup
         uses: kiegroup/kogito-pipelines/.ci/actions/maven@1.13.x
-        env:
-          BUILD_MVN_OPTS: '-Dproductized'
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
