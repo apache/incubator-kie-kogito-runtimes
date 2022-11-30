@@ -26,11 +26,9 @@ import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils;
 import org.kie.kogito.serverless.workflow.suppliers.ProduceEventActionSupplier;
-import org.kie.kogito.serverless.workflow.utils.AsyncApiResolverHolder;
-
-import com.asyncapi.v2.model.AsyncAPI;
-import com.asyncapi.v2.model.channel.ChannelItem;
-import com.asyncapi.v2.model.channel.operation.Operation;
+import org.kie.kogito.serverless.workflow.utils.AsyncChannelInfo;
+import org.kie.kogito.serverless.workflow.utils.AsyncInfo;
+import org.kie.kogito.serverless.workflow.utils.AsyncInfoResolverHolder;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -53,35 +51,31 @@ public class AsyncAPITypeHandler implements FunctionTypeHandler {
             RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
             FunctionRef functionRef, VariableInfo varInfo) {
         WorkflowOperationId operationId = context.operationIdFactory().from(workflow, functionDef, Optional.of(context));
-        return AsyncApiResolverHolder.get().flatMap(resolver -> resolver.getAsyncAPI(operationId.getFileName()))
+        return AsyncInfoResolverHolder.get().flatMap(resolver -> resolver.getAsyncInfo(operationId.getFileName()))
                 .flatMap(asyncAPI -> buildNode(workflow, context, embeddedSubProcess, functionDef, functionRef, varInfo, asyncAPI, operationId.getOperation()))
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find an async api with operation " + operationId.getOperation()));
     }
 
     private Optional<NodeFactory<?, ?>> buildNode(Workflow workflow, ParserContext context, RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess, FunctionDefinition functionDef,
-            FunctionRef functionRef, VariableInfo varInfo, AsyncAPI asyncAPI, String operationId) {
-        for (Entry<String, ChannelItem> entry : asyncAPI.getChannels().entrySet()) {
-            if (isOperation(entry.getValue().getPublish(), operationId)) {
-                return Optional.of(buildPublishNode(workflow, context, embeddedSubProcess, functionDef, functionRef, varInfo, entry));
-            } else if (isOperation(entry.getValue().getSubscribe(), operationId)) {
-                return Optional.of(buildSubscribeNode(context, embeddedSubProcess, functionDef, varInfo, entry));
+            FunctionRef functionRef, VariableInfo varInfo, AsyncInfo asyncInfo, String operationId) {
+        for (Entry<String, AsyncChannelInfo> entry : asyncInfo.getOperation2Channel().entrySet()) {
+            if (operationId.equals(entry.getKey())) {
+                AsyncChannelInfo channelInfo = entry.getValue();
+                return Optional.of(channelInfo.isPublish() ? buildPublishNode(workflow, context, embeddedSubProcess, functionDef, functionRef, varInfo, channelInfo)
+                        : buildSubscribeNode(context, embeddedSubProcess, functionDef, varInfo, channelInfo));
             }
         }
         return Optional.empty();
     }
 
     private NodeFactory<?, ?> buildSubscribeNode(ParserContext context, RuleFlowNodeContainerFactory<?, ?> factory, FunctionDefinition functionDef, VariableInfo varInfo,
-            Entry<String, ChannelItem> entry) {
-        return NodeFactoryUtils.consumeMessageNode(factory.eventNode(context.newId()), functionDef.getName(), entry.getKey(), varInfo.getInputVar(), varInfo.getOutputVar());
+            AsyncChannelInfo entry) {
+        return NodeFactoryUtils.consumeMessageNode(factory.eventNode(context.newId()), functionDef.getName(), entry.getName(), varInfo.getInputVar(), varInfo.getOutputVar());
     }
 
     private NodeFactory<?, ?> buildPublishNode(Workflow workflow, ParserContext context, RuleFlowNodeContainerFactory<?, ?> factory, FunctionDefinition functionDef, FunctionRef functionRef,
-            VariableInfo varInfo, Entry<String, ChannelItem> entry) {
+            VariableInfo varInfo, AsyncChannelInfo entry) {
         return NodeFactoryUtils.sendEventNode(factory.actionNode(context.newId()).action(new ProduceEventActionSupplier(workflow, functionRef.getArguments().toString())), functionDef.getName(),
-                entry.getKey(), varInfo.getInputVar());
-    }
-
-    private boolean isOperation(Operation operation, String operationId) {
-        return operation != null && operationId.equals(operation.getOperationId());
+                entry.getName(), varInfo.getInputVar());
     }
 }

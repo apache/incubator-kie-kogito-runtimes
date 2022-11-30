@@ -17,18 +17,7 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.Optional;
 
-public class AsyncApiResolverHolder {
+public interface AsyncInfoResolver {
 
-    private static Optional<AsyncApiResolver> instance = Optional.empty();
-
-    public static Optional<AsyncApiResolver> get() {
-        return instance;
-    }
-
-    public static void set(AsyncApiResolver resolver) {
-        instance = Optional.of(resolver);
-    }
-
-    private AsyncApiResolverHolder() {
-    }
+    Optional<AsyncInfo> getAsyncInfo(String id);
 }
