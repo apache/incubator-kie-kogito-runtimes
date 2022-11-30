@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.quarkus.jbpm;
 
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -24,7 +25,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-@QuarkusTest
+@QuarkusIntegrationTest
 public class OrdersProcessIT {
 
     @Test
