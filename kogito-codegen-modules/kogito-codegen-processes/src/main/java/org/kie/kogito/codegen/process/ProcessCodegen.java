@@ -263,13 +263,10 @@ public class ProcessCodegen extends AbstractGenerator {
         this.processes = new HashMap<>();
         for (GeneratedInfo<KogitoWorkflowProcess> process : processes) {
             if (this.processes.containsKey(process.info().getId())) {
-                String extension = process.info().getType().equalsIgnoreCase("bpmn") ? "bpmn" : "sw";
-                String type = extension.equals("sw") ? "workflow" : "process";
                 throw new ProcessCodegenException(
-                        format("Duplicated %s with id %s found in the project, please review .%s files",
-                                type,
+                        format("Duplicated item found with id %s. Please review the .%s files",
                                 process.info().getId(),
-                                extension));
+                                process.info().getType().toLowerCase()));
             }
             generatedFiles.addAll(process.files());
             this.processes.put(process.info().getId(), process.info());
