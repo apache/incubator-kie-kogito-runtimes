@@ -65,11 +65,11 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             for (Action action : actions) {
                 Sleep sleep = action.getSleep();
                 if (sleep != null && sleep.getBefore() != null && !sleep.getBefore().isEmpty()) {
-                    currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep));
+                    currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep.getBefore()));
                 }
                 currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar, shouldMerge));
                 if (sleep != null && sleep.getAfter() != null && !sleep.getAfter().isEmpty()) {
-                    currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep));
+                    currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep.getAfter()));
                 }
             }
             connect(currentNode, embeddedSubProcess.endNode(parserContext.newId()).name("EmbeddedEnd").terminate(true)).done();
@@ -112,8 +112,7 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
         }
     }
 
-    private TimerNodeFactory<?> createTimerNode(RuleFlowNodeContainerFactory<?, ?> factory, Sleep sleep) {
-        String duration = sleep.getBefore() == null ? sleep.getAfter() : sleep.getBefore();
+    private TimerNodeFactory<?> createTimerNode(RuleFlowNodeContainerFactory<?, ?> factory, String duration) {
         return timerNode(factory.timerNode(parserContext.newId()), duration);
     }
 

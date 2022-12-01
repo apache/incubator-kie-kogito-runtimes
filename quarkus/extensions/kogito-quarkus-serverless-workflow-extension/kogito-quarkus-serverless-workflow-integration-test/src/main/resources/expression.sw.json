@@ -53,7 +53,10 @@
       "type": "operation",
       "actions": [
        {
-          "name": "maxAction",
+         "name": "maxAction",
+         "sleep" : {
+           "before" : "PT1S"
+          },
           "functionRef": {
             "refName": "max"
           },
