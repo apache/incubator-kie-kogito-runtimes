@@ -31,6 +31,7 @@ public class HttpRecipient extends Recipient<byte[]> {
     private Map<String, String> queryParams;
 
     public HttpRecipient() {
+        // marshalling constructor.
         this.headers = new HashMap<>();
         this.queryParams = new HashMap<>();
     }
@@ -77,12 +78,22 @@ public class HttpRecipient extends Recipient<byte[]> {
         this.headers = headers != null ? headers : new HashMap<>();
     }
 
+    public HttpRecipient addHeader(String name, String value) {
+        headers.put(name, value);
+        return this;
+    }
+
     public Map<String, String> getQueryParams() {
         return queryParams;
     }
 
     public void setQueryParams(Map<String, String> queryParams) {
         this.queryParams = queryParams != null ? queryParams : new HashMap<>();
+    }
+
+    public HttpRecipient addQueryParam(String name, String value) {
+        queryParams.put(name, value);
+        return this;
     }
 
     @Override
@@ -93,5 +104,47 @@ public class HttpRecipient extends Recipient<byte[]> {
                 ", headers=" + headers +
                 ", queryParams=" + queryParams +
                 "} " + super.toString();
+    }
+
+    public static Builder builder() {
+        return new Builder(new HttpRecipient());
+    }
+
+    public static class Builder {
+
+        private final HttpRecipient recipient;
+
+        private Builder(HttpRecipient recipient) {
+            this.recipient = recipient;
+        }
+
+        public Builder payload(byte[] payload) {
+            recipient.setPayload(payload);
+            return this;
+        }
+
+        public Builder url(String url) {
+            recipient.setUrl(url);
+            return this;
+        }
+
+        public Builder method(String method) {
+            recipient.setMethod(method);
+            return this;
+        }
+
+        public Builder header(String name, String value) {
+            recipient.addHeader(name, value);
+            return this;
+        }
+
+        public Builder queryParam(String name, String value) {
+            recipient.addQueryParam(name, value);
+            return this;
+        }
+
+        public HttpRecipient build() {
+            return recipient;
+        }
     }
 }

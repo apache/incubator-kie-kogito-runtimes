@@ -21,13 +21,14 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(description = "The retry configuration establishes the number of times a failing Job execution must be retried before it’s considered as FAILED")
 public class Retry {
 
-    private int maxRetries;
-    private long delay;
-    private TemporalUnit delayUnit;
-    private long maxDuration;
-    private TemporalUnit durationUnit;
+    private int maxRetries = 3;
+    private long delay = 0;
+    private TemporalUnit delayUnit = TemporalUnit.MILLIS;
+    private long maxDuration = 180000L;
+    private TemporalUnit durationUnit = TemporalUnit.MILLIS;
 
     public Retry() {
+        // marshalling constructor.
     }
 
     public int getMaxRetries() {
@@ -79,5 +80,47 @@ public class Retry {
                 ", maxDuration=" + maxDuration +
                 ", durationUnit='" + durationUnit + '\'' +
                 '}';
+    }
+
+    public static Builder builder() {
+        return new Builder(new Retry());
+    }
+
+    public static class Builder {
+
+        private final Retry retry;
+
+        private Builder(Retry retry) {
+            this.retry = retry;
+        }
+
+        public Builder maxRetries(int maxRetries) {
+            retry.setMaxRetries(maxRetries);
+            return this;
+        }
+
+        public Builder delay(long delay) {
+            retry.setDelay(delay);
+            return this;
+        }
+
+        public Builder delayUnit(TemporalUnit delayUnit) {
+            retry.setDelayUnit(delayUnit);
+            return this;
+        }
+
+        public Builder maxDuration(long maxDuration) {
+            retry.setMaxDuration(maxDuration);
+            return this;
+        }
+
+        public Builder durationUnit(TemporalUnit durationUnit) {
+            retry.setDelayUnit(durationUnit);
+            return this;
+        }
+
+        public Retry build() {
+            return retry;
+        }
     }
 }

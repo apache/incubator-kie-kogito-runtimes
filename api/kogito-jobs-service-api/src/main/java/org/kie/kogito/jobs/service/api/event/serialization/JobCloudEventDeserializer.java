@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@ public class JobCloudEventDeserializer {
 
     public JobCloudEvent<?> deserialize(CloudEvent cloudEvent) {
         try {
+            if (cloudEvent.getSpecVersion() != JobCloudEvent.SPEC_VERSION) {
+                throw new DeserializationException("JobCloudEvents are expected to be in the CloudEvent specversion: " + JobCloudEvent.SPEC_VERSION);
+            }
             CloudEventData cloudEventData = Objects.requireNonNull(cloudEvent.getData(), "JobCloudEvent data field must not be null");
             if (cloudEvent.getType().equals(CreateJobEvent.TYPE)) {
                 Job job = objectMapper.readValue(cloudEventData.toBytes(), Job.class);

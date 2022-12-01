@@ -29,11 +29,15 @@ public class Job {
     }
 
     private String id;
-    private String businessKey;
+    private String correlationId;
     private State state;
     private Schedule schedule;
     private Retry retry;
-    private Recipient recipient;
+    private Recipient<?> recipient;
+
+    public Job() {
+        // marshalling constructor.
+    }
 
     public String getId() {
         return id;
@@ -43,12 +47,12 @@ public class Job {
         this.id = id;
     }
 
-    public String getBusinessKey() {
-        return businessKey;
+    public String getCorrelationId() {
+        return correlationId;
     }
 
-    public void setBusinessKey(String businessKey) {
-        this.businessKey = businessKey;
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     public State getState() {
@@ -75,11 +79,11 @@ public class Job {
         this.retry = retry;
     }
 
-    public Recipient getRecipient() {
+    public Recipient<?> getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(Recipient recipient) {
+    public void setRecipient(Recipient<?> recipient) {
         this.recipient = recipient;
     }
 
@@ -87,11 +91,58 @@ public class Job {
     public String toString() {
         return "Job{" +
                 "id='" + id + '\'' +
-                ", businessKey='" + businessKey + '\'' +
+                ", correlationId='" + correlationId + '\'' +
                 ", state=" + state +
                 ", schedule=" + schedule +
                 ", retry=" + retry +
                 ", recipient=" + recipient +
                 '}';
+    }
+
+    public static Builder builder() {
+        return new Builder(new Job());
+    }
+
+    public static class Builder {
+
+        private final Job job;
+
+        private Builder(Job job) {
+            this.job = job;
+        }
+
+        public Builder id(String id) {
+            job.setId(id);
+            return this;
+        }
+
+        public Builder correlationId(String correlationId) {
+            job.setCorrelationId(correlationId);
+            return this;
+        }
+
+        public Builder state(State state) {
+            job.setState(state);
+            return this;
+        }
+
+        public Builder schedule(Schedule schedule) {
+            job.setSchedule(schedule);
+            return this;
+        }
+
+        public Builder retry(Retry retry) {
+            job.setRetry(retry);
+            return this;
+        }
+
+        public Builder recipient(Recipient<?> recipient) {
+            job.setRecipient(recipient);
+            return this;
+        }
+
+        public Job build() {
+            return job;
+        }
     }
 }

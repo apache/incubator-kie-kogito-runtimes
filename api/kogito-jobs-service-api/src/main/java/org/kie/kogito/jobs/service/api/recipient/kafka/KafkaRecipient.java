@@ -30,6 +30,7 @@ public class KafkaRecipient extends Recipient<byte[]> {
     private Map<String, String> headers;
 
     public KafkaRecipient() {
+        // marshalling constructor.
         this.headers = new HashMap<>();
     }
 
@@ -67,6 +68,11 @@ public class KafkaRecipient extends Recipient<byte[]> {
         this.headers = headers != null ? headers : new HashMap<>();
     }
 
+    public KafkaRecipient addHeader(String name, String value) {
+        headers.put(name, value);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "KafkaRecipient{" +
@@ -74,5 +80,42 @@ public class KafkaRecipient extends Recipient<byte[]> {
                 ", topicName='" + topicName + '\'' +
                 ", headers=" + headers +
                 "} " + super.toString();
+    }
+
+    public static Builder builder() {
+        return new Builder(new KafkaRecipient());
+    }
+
+    public static class Builder {
+
+        private final KafkaRecipient recipient;
+
+        private Builder(KafkaRecipient recipient) {
+            this.recipient = recipient;
+        }
+
+        public Builder payload(byte[] payload) {
+            recipient.setPayload(payload);
+            return this;
+        }
+
+        public Builder bootstrapServers(String bootstrapServers) {
+            recipient.setBootstrapServers(bootstrapServers);
+            return this;
+        }
+
+        public Builder topicName(String topicName) {
+            recipient.setTopicName(topicName);
+            return this;
+        }
+
+        public Builder header(String name, String value) {
+            recipient.addHeader(name, value);
+            return this;
+        }
+
+        public KafkaRecipient build() {
+            return recipient;
+        }
     }
 }

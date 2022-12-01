@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDescriptorRegistry<T extends Descriptor> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RecipientDescriptorRegistry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDescriptorRegistry.class);
     protected final LinkedHashSet<T> descriptors = new LinkedHashSet<>();
     protected final Class<T> clazz;
 

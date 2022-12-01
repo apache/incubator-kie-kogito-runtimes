@@ -13,15 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.kie.kogito.jobs.service.api.event.serialization;
 
-public class SerializationException extends RuntimeException {
+import java.io.IOException;
 
-    public SerializationException(String message) {
-        super(message);
-    }
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
-    public SerializationException(String message, Throwable cause) {
-        super(message, cause);
+import io.cloudevents.SpecVersion;
+
+public class SpecVersionDeserializer extends JsonDeserializer<SpecVersion> {
+
+    @Override
+    public SpecVersion deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        return SpecVersion.parse(jsonParser.getText());
     }
 }

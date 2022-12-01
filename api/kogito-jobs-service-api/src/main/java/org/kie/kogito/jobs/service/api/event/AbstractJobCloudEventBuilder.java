@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.kie.kogito.jobs.service.api.event;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import io.cloudevents.CloudEvent;
+import io.cloudevents.SpecVersion;
 
 public abstract class AbstractJobCloudEventBuilder<B extends AbstractJobCloudEventBuilder<B, T, E>, T, E extends JobCloudEvent<T>> {
 
@@ -28,14 +29,9 @@ public abstract class AbstractJobCloudEventBuilder<B extends AbstractJobCloudEve
 
     protected AbstractJobCloudEventBuilder(E event) {
         this.event = event;
-        this.event.setSpecVersion(JobCloudEvent.SPEC_VERSION);
+        this.event.setSpecVersion(SpecVersion.V1);
         this.event.setId(UUID.randomUUID().toString());
-        this.event.setTime(ZonedDateTime.now());
-    }
-
-    public B specVersion(String specVersion) {
-        event.setSpecVersion(specVersion);
-        return cast();
+        this.event.setTime(OffsetDateTime.now());
     }
 
     public B id(String id) {
@@ -53,7 +49,7 @@ public abstract class AbstractJobCloudEventBuilder<B extends AbstractJobCloudEve
         return cast();
     }
 
-    public B time(ZonedDateTime time) {
+    public B time(OffsetDateTime time) {
         event.setTime(time);
         return cast();
     }
@@ -68,7 +64,7 @@ public abstract class AbstractJobCloudEventBuilder<B extends AbstractJobCloudEve
         return cast();
     }
 
-    public B dataSchema(String dataSchema) {
+    public B dataSchema(URI dataSchema) {
         event.setDataSchema(dataSchema);
         return cast();
     }
@@ -80,13 +76,12 @@ public abstract class AbstractJobCloudEventBuilder<B extends AbstractJobCloudEve
 
     @SuppressWarnings("squid:S2583")
     public B withValuesFrom(CloudEvent cloudEvent) {
-        return specVersion(cloudEvent.getSpecVersion().toString())
-                .id(cloudEvent.getId())
+        return id(cloudEvent.getId())
                 .source(cloudEvent.getSource())
                 .type(cloudEvent.getType())
-                .time(cloudEvent.getTime() != null ? cloudEvent.getTime().toZonedDateTime() : null)
+                .time(cloudEvent.getTime() != null ? cloudEvent.getTime() : null)
                 .dataContentType(cloudEvent.getDataContentType())
-                .dataSchema(cloudEvent.getDataSchema() != null ? cloudEvent.getDataSchema().toString() : null)
+                .dataSchema(cloudEvent.getDataSchema() != null ? cloudEvent.getDataSchema() : null)
                 .subject(cloudEvent.getSubject());
     }
 

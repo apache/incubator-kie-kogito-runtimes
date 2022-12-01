@@ -42,6 +42,7 @@ public class CronSchedule extends Schedule {
     }
 
     public CronSchedule() {
+        // marshalling constructor.
     }
 
     public CronSchedule(String expression, String timeZone) {
@@ -55,5 +56,32 @@ public class CronSchedule extends Schedule {
                 "expression='" + expression + '\'' +
                 ", timeZone='" + timeZone + '\'' +
                 '}';
+    }
+
+    public static Builder builder() {
+        return new Builder(new CronSchedule());
+    }
+
+    public static class Builder {
+
+        private final CronSchedule schedule;
+
+        private Builder(CronSchedule schedule) {
+            this.schedule = schedule;
+        }
+
+        public Builder expression(String expression) {
+            schedule.setExpression(expression);
+            return this;
+        }
+
+        public Builder timeZone(String timeZone) {
+            schedule.setTimeZone(timeZone);
+            return this;
+        }
+
+        public CronSchedule build() {
+            return schedule;
+        }
     }
 }

@@ -19,23 +19,23 @@ package org.kie.kogito.jobs.service.api;
 public class JobLookupId {
 
     private String id;
-    private String businessKey;
+    private String correlationId;
 
     private JobLookupId() {
         // marshalling constructor.
     }
 
-    private JobLookupId(String id, String businessKey) {
+    private JobLookupId(String id, String correlationId) {
         this.id = id;
-        this.businessKey = businessKey;
+        this.correlationId = correlationId;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getBusinessKey() {
-        return businessKey;
+    public String getCorrelationId() {
+        return correlationId;
     }
 
     public static JobLookupId fromId(String id) {

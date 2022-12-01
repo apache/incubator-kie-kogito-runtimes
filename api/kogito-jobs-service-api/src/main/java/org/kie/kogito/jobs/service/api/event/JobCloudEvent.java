@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,45 @@
 package org.kie.kogito.jobs.service.api.event;
 
 import java.net.URI;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+
+import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionDeserializer;
+import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionSerializer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-public abstract class JobCloudEvent<T> {
+import io.cloudevents.CloudEventContext;
+import io.cloudevents.SpecVersion;
 
-    static final String SPEC_VERSION = "1.0";
+import static io.cloudevents.core.v1.CloudEventV1.DATACONTENTTYPE;
+import static io.cloudevents.core.v1.CloudEventV1.DATASCHEMA;
+import static io.cloudevents.core.v1.CloudEventV1.ID;
+import static io.cloudevents.core.v1.CloudEventV1.SOURCE;
+import static io.cloudevents.core.v1.CloudEventV1.SPECVERSION;
+import static io.cloudevents.core.v1.CloudEventV1.SUBJECT;
+import static io.cloudevents.core.v1.CloudEventV1.TIME;
+import static io.cloudevents.core.v1.CloudEventV1.TYPE;
+
+public abstract class JobCloudEvent<T> implements CloudEventContext {
+
+    public static final SpecVersion SPEC_VERSION = SpecVersion.V1;
+
+    @JsonDeserialize(using = SpecVersionDeserializer.class)
+    @JsonSerialize(using = SpecVersionSerializer.class)
     @JsonProperty("specversion")
-    private String specVersion;
+    private SpecVersion specVersion = SPEC_VERSION;
     private String id;
     private URI source;
     private String type;
-    private ZonedDateTime time;
+    private OffsetDateTime time;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String subject;
     @JsonProperty("datacontenttype")
@@ -38,7 +62,8 @@ public abstract class JobCloudEvent<T> {
     private String dataContentType;
     @JsonProperty("dataschema")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private String dataSchema;
+    private URI dataSchema;
+    private Map<String, Object> extensions = new HashMap<>();
 
     private T data;
 
@@ -46,23 +71,28 @@ public abstract class JobCloudEvent<T> {
         // marshalling constructor.
     }
 
+    @Override
     public URI getSource() {
         return source;
     }
 
-    public String getSpecVersion() {
+    @Override
+    public SpecVersion getSpecVersion() {
         return specVersion;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
-    public ZonedDateTime getTime() {
+    @Override
+    public OffsetDateTime getTime() {
         return time;
     }
 
@@ -70,19 +100,55 @@ public abstract class JobCloudEvent<T> {
         return data;
     }
 
+    @Override
     public String getDataContentType() {
         return dataContentType;
     }
 
-    public String getDataSchema() {
+    @Override
+    public URI getDataSchema() {
         return dataSchema;
     }
 
+    @Override
     public String getSubject() {
         return subject;
     }
 
-    public void setSpecVersion(String specVersion) {
+    @Override
+    public Object getAttribute(String attributeName) throws IllegalArgumentException {
+        switch (attributeName) {
+            case SPECVERSION:
+                return this.specVersion;
+            case ID:
+                return this.id;
+            case SOURCE:
+                return this.source;
+            case TYPE:
+                return this.type;
+            case DATACONTENTTYPE:
+                return this.dataContentType;
+            case DATASCHEMA:
+                return this.dataSchema;
+            case SUBJECT:
+                return this.subject;
+            case TIME:
+                return this.time;
+        }
+        throw new IllegalArgumentException("Spec version v1 doesn't have attribute named " + attributeName);
+    }
+
+    @Override
+    public Object getExtension(String extensionName) {
+        return null;
+    }
+
+    @Override
+    public Set<String> getExtensionNames() {
+        return Collections.emptySet();
+    }
+
+    public void setSpecVersion(SpecVersion specVersion) {
         this.specVersion = specVersion;
     }
 
@@ -98,7 +164,7 @@ public abstract class JobCloudEvent<T> {
         this.type = type;
     }
 
-    public void setTime(ZonedDateTime time) {
+    public void setTime(OffsetDateTime time) {
         this.time = time;
     }
 
@@ -110,7 +176,7 @@ public abstract class JobCloudEvent<T> {
         this.dataContentType = dataContentType;
     }
 
-    public void setDataSchema(String dataSchema) {
+    public void setDataSchema(URI dataSchema) {
         this.dataSchema = dataSchema;
     }
 
@@ -128,14 +194,15 @@ public abstract class JobCloudEvent<T> {
     @Override
     public String toString() {
         return "JobCloudEvent{" +
-                "specVersion='" + specVersion + '\'' +
+                "specVersion=" + specVersion +
                 ", id='" + id + '\'' +
                 ", source=" + source +
                 ", type='" + type + '\'' +
                 ", time=" + time +
                 ", subject='" + subject + '\'' +
                 ", dataContentType='" + dataContentType + '\'' +
-                ", dataSchema='" + dataSchema + '\'' +
+                ", dataSchema=" + dataSchema +
+                ", extensions=" + extensions +
                 ", data=" + data +
                 '}';
     }

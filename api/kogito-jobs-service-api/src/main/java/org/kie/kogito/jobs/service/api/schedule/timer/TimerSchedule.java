@@ -24,11 +24,12 @@ import org.kie.kogito.jobs.service.api.TemporalUnit;
 public class TimerSchedule extends Schedule {
 
     private String startTime;
-    private int repeatCount;
-    private long delay;
-    private TemporalUnit delayUnit;
+    private int repeatCount = 0;
+    private long delay = 0;
+    private TemporalUnit delayUnit = TemporalUnit.MILLIS;
 
     public TimerSchedule() {
+        // marshalling constructor.
     }
 
     public TimerSchedule(String startTime, int repeatCount, long delay, TemporalUnit delayUnit) {
@@ -78,5 +79,42 @@ public class TimerSchedule extends Schedule {
                 ", delay=" + delay +
                 ", delayUnit='" + delayUnit + '\'' +
                 '}';
+    }
+
+    public static Builder builder() {
+        return new Builder(new TimerSchedule());
+    }
+
+    public static class Builder {
+
+        private final TimerSchedule schedule;
+
+        private Builder(TimerSchedule schedule) {
+            this.schedule = schedule;
+        }
+
+        public Builder startTime(String startTime) {
+            schedule.setStartTime(startTime);
+            return this;
+        }
+
+        public Builder repeatCount(int repeatCount) {
+            schedule.setRepeatCount(repeatCount);
+            return this;
+        }
+
+        public Builder delay(long delay) {
+            schedule.setDelay(delay);
+            return this;
+        }
+
+        public Builder delayUnit(TemporalUnit delayUnit) {
+            schedule.setDelayUnit(delayUnit);
+            return this;
+        }
+
+        public TimerSchedule build() {
+            return schedule;
+        }
     }
 }

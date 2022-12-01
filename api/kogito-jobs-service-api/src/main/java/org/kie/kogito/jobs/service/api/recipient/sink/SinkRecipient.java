@@ -24,15 +24,21 @@ import io.cloudevents.CloudEvent;
 @Schema(description = "Recipient definition to execute a job with a cloud event on a knative sink", allOf = { Recipient.class })
 public class SinkRecipient extends Recipient<CloudEvent> {
 
+    public enum ContentMode {
+        BINARY,
+        STRUCTURED
+    }
+
     private String sinkUrl;
-    private String contentMode;
+    private ContentMode contentMode;
 
     public SinkRecipient() {
+        // marshalling constructor.
     }
 
     public SinkRecipient(CloudEvent payload,
             String sinkUrl,
-            String contentMode) {
+            ContentMode contentMode) {
         super(payload);
         this.sinkUrl = sinkUrl;
         this.contentMode = contentMode;
@@ -46,11 +52,11 @@ public class SinkRecipient extends Recipient<CloudEvent> {
         this.sinkUrl = sinkUrl;
     }
 
-    public String getContentMode() {
+    public ContentMode getContentMode() {
         return contentMode;
     }
 
-    public void setContentMode(String contentMode) {
+    public void setContentMode(ContentMode contentMode) {
         this.contentMode = contentMode;
     }
 
@@ -60,5 +66,37 @@ public class SinkRecipient extends Recipient<CloudEvent> {
                 "sinkUrl='" + sinkUrl + '\'' +
                 ", contentMode='" + contentMode + '\'' +
                 "} " + super.toString();
+    }
+
+    public static Builder builder() {
+        return new Builder(new SinkRecipient());
+    }
+
+    public static class Builder {
+
+        private final SinkRecipient recipient;
+
+        private Builder(SinkRecipient recipient) {
+            this.recipient = recipient;
+        }
+
+        public Builder payload(CloudEvent payload) {
+            recipient.setPayload(payload);
+            return this;
+        }
+
+        public Builder sinkUrl(String sinkUrl) {
+            recipient.setSinkUrl(sinkUrl);
+            return this;
+        }
+
+        public Builder contentMode(ContentMode contentMode) {
+            recipient.setContentMode(contentMode);
+            return this;
+        }
+
+        public SinkRecipient build() {
+            return recipient;
+        }
     }
 }

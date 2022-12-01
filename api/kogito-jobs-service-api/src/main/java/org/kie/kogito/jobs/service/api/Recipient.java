@@ -31,6 +31,7 @@ public abstract class Recipient<T> {
     protected T payload;
 
     public Recipient() {
+        // marshalling constructor.
     }
 
     public Recipient(T payload) {
