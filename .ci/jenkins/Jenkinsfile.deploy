@@ -268,7 +268,7 @@ String getBotBranch() {
 }
 
 String getBotAuthor() {
-    return env.GIT_AUTHOR_BOT
+    return env.GIT_BOT_AUTHOR
 }
 
 String getBotAuthorCredsID() {
