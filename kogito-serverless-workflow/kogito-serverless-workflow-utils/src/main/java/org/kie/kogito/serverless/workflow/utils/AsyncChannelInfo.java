@@ -35,6 +35,6 @@ public class AsyncChannelInfo {
 
     @Override
     public String toString() {
-        return "AsyncChannelInfo [name=" + name + ", isSubcribe=" + isPublish + "]";
+        return "AsyncChannelInfo [name=" + name + ", isPublish=" + isPublish + "]";
     }
 }
