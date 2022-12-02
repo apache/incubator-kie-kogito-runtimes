@@ -15,10 +15,9 @@
  */
 package org.kie.kogito.quarkus.jbpm;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.http.ContentType;
 
 import static io.restassured.RestAssured.given;
