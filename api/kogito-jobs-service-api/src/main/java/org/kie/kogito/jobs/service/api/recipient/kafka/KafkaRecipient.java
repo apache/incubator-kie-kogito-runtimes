@@ -22,11 +22,14 @@ import java.util.Map;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.kie.kogito.jobs.service.api.Recipient;
 
-@Schema(description = "Recipient definition to execute a job with a kafka message", allOf = { Recipient.class })
+@Schema(description = "Recipient definition that delivers a kafka message that contains the configured \"payload\".", allOf = { Recipient.class })
 public class KafkaRecipient extends Recipient<byte[]> {
 
+    @Schema(description = "A comma-separated list of host:port to use to establish the connection to the kafka cluster.", required = true)
     private String bootstrapServers;
+    @Schema(description = "Topic name for the message delivery.", required = true)
     private String topicName;
+    @Schema(description = "Headers to send with the kafka message.")
     private Map<String, String> headers;
 
     public KafkaRecipient() {

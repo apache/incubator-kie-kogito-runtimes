@@ -21,7 +21,7 @@ import org.kie.kogito.jobs.service.api.Recipient;
 
 import io.cloudevents.CloudEvent;
 
-@Schema(description = "Recipient definition to execute a job with a cloud event on a knative sink", allOf = { Recipient.class })
+@Schema(description = "Recipient definition that delivers a cloud event to a knative sink.", allOf = { Recipient.class })
 public class SinkRecipient extends Recipient<CloudEvent> {
 
     public enum ContentMode {
@@ -29,8 +29,10 @@ public class SinkRecipient extends Recipient<CloudEvent> {
         STRUCTURED
     }
 
+    @Schema(description = "Url of the knative sink that will receive the cloud event.", required = true)
     private String sinkUrl;
-    private ContentMode contentMode;
+    @Schema(description = "Content mode for the event transfer to knative sink.", required = true, defaultValue = "BINARY")
+    private ContentMode contentMode = ContentMode.BINARY;
 
     public SinkRecipient() {
         // marshalling constructor.

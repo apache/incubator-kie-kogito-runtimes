@@ -18,13 +18,19 @@ package org.kie.kogito.jobs.service.api;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-@Schema(description = "The retry configuration establishes the number of times a failing Job execution must be retried before it’s considered as FAILED")
+@Schema(description = "The retry configuration establishes the number of times a failing job execution must be retried before it’s considered as FAILED.")
 public class Retry {
 
+    @Schema(description = "Number of retries to execute in case of failures.", defaultValue = "3")
     private int maxRetries = 3;
+    @Schema(description = "Time delay between the retries.", defaultValue = "0")
     private long delay = 0;
+    @Schema(description = "Time unit for the delay between retries.", defaultValue = "MILLIS")
     private TemporalUnit delayUnit = TemporalUnit.MILLIS;
+    @Schema(description = "Maximum amount of time to continue retrying if no successful execution was produced.", defaultValue = "180000")
     private long maxDuration = 180000L;
+    @Schema(description = "Time unit for the max duration time.", defaultValue = "MILLIS")
+
     private TemporalUnit durationUnit = TemporalUnit.MILLIS;
 
     public Retry() {

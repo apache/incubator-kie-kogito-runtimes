@@ -24,10 +24,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @Schema(discriminatorProperty = "type",
         properties = { @SchemaProperty(name = "type", type = SchemaType.STRING) },
-        requiredProperties = { "type" })
+        requiredProperties = { "type" },
+        description = "Generic definition for a Recipient, users must provide instances of subclasses of this schema to create a job.")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public abstract class Recipient<T> {
 
+    @Schema(description = "This value represents the information that is sent to the recipient entity at the job execution, and might vary depending on the particular recipient subclass.")
     protected T payload;
 
     public Recipient() {

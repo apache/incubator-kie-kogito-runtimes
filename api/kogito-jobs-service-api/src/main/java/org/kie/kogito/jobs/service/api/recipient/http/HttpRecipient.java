@@ -22,12 +22,17 @@ import java.util.Map;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.kie.kogito.jobs.service.api.Recipient;
 
-@Schema(description = "Recipient definition to execute a job with a http request", allOf = { Recipient.class })
+@Schema(description = "Recipient definition that executes a http request on a given url and sends the configured \"payload\" as the body.", allOf = { Recipient.class })
 public class HttpRecipient extends Recipient<byte[]> {
 
+    @Schema(description = "Url of the recipient that will receive the request.", required = true)
     private String url;
-    private String method;
+    @Schema(description = "Http method to use for the request.", required = true, defaultValue = "POST",
+            enumeration = { "POST", "GET", "HEAD", "PUT", "DELETE", "PATCH", "OPTIONS" })
+    private String method = "POST";
+    @Schema(description = "Http headers to send with the request.")
     private Map<String, String> headers;
+    @Schema(description = "Http query parameters to send with the request.")
     private Map<String, String> queryParams;
 
     public HttpRecipient() {

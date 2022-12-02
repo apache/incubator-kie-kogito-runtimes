@@ -18,21 +18,27 @@ package org.kie.kogito.jobs.service.api;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-@Schema(description = "Defines a job that can be managed by the Jobs Service")
+@Schema(description = "Defines a job that can be managed by the jobs service.")
 public class Job {
 
-    @Schema(description = "Available states for a Job")
+    @Schema(description = "Available states for a Job.")
     public enum State {
         TBD1,
         TBD2,
         TBD3
     }
 
+    @Schema(description = "The unique identifier of the job in the system, this value is set by the jobs service.")
     private String id;
+    @Schema(description = "Logical user provided identifier of the job in the system.")
     private String correlationId;
+    @Schema(description = "The job state, this value is set and managed by the jobs service.")
     private State state;
+    @Schema(description = "This value represents the job triggering periodicity.", required = true)
     private Schedule schedule;
+    @Schema(description = "This value establishes the retries configuration in cases where job execution fails.")
     private Retry retry;
+    @Schema(description = "This value represents the entity that is called on the job execution, for example, an http resource, a kafka broker, or a knative sink, etc.", required = true)
     private Recipient<?> recipient;
 
     public Job() {

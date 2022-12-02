@@ -19,10 +19,12 @@ package org.kie.kogito.jobs.service.api.schedule.cron;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.kie.kogito.jobs.service.api.Schedule;
 
-@Schema(description = "Schedule definition to execute a job on a cron based configuration", allOf = { Schedule.class })
+@Schema(description = "Cron schedules establishes that a job must be executed with a periodicity based on a unix like crontab expression.", allOf = { Schedule.class })
 public class CronSchedule extends Schedule {
 
+    @Schema(description = "Cron expression for the job execution, for more information <a href=\"https://en.wikipedia.org/wiki/Cron#Overview\" target=\"_blank\">see</a>.", required = true)
     private String expression;
+    @Schema(description = "Time zone for the cron programming, for example \"Europe/Madrid\". For more information <a href=\"https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\" target=\"_blank\">see</a>.")
     private String timeZone;
 
     public String getExpression() {

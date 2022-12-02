@@ -24,7 +24,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @Schema(discriminatorProperty = "type",
         properties = { @SchemaProperty(name = "type", type = SchemaType.STRING) },
-        requiredProperties = { "type" })
+        requiredProperties = { "type" },
+        description = "Generic definition for a Schedule, users must provide instances of subclasses of this schema.")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public abstract class Schedule {
 

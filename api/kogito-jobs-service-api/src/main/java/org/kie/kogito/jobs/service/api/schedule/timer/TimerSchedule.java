@@ -20,12 +20,16 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.kie.kogito.jobs.service.api.Schedule;
 import org.kie.kogito.jobs.service.api.TemporalUnit;
 
-@Schema(description = "Schedule definition to execute a job on a timer based configuration", allOf = { Schedule.class })
+@Schema(description = "Timer schedules establishes that a job must be executed at a given date time and can be repeated a configurable number of times.", allOf = { Schedule.class })
 public class TimerSchedule extends Schedule {
 
+    @Schema(description = "Initial fire time for the job in the ISO-8601 standard.", example = "2023-01-30T12:01:15+01:00")
     private String startTime;
+    @Schema(description = "Number of times that the job execution must be repeated.", defaultValue = "0")
     private int repeatCount = 0;
+    @Schema(description = "Time delay between executions.", defaultValue = "0")
     private long delay = 0;
+    @Schema(description = "Time unit for the delay", defaultValue = "MILLIS")
     private TemporalUnit delayUnit = TemporalUnit.MILLIS;
 
     public TimerSchedule() {
