@@ -42,7 +42,7 @@ public class JobLookupId {
         return new JobLookupId(id, null);
     }
 
-    public static JobLookupId fromBusinessKey(String businessKey) {
-        return new JobLookupId(null, businessKey);
+    public static JobLookupId fromCorrelationId(String correlationId) {
+        return new JobLookupId(null, correlationId);
     }
 }
