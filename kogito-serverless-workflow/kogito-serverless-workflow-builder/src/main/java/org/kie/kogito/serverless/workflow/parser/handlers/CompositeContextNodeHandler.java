@@ -64,11 +64,11 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
             NodeFactory<?, ?> currentNode = startNode;
             for (Action action : actions) {
                 Sleep sleep = action.getSleep();
-                if (sleep != null && sleep.getBefore() != null && !sleep.getBefore().isEmpty()) {
+                if (sleep != null && isDurationThere(sleep.getBefore())) {
                     currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep.getBefore()));
                 }
                 currentNode = connect(currentNode, getActionNode(embeddedSubProcess, action, outputVar, shouldMerge));
-                if (sleep != null && sleep.getAfter() != null && !sleep.getAfter().isEmpty()) {
+                if (sleep != null && isDurationThere(sleep.getAfter())) {
                     currentNode = connect(currentNode, createTimerNode(embeddedSubProcess, sleep.getAfter()));
                 }
             }
@@ -159,5 +159,13 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     private Optional<NodeFactory> fromPredefinedFunction(RuleFlowNodeContainerFactory<?, ?> embeddedSubProcess,
             FunctionRef functionRef, VariableInfo varInfo) {
         return FunctionNamespaceFactory.instance().getNamespace(functionRef).map(f -> f.getActionNode(workflow, parserContext, embeddedSubProcess, functionRef, varInfo));
+    }
+
+    private static boolean isDurationThere(String sleepTime) {
+        if (sleepTime != null && !sleepTime.isBlank()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
