@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.utils;
 
-public class AsyncChannelInfo {
-    private final String name;
-    private final boolean isPublish;
+package org.kie.kogito.serverless.workflow.asyncapi;
 
-    public AsyncChannelInfo(String name, boolean isPublish) {
-        super();
-        this.name = name;
-        this.isPublish = isPublish;
-    }
+import java.util.Optional;
 
-    public String getName() {
-        return name;
-    }
-
-    public boolean isPublish() {
-        return isPublish;
-    }
-
-    @Override
-    public String toString() {
-        return "AsyncChannelInfo [name=" + name + ", isPublish=" + isPublish + "]";
-    }
+public interface AsyncInfoResolver {
+    Optional<AsyncInfo> getAsyncInfo(String id);
 }

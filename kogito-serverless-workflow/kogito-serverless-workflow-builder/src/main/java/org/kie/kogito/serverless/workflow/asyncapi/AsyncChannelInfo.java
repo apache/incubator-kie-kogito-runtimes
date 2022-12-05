@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.utils;
+package org.kie.kogito.serverless.workflow.asyncapi;
 
-import java.util.Map;
+public class AsyncChannelInfo {
+    private final String name;
+    private final boolean isPublish;
 
-public class AsyncInfo {
-
-    private final Map<String, AsyncChannelInfo> operation2Channel;
-
-    public AsyncInfo(Map<String, AsyncChannelInfo> operation2Channel) {
+    public AsyncChannelInfo(String name, boolean isPublish) {
         super();
-        this.operation2Channel = operation2Channel;
+        this.name = name;
+        this.isPublish = isPublish;
     }
 
-    public Map<String, AsyncChannelInfo> getOperation2Channel() {
-        return operation2Channel;
+    public String getName() {
+        return name;
+    }
+
+    public boolean isPublish() {
+        return isPublish;
     }
 
     @Override
     public String toString() {
-        return "AsyncInfo [operation2Channel=" + operation2Channel + "]";
+        return "AsyncChannelInfo [name=" + name + ", isPublish=" + isPublish + "]";
     }
-
 }
