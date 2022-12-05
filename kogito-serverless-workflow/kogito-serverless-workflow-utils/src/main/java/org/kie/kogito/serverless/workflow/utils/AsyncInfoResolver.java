@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.drools;
+package org.kie.kogito.serverless.workflow.utils;
 
-import io.quarkus.test.junit.NativeImageTest;
+import java.util.Optional;
 
-@NativeImageTest
-public class NativeDroolsIT extends DroolsIT {
+public interface AsyncInfoResolver {
+
+    Optional<AsyncInfo> getAsyncInfo(String id);
 }

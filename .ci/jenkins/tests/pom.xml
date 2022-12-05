@@ -40,7 +40,7 @@
 
         <groovy.core.version>2.4.11</groovy.core.version>
         <groovy.gmaven.pluginVersion>1.6.1</groovy.gmaven.pluginVersion>
-        <google.guava.version>24.1.1-jre</google.guava.version>
+        <google.guava.version>29.0-jre</google.guava.version>
 
         <jenkins-spock.version>2.0.0</jenkins-spock.version>
         <jenkins.version>2.334</jenkins.version>
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>1.31</version>
         </dependency>
 
         <!-- Tools -->
@@ -177,7 +177,7 @@
             <!-- provides git() step -->
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>4.11.4</version>
+            <version>4.11.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -218,7 +218,7 @@
             <!-- provides @Library() step -->
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps-global-lib</artifactId>
-            <version>2.13</version>
+            <version>588.v576c103a_ff86</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.integrationtests.quarkus;
+package org.kie.kogito.serverless.workflow.utils;
 
-import io.quarkus.test.junit.NativeImageTest;
+import java.util.Optional;
 
-/**
- * Part of build certification process. Please do not remove.
- * Smoke test of kogito end-to-end scenarios.
- */
-@NativeImageTest
-public class NativeHospitalsStatusIT extends HospitalsStatusIT {
+public class AsyncInfoResolverHolder {
 
+    private static Optional<AsyncInfoResolver> instance = Optional.empty();
+
+    public static Optional<AsyncInfoResolver> get() {
+        return instance;
+    }
+
+    public static void set(AsyncInfoResolver resolver) {
+        instance = Optional.of(resolver);
+    }
+
+    private AsyncInfoResolverHolder() {
+    }
 }
