@@ -61,11 +61,6 @@
         <artifactId>quarkus-openapi-generator-deployment</artifactId>
         <version>${version.io.quarkiverse.openapi.generator}</version>
       </dependency>
-      <dependency> <!-- temporary for DROOLS-7105 DMN upgrade to Antlr 4.10 --> 
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-runtime</artifactId>
-        <version>${version.org.antlr4}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

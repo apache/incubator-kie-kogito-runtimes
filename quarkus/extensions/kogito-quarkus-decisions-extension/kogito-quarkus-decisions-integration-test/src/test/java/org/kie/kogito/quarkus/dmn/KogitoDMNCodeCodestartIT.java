@@ -43,10 +43,6 @@ public class KogitoDMNCodeCodestartIT {
         return properties.getProperty("version.assertj");
     }
 
-    public static String antlr4Version() {
-        return properties.getProperty("version.org.antlr4");
-    }
-
     public static String projectVersion() {
         return properties.getProperty("version");
     }
@@ -58,7 +54,6 @@ public class KogitoDMNCodeCodestartIT {
             .extension(ArtifactCoords.fromString("org.kie.kogito:kogito-quarkus-decisions:" + projectVersion()))
             .extension(ArtifactKey.fromString("io.quarkus:quarkus-resteasy-jackson")) // account for KOGITO-5817
             .extension(ArtifactCoords.fromString("org.assertj:assertj-core:" + assertjVersion()))
-            .extension(ArtifactCoords.fromString("org.antlr:antlr4-runtime:" + antlr4Version())) // account temporary for DROOLS-7105 DMN upgrade to Antlr 4.10
             .putData(QuarkusDataKey.APP_CONFIG, Map.of("quarkus.http.test-port", "0"))
             .languages(JAVA)
             .build();
