@@ -11,7 +11,7 @@
       <directory>${path.to.persistence.modules}/postgresql/src/main/resources/db/migration</directory>
       <outputDirectory>postgresql</outputDirectory>
       <includes>
-        <include>*_create.sql</include>
+        <include>*.sql</include>
       </includes>
     </fileSet>
   </fileSets>
