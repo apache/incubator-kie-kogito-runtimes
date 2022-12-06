@@ -37,16 +37,6 @@ public class KafkaRecipient extends Recipient<byte[]> {
         this.headers = new HashMap<>();
     }
 
-    public KafkaRecipient(byte[] payload,
-            String bootstrapServers,
-            String topicName,
-            Map<String, String> headers) {
-        super(payload);
-        this.bootstrapServers = bootstrapServers;
-        this.topicName = topicName;
-        this.headers = headers != null ? headers : new HashMap<>();
-    }
-
     public String getBootstrapServers() {
         return bootstrapServers;
     }

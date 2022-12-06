@@ -108,7 +108,7 @@ class JobCloudEventSerializerTest {
         assertThat(json).isNotNull();
 
         JsonNode jsonNode = OBJECT_MAPPER.readTree(json);
-        assertHasTotalFields(jsonNode, 9);
+        assertHasTotalFields(jsonNode, 7);
         assertHasFieldWithValue(jsonNode, "type", CreateJobEvent.TYPE);
         assertHasBaseFields(jsonNode);
 
@@ -160,7 +160,7 @@ class JobCloudEventSerializerTest {
         String json = serializer.serialize(event);
         assertThat(json).isNotNull();
         JsonNode jsonNode = OBJECT_MAPPER.readTree(json);
-        assertHasTotalFields(jsonNode, 9);
+        assertHasTotalFields(jsonNode, 7);
         assertHasFieldWithValue(jsonNode, "type", DeleteJobEvent.TYPE);
         assertHasBaseFields(jsonNode);
         JsonNode dataJsonNode = jsonNode.get("data");

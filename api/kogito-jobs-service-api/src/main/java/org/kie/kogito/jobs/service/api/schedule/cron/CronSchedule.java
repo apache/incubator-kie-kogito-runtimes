@@ -47,11 +47,6 @@ public class CronSchedule extends Schedule {
         // marshalling constructor.
     }
 
-    public CronSchedule(String expression, String timeZone) {
-        this.expression = expression;
-        this.timeZone = timeZone;
-    }
-
     @Override
     public String toString() {
         return "CronSchedule{" +

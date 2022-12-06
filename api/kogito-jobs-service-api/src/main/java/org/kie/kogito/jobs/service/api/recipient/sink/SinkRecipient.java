@@ -38,14 +38,6 @@ public class SinkRecipient extends Recipient<CloudEvent> {
         // marshalling constructor.
     }
 
-    public SinkRecipient(CloudEvent payload,
-            String sinkUrl,
-            ContentMode contentMode) {
-        super(payload);
-        this.sinkUrl = sinkUrl;
-        this.contentMode = contentMode;
-    }
-
     public String getSinkUrl() {
         return sinkUrl;
     }

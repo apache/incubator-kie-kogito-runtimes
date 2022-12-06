@@ -29,7 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
 
-import static org.kie.kogito.jobs.service.api.event.serialization.JobCloudEventSerializer.DEFAULT_OBJECT_MAPPER;
+import static org.kie.kogito.jobs.service.api.event.serialization.SerializationUtils.DEFAULT_OBJECT_MAPPER;
+import static org.kie.kogito.jobs.service.api.event.serialization.SerializationUtils.registerDescriptors;
 
 public class JobCloudEventDeserializer {
 
@@ -41,6 +42,7 @@ public class JobCloudEventDeserializer {
 
     public JobCloudEventDeserializer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        registerDescriptors(objectMapper);
     }
 
     public JobCloudEvent<?> deserialize(byte[] data) {

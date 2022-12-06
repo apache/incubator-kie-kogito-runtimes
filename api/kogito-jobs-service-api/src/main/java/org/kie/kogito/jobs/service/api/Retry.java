@@ -22,34 +22,33 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public class Retry {
 
     @Schema(description = "Number of retries to execute in case of failures.", defaultValue = "3")
-    private int maxRetries = 3;
+    private Integer maxRetries = 3;
     @Schema(description = "Time delay between the retries.", defaultValue = "0")
-    private long delay = 0;
+    private Long delay = 0L;
     @Schema(description = "Time unit for the delay between retries.", defaultValue = "MILLIS")
     private TemporalUnit delayUnit = TemporalUnit.MILLIS;
     @Schema(description = "Maximum amount of time to continue retrying if no successful execution was produced.", defaultValue = "180000")
-    private long maxDuration = 180000L;
+    private Long maxDuration = 180000L;
     @Schema(description = "Time unit for the max duration time.", defaultValue = "MILLIS")
-
     private TemporalUnit durationUnit = TemporalUnit.MILLIS;
 
     public Retry() {
         // marshalling constructor.
     }
 
-    public int getMaxRetries() {
+    public Integer getMaxRetries() {
         return maxRetries;
     }
 
-    public void setMaxRetries(int maxRetries) {
+    public void setMaxRetries(Integer maxRetries) {
         this.maxRetries = maxRetries;
     }
 
-    public long getDelay() {
+    public Long getDelay() {
         return delay;
     }
 
-    public void setDelay(long delay) {
+    public void setDelay(Long delay) {
         this.delay = delay;
     }
 
@@ -61,11 +60,11 @@ public class Retry {
         this.delayUnit = delayUnit;
     }
 
-    public long getMaxDuration() {
+    public Long getMaxDuration() {
         return maxDuration;
     }
 
-    public void setMaxDuration(long maxDuration) {
+    public void setMaxDuration(Long maxDuration) {
         this.maxDuration = maxDuration;
     }
 
@@ -100,12 +99,12 @@ public class Retry {
             this.retry = retry;
         }
 
-        public Builder maxRetries(int maxRetries) {
+        public Builder maxRetries(Integer maxRetries) {
             retry.setMaxRetries(maxRetries);
             return this;
         }
 
-        public Builder delay(long delay) {
+        public Builder delay(Long delay) {
             retry.setDelay(delay);
             return this;
         }
@@ -115,7 +114,7 @@ public class Retry {
             return this;
         }
 
-        public Builder maxDuration(long maxDuration) {
+        public Builder maxDuration(Long maxDuration) {
             retry.setMaxDuration(maxDuration);
             return this;
         }

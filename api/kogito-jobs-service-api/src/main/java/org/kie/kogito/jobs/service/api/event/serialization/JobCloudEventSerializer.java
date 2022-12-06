@@ -15,27 +15,15 @@
  */
 package org.kie.kogito.jobs.service.api.event.serialization;
 
-import org.kie.kogito.jobs.service.api.RecipientDescriptor;
-import org.kie.kogito.jobs.service.api.RecipientDescriptorRegistry;
-import org.kie.kogito.jobs.service.api.ScheduleDescriptor;
-import org.kie.kogito.jobs.service.api.ScheduleDescriptorRegistry;
 import org.kie.kogito.jobs.service.api.event.JobCloudEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.cloudevents.jackson.JsonFormat;
+import static org.kie.kogito.jobs.service.api.event.serialization.SerializationUtils.DEFAULT_OBJECT_MAPPER;
+import static org.kie.kogito.jobs.service.api.event.serialization.SerializationUtils.registerDescriptors;
 
 public class JobCloudEventSerializer {
-
-    /**
-     * Shared default object mapper with the minimal required setups that can be used by the JobCloudEventDeserializer
-     * and JobCloudEventSerializer classes. Interested parties that doesn't want to use this object mapper can use
-     * their own provided mappers by using the proper constructors.
-     */
-    public static final ObjectMapper DEFAULT_OBJECT_MAPPER = buildObjectMapper();
 
     private final ObjectMapper objectMapper;
 
@@ -45,6 +33,7 @@ public class JobCloudEventSerializer {
 
     public JobCloudEventSerializer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        registerDescriptors(objectMapper);
     }
 
     public String serialize(JobCloudEvent<?> jobCloudEvent) {
@@ -53,20 +42,5 @@ public class JobCloudEventSerializer {
         } catch (JsonProcessingException e) {
             throw new SerializationException("An error was produced during a JobCloudEvent serialization: " + e.getMessage(), e);
         }
-    }
-
-    private static ObjectMapper buildObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .registerModule(JsonFormat.getCloudEventJacksonModule())
-                .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // subtype registration for the different available Recipient and Schedule definitions.
-        for (RecipientDescriptor<?> descriptor : RecipientDescriptorRegistry.getInstance().getDescriptors()) {
-            mapper.registerSubtypes(new NamedType(descriptor.getType(), descriptor.getName()));
-        }
-        for (ScheduleDescriptor<?> descriptor : ScheduleDescriptorRegistry.getInstance().getDescriptors()) {
-            mapper.registerSubtypes(new NamedType(descriptor.getType(), descriptor.getName()));
-        }
-        return mapper;
     }
 }

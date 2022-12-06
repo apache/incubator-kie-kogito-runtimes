@@ -17,21 +17,19 @@ package org.kie.kogito.jobs.service.api.event;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionDeserializer;
 import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionSerializer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.cloudevents.CloudEventContext;
+import io.cloudevents.CloudEventAttributes;
 import io.cloudevents.SpecVersion;
 
 import static io.cloudevents.core.v1.CloudEventV1.DATACONTENTTYPE;
@@ -43,7 +41,7 @@ import static io.cloudevents.core.v1.CloudEventV1.SUBJECT;
 import static io.cloudevents.core.v1.CloudEventV1.TIME;
 import static io.cloudevents.core.v1.CloudEventV1.TYPE;
 
-public abstract class JobCloudEvent<T> implements CloudEventContext {
+public abstract class JobCloudEvent<T> implements CloudEventAttributes {
 
     public static final SpecVersion SPEC_VERSION = SpecVersion.V1;
 
@@ -63,7 +61,6 @@ public abstract class JobCloudEvent<T> implements CloudEventContext {
     @JsonProperty("dataschema")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private URI dataSchema;
-    private Map<String, Object> extensions = new HashMap<>();
 
     private T data;
 
@@ -115,6 +112,7 @@ public abstract class JobCloudEvent<T> implements CloudEventContext {
         return subject;
     }
 
+    @JsonIgnore
     @Override
     public Object getAttribute(String attributeName) throws IllegalArgumentException {
         switch (attributeName) {
@@ -138,14 +136,10 @@ public abstract class JobCloudEvent<T> implements CloudEventContext {
         throw new IllegalArgumentException("Spec version v1 doesn't have attribute named " + attributeName);
     }
 
+    @JsonIgnore
     @Override
-    public Object getExtension(String extensionName) {
-        return null;
-    }
-
-    @Override
-    public Set<String> getExtensionNames() {
-        return Collections.emptySet();
+    public Set<String> getAttributeNames() {
+        return CloudEventAttributes.super.getAttributeNames();
     }
 
     public void setSpecVersion(SpecVersion specVersion) {
@@ -202,7 +196,6 @@ public abstract class JobCloudEvent<T> implements CloudEventContext {
                 ", subject='" + subject + '\'' +
                 ", dataContentType='" + dataContentType + '\'' +
                 ", dataSchema=" + dataSchema +
-                ", extensions=" + extensions +
                 ", data=" + data +
                 '}';
     }

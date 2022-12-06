@@ -26,21 +26,14 @@ public class TimerSchedule extends Schedule {
     @Schema(description = "Initial fire time for the job in the ISO-8601 standard.", example = "2023-01-30T12:01:15+01:00")
     private String startTime;
     @Schema(description = "Number of times that the job execution must be repeated.", defaultValue = "0")
-    private int repeatCount = 0;
+    private Integer repeatCount = 0;
     @Schema(description = "Time delay between executions.", defaultValue = "0")
-    private long delay = 0;
+    private Long delay = 0L;
     @Schema(description = "Time unit for the delay", defaultValue = "MILLIS")
     private TemporalUnit delayUnit = TemporalUnit.MILLIS;
 
     public TimerSchedule() {
         // marshalling constructor.
-    }
-
-    public TimerSchedule(String startTime, int repeatCount, long delay, TemporalUnit delayUnit) {
-        this.startTime = startTime;
-        this.repeatCount = repeatCount;
-        this.delay = delay;
-        this.delayUnit = delayUnit;
     }
 
     public String getStartTime() {
@@ -51,19 +44,19 @@ public class TimerSchedule extends Schedule {
         this.startTime = startTime;
     }
 
-    public int getRepeatCount() {
+    public Integer getRepeatCount() {
         return repeatCount;
     }
 
-    public void setRepeatCount(int repeatCount) {
+    public void setRepeatCount(Integer repeatCount) {
         this.repeatCount = repeatCount;
     }
 
-    public long getDelay() {
+    public Long getDelay() {
         return delay;
     }
 
-    public void setDelay(long delay) {
+    public void setDelay(Long delay) {
         this.delay = delay;
     }
 
@@ -102,12 +95,12 @@ public class TimerSchedule extends Schedule {
             return this;
         }
 
-        public Builder repeatCount(int repeatCount) {
+        public Builder repeatCount(Integer repeatCount) {
             schedule.setRepeatCount(repeatCount);
             return this;
         }
 
-        public Builder delay(long delay) {
+        public Builder delay(Long delay) {
             schedule.setDelay(delay);
             return this;
         }

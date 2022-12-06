@@ -41,24 +41,6 @@ public class HttpRecipient extends Recipient<byte[]> {
         this.queryParams = new HashMap<>();
     }
 
-    public HttpRecipient(byte[] payload,
-            String url,
-            String method) {
-        this(payload, url, method, new HashMap<>(), new HashMap<>());
-    }
-
-    public HttpRecipient(byte[] payload,
-            String url,
-            String method,
-            Map<String, String> headers,
-            Map<String, String> queryParams) {
-        super(payload);
-        this.url = url;
-        this.method = method;
-        this.headers = headers != null ? headers : new HashMap<>();
-        this.queryParams = queryParams != null ? queryParams : new HashMap<>();
-    }
-
     public String getUrl() {
         return url;
     }

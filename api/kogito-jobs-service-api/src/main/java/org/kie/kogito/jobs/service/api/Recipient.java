@@ -36,10 +36,6 @@ public abstract class Recipient<T> {
         // marshalling constructor.
     }
 
-    public Recipient(T payload) {
-        this.payload = payload;
-    }
-
     public T getPayload() {
         return payload;
     }
