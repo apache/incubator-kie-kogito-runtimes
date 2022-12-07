@@ -15,10 +15,10 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.asyncapi;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextBuildItem;
+import org.kie.kogito.quarkus.common.deployment.KogitoBuildContextAttributeBuildItem;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 
 import io.quarkiverse.asyncapi.config.MapAsyncAPIRegistry;
@@ -28,8 +28,8 @@ import io.quarkus.deployment.annotations.BuildStep;
 public class AsyncAPIProcessor {
 
     @BuildStep
-    void asyncAPIContext(KogitoBuildContextBuildItem contextBuildItem, Collection<AsyncAPIBuildItem> asyncAPIBuildItem) {
-        contextBuildItem.getKogitoBuildContext().addContextAttribute(ParserContext.ASYNC_CONVERTER_KEY, new AsyncAPIInfoConverter(
+    KogitoBuildContextAttributeBuildItem asyncAPIContext(List<AsyncAPIBuildItem> asyncAPIBuildItem) {
+        return new KogitoBuildContextAttributeBuildItem(ParserContext.ASYNC_CONVERTER_KEY, new AsyncAPIInfoConverter(
                 new MapAsyncAPIRegistry(asyncAPIBuildItem.stream().map(AsyncAPIBuildItem::getAsyncAPI).collect(Collectors.toList()))));
     }
 }

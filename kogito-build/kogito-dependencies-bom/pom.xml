@@ -28,7 +28,6 @@
     <version.io.quarkiverse.jackson-jq>1.1.0</version.io.quarkiverse.jackson-jq>
     <version.io.quarkiverse.openapi.generator>0.12.0</version.io.quarkiverse.openapi.generator>
     <version.io.quarkiverse.asyncapi>1.0.0-SNAPSHOT</version.io.quarkiverse.asyncapi>
-    <version.org.projectlombok>1.18.22</version.org.projectlombok>
     <version.io.quarkiverse.reactivemessaging.http>1.0.8</version.io.quarkiverse.reactivemessaging.http>
     <version.com.github.haifengl.smile>1.5.2</version.com.github.haifengl.smile>
     <version.com.github.javaparser>3.24.2</version.com.github.javaparser>
@@ -308,12 +307,6 @@
         <artifactId>smallrye-mutiny-vertx-auth-oauth2</artifactId>
         <version>${version.io.smallrye.reactive.mutiny-vertx-web-client}</version>
       </dependency>
-
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${version.org.projectlombok}</version>
-      </dependency> 
 
       <!-- metrics - monitoring -->
       <dependency>

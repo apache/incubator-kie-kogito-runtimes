@@ -8,11 +8,13 @@
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
+  <properties>
+      <version.org.projectlombok>1.18.22</version.org.projectlombok>
+  </properties>
   <artifactId>kogito-quarkus-serverless-workflow</artifactId>
   <name>Kogito :: Quarkus Serverless Workflow Extension :: Runtime</name>
   <description>Add Kogito Serverless Workflows (SW) capabilities - Includes the Process engine and Knative Eventing capabilities</description>
-
+  
   <dependencies>
     <dependency>
       <groupId>org.kie.kogito</groupId>
