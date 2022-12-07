@@ -162,6 +162,6 @@ public abstract class CompositeContextNodeHandler<S extends State> extends State
     }
 
     private static boolean isDurationThere(String sleepTime) {
-        return sleepTime != null && !sleepTime.isBlank() ? true : false;
+        return sleepTime != null && !sleepTime.isBlank();
     }
 }
