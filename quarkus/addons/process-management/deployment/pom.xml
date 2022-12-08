@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-process-management-parent</artifactId>
-    <version>1.31.1.Final</version>
+    <version>1.31.2-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-process-management-deployment</artifactId>
   <name>Kogito Add-On Process Management - Deployment</name>
