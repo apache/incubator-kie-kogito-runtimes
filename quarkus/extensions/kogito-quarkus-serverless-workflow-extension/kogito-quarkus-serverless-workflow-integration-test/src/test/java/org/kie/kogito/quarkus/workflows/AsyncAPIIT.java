@@ -37,7 +37,9 @@ import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.*;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.buildCloudEvent;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.startProcess;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.waitForFinish;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
