@@ -80,7 +80,7 @@ public final class CamelFunctionStaticValidator {
         }
         final JsonNode headers = jsonNode.get(CamelFunctionArgs.HEADERS);
         if (headers != null && (headers.isArray() || !headers.isObject())) {
-            throw new IllegalArgumentException("Camel functions headers arguments must be either an object or array. Please review the arguments: \n" + headers.asText());
+            throw new IllegalArgumentException("Camel functions headers arguments must be a key/value object. Please review the arguments: \n" + headers.asText());
         }
         if (jsonNode.get(CamelFunctionArgs.BODY) == null) {
             LOGGER.warn("No body arguments found in the function reference '{}'. The first parameter will be used as the Camel message body. Please use 'body: { }'.", functionRef.getRefName());
