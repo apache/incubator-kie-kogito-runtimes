@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.asyncapi;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
@@ -31,7 +30,7 @@ class AsyncInputStreamSupplier implements InputStreamSupplier {
     }
 
     @Override
-    public InputStream get() throws IOException {
+    public InputStream get() {
         return resource.getContentLoader().getInputStream();
     }
 }
