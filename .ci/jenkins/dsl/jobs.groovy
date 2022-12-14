@@ -72,13 +72,12 @@ createSetupBranchJob()
 
 // Nightly jobs
 setupSonarCloudJob()
-setupDeployJob(JobType.NIGHTLY)
+KogitoJobUtils.createNightlyBuildChainBuildAndDeployJobForCurrentRepo(this, '', true)
 
+// Environment nightlies
 setupSpecificBuildChainNightlyJob('native')
-
 setupSpecificBuildChainNightlyJob('quarkus-main')
 setupSpecificBuildChainNightlyJob('quarkus-branch')
-
 setupSpecificBuildChainNightlyJob('mandrel')
 setupSpecificBuildChainNightlyJob('mandrel-lts')
 setupSpecificBuildChainNightlyJob('quarkus-lts')
