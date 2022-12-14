@@ -17,7 +17,7 @@ package org.kie.kogito.addons.quarkus.camel.deployment;
 
 import java.util.Objects;
 
-import org.kie.kogito.addons.quarkus.camel.runtime.CamelFunctionArgs;
+import org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public final class CamelFunctionStaticValidator {
     /**
      * Validation for the Function Definition within the given Workflow
      *
-     * @param workflow the workflow reference
+     * @param workflow        the workflow reference
      * @param functionDefName the name of the function definition
      * @throws IllegalArgumentException if the referenced function has more than one argument in the call
      */
@@ -81,19 +81,17 @@ public final class CamelFunctionStaticValidator {
         if (jsonNode.size() > 2) {
             throw new IllegalArgumentException("Camel functions only support 'body', 'header', or no arguments. Please review the arguments: \n" + jsonNode.asText());
         }
-        final JsonNode headers = jsonNode.get(CamelFunctionArgs.HEADERS);
+        final JsonNode headers = jsonNode.get(CamelConstants.HEADERS);
         if (headers != null && (headers.isArray() || !headers.isObject())) {
             throw new IllegalArgumentException("Camel functions headers arguments must be a key/value object. Please review the arguments: \n" + headers.asText());
         }
-        if (jsonNode.get(CamelFunctionArgs.BODY) == null) {
+        if (jsonNode.get(CamelConstants.BODY) == null) {
             LOGGER.warn("No body arguments found in the function reference '{}'. The first parameter will be used as the Camel message body. Please use 'body: { }'.", functionRef.getRefName());
         }
     }
 
     private static void validateAction(final Action action, final String functionDefName) {
-        if (action != null &&
-                action.getFunctionRef() != null &&
-                Objects.equals(action.getFunctionRef().getRefName(), functionDefName)) {
+        if (Objects.equals(action.getFunctionRef().getRefName(), functionDefName)) {
             validateFunctionRef(action.getFunctionRef());
         }
     }

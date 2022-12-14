@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.kie.kogito.addons.quarkus.camel.runtime.CamelFunctionArgs.BODY;
-import static org.kie.kogito.addons.quarkus.camel.runtime.CamelFunctionArgs.HEADERS;
+import static org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants.BODY;
+import static org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants.HEADERS;
 
 @ApplicationScoped
 public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {

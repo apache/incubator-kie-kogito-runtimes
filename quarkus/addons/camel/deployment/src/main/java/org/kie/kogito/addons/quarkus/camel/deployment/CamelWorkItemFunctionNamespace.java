@@ -17,6 +17,7 @@ package org.kie.kogito.addons.quarkus.camel.deployment;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants;
 import org.kie.kogito.serverless.workflow.functions.WorkItemFunctionNamespace;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 
@@ -30,7 +31,7 @@ import static org.kie.kogito.serverless.workflow.parser.FunctionNamespaceFactory
 /**
  * Implementation of the custom Camel Namespace Function Reference
  */
-public class CamelFunctionNamespace extends WorkItemFunctionNamespace {
+public class CamelWorkItemFunctionNamespace extends WorkItemFunctionNamespace {
 
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow, ParserContext parserContext, WorkItemNodeFactory<T> workItemNodeFactory,
@@ -41,6 +42,6 @@ public class CamelFunctionNamespace extends WorkItemFunctionNamespace {
 
     @Override
     public String namespace() {
-        return "camel";
+        return CamelConstants.NAMESPACE;
     }
 }

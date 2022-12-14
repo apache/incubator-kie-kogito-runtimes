@@ -17,6 +17,7 @@ package org.kie.kogito.addons.quarkus.camel.deployment;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
+import org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 
@@ -30,7 +31,7 @@ import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFacto
 /**
  * Implementation for the custom Camel Function Definition
  */
-public class CamelTypeHandler extends WorkItemTypeHandler {
+public class CamelWorkItemTypeHandler extends WorkItemTypeHandler {
 
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow, ParserContext context, WorkItemNodeFactory<T> node,
@@ -41,7 +42,7 @@ public class CamelTypeHandler extends WorkItemTypeHandler {
 
     @Override
     public String type() {
-        return "camel";
+        return CamelConstants.NAMESPACE;
     }
 
 }
