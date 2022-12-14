@@ -36,7 +36,7 @@ public class CamelWorkItemFunctionNamespace extends WorkItemFunctionNamespace {
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow, ParserContext parserContext, WorkItemNodeFactory<T> workItemNodeFactory,
             FunctionRef functionRef) {
-        CamelFunctionStaticValidator.validateFunctionRef(functionRef);
+        CamelFunctionStaticValidator.validateFunctionRef(functionRef, workflow);
         return workItemNodeFactory.workName(NAME).metaData(OPERATION, getFunctionName(functionRef));
     }
 
