@@ -63,7 +63,9 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
 
     @PreDestroy
     void stop() {
-        template.stop();
+        if (template != null) {
+            template.stop();
+        }
     }
 
     @Override
@@ -76,29 +78,29 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
         if (parameters.isEmpty()) {
             LOGGER.debug("Invoking Camel Endpoint '{}' with no body or headers", camelEndpoint);
             return template.requestBody(camelEndpoint, "");
-        } else {
-            Object body = null;
-            Map<String, Object> headers = null;
-            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-                if (HEADERS.equalsIgnoreCase(entry.getKey())) {
-                    headers = objectMapper.convertValue(entry.getValue(), new TypeReference<>() {
-                    });
-                }
-                if (BODY.equalsIgnoreCase(entry.getKey())) {
-                    body = entry.getValue();
-                }
-            }
-            if (body == null) {
-                body = parameters.values().iterator().next();
-            }
-
-            if (headers == null) {
-                LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}'", camelEndpoint, body);
-                return template.requestBody(camelEndpoint, body);
-            }
-            LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}' and headers '{}'", camelEndpoint, body, headers);
-            return template.requestBodyAndHeaders(camelEndpoint, body, headers);
         }
+
+        Object body = null;
+        Map<String, Object> headers = null;
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            if (HEADERS.equalsIgnoreCase(entry.getKey())) {
+                headers = objectMapper.convertValue(entry.getValue(), new TypeReference<>() {
+                });
+            }
+            if (BODY.equalsIgnoreCase(entry.getKey())) {
+                body = entry.getValue();
+            }
+        }
+        if (body == null) {
+            body = parameters.values().iterator().next();
+        }
+
+        if (headers == null) {
+            LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}'", camelEndpoint, body);
+            return template.requestBody(camelEndpoint, body);
+        }
+        LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}' and headers '{}'", camelEndpoint, body, headers);
+        return template.requestBodyAndHeaders(camelEndpoint, body, headers);
     }
 
     private void checkEndpointExists(final String endpoint) {
