@@ -60,6 +60,9 @@ public final class CamelFunctionStaticValidator {
                 case CALLBACK:
                     validateAction(((CallbackState) state).getAction(), functionDefName);
                     break;
+                // Sonar compliance...
+                default:
+                    break;
             }
         }
     }

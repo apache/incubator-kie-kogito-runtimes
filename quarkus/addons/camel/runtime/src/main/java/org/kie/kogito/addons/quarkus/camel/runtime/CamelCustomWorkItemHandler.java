@@ -17,10 +17,13 @@ package org.kie.kogito.addons.quarkus.camel.runtime;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 import org.slf4j.Logger;
@@ -46,6 +49,23 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
     @Inject
     ObjectMapper objectMapper;
 
+    /**
+     * Camel Producer Template bound to the bean lifecycle. It's responsible to call the inner routes based on the endpoints defined by users in the workflow DSL.
+     *
+     * @see <a href="https://camel.apache.org/manual/faq/why-does-camel-use-too-many-threads-with-producertemplate.html">WHY DOES CAMEL USE TOO MANY THREADS WITH PRODUCERTEMPLATE?</a>
+     */
+    ProducerTemplate template;
+
+    @PostConstruct
+    void init() {
+        template = context.createProducerTemplate();
+    }
+
+    @PreDestroy
+    void stop() {
+        template.stop();
+    }
+
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         final Map<String, Object> metadata = workItem.getNodeInstance().getNode().getMetaData();
@@ -55,7 +75,7 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
 
         if (parameters.isEmpty()) {
             LOGGER.debug("Invoking Camel Endpoint '{}' with no body or headers", camelEndpoint);
-            return context.createProducerTemplate().requestBody(camelEndpoint, "");
+            return template.requestBody(camelEndpoint, "");
         } else {
             Object body = null;
             Map<String, Object> headers = null;
@@ -74,10 +94,10 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
 
             if (headers == null) {
                 LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}'", camelEndpoint, body);
-                return context.createProducerTemplate().requestBody(camelEndpoint, body);
+                return template.requestBody(camelEndpoint, body);
             }
             LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}' and headers '{}'", camelEndpoint, body, headers);
-            return context.createProducerTemplate().requestBodyAndHeaders(camelEndpoint, body, headers);
+            return template.requestBodyAndHeaders(camelEndpoint, body, headers);
         }
     }
 

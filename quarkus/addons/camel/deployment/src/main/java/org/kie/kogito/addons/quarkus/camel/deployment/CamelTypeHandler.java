@@ -32,9 +32,6 @@ import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFacto
  */
 public class CamelTypeHandler extends WorkItemTypeHandler {
 
-    public CamelTypeHandler() {
-    }
-
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> WorkItemNodeFactory<T> fillWorkItemHandler(Workflow workflow, ParserContext context, WorkItemNodeFactory<T> node,
             FunctionDefinition functionDef) {
