@@ -44,15 +44,14 @@ public class KubeDiscoveryConfigSourceInterceptor implements ConfigSourceInterce
         ConfigValue configValue = context.proceed(s);
         if (configValue == null) {
             return null;
-        } else {
-            try {
-                return kubeDiscoveryConfigCache.get(configValue.getName(), configValue.getValue())
-                        .map(configValue::withValue)
-                        .orElse(configValue);
-            } catch (RuntimeException e) {
-                logger.error("Service Discovery has failed", e);
-                return configValue;
-            }
+        }
+        try {
+            return kubeDiscoveryConfigCache.get(configValue.getName(), configValue.getValue())
+                    .map(configValue::withValue)
+                    .orElse(configValue);
+        } catch (RuntimeException e) {
+            logger.error("Service Discovery has failed", e);
+            return configValue;
         }
     }
 }
