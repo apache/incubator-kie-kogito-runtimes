@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addons.quarkus.camel.runtime;
 
+import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -80,25 +81,9 @@ public class CamelCustomWorkItemHandler extends WorkflowWorkItemHandler {
             return template.requestBody(camelEndpoint, "");
         }
 
-        Object body = null;
-        Map<String, Object> headers = null;
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-            if (HEADERS.equalsIgnoreCase(entry.getKey())) {
-                headers = objectMapper.convertValue(entry.getValue(), new TypeReference<>() {
-                });
-            }
-            if (BODY.equalsIgnoreCase(entry.getKey())) {
-                body = entry.getValue();
-            }
-        }
-        if (body == null) {
-            body = parameters.values().iterator().next();
-        }
-
-        if (headers == null) {
-            LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}'", camelEndpoint, body);
-            return template.requestBody(camelEndpoint, body);
-        }
+        Object body = parameters.getOrDefault(BODY, parameters.values().iterator().next());
+        Map<String, Object> headers = objectMapper.convertValue(parameters.getOrDefault(HEADERS, Collections.emptyMap()), new TypeReference<>() {
+        });
         LOGGER.debug("Invoking Camel Endpoint '{}' with body '{}' and headers '{}'", camelEndpoint, body, headers);
         return template.requestBodyAndHeaders(camelEndpoint, body, headers);
     }

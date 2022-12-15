@@ -21,7 +21,7 @@
             "refName": "callSoap",
             "arguments": {
               "body": "${ .number }",
-              "headers": "key"
+              "headers": 1000
             }
           }
         }
