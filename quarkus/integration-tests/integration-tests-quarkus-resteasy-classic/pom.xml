@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-quarkus-integration-tests</artifactId>
-    <version>1.32.0.Final</version>
+    <version>1.32.1-SNAPSHOT</version>
   </parent>
   <artifactId>integration-tests-quarkus-resteasy-classic</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: RESTEasy Classic</name>
