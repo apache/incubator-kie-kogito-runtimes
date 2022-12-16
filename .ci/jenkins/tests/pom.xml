@@ -191,7 +191,7 @@
             <!-- provides withCredentials() step -->
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials-binding</artifactId>
-            <version>1.19</version>
+            <version>1.23</version>
             <scope>test</scope>
         </dependency>
         <dependency>
