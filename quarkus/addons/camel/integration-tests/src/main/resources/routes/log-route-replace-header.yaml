@@ -3,8 +3,5 @@
     steps:
       - setBody:
           simple: '{ "id": "${header.WorkflowID}", "arg1": { "arg2": "value1" } }'
-      - unmarshal:
-          json:
-            library: Jackson
       - log:
           message: We received the ${body}
