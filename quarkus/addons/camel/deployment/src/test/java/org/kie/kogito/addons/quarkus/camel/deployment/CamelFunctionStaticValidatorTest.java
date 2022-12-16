@@ -79,7 +79,7 @@ public class CamelFunctionStaticValidatorTest {
 
     private void verifyAction(final Action action, final String functionDefName) {
         if (functionDefName.equals(action.getFunctionRef().getRefName())) {
-            validateFunctionRef(action.getFunctionRef().getArguments());
+            validateFunctionRef(action.getFunctionRef());
         }
     }
 

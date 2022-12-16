@@ -21,10 +21,9 @@ import org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
+import io.serverlessworkflow.api.functions.FunctionRef;
 
 import static org.kie.kogito.addons.quarkus.camel.runtime.CamelCustomWorkItemHandler.NAME;
 import static org.kie.kogito.addons.quarkus.camel.runtime.CamelCustomWorkItemHandler.OPERATION;
@@ -42,8 +41,8 @@ public class CamelWorkItemTypeHandler extends WorkItemTypeHandler {
     }
 
     @Override
-    protected void validateArgs(JsonNode functionArgs) {
-        CamelFunctionStaticValidator.validateFunctionRef(functionArgs);
+    protected void validateArgs(FunctionRef ref) {
+        CamelFunctionStaticValidator.validateFunctionRef(ref);
     }
 
     @Override

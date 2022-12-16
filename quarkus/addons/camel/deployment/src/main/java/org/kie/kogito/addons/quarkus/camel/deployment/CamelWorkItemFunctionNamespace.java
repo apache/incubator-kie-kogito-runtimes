@@ -21,8 +21,6 @@ import org.kie.kogito.addons.quarkus.camel.runtime.CamelConstants;
 import org.kie.kogito.serverless.workflow.functions.WorkItemFunctionNamespace;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionRef;
 
@@ -42,8 +40,8 @@ public class CamelWorkItemFunctionNamespace extends WorkItemFunctionNamespace {
     }
 
     @Override
-    protected void validateArgs(JsonNode functionArgs) {
-        CamelFunctionStaticValidator.validateFunctionRef(functionArgs);
+    protected void validateArgs(FunctionRef ref) {
+        super.validateArgs(ref);
     }
 
     @Override
