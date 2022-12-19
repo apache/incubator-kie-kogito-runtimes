@@ -20,8 +20,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class KubeDiscoveryConfigCache {
+
+    private static final Logger logger = LoggerFactory.getLogger(KubeDiscoveryConfigCache.class);
 
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
@@ -32,13 +36,16 @@ final class KubeDiscoveryConfigCache {
     }
 
     Optional<String> get(String configName, String configValue) {
-        if (isValidURI(configValue)) {
-            String cachedValue = cache.computeIfAbsent(configName, k -> kResource
-                    .query(new KubeURI(configValue)).orElse(null));
-            return Optional.ofNullable(cachedValue);
-        } else {
-            return Optional.ofNullable(configValue);
+        try {
+            if (isValidURI(configValue)) {
+                String cachedValue = cache.computeIfAbsent(configName, k -> kResource
+                        .query(new KubeURI(configValue)).orElse(null));
+                return Optional.ofNullable(cachedValue);
+            }
+        } catch (RuntimeException e) {
+            logger.error("Service Discovery has failed", e);
         }
+        return Optional.ofNullable(configValue);
     }
 
     private boolean isValidURI(String value) {
