@@ -101,14 +101,13 @@ public class KogitoAssetsProcessor {
     OutputTargetBuildItem outputTargetBuildItem;
 
     @BuildStep
-    public KogitoBuildContextBuildItem generateKogitoBuildContext(List<KogitoBuildContextAttributeBuildItem> attributes) {
+    public KogitoBuildContextBuildItem generateKogitoBuildContext() {
         // configure the application generator
         KogitoBuildContext context =
                 kogitoBuildContext(outputTargetBuildItem.getOutputDirectory(),
                         root.getResolvedPaths(),
                         combinedIndexBuildItem.getIndex(),
                         curateOutcomeBuildItem.getApplicationModel().getAppArtifact());
-        attributes.forEach(attribute -> context.addContextAttribute(attribute.getName(), attribute.getValue()));
         return new KogitoBuildContextBuildItem(context);
     }
 

@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.quarkus.serverless.workflow.asyncapi;
+package org.kie.kogito.serverless.workflow.utils;
 
-import java.io.InputStream;
+import java.util.Map;
 
-import org.kie.kogito.quarkus.serverless.workflow.WorkflowOperationResource;
+public class AsyncInfo {
 
-import io.quarkiverse.asyncapi.generator.input.InputStreamSupplier;
+    private final Map<String, AsyncChannelInfo> operation2Channel;
 
-class AsyncInputStreamSupplier implements InputStreamSupplier {
+    public AsyncInfo(Map<String, AsyncChannelInfo> operation2Channel) {
+        super();
+        this.operation2Channel = operation2Channel;
+    }
 
-    private final WorkflowOperationResource resource;
-
-    public AsyncInputStreamSupplier(WorkflowOperationResource resource) {
-        this.resource = resource;
+    public Map<String, AsyncChannelInfo> getOperation2Channel() {
+        return operation2Channel;
     }
 
     @Override
-    public InputStream get() {
-        return resource.getContentLoader().getInputStream();
+    public String toString() {
+        return "AsyncInfo [operation2Channel=" + operation2Channel + "]";
     }
+
 }

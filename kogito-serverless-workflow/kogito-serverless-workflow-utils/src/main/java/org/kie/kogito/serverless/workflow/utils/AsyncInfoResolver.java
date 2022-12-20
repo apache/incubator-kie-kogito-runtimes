@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.asyncapi;
+package org.kie.kogito.serverless.workflow.utils;
 
-import java.util.Map;
+import java.util.Optional;
 
-public class AsyncInfo {
+public interface AsyncInfoResolver {
 
-    private final Map<String, AsyncChannelInfo> operation2Channel;
-
-    public AsyncInfo(Map<String, AsyncChannelInfo> operation2Channel) {
-        super();
-        this.operation2Channel = operation2Channel;
-    }
-
-    public Map<String, AsyncChannelInfo> getOperation2Channel() {
-        return operation2Channel;
-    }
-
-    @Override
-    public String toString() {
-        return "AsyncInfo [operation2Channel=" + operation2Channel + "]";
-    }
+    Optional<AsyncInfo> getAsyncInfo(String id);
 }
