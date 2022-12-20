@@ -4,13 +4,13 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     paths-ignore:
-      - 'LICENSE'
-      - '**/.gitignore'
-      - '**.md'
-      - '**.adoc'
-      - '*.txt'
-      - 'docsimg/**'
-      - '.ci/jenkins/**'
+      - "LICENSE"
+      - "**/.gitignore"
+      - "**.md"
+      - "**.adoc"
+      - "*.txt"
+      - "docsimg/**"
+      - ".ci/jenkins/**"
 
 jobs:
   example-build:
@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [11]
-        maven-version: ['3.8.6']
+        maven-version: ["3.8.6"]
         examples-subfolder:
           - kogito-quarkus-examples
           - kogito-springboot-examples
@@ -44,7 +44,9 @@ jobs:
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
       - name: Build Chain
+        uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
         env:
+          BUILD_MVN_OPTS: "-Dproductized -Ddata-index-ephemeral.image=quay.io/kiegroup/kogito-data-index-ephemeral"
           KOGITO_EXAMPLES_SUBFOLDER_POM: ${{ matrix.examples-subfolder }}/
         with:
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}/${{ matrix.maven-version }}
@@ -54,4 +56,4 @@ jobs:
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
         with:
-          report_paths: '**/*-reports/TEST-*.xml'
+          report_paths: "**/*-reports/TEST-*.xml"
