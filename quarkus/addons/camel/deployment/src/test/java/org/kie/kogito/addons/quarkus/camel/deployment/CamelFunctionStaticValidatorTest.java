@@ -37,11 +37,11 @@ public class CamelFunctionStaticValidatorTest {
 
     @ParameterizedTest
     @CsvSource({
-            "camel-soap.sw.json,callSoap",
-            "newsletter-subscription.sw.json,subscribeToNewsletter",
-            "camel-soap-no-args.sw.json,callSoap",
-            "camel-soap-expression-args.sw.json,callSoap",
-            "camel-soap-headers.sw.json,callSoap",
+            "valid-camel-soap.sw.json,callSoap",
+            "valid-newsletter-subscription.sw.json,subscribeToNewsletter",
+            "valid-camel-soap-no-args.sw.json,callSoap",
+            "valid-camel-soap-expression-args.sw.json,callSoap",
+            "valid-camel-soap-headers.sw.json,callSoap",
     })
     public void verifyValidWorkflowsWithCamelFunctions(final String workflowFile, final String functionDefName) throws URISyntaxException {
         getWorkflows(Stream.of(Paths.get(requireNonNull(CamelFunctionStaticValidatorTest.class.getResource("/" + workflowFile)).toURI())))
@@ -49,9 +49,9 @@ public class CamelFunctionStaticValidatorTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "camel-soap-invalid.sw.json,callSoap",
-            "camel-soap-headers-array.sw.json,callSoap",
-            "camel-soap-headers-primitive.sw.json,callSoap" })
+    @CsvSource({ "invalid-camel-soap.sw.json,callSoap",
+            "invalid-camel-soap-headers-array.sw.json,callSoap",
+            "invalid-camel-soap-headers-primitive.sw.json,callSoap" })
     public void verifyInvalidWorkflowsWithCamelFunctions(final String workflowFile, final String functionDefName) throws URISyntaxException {
         getWorkflows(Stream.of(
                 Paths.get(requireNonNull(CamelFunctionStaticValidatorTest.class.getResource("/" + workflowFile)).toURI())))
