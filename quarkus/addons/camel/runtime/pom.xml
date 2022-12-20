@@ -29,27 +29,9 @@
       <version>${version.io.quarkus.camel}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-xml-io-dsl</artifactId>
-      <version>${version.org.apache.camel}</version>
-    </dependency>
-    <!-- We are only interested in the XSD for IDE validation and auto-complete for XML Routes DSL -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-spring-xml</artifactId>
-      <version>${version.org.apache.camel}</version>
-      <scope>provided</scope>
-      <classifier>sources</classifier>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.camel</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.camel.quarkus</groupId>
+      <artifactId>camel-quarkus-xml-io-dsl</artifactId>
+      <version>${version.io.quarkus.camel}</version>
     </dependency>
   </dependencies>
   <build>
