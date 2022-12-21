@@ -23,7 +23,6 @@ import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,10 +43,10 @@ public class KnativeResourceDiscovery {
         this.knativeClient = kubernetesClient.adapt(KnativeClient.class);
     }
 
-    public Optional<URL> queryServiceByName(KubeURI kubeURI) {
-        Service service = knativeClient.services().inNamespace(kubeURI.getNamespace()).withName(kubeURI.getResourceName()).get();
+    public Optional<URL> queryService(String namespace, String serviceName) {
+        Service service = knativeClient.services().inNamespace(namespace).withName(serviceName).get();
         if (null == service) {
-            logger.error("Knative {} service not found on the {} namespace.", kubeURI.getResourceName(), kubeURI.getNamespace());
+            logger.error("Knative {} service not found on the {} namespace.", serviceName, namespace);
             return Optional.empty();
         }
         logger.debug("Found Knative endpoint at {}", service.getStatus().getUrl());

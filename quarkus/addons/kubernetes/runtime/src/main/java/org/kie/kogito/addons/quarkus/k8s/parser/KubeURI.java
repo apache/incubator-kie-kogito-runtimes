@@ -80,9 +80,6 @@ public class KubeURI {
             case 1:
                 // just function, get the current namespace to query the func.
                 logger.debug("Custom Functions calls are not yet implemented  for more information please visit https://issues.redhat.com/browse/KOGITO-7373");
-
-                resourceName = values[0];
-
                 break;
 
             default:

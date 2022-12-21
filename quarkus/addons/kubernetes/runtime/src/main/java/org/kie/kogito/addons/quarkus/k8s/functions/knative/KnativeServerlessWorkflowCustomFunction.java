@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
@@ -68,7 +67,7 @@ final class KnativeServerlessWorkflowCustomFunction {
     }
 
     private JsonNode sendRequest(Server server, String path, Map<String, Object> parameters) {
-        HttpRequest<Buffer> request = webClient.request(HttpMethod.POST, server.getPort(), server.getHost(), path);
+        HttpRequest<Buffer> request = webClient.post(server.getPort(), server.getHost(), path);
 
         HttpResponse<Buffer> response;
 

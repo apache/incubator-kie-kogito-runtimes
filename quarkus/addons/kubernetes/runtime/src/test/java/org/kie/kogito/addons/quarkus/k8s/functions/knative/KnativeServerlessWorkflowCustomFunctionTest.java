@@ -55,9 +55,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     @Inject
     KnativeServerlessWorkflowCustomFunction knativeServerlessWorkflowCustomFunction;
 
-    @Inject
-    KnativeServiceRegistry knativeServiceRegistry;
-
     static KnativeClient knativeClient;
 
     @BeforeEach
@@ -77,8 +74,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         kService.getStatus().setUrl(remoteServiceUrl);
 
         knativeClient.services().inNamespace(namespace).resource(kService).create();
-
-        knativeServiceRegistry.addService("serverless-workflow-greeting-quarkus");
     }
 
     @AfterAll

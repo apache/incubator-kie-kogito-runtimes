@@ -22,10 +22,9 @@ import javax.inject.Inject;
 
 import org.kie.kogito.addons.quarkus.k8s.KnativeResourceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.ServiceDiscoveryException;
-import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
 
 @ApplicationScoped
-public class KnativeServiceDiscovery {
+final class KnativeServiceDiscovery {
 
     private final KnativeResourceDiscovery knativeResourceDiscovery;
 
@@ -37,16 +36,12 @@ public class KnativeServiceDiscovery {
         this.currentNamespace = knativeResourceDiscovery.getCurrentNamespace();
     }
 
-    public Optional<Server> discover(String serviceName) {
+    Optional<Server> discover(String serviceName) {
         KnativeService knativeService = new KnativeService(serviceName);
 
-        KubeURI kubeURI = new KubeURI(String.format("knative:serving.knative.dev/v1/Service/%s/%s",
-                knativeService.getNamespace().orElse(currentNamespace),
-                knativeService.getName()));
-
         try {
-            return knativeResourceDiscovery.queryServiceByName(kubeURI)
-                    .map(url -> new Server(url.getProtocol(), url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
+            return knativeResourceDiscovery.queryService(knativeService.getNamespace().orElse(currentNamespace), knativeService.getName())
+                    .map(url -> new Server(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
         } catch (RuntimeException e) {
             throw new ServiceDiscoveryException("An exception occurred while discovering the Knative service with name: " + serviceName, e);
         }

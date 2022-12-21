@@ -15,28 +15,36 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.functions.knative;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.kie.kogito.addons.quarkus.k8s.ServiceDiscoveryException;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-public final class KnativeServiceRegistry {
+@ApplicationScoped
+final class KnativeServiceRegistry {
 
-    private final Map<String, Server> services = new HashMap<>();
+    private final Map<String, Server> services = new ConcurrentHashMap<>();
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
-    public KnativeServiceRegistry(KnativeServiceDiscovery knativeServiceDiscovery) {
+    @Inject
+    KnativeServiceRegistry(KnativeServiceDiscovery knativeServiceDiscovery) {
         this.knativeServiceDiscovery = knativeServiceDiscovery;
     }
 
-    void addService(String serviceName) {
-        services.put(serviceName,
-                knativeServiceDiscovery.discover(serviceName).orElseThrow(() -> new ServiceDiscoveryException("A Knative service with name '" + serviceName + "' could not be found.")));
+    private Optional<Server> addService(String serviceName) {
+        Optional<Server> server = knativeServiceDiscovery.discover(serviceName);
+        services.put(serviceName, server.orElse(null));
+        return server;
     }
 
-    public Optional<Server> getServer(String serviceName) {
-        return Optional.ofNullable(services.get(serviceName));
+    Optional<Server> getServer(String serviceName) {
+        if (services.containsKey(serviceName)) {
+            return Optional.ofNullable(services.get(serviceName));
+        } else {
+            return addService(serviceName);
+        }
     }
 }

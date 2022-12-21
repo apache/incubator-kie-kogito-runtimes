@@ -15,16 +15,13 @@
  */
 package org.kie.kogito.addons.quarkus.k8s.functions.knative;
 
-public final class Server {
-
-    private final String protocol;
+final class Server {
 
     private final String host;
 
     private final int port;
 
-    public Server(String protocol, String host, int port) {
-        this.protocol = protocol;
+    Server(String host, int port) {
         this.host = host;
         this.port = port;
     }
@@ -35,14 +32,5 @@ public final class Server {
 
     int getPort() {
         return port;
-    }
-
-    String getProtocol() {
-        return protocol;
-    }
-
-    @Override
-    public String toString() {
-        return protocol + "://" + host + ":" + port;
     }
 }

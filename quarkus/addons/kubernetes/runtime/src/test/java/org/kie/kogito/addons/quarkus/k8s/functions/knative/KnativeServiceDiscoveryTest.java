@@ -68,13 +68,15 @@ class KnativeServiceDiscoveryTest {
     @Test
     void discoverSpecificNamespace() {
         Optional<Server> server = knativeServiceDiscovery.discover("test/serverless-workflow-greeting-quarkus");
-        assertThat(server.orElseThrow()).hasToString("http://serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io:80");
+        assertThat(server).map(Server::getHost).hasValue("serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io");
+        assertThat(server).map(Server::getPort).hasValue(80);
     }
 
     @Test
     void discoverCurrentNamespace() {
         Optional<Server> server = knativeServiceDiscovery.discover("serverless-workflow-greeting-quarkus");
-        assertThat(server.orElseThrow()).hasToString("http://serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io:80");
+        assertThat(server).map(Server::getHost).hasValue("serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io");
+        assertThat(server).map(Server::getPort).hasValue(80);
     }
 
     @Test

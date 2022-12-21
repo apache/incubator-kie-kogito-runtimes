@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.kie.kogito.process.impl.DefaultWorkItemHandlerConfig;
 
 @ApplicationScoped
-public final class KnativeWorkItemHandlerConfig extends DefaultWorkItemHandlerConfig {
+final class KnativeWorkItemHandlerConfig extends DefaultWorkItemHandlerConfig {
 
     @Inject
     KnativeWorkItemHandler handler;
