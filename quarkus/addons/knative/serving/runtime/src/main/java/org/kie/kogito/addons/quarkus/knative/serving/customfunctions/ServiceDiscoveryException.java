@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.addons.quarkus.k8s;
+package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 public final class ServiceDiscoveryException extends RuntimeException {
-
-    public ServiceDiscoveryException(String message) {
-        super(message);
-    }
 
     public ServiceDiscoveryException(String message, Throwable cause) {
         super(message, cause);

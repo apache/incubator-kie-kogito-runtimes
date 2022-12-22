@@ -21,7 +21,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.kie.kogito.addons.quarkus.k8s.KnativeResourceDiscovery;
-import org.kie.kogito.addons.quarkus.k8s.ServiceDiscoveryException;
 
 @ApplicationScoped
 final class KnativeServiceDiscovery {

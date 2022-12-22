@@ -114,7 +114,6 @@ public class ServerlessWorkflowAssetsProcessor extends WorkflowProcessor {
     }
 
     private static Stream<Workflow> getWorkflows(KogitoBuildContext kogitoBuildContext) {
-        // TODO: Helber - REMOVE if #workflowsBuildItem is going to be kept
         Path[] paths = kogitoBuildContext.getAppPaths().getPaths();
 
         Stream<Path> workflowFiles = CollectedResourceProducer.fromPaths(paths).stream()
