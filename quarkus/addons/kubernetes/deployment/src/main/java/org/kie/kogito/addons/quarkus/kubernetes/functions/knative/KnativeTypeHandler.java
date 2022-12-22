@@ -33,13 +33,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             ParserContext context,
             WorkItemNodeFactory<T> node,
             FunctionDefinition functionDef) {
-        String operation = trimCustomOperation(functionDef);
-
-        KnativeTypeHandlerMetadata metadata = KnativeTypeHandlerMetadata.from(operation);
-
-        return node.workName(KnativeWorkItemHandler.NAME)
-                .metaData("knativeServiceName", metadata.getKnativeServiceName())
-                .metaData("path", metadata.getPath());
+        return node.workName(KnativeWorkItemHandler.NAME).metaData("operation", trimCustomOperation(functionDef));
     }
 
     @Override

@@ -36,10 +36,15 @@ public final class KnativeWorkItemHandler extends WorkflowWorkItemHandler {
     }
 
     @Override
-    protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
-        String knativeServiceName = (String) workItem.getNodeInstance().getNode().getMetaData().get("knativeServiceName");
-        String path = (String) workItem.getNodeInstance().getNode().getMetaData().get("path");
-        return customFunction.execute(knativeServiceName, path, parameters);
+    protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> unused) {
+        String operation = (String) workItem.getNodeInstance().getNode().getMetaData().get("operation");
+
+        KnativeTypeHandlerOperation knativeTypeHandlerOperation = KnativeTypeHandlerOperation.from(operation);
+
+        return customFunction.execute(
+                knativeTypeHandlerOperation.getKnativeServiceName(),
+                knativeTypeHandlerOperation.getPath(),
+                knativeTypeHandlerOperation.getParameters());
     }
 
     @Override
