@@ -70,7 +70,6 @@ public class JsonNodeContext implements AutoCloseable {
             }
         }
         return Collections.emptyMap();
-
     }
 
     private static boolean isEvalVariable(String varName, KogitoNodeInstance nodeInstance) {
@@ -83,7 +82,6 @@ public class JsonNodeContext implements AutoCloseable {
         VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
         return variableScope.getVariables().entrySet().stream().filter(e -> isEvalVariable(e.getKey(), (KogitoNodeInstance) node))
                 .collect(Collectors.toMap(Entry::getKey, entry -> JsonObjectUtils.fromValue(entry.getValue())));
-
     }
 
     @Override

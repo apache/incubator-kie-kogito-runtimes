@@ -22,12 +22,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.datatype.impl.coverter.CloneHelper;
 import org.jbpm.ruleflow.core.factory.SubProcessNodeFactory;
 import org.jbpm.workflow.core.impl.DataDefinition;
 import org.jbpm.workflow.core.node.SubProcessNode;
 import org.jbpm.workflow.instance.impl.NodeInstanceImpl;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
@@ -148,7 +150,10 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                 continue;
             }
 
-            Expression getValueExpr = new MethodCallExpr(new NameExpr("inputs"), "get", nodeList(new StringLiteralExpr(inputDefinition.getLabel())));
+            Expression getValueExpr =
+                    new MethodCallExpr(
+                            new MethodCallExpr(new NameExpr(CloneHelper.class.getCanonicalName()), "get"), "clone", NodeList.nodeList(new MethodCallExpr(new NameExpr("inputs"),
+                                    "get", nodeList(new StringLiteralExpr(inputDefinition.getLabel())))));
             actionBody.addStatement(subProcessModel.callSetter("model", inputDefinition.getLabel(), getValueExpr));
         }
 
