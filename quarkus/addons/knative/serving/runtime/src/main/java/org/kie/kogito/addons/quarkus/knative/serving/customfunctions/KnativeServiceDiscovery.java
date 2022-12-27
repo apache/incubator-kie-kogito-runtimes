@@ -27,20 +27,20 @@ final class KnativeServiceDiscovery {
 
     private final KnativeResourceDiscovery knativeResourceDiscovery;
 
-    private final String currentNamespace;
+    private final String currentContext;
 
     @Inject
     KnativeServiceDiscovery(KnativeResourceDiscovery knativeResourceDiscovery) {
         this.knativeResourceDiscovery = knativeResourceDiscovery;
-        this.currentNamespace = knativeResourceDiscovery.getCurrentNamespace();
+        this.currentContext = knativeResourceDiscovery.getCurrentContext();
     }
 
-    Optional<KnativeServiceServer> discover(String serviceName) {
-        KnativeService knativeService = new KnativeService(serviceName);
+    Optional<KnativeServiceAddress> discover(String serviceName) {
+        KnativeServiceIdentifier serviceIdentifier = new KnativeServiceIdentifier(serviceName);
 
         try {
-            return knativeResourceDiscovery.queryService(knativeService.getNamespace().orElse(currentNamespace), knativeService.getName())
-                    .map(url -> new KnativeServiceServer(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
+            return knativeResourceDiscovery.queryService(serviceIdentifier.getNamespace().orElse(currentContext), serviceIdentifier.getName())
+                    .map(url -> new KnativeServiceAddress(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
         } catch (RuntimeException e) {
             throw new ServiceDiscoveryException("An exception occurred while discovering the Knative service with name: " + serviceName, e);
         }

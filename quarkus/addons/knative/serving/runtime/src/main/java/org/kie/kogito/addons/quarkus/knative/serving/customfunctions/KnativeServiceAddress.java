@@ -15,13 +15,13 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
-final class KnativeServiceServer {
+final class KnativeServiceAddress {
 
     private final String host;
 
     private final int port;
 
-    KnativeServiceServer(String host, int port) {
+    KnativeServiceAddress(String host, int port) {
         this.host = host;
         this.port = port;
     }

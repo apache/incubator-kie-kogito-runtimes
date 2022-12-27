@@ -18,11 +18,13 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 class KnativeTypeHandlerOperationTest {
 
@@ -45,6 +47,13 @@ class KnativeTypeHandlerOperationTest {
     void from(String operation, KnativeTypeHandlerOperation expectedMetadata) {
         assertThat(KnativeTypeHandlerOperation.from(operation))
                 .isEqualTo(expectedMetadata);
+    }
+
+    @Test
+    void nullOperationShouldThrowNPE() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> KnativeTypeHandlerOperation.from(null))
+                .withMessage(KnativeTypeHandlerOperation.OPERATION_IS_REQUIRED_MSG);
     }
 
     private static KnativeTypeHandlerOperation customPathWithParams() {

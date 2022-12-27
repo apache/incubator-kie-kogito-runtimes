@@ -24,6 +24,10 @@ import static java.util.stream.Collectors.toMap;
 
 public final class KnativeTypeHandlerOperation {
 
+    private static final String PATH_KEY = "path";
+
+    static final String OPERATION_IS_REQUIRED_MSG = "Operation is required.";
+
     private final String knativeServiceName;
 
     private final String path;
@@ -37,6 +41,8 @@ public final class KnativeTypeHandlerOperation {
     }
 
     public static KnativeTypeHandlerOperation from(String operation) {
+        Objects.requireNonNull(operation, OPERATION_IS_REQUIRED_MSG);
+
         String[] splitOperation = operation.split("\\?");
 
         String knativeServiceName = splitOperation[0];
@@ -52,7 +58,7 @@ public final class KnativeTypeHandlerOperation {
             Map<String, Object> parameters = new HashMap<>();
 
             for (Map.Entry<String, String> entry : queryString.entrySet()) {
-                if ("path".equals(entry.getKey())) {
+                if (PATH_KEY.equals(entry.getKey())) {
                     path = entry.getValue();
                 } else {
                     parameters.put(entry.getKey(), entry.getValue());

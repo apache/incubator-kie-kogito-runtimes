@@ -26,7 +26,7 @@ import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 @ApplicationScoped
 public final class KnativeWorkItemHandler extends WorkflowWorkItemHandler {
 
-    public static final String NAME = KnativeWorkItemHandler.class.getSimpleName();
+    public static final String NAME = "knative-serving";
 
     private final KnativeServerlessWorkflowCustomFunction customFunction;
 

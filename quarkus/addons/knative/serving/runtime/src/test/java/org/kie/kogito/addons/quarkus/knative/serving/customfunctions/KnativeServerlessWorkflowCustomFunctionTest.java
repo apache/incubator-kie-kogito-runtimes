@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import io.fabric8.knative.client.KnativeClient;
-import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -38,6 +37,7 @@ import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceDiscoveryTestUtil.createServiceIfNotExists;
 
 @QuarkusTest
 @WithKubernetesTestServer
@@ -50,7 +50,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     String remoteServiceUrl;
 
     @KubernetesTestServer
-    KubernetesServer mockK8sServer;
+    KubernetesServer mockServer;
 
     @Inject
     KnativeServerlessWorkflowCustomFunction knativeServerlessWorkflowCustomFunction;
@@ -58,26 +58,13 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     static KnativeClient knativeClient;
 
     @BeforeEach
-    void createServiceIfNotExists() {
-        String namespace = "test";
-
-        if (mockK8sServer.getClient().services().inNamespace("test").withName("serverless-workflow-greeting-quarkus").get() != null) {
-            return;
-        }
-
-        knativeClient = mockK8sServer.getClient().adapt(KnativeClient.class);
-        Service kService = knativeClient.services()
-                .inNamespace(namespace)
-                .load(getClass().getClassLoader().getResourceAsStream("knative/quarkus-greeting.yaml"))
-                .get();
-
-        kService.getStatus().setUrl(remoteServiceUrl);
-
-        knativeClient.services().inNamespace(namespace).resource(kService).create();
+    void setup() {
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "serverless-workflow-greeting-quarkus")
+                .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
     }
 
     @AfterAll
-    static void cleanup() {
+    static void tearDown() {
         knativeClient.close();
     }
 

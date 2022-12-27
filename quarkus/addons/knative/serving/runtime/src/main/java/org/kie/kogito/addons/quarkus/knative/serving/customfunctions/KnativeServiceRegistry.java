@@ -25,7 +25,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 final class KnativeServiceRegistry {
 
-    private final Map<String, KnativeServiceServer> services = new ConcurrentHashMap<>();
+    private final Map<String, KnativeServiceAddress> services = new ConcurrentHashMap<>();
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
@@ -34,13 +34,13 @@ final class KnativeServiceRegistry {
         this.knativeServiceDiscovery = knativeServiceDiscovery;
     }
 
-    private Optional<KnativeServiceServer> addService(String serviceName) {
-        Optional<KnativeServiceServer> server = knativeServiceDiscovery.discover(serviceName);
-        services.put(serviceName, server.orElse(null));
-        return server;
+    private Optional<KnativeServiceAddress> addService(String serviceName) {
+        Optional<KnativeServiceAddress> serviceAddress = knativeServiceDiscovery.discover(serviceName);
+        services.put(serviceName, serviceAddress.orElse(null));
+        return serviceAddress;
     }
 
-    Optional<KnativeServiceServer> getServer(String serviceName) {
+    Optional<KnativeServiceAddress> getServiceAddress(String serviceName) {
         if (services.containsKey(serviceName)) {
             return Optional.ofNullable(services.get(serviceName));
         } else {

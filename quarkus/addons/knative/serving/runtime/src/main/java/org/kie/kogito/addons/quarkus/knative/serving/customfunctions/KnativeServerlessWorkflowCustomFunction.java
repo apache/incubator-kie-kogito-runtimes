@@ -37,6 +37,11 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
+/**
+ * Implementation of a Serverless Workflow custom function to invoke Knative services.
+ * 
+ * @see <a href="https://github.com/serverlessworkflow/specification/blob/main/specification.md#defining-custom-function-types">Serverless Workflow specification - Defining custom function types</a>
+ */
 @ApplicationScoped
 final class KnativeServerlessWorkflowCustomFunction {
 
@@ -57,26 +62,34 @@ final class KnativeServerlessWorkflowCustomFunction {
         webClient.close();
     }
 
-    JsonNode execute(String knativeServiceName, String path, Map<String, Object> parameters) {
+    /**
+     * Invokes a Knative service using the specified payload.
+     * 
+     * @param knativeServiceName name of the Knative service
+     * @param path resource path
+     * @param payload the payload
+     * @return a {@link JsonNode} that represents the response payload
+     */
+    JsonNode execute(String knativeServiceName, String path, Map<String, Object> payload) {
         Objects.requireNonNull(knativeServiceName, "knativeServiceName is a mandatory parameter");
         Objects.requireNonNull(path, "path is a mandatory parameter");
 
-        KnativeServiceServer server = getServer(knativeServiceName);
+        KnativeServiceAddress serviceAddress = getServiceAddress(knativeServiceName);
 
-        return sendRequest(server, path, parameters);
+        return sendRequest(serviceAddress, path, payload);
     }
 
-    private JsonNode sendRequest(KnativeServiceServer server, String path, Map<String, Object> parameters) {
-        HttpRequest<Buffer> request = webClient.post(server.getPort(), server.getHost(), path);
+    private JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload) {
+        HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path);
 
         HttpResponse<Buffer> response;
 
-        if (parameters.isEmpty()) {
-            logger.debug("Sending request with empty body - host: {}, port: {}, path: {}", server.getHost(), server.getPort(), path);
+        if (payload.isEmpty()) {
+            logger.debug("Sending request with empty body - host: {}, port: {}, path: {}", serviceAddress.getHost(), serviceAddress.getPort(), path);
             response = request.sendAndAwait();
         } else {
-            JsonObject body = new JsonObject(parameters);
-            logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", server.getHost(), server.getPort(), path, body);
+            JsonObject body = new JsonObject(payload);
+            logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", serviceAddress.getHost(), serviceAddress.getPort(), path, body);
             response = request.sendJsonObjectAndAwait(body);
         }
 
@@ -93,8 +106,8 @@ final class KnativeServerlessWorkflowCustomFunction {
         }
     }
 
-    private KnativeServiceServer getServer(String knativeServiceName) {
-        return knativeServiceRegistry.getServer(knativeServiceName)
+    private KnativeServiceAddress getServiceAddress(String knativeServiceName) {
+        return knativeServiceRegistry.getServiceAddress(knativeServiceName)
                 .orElseThrow(() -> new WorkItemExecutionException("The Knative service '" + knativeServiceName
                         + "' could not be found."));
     }

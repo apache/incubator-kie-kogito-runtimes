@@ -19,68 +19,71 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.fabric8.knative.client.KnativeClient;
-import io.fabric8.knative.serving.v1.Service;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceDiscoveryTestUtil.createServiceIfNotExists;
+
 @QuarkusTest
 @WithKubernetesTestServer
 class KnativeServiceDiscoveryTest {
+
+    private static final String REMOTE_SERVICE_HOST = "serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io";
 
     @KubernetesTestServer
     KubernetesServer mockServer;
 
     @Inject
-    KnativeServiceDiscovery knativeServiceDiscovery;
+    KnativeServiceDiscovery serviceDiscovery;
 
     static KnativeClient knativeClient;
 
     @BeforeEach
-    void createServiceIfNotExists() {
-        String namespace = "test";
+    void setup() {
+        String remoteServiceUrl = "http://" + REMOTE_SERVICE_HOST;
 
-        if (mockServer.getClient().services().inNamespace("test").withName("serverless-workflow-greeting-quarkus").get() != null) {
-            return;
-        }
-
-        knativeClient = mockServer.getClient().adapt(KnativeClient.class);
-        Service kService = knativeClient.services()
-                .inNamespace(namespace)
-                .load(getClass().getClassLoader().getResourceAsStream("knative/quarkus-greeting.yaml"))
-                .get();
-        knativeClient.services().inNamespace(namespace).resource(kService).create();
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "serverless-workflow-greeting-quarkus")
+                .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
     }
 
     @AfterAll
-    static void cleanup() {
+    static void tearDown() {
         knativeClient.close();
     }
 
     @Test
     void discoverSpecificNamespace() {
-        Optional<KnativeServiceServer> server = knativeServiceDiscovery.discover("test/serverless-workflow-greeting-quarkus");
-        Assertions.assertThat(server).map(KnativeServiceServer::getHost).hasValue("serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io");
-        Assertions.assertThat(server).map(KnativeServiceServer::getPort).hasValue(80);
+        Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("test/serverless-workflow-greeting-quarkus");
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getHost)
+                .hasValue(REMOTE_SERVICE_HOST);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
+                .hasValue(80);
     }
 
     @Test
     void discoverCurrentNamespace() {
-        Optional<KnativeServiceServer> server = knativeServiceDiscovery.discover("serverless-workflow-greeting-quarkus");
-        Assertions.assertThat(server).map(KnativeServiceServer::getHost).hasValue("serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io");
-        Assertions.assertThat(server).map(KnativeServiceServer::getPort).hasValue(80);
+        Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("serverless-workflow-greeting-quarkus");
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getHost)
+                .hasValue(REMOTE_SERVICE_HOST);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
+                .hasValue(80);
     }
 
     @Test
     void serviceInDifferentNamespaceShouldNotBeFound() {
-        Optional<KnativeServiceServer> server = knativeServiceDiscovery.discover("different_namespace/serverless-workflow-greeting-quarkus");
-        Assertions.assertThat(server).isEmpty();
+        Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("different_namespace/serverless-workflow-greeting-quarkus");
+        assertThat(serviceAddress).isEmpty();
     }
 }

@@ -58,7 +58,7 @@ public class KnativeResourceDiscovery {
         }
     }
 
-    public String getCurrentNamespace() {
+    public String getCurrentContext() {
         return knativeClient.getNamespace();
     }
 }

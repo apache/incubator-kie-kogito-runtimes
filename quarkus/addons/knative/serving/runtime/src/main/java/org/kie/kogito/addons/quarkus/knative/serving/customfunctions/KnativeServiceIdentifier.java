@@ -15,15 +15,21 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
-final class KnativeService {
+final class KnativeServiceIdentifier {
 
     private final String namespace;
 
     private final String name;
 
-    KnativeService(String url) {
+    private static final Pattern validUrlPattern = Pattern.compile("\\S+/\\S+");
+
+    KnativeServiceIdentifier(String url) {
+        validateUrl(url);
+
         String[] splitUrl = url.split("/");
 
         if (splitUrl.length == 1) {
@@ -32,6 +38,14 @@ final class KnativeService {
         } else {
             namespace = splitUrl[0];
             name = splitUrl[1];
+        }
+    }
+
+    private static void validateUrl(String url) {
+        Objects.requireNonNull(url, "The Knative service URL is required.");
+
+        if ((!validUrlPattern.matcher(url).matches() && url.contains("/")) || url.trim().length() == 0) {
+            throw new IllegalArgumentException();
         }
     }
 
