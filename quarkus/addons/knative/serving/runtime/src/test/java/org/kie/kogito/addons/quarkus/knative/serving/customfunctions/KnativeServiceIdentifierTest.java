@@ -45,7 +45,7 @@ class KnativeServiceIdentifierTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "", " ", "namespace/", "/service" })
+    @ValueSource(strings = { "", " ", "namespace/", "/service", " / ", "several/slashes/slashes/slashes" })
     void testInvalidUrl(String url) {
         assertThatIllegalArgumentException().isThrownBy(() -> new KnativeServiceIdentifier(url));
     }
