@@ -18,8 +18,13 @@ package org.kie.kogito.addons.quarkus.knative.serving.deployment.customfunctions
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
 import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler;
+import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandlerConstants;
+import org.kie.kogito.addons.quarkus.knative.serving.customfunctions.ServiceDiscoveryException;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.parser.ParserContext;
 import org.kie.kogito.serverless.workflow.parser.types.WorkItemTypeHandler;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -33,7 +38,16 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             ParserContext context,
             WorkItemNodeFactory<T> node,
             FunctionDefinition functionDef) {
-        return node.workName(KnativeWorkItemHandler.NAME).metaData("operation", trimCustomOperation(functionDef));
+        String functionMetadata;
+        try {
+            functionMetadata = ObjectMapperFactory.get().writeValueAsString(functionDef.getMetadata());
+        } catch (JsonProcessingException e) {
+            throw new ServiceDiscoveryException("Error while reading function metadata.", e);
+        }
+
+        return node.workName(KnativeWorkItemHandler.NAME)
+                .metaData(KnativeWorkItemHandlerConstants.OPERATION_PROPERTY_NAME, trimCustomOperation(functionDef))
+                .metaData(KnativeWorkItemHandlerConstants.FUNCTION_METADATA_PROPERTY_NAME, functionMetadata);
     }
 
     @Override
