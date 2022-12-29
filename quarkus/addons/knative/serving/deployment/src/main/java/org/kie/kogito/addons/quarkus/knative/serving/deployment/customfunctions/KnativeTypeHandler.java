@@ -52,6 +52,6 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
 
     @Override
     public String type() {
-        return "knative";
+        return KnativeWorkItemHandler.NAME;
     }
 }
