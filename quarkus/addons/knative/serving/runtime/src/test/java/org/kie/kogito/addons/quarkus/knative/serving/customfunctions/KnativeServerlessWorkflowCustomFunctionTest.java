@@ -21,55 +21,127 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.REQUEST_TIMEOUT_PROPERTY_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.TIMEOUT_ERROR_MSG;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceDiscoveryTestUtil.createServiceIfNotExists;
 
 @QuarkusTest
 @WithKubernetesTestServer
-@QuarkusTestResource(KnativeServerlessWorkflowCustomFunctionMockServer.class)
 class KnativeServerlessWorkflowCustomFunctionTest {
 
-    static final String REMOTE_SERVICE_URL_PROPERTY_NAME = "knative-serverless-workflow-custom-function-test.remote.service.url";
-
-    @ConfigProperty(name = REMOTE_SERVICE_URL_PROPERTY_NAME)
-    String remoteServiceUrl;
+    private static String remoteServiceUrl;
 
     @KubernetesTestServer
     KubernetesServer mockServer;
 
+    @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME)
+    Long requestTimeout;
+
     @Inject
     KnativeServerlessWorkflowCustomFunction knativeServerlessWorkflowCustomFunction;
 
-    static KnativeClient knativeClient;
+    private static KnativeClient knativeClient;
+
+    private static WireMockServer wireMockServer;
+
+    @BeforeAll
+    static void beforeAll() {
+        createWiremockServer();
+    }
 
     @BeforeEach
-    void setup() {
+    void beforeEach() {
         createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "serverless-workflow-greeting-quarkus")
                 .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
     }
 
     @AfterAll
-    static void tearDown() {
+    static void afterAll() {
+        if (wireMockServer != null) {
+            wireMockServer.stop();
+        }
         knativeClient.close();
+    }
+
+    private static void createWiremockServer() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig().dynamicPort());
+        wireMockServer.start();
+        remoteServiceUrl = wireMockServer.baseUrl();
+    }
+
+    private void mockExecuteTimeoutEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/timeout"))
+                .willReturn(aResponse()
+                        .withFixedDelay(requestTimeout.intValue() + 500)
+                        .withStatus(200)));
+    }
+
+    private void mockExecute404Endpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/non_existing_path"))
+                .willReturn(aResponse()
+                        .withStatus(404)));
+    }
+
+    private void mockExecuteWithQueryParametersEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/hello"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Hello Kogito"))));
+    }
+
+    private void mockExecuteWithParametersEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/"))
+                .withRequestBody(equalToJson(JsonNodeFactory.instance.objectNode()
+                        .put("org", "Acme")
+                        .put("project", "Kogito")
+                        .toString()))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("message", "Kogito is awesome!"))));
+    }
+
+    private void mockExecuteWithEmptyParametersEndpoint() {
+        wireMockServer.stubFor(post(urlEqualTo("/"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withJsonBody(JsonNodeFactory.instance.objectNode()
+                                .put("org", "Acme")
+                                .put("project", "Kogito"))));
     }
 
     @Test
     void executeWithEmptyParameters() {
+        mockExecuteWithEmptyParametersEndpoint();
+
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute("serverless-workflow-greeting-quarkus", "/", Map.of());
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
@@ -81,6 +153,8 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @Test
     void executeWithParameters() {
+        mockExecuteWithParametersEndpoint();
+
         Map<String, Object> parameters = Map.of(
                 "org", "Acme",
                 "project", "Kogito");
@@ -95,6 +169,8 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @Test
     void executeWithQueryParameters() {
+        mockExecuteWithQueryParametersEndpoint();
+
         Map<String, Object> parameters = Map.of();
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute("serverless-workflow-greeting-quarkus", "/hello", parameters);
@@ -107,10 +183,24 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @Test
     void execute404() {
+        mockExecute404Endpoint();
+
         Map<String, Object> parameters = Map.of();
         assertThatCode(() -> knativeServerlessWorkflowCustomFunction.execute("serverless-workflow-greeting-quarkus", "/non_existing_path", parameters))
                 .isInstanceOf(WorkItemExecutionException.class)
                 .extracting("errorCode")
                 .isEqualTo("404");
+    }
+
+    @Test
+    void executeTimeout() {
+        mockExecuteTimeoutEndpoint();
+
+        Map<String, Object> payload = Map.of();
+
+        assertThatExceptionOfType(WorkItemExecutionException.class)
+                .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute("serverless-workflow-greeting-quarkus", "/timeout", payload))
+                .withMessage(TIMEOUT_ERROR_MSG)
+                .extracting("errorCode").isEqualTo(String.valueOf(REQUEST_TIMEOUT.getStatusCode()));
     }
 }

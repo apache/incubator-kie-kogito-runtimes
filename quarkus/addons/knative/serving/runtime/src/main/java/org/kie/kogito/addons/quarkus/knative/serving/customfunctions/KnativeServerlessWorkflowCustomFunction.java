@@ -17,11 +17,18 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +44,9 @@ import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+
 /**
  * Implementation of a Serverless Workflow custom function to invoke Knative services.
  * 
@@ -46,15 +56,25 @@ import io.vertx.mutiny.ext.web.client.WebClient;
 final class KnativeServerlessWorkflowCustomFunction {
 
     private static final Logger logger = LoggerFactory.getLogger(KnativeServerlessWorkflowCustomFunction.class);
+    
+    static final String REQUEST_TIMEOUT_PROPERTY_NAME = "kogito.addon.knative-serving.request-timeout";
+
+    private static final long DEFAULT_REQUEST_TIMEOUT_VALUE = 10_000L;
+
+    static final String TIMEOUT_ERROR_MSG = "Timeout while waiting for the Knative service to respond.";
 
     private final WebClient webClient;
 
     private final KnativeServiceRegistry knativeServiceRegistry;
 
+    private final Long requestTimeout;
+
     @Inject
-    KnativeServerlessWorkflowCustomFunction(Vertx vertx, KnativeServiceRegistry knativeServiceRegistry) {
+    KnativeServerlessWorkflowCustomFunction(Vertx vertx, KnativeServiceRegistry knativeServiceRegistry,
+            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
         this.webClient = WebClient.create(vertx);
         this.knativeServiceRegistry = knativeServiceRegistry;
+        this.requestTimeout = requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE);
     }
 
     @PreDestroy
@@ -86,11 +106,11 @@ final class KnativeServerlessWorkflowCustomFunction {
 
         if (payload.isEmpty()) {
             logger.debug("Sending request with empty body - host: {}, port: {}, path: {}", serviceAddress.getHost(), serviceAddress.getPort(), path);
-            response = request.sendAndAwait();
+            response = dispatchRequestWithTimeout(request::sendAndAwait);
         } else {
             JsonObject body = new JsonObject(payload);
             logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", serviceAddress.getHost(), serviceAddress.getPort(), path, body);
-            response = request.sendJsonObjectAndAwait(body);
+            response = dispatchRequestWithTimeout(() -> request.sendJsonObjectAndAwait(body));
         }
 
         JsonObject responseBody = response.bodyAsJsonObject();
@@ -103,6 +123,19 @@ final class KnativeServerlessWorkflowCustomFunction {
             ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
             responseBody.fieldNames().forEach(fieldName -> jsonNode.put(fieldName, responseBody.getString(fieldName)));
             return jsonNode;
+        }
+    }
+
+    private HttpResponse<Buffer> dispatchRequestWithTimeout(Supplier<HttpResponse<Buffer>> requestDispatch) {
+        try {
+            return CompletableFuture.supplyAsync(requestDispatch).get(requestTimeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new WorkItemExecutionException("Execution interrupted while waiting for a response from the Knative service.");
+        } catch (ExecutionException e) {
+            throw new WorkItemExecutionException(String.valueOf(INTERNAL_SERVER_ERROR.getStatusCode()), e);
+        } catch (TimeoutException e) {
+            throw new WorkItemExecutionException(String.valueOf(REQUEST_TIMEOUT.getStatusCode()), TIMEOUT_ERROR_MSG, e);
         }
     }
 
