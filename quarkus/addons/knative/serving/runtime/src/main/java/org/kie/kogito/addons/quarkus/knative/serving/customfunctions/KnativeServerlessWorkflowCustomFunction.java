@@ -56,7 +56,7 @@ import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 final class KnativeServerlessWorkflowCustomFunction {
 
     private static final Logger logger = LoggerFactory.getLogger(KnativeServerlessWorkflowCustomFunction.class);
-    
+
     static final String REQUEST_TIMEOUT_PROPERTY_NAME = "kogito.addon.knative-serving.request-timeout";
 
     private static final long DEFAULT_REQUEST_TIMEOUT_VALUE = 10_000L;

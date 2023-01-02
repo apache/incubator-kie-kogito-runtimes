@@ -38,11 +38,7 @@ final class KnativeServiceDiscovery {
     Optional<KnativeServiceAddress> discover(String serviceName) {
         KnativeServiceIdentifier serviceIdentifier = new KnativeServiceIdentifier(serviceName);
 
-        try {
-            return knativeResourceDiscovery.queryService(serviceIdentifier.getNamespace().orElse(currentContext), serviceIdentifier.getName())
-                    .map(url -> new KnativeServiceAddress(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
-        } catch (RuntimeException e) {
-            throw new ServiceDiscoveryException("An exception occurred while discovering the Knative service with name: " + serviceName, e);
-        }
+        return knativeResourceDiscovery.queryService(serviceIdentifier.getNamespace().orElse(currentContext), serviceIdentifier.getName())
+                .map(url -> new KnativeServiceAddress(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
     }
 }
