@@ -63,15 +63,18 @@ public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, Ma
         return new JsonNodeModelOutput(id, workflowdata);
     }
 
+    @Override
     public void update(Map<String, Object> params) {
         Map<String, Object> copy = mutableMap(params);
         update((String) copy.remove("id"), copy);
     }
 
+    @Override
     public void fromMap(String id, Map<String, Object> params) {
         update(id, mutableMap(params));
     }
 
+    @Override
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put(SWFConstants.DEFAULT_WORKFLOW_VAR, workflowdata);

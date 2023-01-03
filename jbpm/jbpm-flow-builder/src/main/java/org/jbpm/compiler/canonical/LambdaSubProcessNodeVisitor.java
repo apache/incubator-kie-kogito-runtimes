@@ -100,7 +100,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
                     .forEach(t -> t.setName(subProcessModelClassName));
 
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("bind"))
-                    .ifPresent(m -> m.setBody(bind(node, subProcessModel)));
+                    .ifPresent(m -> m.setBody(bind(subProcessModel)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("createInstance"))
                     .ifPresent(m -> m.setBody(createInstance(node, metadata)));
             retValueExpression.findFirst(MethodDeclaration.class, m -> m.getNameAsString().equals("unbind"))
@@ -113,7 +113,7 @@ public class LambdaSubProcessNodeVisitor extends AbstractNodeVisitor<SubProcessN
         body.addStatement(getDoneMethod(getNodeId(node)));
     }
 
-    private BlockStmt bind(SubProcessNode subProcessNode, ModelMetaData subProcessModel) {
+    private BlockStmt bind(ModelMetaData subProcessModel) {
         BlockStmt actionBody = new BlockStmt();
         actionBody.addStatement(subProcessModel.newInstance("model"));
 
