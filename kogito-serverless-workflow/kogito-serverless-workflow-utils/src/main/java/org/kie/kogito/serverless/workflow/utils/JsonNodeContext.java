@@ -99,11 +99,13 @@ public class JsonNodeContext implements AutoCloseable {
     }
 
     private static void getVariablesFromContext(Map<String, JsonNode> variables, ContextableInstance node) {
-        Map<String, Object> variableValues = ((VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE)).getVariables();
-        Collection<String> evalVariables = getEvalVariables(node).map(Variable::getName).collect(Collectors.toList());
-        for (Entry<String, Object> e : variableValues.entrySet()) {
-            if (evalVariables.contains(e.getKey()) || node instanceof WorkflowProcessInstance && !e.getKey().equals("workflowdata")) {
-                variables.putIfAbsent(e.getKey(), JsonObjectUtils.fromValue(e.getValue()));
+        VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
+        if (variableScope != null) {
+            Collection<String> evalVariables = getEvalVariables(node).map(Variable::getName).collect(Collectors.toList());
+            for (Entry<String, Object> e : variableScope.getVariables().entrySet()) {
+                if (evalVariables.contains(e.getKey()) || node instanceof WorkflowProcessInstance && !e.getKey().equals("workflowdata")) {
+                    variables.putIfAbsent(e.getKey(), JsonObjectUtils.fromValue(e.getValue()));
+                }
             }
         }
     }
