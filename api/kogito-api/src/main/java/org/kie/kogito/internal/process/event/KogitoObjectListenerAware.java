@@ -22,7 +22,7 @@ public interface KogitoObjectListenerAware {
 
     default void fireEvent(String propertyName, Object oldValue, Object newValue, Runnable updater) {
         if (!Objects.equals(oldValue, newValue)) {
-            if (newValue instanceof KogitoObjectListenerAware) {
+            if (newValue instanceof KogitoObjectListenerAware && !Objects.equals(this, newValue)) {
                 ((KogitoObjectListenerAware) newValue).addKogitoObjectListener(new KogitoObjectListenerAwareListener(this, propertyName));
             }
             listeners().forEach(l -> l.beforeValueChanged(this, propertyName, oldValue, newValue));

@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,15 +101,11 @@ public class JsonNodeContext implements AutoCloseable {
         if (variableScope != null) {
             Collection<String> evalVariables = getEvalVariables(node).map(Variable::getName).collect(Collectors.toList());
             for (Entry<String, Object> e : variableScope.getVariables().entrySet()) {
-                if (evalVariables.contains(e.getKey()) || shouldAdd(e, jsonNode, node)) {
+                if (evalVariables.contains(e.getKey()) || node instanceof WorkflowProcessInstance && !Objects.equals(jsonNode, e.getValue())) {
                     variables.putIfAbsent(e.getKey(), JsonObjectUtils.fromValue(e.getValue()));
                 }
             }
         }
-    }
-
-    private static boolean shouldAdd(Entry<String, Object> e, ObjectNode jsonNode, ContextableInstance node) {
-        return jsonNode != e.getValue() && node instanceof WorkflowProcessInstance && !e.getKey().equals("workflowdata");
     }
 
     @Override
