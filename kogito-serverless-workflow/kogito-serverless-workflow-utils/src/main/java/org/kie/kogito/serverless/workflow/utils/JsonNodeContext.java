@@ -16,7 +16,6 @@
 package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,11 +66,10 @@ public class JsonNodeContext implements AutoCloseable {
     }
 
     public static JsonNodeContext from(JsonNode jsonNode, KogitoProcessContext context) {
-        Map<String, JsonNode> map = Collections.emptyMap();
+        Map<String, JsonNode> map = new HashMap<>();
         if (jsonNode.isObject()) {
             ObjectNode objectNode = (ObjectNode) jsonNode;
-            map = addVariablesFromContext(context);
-            map.forEach(objectNode::set);
+            addVariablesFromContext(objectNode, context, map);
         }
         return new JsonNodeContext(jsonNode, map.keySet());
     }
@@ -85,29 +83,32 @@ public class JsonNodeContext implements AutoCloseable {
         this.keys = keys;
     }
 
-    private static Map<String, JsonNode> addVariablesFromContext(KogitoProcessContext processInfo) {
+    private static void addVariablesFromContext(ObjectNode jsonNode, KogitoProcessContext processInfo, Map<String, JsonNode> variables) {
         KogitoNodeInstance nodeInstance = processInfo.getNodeInstance();
-        Map<String, JsonNode> variables = new HashMap<>();
         if (nodeInstance != null) {
             NodeInstanceContainer container = nodeInstance instanceof NodeInstanceContainer ? (NodeInstanceContainer) nodeInstance : nodeInstance.getNodeInstanceContainer();
             while (container instanceof ContextableInstance) {
-                getVariablesFromContext(variables, (ContextableInstance) container);
+                getVariablesFromContext(jsonNode, (ContextableInstance) container, variables);
                 container = container instanceof KogitoNodeInstance ? ((KogitoNodeInstance) container).getNodeInstanceContainer() : null;
             }
         }
-        return variables;
+        variables.forEach(jsonNode::set);
     }
 
-    private static void getVariablesFromContext(Map<String, JsonNode> variables, ContextableInstance node) {
+    private static void getVariablesFromContext(ObjectNode jsonNode, ContextableInstance node, Map<String, JsonNode> variables) {
         VariableScopeInstance variableScope = (VariableScopeInstance) node.getContextInstance(VariableScope.VARIABLE_SCOPE);
         if (variableScope != null) {
             Collection<String> evalVariables = getEvalVariables(node).map(Variable::getName).collect(Collectors.toList());
             for (Entry<String, Object> e : variableScope.getVariables().entrySet()) {
-                if (evalVariables.contains(e.getKey()) || node instanceof WorkflowProcessInstance && !e.getKey().equals("workflowdata")) {
+                if (evalVariables.contains(e.getKey()) || shouldAdd(e, jsonNode, node)) {
                     variables.putIfAbsent(e.getKey(), JsonObjectUtils.fromValue(e.getValue()));
                 }
             }
         }
+    }
+
+    private static boolean shouldAdd(Entry<String, Object> e, ObjectNode jsonNode, ContextableInstance node) {
+        return jsonNode != e.getValue() && node instanceof WorkflowProcessInstance && !e.getKey().equals("workflowdata");
     }
 
     @Override

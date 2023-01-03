@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class JacksonConverter<T> implements Function<String, T> {
 
-    private Class<T> clazz;
+    private final Class<T> clazz;
 
     public JacksonConverter(Class<T> clazz) {
         this.clazz = clazz;
