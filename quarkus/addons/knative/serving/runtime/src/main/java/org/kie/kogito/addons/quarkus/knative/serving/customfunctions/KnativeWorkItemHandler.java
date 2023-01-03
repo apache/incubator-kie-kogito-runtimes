@@ -28,6 +28,10 @@ public final class KnativeWorkItemHandler extends WorkflowWorkItemHandler {
 
     public static final String NAME = "knative";
 
+    public static final String OPERATION_PROPERTY_NAME = "operation";
+
+    public static final String PATH_PROPERTY_NAME = "path";
+
     private final KnativeServerlessWorkflowCustomFunction customFunction;
 
     @Inject
@@ -37,9 +41,11 @@ public final class KnativeWorkItemHandler extends WorkflowWorkItemHandler {
 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> arguments) {
+        Map<String, Object> metadata = workItem.getNodeInstance().getNode().getMetaData();
+
         return customFunction.execute(
-                (String) workItem.getNodeInstance().getNode().getMetaData().get("operation"),
-                workItem.getNodeInstance().getNode().getMetaData().getOrDefault("path", "/").toString(),
+                (String) metadata.get(OPERATION_PROPERTY_NAME),
+                metadata.getOrDefault(PATH_PROPERTY_NAME, "/").toString(),
                 arguments);
     }
 

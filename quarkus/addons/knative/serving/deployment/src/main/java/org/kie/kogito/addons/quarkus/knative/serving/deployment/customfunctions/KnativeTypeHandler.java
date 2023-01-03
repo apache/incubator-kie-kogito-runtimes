@@ -37,7 +37,7 @@ public class KnativeTypeHandler extends WorkItemTypeHandler {
             functionDef.getMetadata().forEach(node::metaData);
         }
 
-        return node.workName(KnativeWorkItemHandler.NAME).metaData("operation", trimCustomOperation(functionDef));
+        return node.workName(KnativeWorkItemHandler.NAME).metaData(KnativeWorkItemHandler.OPERATION_PROPERTY_NAME, trimCustomOperation(functionDef));
     }
 
     @Override
