@@ -75,9 +75,6 @@ public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, Ma
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put(SWFConstants.DEFAULT_WORKFLOW_VAR, workflowdata);
-        if (id != null) {
-            map.put("id", id);
-        }
         map.putAll(additionalProperties);
         return map;
     }
