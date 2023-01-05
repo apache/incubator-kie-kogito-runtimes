@@ -54,8 +54,6 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     private static final long DEFAULT_REQUEST_TIMEOUT_VALUE = 10_000L;
 
-    static final String TIMEOUT_ERROR_MSG = "Timeout while waiting for the Knative service to respond.";
-
     private final WebClient webClient;
 
     private final KnativeServiceRegistry knativeServiceRegistry;
