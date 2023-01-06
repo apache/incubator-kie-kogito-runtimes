@@ -68,6 +68,9 @@ class KnativeServiceDiscoveryTest {
 
         assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
                 .hasValue(80);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::isSsl)
+                .hasValue(false);
     }
 
     @Test
@@ -79,11 +82,32 @@ class KnativeServiceDiscoveryTest {
 
         assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
                 .hasValue(80);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::isSsl)
+                .hasValue(false);
     }
 
     @Test
     void serviceInDifferentNamespaceShouldNotBeFound() {
         Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("different_namespace/serverless-workflow-greeting-quarkus");
         assertThat(serviceAddress).isEmpty();
+    }
+
+    @Test
+    void https() {
+        String remoteServiceUrl = "https://" + REMOTE_SERVICE_HOST;
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting-https.yaml", "serverless-workflow-greeting-quarkus-https")
+                .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
+
+        Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("serverless-workflow-greeting-quarkus-https");
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getHost)
+                .hasValue(REMOTE_SERVICE_HOST);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
+                .hasValue(80);
+
+        assertThat(serviceAddress).map(KnativeServiceAddress::isSsl)
+                .hasValue(true);
     }
 }

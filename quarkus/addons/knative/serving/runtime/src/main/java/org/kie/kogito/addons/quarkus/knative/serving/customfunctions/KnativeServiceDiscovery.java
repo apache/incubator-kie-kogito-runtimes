@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.net.URL;
 import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -39,6 +40,10 @@ final class KnativeServiceDiscovery {
         KnativeServiceIdentifier serviceIdentifier = new KnativeServiceIdentifier(serviceName);
 
         return knativeResourceDiscovery.queryService(serviceIdentifier.getNamespace().orElse(currentContext), serviceIdentifier.getName())
-                .map(url -> new KnativeServiceAddress(url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
+                .map(url -> new KnativeServiceAddress(isSsl(url), url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
+    }
+
+    private static boolean isSsl(URL url) {
+        return "https".equals(url.getProtocol());
     }
 }

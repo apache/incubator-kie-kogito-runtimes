@@ -17,11 +17,14 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 final class KnativeServiceAddress {
 
+    private final boolean ssl;
+
     private final String host;
 
     private final int port;
 
-    KnativeServiceAddress(String host, int port) {
+    KnativeServiceAddress(boolean ssl, String host, int port) {
+        this.ssl = ssl;
         this.host = host;
         this.port = port;
     }
@@ -32,5 +35,9 @@ final class KnativeServiceAddress {
 
     int getPort() {
         return port;
+    }
+
+    public boolean isSsl() {
+        return ssl;
     }
 }

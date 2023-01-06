@@ -91,7 +91,8 @@ final class KnativeServerlessWorkflowCustomFunction {
     }
 
     private JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload) {
-        HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path);
+        HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path)
+                .ssl(serviceAddress.isSsl());
 
         HttpResponse<Buffer> response;
 
