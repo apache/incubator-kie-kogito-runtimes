@@ -45,6 +45,9 @@ import org.jbpm.util.ContextFactory;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
+import org.jbpm.workflow.core.node.EventNode;
+import org.jbpm.workflow.core.node.Join;
+import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.jbpm.workflow.instance.node.ActionNodeInstance;
@@ -276,6 +279,15 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             }
             ((WorkflowProcessInstanceImpl) processInstance).addCompletedNodeId(uniqueId);
             ((WorkflowProcessInstanceImpl) processInstance).getIterationLevels().remove(uniqueId);
+            Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances = processInstance.getNodeInstances();
+            if (node instanceof Join) {
+                nodeInstances.stream().forEach(nodeInstance -> {
+                    if (nodeInstance.getNode() instanceof EventNode) {
+                        ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
+                                .removeNodeInstance((NodeInstance) nodeInstance);
+                    }
+                });
+            }
         }
 
         // if node instance was cancelled, or containing container instance was cancelled
