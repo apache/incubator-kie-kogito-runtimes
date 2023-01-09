@@ -486,7 +486,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         assertThat(process.getPackageName()).isEqualTo("org.kie.kogito.serverless");
         assertThat(process.getVisibility()).isEqualTo(RuleFlowProcess.PUBLIC_VISIBILITY);
 
-        assertThat(process.getNodes()).hasSize(11);
+        assertThat(process.getNodes()).hasSize(12);
 
         Node node = process.getNodes()[5];
         assertThat(node).isInstanceOf(CompositeContextNode.class);

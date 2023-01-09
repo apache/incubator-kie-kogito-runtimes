@@ -188,12 +188,8 @@ public class SwitchHandler extends StateHandler<SwitchState> {
     }
 
     @Override
-    public void connect(RuleFlowNodeContainerFactory<?, ?> factory, long sourceId) {
-        factory.connection(sourceId, getNode().getNode().getId());
-    }
-
-    @Override
     public void handleConnections() {
+        super.handleConnections();
         targetHandlers.forEach(Runnable::run);
     }
 }
