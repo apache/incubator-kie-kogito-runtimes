@@ -103,7 +103,13 @@ public class SwitchHandler extends StateHandler<SwitchState> {
         for (EventCondition eventCondition : conditions) {
             NodeFactory<?, ?> outNode = connect(splitNode,
                     filterAndMergeNode(factory, eventCondition.getEventDataFilter(), (f, inputVar, outputVar) -> consumeEventNode(f, eventCondition.getEventRef(), inputVar, outputVar)));
-            handleTransition(factory, eventCondition.getTransition(), outNode, Optional.empty());
+            handleTransition(factory, eventCondition.getTransition(), outNode, Optional.of(new StateHandler.HandleTransitionCallBack() {
+                @Override
+                public void onEmptyTarget() {
+                    // Connect the timer with a process finalization sequence that might produce events.
+                    endIt(outNode.getNode().getId(), factory, eventCondition.getEnd());
+                }
+            }));
         }
     }
 
