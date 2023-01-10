@@ -282,11 +282,8 @@ public class DecisionRestResourceGenerator {
 
         interpolateRequestPath(pathName, placeHolder, clonedDmnMethod);
 
-        List<ReturnStmt> returnStmts = clonedDmnMethod.findAll(ReturnStmt.class);
-        if (returnStmts.isEmpty()) {
-            throw TEMPLATE_WAS_MODIFIED.get();
-        }
-        returnStmts.get(returnStmts.size() - 1).setExpression(new MethodCallExpr("buildDMNResultResponse").addArgument(new NameExpr("result")));
+        MethodCallExpr methodCallExpr = clonedDmnMethod.findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("enrichResponseHeaders")).orElseThrow(TEMPLATE_WAS_MODIFIED);
+        methodCallExpr.setName("buildDMNResultResponse").setArguments(NodeList.nodeList(new NameExpr("result")));
         return clonedDmnMethod;
     }
 
@@ -362,14 +359,11 @@ public class DecisionRestResourceGenerator {
     }
 
     private void addMonitoringToMethod(MethodDeclaration method, String nameURL) {
-        List<ReturnStmt> returnStmts = method.findAll(ReturnStmt.class);
-        if (returnStmts.isEmpty()) {
-            throw new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified.");
-        }
-        ReturnStmt returnStmt = returnStmts.get(returnStmts.size() - 1);
-        BlockStmt body = (BlockStmt) returnStmt.getParentNode()
+        MethodCallExpr methodCallExpr = method.findFirst(MethodCallExpr.class, mce -> mce.getNameAsString().equals("enrichResponseHeaders")).orElseThrow(TEMPLATE_WAS_MODIFIED);
+        BlockStmt body = methodCallExpr.findAncestor(BlockStmt.class)
                 .orElseThrow(() -> new NoSuchElementException("This method should be invoked only with concrete classes and not with abstract methods or interfaces."));
         NodeList<Statement> statements = body.getStatements();
+        ReturnStmt returnStmt = body.findFirst(ReturnStmt.class).orElseThrow(() -> new NoSuchElementException("Return statement not found: can't add monitoring to endpoint. Template was modified."));
         statements.addFirst(parseStatement("long startTime = System.nanoTime();"));
         statements.addBefore(parseStatement("long endTime = System.nanoTime();"), returnStmt);
         statements.addBefore(parseStatement("systemMetricsCollectorProvider.get().registerElapsedTimeSampleMetrics(\"" + nameURL + "\", endTime - startTime);"), returnStmt);
