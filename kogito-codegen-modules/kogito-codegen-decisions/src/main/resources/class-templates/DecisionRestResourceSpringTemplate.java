@@ -15,6 +15,8 @@
  */
 package org.kie.dmn.kogito.quarkus.example;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.Application;
@@ -23,7 +25,6 @@ import org.kie.kogito.dmn.rest.DMNJSONUtils;
 import org.kie.kogito.dmn.rest.KogitoDMNResult;
 import org.kie.kogito.dmn.util.StronglyTypedUtils;
 
-import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,29 +76,29 @@ public class DMNRestResourceTemplate {
                                                                         ".dmn_nologic")));
     }
 
-    private Pair<HttpStatus, ?> buildFailedEvaluationResponse(KogitoDMNResult result){
-        return Pair.of(HttpStatus.INTERNAL_SERVER_ERROR, result);
+    private Entry<HttpStatus, ?> buildFailedEvaluationResponse(KogitoDMNResult result){
+        return new SimpleEntry(HttpStatus.INTERNAL_SERVER_ERROR, result);
     }
 
-    private Pair<HttpStatus, ?> extractContextIfSucceded(KogitoDMNResult result){
+    private Entry<HttpStatus, ?> extractContextIfSucceded(KogitoDMNResult result){
         if (!result.hasErrors()) {
-            return Pair.of(HttpStatus.OK, buildResponse(result.getDmnContext()));
+            return new SimpleEntry(HttpStatus.OK, buildResponse(result.getDmnContext()));
         } else {
             return buildFailedEvaluationResponse(result);
         }
     }
 
-    private Pair<HttpStatus, ?> extractStronglyTypedContextIfSucceded(KogitoDMNResult result) {
+    private Entry<HttpStatus, ?> extractStronglyTypedContextIfSucceded(KogitoDMNResult result) {
         if (!result.hasErrors()) {
-            return Pair.of(HttpStatus.OK, buildResponse((OutputSet)StronglyTypedUtils.extractOutputSet(result, OutputSet.class)));
+            return new SimpleEntry(HttpStatus.OK, buildResponse((OutputSet)StronglyTypedUtils.extractOutputSet(result, OutputSet.class)));
         } else {
             return buildFailedEvaluationResponse(result);
         }
     }
 
-    private Pair<HttpStatus, ?> extractSingletonDSIfSucceded(KogitoDMNResult result) {
+    private Entry<HttpStatus, ?> extractSingletonDSIfSucceded(KogitoDMNResult result) {
         if (!result.hasErrors()) {
-            return Pair.of(HttpStatus.OK, buildResponse(result.getDecisionResults().get(0).getResult()));
+            return new SimpleEntry(HttpStatus.OK, buildResponse(result.getDecisionResults().get(0).getResult()));
         } else {
             return buildFailedEvaluationResponse(result);
         }
@@ -107,8 +108,8 @@ public class DMNRestResourceTemplate {
         if (!result.hasErrors()) {
             return ResponseEntity.ok(buildResponse(result));
         } else {
-            Pair<HttpStatus, ?> response = buildFailedEvaluationResponse(result);
-            return ResponseEntity.status(response.getFirst()).body(response.getSecond());
+            Entry<HttpStatus, ?> response = buildFailedEvaluationResponse(result);
+            return ResponseEntity.status(response.getKey()).body(response.getValue());
         }
     }
 
@@ -121,8 +122,8 @@ public class DMNRestResourceTemplate {
         }
     }
 
-    private ResponseEntity enrichResponseHeaders(org.kie.dmn.api.core.DMNResult result, Pair<HttpStatus, ?> response) {
-        ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(response.getFirst());
+    private ResponseEntity enrichResponseHeaders(org.kie.dmn.api.core.DMNResult result, Entry<HttpStatus, ?> response) {
+        ResponseEntity.BodyBuilder bodyBuilder = ResponseEntity.status(response.getKey());
 
         if (!result.getMessages().isEmpty()) {
             String infoWarns = result.getMessages().stream().map(m -> m.getLevel() + " " + m.getMessage()).collect(Collectors.joining(", "));
@@ -132,6 +133,6 @@ public class DMNRestResourceTemplate {
         org.kie.kogito.decision.DecisionExecutionIdUtils.getOptional(result.getContext())
             .ifPresent(executionId -> bodyBuilder.header(KOGITO_EXECUTION_ID_HEADER, executionId));
 
-        return bodyBuilder.body(response.getSecond());
+        return bodyBuilder.body(response.getValue());
     }
 }
