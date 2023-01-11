@@ -73,6 +73,7 @@ class JobCloudEventSerializerTest {
 
     @Test
     void serializeCreateJobEvent() throws Exception {
+        System.out.println("Hello, this is a test");
         Job job = Job.builder()
                 .correlationId(CORRELATION_ID)
                 .retry(Retry.builder()
