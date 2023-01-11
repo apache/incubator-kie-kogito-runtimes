@@ -26,10 +26,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.stmt.ReturnStmt;
 import org.assertj.core.api.AbstractStringAssert;
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
@@ -43,7 +39,11 @@ import org.kie.kogito.codegen.core.DashboardGeneratedFileUtils;
 import org.kie.kogito.codegen.core.io.CollectedResourceProducer;
 import org.kie.kogito.grafana.JGrafana;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
