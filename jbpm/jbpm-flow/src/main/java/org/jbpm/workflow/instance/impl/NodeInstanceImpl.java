@@ -45,7 +45,6 @@ import org.jbpm.util.ContextFactory;
 import org.jbpm.util.PatternConstants;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.impl.NodeImpl;
-import org.jbpm.workflow.core.node.EventNode;
 import org.jbpm.workflow.core.node.Join;
 import org.jbpm.workflow.instance.NodeInstance;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -272,6 +271,7 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
     public void triggerCompleted(String type, boolean remove) {
         leaveTime = new Date();
         org.kie.api.definition.process.Node node = getNode();
+        Collection<org.kie.api.runtime.process.NodeInstance> processNodeInstances = processInstance.getNodeInstances();
         if (node != null) {
             String uniqueId = (String) node.getMetaData().get(UNIQUE_ID);
             if (uniqueId == null) {
@@ -279,15 +279,6 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             }
             ((WorkflowProcessInstanceImpl) processInstance).addCompletedNodeId(uniqueId);
             ((WorkflowProcessInstanceImpl) processInstance).getIterationLevels().remove(uniqueId);
-            Collection<org.kie.api.runtime.process.NodeInstance> nodeInstances = processInstance.getNodeInstances();
-            if (node instanceof Join) {
-                nodeInstances.stream().forEach(nodeInstance -> {
-                    if (nodeInstance.getNode() instanceof EventNode) {
-                        ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
-                                .removeNodeInstance((NodeInstance) nodeInstance);
-                    }
-                });
-            }
         }
 
         // if node instance was cancelled, or containing container instance was cancelled
@@ -299,6 +290,14 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
         if (remove) {
             ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
                     .removeNodeInstance(this);
+        }
+
+        if (node instanceof Join) {
+            processNodeInstances.stream().forEach(nodeInstance -> {
+                ((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
+                        .removeNodeInstance((NodeInstance) nodeInstance);
+
+            });
         }
 
         List<Connection> connections = null;
