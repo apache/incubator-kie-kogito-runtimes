@@ -15,7 +15,9 @@
  */
 package org.kie.kogito.process;
 
+import java.time.Duration;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.kie.kogito.Model;
@@ -52,6 +54,10 @@ public interface Process<T> {
     String version();
 
     String type();
+
+    default Optional<Duration> timeout() {
+        return Optional.empty();
+    }
 
     void activate();
 

@@ -16,6 +16,8 @@
 package org.kie.kogito.process.impl;
 
 import java.lang.reflect.Field;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +58,9 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.internal.process.runtime.WorkItemNotFoundException;
+import org.kie.kogito.jobs.AsyncJobId;
+import org.kie.kogito.jobs.ExactExpirationTime;
+import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.NodeInstanceNotFoundException;
@@ -99,8 +104,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     private Optional<CorrelationInstance> correlationInstance = Optional.empty();
 
-    private CompositeCorrelation correlation;
-
     public AbstractProcessInstance(AbstractProcess<T> process, T variables, ProcessRuntime rt) {
         this(process, variables, null, rt);
     }
@@ -127,7 +130,6 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.setMetaData(KOGITO_PROCESS_INSTANCE, this);
 
         if (Objects.nonNull(correlation)) {
-            this.correlation = correlation;
             this.correlationInstance = Optional.of(process.correlations().create(correlation, id()));
         }
     }
@@ -286,6 +288,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         this.id = processInstance.getStringId();
         addCompletionEventListener();
         ((MutableProcessInstances<T>) process.instances()).create(id, this);
+        process.timeout().ifPresent(this::setTimeout);
         KogitoProcessInstance kogitoProcessInstance = getProcessRuntime().getKogitoProcessRuntime().startProcessInstance(this.id, trigger);
         if (kogitoProcessInstance.getState() != STATE_ABORTED && kogitoProcessInstance.getState() != STATE_COMPLETED) {
             addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).update(pi.id(), pi));
@@ -294,6 +297,10 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (this.processInstance != null) {
             this.status = this.processInstance.getState();
         }
+    }
+
+    private void setTimeout(Duration timeout) {
+        rt.getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.of(new AsyncJobId(id), ExactExpirationTime.of(ZonedDateTime.now().plus(timeout)), id, process.id()));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -318,11 +325,15 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
     @Override
     public <S> void send(Signal<S> signal) {
-        if (signal.referenceId() != null) {
-            processInstance().setReferenceId(signal.referenceId());
+        if (signal.channel().endsWith(":" + id)) {
+            abort();
+        } else {
+            if (signal.referenceId() != null) {
+                processInstance().setReferenceId(signal.referenceId());
+            }
+            processInstance().signalEvent(signal.channel(), signal.payload());
+            removeOnFinish();
         }
-        processInstance().signalEvent(signal.channel(), signal.payload());
-        removeOnFinish();
     }
 
     @Override
