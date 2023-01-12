@@ -102,7 +102,7 @@
         </property>
       </activation>
       <properties>
-        <data-index-ephemeral.image>registry.redhat.io/openshift-serverless-1-tech-preview/logic-data-index-ephemeral-rhel8:1.25</data-index-ephemeral.image>
+        <data-index-ephemeral.image>registry.redhat.io/openshift-serverless-1-tech-preview/logic-data-index-ephemeral-rhel8:1.27</data-index-ephemeral.image>
       </properties>
     </profile>
   </profiles>
