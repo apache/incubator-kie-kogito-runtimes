@@ -15,6 +15,9 @@
  */
 package org.jbpm.workflow.instance.node;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.drools.core.common.InternalKnowledgeRuntime;
 import org.jbpm.process.core.event.EventFilter;
 import org.jbpm.process.core.event.EventTypeFilter;
@@ -31,9 +34,6 @@ import org.jbpm.workflow.instance.impl.NodeInstanceFactoryRegistry;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,13 +90,12 @@ public class JoinNodeInstanceTest extends AbstractBaseTest {
                 joinNode, Node.CONNECTION_DEFAULT_TYPE,
                 endNode, Node.CONNECTION_DEFAULT_TYPE);
 
-
         RuleFlowProcessInstance processInstance = new RuleFlowProcessInstance();
         processInstance.setId("1223");
         processInstance.setState(ProcessInstance.STATE_ACTIVE);
         processInstance.setProcess(process);
         processInstance.setKnowledgeRuntime((InternalKnowledgeRuntime) kruntime.getKieSession());
-        processInstance.signalEvent("signal",null);
+        processInstance.signalEvent("signal", null);
 
         MockNodeInstance mockNodeInstance = (MockNodeInstance) processInstance.getNodeInstance(mockNode);
         mockNodeInstance.triggerCompleted();
