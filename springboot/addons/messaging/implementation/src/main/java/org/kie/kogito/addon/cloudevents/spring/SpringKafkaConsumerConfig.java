@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +39,16 @@ public class SpringKafkaConsumerConfig {
     String groupId;
     @Value(value = "${spring.kafka.consumer.auto-offset-reset}")
     String offset;
+    @Value(value = "${spring.kafka.security.protocol}")
+    String security_protocol;
+    @Value(value = "${spring.kafka.ssl.trust-store-location}")
+    String ts_location;
+    @Value(value = "${spring.kafka.ssl.trust-store-password}")
+    String ts_password;
+    @Value(value = "${spring.kafka.ssl.key-store-location}")
+    String ks_location;
+    @Value(value = "${spring.kafka.ssl.key-store-password}")
+    String ks_password;
 
     private static final Logger logger = LoggerFactory.getLogger(SpringKafkaConsumerConfig.class);
 
@@ -52,6 +61,12 @@ public class SpringKafkaConsumerConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, offset);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
+        props.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, security_protocol);
+        props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, ts_location);
+        props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, ts_password);
+        props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, ks_location);
+        props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, ks_password);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
