@@ -39,15 +39,15 @@ public class SpringKafkaConsumerConfig {
     String groupId;
     @Value(value = "${spring.kafka.consumer.auto-offset-reset}")
     String offset;
-    @Value(value = "${spring.kafka.security.protocol}")
+    @Value(value = "${spring.kafka.security.protocol:#{null}}")
     String security_protocol;
-    @Value(value = "${spring.kafka.ssl.trust-store-location}")
+    @Value(value = "${spring.kafka.ssl.trust-store-location:#{null}}")
     String ts_location;
-    @Value(value = "${spring.kafka.ssl.trust-store-password}")
+    @Value(value = "${spring.kafka.ssl.trust-store-password:#{null}}")
     String ts_password;
-    @Value(value = "${spring.kafka.ssl.key-store-location}")
+    @Value(value = "${spring.kafka.ssl.key-store-location:#{null}}")
     String ks_location;
-    @Value(value = "${spring.kafka.ssl.key-store-password}")
+    @Value(value = "${spring.kafka.ssl.key-store-password:#{null}}")
     String ks_password;
 
     private static final Logger logger = LoggerFactory.getLogger(SpringKafkaConsumerConfig.class);
@@ -62,12 +62,17 @@ public class SpringKafkaConsumerConfig {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
-        props.put(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, security_protocol);
-        props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, ts_location);
-        props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, ts_password);
-        props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, ks_location);
-        props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, ks_password);
+        propsPut(props, AdminClientConfig.SECURITY_PROTOCOL_CONFIG, security_protocol);
+        propsPut(props, SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, ts_location);
+        propsPut(props, SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, ts_password);
+        propsPut(props, SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, ks_location);
+        propsPut(props, SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, ks_password);
         return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    private static void propsPut(Map<String, Object> props, String key, String val) {
+        if (val != null)
+            props.put(key, val);
     }
 
     @Bean
