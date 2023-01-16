@@ -1075,6 +1075,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
         this.slaTimerId = slaTimerId;
     }
 
+    public String getCancelTimerId() {
+        return cancelTimerId;
+    }
+
+    public void internalSetCancelTimerId(String cancelTimerId) {
+        this.cancelTimerId = cancelTimerId;
+    }
+
     @Override
     public String getNodeIdInError() {
         return nodeIdInError;
