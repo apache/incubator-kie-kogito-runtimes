@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.process.impl;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +32,6 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.LightProcessRuntime;
 import org.jbpm.process.instance.LightProcessRuntimeServiceProvider;
 import org.jbpm.process.instance.ProcessRuntimeServiceProvider;
-import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.impl.WorkflowProcessImpl;
 import org.jbpm.workflow.core.node.StartNode;
@@ -124,11 +122,6 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
     @Override
     public String name() {
         return get().getName();
-    }
-
-    @Override
-    public Optional<Duration> timeout() {
-        return Optional.ofNullable((String) get().getMetaData().get(Metadata.PROCESS_DURATION)).map(Duration::parse);
     }
 
     @Override
