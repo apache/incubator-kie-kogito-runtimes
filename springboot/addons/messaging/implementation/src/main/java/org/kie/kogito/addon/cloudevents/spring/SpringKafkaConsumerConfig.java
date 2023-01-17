@@ -15,13 +15,7 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -33,46 +27,24 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @Configuration
 public class SpringKafkaConsumerConfig {
 
-    @Value(value = "${spring.kafka.bootstrap-servers}")
-    String kafkaBootstrapAddress;
-    @Value(value = "${spring.kafka.consumer.group-id}")
-    String groupId;
-    @Value(value = "${spring.kafka.consumer.auto-offset-reset}")
-    String offset;
-    @Value(value = "${spring.kafka.security.protocol:#{null}}")
-    String security_protocol;
-    @Value(value = "${spring.kafka.ssl.trust-store-location:#{null}}")
-    String ts_location;
-    @Value(value = "${spring.kafka.ssl.trust-store-password:#{null}}")
-    String ts_password;
-    @Value(value = "${spring.kafka.ssl.key-store-location:#{null}}")
-    String ks_location;
-    @Value(value = "${spring.kafka.ssl.key-store-password:#{null}}")
-    String ks_password;
+    @Autowired
+    private ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers;
+
+    @Autowired
+    private KafkaProperties properties;
 
     private static final Logger logger = LoggerFactory.getLogger(SpringKafkaConsumerConfig.class);
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
-        logger.info("Creating consumer factory with bootstrap {} and groupid {}", kafkaBootstrapAddress, groupId);
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, offset);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        logger.info("Creating Default Kafka Consumer Factory");
 
-        propsPut(props, AdminClientConfig.SECURITY_PROTOCOL_CONFIG, security_protocol);
-        propsPut(props, SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, ts_location);
-        propsPut(props, SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, ts_password);
-        propsPut(props, SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, ks_location);
-        propsPut(props, SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, ks_password);
-        return new DefaultKafkaConsumerFactory<>(props);
-    }
+        DefaultKafkaConsumerFactory<String, String> factory = new DefaultKafkaConsumerFactory<>(
+                this.properties.buildConsumerProperties());
 
-    private static void propsPut(Map<String, Object> props, String key, String val) {
-        if (val != null)
-            props.put(key, val);
+        customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+
+        return factory;
     }
 
     @Bean
