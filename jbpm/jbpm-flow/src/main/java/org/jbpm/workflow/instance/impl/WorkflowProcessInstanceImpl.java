@@ -513,8 +513,9 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     @Override
-    public void configureSLA() {
-        String slaDueDateExpression = (String) getProcess().getMetaData().get(CUSTOM_SLA_DUE_DATE);
+    public void configureTimers() {
+        Map<String, Object> metadata = getProcess().getMetaData();
+        String slaDueDateExpression = (String) metadata.get(CUSTOM_SLA_DUE_DATE);
         if (slaDueDateExpression != null) {
             TimerInstance timer = configureSLATimer(slaDueDateExpression);
             if (timer != null) {
@@ -524,7 +525,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 logger.debug("SLA for process instance {} is PENDING with due date {}", this.getStringId(), this.slaDueDate);
             }
         }
-        String processDuration = (String) getProcess().getMetaData().get(Metadata.PROCESS_DURATION);
+        String processDuration = (String) metadata.get(Metadata.PROCESS_DURATION);
         if (processDuration != null) {
             this.cancelTimerId = registerTimer(createDurationTimer(Duration.parse(processDuration).toMillis())).getId();
         }
