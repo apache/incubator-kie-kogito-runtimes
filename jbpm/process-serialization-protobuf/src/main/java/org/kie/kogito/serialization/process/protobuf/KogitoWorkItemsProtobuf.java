@@ -313,11 +313,9 @@ public final class KogitoWorkItemsProtobuf {
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
 
-    /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
+    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getStartDeadlinesOrDefault(
         java.lang.String key,
-        /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; start_deadlines = 13;</code>
      */
@@ -349,11 +347,9 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline d
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
 
-    /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
+    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline getCompletedDeadlinesOrDefault(
         java.lang.String key,
-        /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Deadline&gt; completed_deadlines = 14;</code>
      */
@@ -385,11 +381,9 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline d
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
 
-    /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
+    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getStartReassigmentsOrDefault(
         java.lang.String key,
-        /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; start_reassigments = 15;</code>
      */
@@ -421,11 +415,9 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
 
-    /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
+    org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment getCompletedReassigmentsOrDefault(
         java.lang.String key,
-        /* nullable */
-org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment defaultValue);
     /**
      * <code>map&lt;string, .org.kie.kogito.serialization.process.protobuf.Reassignment&gt; completed_reassigments = 16;</code>
      */
@@ -471,6 +463,210 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
+    }
+    private HumanTaskWorkItemData(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              taskName_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              taskDescription_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              taskPriority_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000008;
+              actualOwner_ = s;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
+                potUsers_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000010;
+              }
+              potUsers_.add(s);
+              break;
+            }
+            case 50: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000020) != 0)) {
+                potGroups_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              potGroups_.add(s);
+              break;
+            }
+            case 58: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000040) != 0)) {
+                excludedUsers_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              excludedUsers_.add(s);
+              break;
+            }
+            case 66: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000080) != 0)) {
+                adminUsers_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000080;
+              }
+              adminUsers_.add(s);
+              break;
+            }
+            case 74: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000100) != 0)) {
+                adminGroups_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000100;
+              }
+              adminGroups_.add(s);
+              break;
+            }
+            case 82: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000010;
+              taskReferenceName_ = s;
+              break;
+            }
+            case 90: {
+              if (!((mutable_bitField0_ & 0x00000400) != 0)) {
+                comments_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment>();
+                mutable_bitField0_ |= 0x00000400;
+              }
+              comments_.add(
+                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.parser(), extensionRegistry));
+              break;
+            }
+            case 98: {
+              if (!((mutable_bitField0_ & 0x00000800) != 0)) {
+                attachments_ = new java.util.ArrayList<org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment>();
+                mutable_bitField0_ |= 0x00000800;
+              }
+              attachments_.add(
+                  input.readMessage(org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.parser(), extensionRegistry));
+              break;
+            }
+            case 106: {
+              if (!((mutable_bitField0_ & 0x00001000) != 0)) {
+                startDeadlines_ = com.google.protobuf.MapField.newMapField(
+                    StartDeadlinesDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00001000;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
+              startDeadlines__ = input.readMessage(
+                  StartDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              startDeadlines_.getMutableMap().put(
+                  startDeadlines__.getKey(), startDeadlines__.getValue());
+              break;
+            }
+            case 114: {
+              if (!((mutable_bitField0_ & 0x00002000) != 0)) {
+                completedDeadlines_ = com.google.protobuf.MapField.newMapField(
+                    CompletedDeadlinesDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00002000;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
+              completedDeadlines__ = input.readMessage(
+                  CompletedDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              completedDeadlines_.getMutableMap().put(
+                  completedDeadlines__.getKey(), completedDeadlines__.getValue());
+              break;
+            }
+            case 122: {
+              if (!((mutable_bitField0_ & 0x00004000) != 0)) {
+                startReassigments_ = com.google.protobuf.MapField.newMapField(
+                    StartReassigmentsDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00004000;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
+              startReassigments__ = input.readMessage(
+                  StartReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              startReassigments_.getMutableMap().put(
+                  startReassigments__.getKey(), startReassigments__.getValue());
+              break;
+            }
+            case 130: {
+              if (!((mutable_bitField0_ & 0x00008000) != 0)) {
+                completedReassigments_ = com.google.protobuf.MapField.newMapField(
+                    CompletedReassigmentsDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00008000;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
+              completedReassigments__ = input.readMessage(
+                  CompletedReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              completedReassigments_.getMutableMap().put(
+                  completedReassigments__.getKey(), completedReassigments__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000010) != 0)) {
+          potUsers_ = potUsers_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000020) != 0)) {
+          potGroups_ = potGroups_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000040) != 0)) {
+          excludedUsers_ = excludedUsers_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000080) != 0)) {
+          adminUsers_ = adminUsers_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000100) != 0)) {
+          adminGroups_ = adminGroups_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000400) != 0)) {
+          comments_ = java.util.Collections.unmodifiableList(comments_);
+        }
+        if (((mutable_bitField0_ & 0x00000800) != 0)) {
+          attachments_ = java.util.Collections.unmodifiableList(attachments_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -1387,7 +1583,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           internalGetCompletedReassigments(),
           CompletedReassigmentsDefaultEntryHolder.defaultEntry,
           16);
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     @java.lang.Override
@@ -1499,7 +1695,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(16, completedReassigments__);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1561,7 +1757,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           other.internalGetStartReassigments())) return false;
       if (!internalGetCompletedReassigments().equals(
           other.internalGetCompletedReassigments())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
 
@@ -1636,7 +1832,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         hash = (37 * hash) + COMPLETED_REASSIGMENTS_FIELD_NUMBER;
         hash = (53 * hash) + internalGetCompletedReassigments().hashCode();
       }
-      hash = (29 * hash) + getUnknownFields().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1787,13 +1983,20 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getCommentsFieldBuilder();
+          getAttachmentsFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
@@ -1820,18 +2023,16 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         bitField0_ = (bitField0_ & ~0x00000200);
         if (commentsBuilder_ == null) {
           comments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
         } else {
-          comments_ = null;
           commentsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000400);
         if (attachmentsBuilder_ == null) {
           attachments_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000800);
         } else {
-          attachments_ = null;
           attachmentsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
         internalGetMutableStartDeadlines().clear();
         internalGetMutableCompletedDeadlines().clear();
         internalGetMutableStartReassigments().clear();
@@ -2119,7 +2320,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
             other.internalGetStartReassigments());
         internalGetMutableCompletedReassigments().mergeFrom(
             other.internalGetCompletedReassigments());
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -2134,143 +2335,17 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData parsedMessage = null;
         try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                taskName_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 10
-              case 18: {
-                taskDescription_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 18
-              case 26: {
-                taskPriority_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 26
-              case 34: {
-                actualOwner_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 34
-              case 42: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensurePotUsersIsMutable();
-                potUsers_.add(s);
-                break;
-              } // case 42
-              case 50: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensurePotGroupsIsMutable();
-                potGroups_.add(s);
-                break;
-              } // case 50
-              case 58: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureExcludedUsersIsMutable();
-                excludedUsers_.add(s);
-                break;
-              } // case 58
-              case 66: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureAdminUsersIsMutable();
-                adminUsers_.add(s);
-                break;
-              } // case 66
-              case 74: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureAdminGroupsIsMutable();
-                adminGroups_.add(s);
-                break;
-              } // case 74
-              case 82: {
-                taskReferenceName_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000200;
-                break;
-              } // case 82
-              case 90: {
-                org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment m =
-                    input.readMessage(
-                        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.parser(),
-                        extensionRegistry);
-                if (commentsBuilder_ == null) {
-                  ensureCommentsIsMutable();
-                  comments_.add(m);
-                } else {
-                  commentsBuilder_.addMessage(m);
-                }
-                break;
-              } // case 90
-              case 98: {
-                org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment m =
-                    input.readMessage(
-                        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.parser(),
-                        extensionRegistry);
-                if (attachmentsBuilder_ == null) {
-                  ensureAttachmentsIsMutable();
-                  attachments_.add(m);
-                } else {
-                  attachmentsBuilder_.addMessage(m);
-                }
-                break;
-              } // case 98
-              case 106: {
-                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-                startDeadlines__ = input.readMessage(
-                    StartDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-                internalGetMutableStartDeadlines().getMutableMap().put(
-                    startDeadlines__.getKey(), startDeadlines__.getValue());
-                break;
-              } // case 106
-              case 114: {
-                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline>
-                completedDeadlines__ = input.readMessage(
-                    CompletedDeadlinesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-                internalGetMutableCompletedDeadlines().getMutableMap().put(
-                    completedDeadlines__.getKey(), completedDeadlines__.getValue());
-                break;
-              } // case 114
-              case 122: {
-                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-                startReassigments__ = input.readMessage(
-                    StartReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-                internalGetMutableStartReassigments().getMutableMap().put(
-                    startReassigments__.getKey(), startReassigments__.getValue());
-                break;
-              } // case 122
-              case 130: {
-                com.google.protobuf.MapEntry<java.lang.String, org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment>
-                completedReassigments__ = input.readMessage(
-                    CompletedReassigmentsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-                internalGetMutableCompletedReassigments().getMutableMap().put(
-                    completedReassigments__.getKey(), completedReassigments__.getValue());
-                break;
-              } // case 130
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.HumanTaskWorkItemData) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          onChanged();
-        } // finally
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       private int bitField0_;
@@ -4276,18 +4351,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
+        return new HumanTaskWorkItemData(input, extensionRegistry);
       }
     };
 
@@ -4397,6 +4461,67 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
+    }
+    private Comment(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              id_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              content_ = s;
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              updatedAt_ = input.readInt64();
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              updatedBy_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -4587,7 +4712,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
       if (((bitField0_ & 0x00000004) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, updatedBy_);
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     @java.lang.Override
@@ -4609,7 +4734,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
       if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, updatedBy_);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4641,7 +4766,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         if (!getUpdatedBy()
             .equals(other.getUpdatedBy())) return false;
       }
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
 
@@ -4667,7 +4792,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         hash = (37 * hash) + UPDATEDBY_FIELD_NUMBER;
         hash = (53 * hash) + getUpdatedBy().hashCode();
       }
-      hash = (29 * hash) + getUnknownFields().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4784,13 +4909,18 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
       }
       @java.lang.Override
       public Builder clear() {
@@ -4910,7 +5040,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           updatedBy_ = other.updatedBy_;
           onChanged();
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -4925,50 +5055,17 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment parsedMessage = null;
         try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                id_ = input.readStringRequireUtf8();
-
-                break;
-              } // case 10
-              case 18: {
-                content_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 18
-              case 24: {
-                updatedAt_ = input.readInt64();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 24
-              case 34: {
-                updatedBy_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 34
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Comment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          onChanged();
-        } // finally
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       private int bitField0_;
@@ -5286,18 +5383,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
+        return new Comment(input, extensionRegistry);
       }
     };
 
@@ -5425,6 +5511,73 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
+    }
+    private Attachment(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              id_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              content_ = s;
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              updatedAt_ = input.readInt64();
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              updatedBy_ = s;
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000008;
+              name_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -5664,7 +5817,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
       if (((bitField0_ & 0x00000008) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, name_);
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     @java.lang.Override
@@ -5689,7 +5842,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
       if (((bitField0_ & 0x00000008) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, name_);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5726,7 +5879,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         if (!getName()
             .equals(other.getName())) return false;
       }
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
 
@@ -5756,7 +5909,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
         hash = (37 * hash) + NAME_FIELD_NUMBER;
         hash = (53 * hash) + getName().hashCode();
       }
-      hash = (29 * hash) + getUnknownFields().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5873,13 +6026,18 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
       }
       @java.lang.Override
       public Builder clear() {
@@ -6010,7 +6168,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           name_ = other.name_;
           onChanged();
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -6025,55 +6183,17 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment parsedMessage = null;
         try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                id_ = input.readStringRequireUtf8();
-
-                break;
-              } // case 10
-              case 18: {
-                content_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000001;
-                break;
-              } // case 18
-              case 24: {
-                updatedAt_ = input.readInt64();
-                bitField0_ |= 0x00000002;
-                break;
-              } // case 24
-              case 34: {
-                updatedBy_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000004;
-                break;
-              } // case 34
-              case 42: {
-                name_ = input.readStringRequireUtf8();
-                bitField0_ |= 0x00000008;
-                break;
-              } // case 42
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Attachment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          onChanged();
-        } // finally
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       private int bitField0_;
@@ -6474,18 +6594,7 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
+        return new Attachment(input, extensionRegistry);
       }
     };
 
@@ -6533,11 +6642,9 @@ org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignme
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
 
-    /* nullable */
-java.lang.String getContentOrDefault(
+    java.lang.String getContentOrDefault(
         java.lang.String key,
-        /* nullable */
-java.lang.String defaultValue);
+        java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; content = 1;</code>
      */
@@ -6571,6 +6678,57 @@ java.lang.String defaultValue);
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
+    }
+    private Deadline(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                content_ = com.google.protobuf.MapField.newMapField(
+                    ContentDefaultEntryHolder.defaultEntry);
+                mutable_bitField0_ |= 0x00000001;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              content__ = input.readMessage(
+                  ContentDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              content_.getMutableMap().put(
+                  content__.getKey(), content__.getValue());
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -6698,7 +6856,7 @@ java.lang.String defaultValue);
           internalGetContent(),
           ContentDefaultEntryHolder.defaultEntry,
           1);
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     @java.lang.Override
@@ -6717,7 +6875,7 @@ java.lang.String defaultValue);
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(1, content__);
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6734,7 +6892,7 @@ java.lang.String defaultValue);
 
       if (!internalGetContent().equals(
           other.internalGetContent())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
 
@@ -6749,7 +6907,7 @@ java.lang.String defaultValue);
         hash = (37 * hash) + CONTENT_FIELD_NUMBER;
         hash = (53 * hash) + internalGetContent().hashCode();
       }
-      hash = (29 * hash) + getUnknownFields().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6888,13 +7046,18 @@ java.lang.String defaultValue);
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
       }
       @java.lang.Override
       public Builder clear() {
@@ -6979,7 +7142,7 @@ java.lang.String defaultValue);
         if (other == org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline.getDefaultInstance()) return this;
         internalGetMutableContent().mergeFrom(
             other.internalGetContent());
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -6994,38 +7157,17 @@ java.lang.String defaultValue);
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline parsedMessage = null;
         try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-                content__ = input.readMessage(
-                    ContentDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-                internalGetMutableContent().getMutableMap().put(
-                    content__.getKey(), content__.getValue());
-                break;
-              } // case 10
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Deadline) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          onChanged();
-        } // finally
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       private int bitField0_;
@@ -7193,18 +7335,7 @@ java.lang.String defaultValue);
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
+        return new Deadline(input, extensionRegistry);
       }
     };
 
@@ -7306,6 +7437,68 @@ java.lang.String defaultValue);
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
+    }
+    private Reassignment(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                users_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              users_.add(s);
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+                groups_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              groups_.add(s);
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          users_ = users_.getUnmodifiableView();
+        }
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          groups_ = groups_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -7410,7 +7603,7 @@ java.lang.String defaultValue);
       for (int i = 0; i < groups_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, groups_.getRaw(i));
       }
-      getUnknownFields().writeTo(output);
+      unknownFields.writeTo(output);
     }
 
     @java.lang.Override
@@ -7435,7 +7628,7 @@ java.lang.String defaultValue);
         size += dataSize;
         size += 1 * getGroupsList().size();
       }
-      size += getUnknownFields().getSerializedSize();
+      size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7454,7 +7647,7 @@ java.lang.String defaultValue);
           .equals(other.getUsersList())) return false;
       if (!getGroupsList()
           .equals(other.getGroupsList())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
 
@@ -7473,7 +7666,7 @@ java.lang.String defaultValue);
         hash = (37 * hash) + GROUPS_FIELD_NUMBER;
         hash = (53 * hash) + getGroupsList().hashCode();
       }
-      hash = (29 * hash) + getUnknownFields().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7590,13 +7783,18 @@ java.lang.String defaultValue);
 
       // Construct using org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
       }
       @java.lang.Override
       public Builder clear() {
@@ -7710,7 +7908,7 @@ java.lang.String defaultValue);
           }
           onChanged();
         }
-        this.mergeUnknownFields(other.getUnknownFields());
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
@@ -7725,42 +7923,17 @@ java.lang.String defaultValue);
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
+        org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment parsedMessage = null;
         try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureUsersIsMutable();
-                users_.add(s);
-                break;
-              } // case 10
-              case 18: {
-                java.lang.String s = input.readStringRequireUtf8();
-                ensureGroupsIsMutable();
-                groups_.add(s);
-                break;
-              } // case 18
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.kie.kogito.serialization.process.protobuf.KogitoWorkItemsProtobuf.Reassignment) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          onChanged();
-        } // finally
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       private int bitField0_;
@@ -8017,18 +8190,7 @@ java.lang.String defaultValue);
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
+        return new Reassignment(input, extensionRegistry);
       }
     };
 
