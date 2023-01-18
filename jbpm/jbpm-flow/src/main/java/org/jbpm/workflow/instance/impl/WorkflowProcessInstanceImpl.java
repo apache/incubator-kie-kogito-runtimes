@@ -416,14 +416,8 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
                 NodeInstance nodeInstance = nodeInstances.get(0);
                 nodeInstance.cancel();
             }
-            if (this.slaTimerId != null && !slaTimerId.trim().isEmpty()) {
-                processRuntime.getJobsService().cancelJob(this.slaTimerId);
-                logger.debug("SLA Timer {} has been canceled", this.slaTimerId);
-            }
-
-            if (this.cancelTimerId != null) {
-                processRuntime.getJobsService().cancelJob(this.cancelTimerId);
-            }
+            cancelTimer(processRuntime, slaTimerId);
+            cancelTimer(processRuntime, cancelTimerId);
 
             removeEventListeners();
             processRuntime.getProcessInstanceManager().removeProcessInstance(this);
@@ -442,6 +436,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
             }
         } else {
             super.setState(state, outcome);
+        }
+    }
+
+    private static void cancelTimer(InternalProcessRuntime processRuntime, String timerId) {
+        if (timerId != null && !timerId.isBlank()) {
+            processRuntime.getJobsService().cancelJob(timerId);
+            logger.debug("Timer {} has been canceled", timerId);
         }
     }
 
