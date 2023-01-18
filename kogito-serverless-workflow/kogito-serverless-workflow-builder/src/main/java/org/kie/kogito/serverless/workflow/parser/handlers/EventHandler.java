@@ -67,8 +67,17 @@ public class EventHandler extends CompositeContextNodeHandler<EventState> {
             incomingNode = nodes.get(0).getIncomingNode();
             outgoingNode = nodes.get(0).getOutgoingNode();
         } else {
-            incomingNode = isStartState ? null : factory.splitNode(parserContext.newId()).name(state.getName() + "Split").type(Split.TYPE_AND);
-            outgoingNode = factory.joinNode(parserContext.newId()).name(state.getName() + "Join").type(state.isExclusive() ? Join.TYPE_XOR : Join.TYPE_AND);
+            final int splitType;
+            final int joinType;
+            if (state.isExclusive()) {
+                splitType = Split.TYPE_XAND;
+                joinType = Join.TYPE_XOR;
+            } else {
+                splitType = Split.TYPE_AND;
+                joinType = Join.TYPE_AND;
+            }
+            incomingNode = isStartState ? null : factory.splitNode(parserContext.newId()).name(state.getName() + "Split").type(splitType);
+            outgoingNode = factory.joinNode(parserContext.newId()).name(state.getName() + "Join").type(joinType);
             for (MakeNodeResult node : nodes) {
                 connectNode(node, incomingNode, outgoingNode);
             }
