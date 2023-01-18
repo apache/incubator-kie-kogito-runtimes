@@ -195,7 +195,8 @@ public class SplitInstance extends NodeInstanceImpl {
                     }
                     Map<org.jbpm.workflow.instance.NodeInstance, String> nodeInstancesMap = new HashMap<>();
                     for (Connection connection : connections) {
-                        nodeInstancesMap.put(followConnection(connection), connection.getToType());
+                        nodeInstancesMap.put(((org.jbpm.workflow.instance.NodeInstanceContainer) getNodeInstanceContainer())
+                                .getNodeInstance(connection.getTo()), connection.getToType());
                     }
                     for (KogitoNodeInstance nodeInstance : nodeInstancesMap.keySet()) {
                         groupInstance.addNodeInstance(nodeInstance);
