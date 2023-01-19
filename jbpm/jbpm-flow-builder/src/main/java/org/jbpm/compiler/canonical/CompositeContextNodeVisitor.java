@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.jbpm.process.core.context.variable.VariableScope;
+import org.jbpm.process.core.timer.Timer;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
 import org.jbpm.workflow.core.node.CompositeContextNode;
 import org.kie.api.definition.process.Node;
@@ -27,6 +28,7 @@ import org.kie.api.definition.process.Node;
 import com.github.javaparser.ast.expr.BooleanLiteralExpr;
 import com.github.javaparser.ast.expr.LongLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.stmt.BlockStmt;
 
 public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends AbstractCompositeNodeVisitor<T> {
@@ -75,6 +77,14 @@ public class CompositeContextNodeVisitor<T extends CompositeContextNode> extends
         visitCompensationScope(node, body);
 
         body.addStatement(getFactoryMethod(getNodeId(node), CompositeContextNodeFactory.METHOD_AUTO_COMPLETE, new BooleanLiteralExpr(node.isAutoComplete())));
+
+        if (node.getTimers() != null) {
+            for (Timer timer : node.getTimers().keySet()) {
+                if (timer.getTimeType() == Timer.TIME_DURATION) {
+                    body.addStatement(getFactoryMethod(getNodeId(node), "timeout", new StringLiteralExpr(timer.getDelay())));
+                }
+            }
+        }
         addNodeMappings(node, body, getNodeId(node));
         visitNodes(getNodeId(node), node.getNodes(), body, scope, metadata);
         visitConnections(getNodeId(node), node.getNodes(), body);

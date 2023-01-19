@@ -18,10 +18,17 @@ package org.jbpm.ruleflow.core.factory;
 import org.jbpm.process.core.context.variable.Variable;
 import org.jbpm.process.core.context.variable.VariableScope;
 import org.jbpm.process.core.datatype.DataType;
+import org.jbpm.process.core.timer.Timer;
+import org.jbpm.process.instance.impl.Action;
+import org.jbpm.process.instance.impl.actions.CompleteCompositeNodeInstanceAction;
+import org.jbpm.process.instance.impl.actions.SignalProcessInstanceAction;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
+import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.node.CompositeContextNode;
+
+import static org.jbpm.ruleflow.core.Metadata.ACTION;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContainerFactory<T, P>, P extends RuleFlowNodeContainerFactory<P, ?>> extends RuleFlowNodeContainerFactory<T, P> {
@@ -35,6 +42,21 @@ public abstract class AbstractCompositeNodeFactory<T extends RuleFlowNodeContain
 
     protected CompositeContextNode getCompositeNode() {
         return (CompositeContextNode) node;
+    }
+
+    public T timeout(String timeout) {
+        CompositeContextNode node = getCompositeNode();
+        Timer timer = new Timer();
+        timer.setDelay(timeout);
+        node.addTimer(timer, createJavaAction(new SignalProcessInstanceAction("Timer-" + timeout + "-" + node.getId(),
+                kcontext -> kcontext.getNodeInstance().getStringId(), SignalProcessInstanceAction.PROCESS_INSTANCE_SCOPE)));
+        return (T) this;
+    }
+
+    private DroolsConsequenceAction createJavaAction(Action action) {
+        DroolsConsequenceAction cancelAction = new DroolsConsequenceAction("java", null);
+        cancelAction.setMetaData(ACTION, new CompleteCompositeNodeInstanceAction(getCompositeNode().getNodeUniqueId()));
+        return cancelAction;
     }
 
     @Override
