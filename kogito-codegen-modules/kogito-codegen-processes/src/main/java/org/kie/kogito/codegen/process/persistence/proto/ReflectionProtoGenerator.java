@@ -69,7 +69,15 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
                 continue;
             }
 
-            Field propertyField = getFieldFromClass(clazz, pd.getName());
+            Field propertyField;
+            try {
+                propertyField = getFieldFromClass(clazz, pd.getName());
+            } catch (IllegalArgumentException ex) {
+                logger.warn(ex.getMessage());
+                // a method starting with get or set without a corresponding backing field makes java beans to
+                // still generate a property descriptor, it should be ignored
+                continue;
+            }
             // ignore static and/or transient fields
             int mod = propertyField.getModifiers();
             if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
