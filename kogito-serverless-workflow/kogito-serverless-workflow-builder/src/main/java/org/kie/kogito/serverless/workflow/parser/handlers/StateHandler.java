@@ -29,6 +29,7 @@ import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
+import org.jbpm.ruleflow.core.factory.AbstractCompositeNodeFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
 import org.jbpm.ruleflow.core.factory.BoundaryEventNodeFactory;
 import org.jbpm.ruleflow.core.factory.CompositeContextNodeFactory;
@@ -468,9 +469,9 @@ public abstract class StateHandler<S extends State> {
     protected final MakeNodeResult makeTimeoutNode(RuleFlowNodeContainerFactory<?, ?> factory, MakeNodeResult notTimerBranch) {
         String eventTimeout = resolveEventTimeout(state, workflow);
         if (eventTimeout != null) {
-            if (notTimerBranch.getIncomingNode() == notTimerBranch.getOutgoingNode() && notTimerBranch.getIncomingNode() instanceof CompositeContextNodeFactory) {
+            if (notTimerBranch.getIncomingNode() == notTimerBranch.getOutgoingNode() && notTimerBranch.getIncomingNode() instanceof AbstractCompositeNodeFactory) {
                 // reusing composite
-                ((CompositeContextNodeFactory) notTimerBranch.getIncomingNode()).timeout(eventTimeout);
+                ((AbstractCompositeNodeFactory<?, ?>) notTimerBranch.getIncomingNode()).timeout(eventTimeout);
                 return notTimerBranch;
             } else {
                 // creating a split-join branch for the timer
