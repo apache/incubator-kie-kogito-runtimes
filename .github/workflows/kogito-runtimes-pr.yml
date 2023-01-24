@@ -47,7 +47,7 @@ jobs:
         env:
           BUILD_MVN_OPTS_CURRENT: '-T 1.5C'
       - name: Surefire Report
-        uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
+        uses: shubhbapna/kogito-pipelines/.ci/actions/surefire-report@surefire
         if: ${{ always() }}
         with:
           report_paths: '**/*-reports/TEST-*.xml'
