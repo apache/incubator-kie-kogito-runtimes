@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.drools.codegen.common.GeneratedFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,7 +40,6 @@ public abstract class AbstractProtoGenerator<T> implements ProtoGenerator {
     protected final ObjectMapper mapper;
     protected final Collection<T> modelClasses;
     protected final Collection<T> dataClasses;
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected AbstractProtoGenerator(Collection<T> rawModelClasses, Collection<T> rawDataClasses) {
         this.modelClasses = rawModelClasses == null ? Collections.emptyList() : rawModelClasses;

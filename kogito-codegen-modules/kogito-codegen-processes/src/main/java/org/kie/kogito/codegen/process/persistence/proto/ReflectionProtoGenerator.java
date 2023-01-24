@@ -45,6 +45,8 @@ import static java.lang.String.format;
 
 public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionProtoGenerator.class);
+
     private ReflectionProtoGenerator(Collection<Class<?>> modelClasses, Collection<Class<?>> dataClasses) {
         super(modelClasses, dataClasses);
     }
@@ -73,7 +75,7 @@ public class ReflectionProtoGenerator extends AbstractProtoGenerator<Class<?>> {
             try {
                 propertyField = getFieldFromClass(clazz, pd.getName());
             } catch (IllegalArgumentException ex) {
-                logger.warn(ex.getMessage());
+                LOGGER.warn(ex.getMessage());
                 // a method starting with get or set without a corresponding backing field makes java beans to
                 // still generate a property descriptor, it should be ignored
                 continue;
