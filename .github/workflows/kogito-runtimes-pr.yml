@@ -25,6 +25,8 @@ jobs:
         maven-version: ['3.8.6']
       fail-fast: false
     runs-on: ${{ matrix.os }}
+    permissions:
+      checks: write
     name: Maven Build
     steps:
       - name: Clean Disk Space
