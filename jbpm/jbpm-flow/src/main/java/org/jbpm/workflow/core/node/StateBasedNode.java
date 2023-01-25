@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jbpm.process.core.timer.Timer;
-import org.jbpm.process.instance.impl.actions.CompleteCompositeNodeInstanceAction;
+import org.jbpm.process.instance.impl.actions.CompleteStateBasedNodeInstanceAction;
 import org.jbpm.workflow.core.DroolsAction;
 import org.jbpm.workflow.core.impl.DroolsConsequenceAction;
 import org.jbpm.workflow.core.impl.ExtendedNodeImpl;
@@ -47,7 +47,7 @@ public class StateBasedNode extends ExtendedNodeImpl {
         Timer timer = new Timer();
         timer.setDelay(duration);
         DroolsConsequenceAction timeoutAction = new DroolsConsequenceAction("java", null);
-        timeoutAction.setMetaData(ACTION, new CompleteCompositeNodeInstanceAction(getNodeUniqueId()));
+        timeoutAction.setMetaData(ACTION, new CompleteStateBasedNodeInstanceAction(getNodeUniqueId()));
         addTimer(timer, timeoutAction);
     }
 

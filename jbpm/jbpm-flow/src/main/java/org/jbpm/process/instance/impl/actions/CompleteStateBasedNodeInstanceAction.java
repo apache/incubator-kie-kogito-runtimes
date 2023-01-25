@@ -15,19 +15,19 @@
  */
 package org.jbpm.process.instance.impl.actions;
 
-import org.jbpm.workflow.instance.node.CompositeNodeInstance;
+import org.jbpm.workflow.instance.node.StateBasedNodeInstance;
 import org.kie.api.runtime.process.NodeInstance;
 
-public class CompleteCompositeNodeInstanceAction extends AbstractNodeInstanceAction {
+public class CompleteStateBasedNodeInstanceAction extends AbstractNodeInstanceAction {
 
     private static final long serialVersionUID = 1L;
 
-    public CompleteCompositeNodeInstanceAction(String attachedToNodeId) {
+    public CompleteStateBasedNodeInstanceAction(String attachedToNodeId) {
         super(attachedToNodeId);
     }
 
     @Override
     protected void execute(NodeInstance nodeInstance) {
-        ((CompositeNodeInstance) nodeInstance).triggerCompleted();
+        ((StateBasedNodeInstance) nodeInstance).triggerCompleted();
     }
 }
