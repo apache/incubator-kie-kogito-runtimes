@@ -40,4 +40,4 @@ jobs:
         uses: shubhbapna/kogito-pipelines/.ci/actions/surefire-report@surefire
         if: ${{ always() }}
         with:
-          report_paths: 'surefire-reports/TEST-*.xml'
+          report_paths: '**/surefire-reports/TEST-*.xml'
