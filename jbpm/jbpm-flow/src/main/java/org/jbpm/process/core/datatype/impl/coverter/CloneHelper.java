@@ -66,37 +66,45 @@ public class CloneHelper {
     }
 
     private Optional<UnaryOperator<?>> searchCloneable(Class<?> type) {
+        return findCloneMethod(type).map(m -> handleException(m::invoke, type, "clone method"));
+    }
+
+    private Optional<UnaryOperator<?>> searchCopyConstructor(Class<?> type) {
+        return findCopyConstructor(type).map(c -> handleException(c::newInstance, type, "copy constructor"));
+    }
+
+    @FunctionalInterface
+    private interface CloneOperation {
+        Object apply(Object o) throws ReflectiveOperationException;
+    }
+
+    private UnaryOperator<?> handleException(CloneOperation cloneOperation, Class<?> type, String message) {
+        return o -> {
+            try {
+                return cloneOperation.apply(o);
+            } catch (InvocationTargetException ex) {
+                Throwable targetException = ex.getTargetException();
+                if (targetException instanceof RuntimeException) {
+                    throw (RuntimeException) targetException;
+                } else {
+                    throw new IllegalStateException("Invocation to " + message + " failed for " + type, targetException);
+                }
+            } catch (ReflectiveOperationException e) {
+                logger.warn("Unexpected issue accessing existing {} for type {}, returning same instance. {}", message, type, e.getMessage());
+                return o;
+            }
+        };
+    }
+
+    private Optional<Method> findCloneMethod(Class<?> type) {
         if (Cloneable.class.isAssignableFrom(type)) {
             try {
-                Method m = type.getMethod("clone");
-                return Optional.of(o -> {
-                    try {
-                        return m.invoke(o);
-                    } catch (InvocationTargetException ex) {
-                        throw new IllegalStateException("Invocation to clone method failed for " + type, ex.getTargetException());
-                    } catch (IllegalAccessException e) {
-                        logger.warn("Unexpexted issue accessing existing clone method for type {}, returning same instance. {}", type, e.getMessage());
-                        return o;
-                    }
-                });
+                return Optional.of(type.getMethod("clone"));
             } catch (NoSuchMethodException ex) {
                 logger.warn("{} implements cloneable but clone method cannot be found", type);
             }
         }
         return Optional.empty();
-    }
-
-    private Optional<UnaryOperator<?>> searchCopyConstructor(Class<?> type) {
-        return findCopyConstructor(type).map(c -> o -> {
-            try {
-                return c.newInstance(o);
-            } catch (InvocationTargetException ex) {
-                throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex.getTargetException());
-            } catch (InstantiationException | IllegalAccessException ex) {
-                logger.warn("Unexpected issue accessing existing copy constructor for type {}, returning same instance. {}", type, ex.getMessage());
-                return o;
-            }
-        });
     }
 
     private Optional<Constructor<?>> findCopyConstructor(Class<?> type) {
