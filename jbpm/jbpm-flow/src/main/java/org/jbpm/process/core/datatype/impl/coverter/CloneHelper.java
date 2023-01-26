@@ -16,6 +16,7 @@
 package org.jbpm.process.core.datatype.impl.coverter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -71,8 +72,11 @@ public class CloneHelper {
                 return Optional.of(o -> {
                     try {
                         return m.invoke(o);
-                    } catch (ReflectiveOperationException ex) {
-                        throw new IllegalStateException(type + " implements cloneable but invocation to clone method failed", ex);
+                    } catch (InvocationTargetException ex) {
+                        throw new IllegalStateException("Invocation to clone method failed for " + type, ex.getTargetException());
+                    } catch (IllegalAccessException e) {
+                        logger.warn("Unexpexted issue accessing existing clone method for type {}, returning same instance. {}", type, e.getMessage());
+                        return o;
                     }
                 });
             } catch (NoSuchMethodException ex) {
@@ -86,8 +90,11 @@ public class CloneHelper {
         return findCopyConstructor(type).map(c -> o -> {
             try {
                 return c.newInstance(o);
-            } catch (ReflectiveOperationException ex) {
-                throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex);
+            } catch (InvocationTargetException ex) {
+                throw new IllegalStateException("Error cloning object " + o + " using copy constructor", ex.getTargetException());
+            } catch (InstantiationException | IllegalAccessException ex) {
+                logger.warn("Unexpected issue accessing existing copy constructor for type {}, returning same instance. {}", type, ex.getMessage());
+                return o;
             }
         });
     }
