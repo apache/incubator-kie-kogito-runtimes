@@ -37,7 +37,7 @@ jobs:
       - name: Unzip files
         run: unzip surefire-reports.zip
       - name: Surefire Report
-        uses: shubhbapna/kogito-pipelines/.ci/actions/surefire-report@surefire
+        uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
         with:
           report_paths: '**/surefire-reports/TEST-*.xml'
