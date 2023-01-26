@@ -41,3 +41,4 @@ jobs:
         if: ${{ always() }}
         with:
           report_paths: '**/surefire-reports/TEST-*.xml'
+          skip_publishing: false
