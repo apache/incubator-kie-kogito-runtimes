@@ -57,16 +57,42 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     private static final String SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_URL = "/switch_state_event_condition_timeouts_end";
     private static final String SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_GET_BY_ID_URL = SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_URL + "/{id}";
 
-    private static final String VISA_APPROVED_EVENT_TOPIC = "visa_approved_topic";
-    private static final String VISA_APPROVED_EVENT_TYPE = "visa_approved_in";
-    private static final String VISA_DENIED_EVENT_TOPIC = "visa_denied_topic";
-    private static final String VISA_DENIED_EVENT_TYPE = "visa_denied_in";
+    /**
+     * GroupId for the events expected by this test class. Keep it isolated from potential events produced by other
+     * tests executing in parallel.
+     */
+    private static final String SW_OUT_EVENTS_GROUP_ID = SwitchStateEventConditionBasedIT.class.getSimpleName();
+
+    /**
+     * Topics and event types for the switch_state_event_condition_timeouts_transition SW.
+     */
+    private static final String VISA_APPROVED_EVENT_TOPIC_TRANSITION = "visa_approved_topic_transition";
+    private static final String VISA_DENIED_EVENT_TOPIC_TRANSITION = "visa_denied_topic_transition";
+    private static final String VISA_APPROVED_EVENT_TYPE_TRANSITION = "visa_approved_in_transition";
+    private static final String VISA_DENIED_EVENT_TYPE_TRANSITION = "visa_denied_in_transition";
+    private static final String PROCESS_RESULT_EVENT_TYPE_TRANSITION = "process_result_event_transition";
+
+    /**
+     * Topics and event types for the switch_state_event_condition_timeouts_transition2 SW.
+     */
+    private static final String VISA_APPROVED_EVENT_TOPIC_TRANSITION2 = "visa_approved_topic_transition2";
+    private static final String VISA_DENIED_EVENT_TOPIC_TRANSITION2 = "visa_denied_topic_transition2";
+    private static final String VISA_APPROVED_EVENT_TYPE_TRANSITION2 = "visa_approved_in_transition2";
+    private static final String VISA_DENIED_EVENT_TYPE_TRANSITION2 = "visa_denied_in_transition2";
+    private static final String PROCESS_RESULT_EVENT_TYPE_TRANSITION2 = "process_result_event_transition2";
+
+    /**
+     * Topics and event types for the switch-state-event-condition-timeouts-end.
+     */
+    private static final String VISA_APPROVED_EVENT_TOPIC_CONDITION_END = "visa_approved_topic_condition_end";
+    private static final String VISA_DENIED_EVENT_TOPIC_CONDITION_END = "visa_denied_topic_condition_end";
+    private static final String VISA_APPROVED_EVENT_TYPE_CONDITION_END = "visa_approved_in_condition_end";
+    private static final String VISA_DENIED_EVENT_TYPE_CONDITION_END = "visa_denied_in_condition_end";
+    private static final String PROCESS_RESULT_EVENT_TYPE_CONDITION_END = "process_result_event_condition_end";
 
     private static final String EVENT_DECISION_PATH = "data.decision";
     private static final String EVENT_PROCESS_INSTANCE_ID_PATH = "kogitoprocinstanceid";
     private static final String EVENT_TYPE_PATH = "type";
-
-    private static final String PROCESS_RESULT_EVENT_TYPE = "process_result_event";
 
     private static final String KOGITO_OUTGOING_STREAM_TOPIC = "kogito-sw-out-events";
 
@@ -99,8 +125,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransitionApproved() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL_GET_BY_ID_URL,
-                VISA_APPROVED_EVENT_TYPE,
-                VISA_APPROVED_EVENT_TOPIC,
+                VISA_APPROVED_EVENT_TYPE_TRANSITION,
+                VISA_APPROVED_EVENT_TOPIC_TRANSITION,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION,
                 DECISION_APPROVED);
     }
 
@@ -108,8 +135,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransitionDenied() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL_GET_BY_ID_URL,
-                VISA_DENIED_EVENT_TYPE,
-                VISA_DENIED_EVENT_TOPIC,
+                VISA_DENIED_EVENT_TYPE_TRANSITION,
+                VISA_DENIED_EVENT_TOPIC_TRANSITION,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION,
                 DECISION_DENIED);
     }
 
@@ -117,6 +145,7 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransitionTimeoutsExceeded() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithTimeoutsExceeded(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION_URL_GET_BY_ID_URL,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION,
                 DECISION_NO_DECISION);
     }
 
@@ -124,8 +153,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransition2Approved() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL_GET_BY_ID_URL,
-                VISA_APPROVED_EVENT_TYPE,
-                VISA_APPROVED_EVENT_TOPIC,
+                VISA_APPROVED_EVENT_TYPE_TRANSITION2,
+                VISA_APPROVED_EVENT_TOPIC_TRANSITION2,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION2,
                 DECISION_APPROVED);
     }
 
@@ -133,8 +163,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransition2Denied() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL_GET_BY_ID_URL,
-                VISA_DENIED_EVENT_TYPE,
-                VISA_DENIED_EVENT_TOPIC,
+                VISA_DENIED_EVENT_TYPE_TRANSITION2,
+                VISA_DENIED_EVENT_TOPIC_TRANSITION2,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION2,
                 DECISION_DENIED);
     }
 
@@ -142,6 +173,7 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsTransition2TimeoutsExceeded() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithTimeoutsExceeded(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_TRANSITION2_URL_GET_BY_ID_URL,
+                PROCESS_RESULT_EVENT_TYPE_TRANSITION2,
                 DECISION_DENIED);
     }
 
@@ -149,8 +181,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsEndTApproved() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_GET_BY_ID_URL,
-                VISA_APPROVED_EVENT_TYPE,
-                VISA_APPROVED_EVENT_TOPIC,
+                VISA_APPROVED_EVENT_TYPE_CONDITION_END,
+                VISA_APPROVED_EVENT_TOPIC_CONDITION_END,
+                PROCESS_RESULT_EVENT_TYPE_CONDITION_END,
                 DECISION_APPROVED);
     }
 
@@ -158,8 +191,9 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     void switchStateEventConditionTimeoutsEndDenied() throws Exception {
         switchStateEventConditionTimeoutsTransitionBasedWithEvent(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_URL,
                 SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_GET_BY_ID_URL,
-                VISA_DENIED_EVENT_TYPE,
-                VISA_DENIED_EVENT_TOPIC,
+                VISA_DENIED_EVENT_TYPE_CONDITION_END,
+                VISA_DENIED_EVENT_TOPIC_CONDITION_END,
+                PROCESS_RESULT_EVENT_TYPE_CONDITION_END,
                 DECISION_DENIED);
     }
 
@@ -170,7 +204,7 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
         // Give enough time for the timeout to exceed.
         assertProcessInstanceHasFinished(SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_GET_BY_ID_URL, processInstanceId, 1, 180);
         // When the process has finished the default case event must arrive.
-        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, 50);
+        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, PROCESS_RESULT_EVENT_TYPE_CONDITION_END, 50);
         assertThat(result.getString("data")).isEmpty();
     }
 
@@ -182,6 +216,7 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
             String processGetByIdUrl,
             String eventTypeToSend,
             String eventTopicToSend,
+            String expectedDecisionEventType,
             String expectedDecision) throws Exception {
         // Start a new process instance.
         String processInstanceId = newProcessInstanceAndGetId(processUrl, EMPTY_WORKFLOW_DATA);
@@ -200,8 +235,8 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
         assertProcessInstanceHasFinished(processGetByIdUrl, processInstanceId, 1, 180);
 
         // Give some time to consume the event and very the expected decision was made.
-        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, 50);
-        assertDecisionEvent(result, processInstanceId, PROCESS_RESULT_EVENT_TYPE, expectedDecision);
+        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, expectedDecisionEventType, 50);
+        assertDecisionEvent(result, processInstanceId, expectedDecisionEventType, expectedDecision);
     }
 
     /**
@@ -210,24 +245,27 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
      */
     private void switchStateEventConditionTimeoutsTransitionBasedWithTimeoutsExceeded(String processUrl,
             String processGetByIdUrl,
+            String expectedDecisionEventType,
             String expectedDecision) throws Exception {
         // Start a new process instance.
         String processInstanceId = newProcessInstanceAndGetId(processUrl, EMPTY_WORKFLOW_DATA);
         // Give enough time for the timeout to exceed.
         assertProcessInstanceHasFinished(processGetByIdUrl, processInstanceId, 1, 180);
         // When the process has finished the default case event must arrive.
-        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, 50);
-        assertDecisionEvent(result, processInstanceId, PROCESS_RESULT_EVENT_TYPE, expectedDecision);
+        JsonPath result = waitForEvent(KOGITO_OUTGOING_STREAM_TOPIC, expectedDecisionEventType, 50);
+        assertDecisionEvent(result, processInstanceId, expectedDecisionEventType, expectedDecision);
     }
 
-    protected JsonPath waitForEvent(String topic, long seconds) throws Exception {
+    protected JsonPath waitForEvent(String topic, String eventType, long seconds) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final AtomicReference<String> cloudEvent = new AtomicReference<>();
-        kafkaClient.consume(topic, rawCloudEvent -> {
-            cloudEvent.set(rawCloudEvent);
-            countDownLatch.countDown();
+        kafkaClient.consume(topic, SW_OUT_EVENTS_GROUP_ID, rawCloudEvent -> {
+            if (eventType.equals(new JsonPath(rawCloudEvent).get(EVENT_TYPE_PATH))) {
+                cloudEvent.set(rawCloudEvent);
+                countDownLatch.countDown();
+            }
         });
-        // give some time to consume the event and verifyy the expected decision was made.
+        // give some time to consume the event and verify the expected decision was made.
         assertThat(countDownLatch.await(seconds, TimeUnit.SECONDS)).isTrue();
         return new JsonPath(cloudEvent.get());
     }
