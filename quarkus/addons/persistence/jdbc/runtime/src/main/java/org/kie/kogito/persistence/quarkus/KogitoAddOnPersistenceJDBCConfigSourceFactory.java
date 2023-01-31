@@ -1,0 +1,57 @@
+/*
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kie.kogito.persistence.quarkus;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
+
+import org.eclipse.microprofile.config.spi.ConfigSource;
+
+import io.smallrye.config.ConfigSourceContext;
+import io.smallrye.config.ConfigSourceFactory;
+
+import static org.kie.kogito.persistence.quarkus.KogitoAddOnPersistenceJDBCConfigSource.ORDINAL;
+
+public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSourceFactory {
+
+    private static final String FLYWAY_LOCATIONS = "quarkus.flyway.locations";
+    private static final String LOCATION_PREFIX = "classpath:/db/";
+
+    @Override
+    public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
+        Map<String, String> configuration = new HashMap<>();
+        final String databaseName = context.getValue("quarkus.datasource.db-kind").getValue();
+        configuration.put(FLYWAY_LOCATIONS, LOCATION_PREFIX + getDBName(databaseName));
+        return List.of(new KogitoAddOnPersistenceJDBCConfigSource(configuration));
+    }
+
+    @Override
+    public OptionalInt getPriority() {
+        return OptionalInt.of(ORDINAL);
+    }
+
+    private String getDBName(final String dbKind) {
+        if (dbKind.equals("postgresql")) {
+            return "postgresql";
+        } else if (dbKind.equals("oracle")) {
+            return "oracle";
+        } else {
+            return "ansi";
+        }
+    }
+}
