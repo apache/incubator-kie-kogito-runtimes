@@ -58,12 +58,6 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     private static final String SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_GET_BY_ID_URL = SWITCH_STATE_EVENT_CONDITION_TIMEOUTS_END_URL + "/{id}";
 
     /**
-     * GroupId for the events expected by this test class. Keep it isolated from potential events produced by other
-     * tests executing in parallel.
-     */
-    private static final String SW_OUT_EVENTS_GROUP_ID = SwitchStateEventConditionBasedIT.class.getSimpleName();
-
-    /**
      * Topics and event types for the switch_state_event_condition_timeouts_transition SW.
      */
     private static final String VISA_APPROVED_EVENT_TOPIC_TRANSITION = "visa_approved_topic_transition";
@@ -259,14 +253,14 @@ class SwitchStateEventConditionBasedIT extends AbstractSwitchStateIT {
     protected JsonPath waitForEvent(String topic, String eventType, long seconds) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         final AtomicReference<String> cloudEvent = new AtomicReference<>();
-        kafkaClient.consume(topic, SW_OUT_EVENTS_GROUP_ID, rawCloudEvent -> {
-            if (eventType.equals(new JsonPath(rawCloudEvent).get(EVENT_TYPE_PATH))) {
-                cloudEvent.set(rawCloudEvent);
-                countDownLatch.countDown();
-            }
+        kafkaClient.consume(topic, rawCloudEvent -> {
+            cloudEvent.set(rawCloudEvent);
+            countDownLatch.countDown();
         });
         // give some time to consume the event and verify the expected decision was made.
         assertThat(countDownLatch.await(seconds, TimeUnit.SECONDS)).isTrue();
+        JsonPath jsonPath = new JsonPath(cloudEvent.get());
+        assertThat(jsonPath.getString(EVENT_TYPE_PATH)).isEqualTo(eventType);
         return new JsonPath(cloudEvent.get());
     }
 

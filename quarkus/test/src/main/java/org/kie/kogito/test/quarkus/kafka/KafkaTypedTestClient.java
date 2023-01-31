@@ -64,19 +64,15 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
         this.deserializer = deserializer;
     }
 
-    private KafkaConsumer<String, T> createDefaultConsumer(String hosts, String groupId) {
+    private KafkaConsumer<String, T> createDefaultConsumer(String hosts) {
         Properties consumerConfig = new Properties();
         consumerConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hosts);
         consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer.getName());
-        consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaTypedTestClient.class.getName() + "Consumer");
         return new KafkaConsumer<>(consumerConfig);
-    }
-
-    private static String defaultGroupId() {
-        return KafkaTypedTestClient.class.getName() + "Consumer";
     }
 
     private KafkaProducer<String, T> createDefaultProducer(String hosts) {
@@ -90,10 +86,6 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
     }
 
     public void consume(Set<String> topics, Consumer<T> callback) {
-        consume(topics, defaultGroupId(), callback);
-    }
-
-    public void consume(Set<String> topics, String groupId, Consumer<T> callback) {
         if (consumer != null) {
             shutdown();
         }
@@ -101,7 +93,7 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
         executorService = Executors.newSingleThreadExecutor();
 
         CountDownLatch awaitSubscribe = new CountDownLatch(1);
-        consumer = new KafkaConsumerLoop<>(createDefaultConsumer(hosts, groupId), topics, callback, v -> {
+        consumer = new KafkaConsumerLoop<>(createDefaultConsumer(hosts), topics, callback, v -> {
             awaitSubscribe.countDown();
             return null;
         });
@@ -114,10 +106,6 @@ public class KafkaTypedTestClient<T, S extends Serializer<T>, D extends Deserial
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    public void consume(String topic, String groupId, Consumer<T> callback) {
-        consume(singleton(topic), groupId, callback);
     }
 
     public void consume(String topic, Consumer<T> callback) {
