@@ -69,8 +69,8 @@ class PersistentProcessInstancesIT extends TestHelper {
 
         MongoDBProcessInstances<?> mongodbInstance = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), false);
 
-        assertThat(mongodbInstance.size()).isOne()
-                .isEqualTo(process.instances().size());
+        assertThat(mongodbInstance.stream().count()).isOne()
+                .isEqualTo(process.instances().stream().count());
 
         Optional<?> findById = mongodbInstance.findById(processInstance.id());
         BpmnProcessInstance found = (BpmnProcessInstance) findById.get();
@@ -79,15 +79,15 @@ class PersistentProcessInstancesIT extends TestHelper {
         assertThat(found.description()).isEqualTo("User Task");
         assertThat(found.variables().toMap()).containsExactly(entry("test", "test"));
         assertThat(mongodbInstance.exists(processInstance.id())).isTrue();
-        assertThat(mongodbInstance.values().size()).isOne();
+        assertThat(mongodbInstance.stream()).hasSize(1);
 
         ProcessInstance<?> readOnlyPI = mongodbInstance.findById(processInstance.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThat(readOnlyPI).as("ProcessInstanceDocument cannot be null").isNotNull();
-        assertThat(mongodbInstance.values(ProcessInstanceReadMode.READ_ONLY).size()).isOne();
+        assertThat(mongodbInstance.stream(ProcessInstanceReadMode.READ_ONLY)).hasSize(1);
 
         mongodbInstance.remove(processInstance.id());
         assertThat(mongodbInstance.exists(processInstance.id())).isFalse();
-        assertThat(mongodbInstance.values()).isEmpty();
+        assertThat(mongodbInstance.stream()).isEmpty();
     }
 
     @Test
@@ -122,17 +122,11 @@ class PersistentProcessInstancesIT extends TestHelper {
 
         MongoDBProcessInstances<BpmnVariables> mongodbInstance = new MongoDBProcessInstances<>(mongoClient, process, DB_NAME, transactionExecutor, false);
 
-        mongodbInstance.size();
-        verify(mongoCollection, times(1)).countDocuments(eq(clientSession));
-
         mongodbInstance.findById(id, ProcessInstanceReadMode.READ_ONLY);
         verify(mongoCollection, times(1)).find(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));
 
         mongodbInstance.exists(id);
         verify(mongoCollection, times(2)).find(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));
-
-        mongodbInstance.values(ProcessInstanceReadMode.READ_ONLY);
-        verify(mongoCollection, times(1)).find(eq(clientSession));
 
         mongodbInstance.remove(id);
         verify(mongoCollection, times(1)).deleteOne(eq(clientSession), eq(Filters.eq(PROCESS_INSTANCE_ID, id)));

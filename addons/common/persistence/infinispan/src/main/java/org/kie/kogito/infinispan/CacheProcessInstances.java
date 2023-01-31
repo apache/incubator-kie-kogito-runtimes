@@ -15,10 +15,9 @@
  */
 package org.kie.kogito.infinispan;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.infinispan.client.hotrod.DefaultTemplate;
 import org.infinispan.client.hotrod.MetadataValue;
@@ -57,11 +56,6 @@ public class CacheProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Integer size() {
-        return cache.size();
-    }
-
-    @Override
     public Optional<? extends ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
         return this.lock ? findWithLock(id, mode) : findInternal(id, mode);
     }
@@ -86,11 +80,10 @@ public class CacheProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Collection<? extends ProcessInstance> values(ProcessInstanceReadMode mode) {
+    public Stream<? extends ProcessInstance> stream(ProcessInstanceReadMode mode) {
         return cache.values()
                 .parallelStream()
-                .map(data -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process) : marshaller.unmarshallReadOnlyProcessInstance(data, process))
-                .collect(Collectors.toList());
+                .map(data -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process) : marshaller.unmarshallReadOnlyProcessInstance(data, process));
     }
 
     @Override

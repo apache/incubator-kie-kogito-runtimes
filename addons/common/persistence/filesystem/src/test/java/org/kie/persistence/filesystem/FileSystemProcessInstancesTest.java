@@ -58,7 +58,7 @@ class FileSystemProcessInstancesTest {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource(fileName)).get(0);
         process.setProcessInstancesFactory(new FileSystemProcessInstancesFactory());
         process.configure();
-        process.instances().values(ProcessInstanceReadMode.MUTABLE).forEach(p -> p.abort());
+        process.instances().stream(ProcessInstanceReadMode.MUTABLE).forEach(p -> p.abort());
         return process;
     }
 
@@ -87,7 +87,6 @@ class FileSystemProcessInstancesTest {
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
 
@@ -101,7 +100,7 @@ class FileSystemProcessInstancesTest {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.size()).isZero();
+        assertThat(instances.stream()).isEmpty();
     }
 
     @Test
@@ -111,11 +110,10 @@ class FileSystemProcessInstancesTest {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
-        ProcessInstance<BpmnVariables> pi = instances.values().stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = instances.stream().findFirst().get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        instances.values(ProcessInstanceReadMode.MUTABLE).stream().findFirst().get().abort();
-        assertThat(instances.size()).isZero();
+        instances.stream(ProcessInstanceReadMode.MUTABLE).findFirst().get().abort();
+        assertThat(instances.stream()).isEmpty();
     }
 
     @Test
@@ -128,7 +126,6 @@ class FileSystemProcessInstancesTest {
         assertThat(processInstance.description()).isEqualTo("User Task");
 
         FileSystemProcessInstances fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
-        assertThat(fileSystemBasedStorage.size()).isOne();
         assertThat(fileSystemBasedStorage.exists(processInstance.id())).isTrue();
         verify(fileSystemBasedStorage).create(any(), any());
         verify(fileSystemBasedStorage, times(2)).setMetadata(any(), eq(FileSystemProcessInstances.PI_DESCRIPTION), eq("User Task"));
@@ -138,7 +135,6 @@ class FileSystemProcessInstancesTest {
         assertThat(testVar).isEqualTo("test");
 
         assertThat(processInstance.description()).isEqualTo("User Task");
-        assertThat(process.instances().size()).isEqualTo(1);
         assertThat(processInstance.workItems(securityPolicy)).hasSize(1);
 
         WorkItem workItem = processInstance.workItems(securityPolicy).get(0);
@@ -149,7 +145,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage, times(1)).remove(processInstance.id());
-        assertThat(fileSystemBasedStorage.size()).isZero();
+        assertThat(fileSystemBasedStorage.stream()).isEmpty();
     }
 
     @Test
@@ -177,7 +173,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage, times(1)).remove(any());
-        assertThat(fileSystemBasedStorage.size()).isZero();
+        assertThat(fileSystemBasedStorage.stream()).isEmpty();
     }
 
     @Test
@@ -222,7 +218,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage).remove(processInstance.id());
-        assertThat(fileSystemBasedStorage.size()).isZero();
+        assertThat(fileSystemBasedStorage.stream()).isEmpty();
     }
 
     private class FileSystemProcessInstancesFactory extends AbstractProcessInstancesFactory {

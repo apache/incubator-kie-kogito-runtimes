@@ -100,7 +100,7 @@ class CacheProcessInstancesIT {
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
+        assertThat(instances.stream()).hasSize(1);
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
 
@@ -114,7 +114,7 @@ class CacheProcessInstancesIT {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.size()).isZero();
+        assertThat(instances.stream()).isEmpty();
     }
 
     @Test
@@ -128,11 +128,10 @@ class CacheProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.size()).isOne();
-        ProcessInstance<BpmnVariables> pi = instances.values().stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = instances.stream().findFirst().get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        instances.values(ProcessInstanceReadMode.MUTABLE).stream().findFirst().get().abort();
-        assertThat(instances.size()).isZero();
+        instances.stream(ProcessInstanceReadMode.MUTABLE).findFirst().get().abort();
+        assertThat(instances.stream()).isEmpty();
     }
 
     @Test
@@ -146,11 +145,11 @@ class CacheProcessInstancesIT {
         processInstance.start();
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
 
-        assertThat(process.instances().size()).isOne();
+        assertThat(process.instances().stream()).hasSize(1);
 
         SecurityPolicy asJohn = SecurityPolicy.of(new StaticIdentityProvider("john"));
 
-        assertThat(process.instances().values().iterator().next().workItems(asJohn)).hasSize(1);
+        assertThat(process.instances().stream().iterator().next().workItems(asJohn)).hasSize(1);
 
         List<WorkItem> workItems = processInstance.workItems(asJohn);
         assertThat(workItems).hasSize(1);
@@ -158,7 +157,7 @@ class CacheProcessInstancesIT {
         assertThat(workItem.getParameters()).containsEntry("ActorId", "john");
         processInstance.completeWorkItem(workItem.getId(), null, asJohn);
         assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
-        assertThat(process.instances().size()).isZero();
+        assertThat(process.instances().stream()).isEmpty();
     }
 
     private class CacheProcessInstancesFactory extends AbstractProcessInstancesFactory {

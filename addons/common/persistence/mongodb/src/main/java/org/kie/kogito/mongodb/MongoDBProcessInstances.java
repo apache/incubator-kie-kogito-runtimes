@@ -15,10 +15,9 @@
  */
 package org.kie.kogito.mongodb;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -37,10 +36,8 @@ import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.ClientSession;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
@@ -84,17 +81,10 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
     }
 
     @Override
-    public Collection<ProcessInstance<T>> values(ProcessInstanceReadMode mode) {
-        FindIterable<Document> docs = Optional.ofNullable(transactionManager.getClientSession())
+    public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
+        return StreamSupport.stream(Optional.ofNullable(transactionManager.getClientSession())
                 .map(collection::find)
-                .orElseGet(collection::find);
-        List<ProcessInstance<T>> list = new ArrayList<>();
-        try (MongoCursor<Document> cursor = docs.iterator()) {
-            while (cursor.hasNext()) {
-                list.add(unmarshall(cursor.next(), mode));
-            }
-        }
-        return list;
+                .orElseGet(collection::find).map(cursor -> unmarshall(cursor, mode)).spliterator(), false);
     }
 
     private ProcessInstance<T> unmarshall(Document document, ProcessInstanceReadMode mode) {
@@ -194,13 +184,6 @@ public class MongoDBProcessInstances<T extends Model> implements MutableProcessI
 
     private static void setVersion(ProcessInstance<?> instance, Long version) {
         ((AbstractProcessInstance<?>) instance).setVersion(version == null ? 0L : version);
-    }
-
-    @Override
-    public Integer size() {
-        return Optional.ofNullable(transactionManager.getClientSession())
-                .map(r -> (int) collection.countDocuments(r))
-                .orElseGet(() -> (int) collection.countDocuments());
     }
 
     @Override

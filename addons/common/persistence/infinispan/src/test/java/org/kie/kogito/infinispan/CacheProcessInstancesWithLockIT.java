@@ -90,7 +90,7 @@ class CacheProcessInstancesWithLockIT {
         when(mockCreatePi.internalGetProcessInstance()).thenReturn(createPi);
         when(mockCreatePi.id()).thenReturn(TEST_ID);
         pi.create(TEST_ID, mockCreatePi);
-        assertThat(pi.size()).isOne();
+        assertThat(pi.stream()).hasSize(1);
         assertThat(pi.exists(TEST_ID)).isTrue();
 
         WorkflowProcessInstance updatePi = ((AbstractProcessInstance<?>) process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")))).internalGetProcessInstance();

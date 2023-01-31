@@ -45,7 +45,7 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         ProcessInstance<BpmnVariables> processInstance = process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")));
         processInstance.start();
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
-        assertThat(processInstances.size()).isOne();
+        assertThat(processInstances.stream()).hasSize(1);
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
         foundOne = processInstances.findById(processInstance.id());
@@ -65,8 +65,7 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         assertThat(instanceOne.version()).isEqualTo(2L);
 
         processInstances.remove(processInstance.id());
-        assertThat(processInstances.size()).isZero();
-        assertThat(process.instances().values()).isEmpty();
+        assertThat(process.instances().stream()).isEmpty();
     }
 
     @Test
@@ -80,7 +79,6 @@ class PersistentProcessInstancesWithLockIT extends TestHelper {
         processInstance.start();
 
         MongoDBProcessInstances<?> processInstances = new MongoDBProcessInstances<>(getMongoClient(), process, DB_NAME, getDisabledMongoDBTransactionManager(), true);
-        assertThat(processInstances.size()).isOne();
         Optional<?> foundOne = processInstances.findById(processInstance.id());
         BpmnProcessInstance instanceOne = (BpmnProcessInstance) foundOne.get();
         foundOne = processInstances.findById(processInstance.id());

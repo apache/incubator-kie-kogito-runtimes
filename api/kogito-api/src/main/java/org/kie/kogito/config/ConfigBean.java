@@ -31,4 +31,8 @@ public interface ConfigBean extends KogitoConfig {
     String getServiceUrl();
 
     Optional<KogitoGAV> getGav();
+
+    default Short processInstanceLimit() {
+        return 1000;
+    }
 }

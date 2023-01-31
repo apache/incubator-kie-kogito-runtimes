@@ -20,12 +20,16 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.sql.DataSource;
 
@@ -174,22 +178,63 @@ public class GenericRepository extends Repository {
         return result;
     }
 
+    interface UncheckedCloseable extends Runnable, AutoCloseable {
+        default void run() {
+            try {
+                close();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        static UncheckedCloseable wrap(AutoCloseable c) {
+            return c::close;
+        }
+
+        default UncheckedCloseable nest(AutoCloseable c) {
+            return () -> {
+                try (UncheckedCloseable c1 = this) {
+                    c.close();
+                }
+            };
+        }
+    }
+
     @Override
-    List<byte[]> findAllInternal(String processId, String processVersion) {
-        List<byte[]> result = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_ALL, processVersion))) {
+    Stream<byte[]> findAllInternal(String processId, String processVersion) {
+        UncheckedCloseable close = null;
+        try {
+            Connection connection = dataSource.getConnection();
+            close = UncheckedCloseable.wrap(connection);
+            PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_ALL, processVersion));
+            close = close.nest(statement);
             statement.setString(1, processId);
             if (processVersion != null) {
                 statement.setString(2, processVersion);
             }
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    result.add(resultSet.getBytes(PAYLOAD));
+            ResultSet resultSet = statement.executeQuery();
+            close = close.nest(resultSet);
+            return StreamSupport.stream(new Spliterators.AbstractSpliterator<byte[]>(
+                    Long.MAX_VALUE, Spliterator.ORDERED) {
+                @Override
+                public boolean tryAdvance(Consumer<? super byte[]> action) {
+                    try {
+                        if (!resultSet.next())
+                            return false;
+                        action.accept(resultSet.getBytes(PAYLOAD));
+                        return true;
+                    } catch (SQLException e) {
+                        throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
+                    }
                 }
-            }
-            return result;
-        } catch (Exception e) {
+            }, false).onClose(close);
+        } catch (SQLException e) {
+            if (close != null)
+                try {
+                    close.close();
+                } catch (Exception ex) {
+                    e.addSuppressed(ex);
+                }
             throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
         }
     }

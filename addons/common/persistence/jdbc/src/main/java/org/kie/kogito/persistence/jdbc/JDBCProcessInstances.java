@@ -15,12 +15,11 @@
  */
 package org.kie.kogito.persistence.jdbc;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -116,16 +115,10 @@ public class JDBCProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Collection<ProcessInstance> values(ProcessInstanceReadMode mode) {
+    public Stream<ProcessInstance> stream(ProcessInstanceReadMode mode) {
         LOGGER.debug("Find process instance values using mode: {}", mode);
-        return repository.findAllInternal(process.id(), process.version()).stream()
-                .map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process) : marshaller.unmarshallReadOnlyProcessInstance(b, process))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Integer size() {
-        return repository.countInternal(process.id(), process.version()).intValue();
+        return repository.findAllInternal(process.id(), process.version())
+                .map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process) : marshaller.unmarshallReadOnlyProcessInstance(b, process));
     }
 
     @Override

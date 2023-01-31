@@ -15,19 +15,19 @@
  */
 package org.kie.kogito.persistence.kafka;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -159,28 +159,9 @@ public class KafkaProcessInstances implements MutableProcessInstances {
     }
 
     @Override
-    public Collection<ProcessInstance> values(ProcessInstanceReadMode mode) {
-        final List<ProcessInstance> instances = new ArrayList<>();
-        try (final KeyValueIterator<String, byte[]> iterator = getStore().prefixScan(getProcess().id(), Serdes.String().serializer())) {
-            while (iterator.hasNext()) {
-                instances.add(mode == MUTABLE ? marshaller.unmarshallProcessInstance(iterator.next().value, process) : marshaller.unmarshallReadOnlyProcessInstance(iterator.next().value, process));
-            }
-            return instances;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to read process instances ", e);
-        }
-    }
-
-    @Override
-    public Integer size() {
-        int size = 0;
-        try (KeyValueIterator<String, byte[]> iterator = getStore().prefixScan(getProcess().id(), Serdes.String().serializer())) {
-            while (iterator.hasNext()) {
-                size++;
-                iterator.next();
-            }
-        }
-        return size;
+    public Stream<ProcessInstance> stream(ProcessInstanceReadMode mode) {
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(getStore().prefixScan(getProcess().id(), Serdes.String().serializer()), Spliterator.ORDERED), false)
+                .map(v -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(v.value, process) : marshaller.unmarshallReadOnlyProcessInstance(v.value, process));
     }
 
     protected void disconnect(ProcessInstance instance) {

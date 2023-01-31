@@ -15,9 +15,9 @@
  */
 package org.kie.kogito.persistence.jdbc;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 abstract class Repository {
 
@@ -45,7 +45,7 @@ abstract class Repository {
 
     abstract Map<String, Object> findByIdInternal(String processId, String processVersion, UUID id);
 
-    abstract List<byte[]> findAllInternal(String processId, String processVersion);
+    abstract Stream<byte[]> findAllInternal(String processId, String processVersion);
 
     abstract Long countInternal(String processId, String processVersion);
 
