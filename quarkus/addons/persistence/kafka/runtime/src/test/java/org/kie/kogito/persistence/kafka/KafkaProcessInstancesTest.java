@@ -42,6 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.kie.kogito.persistence.kafka.KafkaPersistenceUtils.topicName;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -143,25 +144,45 @@ public class KafkaProcessInstancesTest {
         verify(marshaller).unmarshallReadOnlyProcessInstance(any(), any());
     }
 
+    private static class KeyValueIteratorMock implements KeyValueIterator<String, String> {
+        boolean hasNext = true;
+
+        @Override
+        public boolean hasNext() {
+            boolean current = hasNext;
+            hasNext = false;
+            return current;
+        }
+
+        @Override
+        public KeyValue<String, String> next() {
+            return mock(KeyValue.class);
+        }
+
+        @Override
+        public void close() {
+        }
+
+        @Override
+        public String peekNextKey() {
+            return "";
+        }
+
+    }
+
     @Test
     public void testProcessInstancesValues() {
-        KeyValueIterator iterator = mock(KeyValueIterator.class);
-        when(iterator.hasNext()).thenReturn(true, false);
-        when(iterator.next()).thenReturn(mock(KeyValue.class));
+        KeyValueIteratorMock iterator = new KeyValueIteratorMock();
         doReturn(iterator).when(store).prefixScan(eq(processId), any());
-
-        assertThat(instances.values()).hasSize(1);
+        assertOne(instances);
         verify(marshaller).unmarshallReadOnlyProcessInstance(any(), any());
     }
 
     @Test
-    public void testProcessInstancesValuesReadOnly() {
-        KeyValueIterator iterator = mock(KeyValueIterator.class);
-        when(iterator.hasNext()).thenReturn(true, false);
-        when(iterator.next()).thenReturn(mock(KeyValue.class));
+    public void testProcessInstancesValuesMutable() {
+        KeyValueIteratorMock iterator = new KeyValueIteratorMock();
         doReturn(iterator).when(store).prefixScan(eq(processId), any());
-
-        assertThat(instances.values(ProcessInstanceReadMode.MUTABLE)).hasSize(1);
+        assertOne(instances, ProcessInstanceReadMode.MUTABLE);
         verify(marshaller).unmarshallProcessInstance(any(), any());
     }
 
@@ -169,7 +190,7 @@ public class KafkaProcessInstancesTest {
     public void testProcessInstancesSize() {
         doReturn(mock(KeyValueIterator.class)).when(store).prefixScan(eq(processId), any());
 
-        assertThat(instances.size()).isZero();
+        assertEmpty(instances);
     }
 
     @Test

@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.state.KeyValueIterator;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.kie.kogito.process.MutableProcessInstances;
 import org.kie.kogito.process.Process;
@@ -160,8 +161,11 @@ public class KafkaProcessInstances implements MutableProcessInstances {
 
     @Override
     public Stream<ProcessInstance> stream(ProcessInstanceReadMode mode) {
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(getStore().prefixScan(getProcess().id(), Serdes.String().serializer()), Spliterator.ORDERED), false)
+        KeyValueIterator<String, byte[]> iterator = getStore().prefixScan(getProcess().id(), Serdes.String().serializer());
+        Stream<ProcessInstance> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
                 .map(v -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(v.value, process) : marshaller.unmarshallReadOnlyProcessInstance(v.value, process));
+        stream.onClose(iterator::close);
+        return stream;
     }
 
     protected void disconnect(ProcessInstance instance) {

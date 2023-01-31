@@ -59,6 +59,10 @@ import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STAT
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
 import static org.kie.kogito.mongodb.utils.DocumentConstants.DOCUMENT_ID;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 
 @Testcontainers
 class MongoDBProcessInstancesIT {
@@ -145,7 +149,7 @@ class MongoDBProcessInstancesIT {
         assertThat(processInstance.status()).isEqualTo(STATE_ACTIVE);
         assertThat(processInstance.description()).isEqualTo("User Task");
 
-        assertThat(process.instances().stream()).hasSize(1);
+        assertOne(process.instances());
 
         String testVar = (String) processInstance.variables().get("test");
         assertThat(testVar).isEqualTo("test");
@@ -161,7 +165,7 @@ class MongoDBProcessInstancesIT {
         assertThat(workItem.getParameters()).containsEntry("ActorId", "john");
         processInstance.completeWorkItem(workItem.getId(), null, securityPolicy);
         assertThat(processInstance.status()).isEqualTo(STATE_COMPLETED);
-        assertThat(process.instances().stream()).isEmpty();
+        assertEmpty(process.instances());
     }
 
     private void testIndexCreation(BpmnProcess process) {
@@ -208,7 +212,6 @@ class MongoDBProcessInstancesIT {
         process.configure();
 
         ProcessInstance<BpmnVariables> mutablePi = process.createInstance(BpmnVariables.create(Collections.singletonMap("var", "value")));
-
         mutablePi.start();
         assertThat(mutablePi.status()).isEqualTo(STATE_ERROR);
         assertThat(mutablePi.error()).hasValueSatisfying(error -> {
@@ -218,7 +221,7 @@ class MongoDBProcessInstancesIT {
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.stream()).hasSize(1);
+        assertOne(instances);
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
 
@@ -232,7 +235,7 @@ class MongoDBProcessInstancesIT {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.stream()).isEmpty();
+        assertEmpty(instances);
     }
 
     @Test
@@ -263,10 +266,10 @@ class MongoDBProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = instances.stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = getFirst(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        instances.stream(ProcessInstanceReadMode.MUTABLE).findFirst().get().abort();
-        assertThat(instances.stream()).isEmpty();
+        abortFirst(instances);
+        assertEmpty(instances);
     }
 
     private class MongoDBProcessInstancesFactory extends AbstractProcessInstancesFactory {

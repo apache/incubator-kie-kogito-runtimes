@@ -47,6 +47,9 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertOne;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 
 @Testcontainers
 class CacheProcessInstancesIT {
@@ -100,7 +103,7 @@ class CacheProcessInstancesIT {
         assertThat(mutablePi.variables().toMap()).containsExactly(entry("var", "value"));
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        assertThat(instances.stream()).hasSize(1);
+        assertOne(instances);
         ProcessInstance<BpmnVariables> pi = instances.findById(mutablePi.id(), ProcessInstanceReadMode.READ_ONLY).get();
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
 
@@ -114,7 +117,7 @@ class CacheProcessInstancesIT {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.stream()).isEmpty();
+        assertEmpty(instances);
     }
 
     @Test
@@ -128,7 +131,7 @@ class CacheProcessInstancesIT {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = instances.stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = getFirst(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
         instances.stream(ProcessInstanceReadMode.MUTABLE).findFirst().get().abort();
         assertThat(instances.stream()).isEmpty();
@@ -149,7 +152,7 @@ class CacheProcessInstancesIT {
 
         SecurityPolicy asJohn = SecurityPolicy.of(new StaticIdentityProvider("john"));
 
-        assertThat(process.instances().stream().iterator().next().workItems(asJohn)).hasSize(1);
+        assertThat(getFirst(process.instances()).workItems(asJohn)).hasSize(1);
 
         List<WorkItem> workItems = processInstance.workItems(asJohn);
         assertThat(workItems).hasSize(1);

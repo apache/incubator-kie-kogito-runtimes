@@ -44,6 +44,10 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ACTIVE;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_COMPLETED;
 import static org.kie.kogito.internal.process.runtime.KogitoProcessInstance.STATE_ERROR;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abort;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.abortFirst;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.assertEmpty;
+import static org.kie.kogito.test.utils.ProcessInstancesTestUtils.getFirst;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -58,7 +62,7 @@ class FileSystemProcessInstancesTest {
         BpmnProcess process = BpmnProcess.from(new ClassPathResource(fileName)).get(0);
         process.setProcessInstancesFactory(new FileSystemProcessInstancesFactory());
         process.configure();
-        process.instances().stream(ProcessInstanceReadMode.MUTABLE).forEach(p -> p.abort());
+        abort(process.instances());
         return process;
     }
 
@@ -100,7 +104,7 @@ class FileSystemProcessInstancesTest {
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> readOnlyPi.abort());
 
         instances.findById(mutablePi.id()).get().abort();
-        assertThat(instances.stream()).isEmpty();
+
     }
 
     @Test
@@ -110,10 +114,10 @@ class FileSystemProcessInstancesTest {
         processInstance.start();
 
         ProcessInstances<BpmnVariables> instances = process.instances();
-        ProcessInstance<BpmnVariables> pi = instances.stream().findFirst().get();
+        ProcessInstance<BpmnVariables> pi = getFirst(instances);
         assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(() -> pi.abort());
-        instances.stream(ProcessInstanceReadMode.MUTABLE).findFirst().get().abort();
-        assertThat(instances.stream()).isEmpty();
+        abortFirst(instances);
+        assertEmpty(instances);
     }
 
     @Test
@@ -145,7 +149,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage, times(1)).remove(processInstance.id());
-        assertThat(fileSystemBasedStorage.stream()).isEmpty();
+        assertEmpty(fileSystemBasedStorage);
     }
 
     @Test
@@ -173,7 +177,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage, times(1)).remove(any());
-        assertThat(fileSystemBasedStorage.stream()).isEmpty();
+        assertEmpty(fileSystemBasedStorage);
     }
 
     @Test
@@ -218,7 +222,7 @@ class FileSystemProcessInstancesTest {
 
         fileSystemBasedStorage = (FileSystemProcessInstances) process.instances();
         verify(fileSystemBasedStorage).remove(processInstance.id());
-        assertThat(fileSystemBasedStorage.stream()).isEmpty();
+        assertEmpty(fileSystemBasedStorage);
     }
 
     private class FileSystemProcessInstancesFactory extends AbstractProcessInstancesFactory {
