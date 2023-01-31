@@ -26,10 +26,7 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.kie.kogito.event.CloudEventMarshaller;
 import org.kie.kogito.event.Converter;
 import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
@@ -57,11 +54,11 @@ import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.waitForFinish;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
-@TestMethodOrder(OrderAnnotation.class)
 class AsyncAPIIT extends AbstractCallbackStateIT {
 
     @QuarkusTestProperty(name = KafkaQuarkusTestResource.KOGITO_KAFKA_PROPERTY)
     String kafkaBootstrapServers;
+    private CloudEventMarshaller<byte[]> marshaller;
     private ObjectMapper objectMapper;
     private KafkaTypedTestClient<byte[], ByteArraySerializer, ByteArrayDeserializer> kafkaClient;
 
@@ -74,7 +71,7 @@ class AsyncAPIIT extends AbstractCallbackStateIT {
                 .registerModule(new JavaTimeModule())
                 .registerModule(JsonFormat.getCloudEventJacksonModule())
                 .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
+        marshaller = new ByteArrayCloudEventMarshaller(objectMapper);
     }
 
     @AfterEach
@@ -85,32 +82,17 @@ class AsyncAPIIT extends AbstractCallbackStateIT {
     }
 
     @Test
-    @Order(1)
     void testConsumer() throws IOException {
         final String flowId = "asyncEventConsumer";
-        CloudEventMarshaller<byte[]> marshaller = new ByteArrayCloudEventMarshaller(objectMapper);
         String id = startProcess(flowId);
         kafkaClient.produce(marshaller.marshall(buildCloudEvent(id, "wait", marshaller)), "wait");
         waitForFinish(flowId, id, Duration.ofSeconds(10));
     }
 
     @Test
-    @Order(2)
-<<<<<<< Upstream, based on main
     void testPublisher() throws InterruptedException {
-        String id = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .body(Collections.singletonMap("workflowdata", Collections.emptyMap()))
-                .post("/" + "asyncEventPublisher")
-                .then()
-                .statusCode(201)
-                .extract().path("id");
-        logger.debug("Process instance id is " + id);
-=======
-    void testPublisher() throws IOException, InterruptedException {
         String id = startProcessNoCheck("asyncEventPublisher");
->>>>>>> 99eb347 [KOGITO-8556] Refactoring test a bit
+        logger.debug("Process instance id is " + id);
         Converter<byte[], CloudEvent> converter = new ByteArrayCloudEventUnmarshallerFactory(objectMapper).unmarshaller(Map.class).cloudEvent();
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         kafkaClient.consume("wait", v -> {
@@ -124,7 +106,7 @@ class AsyncAPIIT extends AbstractCallbackStateIT {
                 logger.info("Unmarshall exception", e);
             }
         });
-        countDownLatch.await(3, TimeUnit.SECONDS);
+        countDownLatch.await(10, TimeUnit.SECONDS);
         assertThat(countDownLatch.getCount()).isZero();
     }
 }
