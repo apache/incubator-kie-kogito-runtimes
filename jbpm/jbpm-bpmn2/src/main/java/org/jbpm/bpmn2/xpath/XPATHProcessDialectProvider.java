@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2011 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.asyncapi;
+package org.jbpm.bpmn2.xpath;
 
-public class AsyncChannelInfo {
-    private final String name;
-    private final boolean isPublish;
+import org.jbpm.process.builder.dialect.ProcessDialect;
+import org.jbpm.process.builder.dialect.ProcessDialectProvider;
 
-    public AsyncChannelInfo(String name, boolean isPublish) {
-        this.name = name;
-        this.isPublish = isPublish;
-    }
+public class XPATHProcessDialectProvider implements ProcessDialectProvider {
 
-    public String getName() {
-        return name;
-    }
+    public static final String ID = "XPath";
+    private static final XPATHProcessDialect DIALECT = new XPATHProcessDialect();
 
-    public boolean isPublish() {
-        return isPublish;
+    @Override
+    public String name() {
+        return ID;
     }
 
     @Override
-    public String toString() {
-        return "AsyncChannelInfo [name=" + name + ", isPublish=" + isPublish + "]";
+    public ProcessDialect dialect() {
+        return DIALECT;
     }
 }
