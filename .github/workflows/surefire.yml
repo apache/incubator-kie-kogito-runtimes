@@ -40,5 +40,7 @@ jobs:
         uses: kiegroup/kogito-pipelines/.ci/actions/surefire-report@main
         if: ${{ always() }}
         with:
+          check_name: ${{ github.event.workflow_run.name  }} test report
+          commit: ${{ github.event.workflow_run.head_sha }}
           report_paths: '**/surefire-reports/TEST-*.xml'
           skip_publishing: false
