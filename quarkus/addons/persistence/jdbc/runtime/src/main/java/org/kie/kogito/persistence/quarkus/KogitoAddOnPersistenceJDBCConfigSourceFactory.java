@@ -31,6 +31,9 @@ public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSour
 
     private static final String FLYWAY_LOCATIONS = "quarkus.flyway.locations";
     private static final String LOCATION_PREFIX = "classpath:/db/";
+    private static final String POSTGRESQL = "postgresql";
+    private static final String ORACLE = "oracle";
+    private static final String ANSI = "ansi";
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
@@ -46,12 +49,12 @@ public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSour
     }
 
     private String getDBName(final String dbKind) {
-        if (dbKind.equals("postgresql")) {
-            return "postgresql";
-        } else if (dbKind.equals("oracle")) {
-            return "oracle";
+        if (POSTGRESQL.equals(dbKind)) {
+            return POSTGRESQL;
+        } else if (ORACLE.equals(dbKind)) {
+            return ORACLE;
         } else {
-            return "ansi";
+            return ANSI;
         }
     }
 }
