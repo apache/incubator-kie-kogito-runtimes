@@ -41,7 +41,7 @@ jobs:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
-      - run: echo "${{ github.job }}"
+      - run: echo "${{ jobs.runtime-build.name }}"
       - name: Build Chain
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@main
         with:
