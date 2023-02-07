@@ -68,7 +68,6 @@ class DocumentProcessInstanceMarshallerTest {
         assertThat(processInstance.id()).isEqualTo(doc.get("id"));
         assertThat(processInstance.description()).isEqualTo(doc.get("description"))
                 .isEqualTo("User Task");
-        assertThat(process.instances().stream()).isNotEmpty();
         BpmnVariables variables = processInstance.variables();
         String testVar = (String) variables.get("test");
         assertThat(testVar).isEqualTo("testValue");

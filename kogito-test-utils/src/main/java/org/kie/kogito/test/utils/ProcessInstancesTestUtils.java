@@ -56,9 +56,12 @@ public class ProcessInstancesTestUtils {
     }
 
     public static <T> void assertOne(ProcessInstances<T> processInstances, ProcessInstanceReadMode mode) {
-        try (Stream<ProcessInstance<T>> stream = processInstances.stream(mode)) {
-            assertThat(stream).hasSize(1);
-        }
+        assertSize(processInstances, mode, 1);
     }
 
+    public static <T> void assertSize(ProcessInstances<T> processInstances, ProcessInstanceReadMode mode, int size) {
+        try (Stream<ProcessInstance<T>> stream = processInstances.stream(mode)) {
+            assertThat(stream).hasSize(size);
+        }
+    }
 }
