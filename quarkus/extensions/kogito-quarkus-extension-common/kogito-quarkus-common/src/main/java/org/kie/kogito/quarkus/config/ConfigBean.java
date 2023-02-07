@@ -42,6 +42,11 @@ public class ConfigBean extends StaticConfigBean {
     }
 
     @Override
+    public short processInstanceLimit() {
+        return runtimeConfig.get().processInstanceLimit;
+    }
+
+    @Override
     public Optional<KogitoGAV> getGav() {
         return Optional.ofNullable(gav);
     }
@@ -55,4 +60,5 @@ public class ConfigBean extends StaticConfigBean {
     public boolean useCloudEvents() {
         return buildTimeConfig.get().useCloudEvents;
     }
+
 }

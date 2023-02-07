@@ -32,7 +32,7 @@ public interface ConfigBean extends KogitoConfig {
 
     Optional<KogitoGAV> getGav();
 
-    default Short processInstanceLimit() {
+    default short processInstanceLimit() {
         return 1000;
     }
 }
