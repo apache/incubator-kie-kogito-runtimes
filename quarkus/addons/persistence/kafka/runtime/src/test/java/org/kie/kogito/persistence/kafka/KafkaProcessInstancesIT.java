@@ -92,19 +92,17 @@ public class KafkaProcessInstancesIT {
     }
 
     private <T> void awaitTillOne(ProcessInstances<T> instances) {
-
-        await().atMost(TIMEOUT).until(() -> {
-            try (Stream<ProcessInstance<T>> stream = instances.stream()) {
-                return stream.count() == 1;
-            }
-        });
+        awaitTillSize(instances, 1);
     }
 
     private <T> void awaitTillEmpty(ProcessInstances<T> instances) {
+        awaitTillSize(instances, 0);
+    }
 
+    private <T> void awaitTillSize(ProcessInstances<T> instances, int size) {
         await().atMost(TIMEOUT).until(() -> {
             try (Stream<ProcessInstance<T>> stream = instances.stream()) {
-                return stream.count() == 0;
+                return stream.count() == size;
             }
         });
     }

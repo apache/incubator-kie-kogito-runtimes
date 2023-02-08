@@ -21,7 +21,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -40,13 +39,10 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
-import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
-
 @SuppressWarnings({ "rawtypes" })
 public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     private static final String VERSION = "version";
-
     private static final String PAYLOAD = "payload";
 
     private static final String IS_NULL = "is null";
@@ -54,8 +50,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
     private static final String UPDATE = "UPDATE process_instances SET payload = $1 WHERE process_id = $2 and id = $3 and process_version ";
     private static final String DELETE = "DELETE FROM process_instances WHERE process_id = $1 and id = $2 and process_version ";
     private static final String FIND_BY_ID = "SELECT payload, version FROM process_instances WHERE process_id = $1 and id = $2 and process_version ";
-    private static final String FIND_ALL = "SELECT payload FROM process_instances WHERE process_id = $1 and process_version ";
-    private static final String COUNT = "SELECT COUNT(id) FROM process_instances WHERE process_id = $1 and process_version ";
+    private static final String FIND_ALL = "SELECT payload, version FROM process_instances WHERE process_id = $1 and process_version ";
     private static final String UPDATE_WITH_LOCK = "UPDATE process_instances SET payload = $1, version = $2 WHERE process_id = $3 and id = $4 and version = $5 and process_version ";
 
     private final Process<?> process;
@@ -112,17 +107,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
 
     @Override
     public Optional<ProcessInstance> findById(String id, ProcessInstanceReadMode mode) {
-        Optional<Row> row = findByIdInternal(UUID.fromString(id));
-
-        if (row.isPresent()) {
-            Optional<byte[]> payload = row.map(r -> r.getBuffer(PAYLOAD)).map(Buffer::getBytes);
-            if (payload.isPresent()) {
-                ProcessInstance<?> instance = mode == MUTABLE ? marshaller.unmarshallProcessInstance(payload.get(), process) : marshaller.unmarshallReadOnlyProcessInstance(payload.get(), process);
-                ((AbstractProcessInstance) instance).setVersion(row.get().getLong(VERSION));
-                return Optional.of(instance);
-            }
-        }
-        return Optional.empty();
+        return findByIdInternal(UUID.fromString(id)).map(r -> unmarshall(r, mode));
     }
 
     @Override
@@ -130,8 +115,7 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         try {
             return getResultFromFuture(client.preparedQuery(FIND_ALL + (process.version() == null ? IS_NULL : "= $2")).execute(tuple(process.id())))
                     .map(r -> StreamSupport.stream(r.spliterator(), false)).orElse(Stream.empty())
-                    .map(row -> row.getBuffer(PAYLOAD))
-                    .map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b.getBytes(), process) : marshaller.unmarshallReadOnlyProcessInstance(b.getBytes(), process));
+                    .map(row -> unmarshall(row, mode));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw uncheckedException(e, "Error finding all process instances, for processId %s", process.id());
@@ -140,18 +124,22 @@ public class PostgresqlProcessInstances implements MutableProcessInstances {
         }
     }
 
+    private ProcessInstance<?> unmarshall(Row r, ProcessInstanceReadMode mode) {
+        AbstractProcessInstance instance = (AbstractProcessInstance) marshaller.unmarshallProcessInstance(r.getBuffer(PAYLOAD).getBytes(), process, mode);
+        instance.setVersion(r.getLong(VERSION));
+        return instance;
+    }
+
     @Override
     public boolean lock() {
         return this.lock;
     }
 
     private void disconnect(ProcessInstance instance) {
-        Supplier<byte[]> supplier = () -> {
-            Optional<Row> row = findByIdInternal(UUID.fromString(instance.id()));
-            ((AbstractProcessInstance) instance).setVersion(row.get().getLong(VERSION));
-            return row.map(r -> r.getBuffer(PAYLOAD)).map(Buffer::getBytes).get();
-        };
-        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(supplier));
+        ((AbstractProcessInstance<?>) instance).internalRemoveProcessInstance(marshaller.createdReloadFunction(() -> findByIdInternal(UUID.fromString(instance.id())).map(r -> {
+            ((AbstractProcessInstance) instance).setVersion(r.getLong(VERSION));
+            return r.getBuffer(PAYLOAD).getBytes();
+        }).orElseThrow()));
     }
 
     private boolean insertInternal(UUID id, byte[] payload) {

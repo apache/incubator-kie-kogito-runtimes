@@ -82,6 +82,7 @@ public class KafkaProcessInstancesTest {
         instances = new KafkaProcessInstances(process, producer);
         instances.setStore(store);
         instances.setMarshaller(marshaller);
+        lenient().when(marshaller.createUnmarshallFunction(any(), any())).thenCallRealMethod();
     }
 
     @Test
@@ -124,24 +125,22 @@ public class KafkaProcessInstancesTest {
 
     @Test
     public void testProcessInstancesFindById() {
-        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any());
+        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.MUTABLE));
 
         doReturn(new byte[] {}).when(store).get(storedId);
 
         assertThat(instances.findById(id)).isPresent();
         assertThat(instances.findById(UUID.randomUUID().toString())).isNotPresent();
-        verify(marshaller).unmarshallProcessInstance(any(), any());
     }
 
     @Test
     public void testProcessInstancesFindByIdReadOnly() {
-        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallReadOnlyProcessInstance(any(), any());
+        doReturn(mock(ProcessInstance.class)).when(marshaller).unmarshallProcessInstance(any(), any(), eq(ProcessInstanceReadMode.READ_ONLY));
 
         doReturn(new byte[] {}).when(store).get(storedId);
 
         assertThat(instances.findById(id, ProcessInstanceReadMode.READ_ONLY)).isPresent();
         assertThat(instances.findById(UUID.randomUUID().toString(), ProcessInstanceReadMode.READ_ONLY)).isNotPresent();
-        verify(marshaller).unmarshallReadOnlyProcessInstance(any(), any());
     }
 
     private static class KeyValueIteratorMock implements KeyValueIterator<String, String> {
@@ -167,7 +166,6 @@ public class KafkaProcessInstancesTest {
         public String peekNextKey() {
             return "";
         }
-
     }
 
     @Test
@@ -175,7 +173,6 @@ public class KafkaProcessInstancesTest {
         KeyValueIteratorMock iterator = new KeyValueIteratorMock();
         doReturn(iterator).when(store).prefixScan(eq(processId), any());
         assertOne(instances);
-        verify(marshaller).unmarshallReadOnlyProcessInstance(any(), any());
     }
 
     @Test
@@ -183,7 +180,6 @@ public class KafkaProcessInstancesTest {
         KeyValueIteratorMock iterator = new KeyValueIteratorMock();
         doReturn(iterator).when(store).prefixScan(eq(processId), any());
         assertOne(instances, ProcessInstanceReadMode.MUTABLE);
-        verify(marshaller).unmarshallProcessInstance(any(), any());
     }
 
     @Test

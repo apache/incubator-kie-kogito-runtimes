@@ -35,8 +35,6 @@ import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
 
-import static org.kie.kogito.process.ProcessInstanceReadMode.MUTABLE;
-
 @SuppressWarnings({ "rawtypes" })
 public class FileSystemProcessInstances implements MutableProcessInstances {
 
@@ -72,7 +70,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             return Optional.empty();
         }
         byte[] data = readBytesFromFile(processInstanceStorage);
-        return Optional.of(mode == MUTABLE ? marshaller.unmarshallProcessInstance(data, process) : marshaller.unmarshallReadOnlyProcessInstance(data, process));
+        return Optional.of(marshaller.unmarshallProcessInstance(data, process, mode));
     }
 
     @Override
@@ -81,7 +79,7 @@ public class FileSystemProcessInstances implements MutableProcessInstances {
             return Files.walk(storage)
                     .filter(file -> !Files.isDirectory(file))
                     .map(this::readBytesFromFile)
-                    .map(b -> mode == MUTABLE ? marshaller.unmarshallProcessInstance(b, process) : marshaller.unmarshallReadOnlyProcessInstance(b, process));
+                    .map(marshaller.createUnmarshallFunction(process, mode));
         } catch (IOException e) {
             throw new UncheckedIOException("Unable to read process instances ", e);
         }

@@ -60,5 +60,4 @@ public class ConfigBean extends StaticConfigBean {
     public boolean useCloudEvents() {
         return buildTimeConfig.get().useCloudEvents;
     }
-
 }
