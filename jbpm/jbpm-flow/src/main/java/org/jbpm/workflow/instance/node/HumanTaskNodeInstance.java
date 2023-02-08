@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -38,10 +39,11 @@ import org.jbpm.workflow.core.node.WorkItemNode;
 import org.kie.kogito.internal.process.event.KogitoProcessEventSupport;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.process.workitem.HumanTaskWorkItem;
 import org.kie.kogito.process.workitems.InternalKogitoWorkItem;
 import org.kie.kogito.timer.TimerInstance;
+
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 public class HumanTaskNodeInstance extends WorkItemNodeInstance {
 
@@ -57,7 +59,6 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     private static final String BUSINESSADMINISTRATOR_ID = "BusinessAdministratorId";
     private static final String BUSINESSADMINISTRATOR_GROUP_ID = "BusinessAdministratorGroupId";
     private static final String EXCLUDED_OWNER_ID = "ExcludedOwnerId";
-    private static final String TIMER_TRIGGERED = "timerTriggered";
     private static final String WORK_ITEM_TRANSITION = "workItemTransition";
 
     private transient SwimlaneContextInstance swimlaneContextInstance;
@@ -129,7 +130,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
             for (DeadlineInfo<T> deadline : deadlines) {
                 for (ScheduleInfo info : deadline.getScheduleInfo()) {
                     timers.put(getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.of(
-                            new TimerJobId(-1L),
+                            UUID.randomUUID().toString(),
                             DeadlineHelper.getExpirationTime(info),
                             pi.getStringId(),
                             pi.getRootProcessInstanceId(),
@@ -148,7 +149,7 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
                 cancelTimers(notStartedDeadlines);
                 cancelTimers(notStartedReassignments);
                 break;
-            case TIMER_TRIGGERED:
+            case TIMER_TRIGGERED_EVENT:
                 if (!sendNotification((TimerInstance) event)) {
                     super.signalEvent(type, event);
                 }
@@ -199,14 +200,14 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
     @Override
     protected void addWorkItemListener() {
         super.addWorkItemListener();
-        getProcessInstance().addEventListener(TIMER_TRIGGERED, this, false);
+        getProcessInstance().addEventListener(TIMER_TRIGGERED_EVENT, this, false);
         getProcessInstance().addEventListener(WORK_ITEM_TRANSITION, this, false);
     }
 
     @Override
     protected void removeWorkItemListener() {
         super.removeWorkItemListener();
-        getProcessInstance().removeEventListener(TIMER_TRIGGERED, this, false);
+        getProcessInstance().removeEventListener(TIMER_TRIGGERED_EVENT, this, false);
         getProcessInstance().removeEventListener(WORK_ITEM_TRANSITION, this, false);
     }
 

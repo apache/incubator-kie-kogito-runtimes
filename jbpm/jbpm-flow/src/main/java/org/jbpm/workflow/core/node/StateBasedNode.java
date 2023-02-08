@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jbpm.process.core.timer.Timer;
 import org.jbpm.process.instance.impl.actions.CompleteStateBasedNodeInstanceAction;
@@ -59,14 +60,8 @@ public class StateBasedNode extends ExtendedNodeImpl {
         if (timers == null) {
             timers = new HashMap<>();
         }
-        if (timer.getId() == 0) {
-            long id = 0;
-            for (Timer t : timers.keySet()) {
-                if (t.getId() > id) {
-                    id = t.getId();
-                }
-            }
-            timer.setId(++id);
+        if (timer.getId() == null) {
+            timer.setId(UUID.randomUUID().toString());
         }
         timers.put(timer, action);
     }

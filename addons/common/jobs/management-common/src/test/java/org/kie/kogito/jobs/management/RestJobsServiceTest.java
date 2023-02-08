@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.jobs.service.api.Job;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
@@ -36,7 +35,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     public static final String CALLBACK_URL = "http://localhost:8080";
     public static final String JOB_SERVICE_URL = "http://localhost:8085";
     public static final String JOB_ID = "456";
-    public static final long TIMER_ID = 123;
+    public static final String TIMER_ID = "123";
     public static final String PROCESS_ID = "PROCESS_ID";
     public static final String PROCESS_INSTANCE_ID = "PROCESS_INSTANCE_ID";
     public static final String ROOT_PROCESS_ID = "ROOT_PROCESS_ID";
@@ -55,7 +54,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
 
     @Test
     void testGetCallbackEndpoint() {
-        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(new TimerJobId(),
+        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(TIMER_ID,
                 ExactExpirationTime.now(),
                 PROCESS_INSTANCE_ID,
                 PROCESS_ID);
@@ -84,7 +83,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     }
 
     protected ProcessInstanceJobDescription buildProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.of(new TimerJobId(TIMER_ID),
+        return ProcessInstanceJobDescription.of(TIMER_ID,
                 ExactExpirationTime.of(EXPIRATION_TIME),
                 PROCESS_INSTANCE_ID,
                 ROOT_PROCESS_INSTANCE_ID,
@@ -96,7 +95,7 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     protected void assertExpectedJob(Job job, String expectedJobId) {
         assertThat(job).isNotNull();
         assertThat(job.getId()).isEqualTo(expectedJobId);
-        assertThat(job.getId()).contains(Long.toString(TIMER_ID));
+        assertThat(job.getId()).contains(TIMER_ID);
         assertThat(job.getRecipient())
                 .isNotNull()
                 .isInstanceOf(HttpRecipient.class);

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.Node;
@@ -30,7 +31,6 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
 import org.kie.kogito.timer.TimerInstance;
@@ -66,7 +66,8 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
             addTimerListener();
         }
         ProcessInstanceJobDescription jobDescription =
-                ProcessInstanceJobDescription.of(new TimerJobId(getTimerNode().getTimer().getId()),
+                ProcessInstanceJobDescription.of(
+                        UUID.randomUUID().toString(),
                         expirationTime,
                         getProcessInstance().getStringId(),
                         getProcessInstance().getRootProcessInstanceId(),

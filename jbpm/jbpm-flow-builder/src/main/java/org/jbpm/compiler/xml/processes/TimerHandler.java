@@ -59,7 +59,7 @@ public class TimerHandler extends BaseAbstractHandler implements Handler {
         String delay = element.getAttribute("delay");
         String period = element.getAttribute("period");
         Timer timer = new Timer();
-        timer.setId(new Long(id));
+        timer.setId(id);
         if (delay != null && delay.length() != 0) {
             timer.setDelay(delay);
         }

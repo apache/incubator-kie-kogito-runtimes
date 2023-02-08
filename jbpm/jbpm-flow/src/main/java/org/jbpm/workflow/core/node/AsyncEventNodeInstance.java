@@ -19,24 +19,28 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
+import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
-import org.kie.kogito.jobs.AsyncJobId;
 import org.kie.kogito.jobs.ExactExpirationTime;
 import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.services.uow.BaseWorkUnit;
+import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.WorkUnit;
 
 import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
+import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 /**
  * Runtime counterpart of an event node.
@@ -56,9 +60,13 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         }
 
         @Override
-        public void signalEvent(String type,
-                Object event) {
-            triggerCompleted();
+        public void signalEvent(String type, Object event) {
+            if (event instanceof TimerInstance) {
+                TimerInstance timerInstance = (TimerInstance) event;
+                if (Objects.equals(getJobId(), timerInstance.getId())) {
+                    triggerCompleted();
+                }
+            }
         }
 
         @Override
@@ -90,7 +98,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
                 new BaseWorkUnit<>(this, instance -> {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
-                            ProcessInstanceJobDescription.of(new AsyncJobId(instance.getStringId()),
+                            ProcessInstanceJobDescription.of(UUID.randomUUID().toString(),
                                     expirationTime,
                                     instance.getProcessInstance().getStringId(),
                                     instance.getProcessInstance().getRootProcessInstanceId(),
@@ -119,7 +127,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
 
     @Override
     public String getEventType() {
-        return new AsyncJobId(getStringId()).signal();
+        return TIMER_TRIGGERED_EVENT;
     }
 
     @Override

@@ -30,7 +30,6 @@ import org.kie.kogito.jobs.ExpirationTime;
 import org.kie.kogito.jobs.JobsServiceException;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.ProcessJobDescription;
-import org.kie.kogito.jobs.TimerJobId;
 import org.kie.kogito.jobs.service.api.Job;
 import org.kie.kogito.jobs.service.api.JobLookupId;
 import org.kie.kogito.jobs.service.api.TemporalUnit;
@@ -64,12 +63,12 @@ public abstract class AbstractReactiveMessagingJobsServiceTest<T extends Abstrac
     protected static final Integer PRIORITY = 0;
     protected static final String NODE_INSTANCE_ID = "NODE_INSTANCE_ID";
     protected static final ExpirationTime EXPIRATION_TIME = ExactExpirationTime.of("2020-03-21T10:15:30+01:00");
-    protected static final TimerJobId TIMER_JOB_ID = new TimerJobId(1L);
+    protected static final String TIMER_JOB_ID = "JOB_ID";
     protected static final String SERIALIZED_EVENT = "SERIALIZED_EVENT";
     protected static final String SERIALIZED_SECOND_EVENT = "SERIALIZED_SECOND_EVENT";
     protected static final String JOB_ID_STRING = "JOB_ID_STRING";
     private static final String CALLBACK_ENDPOINT = SERVICE_URI + "/management/jobs/" + PROCESS_ID
-            + "/instances/" + PROCESS_INSTANCE_ID + "/timers/" + TIMER_JOB_ID.encode();
+            + "/instances/" + PROCESS_INSTANCE_ID + "/timers/" + TIMER_JOB_ID;
     protected static final String ERROR = "ERROR";
     protected static final String FATAL_ERROR = "FATAL_ERROR";
 
@@ -283,7 +282,7 @@ public abstract class AbstractReactiveMessagingJobsServiceTest<T extends Abstrac
 
     protected CreateJobEvent mockExpectedCreateJobEvent() {
         Job job = Job.builder()
-                .id(TIMER_JOB_ID.encode())
+                .id(TIMER_JOB_ID)
                 .retry(null)
                 .schedule(TimerSchedule.builder()
                         .startTime(EXPIRATION_TIME.get().toOffsetDateTime())

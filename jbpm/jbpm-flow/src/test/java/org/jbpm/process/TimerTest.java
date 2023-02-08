@@ -35,6 +35,7 @@ import org.kie.kogito.timer.TimerInstance;
 import org.slf4j.LoggerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 public class TimerTest extends AbstractBaseTest {
 
@@ -57,7 +58,7 @@ public class TimerTest extends AbstractBaseTest {
             private static final long serialVersionUID = 510l;
 
             public void signalEvent(String type, Object event) {
-                if ("timerTriggered".equals(type)) {
+                if (TIMER_TRIGGERED_EVENT.equals(type)) {
                     TimerInstance timer = (TimerInstance) event;
                     logger.info("Timer {} triggered", timer.getId());
                     counter++;

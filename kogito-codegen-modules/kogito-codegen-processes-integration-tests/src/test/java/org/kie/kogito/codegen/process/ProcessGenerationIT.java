@@ -499,7 +499,7 @@ public class ProcessGenerationIT extends AbstractCodegenIT {
         }
         assertThat(current).as("Size").hasSameSizeAs(expected);
         expected.forEach((expectedTimer, expectedAction) -> {
-            Optional<Timer> currentTimer = current.keySet().stream().filter(c -> c.getId() == expectedTimer.getId()).findFirst();
+            Optional<Timer> currentTimer = current.keySet().stream().filter(c -> Objects.equals(c, expectedTimer)).findFirst();
             assertThat(currentTimer).isPresent();
             assertThat(currentTimer.get().getPeriod()).as("Period").isEqualTo(expectedTimer.getPeriod());
             assertThat(currentTimer.get().getDate()).as("Date").isEqualTo(expectedTimer.getDate());

@@ -36,7 +36,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
     private final String rootProcessId;
     private final String nodeInstanceId;
 
-    private ProcessInstanceJobDescription(JobId timerId,
+    private ProcessInstanceJobDescription(String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,
@@ -45,7 +45,6 @@ public class ProcessInstanceJobDescription implements JobDescription {
             String rootProcessId,
             String nodeInstanceId) {
         this.id = Optional.ofNullable(timerId)
-                .map(JobId::encode)
                 .orElse(UUID.randomUUID().toString());
 
         this.expirationTime = requireNonNull(expirationTime);
@@ -63,7 +62,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
         return of(null, expirationTime, processInstanceId, processId);
     }
 
-    public static ProcessInstanceJobDescription of(JobId timerId,
+    public static ProcessInstanceJobDescription of(String timerId,
             ExpirationTime expirationTime,
             String processInstanceId,
             String processId) {
@@ -71,7 +70,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
     }
 
     //timer
-    public static ProcessInstanceJobDescription of(JobId timerId,
+    public static ProcessInstanceJobDescription of(String timerId,
             ExpirationTime expirationTime,
             String processInstanceId,
             String rootProcessInstanceId,
@@ -82,7 +81,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
                 rootProcessId, nodeInstanceId);
     }
 
-    public static ProcessInstanceJobDescription of(JobId timerId,
+    public static ProcessInstanceJobDescription of(String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,
