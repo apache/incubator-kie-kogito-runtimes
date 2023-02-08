@@ -20,6 +20,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,42 +180,53 @@ public class GenericRepository extends Repository {
         return result;
     }
 
-    interface UncheckedCloseable extends Runnable, AutoCloseable {
-        default void run() {
+    private static class CloseableWrapper implements Runnable {
+
+        private Deque<AutoCloseable> wrapped = new ArrayDeque<>();
+
+        public <T extends AutoCloseable> T nest(T c) {
+            wrapped.addFirst(c);
+            return c;
+        }
+
+        @Override
+        public void run() {
             try {
                 close();
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                throw new RuntimeException("Error closing resources", ex);
             }
         }
 
-        static UncheckedCloseable wrap(AutoCloseable c) {
-            return c::close;
-        }
-
-        default UncheckedCloseable nest(AutoCloseable c) {
-            return () -> {
-                try (UncheckedCloseable c1 = this) {
-                    c.close();
+        public void close() throws Exception {
+            Exception exception = null;
+            for (AutoCloseable wrap : wrapped) {
+                try {
+                    wrap.close();
+                } catch (Exception ex) {
+                    if (exception != null) {
+                        ex.addSuppressed(exception);
+                    }
+                    exception = ex;
                 }
-            };
+            }
+            if (exception != null) {
+                throw exception;
+            }
         }
     }
 
     @Override
     Stream<byte[]> findAllInternal(String processId, String processVersion) {
-        UncheckedCloseable close = null;
+        CloseableWrapper close = new CloseableWrapper();
         try {
-            Connection connection = dataSource.getConnection();
-            close = UncheckedCloseable.wrap(connection);
-            PreparedStatement statement = connection.prepareStatement(sqlIncludingVersion(FIND_ALL, processVersion));
-            close = close.nest(statement);
+            Connection connection = close.nest(dataSource.getConnection());
+            PreparedStatement statement = close.nest(connection.prepareStatement(sqlIncludingVersion(FIND_ALL, processVersion)));
             statement.setString(1, processId);
             if (processVersion != null) {
                 statement.setString(2, processVersion);
             }
-            ResultSet resultSet = statement.executeQuery();
-            close = close.nest(resultSet);
+            ResultSet resultSet = close.nest(statement.executeQuery());
             return StreamSupport.stream(new Spliterators.AbstractSpliterator<byte[]>(
                     Long.MAX_VALUE, Spliterator.ORDERED) {
                 @Override
@@ -229,12 +242,11 @@ public class GenericRepository extends Repository {
                 }
             }, false).onClose(close);
         } catch (SQLException e) {
-            if (close != null)
-                try {
-                    close.close();
-                } catch (Exception ex) {
-                    e.addSuppressed(ex);
-                }
+            try {
+                close.close();
+            } catch (Exception ex) {
+                e.addSuppressed(ex);
+            }
             throw uncheckedException(e, "Error finding all process instances, for processId %s", processId);
         }
     }
