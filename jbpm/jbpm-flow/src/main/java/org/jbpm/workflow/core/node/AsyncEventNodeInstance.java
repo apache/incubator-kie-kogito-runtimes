@@ -24,7 +24,6 @@ import java.util.UUID;
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
 import org.jbpm.workflow.instance.node.EventNodeInstance;
-import org.jbpm.workflow.instance.node.TimerNodeInstance;
 import org.kie.api.definition.process.Node;
 import org.kie.api.runtime.process.NodeInstance;
 import org.kie.kogito.internal.process.event.KogitoEventListener;
@@ -39,7 +38,6 @@ import org.kie.kogito.timer.TimerInstance;
 import org.kie.kogito.uow.WorkUnit;
 
 import static org.jbpm.ruleflow.core.Metadata.ASYNC_WAITING;
-import static org.jbpm.ruleflow.core.Metadata.EVENT_TYPE_TIMER;
 import static org.jbpm.workflow.instance.node.TimerNodeInstance.TIMER_TRIGGERED_EVENT;
 
 /**

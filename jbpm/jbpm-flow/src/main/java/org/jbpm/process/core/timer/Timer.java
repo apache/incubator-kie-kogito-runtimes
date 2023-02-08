@@ -115,11 +115,12 @@ public class Timer implements Serializable {
             return false;
         }
         Timer timer = (Timer) o;
-        return timeType == timer.timeType && Objects.equals(delay, timer.delay) && Objects.equals(period, timer.period) && Objects.equals(date, timer.date);
+        return timeType == timer.timeType && Objects.equals(id, timer.id) && Objects.equals(delay, timer.delay) && Objects.equals(period,
+                timer.period) && Objects.equals(date, timer.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delay, period, date, timeType);
+        return Objects.hash(id, delay, period, date, timeType);
     }
 }

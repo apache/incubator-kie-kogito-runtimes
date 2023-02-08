@@ -33,6 +33,7 @@ public class TriggerJobCommand {
     private Process<?> process;
     private UnitOfWorkManager uom;
     public static final String SIGNAL = "timerTriggered";
+
     public TriggerJobCommand(String processInstanceId, String timerId, Integer limit, Process<?> process, UnitOfWorkManager uom) {
         this.processInstanceId = processInstanceId;
         this.timerId = timerId;
