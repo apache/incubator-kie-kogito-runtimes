@@ -19,7 +19,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.instance.NodeInstanceContainer;
