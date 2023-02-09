@@ -564,7 +564,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     }
 
     private TimerInstance registerTimer(TimerInstance timerInstance) {
-        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(null, DurationExpirationTime.after(timerInstance.getDelay()), getStringId(), getProcessId());
+        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(UUID.randomUUID().toString(), DurationExpirationTime.after(timerInstance.getDelay()), getStringId(), getProcessId());
         timerInstance.setId((InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService().scheduleProcessInstanceJob(description)));
         return timerInstance;
     }
