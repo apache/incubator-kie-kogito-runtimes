@@ -96,13 +96,15 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
                 new BaseWorkUnit<>(this, instance -> {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
-                            ProcessInstanceJobDescription.of(getJobId(),
-                                    expirationTime,
-                                    instance.getProcessInstance().getStringId(),
-                                    instance.getProcessInstance().getRootProcessInstanceId(),
-                                    instance.getProcessInstance().getProcessId(),
-                                    instance.getProcessInstance().getRootProcessId(),
-                                    Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                            ProcessInstanceJobDescription.builder()
+                                    .timerId(getJobId())
+                                    .expirationTime(expirationTime)
+                                    .processInstanceId(instance.getProcessInstance().getStringId())
+                                    .rootProcessInstanceId(instance.getProcessInstance().getRootProcessInstanceId())
+                                    .processId(instance.getProcessInstance().getProcessId())
+                                    .rootProcessId(instance.getProcessInstance().getRootProcessId())
+                                    .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
+                                    .build();
                     JobsService jobService = processRuntime.getJobsService();
                     String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                     setJobId(jobId);

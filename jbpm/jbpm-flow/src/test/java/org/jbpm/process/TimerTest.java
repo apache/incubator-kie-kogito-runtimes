@@ -73,7 +73,11 @@ public class TimerTest extends AbstractBaseTest {
         new Thread(() -> kruntime.getKieSession().fireUntilHalt()).start();
         JobsService jobService = new LegacyInMemoryJobService(kruntime, new DefaultUnitOfWorkManager(new CollectingUnitOfWorkFactory()));
 
-        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.of(ExactExpirationTime.now(), processInstance.getStringId(), "test");
+        ProcessInstanceJobDescription desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(ExactExpirationTime.now())
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .build();
         String jobId = jobService.scheduleProcessInstanceJob(desc);
 
         try {
@@ -84,7 +88,11 @@ public class TimerTest extends AbstractBaseTest {
         assertThat(counter).isEqualTo(1);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.after(500), processInstance.getStringId(), "test");
+        desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(DurationExpirationTime.after(500))
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .build();
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertThat(counter).isZero();
         try {
@@ -95,7 +103,11 @@ public class TimerTest extends AbstractBaseTest {
         assertThat(counter).isEqualTo(1);
 
         counter = 0;
-        desc = ProcessInstanceJobDescription.of(DurationExpirationTime.repeat(500, 300L), processInstance.getStringId(), "test");
+        desc = ProcessInstanceJobDescription.builder()
+                .expirationTime(DurationExpirationTime.repeat(500, 300L))
+                .processInstanceId(processInstance.getStringId())
+                .processId("test")
+                .build();
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertThat(counter).isZero();
         try {

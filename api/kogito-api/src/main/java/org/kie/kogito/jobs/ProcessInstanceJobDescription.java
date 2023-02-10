@@ -29,14 +29,13 @@ public class ProcessInstanceJobDescription implements JobDescription {
     private final ExpirationTime expirationTime;
 
     private final Integer priority;
-
     private final String processInstanceId;
     private final String rootProcessInstanceId;
     private final String processId;
     private final String rootProcessId;
     private final String nodeInstanceId;
 
-    private ProcessInstanceJobDescription(String timerId,
+    public ProcessInstanceJobDescription(String timerId,
             ExpirationTime expirationTime,
             Integer priority,
             String processInstanceId,
@@ -55,45 +54,6 @@ public class ProcessInstanceJobDescription implements JobDescription {
         this.rootProcessId = rootProcessId;
         this.nodeInstanceId = nodeInstanceId;
     }
-
-    public static ProcessInstanceJobDescription of(ExpirationTime expirationTime,
-            String processInstanceId,
-            String processId) {
-        return of(null, expirationTime, processInstanceId, processId);
-    }
-
-    public static ProcessInstanceJobDescription of(String timerId,
-            ExpirationTime expirationTime,
-            String processInstanceId,
-            String processId) {
-        return of(timerId, expirationTime, processInstanceId, null, processId, null, null);
-    }
-
-    //timer
-    public static ProcessInstanceJobDescription of(String timerId,
-            ExpirationTime expirationTime,
-            String processInstanceId,
-            String rootProcessInstanceId,
-            String processId,
-            String rootProcessId,
-            String nodeInstanceId) {
-        return of(timerId, expirationTime, DEFAULT_PRIORITY, processInstanceId, rootProcessInstanceId, processId,
-                rootProcessId, nodeInstanceId);
-    }
-
-    public static ProcessInstanceJobDescription of(String timerId,
-            ExpirationTime expirationTime,
-            Integer priority,
-            String processInstanceId,
-            String rootProcessInstanceId,
-            String processId,
-            String rootProcessId,
-            String nodeInstanceId) {
-
-        return new ProcessInstanceJobDescription(timerId, expirationTime, priority, processInstanceId,
-                rootProcessInstanceId, processId, rootProcessId, nodeInstanceId);
-    }
-
     @Override
     public String id() {
         return id;
@@ -129,6 +89,9 @@ public class ProcessInstanceJobDescription implements JobDescription {
         return nodeInstanceId;
     }
 
+    public static ProcessInstanceJobDescriptionBuilder builder(){
+        return new ProcessInstanceJobDescriptionBuilder();
+    }
     @Override
     public String toString() {
         return "ProcessInstanceJobDescription{" +

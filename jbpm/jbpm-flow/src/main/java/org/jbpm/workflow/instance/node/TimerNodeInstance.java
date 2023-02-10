@@ -66,14 +66,15 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
             addTimerListener();
         }
         ProcessInstanceJobDescription jobDescription =
-                ProcessInstanceJobDescription.of(
-                        UUID.randomUUID().toString(),
-                        expirationTime,
-                        getProcessInstance().getStringId(),
-                        getProcessInstance().getRootProcessInstanceId(),
-                        getProcessInstance().getProcessId(),
-                        getProcessInstance().getRootProcessId(),
-                        Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                ProcessInstanceJobDescription.builder()
+                        .timerId(UUID.randomUUID().toString())
+                        .expirationTime(expirationTime)
+                        .processInstanceId(getProcessInstance().getStringId())
+                        .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
+                        .processId(getProcessInstance().getProcessId())
+                        .rootProcessInstanceId(getProcessInstance().getRootProcessId())
+                        .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
+                        .build();
         JobsService jobService = InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
         timerId = jobService.scheduleProcessInstanceJob(jobDescription);
     }

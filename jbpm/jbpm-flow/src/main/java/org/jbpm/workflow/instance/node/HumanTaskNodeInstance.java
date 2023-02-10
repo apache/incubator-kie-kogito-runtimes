@@ -129,14 +129,15 @@ public class HumanTaskNodeInstance extends WorkItemNodeInstance {
             ProcessInstance pi = getProcessInstance();
             for (DeadlineInfo<T> deadline : deadlines) {
                 for (ScheduleInfo info : deadline.getScheduleInfo()) {
-                    timers.put(getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.of(
-                            UUID.randomUUID().toString(),
-                            DeadlineHelper.getExpirationTime(info),
-                            pi.getStringId(),
-                            pi.getRootProcessInstanceId(),
-                            pi.getProcessId(),
-                            pi.getRootProcessId(),
-                            getStringId())), deadline.getNotification());
+                    timers.put(getJobsService().scheduleProcessInstanceJob(ProcessInstanceJobDescription.builder()
+                                    .timerId(UUID.randomUUID().toString())
+                                    .expirationTime(DeadlineHelper.getExpirationTime(info))
+                                    .processInstanceId(pi.getStringId())
+                                    .rootProcessInstanceId(pi.getRootProcessInstanceId())
+                                    .processId(pi.getProcessId())
+                                    .rootProcessId(pi.getRootProcessId())
+                                    .nodeInstanceId(getStringId()).build()),
+                            deadline.getNotification());
                 }
             }
         }

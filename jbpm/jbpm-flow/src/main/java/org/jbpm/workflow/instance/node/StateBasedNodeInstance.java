@@ -83,13 +83,15 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             JobsService jobService = ((KogitoProcessRuntime.Provider) getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getKogitoProcessRuntime().getJobsService();
             for (Timer timer : timers.keySet()) {
                 ProcessInstanceJobDescription jobDescription =
-                        ProcessInstanceJobDescription.of(UUID.randomUUID().toString(),
-                                createTimerInstance(timer),
-                                getProcessInstance().getStringId(),
-                                getProcessInstance().getRootProcessInstanceId(),
-                                getProcessInstance().getProcessId(),
-                                getProcessInstance().getRootProcessId(),
-                                Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null));
+                        ProcessInstanceJobDescription.builder()
+                                .timerId(UUID.randomUUID().toString())
+                                .expirationTime(createTimerInstance(timer))
+                                .processInstanceId(getProcessInstance().getStringId())
+                                .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
+                                .processId(getProcessInstance().getProcessId())
+                                .rootProcessId(getProcessInstance().getRootProcessId())
+                                .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
+                                .build();
                 String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                 timerInstances.add(jobId);
                 timer.setId(jobId);

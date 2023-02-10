@@ -76,12 +76,15 @@ class JobCallbackResourceDefTest {
     }
 
     private ProcessInstanceJobDescription mockProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.of(JOB_ID,
-                EXPIRATION_TIME,
-                PRIORITY,
-                PROCESS_INSTANCE_ID,
-                ROOT_PROCESS_INSTANCE_ID, PROCESS_ID,
-                ROOT_PROCESS_ID,
-                NODE_INSTANCE_ID);
+        return ProcessInstanceJobDescription.builder()
+                .timerId(JOB_ID)
+                .expirationTime(EXPIRATION_TIME)
+                .priority(PRIORITY)
+                .processInstanceId(PROCESS_INSTANCE_ID)
+                .rootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID)
+                .processId(PROCESS_ID)
+                .rootProcessId(ROOT_PROCESS_ID)
+                .nodeInstanceId(NODE_INSTANCE_ID)
+                .build();
     }
 }

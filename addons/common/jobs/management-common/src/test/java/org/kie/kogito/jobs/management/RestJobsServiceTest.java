@@ -54,10 +54,12 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
 
     @Test
     void testGetCallbackEndpoint() {
-        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.of(TIMER_ID,
-                ExactExpirationTime.now(),
-                PROCESS_INSTANCE_ID,
-                PROCESS_ID);
+        ProcessInstanceJobDescription description = ProcessInstanceJobDescription.builder()
+                .timerId(TIMER_ID)
+                .expirationTime(ExactExpirationTime.now())
+                .processInstanceId(PROCESS_INSTANCE_ID)
+                .processId(PROCESS_ID)
+                .build();
         String callbackEndpoint = tested.getCallbackEndpoint(description);
         assertThat(callbackEndpoint)
                 .isEqualTo("%s/management/jobs/%s/instances/%s/timers/%s",
@@ -83,13 +85,15 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     }
 
     protected ProcessInstanceJobDescription buildProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.of(TIMER_ID,
-                ExactExpirationTime.of(EXPIRATION_TIME),
-                PROCESS_INSTANCE_ID,
-                ROOT_PROCESS_INSTANCE_ID,
-                PROCESS_ID,
-                ROOT_PROCESS_ID,
-                NODE_INSTANCE_ID);
+        return ProcessInstanceJobDescription.builder()
+                .timerId(TIMER_ID)
+                .expirationTime(ExactExpirationTime.of(EXPIRATION_TIME))
+                .processInstanceId(PROCESS_INSTANCE_ID)
+                .rootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID)
+                .processId(PROCESS_ID)
+                .rootProcessId(ROOT_PROCESS_ID)
+                .nodeInstanceId(NODE_INSTANCE_ID)
+                .build();
     }
 
     protected void assertExpectedJob(Job job, String expectedJobId) {

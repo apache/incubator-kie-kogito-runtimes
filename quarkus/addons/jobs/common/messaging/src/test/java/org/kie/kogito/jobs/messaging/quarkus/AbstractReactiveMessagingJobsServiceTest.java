@@ -271,13 +271,16 @@ public abstract class AbstractReactiveMessagingJobsServiceTest<T extends Abstrac
     }
 
     protected ProcessInstanceJobDescription mockProcessInstanceJobDescription() {
-        return ProcessInstanceJobDescription.of(TIMER_JOB_ID,
-                EXPIRATION_TIME,
-                PRIORITY,
-                PROCESS_INSTANCE_ID,
-                ROOT_PROCESS_INSTANCE_ID, PROCESS_ID,
-                ROOT_PROCESS_ID,
-                NODE_INSTANCE_ID);
+        return ProcessInstanceJobDescription.builder()
+                .timerId(TIMER_JOB_ID)
+                .expirationTime(EXPIRATION_TIME)
+                .priority(PRIORITY)
+                .processInstanceId(PROCESS_INSTANCE_ID)
+                .rootProcessInstanceId(ROOT_PROCESS_INSTANCE_ID)
+                .processId(PROCESS_ID)
+                .rootProcessId(ROOT_PROCESS_ID)
+                .nodeInstanceId(NODE_INSTANCE_ID)
+                .build();
     }
 
     protected CreateJobEvent mockExpectedCreateJobEvent() {
