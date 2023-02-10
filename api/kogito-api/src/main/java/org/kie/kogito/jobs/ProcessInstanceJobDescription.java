@@ -54,6 +54,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
         this.rootProcessId = rootProcessId;
         this.nodeInstanceId = nodeInstanceId;
     }
+
     @Override
     public String id() {
         return id;
@@ -89,9 +90,10 @@ public class ProcessInstanceJobDescription implements JobDescription {
         return nodeInstanceId;
     }
 
-    public static ProcessInstanceJobDescriptionBuilder builder(){
+    public static ProcessInstanceJobDescriptionBuilder builder() {
         return new ProcessInstanceJobDescriptionBuilder();
     }
+
     @Override
     public String toString() {
         return "ProcessInstanceJobDescription{" +

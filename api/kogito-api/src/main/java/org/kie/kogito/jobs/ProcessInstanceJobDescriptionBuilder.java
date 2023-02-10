@@ -18,7 +18,7 @@ package org.kie.kogito.jobs;
 public class ProcessInstanceJobDescriptionBuilder {
     private String timerId;
     private ExpirationTime expirationTime;
-    private Integer priority;
+    private Integer priority = ProcessInstanceJobDescription.DEFAULT_PRIORITY;
     private String processInstanceId;
     private String rootProcessInstanceId;
     private String processId;
