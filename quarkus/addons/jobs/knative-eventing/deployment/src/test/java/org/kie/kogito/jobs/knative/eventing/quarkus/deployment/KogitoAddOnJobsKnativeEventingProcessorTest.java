@@ -42,14 +42,17 @@ import org.kie.kogito.jobs.service.api.Schedule;
 import org.kie.kogito.jobs.service.api.event.CreateJobEvent;
 import org.kie.kogito.jobs.service.api.event.DeleteJobEvent;
 import org.kie.kogito.jobs.service.api.event.JobCloudEvent;
-import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionDeserializer;
-import org.kie.kogito.jobs.service.api.event.serialization.SpecVersionSerializer;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientBinaryPayloadData;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientStringPayloadData;
+import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipient;
+import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipientBinaryPayloadData;
+import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipientJsonPayloadData;
 import org.kie.kogito.jobs.service.api.schedule.cron.CronSchedule;
 import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
+import org.kie.kogito.jobs.service.api.serlialization.SpecVersionDeserializer;
+import org.kie.kogito.jobs.service.api.serlialization.SpecVersionSerializer;
 import org.kie.kogito.quarkus.extensions.spi.deployment.KogitoProcessContainerGeneratorBuildItem;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -135,7 +138,7 @@ class KogitoAddOnJobsKnativeEventingProcessorTest {
     void eventsApiReflection() {
         ReflectiveClassBuildItem reflectiveClassBuildItem = new KogitoAddOnJobsKnativeEventingProcessor().eventsApiReflection();
         assertThat(reflectiveClassBuildItem.getClassNames())
-                .hasSize(15)
+                .hasSize(18)
                 .containsExactlyInAnyOrder(SpecVersionSerializer.class.getName(),
                         SpecVersionDeserializer.class.getName(),
                         Job.class.getName(),
@@ -145,6 +148,9 @@ class KogitoAddOnJobsKnativeEventingProcessorTest {
                         HttpRecipientStringPayloadData.class.getName(),
                         HttpRecipientBinaryPayloadData.class.getName(),
                         HttpRecipientJsonPayloadData.class.getName(),
+                        SinkRecipient.class.getName(),
+                        SinkRecipientBinaryPayloadData.class.getName(),
+                        SinkRecipientJsonPayloadData.class.getName(),
                         Schedule.class.getName(),
                         TimerSchedule.class.getName(),
                         CronSchedule.class.getName(),
