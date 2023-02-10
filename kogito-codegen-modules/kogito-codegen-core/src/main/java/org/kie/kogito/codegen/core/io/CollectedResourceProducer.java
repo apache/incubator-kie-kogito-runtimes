@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -42,6 +43,13 @@ import static org.kie.api.io.ResourceType.determineResourceType;
 public class CollectedResourceProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectedResourceProducer.class);
+    private static final Predicate<Path> PATH_IS_NOT_HIDDEN = p -> {
+        try {
+            return !Files.isHidden(p);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    };
 
     private CollectedResourceProducer() {
         // utility class
@@ -55,7 +63,7 @@ public class CollectedResourceProducer {
         Collection<CollectedResource> resources = new ArrayList<>();
 
         for (Path path : paths) {
-            if (path.toFile().isDirectory()) {
+            if (path.toFile().isDirectory() && !path.toFile().isHidden()) {
                 Collection<CollectedResource> res = fromDirectory(path);
                 resources.addAll(res);
             } else if (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".jar.original")) {
@@ -95,8 +103,8 @@ public class CollectedResourceProducer {
      */
     public static Collection<CollectedResource> fromDirectory(Path path) {
         Collection<CollectedResource> resources = new ArrayList<>();
-        try (Stream<Path> paths = Files.walk(path)) {
-            paths.filter(Files::isRegularFile)
+        try (Stream<Path> paths = path.toFile().isHidden() ? Stream.empty() : Files.walk(path)) {
+            paths.filter(PATH_IS_NOT_HIDDEN.and(Files::isRegularFile))
                     .map(Path::toFile)
                     .map(f -> toCollectedResource(path, f))
                     .forEach(resources::add);

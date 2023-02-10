@@ -19,6 +19,8 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.kie.api.io.Resource;
 import org.kie.kogito.codegen.api.io.CollectedResource;
 
@@ -35,6 +37,19 @@ class CollectedResourceProducerTest {
                         .map(Resource::getSourcePath)
                         .map(File::new)
                         .filter(File::isDirectory)
+                        .count()).isZero();
+    }
+
+    @Test
+    @EnabledOnOs(OS.LINUX)
+    void shouldNotContainHiddenFiles() {
+        assertThat(
+                CollectedResourceProducer.fromDirectory(Paths.get("src/test/resources"))
+                        .stream()
+                        .map(CollectedResource::resource)
+                        .map(Resource::getSourcePath)
+                        .map(File::new)
+                        .filter(f -> ".hidden-dir".equals(f.getName()))
                         .count()).isZero();
     }
 }
