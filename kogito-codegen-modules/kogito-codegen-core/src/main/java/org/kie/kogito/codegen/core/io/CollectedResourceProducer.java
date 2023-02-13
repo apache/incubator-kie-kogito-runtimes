@@ -47,7 +47,8 @@ public class CollectedResourceProducer {
         try {
             return !Files.isHidden(p);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            LOGGER.error("Failed to verify if path {} is hidden", p, e);
+            return false;
         }
     };
 
@@ -63,7 +64,7 @@ public class CollectedResourceProducer {
         Collection<CollectedResource> resources = new ArrayList<>();
 
         for (Path path : paths) {
-            if (path.toFile().isDirectory() && !path.toFile().isHidden()) {
+            if (path.toFile().isDirectory()) {
                 Collection<CollectedResource> res = fromDirectory(path);
                 resources.addAll(res);
             } else if (path.getFileName().toString().endsWith(".jar") || path.getFileName().toString().endsWith(".jar.original")) {
@@ -103,7 +104,11 @@ public class CollectedResourceProducer {
      */
     public static Collection<CollectedResource> fromDirectory(Path path) {
         Collection<CollectedResource> resources = new ArrayList<>();
-        try (Stream<Path> paths = path.toFile().isHidden() ? Stream.empty() : Files.walk(path)) {
+        if (path.toFile().isHidden()) {
+            LOGGER.debug("Skipping directory because it's hidden: {}", path);
+            return resources;
+        }
+        try (Stream<Path> paths = Files.walk(path)) {
             paths.filter(PATH_IS_NOT_HIDDEN.and(Files::isRegularFile))
                     .map(Path::toFile)
                     .map(f -> toCollectedResource(path, f))

@@ -41,7 +41,7 @@ class CollectedResourceProducerTest {
     }
 
     @Test
-    @EnabledOnOs(OS.LINUX)
+    @EnabledOnOs({ OS.LINUX, OS.MAC })
     void shouldNotContainHiddenFiles() {
         assertThat(
                 CollectedResourceProducer.fromDirectory(Paths.get("src/test/resources"))
