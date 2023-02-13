@@ -18,11 +18,16 @@ package org.kie.kogito.codegen.core.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -43,13 +48,18 @@ import static org.kie.api.io.ResourceType.determineResourceType;
 public class CollectedResourceProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CollectedResourceProducer.class);
-    private static final Predicate<Path> PATH_IS_NOT_HIDDEN = p -> {
-        try {
-            return !Files.isHidden(p);
-        } catch (IOException e) {
-            LOGGER.error("Failed to verify if path {} is hidden", p, e);
-            return false;
+    /**
+     * Property that controls whether Kogito Codegen should ignore hidden files. Defaults to true.
+     */
+    public static final String IGNORE_HIDDEN_FILES_PROP = "kogito.codegen.ignoreHiddenFiles";
+    /**
+     * Whether to consider a file. It checks for the {@link #IGNORE_HIDDEN_FILES_PROP} property and if the file is hidden or not.
+     */
+    private static final Predicate<File> CONSIDER_FILE = p -> {
+        if (!shouldIgnoreHiddenFiles()) {
+            return true;
         }
+        return !p.isHidden();
     };
 
     private CollectedResourceProducer() {
@@ -104,15 +114,8 @@ public class CollectedResourceProducer {
      */
     public static Collection<CollectedResource> fromDirectory(Path path) {
         Collection<CollectedResource> resources = new ArrayList<>();
-        if (path.toFile().isHidden()) {
-            LOGGER.debug("Skipping directory because it's hidden: {}", path);
-            return resources;
-        }
-        try (Stream<Path> paths = Files.walk(path)) {
-            paths.filter(PATH_IS_NOT_HIDDEN.and(Files::isRegularFile))
-                    .map(Path::toFile)
-                    .map(f -> toCollectedResource(path, f))
-                    .forEach(resources::add);
+        try {
+            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new CollectResourcesVisitor(path, resources));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -124,8 +127,12 @@ public class CollectedResourceProducer {
      */
     public static Collection<CollectedResource> fromFiles(Path basePath, File... files) {
         Collection<CollectedResource> resources = new ArrayList<>();
+        if (shouldIgnoreHiddenFiles() && basePath.toFile().isHidden()) {
+            LOGGER.debug("Skipping directory because it's hidden: {}. You can disable this option by setting {} property to 'false'.", basePath, IGNORE_HIDDEN_FILES_PROP);
+            return resources;
+        }
         try (Stream<File> paths = Arrays.stream(files)) {
-            paths.filter(File::isFile)
+            paths.filter(CONSIDER_FILE.and(File::isFile))
                     .map(f -> toCollectedResource(basePath, f))
                     .forEach(resources::add);
         }
@@ -140,6 +147,34 @@ public class CollectedResourceProducer {
     private static CollectedResource toCollectedResource(Path basePath, String resourceName, Resource resource) {
         resource.setResourceType(determineResourceType(resourceName));
         return new CollectedResource(basePath, resource);
+    }
 
+    private static boolean shouldIgnoreHiddenFiles() {
+        return Boolean.parseBoolean(System.getProperty(IGNORE_HIDDEN_FILES_PROP, "true"));
+    }
+
+    private static class CollectResourcesVisitor extends SimpleFileVisitor<Path> {
+        private final Collection<CollectedResource> resources;
+        private final Path initialPath;
+
+        public CollectResourcesVisitor(Path initialPath, Collection<CollectedResource> resources) {
+            this.resources = resources;
+            this.initialPath = initialPath;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            if (shouldIgnoreHiddenFiles() && Files.isHidden(dir)) {
+                LOGGER.debug("Skipping directory because it's hidden: {}. You can disable this option by setting {} property to 'false'.", dir, IGNORE_HIDDEN_FILES_PROP);
+                return FileVisitResult.SKIP_SUBTREE;
+            }
+            return super.preVisitDirectory(dir, attrs);
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+            resources.add(toCollectedResource(initialPath, path.toFile()));
+            return super.visitFile(path, attrs);
+        }
     }
 }
