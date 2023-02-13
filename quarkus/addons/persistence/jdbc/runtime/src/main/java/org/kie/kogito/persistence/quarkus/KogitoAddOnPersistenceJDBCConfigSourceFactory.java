@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.smallrye.config.ConfigSourceContext;
 import io.smallrye.config.ConfigSourceFactory;
@@ -28,8 +30,10 @@ import io.smallrye.config.ConfigSourceFactory;
 import static org.kie.kogito.persistence.quarkus.KogitoAddOnPersistenceJDBCConfigSource.ORDINAL;
 
 public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSourceFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KogitoAddOnPersistenceJDBCConfigSourceFactory.class);
 
     private static final String FLYWAY_LOCATIONS = "quarkus.flyway.locations";
+    private static final String DATASOURCE_DB_KIND = "quarkus.datasource.db-kind";
     private static final String LOCATION_PREFIX = "classpath:/db/";
     private static final String POSTGRESQL = "postgresql";
     private static final String ORACLE = "oracle";
@@ -38,8 +42,12 @@ public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSour
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
         Map<String, String> configuration = new HashMap<>();
-        final String databaseName = context.getValue("quarkus.datasource.db-kind").getValue();
-        configuration.put(FLYWAY_LOCATIONS, LOCATION_PREFIX + getDBName(databaseName));
+        final String databaseName = context.getValue(DATASOURCE_DB_KIND).getValue();
+        if (databaseName != null) {
+            configuration.put(FLYWAY_LOCATIONS, LOCATION_PREFIX + getDBName(databaseName));
+        } else {
+            LOGGER.warn("Kogito Flyway must have the property \"quarkus.datasource.db-kind\" to be set to initialize process schema.");
+        }
         return List.of(new KogitoAddOnPersistenceJDBCConfigSource(configuration));
     }
 
