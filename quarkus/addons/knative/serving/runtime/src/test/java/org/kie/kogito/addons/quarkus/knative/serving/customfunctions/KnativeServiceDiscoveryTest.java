@@ -50,7 +50,7 @@ class KnativeServiceDiscoveryTest {
     void setup() {
         String remoteServiceUrl = "http://" + REMOTE_SERVICE_HOST;
 
-        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "serverless-workflow-greeting-quarkus")
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "test", "serverless-workflow-greeting-quarkus")
                 .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
     }
 
@@ -96,7 +96,7 @@ class KnativeServiceDiscoveryTest {
     @Test
     void https() {
         String remoteServiceUrl = "https://" + REMOTE_SERVICE_HOST;
-        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting-https.yaml", "serverless-workflow-greeting-quarkus-https")
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting-https.yaml", "test", "serverless-workflow-greeting-quarkus-https")
                 .ifPresent(newKnativeClient -> knativeClient = newKnativeClient);
 
         Optional<KnativeServiceAddress> serviceAddress = serviceDiscovery.discover("serverless-workflow-greeting-quarkus-https");

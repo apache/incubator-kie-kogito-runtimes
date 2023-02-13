@@ -27,9 +27,7 @@ final class KnativeServiceDiscoveryTestUtil {
     private KnativeServiceDiscoveryTestUtil() {
     }
 
-    static Optional<KnativeClient> createServiceIfNotExists(KubernetesServer k8sServer, String remoteServiceUrl, String knativeYaml, String serviceName) {
-        String namespace = "test";
-
+    static Optional<KnativeClient> createServiceIfNotExists(KubernetesServer k8sServer, String remoteServiceUrl, String knativeYaml, String namespace, String serviceName) {
         if (k8sServer.getClient().services().inNamespace("test").withName(serviceName).get() != null) {
             return Optional.empty();
         }
