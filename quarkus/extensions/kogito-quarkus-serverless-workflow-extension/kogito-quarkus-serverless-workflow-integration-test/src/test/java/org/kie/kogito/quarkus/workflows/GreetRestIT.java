@@ -29,7 +29,7 @@ class GreetRestIT {
 
     @Test
     void testGreetHiddenRest() {
-        assertIt("greet-hidden", "Hello from JSON Workflow,");
+        assertIt("greethidden", "Hello from JSON Workflow,");
     }
 
     @Test

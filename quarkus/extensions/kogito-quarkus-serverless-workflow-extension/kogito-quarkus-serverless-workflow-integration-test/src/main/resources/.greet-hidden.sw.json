@@ -1,5 +1,5 @@
 {
-  "id": "greet-hidden",
+  "id": "greethidden",
   "version": "1.0",
   "name": "Greeting workflow",
   "expressionLang": "jsonpath",

@@ -173,7 +173,12 @@ public class CollectedResourceProducer {
 
         @Override
         public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-            resources.add(toCollectedResource(initialPath, path.toFile()));
+            if (shouldIgnoreHiddenFiles() && Files.isHidden(path)) {
+                LOGGER.debug("Skipping file because it's hidden: {}. You can disable this option by setting {} property to 'false'.", path, IGNORE_HIDDEN_FILES_PROP);
+            } else {
+                resources.add(toCollectedResource(initialPath, path.toFile()));
+            }
+
             return super.visitFile(path, attrs);
         }
     }

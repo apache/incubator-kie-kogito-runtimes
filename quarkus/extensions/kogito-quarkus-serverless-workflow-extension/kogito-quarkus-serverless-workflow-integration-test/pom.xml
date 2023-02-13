@@ -177,6 +177,10 @@
         <extensions>true</extensions>
         <configuration>
           <skip>${skipTests}</skip>
+          <systemProperties>
+            <!-- To include the greet-hidden workflow -->
+            <kogito.codegen.ignoreHiddenFiles>false</kogito.codegen.ignoreHiddenFiles>
+          </systemProperties>
         </configuration>
         <executions>
           <execution>

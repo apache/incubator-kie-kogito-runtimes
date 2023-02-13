@@ -50,7 +50,7 @@ class CollectedResourceProducerTest {
                         .map(CollectedResource::resource)
                         .map(Resource::getSourcePath)
                         .map(File::new)
-                        .filter(f -> f.getName().contains(".gitkeep") || f.getName().contains("a-file-within-a-hidden-dir.txt"))
+                        .filter(f -> f.getName().contains(".gitkeep") || f.getName().contains("a-file-within-a-hidden-dir.txt") || f.getName().contains(".a-hidden-file.txt"))
                         .count()).isZero();
     }
 
