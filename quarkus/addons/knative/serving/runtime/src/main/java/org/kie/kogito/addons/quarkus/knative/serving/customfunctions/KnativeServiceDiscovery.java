@@ -40,7 +40,13 @@ final class KnativeServiceDiscovery {
         KnativeServiceIdentifier serviceIdentifier = new KnativeServiceIdentifier(serviceName);
 
         return knativeResourceDiscovery.queryService(serviceIdentifier.getNamespace().orElse(currentContext), serviceIdentifier.getName())
-                .map(url -> new KnativeServiceAddress(isSsl(url), url.getHost(), url.getPort() == -1 ? 80 : url.getPort()));
+                .map(url -> {
+                    if (isSsl(url)) {
+                        return new KnativeServiceAddress(true, url.getHost(), url.getPort() == -1 ? 443 : url.getPort());
+                    } else {
+                        return new KnativeServiceAddress(false, url.getHost(), url.getPort() == -1 ? 80 : url.getPort());
+                    }
+                });
     }
 
     private static boolean isSsl(URL url) {

@@ -105,7 +105,7 @@ class KnativeServiceDiscoveryTest {
                 .hasValue(REMOTE_SERVICE_HOST);
 
         assertThat(serviceAddress).map(KnativeServiceAddress::getPort)
-                .hasValue(80);
+                .hasValue(443);
 
         assertThat(serviceAddress).map(KnativeServiceAddress::isSsl)
                 .hasValue(true);
