@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.jbpm.bpmn2.handler.ServiceTaskHandler;
 import org.jbpm.bpmn2.handler.SignallingTaskHandlerDecorator;
+import org.jbpm.bpmn2.handler.WorkItemHandlerRuntimeException;
 import org.jbpm.bpmn2.objects.ExceptionOnPurposeHandler;
 import org.jbpm.bpmn2.objects.MyError;
 import org.jbpm.bpmn2.objects.Person;
@@ -30,9 +31,11 @@ import org.jbpm.process.instance.event.listeners.RuleAwareProcessEventListener;
 import org.jbpm.process.instance.impl.demo.DoNothingWorkItemHandler;
 import org.jbpm.process.instance.impl.demo.SystemOutWorkItemHandler;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
+import org.jbpm.workflow.instance.WorkflowRuntimeException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.api.event.process.ProcessNodeLeftEvent;
+import org.kie.api.event.process.ProcessNodeTriggeredEvent;
 import org.kie.kogito.internal.process.event.DefaultKogitoProcessEventListener;
 import org.kie.kogito.internal.process.event.KogitoProcessEventListener;
 import org.kie.kogito.internal.process.runtime.KogitoNodeInstance;
@@ -73,6 +76,44 @@ public class ErrorEventTest extends JbpmBpmn2TestCase {
         assertThat(workItem).isNotNull();
         kruntime.getKogitoWorkItemManager().completeWorkItem(workItem.getStringId(), null);
         assertProcessInstanceFinished(processInstance, kruntime);
+        assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
+                "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
+        assertThat(executednodes).hasSize(1);
+
+    }
+
+    @Test
+    public void testEventSubprocessThrowError() throws Exception {
+        kruntime = createKogitoProcessRuntime(
+        		"BPMN2-TerminateErrorEventSubprocessWithBoundaryError.bpmn2", "BPMN2-TerminateErrorSubprocess.bpmn2");
+        final List<String> executednodes = new ArrayList<>();
+        KogitoProcessEventListener listener = new DefaultKogitoProcessEventListener() {
+
+            @Override
+            public void beforeNodeTriggered(ProcessNodeTriggeredEvent event) {
+                System.out.println(event);
+            }
+
+        };
+
+        kruntime.getProcessEventManager().addEventListener(listener);
+        kruntime.getKogitoWorkItemManager().registerWorkItemHandler("Service Task", new KogitoWorkItemHandler() {
+			
+			@Override
+			public void executeWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+				throw new RuntimeException("Adios! ");
+				
+			}
+			
+			@Override
+			public void abortWorkItem(KogitoWorkItem workItem, KogitoWorkItemManager manager) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        KogitoProcessInstance processInstance = kruntime.startProcess("TerminateErrorEventSubprocessWithBoundaryError");
+
+
         assertNodeTriggered(processInstance.getStringId(), "start", "User Task 1",
                 "end", "Sub Process 1", "start-sub", "Script Task 1", "end-sub");
         assertThat(executednodes).hasSize(1);
