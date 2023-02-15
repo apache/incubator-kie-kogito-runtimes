@@ -15,9 +15,6 @@
  */
 package org.kie.kogito.jobs;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import static java.util.Objects.requireNonNull;
 
 public class ProcessInstanceJobDescription implements JobDescription {
@@ -25,9 +22,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
     public static final Integer DEFAULT_PRIORITY = 5;
 
     private final String id;
-
     private final ExpirationTime expirationTime;
-
     private final Integer priority;
     private final String processInstanceId;
     private final String rootProcessInstanceId;
@@ -43,9 +38,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
             String processId,
             String rootProcessId,
             String nodeInstanceId) {
-        this.id = Optional.ofNullable(timerId)
-                .orElse(UUID.randomUUID().toString());
-
+        this.id = requireNonNull(timerId);
         this.expirationTime = requireNonNull(expirationTime);
         this.priority = requireNonNull(priority);
         this.processInstanceId = requireNonNull(processInstanceId);

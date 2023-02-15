@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.Node;
@@ -67,7 +66,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
         ProcessInstanceJobDescription jobDescription =
                 ProcessInstanceJobDescription.builder()
-                        .timerId(UUID.randomUUID().toString())
+                        .timerId(getStringId())
                         .expirationTime(expirationTime)
                         .processInstanceId(getProcessInstance().getStringId())
                         .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())

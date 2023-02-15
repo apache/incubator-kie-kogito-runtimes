@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.jobs;
 
+import java.util.UUID;
+
 public class ProcessInstanceJobDescriptionBuilder {
     private String timerId;
     private ExpirationTime expirationTime;
@@ -28,6 +30,10 @@ public class ProcessInstanceJobDescriptionBuilder {
     public ProcessInstanceJobDescriptionBuilder timerId(String timerId) {
         this.timerId = timerId;
         return this;
+    }
+
+    public ProcessInstanceJobDescriptionBuilder generateTimerId() {
+        return timerId(UUID.randomUUID().toString());
     }
 
     public ProcessInstanceJobDescriptionBuilder expirationTime(ExpirationTime expirationTime) {

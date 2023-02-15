@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.ReteEvaluator;
@@ -84,7 +83,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             for (Timer timer : timers.keySet()) {
                 ProcessInstanceJobDescription jobDescription =
                         ProcessInstanceJobDescription.builder()
-                                .timerId(UUID.randomUUID().toString())
+                                .timerId(timer.getId())
                                 .expirationTime(createTimerInstance(timer))
                                 .processInstanceId(getProcessInstance().getStringId())
                                 .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
@@ -94,7 +93,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
                                 .build();
                 String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
                 timerInstances.add(jobId);
-                timer.setId(jobId);
             }
         }
 

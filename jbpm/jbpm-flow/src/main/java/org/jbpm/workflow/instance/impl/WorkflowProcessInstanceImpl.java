@@ -80,6 +80,7 @@ import org.kie.kogito.internal.process.runtime.KogitoNodeInstanceContainer;
 import org.kie.kogito.internal.process.runtime.KogitoProcessInstance;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
 import org.kie.kogito.jobs.DurationExpirationTime;
+import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
@@ -558,6 +559,7 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
     private TimerInstance createDurationTimer(long duration) {
         TimerInstance timerInstance = new TimerInstance();
+        timerInstance.setId(UUID.randomUUID().toString());
         timerInstance.setDelay(duration);
         timerInstance.setPeriod(0);
         return timerInstance;
@@ -566,12 +568,13 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private TimerInstance registerTimer(TimerInstance timerInstance) {
         ProcessInstanceJobDescription description =
                 ProcessInstanceJobDescription.builder()
-                        .timerId(UUID.randomUUID().toString())
+                        .timerId(timerInstance.getId())
                         .expirationTime(DurationExpirationTime.after(timerInstance.getDelay()))
                         .processInstanceId(getStringId())
                         .processId(getProcessId())
                         .build();
-        timerInstance.setId((InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService().scheduleProcessInstanceJob(description)));
+        JobsService jobsService = InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService();
+        jobsService.scheduleProcessInstanceJob(description);
         return timerInstance;
     }
 
