@@ -99,7 +99,8 @@ public class VertxJobsService extends RestJobsService {
             if (res.succeeded() && res.result().statusCode() == 200) {
                 LOGGER.debug("Creating of the job {} done with status code {} ", job, res.result().statusCode());
             } else {
-                LOGGER.error("Scheduling of job {} failed with response code {}", job, res.result().statusCode(), res.cause());
+                int status = res.result() != null ? res.result().statusCode() : 0;
+                LOGGER.error("Scheduling of job {} failed with response code {}", job, status, res.cause());
             }
         });
         return job.getId();
