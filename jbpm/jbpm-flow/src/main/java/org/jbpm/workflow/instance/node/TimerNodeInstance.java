@@ -66,7 +66,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         }
         ProcessInstanceJobDescription jobDescription =
                 ProcessInstanceJobDescription.builder()
-                        .timerId(getStringId())
+                        .timerId(getTimerNode().getTimer().getId())
                         .expirationTime(expirationTime)
                         .processInstanceId(getProcessInstance().getStringId())
                         .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
