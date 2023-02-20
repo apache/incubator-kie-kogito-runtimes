@@ -21,6 +21,14 @@
             <groupId>org.kie.kogito</groupId>
             <artifactId>kogito-addons-quarkus-kubernetes-deployment</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.kie.kogito</groupId>
+            <artifactId>kogito-serverless-workflow-builder</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-vertx-deployment</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
