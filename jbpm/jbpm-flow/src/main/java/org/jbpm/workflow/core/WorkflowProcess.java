@@ -50,7 +50,7 @@ public interface WorkflowProcess extends KogitoWorkflowProcess, Process, NodeCon
     Optional<WorkflowModelValidator> getInputValidator();
 
     void setInputValidator(WorkflowModelValidator validator);
-    
+
     Optional<WorkflowModelValidator> getOutputValidator();
 
     void setOutputValidator(WorkflowModelValidator validator);

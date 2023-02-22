@@ -16,7 +16,6 @@
 
 package org.kie.kogito.core.process.incubation.quarkus.support;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.kie.kogito.MappableToModel;
@@ -84,13 +83,9 @@ class StatefulProcessServiceImpl implements StatefulProcessService {
     @Override
     public ExtendedDataContext update(LocalId localId, DataContext dataContext) {
         ProcessInstanceId instanceId = ProcessIdParser.select(localId, ProcessInstanceId.class);
-        Process<MappableToModel<Model>> process = parseProcess(instanceId.processId());
-        MappableToModel<Model> model = (MappableToModel<Model>) toModel(dataContext, process);
-        Optional<Model> optionalModel = svc.update(process, instanceId.processInstanceId(), model);
-        Model m = optionalModel.orElseThrow();
-        Map<String, Object> map = m.toMap();
-
-        return ExtendedDataContext.ofData(MapDataContext.from(map));
+        Process process = parseProcess(instanceId.processId());
+        Optional<Model> optionalModel = svc.update(process, instanceId.processInstanceId(), (MappableToModel) toModel(dataContext, process));
+        return optionalModel.map(Model::toMap).map(MapDataContext::from).map(ExtendedDataContext::ofData).orElseThrow();
     }
 
     @Override

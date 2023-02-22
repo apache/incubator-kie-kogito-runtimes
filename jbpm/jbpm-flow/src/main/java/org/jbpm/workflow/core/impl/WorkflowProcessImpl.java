@@ -226,14 +226,14 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
     public void setInputValidator(WorkflowModelValidator inputValidator) {
         this.inputValidator = Optional.of(inputValidator);
     }
-    
-    @Override
-	public Optional<WorkflowModelValidator> getOutputValidator() {
-		return outputValidator;
-	}
 
     @Override
-	public void setOutputValidator(WorkflowModelValidator outputValidator) {
-		this.outputValidator = Optional.of(outputValidator);
-	}
+    public Optional<WorkflowModelValidator> getOutputValidator() {
+        return outputValidator;
+    }
+
+    @Override
+    public void setOutputValidator(WorkflowModelValidator outputValidator) {
+        this.outputValidator = Optional.of(outputValidator);
+    }
 }

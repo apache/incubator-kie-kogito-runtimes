@@ -55,9 +55,9 @@ public interface ProcessService {
 
     <T extends MappableToModel<R>, R> Optional<R> delete(Process<T> process, String id);
 
-    <T extends MappableToModel<R>, R> Optional<R> update(Process<T> process, String id, T resource);
+    <T extends MappableToModel<P>, P extends MappableToModel<R>, R> Optional<R> update(Process<P> process, String id, T resource);
 
-    <T extends MappableToModel<R>, R> Optional<R> updatePartial(Process<T> process, String id, T resource);
+    <T extends MappableToModel<P>, P extends MappableToModel<R>, R> Optional<R> updatePartial(Process<P> process, String id, T resource);
 
     <T extends Model> Optional<List<WorkItem>> getTasks(Process<T> process, String id, SecurityPolicy policy);
 

@@ -135,7 +135,7 @@ public class RuleFlowProcessFactory extends RuleFlowNodeContainerFactory<RuleFlo
         }
         return this;
     }
-    
+
     public RuleFlowProcessFactory outputValidator(WorkflowModelValidator validator) {
         getRuleFlowProcess().setOutputValidator(validator);
         return this;

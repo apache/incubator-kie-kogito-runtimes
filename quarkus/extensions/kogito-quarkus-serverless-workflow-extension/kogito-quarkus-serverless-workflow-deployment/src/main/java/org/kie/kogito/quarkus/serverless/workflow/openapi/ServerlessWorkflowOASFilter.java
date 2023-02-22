@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.openapi;
+package org.kie.kogito.quarkus.serverless.workflow.openapi;
 
 import java.util.Collection;
 import java.util.List;
@@ -86,7 +86,7 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
     }
 
     private static void addWorkflowdataSchemaRefs(SchemaInfo schemaInfo, OpenAPI openAPI) {
-        Schema schema = OASFactory.createSchema().ref(schemaInfo.inputModelRef);
+        Schema schema = OASFactory.createSchema().ref(schemaInfo.targetModelRef);
 
         for (PathItem pathItem : openAPI.getPaths().getPathItems().values()) {
             if (pathItemHasWorkflowId(pathItem, schemaInfo.workflowId)) {
@@ -120,12 +120,12 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
 
         private final OpenAPI openAPI;
 
-        private final String inputModelRef;
+        private final String targetModelRef;
 
-        public SchemaInfo(String workflowId, OpenAPI openAPI, String inputModelRef) {
+        public SchemaInfo(String workflowId, OpenAPI openAPI, String modelRef) {
             this.workflowId = workflowId;
             this.openAPI = openAPI;
-            this.inputModelRef = inputModelRef;
+            this.targetModelRef = modelRef;
         }
     }
 }

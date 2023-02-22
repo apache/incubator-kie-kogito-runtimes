@@ -25,8 +25,10 @@ import org.kie.kogito.MapOutput;
 import org.kie.kogito.MappableToModel;
 import org.kie.kogito.Model;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, MappableToModel<JsonNodeModelOutput> {
@@ -40,6 +42,15 @@ public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, Ma
 
     public JsonNodeModel(JsonNode workflowdata) {
         this.workflowdata = workflowdata;
+    }
+
+    public JsonNodeModel(String id, Map<String, Object> workflowdata) {
+        this.id = id;
+        this.workflowdata = ObjectMapperFactory.listenerAware().convertValue(workflowdata, JsonNode.class);
+    }
+
+    public JsonNodeModel(Map<String, Object> workflowdata) {
+        this(null, workflowdata);
     }
 
     public String getId() {
@@ -60,7 +71,8 @@ public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, Ma
 
     @Override
     public JsonNodeModelOutput toModel() {
-        return new JsonNodeModelOutput(id, workflowdata);
+        return new JsonNodeModelOutput(id, ObjectMapperFactory.get().convertValue(workflowdata, new TypeReference<Map<String, Object>>() {
+        }));
     }
 
     @Override

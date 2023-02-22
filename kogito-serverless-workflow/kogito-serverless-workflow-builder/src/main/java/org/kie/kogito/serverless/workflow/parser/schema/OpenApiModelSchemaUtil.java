@@ -29,4 +29,8 @@ public final class OpenApiModelSchemaUtil {
     public static String getInputModelRef(String workflowId) {
         return "#/components/schemas/" + workflowId;
     }
+
+    public static String getOutputModelRef(String workflowId) {
+        return "#/components/schemas/" + workflowId + "_output";
+    }
 }

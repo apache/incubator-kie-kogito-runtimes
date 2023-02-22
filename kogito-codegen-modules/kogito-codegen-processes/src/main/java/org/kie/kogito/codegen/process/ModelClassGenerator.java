@@ -15,28 +15,49 @@
  */
 package org.kie.kogito.codegen.process;
 
+import java.util.Optional;
+
 import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.ProcessToExecModelGenerator;
-import org.jbpm.ruleflow.core.Metadata;
+import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.kie.api.definition.process.WorkflowProcess;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.serverless.workflow.parser.SwaggerSchemaGenerator;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+
+
 
 public class ModelClassGenerator {
 
     private final String modelFileName;
     private final ModelMetaData modelMetaData;
     private final String modelClassName;
+    private final Optional<SwaggerSchemaGenerator> inputSchemaSupplier;
+    private final Optional<SwaggerSchemaGenerator> outputSchemaSupplier;
 
     public ModelClassGenerator(KogitoBuildContext context, WorkflowProcess workFlowProcess) {
-        modelMetaData = workFlowProcess.getType().equals(KogitoWorkflowProcess.SW_TYPE) ? ServerlessWorkflowUtils.getModelMetadata(workFlowProcess)
-                : ProcessToExecModelGenerator.INSTANCE.generateModel(workFlowProcess);
+        if (workFlowProcess.getType().equals(KogitoWorkflowProcess.SW_TYPE)) {
+            modelMetaData = ServerlessWorkflowUtils.getModelMetadata(workFlowProcess);
+            inputSchemaSupplier = getSchemaSupplier(getProcess(workFlowProcess).flatMap(org.jbpm.workflow.core.WorkflowProcess::getInputValidator));
+            outputSchemaSupplier = getSchemaSupplier(getProcess(workFlowProcess).flatMap(org.jbpm.workflow.core.WorkflowProcess::getOutputValidator));
+        } else {
+            modelMetaData = ProcessToExecModelGenerator.INSTANCE.generateModel(workFlowProcess);
+            inputSchemaSupplier = Optional.empty();
+            outputSchemaSupplier = Optional.empty();
+        }
         modelClassName = modelMetaData.getModelClassName();
         modelFileName = modelMetaData.getModelClassName().replace('.', '/') + ".java";
         modelMetaData.setSupportsValidation(context.isValidationSupported());
         modelMetaData.setSupportsOpenApiGeneration(context.isOpenApiSpecSupported());
-        modelMetaData.setModelSchemaRef((String) workFlowProcess.getMetaData().get(Metadata.DATA_INPUT_SCHEMA_REF));
+    }
+
+    private static final Optional<SwaggerSchemaGenerator> getSchemaSupplier(Optional<WorkflowModelValidator> validator) {
+        return validator.filter(SwaggerSchemaGenerator.class::isInstance).map(SwaggerSchemaGenerator.class::cast);
+    }
+
+    private static final Optional<org.jbpm.workflow.core.WorkflowProcess> getProcess(WorkflowProcess workFlowProcess) {
+        return workFlowProcess instanceof org.jbpm.workflow.core.WorkflowProcess ? Optional.of((org.jbpm.workflow.core.WorkflowProcess) workFlowProcess) : Optional.empty();
     }
 
     public ModelMetaData generate() {

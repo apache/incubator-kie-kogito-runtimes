@@ -17,8 +17,11 @@ package org.kie.kogito.serverless.workflow.actions;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
+import org.everit.json.schema.loader.SchemaClient;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.json.JSONObject;
@@ -27,7 +30,8 @@ import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
@@ -39,25 +43,38 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaValidator.class);
 
-    protected final String schema;
+    protected final String schemaRef;
     protected final boolean failOnValidationErrors;
 
+    private final AtomicReference<Schema> schemaObject = new AtomicReference<>();
+
     public JsonSchemaValidator(String schema, boolean failOnValidationErrors) {
-        this.schema = schema;
+        this.schemaRef = schema;
         this.failOnValidationErrors = failOnValidationErrors;
     }
 
     @Override
     public void validate(Map<String, Object> model) {
-        ObjectMapper mapper = ObjectMapperFactory.get();
         try {
-            SchemaLoader.load(mapper.readValue(readAllBytes(runtimeLoader(schema)), JSONObject.class))
-                    .validate(mapper.convertValue(model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance), JSONObject.class));
+            load().validate(ObjectMapperFactory.get().convertValue(model.getOrDefault(SWFConstants.DEFAULT_WORKFLOW_VAR, NullNode.instance), JSONObject.class));
         } catch (ValidationException ex) {
             handleException(ex, ex.getCausingExceptions().isEmpty() ? ex : ex.getCausingExceptions());
         } catch (IOException ex) {
             handleException(ex, ex);
         }
+    }
+
+    protected Schema load() throws StreamReadException, DatabindException, IOException {
+        Schema result = schemaObject.get();
+        if (result == null) {
+            result = SchemaLoader.builder()
+                    .schemaJson(ObjectMapperFactory.get().readValue(readAllBytes(runtimeLoader(schemaRef)), JSONObject.class))
+                    .resolutionScope(schemaRef)
+                    .schemaClient(SchemaClient.classPathAwareClient())
+                    .build().load().build();
+            schemaObject.set(result);
+        }
+        return result;
     }
 
     private void handleException(Throwable ex, Object toAppend) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jbpm.workflow.core;
+package org.kie.kogito.serverless.workflow.parser;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.io.IOException;
 
-public interface WorkflowModelValidator extends Serializable {
+import com.github.javaparser.ast.expr.Expression;
 
-    /**
-     * Validates the input model
-     * 
-     * @param model the input model as a map
-     * @throws IllegalArgumentException if the validation failed
-     */
-    void validate(Map<String, Object> model);
+public interface SwaggerSchemaGenerator {
+    Expression getContent() throws IOException;
 }

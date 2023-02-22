@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ public class OutputSchema implements Extension {
 
     public static final String OUTPUT_SCHEMA = "workflow-output-schema";
     // this data structure will be removed when migrating to 0.9, but for now it makes sense to reuse it rather than creating a new one
+    // see https://github.com/serverlessworkflow/specification/pull/696
     private DataInputSchema outputSchema;
     // this is a bug in workflow sdk, see https://github.com/serverlessworkflow/sdk-java/pull/207
     @JsonProperty("extensionid")
