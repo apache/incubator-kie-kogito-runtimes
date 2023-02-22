@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
-import org.jbpm.workflow.core.WorkflowInputModelValidator;
+import org.jbpm.workflow.core.WorkflowModelValidator;
 import org.json.JSONObject;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 import org.kie.kogito.serverless.workflow.SWFConstants;
@@ -33,16 +33,16 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.runtimeLoader;
 
-public class DataInputSchemaValidator implements WorkflowInputModelValidator {
+public class JsonSchemaValidator implements WorkflowModelValidator {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(DataInputSchemaValidator.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaValidator.class);
 
     protected final String schema;
     protected final boolean failOnValidationErrors;
 
-    public DataInputSchemaValidator(String schema, boolean failOnValidationErrors) {
+    public JsonSchemaValidator(String schema, boolean failOnValidationErrors) {
         this.schema = schema;
         this.failOnValidationErrors = failOnValidationErrors;
     }
@@ -61,7 +61,7 @@ public class DataInputSchemaValidator implements WorkflowInputModelValidator {
     }
 
     private void handleException(Throwable ex, Object toAppend) {
-        String validationError = String.format("Error validating input schema: %s", toAppend);
+        String validationError = String.format("Error validating schema: %s", toAppend);
         logger.warn(validationError, ex);
         if (failOnValidationErrors) {
             throw new IllegalArgumentException(validationError);
