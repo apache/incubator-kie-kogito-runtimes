@@ -25,6 +25,7 @@ import org.eclipse.microprofile.openapi.models.OpenAPI;
 import org.eclipse.microprofile.openapi.models.PathItem;
 import org.eclipse.microprofile.openapi.models.media.MediaType;
 import org.eclipse.microprofile.openapi.models.media.Schema;
+import org.kie.kogito.serverless.workflow.parser.schema.SchemaInfo;
 
 import io.smallrye.openapi.api.util.MergeUtil;
 
@@ -41,8 +42,8 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
     @Override
     public void filterOpenAPI(OpenAPI openAPI) {
         for (SchemaInfo inputModelSchemaInfo : inputModelSchemaInfos) {
-            if (inputModelSchemaInfo.openAPI != null) {
-                MergeUtil.merge(openAPI, inputModelSchemaInfo.openAPI);
+            if (inputModelSchemaInfo.getOpenAPI() != null) {
+                MergeUtil.merge(openAPI, inputModelSchemaInfo.getOpenAPI());
                 addWorkflowdataSchemaRefs(inputModelSchemaInfo, openAPI);
             }
         }
@@ -76,7 +77,7 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
     }
 
     private boolean doesExistSchemaForPathItem(PathItem pathItem) {
-        return inputModelSchemaInfos.stream().anyMatch(schemaInfo -> pathItemHasWorkflowId(pathItem, schemaInfo.workflowId));
+        return inputModelSchemaInfos.stream().anyMatch(schemaInfo -> pathItemHasWorkflowId(pathItem, schemaInfo.getWorkflowId()));
     }
 
     private static boolean pathItemHasWorkflowId(PathItem pathItem, String workflowId) {
@@ -86,10 +87,10 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
     }
 
     private static void addWorkflowdataSchemaRefs(SchemaInfo schemaInfo, OpenAPI openAPI) {
-        Schema schema = OASFactory.createSchema().ref(schemaInfo.targetModelRef);
+        Schema schema = OASFactory.createSchema().ref(schemaInfo.getTargetModelRef());
 
         for (PathItem pathItem : openAPI.getPaths().getPathItems().values()) {
-            if (pathItemHasWorkflowId(pathItem, schemaInfo.workflowId)) {
+            if (pathItemHasWorkflowId(pathItem, schemaInfo.getWorkflowId())) {
                 getMediaTypes(pathItem).forEach(mediaType -> mediaType.setSchema(schema));
             }
         }
@@ -112,20 +113,5 @@ public final class ServerlessWorkflowOASFilter implements OASFilter {
                 && pathItem.getPOST().getRequestBody() != null
                 && pathItem.getPOST().getRequestBody().getContent() != null
                 && pathItem.getPOST().getRequestBody().getContent().getMediaTypes() != null;
-    }
-
-    public static final class SchemaInfo {
-
-        private final String workflowId;
-
-        private final OpenAPI openAPI;
-
-        private final String targetModelRef;
-
-        public SchemaInfo(String workflowId, OpenAPI openAPI, String modelRef) {
-            this.workflowId = workflowId;
-            this.openAPI = openAPI;
-            this.targetModelRef = modelRef;
-        }
     }
 }

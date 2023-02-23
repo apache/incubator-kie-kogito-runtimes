@@ -30,8 +30,6 @@ import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.node.NullNode;
 
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
@@ -64,7 +62,7 @@ public class JsonSchemaValidator implements WorkflowModelValidator {
         }
     }
 
-    protected Schema load() throws StreamReadException, DatabindException, IOException {
+    protected Schema load() throws IOException {
         Schema result = schemaObject.get();
         if (result == null) {
             result = SchemaLoader.builder()

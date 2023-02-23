@@ -16,20 +16,14 @@
 
 package org.kie.kogito.serverless.workflow.parser.schema;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Optional;
 
 import org.eclipse.microprofile.openapi.OASFactory;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
-import org.eclipse.microprofile.openapi.models.media.Schema;
-import org.everit.json.schema.loader.SchemaClient;
-import org.everit.json.schema.loader.SchemaLoader;
-import org.json.JSONObject;
-import org.kie.kogito.jackson.utils.ObjectMapperFactory;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jbpm.workflow.core.WorkflowModelValidator;
+import org.jbpm.workflow.core.WorkflowProcess;
+import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
+import org.kie.kogito.serverless.workflow.parser.SwaggerSchemaProvider;
 
 import io.serverlessworkflow.api.Workflow;
 
@@ -38,47 +32,38 @@ public final class OpenApiModelSchemaGenerator {
     private OpenApiModelSchemaGenerator() {
     }
 
-    private static Optional<Schema> generateInputModel(Workflow workflow) {
-        if (workflow.getDataInputSchema() == null ||
-                workflow.getDataInputSchema().getSchema() == null ||
-                workflow.getDataInputSchema().getSchema().isEmpty()) {
-            return Optional.empty();
+    private static final Optional<SwaggerSchemaProvider> getSchemaSupplier(Optional<WorkflowModelValidator> validator) {
+        return validator.filter(SwaggerSchemaProvider.class::isInstance).map(SwaggerSchemaProvider.class::cast);
+    }
+
+    public static Optional<SchemaInfo> generateOpenAPIModelSchema(KogitoWorkflowProcess workflow) {
+
+        if (workflow instanceof WorkflowProcess) {
+            WorkflowProcess workflowProcess = (WorkflowProcess) workflow;
+            Optional<SwaggerSchemaProvider> inputSchemaSupplier = getSchemaSupplier(workflowProcess.getInputValidator());
+            Optional<SwaggerSchemaProvider> outputSchemaSupplier = getSchemaSupplier(workflowProcess.getOutputValidator());
+            if (inputSchemaSupplier.isEmpty() || outputSchemaSupplier.isEmpty()) {
+                OpenAPI openAPI = OASFactory.createOpenAPI().openapi(workflow.getId() + '_' + "workflowmodelschema");
+                inputSchemaSupplier.ifPresent(v -> openAPI.components(OASFactory.createComponents().addSchema(workflow.getId() + "_input", v.getSchema())));
+                outputSchemaSupplier.ifPresent(v -> openAPI.components(OASFactory.createComponents().addSchema(workflow.getId() + "_output", v.getSchema())));
+                return Optional.of(new SchemaInfo(workflow.getId(), openAPI, getInputModelRef(workflow.getId())));
+            }
         }
-        return fromJsonSchemaToOpenApiSchema(workflow, workflow.getDataInputSchema().getSchema());
+        return Optional.empty();
     }
 
     /**
-     * Converts a given JSON Schema URI to OpenAPI Schema definition.
-     * <p/>
-     * It will try to load the file into bytes, load all the schema inheritance and provide the caller
-     * with a reference to an OpenAPI Schema object.
+     * Path to save the partial OpenAPI file with the additional model provided by the Workflow definition
      *
-     * @param workflow the workflow
-     * @param jsonSchemaURI the given JSON Schema URI
-     * @param authRef the Authentication Reference information to fetch the JSON Schema URI if needed
-     * @return The @{@link Schema} object
+     * @see <a href="https://github.com/eclipse/microprofile-open-api/blob/master/spec/src/main/asciidoc/microprofile-openapi-spec.asciidoc#location-and-formats">MicroProfile OpenAPI Specification -
+     *      Location And Formats</a>
      */
-    private static Optional<Schema> fromJsonSchemaToOpenApiSchema(Workflow workflow, String jsonSchemaURI) {
-        return ServerlessWorkflowUtils.loadResourceFile(workflow, Optional.empty(), jsonSchemaURI, null).map(bytes -> {
-            try {
-                final ObjectMapper objectMapper = ObjectMapperFactory.get();
-                // SchemaLoader will load all the references from other files into the schema
-                return objectMapper.readValue(SchemaLoader.builder()
-                        .schemaJson(objectMapper.readValue(bytes, JSONObject.class))
-                        .resolutionScope(jsonSchemaURI)
-                        .schemaClient(SchemaClient.classPathAwareClient())
-                        .build().load().build().toString(), JsonSchemaImpl.class);
-            } catch (IOException e) {
-                throw new UncheckedIOException("Error deserializing JSON Schema " + jsonSchemaURI + " for workflow " + workflow.getId(), e);
-            }
-        });
-
+    private static String getInputModelRef(String workflowId) {
+        return "#/components/schemas/" + workflowId + "_input";
     }
 
-    public static Optional<OpenAPI> generateOpenAPIModelSchema(Workflow workflow) {
-        return generateInputModel(workflow).map(inputModel -> OASFactory.createOpenAPI()
-                .components(OASFactory.createComponents().addSchema(workflow.getId(), inputModel))
-                .openapi(workflow.getId() + '_' + "workflowmodelschema"));
+    public static String getOutputModelRef(String workflowId) {
+        return "#/components/schemas/" + workflowId + "_output";
     }
 
 }

@@ -15,10 +15,8 @@
  */
 package org.kie.kogito.serverless.workflow.parser;
 
-import java.io.IOException;
+import org.eclipse.microprofile.openapi.models.media.Schema;
 
-import com.github.javaparser.ast.expr.Expression;
-
-public interface SwaggerSchemaGenerator {
-    Expression getContent() throws IOException;
+public interface SwaggerSchemaProvider {
+    Schema getSchema();
 }
