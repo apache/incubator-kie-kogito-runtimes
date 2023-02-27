@@ -21,7 +21,6 @@ import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.process.instance.ProcessRuntimeFactoryServiceImpl;
 import org.jbpm.ruleflow.instance.RuleFlowProcessInstance;
 import org.jbpm.test.util.AbstractBaseTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.internal.process.runtime.KogitoProcessRuntime;
 import org.kie.kogito.jobs.DurationExpirationTime;
