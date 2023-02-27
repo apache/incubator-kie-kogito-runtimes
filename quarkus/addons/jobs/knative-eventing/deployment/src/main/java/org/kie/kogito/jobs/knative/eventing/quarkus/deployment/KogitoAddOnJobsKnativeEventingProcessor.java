@@ -28,24 +28,9 @@ import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.cloudevents.CloudEventMeta;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-import org.kie.kogito.jobs.service.api.Job;
-import org.kie.kogito.jobs.service.api.JobLookupId;
-import org.kie.kogito.jobs.service.api.Recipient;
-import org.kie.kogito.jobs.service.api.Schedule;
+import org.kie.kogito.jobs.quarkus.common.reflection.AddonReflectionClasses;
 import org.kie.kogito.jobs.service.api.event.CreateJobEvent;
 import org.kie.kogito.jobs.service.api.event.DeleteJobEvent;
-import org.kie.kogito.jobs.service.api.event.JobCloudEvent;
-import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
-import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientBinaryPayloadData;
-import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
-import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientStringPayloadData;
-import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipient;
-import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipientBinaryPayloadData;
-import org.kie.kogito.jobs.service.api.recipient.sink.SinkRecipientJsonPayloadData;
-import org.kie.kogito.jobs.service.api.schedule.cron.CronSchedule;
-import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
-import org.kie.kogito.jobs.service.api.serlialization.SpecVersionDeserializer;
-import org.kie.kogito.jobs.service.api.serlialization.SpecVersionSerializer;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
 import org.kie.kogito.quarkus.addons.common.deployment.OneOfCapabilityKogitoAddOnProcessor;
 import org.kie.kogito.quarkus.extensions.spi.deployment.HasWorkflowExtension;
@@ -71,28 +56,11 @@ public class KogitoAddOnJobsKnativeEventingProcessor extends OneOfCapabilityKogi
     }
 
     @BuildStep
-    public ReflectiveClassBuildItem eventsApiReflection() {
+    public ReflectiveClassBuildItem jobsApiReflection() {
         return new ReflectiveClassBuildItem(true,
                 true,
                 true,
-                SpecVersionSerializer.class.getName(),
-                SpecVersionDeserializer.class.getName(),
-                Job.class.getName(),
-                JobLookupId.class.getName(),
-                Recipient.class.getName(),
-                HttpRecipient.class.getName(),
-                HttpRecipientStringPayloadData.class.getName(),
-                HttpRecipientBinaryPayloadData.class.getName(),
-                HttpRecipientJsonPayloadData.class.getName(),
-                SinkRecipient.class.getName(),
-                SinkRecipientBinaryPayloadData.class.getName(),
-                SinkRecipientJsonPayloadData.class.getName(),
-                Schedule.class.getName(),
-                TimerSchedule.class.getName(),
-                CronSchedule.class.getName(),
-                JobCloudEvent.class.getName(),
-                CreateJobEvent.class.getName(),
-                DeleteJobEvent.class.getName());
+                AddonReflectionClasses.apiReflectionClasses().toArray(new Class[] {}));
     }
 
     @BuildStep(onlyIfNot = IsTest.class, onlyIf = HasWorkflowExtension.class)

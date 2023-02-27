@@ -16,6 +16,7 @@
   <modules>
     <module>messaging</module>
     <module>rest-callback</module>
+    <module>reflection</module>
   </modules>
 
 </project>

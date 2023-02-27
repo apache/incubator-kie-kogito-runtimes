@@ -17,31 +17,29 @@
 package org.kie.kogito.jobs.service.api.utils;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class EventUtilsTest {
 
-    @Test
-    void isValidExtensionNameTrue() {
-        assertThat(EventUtils.isValidExtensionName("myextension")).isTrue();
-    }
-
-    @Test
-    void isValidExtensionNameFalse() {
-        assertThat(EventUtils.isValidExtensionName("myExtension")).isFalse();
-    }
-
-    @Test
-    void validateExtensionNameSuccessful() {
-        assertThatNoException().isThrownBy(() -> EventUtils.validateExtensionName("successful"));
-    }
-
-    @Test
-    void validateExtensionNameUnsuccessful() {
-        assertThatThrownBy(() -> EventUtils.validateExtensionName("unSuccessful"))
+    @ParameterizedTest
+    @ValueSource(strings = { "", " ", "myExtension", "myëxtension" })
+    void validateExtensionNameUnsuccessful(String name) {
+        assertThatThrownBy(() -> EventUtils.validateExtensionName(name))
                 .hasMessageStartingWith("Invalid attribute or extension name:");
+    }
+
+    @Test
+    void validateExtensionNameNullUnsuccessful() {
+        validateExtensionNameUnsuccessful(null);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "successful", "value1", "value3", "v" })
+    void validateExtensionNameSuccessful(String name) {
+        assertThatNoException().isThrownBy(() -> EventUtils.validateExtensionName(name));
     }
 }
