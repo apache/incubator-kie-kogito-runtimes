@@ -29,12 +29,8 @@ public class ModelClassGenerator {
     private final String modelClassName;
 
     public ModelClassGenerator(KogitoBuildContext context, WorkflowProcess workFlowProcess) {
-        if (workFlowProcess.getType().equals(KogitoWorkflowProcess.SW_TYPE)) {
-            modelMetaData = ServerlessWorkflowUtils.getModelMetadata(workFlowProcess);
-
-        } else {
-            modelMetaData = ProcessToExecModelGenerator.INSTANCE.generateModel(workFlowProcess);
-        }
+        modelMetaData = workFlowProcess.getType().equals(KogitoWorkflowProcess.SW_TYPE) ? ServerlessWorkflowUtils.getModelMetadata(workFlowProcess)
+                : ProcessToExecModelGenerator.INSTANCE.generateModel(workFlowProcess);
         modelClassName = modelMetaData.getModelClassName();
         modelFileName = modelMetaData.getModelClassName().replace('.', '/') + ".java";
         modelMetaData.setSupportsValidation(context.isValidationSupported());

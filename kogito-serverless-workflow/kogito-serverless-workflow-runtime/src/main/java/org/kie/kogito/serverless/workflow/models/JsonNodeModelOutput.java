@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.serverless.workflow.models;
 
-import java.util.Map;
-
 import org.kie.kogito.MapInput;
 import org.kie.kogito.MapInputId;
 import org.kie.kogito.MapOutput;
@@ -26,7 +24,7 @@ import org.kie.kogito.Model;
 public class JsonNodeModelOutput implements Model, MapInput, MapInputId, MapOutput, MappableToModel<JsonNodeModel> {
 
     private String id;
-    private Map<String, Object> workflowdata;
+    private Object workflowdata;
 
     public JsonNodeModelOutput() {
     }
@@ -35,12 +33,12 @@ public class JsonNodeModelOutput implements Model, MapInput, MapInputId, MapOutp
         return id;
     }
 
-    public JsonNodeModelOutput(String id, Map<String, Object> workflowdata) {
+    public JsonNodeModelOutput(String id, Object workflowdata) {
         this.id = id;
         this.workflowdata = workflowdata;
     }
 
-    public Map<String, Object> getWorkflowdata() {
+    public Object getWorkflowdata() {
         return workflowdata;
     }
 
