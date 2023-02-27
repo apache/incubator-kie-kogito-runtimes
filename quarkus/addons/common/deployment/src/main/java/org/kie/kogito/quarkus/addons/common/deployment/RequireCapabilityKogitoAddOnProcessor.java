@@ -62,11 +62,11 @@ public abstract class RequireCapabilityKogitoAddOnProcessor {
 
     /**
      * {@link BuildStep} to verify if all {@link Capabilities} are presented in the current classpath.
+     *
      */
     @BuildStep
     @Produce(ArtifactResultBuildItem.class)
-    public void verifyCapabilities(final Capabilities capabilities) {
-        System.out.println("RequireCapabilityKogitoAddOnProcessor verifyCapabilities capabilities = " + capabilities);
+    void verifyCapabilities(final Capabilities capabilities) {
         final List<KogitoCapability> missing = requiredCapabilities.stream()
                 .filter(kc -> capabilities.isMissing(kc.getCapability()))
                 .collect(Collectors.toList());

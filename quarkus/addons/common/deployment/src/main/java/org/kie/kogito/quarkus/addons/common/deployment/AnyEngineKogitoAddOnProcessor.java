@@ -32,13 +32,12 @@ public abstract class AnyEngineKogitoAddOnProcessor {
 
     /**
      * Verifies if one of the {@link KogitoCapability#ENGINES} are present in the classpath.
-     *
+     * 
      * @param capabilities
      */
     @BuildStep
     @Produce(ArtifactResultBuildItem.class)
-    public void verifyCapabilities(final Capabilities capabilities) {
-        System.out.println("AnyEngineKogitoAddOnProcessor verifyCapabilities capabilities = " + capabilities);
+    void verifyCapabilities(final Capabilities capabilities) {
         if (KogitoCapability.ENGINES.stream().noneMatch(kc -> capabilities.isPresent(kc.getCapability()))) {
             throw this.exceptionForEngineNotPresent();
         }

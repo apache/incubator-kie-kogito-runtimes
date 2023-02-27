@@ -26,7 +26,6 @@ public class KogitoAddOnMessagingProcessor extends AnyEngineKogitoAddOnProcessor
 
     @BuildStep
     FeatureBuildItem feature() {
-        System.out.println(">>>>KogitoAddOnMessagingProcessor feature");
         return new FeatureBuildItem(FEATURE);
     }
 

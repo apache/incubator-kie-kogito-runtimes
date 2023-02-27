@@ -30,8 +30,7 @@ class KogitoAddOnEventRulesProcessor extends RequireCapabilityKogitoAddOnProcess
     }
 
     @BuildStep
-    public FeatureBuildItem feature() {
-        System.out.println(">>>>KogitoAddOnEventRulesProcessor feature");
+    FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
 
