@@ -49,8 +49,8 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
     private boolean autoComplete = false;
     private boolean dynamic = false;
-    private Optional<WorkflowModelValidator> inputValidator = Optional.empty();
-    private Optional<WorkflowModelValidator> outputValidator = Optional.empty();
+    private WorkflowModelValidator inputValidator;
+    private WorkflowModelValidator outputValidator;
     private org.jbpm.workflow.core.NodeContainer nodeContainer;
 
     private transient BiFunction<String, ProcessInstance, String> expressionEvaluator = (expression, p) -> {
@@ -219,21 +219,21 @@ public class WorkflowProcessImpl extends ProcessImpl implements WorkflowProcess,
 
     @Override
     public Optional<WorkflowModelValidator> getInputValidator() {
-        return inputValidator;
+        return Optional.ofNullable(inputValidator);
     }
 
     @Override
     public void setInputValidator(WorkflowModelValidator inputValidator) {
-        this.inputValidator = Optional.of(inputValidator);
+        this.inputValidator = inputValidator;
     }
 
     @Override
     public Optional<WorkflowModelValidator> getOutputValidator() {
-        return outputValidator;
+        return Optional.ofNullable(outputValidator);
     }
 
     @Override
     public void setOutputValidator(WorkflowModelValidator outputValidator) {
-        this.outputValidator = Optional.of(outputValidator);
+        this.outputValidator = outputValidator;
     }
 }
