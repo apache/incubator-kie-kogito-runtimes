@@ -28,18 +28,22 @@ public class Timer implements Serializable {
     public static final int TIME_CYCLE = 2;
     public static final int TIME_DATE = 3;
 
-    private String id = UUID.randomUUID().toString();
+    private final String id;
     private String delay;
     private String period;
     private String date;
     private int timeType;
 
-    public String getId() {
-        return id;
+    public Timer() {
+        this(UUID.randomUUID().toString());
     }
 
-    public void setId(String id) {
+    public Timer(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getDelay() {

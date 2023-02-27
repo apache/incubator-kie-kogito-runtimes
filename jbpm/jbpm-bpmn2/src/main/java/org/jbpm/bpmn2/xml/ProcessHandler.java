@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -540,7 +539,6 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
         String timeDate = (String) node.getMetaData().get("TimeDate");
         Timer timer = new Timer();
         if (timeDuration != null) {
-            timer.setId(UUID.randomUUID().toString());
             timer.setDelay(timeDuration);
             timer.setTimeType(Timer.TIME_DURATION);
             DroolsConsequenceAction consequenceAction = createJavaAction(new SignalProcessInstanceAction("Timer-" + attachedTo + "-" + timeDuration + "-" + node.getId(),

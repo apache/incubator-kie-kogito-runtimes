@@ -50,7 +50,6 @@ public class TimerTest extends AbstractBaseTest {
     }
 
     @Test
-    @Disabled
     public void testTimer() {
         KogitoProcessRuntime kruntime = createKogitoProcessRuntime();
 
@@ -77,6 +76,7 @@ public class TimerTest extends AbstractBaseTest {
                 .expirationTime(ExactExpirationTime.now())
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")
+                .timerId("timer1")
                 .build();
         String jobId = jobService.scheduleProcessInstanceJob(desc);
 
@@ -92,6 +92,7 @@ public class TimerTest extends AbstractBaseTest {
                 .expirationTime(DurationExpirationTime.after(500))
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")
+                .timerId("timer2")
                 .build();
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertThat(counter).isZero();
@@ -107,6 +108,7 @@ public class TimerTest extends AbstractBaseTest {
                 .expirationTime(DurationExpirationTime.repeat(500, 300L))
                 .processInstanceId(processInstance.getStringId())
                 .processId("test")
+                .timerId("timer3")
                 .build();
         jobId = jobService.scheduleProcessInstanceJob(desc);
         assertThat(counter).isZero();

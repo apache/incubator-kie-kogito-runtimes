@@ -19,8 +19,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.Node;
@@ -32,7 +34,9 @@ import org.kie.kogito.jobs.JobsService;
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.process.BaseEventDescription;
 import org.kie.kogito.process.EventDescription;
+import org.kie.kogito.services.uow.BaseWorkUnit;
 import org.kie.kogito.timer.TimerInstance;
+import org.kie.kogito.uow.WorkUnit;
 
 public class TimerNodeInstance extends StateBasedNodeInstance implements EventListener {
 
@@ -64,25 +68,33 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         if (getTimerInstances() == null) {
             addTimerListener();
         }
-        ProcessInstanceJobDescription jobDescription =
-                ProcessInstanceJobDescription.builder()
-                        .timerId(getTimerNode().getTimer().getId())
-                        .expirationTime(expirationTime)
-                        .processInstanceId(getProcessInstance().getStringId())
-                        .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
-                        .processId(getProcessInstance().getProcessId())
-                        .rootProcessInstanceId(getProcessInstance().getRootProcessId())
-                        .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
-                        .build();
-        JobsService jobService = InternalProcessRuntime.asKogitoProcessRuntime(getProcessInstance().getKnowledgeRuntime().getProcessRuntime()).getJobsService();
-        timerId = jobService.scheduleProcessInstanceJob(jobDescription);
+        internalSetTimerId(getStringId());
+        final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
+        //Deffer the timer scheduling to the end of current UnitOfWork execution chain
+        processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
+                new BaseWorkUnit<>(this, instance -> {
+                    ProcessInstanceJobDescription jobDescription =
+                            ProcessInstanceJobDescription.builder()
+                                    .timerId(getTimerId())
+                                    .expirationTime(expirationTime)
+                                    .processInstanceId(getProcessInstance().getStringId())
+                                    .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
+                                    .processId(getProcessInstance().getProcessId())
+                                    .rootProcessId(getProcessInstance().getRootProcessId())
+                                    .nodeInstanceId(Optional.ofNullable(from).map(KogitoNodeInstance::getStringId).orElse(null))
+                                    .build();
+                    JobsService jobService = processRuntime.getJobsService();
+                    String jobId = jobService.scheduleProcessInstanceJob(jobDescription);
+                    internalSetTimerId(jobId);
+                }, i -> {
+                }, WorkUnit.LOW_PRIORITY));
     }
 
     @Override
     public void signalEvent(String type, Object event) {
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timer = (TimerInstance) event;
-            if (timer.getId().equals(timerId)) {
+            if (Objects.equals(timer.getId(), getTimerId())) {
                 triggerCompleted(timer.getRepeatLimit() <= 0);
             }
         }
@@ -121,7 +133,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
     @Override
     public Set<EventDescription<?>> getEventDescriptions() {
         Map<String, String> properties = new HashMap<>();
-        properties.put("TimerID", timerId);
+        properties.put("TimerID", getTimerId());
         properties.put("Delay", getTimerNode().getTimer().getDelay());
         properties.put("Period", getTimerNode().getTimer().getPeriod());
         properties.put("Date", getTimerNode().getTimer().getDate());

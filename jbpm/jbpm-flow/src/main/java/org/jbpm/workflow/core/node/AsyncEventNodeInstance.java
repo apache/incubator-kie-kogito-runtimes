@@ -90,14 +90,14 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         addAsyncStatus();
 
         final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
-        //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         setJobId(getStringId());
+        //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
                 new BaseWorkUnit<>(this, instance -> {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
                             ProcessInstanceJobDescription.builder()
-                                    .timerId(getStringId())
+                                    .timerId(getJobId())
                                     .expirationTime(expirationTime)
                                     .processInstanceId(instance.getProcessInstance().getStringId())
                                     .rootProcessInstanceId(instance.getProcessInstance().getRootProcessInstanceId())
