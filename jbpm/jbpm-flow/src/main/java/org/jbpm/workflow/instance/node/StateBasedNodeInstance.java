@@ -27,7 +27,7 @@ import java.util.Optional;
 import org.drools.core.common.InternalAgenda;
 import org.drools.core.common.ReteEvaluator;
 import org.drools.core.rule.Declaration;
-import org.drools.core.rule.consequence.Activation;
+import org.drools.core.rule.consequence.InternalMatch;
 import org.jbpm.process.core.timer.BusinessCalendar;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
@@ -269,7 +269,7 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             handleSLAViolation();
         } else if (type.equals(getActivationType()) && event instanceof MatchCreatedEvent) {
             String name = ((MatchCreatedEvent) event).getMatch().getRule().getName();
-            if (checkProcessInstance((Activation) ((MatchCreatedEvent) event).getMatch())) {
+            if (checkProcessInstance((InternalMatch) ((MatchCreatedEvent) event).getMatch())) {
                 ((MatchCreatedEvent) event).getKieRuntime().signalEvent(name, null);
             }
         }
@@ -391,15 +391,15 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
         getProcessInstance().removeEventListener(getActivationType(), this, true);
     }
 
-    protected boolean checkProcessInstance(Activation activation) {
-        final Map<?, ?> declarations = activation.getSubRule().getOuterDeclarations();
+    protected boolean checkProcessInstance(InternalMatch match) {
+        final Map<?, ?> declarations = match.getSubRule().getOuterDeclarations();
         for (Iterator<?> it = declarations.values().iterator(); it.hasNext();) {
             Declaration declaration = (Declaration) it.next();
             if ("processInstance".equals(declaration.getIdentifier())
                     || "org.kie.api.runtime.process.WorkflowProcessInstance".equals(declaration.getTypeName())) {
                 Object value = declaration.getValue(
                         ((ReteEvaluator) getProcessInstance().getKnowledgeRuntime()),
-                        activation.getTuple().get(declaration).getObject());
+                        match.getTuple().get(declaration).getObject());
                 if (value instanceof ProcessInstance) {
                     return ((ProcessInstance) value).getStringId().equals(getProcessInstance().getStringId());
                 }
