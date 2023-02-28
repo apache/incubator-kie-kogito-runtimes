@@ -23,7 +23,7 @@ import org.kie.kogito.serverless.workflow.parser.schema.OpenApiModelSchemaGenera
 
 public final class ServerlessWorkflowOASFilter implements OASFilter {
 
-    private Collection<OpenAPI> schemasInfo;
+    private final Collection<OpenAPI> schemasInfo;
 
     public ServerlessWorkflowOASFilter(Collection<OpenAPI> schemasInfo) {
         this.schemasInfo = schemasInfo;
