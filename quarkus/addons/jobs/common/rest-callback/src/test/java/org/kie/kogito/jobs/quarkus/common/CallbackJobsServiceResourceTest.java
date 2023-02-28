@@ -21,7 +21,6 @@ import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.ws.rs.core.Response;
 
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +40,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,8 +81,8 @@ class CallbackJobsServiceResourceTest {
         resource = new CallbackJobsServiceResource();
         resource.application = mock(Instance.class);
         resource.processes = mock(Instance.class);
-        when(resource.application.get()).thenReturn(application);
-        when(resource.processes.get()).thenReturn(processes);
+        lenient().when(resource.application.get()).thenReturn(application);
+        lenient().when(resource.processes.get()).thenReturn(processes);
     }
 
     @Test
