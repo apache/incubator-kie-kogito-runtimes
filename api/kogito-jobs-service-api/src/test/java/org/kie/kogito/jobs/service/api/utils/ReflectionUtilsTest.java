@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.jobs.quarkus.common.reflection;
+package org.kie.kogito.jobs.service.api.utils;
 
-import java.util.Arrays;
-import java.util.List;
-
+import org.junit.jupiter.api.Test;
 import org.kie.kogito.jobs.service.api.Job;
 import org.kie.kogito.jobs.service.api.JobLookupId;
 import org.kie.kogito.jobs.service.api.Recipient;
@@ -40,32 +38,33 @@ import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
 import org.kie.kogito.jobs.service.api.serlialization.SpecVersionDeserializer;
 import org.kie.kogito.jobs.service.api.serlialization.SpecVersionSerializer;
 
-public class AddonReflectionClasses {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private AddonReflectionClasses() {
-    }
+class ReflectionUtilsTest {
 
-    public static List<Class<?>> apiReflectionClasses() {
-        return Arrays.asList(
-                SpecVersionSerializer.class,
-                SpecVersionDeserializer.class,
-                Job.class,
-                JobLookupId.class,
-                Recipient.class,
-                HttpRecipient.class,
-                HttpRecipientStringPayloadData.class,
-                HttpRecipientBinaryPayloadData.class,
-                HttpRecipientJsonPayloadData.class,
-                SinkRecipient.class,
-                ContentModeSerializer.class,
-                ContentModeDeserializer.class,
-                SinkRecipientBinaryPayloadData.class,
-                SinkRecipientJsonPayloadData.class,
-                Schedule.class,
-                TimerSchedule.class,
-                CronSchedule.class,
-                JobCloudEvent.class,
-                CreateJobEvent.class,
-                DeleteJobEvent.class);
+    @Test
+    void apiReflectiveClasses() {
+        assertThat(ReflectionUtils.apiReflectiveClasses())
+                .hasSize(20)
+                .containsExactlyInAnyOrder(SpecVersionSerializer.class,
+                        SpecVersionDeserializer.class,
+                        Job.class,
+                        JobLookupId.class,
+                        Recipient.class,
+                        HttpRecipient.class,
+                        HttpRecipientStringPayloadData.class,
+                        HttpRecipientBinaryPayloadData.class,
+                        HttpRecipientJsonPayloadData.class,
+                        ContentModeSerializer.class,
+                        ContentModeDeserializer.class,
+                        SinkRecipient.class,
+                        SinkRecipientBinaryPayloadData.class,
+                        SinkRecipientJsonPayloadData.class,
+                        Schedule.class,
+                        TimerSchedule.class,
+                        CronSchedule.class,
+                        JobCloudEvent.class,
+                        CreateJobEvent.class,
+                        DeleteJobEvent.class);
     }
 }

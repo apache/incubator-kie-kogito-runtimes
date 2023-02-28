@@ -15,7 +15,7 @@
  */
 package org.kie.kogito.jobs.management.quarkus.deployment;
 
-import org.kie.kogito.jobs.quarkus.common.reflection.AddonReflectionClasses;
+import org.kie.kogito.jobs.service.api.utils.ReflectionUtils;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
 import org.kie.kogito.quarkus.addons.common.deployment.OneOfCapabilityKogitoAddOnProcessor;
 
@@ -41,6 +41,6 @@ class KogitoAddOnJobsManagementProcessor extends OneOfCapabilityKogitoAddOnProce
         return new ReflectiveClassBuildItem(true,
                 true,
                 true,
-                AddonReflectionClasses.apiReflectionClasses().toArray(new Class[] {}));
+                ReflectionUtils.apiReflectiveClasses().toArray(new Class[] {}));
     }
 }

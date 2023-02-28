@@ -1275,17 +1275,6 @@
         <classifier>sources</classifier>
       </dependency>
 
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-jobs-common-reflection</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.kie.kogito</groupId>
-        <artifactId>kogito-addons-quarkus-jobs-common-reflection</artifactId>
-        <version>${project.version}</version>
-        <classifier>sources</classifier>
-      </dependency>
       <!--  Jobs management addon    -->
       <dependency>
         <groupId>org.kie.kogito</groupId>

@@ -28,9 +28,9 @@ import org.kie.kogito.codegen.process.ProcessGenerator;
 import org.kie.kogito.event.EventKind;
 import org.kie.kogito.event.cloudevents.CloudEventMeta;
 import org.kie.kogito.internal.process.runtime.KogitoWorkflowProcess;
-import org.kie.kogito.jobs.quarkus.common.reflection.AddonReflectionClasses;
 import org.kie.kogito.jobs.service.api.event.CreateJobEvent;
 import org.kie.kogito.jobs.service.api.event.DeleteJobEvent;
+import org.kie.kogito.jobs.service.api.utils.ReflectionUtils;
 import org.kie.kogito.quarkus.addons.common.deployment.KogitoCapability;
 import org.kie.kogito.quarkus.addons.common.deployment.OneOfCapabilityKogitoAddOnProcessor;
 import org.kie.kogito.quarkus.extensions.spi.deployment.HasWorkflowExtension;
@@ -60,7 +60,7 @@ public class KogitoAddOnJobsKnativeEventingProcessor extends OneOfCapabilityKogi
         return new ReflectiveClassBuildItem(true,
                 true,
                 true,
-                AddonReflectionClasses.apiReflectionClasses().toArray(new Class[] {}));
+                ReflectionUtils.apiReflectiveClasses().toArray(new Class[] {}));
     }
 
     @BuildStep(onlyIfNot = IsTest.class, onlyIf = HasWorkflowExtension.class)

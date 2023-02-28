@@ -28,7 +28,7 @@
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-addons-quarkus-jobs-common-reflection</artifactId>
+      <artifactId>jobs-service-api</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>
