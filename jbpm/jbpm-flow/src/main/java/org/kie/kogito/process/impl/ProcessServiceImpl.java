@@ -128,24 +128,24 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public <T extends MappableToModel<P>, P extends MappableToModel<R>, R> Optional<R> update(Process<P> process, String id, T resource) {
+    public <T extends MappableToModel<R>, R> Optional<R> update(Process<T> process, String id, T resource) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
                 () -> process
                         .instances()
                         .findById(id)
-                        .map(pi -> pi.updateVariables(resource.toModel()))
+                        .map(pi -> pi.updateVariables(resource))
                         .map(MappableToModel::toModel));
     }
 
     @Override
-    public <T extends MappableToModel<P>, P extends MappableToModel<R>, R> Optional<R> updatePartial(Process<P> process, String id, T resource) {
+    public <T extends MappableToModel<R>, R> Optional<R> updatePartial(Process<T> process, String id, T resource) {
         return UnitOfWorkExecutor.executeInUnitOfWork(
                 application.unitOfWorkManager(),
                 () -> process
                         .instances()
                         .findById(id)
-                        .map(pi -> pi.updateVariablesPartially(resource.toModel()))
+                        .map(pi -> pi.updateVariablesPartially(resource))
                         .map(MappableToModel::toModel));
     }
 

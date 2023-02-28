@@ -71,6 +71,7 @@ public final class OpenApiModelSchemaGenerator {
         for (PathItem pathItem : targetSchema.getPaths().getPathItems().values()) {
             processInputOperation(targetSchema, pathItem.getPOST());
             processInputOperation(targetSchema, pathItem.getPUT());
+            processInputOperation(targetSchema, pathItem.getPATCH());
             processOutputOperation(targetSchema, pathItem.getGET());
         }
     }
