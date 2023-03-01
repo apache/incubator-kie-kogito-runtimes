@@ -27,9 +27,10 @@ import org.kie.kogito.event.KogitoEventStreams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.quarkus.smallrye.reactivemessaging.runtime.QuarkusEmitterConfiguration;
 import io.smallrye.reactive.messaging.ChannelRegistar;
 import io.smallrye.reactive.messaging.ChannelRegistry;
-import io.smallrye.reactive.messaging.providers.extension.EmitterConfiguration;
+import io.smallrye.reactive.messaging.annotations.EmitterFactoryFor;
 import io.smallrye.reactive.messaging.providers.extension.MediatorManager;
 
 @ApplicationScoped
@@ -52,7 +53,7 @@ public class QuarkusCloudEventEmitter extends AbstractQuarkusCloudEventEmitter i
     public void initialize() {
         if (ConfigProvider.getConfig().getOptionalValue(PROPERTY, String.class).isPresent()) {
             logger.info("Registering emitter {}", KogitoEventStreams.OUTGOING);
-            mediatorManager.addEmitter(new EmitterConfiguration(KogitoEventStreams.OUTGOING, false, null, null));
+            mediatorManager.addEmitter(new QuarkusEmitterConfiguration(KogitoEventStreams.OUTGOING, EmitterFactoryFor.Literal.EMITTER, null, null));
         }
     }
 

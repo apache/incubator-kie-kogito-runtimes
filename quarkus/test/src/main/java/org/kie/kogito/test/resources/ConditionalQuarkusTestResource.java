@@ -18,10 +18,13 @@ package org.kie.kogito.test.resources;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.test.quarkus.QuarkusTestProperty;
+
+import com.google.common.base.Strings;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
@@ -73,9 +76,13 @@ public abstract class ConditionalQuarkusTestResource<T extends TestResource> imp
         Class<?> c = testInstance.getClass();
         while (c != Object.class) {
             for (Field f : c.getDeclaredFields()) {
-                ConfigProperty configProperty = f.getAnnotation(ConfigProperty.class);
-                if (configProperty != null && getProperties().containsKey(configProperty.name())) {
-                    setFieldValue(f, testInstance, getProperties().get(configProperty.name()));
+                QuarkusTestProperty quarkusTestProperty = f.getAnnotation(QuarkusTestProperty.class);
+                if (quarkusTestProperty != null) {
+                    String value = Optional.ofNullable(getProperties().get(quarkusTestProperty.name()))
+                            .orElse(quarkusTestProperty.defaultValue());
+                    if (!Strings.isNullOrEmpty(value)) {
+                        setFieldValue(f, testInstance, value);
+                    }
                 } else if (f.isAnnotationPresent(Resource.class) && f.getType().isInstance(this)) {
                     setFieldValue(f, testInstance, this);
                 }
