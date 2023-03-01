@@ -108,4 +108,17 @@ public class JsonNodeModel implements Model, MapInput, MapInputId, MapOutput, Ma
     private static Map<String, Object> mutableMap(Map<String, Object> map) {
         return map instanceof HashMap ? map : new HashMap<>(map);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (id != null) {
+            sb.append("id=").append(id).append(", ");
+        }
+        sb.append("workflowdata=" + workflowdata);
+        if (!additionalProperties.isEmpty()) {
+            sb.append(", additionalProperties=").append(additionalProperties);
+        }
+        return sb.toString();
+    }
 }

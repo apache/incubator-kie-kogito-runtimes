@@ -32,7 +32,7 @@ public class JsonSchemaValidatorSupplier extends JsonSchemaValidator implements 
 
     private static final long serialVersionUID = 1L;
 
-    private Schema schema;
+    private transient Schema schema;
 
     public JsonSchemaValidatorSupplier(String schema, boolean failOnValidationErrors) {
         super(schema, failOnValidationErrors);
