@@ -16,10 +16,10 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>events</module>
-    <module>messaging</module>
-    <module>monitoring</module>
     <module>common</module>
+    <module>messaging</module>
+    <module>events</module>
+    <module>monitoring</module>
   </modules>
 
   <profiles>
