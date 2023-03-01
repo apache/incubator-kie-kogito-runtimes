@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 import io.quarkus.deployment.Capabilities;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.Produce;
+import io.quarkus.deployment.pkg.builditem.ArtifactResultBuildItem;
 
 import static java.util.Arrays.asList;
 
@@ -63,6 +65,7 @@ public abstract class RequireCapabilityKogitoAddOnProcessor {
      *
      */
     @BuildStep
+    @Produce(ArtifactResultBuildItem.class)
     void verifyCapabilities(final Capabilities capabilities) {
         final List<KogitoCapability> missing = requiredCapabilities.stream()
                 .filter(kc -> capabilities.isMissing(kc.getCapability()))

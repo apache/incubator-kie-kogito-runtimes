@@ -51,7 +51,7 @@
                         <configuration>
                             <deployment>${project.groupId}:${project.artifactId}-deployment:${project.version}</deployment>
                             <capabilities>
-                                <provides>kogito-decisions</provides>
+                                <provides>org.kie.kogito.decisions</provides>
                             </capabilities>
                         </configuration>
                     </execution>
