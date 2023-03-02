@@ -9,7 +9,7 @@
   </parent>
   <artifactId>kogito-addons-quarkus-messaging-it</artifactId>
   <name>Kogito :: Add-Ons :: Messaging :: Quarkus (ITs)</name>
-  <description>Integration tests for for Messaging Add-On (Quarkus)</description>
+  <description>Integration tests for Messaging Add-On (Quarkus)</description>
 
   <properties>
     <quarkus.test.list.include>true</quarkus.test.list.include>
@@ -64,6 +64,19 @@
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-quarkus-decisions-deployment</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-addons-quarkus-messaging-deployment</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>test</scope>
