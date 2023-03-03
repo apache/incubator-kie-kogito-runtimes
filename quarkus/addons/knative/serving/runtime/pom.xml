@@ -46,6 +46,10 @@
             <artifactId>quarkus-test-kubernetes-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.cloudevents</groupId>
+            <artifactId>cloudevents-http-vertx</artifactId>
+        </dependency>
         <!-- this is used implicitly by Maven parallel builds so let's make Maven aware of it -->
         <dependency>
             <groupId>org.kie.kogito</groupId>
