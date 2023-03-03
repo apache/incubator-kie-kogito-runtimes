@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-quarkus-integration-tests</artifactId>
-    <version>1.35.0.Final</version>
+    <version>1.35.1-SNAPSHOT</version>
   </parent>
   <artifactId>integration-tests-quarkus-rules</artifactId>
   <name>Kogito :: Integration Tests :: Quarkus :: Rules</name>
