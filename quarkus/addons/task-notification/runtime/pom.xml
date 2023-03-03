@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-task-notification-parent</artifactId>
-    <version>1.35.0.Final</version>
+    <version>1.35.1-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-task-notification</artifactId>
   <name>Kogito Add-On Task Notification</name>

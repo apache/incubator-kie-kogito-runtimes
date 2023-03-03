@@ -5,7 +5,7 @@
   <parent>
     <artifactId>kogito-runtimes</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>1.35.0.Final</version>
+    <version>1.35.1-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
