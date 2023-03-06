@@ -15,14 +15,9 @@
  */
 package org.kie.kogito.it;
 
-import org.kie.kogito.testcontainers.quarkus.InfinispanQuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-
-@QuarkusTest
-@QuarkusTestResource(InfinispanQuarkusTestResource.class)
+@QuarkusIntegrationTest
 class InfinispanPersistenceIT extends PersistenceTest {
-    // This test is disabling proto marshaller generator (kogito.persistence.proto.marshaller=false) to fallback
-    // on ProtobufObjectMarshallerStrategy that uses Java serialization (thus domain class must implement Serializable).
+
 }

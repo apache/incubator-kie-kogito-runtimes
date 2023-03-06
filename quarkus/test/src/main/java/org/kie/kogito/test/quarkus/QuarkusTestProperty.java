@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2022 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.it;
 
-import io.quarkus.test.junit.NativeImageTest;
+package org.kie.kogito.test.quarkus;
 
-@NativeImageTest
-class NativeJDBCPersistenceIT extends JDBCPersistenceIT {
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
+import javax.inject.Qualifier;
+
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Qualifier
+@Retention(RUNTIME)
+@Target({ FIELD })
+public @interface QuarkusTestProperty {
+
+    String name();
+
+    String defaultValue() default "";
 }
