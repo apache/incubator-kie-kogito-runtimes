@@ -103,6 +103,8 @@ pipeline {
                 script {
                     getMavenCommand()
                         .withProperty('maven.test.failure.ignore', true)
+                        .withProperty('data-index-ephemeral.image', getNextProdImage())
+                        .withProperty('data-index-ephemeral.image.test', getCurrentNightlyImage())
                         .skipTests(params.SKIP_TESTS)
                         .run('clean install')
                 }
@@ -319,4 +321,20 @@ MavenStagingHelper getStagingHelper() {
 
 String getLocalDeploymentFolder() {
     return "${env.MAVEN_DEPLOY_LOCAL_DIR}/${getRepoName()}"
+}
+
+String getMajorMinorProjectVersion() {
+    def parsed = getProjectVersion().split('\\.')
+    return parsed[0] + '.' + parsed[1]
+}
+
+String getCurrentNightlyImage() {
+    def workflowCommonDeploymentPath = "${getRepoName()}/quarkus/extensions/kogito-quarkus-workflow-extension-common/kogito-quarkus-workflow-common-deployment"
+    return maven.mvnGetVersionProperty(getMavenCommand(workflowCommonDeploymentPath), "data-index-ephemeral.image")
+}
+
+String getNextProdImage() {
+    def currentNightlyImage = getCurrentNightlyImage()
+    def nextProdImageName = currentNightlyImage.substring(0, currentNightlyImage.indexOf('-nightly'))
+    return "${nextProdImageName}:${getMajorMinorProjectVersion()}"
 }
