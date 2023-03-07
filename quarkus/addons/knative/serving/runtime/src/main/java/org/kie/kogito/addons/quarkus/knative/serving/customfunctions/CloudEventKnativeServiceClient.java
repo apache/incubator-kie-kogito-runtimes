@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import io.cloudevents.SpecVersion;
 import io.cloudevents.core.format.EventDeserializationException;
+import io.cloudevents.core.format.EventFormat;
 import io.cloudevents.core.provider.EventFormatProvider;
 import io.cloudevents.core.v1.CloudEventV1;
 import io.cloudevents.jackson.JsonFormat;
@@ -77,8 +78,12 @@ class CloudEventKnativeServiceClient extends KnativeServiceClient {
 
     private static void validateCloudEvent(JsonObject cloudEvent) {
         try {
-            EventFormatProvider.getInstance().resolveFormat(JsonFormat.CONTENT_TYPE)
-                    .deserialize(sanitizeCloudEvent(cloudEvent).toBuffer().getBytes());
+            EventFormat eventFormat = EventFormatProvider.getInstance().resolveFormat(JsonFormat.CONTENT_TYPE);
+            if (eventFormat == null) {
+                throw new IllegalStateException("An " + EventFormat.class.getSimpleName() + " could not be found for "
+                        + JsonFormat.CONTENT_TYPE);
+            }
+            eventFormat.deserialize(sanitizeCloudEvent(cloudEvent).toBuffer().getBytes());
         } catch (EventDeserializationException e) {
             Throwable cause = e.getCause();
             if (cause instanceof MismatchedInputException) {
