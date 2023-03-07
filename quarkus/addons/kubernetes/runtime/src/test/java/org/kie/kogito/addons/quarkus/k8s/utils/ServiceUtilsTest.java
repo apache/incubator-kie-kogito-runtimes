@@ -20,7 +20,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
-import org.kie.kogito.addons.quarkus.k8s.parser.KubeURI;
+import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeResourceUri;
+import org.kie.kogito.addons.quarkus.k8s.discovery.utils.PortUtils;
+import org.kie.kogito.addons.quarkus.k8s.discovery.utils.ServiceUtils;
 
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.Service;
@@ -37,7 +39,7 @@ public class ServiceUtilsTest {
     @Test
     public void testExternalNameServiceKind() {
         String externalName = "kourier-internal.kourier-system.svc.cluster.local";
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -48,12 +50,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://" + externalName + ":" + 80), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://" + externalName + ":" + 80), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testClusterIPServiceKind() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -64,12 +66,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://10.10.10.10:80"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://10.10.10.10:80"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testClusterIPServiceKindWithSSL() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -81,12 +83,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("https://10.10.10.10:443"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("https://10.10.10.10:443"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testClusterIPServiceKindWithWebNamedPort() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -98,12 +100,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://10.10.10.10:801"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://10.10.10.10:801"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testClusterIPServiceKindWithAleatoryNamePort() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -114,12 +116,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://10.10.10.10:820"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://10.10.10.10:820"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testNodePortServiceKind() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -130,12 +132,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://10.10.10.10:809"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://10.10.10.10:809"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testClusterIPServiceKindWithCustomPortName() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli?port-name=my-custom-port");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli?port-name=my-custom-port");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -148,12 +150,12 @@ public class ServiceUtilsTest {
                 .withInternalTrafficPolicy("Cluster")
                 .endSpec()
                 .build();
-        assertEquals(URI.create("http://10.10.10.10:8080"), ServiceUtils.getURLFromService(service, kubeURI).get());
+        assertEquals(URI.create("http://10.10.10.10:8080"), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()).get());
     }
 
     @Test
     public void testLoadBalancerServiceKind() {
-        KubeURI kubeURI = new KubeURI("knative:v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
+        var kubeURI = KnativeResourceUri.parse("v1/Service/serverless-workflow-greeting-quarkus/greeting-quarkus-cli");
         Service service = new ServiceBuilder()
                 .withNewMetadata().withName("my-service").endMetadata()
                 .withNewSpec()
@@ -164,7 +166,7 @@ public class ServiceUtilsTest {
                 .endSpec()
                 .build();
 
-        assertEquals(Optional.empty(), ServiceUtils.getURLFromService(service, kubeURI));
+        assertEquals(Optional.empty(), ServiceUtils.getURLFromService(service, kubeURI.getVanillaKubernetesResourceUri()));
     }
 
     @Test

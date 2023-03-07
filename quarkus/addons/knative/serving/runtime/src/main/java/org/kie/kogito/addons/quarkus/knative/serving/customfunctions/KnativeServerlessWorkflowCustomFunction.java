@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.net.URI;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -61,7 +62,7 @@ final class KnativeServerlessWorkflowCustomFunction {
                 arguments);
     }
 
-    private KnativeServiceAddress getServiceAddress(String knativeServiceName) {
+    private URI getServiceAddress(String knativeServiceName) {
         return knativeServiceRegistry.getServiceAddress(knativeServiceName)
                 .orElseThrow(() -> new WorkItemExecutionException("The Knative service '" + knativeServiceName
                         + "' could not be found."));
