@@ -62,14 +62,14 @@ class PlainJsonKnativeServiceClient extends KnativeServiceClient {
         if (payload.isEmpty()) {
             logger.debug("Sending request with empty body - host: {}, port: {}, path: {}", serviceAddress.getHost(),
                     serviceAddress.getPort(), path);
-            
+
             response = request.send().await().atMost(requestTimeout);
         } else {
             JsonObject body = new JsonObject(payload);
-            
+
             logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", serviceAddress.getHost(),
                     serviceAddress.getPort(), path, body);
-            
+
             response = request.sendJsonObject(body).await().atMost(requestTimeout);
         }
 
