@@ -30,9 +30,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 
-abstract class KnativeServiceClient {
+abstract class KnativeServiceRequestClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(KnativeServiceClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(KnativeServiceRequestClient.class);
 
     protected static final long DEFAULT_REQUEST_TIMEOUT_VALUE = 10_000L;
 

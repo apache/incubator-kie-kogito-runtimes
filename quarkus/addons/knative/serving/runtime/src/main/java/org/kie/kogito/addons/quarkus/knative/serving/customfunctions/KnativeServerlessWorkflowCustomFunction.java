@@ -40,13 +40,13 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     private final KnativeServiceRegistry knativeServiceRegistry;
 
-    private final KnativeServiceClientResolver knativeServiceClientResolver;
+    private final KnativeServiceRequestClientResolver knativeServiceRequestClientResolver;
 
     @Inject
     KnativeServerlessWorkflowCustomFunction(KnativeServiceRegistry knativeServiceRegistry,
-            KnativeServiceClientResolver knativeServiceClientResolver) {
+            KnativeServiceRequestClientResolver knativeServiceRequestClientResolver) {
         this.knativeServiceRegistry = knativeServiceRegistry;
-        this.knativeServiceClientResolver = knativeServiceClientResolver;
+        this.knativeServiceRequestClientResolver = knativeServiceRequestClientResolver;
 
     }
 
@@ -54,7 +54,7 @@ final class KnativeServerlessWorkflowCustomFunction {
         KnativeServiceAddress serviceAddress = getServiceAddress((String) metadata.get(OPERATION_PROPERTY_NAME));
         String path = metadata.getOrDefault(PATH_PROPERTY_NAME, "/").toString();
 
-        return knativeServiceClientResolver.resolve(metadata).execute(
+        return knativeServiceRequestClientResolver.resolve(metadata).execute(
                 serviceAddress,
                 path,
                 arguments);

@@ -37,16 +37,16 @@ import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
 
 @ApplicationScoped
-class PlainJsonKnativeServiceClient extends KnativeServiceClient {
+class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlainJsonKnativeServiceClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlainJsonKnativeServiceRequestClient.class);
 
     private final WebClient webClient;
 
     private final Duration requestTimeout;
 
     @Inject
-    PlainJsonKnativeServiceClient(Vertx vertx,
+    PlainJsonKnativeServiceRequestClient(Vertx vertx,
             @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));

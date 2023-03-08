@@ -43,16 +43,16 @@ import io.vertx.mutiny.ext.web.client.WebClient;
 import static java.util.function.Predicate.not;
 
 @ApplicationScoped
-class CloudEventKnativeServiceClient extends KnativeServiceClient {
+class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(CloudEventKnativeServiceClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(CloudEventKnativeServiceRequestClient.class);
 
     private final WebClient webClient;
 
     private final Duration requestTimeout;
 
     @Inject
-    CloudEventKnativeServiceClient(Vertx vertx, @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
+    CloudEventKnativeServiceRequestClient(Vertx vertx, @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));
     }

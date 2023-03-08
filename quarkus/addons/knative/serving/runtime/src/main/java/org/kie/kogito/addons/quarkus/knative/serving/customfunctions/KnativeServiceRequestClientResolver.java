@@ -23,24 +23,24 @@ import javax.inject.Inject;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.CLOUD_EVENT_PROPERTY_NAME;
 
 @ApplicationScoped
-class KnativeServiceClientResolver {
+class KnativeServiceRequestClientResolver {
 
-    private final CloudEventKnativeServiceClient cloudEventKnativeServiceClient;
+    private final CloudEventKnativeServiceRequestClient cloudEventClient;
 
-    private final PlainJsonKnativeServiceClient plainJsonKnativeServiceClient;
+    private final PlainJsonKnativeServiceRequestClient plainJsonClient;
 
     @Inject
-    KnativeServiceClientResolver(CloudEventKnativeServiceClient cloudEventKnativeServiceClient,
-            PlainJsonKnativeServiceClient plainJsonKnativeServiceClient) {
-        this.cloudEventKnativeServiceClient = cloudEventKnativeServiceClient;
-        this.plainJsonKnativeServiceClient = plainJsonKnativeServiceClient;
+    KnativeServiceRequestClientResolver(CloudEventKnativeServiceRequestClient cloudEventClient,
+            PlainJsonKnativeServiceRequestClient plainJsonClient) {
+        this.cloudEventClient = cloudEventClient;
+        this.plainJsonClient = plainJsonClient;
     }
 
-    KnativeServiceClient resolve(Map<String, Object> metadata) {
+    KnativeServiceRequestClient resolve(Map<String, Object> metadata) {
         if (isCloudEvent(metadata)) {
-            return cloudEventKnativeServiceClient;
+            return cloudEventClient;
         } else {
-            return plainJsonKnativeServiceClient;
+            return plainJsonClient;
         }
     }
 
