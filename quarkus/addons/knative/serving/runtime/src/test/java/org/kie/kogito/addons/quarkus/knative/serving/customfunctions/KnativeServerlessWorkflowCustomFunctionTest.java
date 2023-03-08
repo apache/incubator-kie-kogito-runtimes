@@ -232,7 +232,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> metadata = createMetadata(true, "serverless-workflow-greeting-quarkus", "/cloud-event");
 
-        assertThatExceptionOfType(InvalidCloudEventException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(metadata, cloudEvent))
                 .withMessage("Invalid CloudEvent. The following mandatory attributes are missing: id");
     }

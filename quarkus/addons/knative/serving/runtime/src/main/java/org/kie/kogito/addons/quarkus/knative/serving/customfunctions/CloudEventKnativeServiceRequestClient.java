@@ -83,7 +83,8 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
                 .collect(Collectors.toList());
 
         if (!missingAttributes.isEmpty()) {
-            throw new InvalidCloudEventException(missingAttributes);
+            throw new IllegalArgumentException("Invalid CloudEvent. The following mandatory attributes are missing: "
+                    + String.join(", ", missingAttributes));
         }
     }
 
