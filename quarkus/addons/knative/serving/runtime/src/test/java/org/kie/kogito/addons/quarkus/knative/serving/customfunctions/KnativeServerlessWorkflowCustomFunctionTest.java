@@ -234,7 +234,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         assertThatExceptionOfType(InvalidCloudEventException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(metadata, cloudEvent))
-                .withMessage("Invalid CloudEvent: Missing mandatory id attribute");
+                .withMessage("Invalid CloudEvent. The following mandatory attributes are missing: id");
     }
 
     @Test

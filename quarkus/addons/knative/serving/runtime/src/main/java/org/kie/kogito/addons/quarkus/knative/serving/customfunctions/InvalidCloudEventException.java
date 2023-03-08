@@ -15,9 +15,11 @@
  */
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
+import java.util.Collection;
+
 public class InvalidCloudEventException extends RuntimeException {
 
-    public InvalidCloudEventException(String message, Throwable cause) {
-        super("Invalid CloudEvent: " + message, cause);
+    public InvalidCloudEventException(Collection<String> missingAttributes) {
+        super("Invalid CloudEvent. The following mandatory attributes are missing: " + String.join(", ", missingAttributes));
     }
 }

@@ -16,8 +16,10 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
@@ -28,20 +30,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import io.cloudevents.SpecVersion;
-import io.cloudevents.core.format.EventDeserializationException;
-import io.cloudevents.core.format.EventFormat;
-import io.cloudevents.core.provider.EventFormatProvider;
 import io.cloudevents.core.v1.CloudEventV1;
-import io.cloudevents.jackson.JsonFormat;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+
+import static java.util.function.Predicate.not;
 
 @ApplicationScoped
 class CloudEventKnativeServiceClient extends KnativeServiceClient {
@@ -77,41 +76,15 @@ class CloudEventKnativeServiceClient extends KnativeServiceClient {
     }
 
     private static void validateCloudEvent(JsonObject cloudEvent) {
-        try {
-            EventFormat eventFormat = EventFormatProvider.getInstance().resolveFormat(JsonFormat.CONTENT_TYPE);
-            if (eventFormat == null) {
-                throw new IllegalStateException("An " + EventFormat.class.getSimpleName() + " could not be found for "
-                        + JsonFormat.CONTENT_TYPE);
-            }
-            eventFormat.deserialize(sanitizeCloudEvent(cloudEvent).toBuffer().getBytes());
-        } catch (EventDeserializationException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof MismatchedInputException) {
-                throw new InvalidCloudEventException(((MismatchedInputException) cause).getOriginalMessage(), e);
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    /**
-     * Returns a copy of the specified CloudEvent converting all attributes that have non {@link String} value to {@link String}.
-     * 
-     * @param cloudEvent the CloudEvent JsonObject that needs to be sanitized
-     * @return the sanitized CloudEvent
-     */
-    private static JsonObject sanitizeCloudEvent(JsonObject cloudEvent) {
-        JsonObject sanitizedCloudEvent = new JsonObject().mergeIn(cloudEvent);
-
         SpecVersion specVersion = SpecVersion.parse(cloudEvent.getString(CloudEventV1.SPECVERSION, "1.0"));
 
-        specVersion.getAllAttributes().stream()
-                .filter(sanitizedCloudEvent::containsKey)
-                .filter(attribute -> sanitizedCloudEvent.getValue(attribute) != null)
-                .filter(attribute -> !(sanitizedCloudEvent.getValue(attribute) instanceof String))
-                .forEach(attribute -> sanitizedCloudEvent.put(attribute, sanitizedCloudEvent.getValue(attribute).toString()));
+        List<String> missingAttributes = specVersion.getMandatoryAttributes().stream()
+                .filter(not(cloudEvent::containsKey))
+                .collect(Collectors.toList());
 
-        return sanitizedCloudEvent;
+        if (!missingAttributes.isEmpty()) {
+            throw new InvalidCloudEventException(missingAttributes);
+        }
     }
 
     @PreDestroy
