@@ -41,15 +41,21 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
 
     private static final Logger logger = LoggerFactory.getLogger(PlainJsonKnativeServiceRequestClient.class);
 
+    static final String CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE = "A Knative custom function argument cannot be a CloudEvent when the 'asCloudEvent' property are not set to 'true'";
+
     private final WebClient webClient;
 
     private final Duration requestTimeout;
 
+    private final CloudEventValidator cloudEventValidator;
+
     @Inject
     PlainJsonKnativeServiceRequestClient(Vertx vertx,
-            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
+            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout,
+            CloudEventValidator cloudEventValidator) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));
+        this.cloudEventValidator = cloudEventValidator;
     }
 
     @Override
@@ -67,6 +73,8 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
         } else {
             JsonObject body = new JsonObject(payload);
 
+            validatePayload(body);
+
             logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", serviceAddress.getHost(),
                     serviceAddress.getPort(), path, body);
 
@@ -74,6 +82,13 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
         }
 
         return responseAsJsonObject(response);
+    }
+
+    private void validatePayload(JsonObject payload) {
+        Optional<String> errorMessage = cloudEventValidator.validateCloudEvent(payload);
+        if (errorMessage.isEmpty()) {
+            throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
+        }
     }
 
     @PreDestroy

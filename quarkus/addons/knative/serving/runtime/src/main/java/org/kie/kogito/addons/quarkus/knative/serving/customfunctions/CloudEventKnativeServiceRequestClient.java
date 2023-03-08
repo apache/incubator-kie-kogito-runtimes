@@ -16,10 +16,8 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
@@ -31,16 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.cloudevents.SpecVersion;
-import io.cloudevents.core.v1.CloudEventV1;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.core.buffer.Buffer;
 import io.vertx.mutiny.ext.web.client.HttpRequest;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
-
-import static java.util.function.Predicate.not;
 
 @ApplicationScoped
 class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient {
@@ -51,10 +45,15 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
 
     private final Duration requestTimeout;
 
+    private final CloudEventValidator cloudEventValidator;
+
     @Inject
-    CloudEventKnativeServiceRequestClient(Vertx vertx, @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
+    CloudEventKnativeServiceRequestClient(Vertx vertx,
+            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout,
+            CloudEventValidator cloudEventValidator) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));
+        this.cloudEventValidator = cloudEventValidator;
     }
 
     @Override
@@ -75,16 +74,11 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         return responseAsJsonObject(response);
     }
 
-    private static void validateCloudEvent(JsonObject cloudEvent) {
-        SpecVersion specVersion = SpecVersion.parse(cloudEvent.getString(CloudEventV1.SPECVERSION, "1.0"));
+    private void validateCloudEvent(JsonObject cloudEvent) {
+        Optional<String> errorMessage = cloudEventValidator.validateCloudEvent(cloudEvent);
 
-        List<String> missingAttributes = specVersion.getMandatoryAttributes().stream()
-                .filter(not(cloudEvent::containsKey))
-                .collect(Collectors.toList());
-
-        if (!missingAttributes.isEmpty()) {
-            throw new IllegalArgumentException("Invalid CloudEvent. The following mandatory attributes are missing: "
-                    + String.join(", ", missingAttributes));
+        if (errorMessage.isPresent()) {
+            throw new IllegalArgumentException(errorMessage.orElseThrow());
         }
     }
 

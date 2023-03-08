@@ -55,6 +55,7 @@ import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Knat
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.REQUEST_TIMEOUT_PROPERTY_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.OPERATION_PROPERTY_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.PlainJsonKnativeServiceRequestClient.CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE;
 
 @QuarkusTest
 @WithKubernetesTestServer
@@ -185,6 +186,26 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                 .put("message", "Kogito is awesome!");
 
         assertThat(output).isEqualTo(expected);
+    }
+
+    @Test
+    void executeWithCloudEventAsPlainJson() {
+        mockExecuteWithParametersEndpoint();
+
+        Map<String, Object> cloudEvent = Map.of(
+                CloudEventV1.SPECVERSION, 1.0, // KnativeWorkItemHandler receives this attribute as a double
+                "id", 42, // KnativeWorkItemHandler receivers this attribute as an Integer
+                "source", "https://localhost:8080",
+                "type", "org.kie.kogito.test",
+                "data", Map.of(
+                        "org", "Acme",
+                        "project", "Kogito"));
+
+        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(metadata, cloudEvent))
+                .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
     }
 
     @Test
