@@ -56,13 +56,13 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
 
     @Override
     protected JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> cloudEvent) {
-        JsonObject body = new JsonObject(cloudEvent);
-
-        validateCloudEvent(body);
+        validateCloudEvent(cloudEvent);
 
         HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path)
                 .putHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
                 .ssl(serviceAddress.isSsl());
+
+        JsonObject body = new JsonObject(cloudEvent);
 
         logger.debug("Sending request with CloudEvent - host: {}, port: {}, path: {}, CloudEvent: {}",
                 serviceAddress.getHost(), serviceAddress.getPort(), path, body);
@@ -72,8 +72,8 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         return responseAsJsonObject(response);
     }
 
-    private void validateCloudEvent(JsonObject cloudEvent) {
-        List<String> missingAttributes = CloudEventUtils.getMissingAttributes(cloudEvent.getMap());
+    private void validateCloudEvent(Map<String, Object> cloudEvent) {
+        List<String> missingAttributes = CloudEventUtils.getMissingAttributes(cloudEvent);
 
         if (!missingAttributes.isEmpty()) {
             throw new IllegalArgumentException("Invalid CloudEvent. The following mandatory attributes are missing: "

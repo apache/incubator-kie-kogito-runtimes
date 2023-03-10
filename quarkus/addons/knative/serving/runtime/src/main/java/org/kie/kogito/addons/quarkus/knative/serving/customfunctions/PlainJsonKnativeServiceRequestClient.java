@@ -68,9 +68,9 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
 
             response = request.send().await().atMost(requestTimeout);
         } else {
-            JsonObject body = new JsonObject(payload);
+            validatePayload(payload);
 
-            validatePayload(body);
+            JsonObject body = new JsonObject(payload);
 
             logger.debug("Sending request with body - host: {}, port: {}, path: {}, body: {}", serviceAddress.getHost(),
                     serviceAddress.getPort(), path, body);
@@ -81,8 +81,8 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
         return responseAsJsonObject(response);
     }
 
-    private void validatePayload(JsonObject payload) {
-        if (CloudEventUtils.getMissingAttributes(payload.getMap()).isEmpty()) {
+    private void validatePayload(Map<String, Object> payload) {
+        if (CloudEventUtils.getMissingAttributes(payload).isEmpty()) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
     }
