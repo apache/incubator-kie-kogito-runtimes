@@ -16,6 +16,7 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,15 +47,11 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
 
     private final Duration requestTimeout;
 
-    private final CloudEventValidator cloudEventValidator;
-
     @Inject
     CloudEventKnativeServiceRequestClient(Vertx vertx,
-            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout,
-            CloudEventValidator cloudEventValidator) {
+            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));
-        this.cloudEventValidator = cloudEventValidator;
     }
 
     @Override
@@ -75,10 +73,11 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
     }
 
     private void validateCloudEvent(JsonObject cloudEvent) {
-        Optional<String> errorMessage = cloudEventValidator.validateCloudEvent(cloudEvent);
+        List<String> missingAttributes = CloudEventUtils.getMissingAttributes(cloudEvent.getMap());
 
-        if (errorMessage.isPresent()) {
-            throw new IllegalArgumentException(errorMessage.orElseThrow());
+        if (!missingAttributes.isEmpty()) {
+            throw new IllegalArgumentException("Invalid CloudEvent. The following mandatory attributes are missing: "
+                    + String.join(", ", missingAttributes));
         }
     }
 

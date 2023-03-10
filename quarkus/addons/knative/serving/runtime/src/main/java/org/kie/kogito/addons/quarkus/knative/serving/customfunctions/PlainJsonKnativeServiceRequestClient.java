@@ -24,6 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +48,11 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
 
     private final Duration requestTimeout;
 
-    private final CloudEventValidator cloudEventValidator;
-
     @Inject
     PlainJsonKnativeServiceRequestClient(Vertx vertx,
-            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout,
-            CloudEventValidator cloudEventValidator) {
+            @ConfigProperty(name = REQUEST_TIMEOUT_PROPERTY_NAME) Optional<Long> requestTimeout) {
         this.webClient = WebClient.create(vertx);
         this.requestTimeout = Duration.ofMillis(requestTimeout.orElse(DEFAULT_REQUEST_TIMEOUT_VALUE));
-        this.cloudEventValidator = cloudEventValidator;
     }
 
     @Override
@@ -85,8 +82,7 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
     }
 
     private void validatePayload(JsonObject payload) {
-        Optional<String> errorMessage = cloudEventValidator.validateCloudEvent(payload);
-        if (errorMessage.isEmpty()) {
+        if (CloudEventUtils.getMissingAttributes(payload.getMap()).isEmpty()) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
     }
