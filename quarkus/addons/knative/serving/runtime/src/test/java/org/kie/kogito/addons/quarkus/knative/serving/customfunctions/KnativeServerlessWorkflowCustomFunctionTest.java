@@ -133,7 +133,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withJsonBody(JsonNodeFactory.instance.objectNode()
-                                .put("message", "Kogito is awesome!"))));
+                                .put("message", "Kogito is awesome!")
+                                .set("object", JsonNodeFactory.instance.objectNode()
+                                        .put("long", 42L)
+                                        .put("String", "Knowledge is everything")))));
     }
 
     private void mockExecuteCloudEventWithParametersEndpoint() {
@@ -142,7 +145,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         .withStatus(200)
                         .withHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
                         .withJsonBody(JsonNodeFactory.instance.objectNode()
-                                .put("message", "CloudEvents are awesome!"))));
+                                .put("message", "CloudEvents are awesome!")
+                                .set("object", JsonNodeFactory.instance.objectNode()
+                                        .put("long", 42L)
+                                        .put("String", "Knowledge is everything")))));
     }
 
     private void mockExecuteWithEmptyParametersEndpoint() {
@@ -183,9 +189,12 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(metadata, parameters);
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
-                .put("message", "Kogito is awesome!");
+                .put("message", "Kogito is awesome!")
+                .set("object", JsonNodeFactory.instance.objectNode()
+                        .put("long", 42L)
+                        .put("String", "Knowledge is everything"));
 
-        assertThat(output).isEqualTo(expected);
+        assertThat(output).hasToString(expected.toString());
     }
 
     @Test
@@ -226,9 +235,12 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(metadata, cloudEvent);
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
-                .put("message", "CloudEvents are awesome!");
+                .put("message", "CloudEvents are awesome!")
+                .set("object", JsonNodeFactory.instance.objectNode()
+                        .put("long", 42L)
+                        .put("String", "Knowledge is everything"));
 
-        assertThat(output).isEqualTo(expected);
+        assertThat(output).hasToString(expected.toString());
 
         wireMockServer.verify(postRequestedFor(urlEqualTo("/cloud-event"))
                 .withHeader("Content-Type", equalTo(APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)));
