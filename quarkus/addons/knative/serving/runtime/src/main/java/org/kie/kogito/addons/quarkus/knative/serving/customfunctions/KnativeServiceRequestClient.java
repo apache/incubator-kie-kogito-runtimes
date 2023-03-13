@@ -42,16 +42,17 @@ abstract class KnativeServiceRequestClient {
     /**
      * Invokes a Knative service using the specified payload.
      *
+     * @param processInstanceId process instance ID.
      * @param serviceAddress address of the Knative service
      * @param path resource path
      * @param payload the payload
      * @return a {@link JsonNode} that represents the response payload
      */
-    JsonNode execute(KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload) {
+    JsonNode execute(String processInstanceId, KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload) {
         Objects.requireNonNull(serviceAddress, "serviceAddress is a mandatory parameter");
         Objects.requireNonNull(path, "path is a mandatory parameter");
 
-        return sendRequest(serviceAddress, path, payload);
+        return sendRequest(processInstanceId, serviceAddress, path, payload);
     }
 
     protected final JsonNode responseAsJsonObject(HttpResponse<Buffer> response) {
@@ -66,5 +67,6 @@ abstract class KnativeServiceRequestClient {
         }
     }
 
-    protected abstract JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload);
+    protected abstract JsonNode sendRequest(String processInstanceId, KnativeServiceAddress serviceAddress, String path,
+            Map<String, Object> payload);
 }

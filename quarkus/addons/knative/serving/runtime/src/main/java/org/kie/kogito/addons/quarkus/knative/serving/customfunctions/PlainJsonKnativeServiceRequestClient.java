@@ -16,6 +16,7 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,7 +57,8 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
     }
 
     @Override
-    protected JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> payload) {
+    protected JsonNode sendRequest(String processInstanceId, KnativeServiceAddress serviceAddress, String path,
+            Map<String, Object> payload) {
         HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path)
                 .ssl(serviceAddress.isSsl());
 
@@ -82,7 +84,8 @@ class PlainJsonKnativeServiceRequestClient extends KnativeServiceRequestClient {
     }
 
     private void validatePayload(Map<String, Object> payload) {
-        if (CloudEventUtils.getMissingAttributes(payload).isEmpty()) {
+        List<String> missingAttributes = CloudEventUtils.getMissingAttributes(payload);
+        if (missingAttributes.isEmpty() || (missingAttributes.size() == 1 && missingAttributes.contains("id"))) {
             throw new IllegalArgumentException(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
         }
     }

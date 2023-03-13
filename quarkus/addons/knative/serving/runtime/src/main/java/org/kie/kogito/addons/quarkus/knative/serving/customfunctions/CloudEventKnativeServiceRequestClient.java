@@ -16,6 +16,7 @@
 package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,14 +56,15 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
     }
 
     @Override
-    protected JsonNode sendRequest(KnativeServiceAddress serviceAddress, String path, Map<String, Object> cloudEvent) {
+    protected JsonNode sendRequest(String processInstanceId, KnativeServiceAddress serviceAddress, String path, Map<String, Object> cloudEvent) {
         validateCloudEvent(cloudEvent);
 
         HttpRequest<Buffer> request = webClient.post(serviceAddress.getPort(), serviceAddress.getHost(), path)
                 .putHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
                 .ssl(serviceAddress.isSsl());
 
-        JsonObject body = new JsonObject(cloudEvent);
+        JsonObject body = new JsonObject(new HashMap<>(cloudEvent))
+                .put("id", generateCloudEventId(processInstanceId, cloudEvent.get("source").toString()));
 
         logger.debug("Sending request with CloudEvent - host: {}, port: {}, path: {}, CloudEvent: {}",
                 serviceAddress.getHost(), serviceAddress.getPort(), path, body);
@@ -72,8 +74,13 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         return responseAsJsonObject(response);
     }
 
+    private static String generateCloudEventId(String processInstanceId, String source) {
+        return source + '_' + processInstanceId;
+    }
+
     private void validateCloudEvent(Map<String, Object> cloudEvent) {
         List<String> missingAttributes = CloudEventUtils.getMissingAttributes(cloudEvent);
+        missingAttributes.remove("id");
 
         if (!missingAttributes.isEmpty()) {
             throw new IllegalArgumentException("Invalid CloudEvent. The following mandatory attributes are missing: "

@@ -50,11 +50,12 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     }
 
-    JsonNode execute(Map<String, Object> metadata, Map<String, Object> arguments) {
+    JsonNode execute(String processInstanceId, Map<String, Object> metadata, Map<String, Object> arguments) {
         KnativeServiceAddress serviceAddress = getServiceAddress((String) metadata.get(OPERATION_PROPERTY_NAME));
         String path = metadata.getOrDefault(PATH_PROPERTY_NAME, "/").toString();
 
         return knativeServiceRequestClientResolver.resolve(metadata).execute(
+                processInstanceId,
                 serviceAddress,
                 path,
                 arguments);
