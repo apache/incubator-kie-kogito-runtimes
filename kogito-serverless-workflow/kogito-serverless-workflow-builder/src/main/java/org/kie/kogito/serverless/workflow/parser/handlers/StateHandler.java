@@ -151,8 +151,7 @@ public abstract class StateHandler<S extends State> {
         while (compensation != null) {
             if (!compensation.usedForCompensation()) {
                 throw new IllegalArgumentException(
-                        "Compensation states can transition only to states which also have their 'usedForCompensation' property set to 'true'. State " + compensation.getState().getName()
-                                + " is not used for compensation");
+                        "Compensation state can only have transition to other compensation state. State " + compensation.getState().getName() + " is not used for compensation");
             }
             lastNodeId = handleCompensation(embeddedSubProcess, compensation);
             compensation = parserContext.getStateHandler(compensation);
