@@ -147,7 +147,7 @@ public class RestWorkItemHandler implements KogitoWorkItemHandler {
         }
         if (port == -1) {
             port = portProp;
-            logger.info("Port not specified, using default {}", portProp);
+            logger.debug("Port not specified, using default {}", portProp);
         }
         if (isEmpty(path)) {
             path = endPoint;
