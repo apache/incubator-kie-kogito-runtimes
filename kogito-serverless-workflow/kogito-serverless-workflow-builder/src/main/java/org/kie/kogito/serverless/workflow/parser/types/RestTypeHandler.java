@@ -63,7 +63,7 @@ public class RestTypeHandler extends WorkItemTypeHandler {
                 .workParameter(RestWorkItemHandler.PASSWORD, runtimeRestApi(functionDef, PASSWORD_PROP, context.getContext()))
                 .workParameter(RestWorkItemHandler.HOST, runtimeRestApi(functionDef, "host", context.getContext()))
                 .workParameter(RestWorkItemHandler.PORT, runtimeRestApi(functionDef, PORT, context.getContext(), Integer.class,
-                        Integer.parseInt(context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + PORT).orElse("8080"))))
+                        context.getContext().getApplicationProperty(APP_PROPERTIES_FUNCTIONS_BASE + PORT).map(Integer::parseInt).orElse(RestWorkItemHandler.DEFAULT_PORT)))
                 .workParameter(RestWorkItemHandler.BODY_BUILDER, new ParamsRestBodyBuilderSupplier())
                 .workParameter(BearerTokenAuthDecorator.BEARER_TOKEN, runtimeRestApi(functionDef, ACCESS_TOKEN, context.getContext()))
                 .workParameter(ApiKeyAuthDecorator.KEY_PREFIX, runtimeRestApi(functionDef, API_KEY_PREFIX, context.getContext()))
