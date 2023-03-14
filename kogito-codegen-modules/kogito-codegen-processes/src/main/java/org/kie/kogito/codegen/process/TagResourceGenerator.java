@@ -67,6 +67,6 @@ final class TagResourceGenerator {
             attributes.add(description);
         }
 
-        cls.addAnnotation(new NormalAnnotationExpr(new Name("Tag"), attributes));
+        cls.addAnnotation(new NormalAnnotationExpr(new Name("io.swagger.v3.oas.annotations.tags.Tag"), attributes));
     }
 }
