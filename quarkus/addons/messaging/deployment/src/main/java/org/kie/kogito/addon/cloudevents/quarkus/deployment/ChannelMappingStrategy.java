@@ -47,6 +47,8 @@ public class ChannelMappingStrategy {
     private static final String MARSHALLER_PREFIX = KOGITO_MESSAGING_PREFIX + "marshaller.";
     private static final String UNMARSHALLLER_PREFIX = KOGITO_MESSAGING_PREFIX + "unmarshaller.";
     private static final String KOGITO_EMITTER_PREFIX = KOGITO_MESSAGING_PREFIX + "emitter.";
+    private static final String OVERFLOW_STRATEGY_PROP = "overflow-strategy";
+    private static final String BUFFER_SIZE_PROP = "buffer-size";
 
     private static Config config = ConfigProvider.getConfig();
 
@@ -97,9 +99,10 @@ public class ChannelMappingStrategy {
 
     private static Optional<OnOverflowInfo> onOverflowInfo(String name) {
         final String namePrefix = KOGITO_EMITTER_PREFIX + name + ".";
-        Optional<Strategy> strategy = config.getOptionalValue(namePrefix + "overflow-strategy", String.class).map(Strategy::valueOf);
-        Optional<Long> bufferSize = config.getOptionalValue(namePrefix + "buffer-size", Long.class);
-        return strategy.map(s -> new OnOverflowInfo(s, bufferSize)).or(() -> bufferSize.isPresent() ? Optional.of(new OnOverflowInfo(Strategy.BUFFER, bufferSize)) : Optional.empty());
+        Optional<Strategy> strategy = config.getOptionalValue(namePrefix + OVERFLOW_STRATEGY_PROP, String.class).map(Strategy::valueOf);
+        Optional<Long> bufferSize = config.getOptionalValue(namePrefix + BUFFER_SIZE_PROP, Long.class);
+        return strategy.map(s -> new OnOverflowInfo(s, bufferSize)).or(() -> bufferSize.isPresent() ? Optional.of(new OnOverflowInfo(Strategy.BUFFER, bufferSize)) : Optional.empty()).or(
+                () -> config.getOptionalValue(KOGITO_EMITTER_PREFIX + OVERFLOW_STRATEGY_PROP, String.class).map(Strategy::valueOf).map(s -> new OnOverflowInfo(s, Optional.empty())));
     }
 
     private static String getClassName(Optional<String> serializerClassName) {
