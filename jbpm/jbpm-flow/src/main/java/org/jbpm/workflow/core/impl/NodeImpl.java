@@ -20,12 +20,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jbpm.process.core.Context;
 import org.jbpm.process.core.ContextResolver;
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.workflow.core.Constraint;
+import org.jbpm.workflow.core.ExecutionCondition;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.node.CompositeNode;
 import org.kie.api.definition.process.Connection;
@@ -47,6 +49,7 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
     private NodeContainer parentContainer;
     private Map<String, Context> contexts = new HashMap<>();
     private Map<String, Object> metaData = new HashMap<>();
+    private ExecutionCondition executionCondition;
 
     protected Map<ConnectionRef, Constraint> constraints = new HashMap<>();
 
@@ -121,6 +124,14 @@ public abstract class NodeImpl implements Node, ContextResolver, Mappable {
 
     public long getId() {
         return this.id;
+    }
+
+    public Optional<ExecutionCondition> executionCondition() {
+        return Optional.ofNullable(executionCondition);
+    }
+
+    public void setExecutionCondition(ExecutionCondition condition) {
+        this.executionCondition = condition;
     }
 
     public String getUniqueId() {
