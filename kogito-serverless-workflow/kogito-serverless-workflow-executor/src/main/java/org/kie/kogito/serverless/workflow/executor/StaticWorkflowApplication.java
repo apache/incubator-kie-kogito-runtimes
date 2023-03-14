@@ -39,11 +39,29 @@ import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import org.kie.kogito.serverless.workflow.parser.types.RestTypeHandler;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import io.vertx.mutiny.core.Vertx;
 
+/**
+ * This is the entry point for executing a workflow from a JVM
+ * Given a <code>Workflow</code> object, you can execute it by writing
+ * <code>
+ *  // Generated a flow definition or read it from a file
+ *  Workflow flow = ....;
+ *  try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+ *       // set input model for flow
+ *       Map<String,Object> params = ...;
+ *       JsonNodeModel model = application.execute(flow, params);
+ *       // do something with returned data;
+ * }
+ * </code>
+ * 
+ *
+ */
 public class StaticWorkflowApplication extends StaticApplication implements AutoCloseable {
 
     private final StaticWorkflowProcesses processes = new StaticWorkflowProcesses();
@@ -60,16 +78,74 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     }
 
+    /**
+     * Given a workflow, executes it. This is a shortcut for <code>
+     * execute(process(flow),data);
+     * </code>. It is expected to be used only when you want to execute your flow once.
+     * 
+     * @param workflow Serverless workflow definition
+     * @param data A map containing workflow input parameters
+     * @return
+     */
     public JsonNodeModel execute(Workflow workflow, Map<String, Object> data) {
         return execute(process(workflow), data);
     }
 
+    /**
+     * Given a workflow, executes it. This is a shortcut for <code>
+     * 	execute(process(flow),data);
+     * </code>. It is expected to be used only when you want to execute your flow once.
+     * 
+     * @param workflow Serverless workflow definition
+     * @param data A json containing workflow input parameters
+     * @return
+     */
+    public JsonNodeModel execute(Workflow workflow, JsonNode data) {
+        return execute(process(workflow), data);
+    }
+
+    /**
+     * Given a process definition, executes it. A process definition can be obtained from the flow by using <code>process</code> method
+     * 
+     * @param workflow Serverless Workflow definition
+     * @param data A map containing workflow input parameters.
+     * @return
+     */
     public JsonNodeModel execute(Process<JsonNodeModel> process, Map<String, Object> data) {
-        ProcessInstance<JsonNodeModel> processInstance = process.createInstance(new JsonNodeModel(data));
+        return execute(process, new JsonNodeModel(data));
+    }
+
+    /**
+     * Given a process definition, executes it. A process definition can be obtained from the flow by using <code>process</code> method
+     * 
+     * @param workflow Serverless Workflow definition
+     * @param data A JsonNode containing workflow input parameters.
+     * @return
+     */
+    public JsonNodeModel execute(Process<JsonNodeModel> process, JsonNode data) {
+        return execute(process, new JsonNodeModel(data));
+    }
+
+    /**
+     * Given a process definition, executes it. A process definition can be obtained from a flow by using <code>process</code> method
+     * 
+     * @param workflow Serverless Workflow definition
+     * @param model JsnoNodeModel obtained from a previous execution of another flow
+     * @return
+     */
+    public JsonNodeModel execute(Process<JsonNodeModel> process, JsonNodeModel model) {
+        ProcessInstance<JsonNodeModel> processInstance = process.createInstance(model);
         processInstance.start();
         return processInstance.variables();
     }
 
+    /**
+     * Parses the flow, generating a process definition. You can reuse that process definition to invoke
+     * the same flow several times, using <code>execute</code> method
+     * 
+     * @param workflow Serverless Worflow definition
+     * @return Executable process definition
+     */
     public Process<JsonNodeModel> process(Workflow workflow) {
         return processes.map.computeIfAbsent(workflow.getId(), k -> createProcess(workflow));
     }
