@@ -202,12 +202,33 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @Test
-    void executeWithCloudEventAsPlainJson() {
+    void executeWithCloudEventWithIdAsPlainJson() {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
                 CloudEventV1.SPECVERSION, 1.0, // KnativeWorkItemHandler receives this attribute as a double
                 "id", 42, // KnativeWorkItemHandler receivers this attribute as an Integer
+                "source", "https://localhost:8080",
+                "type", "org.kie.kogito.test",
+                "data", Map.of(
+                        "org", "Acme",
+                        "project", "Kogito"));
+
+        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+
+        String processInstanceId = Instant.now().toString();
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(processInstanceId, metadata, cloudEvent))
+                .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
+    }
+
+    @Test
+    void executeWithCloudEventWithoutIdAsPlainJson() {
+        mockExecuteWithParametersEndpoint();
+
+        Map<String, Object> cloudEvent = Map.of(
+                CloudEventV1.SPECVERSION, 1.0, // KnativeWorkItemHandler receives this attribute as a double
                 "source", "https://localhost:8080",
                 "type", "org.kie.kogito.test",
                 "data", Map.of(

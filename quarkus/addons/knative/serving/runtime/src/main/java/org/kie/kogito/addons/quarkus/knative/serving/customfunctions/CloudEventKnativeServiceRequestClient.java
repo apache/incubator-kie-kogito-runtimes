@@ -63,8 +63,7 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
                 .putHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
                 .ssl(serviceAddress.isSsl());
 
-        JsonObject body = new JsonObject(new HashMap<>(cloudEvent))
-                .put("id", generateCloudEventId(processInstanceId, cloudEvent.get("source").toString()));
+        JsonObject body = new JsonObject(createCloudEventWithGeneratedId(cloudEvent, processInstanceId));
 
         logger.debug("Sending request with CloudEvent - host: {}, port: {}, path: {}, CloudEvent: {}",
                 serviceAddress.getHost(), serviceAddress.getPort(), path, body);
@@ -72,6 +71,16 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         HttpResponse<Buffer> response = request.sendBuffer(Buffer.buffer(body.encode())).await().atMost(requestTimeout);
 
         return responseAsJsonObject(response);
+    }
+
+    private static HashMap<String, Object> createCloudEventWithGeneratedId(Map<String, Object> cloudEvent, String processInstanceId) {
+        HashMap<String, Object> modifiableCloudEvent = new HashMap<>(cloudEvent);
+        Object oldIdValue = modifiableCloudEvent.put("id", generateCloudEventId(processInstanceId, cloudEvent.get("source").toString()));
+
+        if (oldIdValue != null) {
+            logger.warn("CloudEvent id should not be set. Ignoring id {}. A generated value will be used instead.", oldIdValue);
+        }
+        return modifiableCloudEvent;
     }
 
     private static String generateCloudEventId(String processInstanceId, String source) {
