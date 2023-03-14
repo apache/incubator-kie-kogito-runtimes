@@ -67,5 +67,4 @@ class StaticWorkflowProcess extends AbstractProcess<JsonNodeModel> {
     protected Process process() {
         return process;
     }
-
 }

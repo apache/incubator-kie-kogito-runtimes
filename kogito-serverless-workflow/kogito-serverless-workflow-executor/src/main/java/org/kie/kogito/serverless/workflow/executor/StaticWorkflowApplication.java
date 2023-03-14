@@ -125,7 +125,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             for (FunctionDefinition functionDef : flow.getFunctions().getFunctionDefs()) {
                 if (functionDef.getType() == Type.CUSTOM) {
                     String type = FunctionTypeHandlerFactory.getTypeFromOperation(functionDef);
-                    if (RestTypeHandler.TYPE.equals(type)) {
+                    if (RestTypeHandler.REST_TYPE.equals(type)) {
                         initRestWorkItemHandler();
                     }
                 }

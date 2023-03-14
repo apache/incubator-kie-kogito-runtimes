@@ -26,6 +26,7 @@ class StaticRestWorkItemHandler extends RestWorkItemHandler implements AutoClose
         super(WebClient.create(vertx));
     }
 
+    @Override
     public String getName() {
         return RestWorkItemHandler.REST_TASK_TYPE;
     }

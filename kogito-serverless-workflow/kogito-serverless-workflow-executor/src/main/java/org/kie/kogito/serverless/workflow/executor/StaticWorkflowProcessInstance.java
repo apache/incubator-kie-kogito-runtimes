@@ -46,10 +46,12 @@ class StaticWorkflowProcessInstance extends AbstractProcessInstance<JsonNodeMode
         super(process, model, wpi);
     }
 
+    @Override
     protected Map<String, Object> bind(JsonNodeModel variables) {
         return variables.toMap();
     }
 
+    @Override
     protected void unbind(JsonNodeModel variables, Map<String, Object> vmap) {
         variables.fromMap(this.id(), vmap);
     }

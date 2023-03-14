@@ -36,7 +36,7 @@ class StaticSubprocessFactory implements SubProcessFactory<JsonNodeModel> {
 
     public JsonNodeModel bind(org.kie.api.runtime.process.ProcessContext kcontext) {
         JsonNodeModel model = new JsonNodeModel();
-        model.update(NodeIoHelper.processInputs((NodeInstanceImpl) kcontext.getNodeInstance(), name -> kcontext.getVariable(name)));
+        model.update(NodeIoHelper.processInputs((NodeInstanceImpl) kcontext.getNodeInstance(), kcontext::getVariable));
         return model;
     }
 
@@ -45,8 +45,8 @@ class StaticSubprocessFactory implements SubProcessFactory<JsonNodeModel> {
     }
 
     public void unbind(org.kie.api.runtime.process.ProcessContext kcontext, JsonNodeModel model) {
-        Map<String, Object> outputs = new HashMap<String, Object>();
+        Map<String, Object> outputs = new HashMap<>();
         outputs.put(SWFConstants.DEFAULT_WORKFLOW_VAR, model.getWorkflowdata());
-        NodeIoHelper.processOutputs((NodeInstanceImpl) kcontext.getNodeInstance(), name -> outputs.get(name), name -> kcontext.getVariable(name));
+        NodeIoHelper.processOutputs((NodeInstanceImpl) kcontext.getNodeInstance(), outputs::get, kcontext::getVariable);
     }
 }
