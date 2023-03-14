@@ -35,19 +35,21 @@ import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.process.impl.StaticProcessConfig;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
-import org.kogito.workitem.rest.RestWorkItemHandler;
+import org.kie.kogito.serverless.workflow.parser.types.RestTypeHandler;
 
 import io.serverlessworkflow.api.Workflow;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
+import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
 import io.vertx.mutiny.core.Vertx;
-import io.vertx.mutiny.ext.web.client.WebClient;
 
 public class StaticWorkflowApplication extends StaticApplication implements AutoCloseable {
 
     private final StaticWorkflowProcesses processes = new StaticWorkflowProcesses();
     private Collection<KogitoWorkItemHandler> handlers = new ArrayList<>();
-    private Vertx vertx = Vertx.vertx();
-    private WebClient client;
+    private StaticRestWorkItemHandler restWorkItemHandler;
+    private Vertx vertx;
 
     public static StaticWorkflowApplication create() {
         return new StaticWorkflowApplication();
@@ -55,13 +57,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     private StaticWorkflowApplication() {
         super(new StaticConfig(new Addons(Collections.emptySet()), new StaticProcessConfig()));
-        client = WebClient.create(vertx);
-        handlers.add(new RestWorkItemHandler(client) {
-            @Override
-            public String getName() {
-                return RestWorkItemHandler.REST_TASK_TYPE;
-            }
-        });
+
     }
 
     public JsonNodeModel execute(Workflow workflow, Map<String, Object> data) {
@@ -79,6 +75,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
+        registerNeededHandlers(workflow);
         StaticWorkflowProcess process = new StaticWorkflowProcess(this, handlers, ServerlessWorkflowParser
                 .of(workflow, JavaKogitoBuildContext.builder().withApplicationProperties(System.getProperties()).build()).getProcessInfo().info());
         WorkflowProcessImpl workflowProcess = (WorkflowProcessImpl) process.get();
@@ -89,10 +86,6 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
             }
         });
         return process;
-    }
-
-    public static String getKey(Workflow workflow) {
-        return workflow.getId() + "_" + workflow.getVersion();
     }
 
     @Override
@@ -119,7 +112,38 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     @Override
     public void close() {
-        client.close();
-        vertx.closeAndAwait();
+        if (restWorkItemHandler != null) {
+            restWorkItemHandler.close();
+        }
+        if (vertx != null) {
+            vertx.closeAndAwait();
+        }
+    }
+
+    private void registerNeededHandlers(Workflow flow) {
+        if (flow.getFunctions() != null && flow.getFunctions().getFunctionDefs() != null) {
+            for (FunctionDefinition functionDef : flow.getFunctions().getFunctionDefs()) {
+                if (functionDef.getType() == Type.CUSTOM) {
+                    String type = FunctionTypeHandlerFactory.getTypeFromOperation(functionDef);
+                    if (RestTypeHandler.TYPE.equals(type)) {
+                        initRestWorkItemHandler();
+                    }
+                }
+            }
+        }
+    }
+
+    private Vertx initVertx() {
+        if (vertx == null) {
+            vertx = Vertx.vertx();
+        }
+        return vertx;
+    }
+
+    private void initRestWorkItemHandler() {
+        if (restWorkItemHandler == null) {
+            restWorkItemHandler = new StaticRestWorkItemHandler(initVertx());
+            handlers.add(restWorkItemHandler);
+        }
     }
 }
