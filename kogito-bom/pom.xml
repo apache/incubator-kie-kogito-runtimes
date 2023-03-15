@@ -1442,6 +1442,13 @@
       </dependency>
       <dependency>
         <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-jobs-service-embedded</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+        <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
         <artifactId>kogito-addons-jobs-api</artifactId>
         <version>${project.version}</version>
       </dependency>
