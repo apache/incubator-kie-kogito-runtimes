@@ -42,9 +42,9 @@ import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
 import io.smallrye.mutiny.TimeoutException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -295,7 +295,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         assertThat(output).hasToString(expected.toString());
 
         wireMockServer.verify(postRequestedFor(urlEqualTo("/cloud-event"))
-                .withRequestBody(containing("\"id\":\"" + source + "_" + processInstanceId + "\""))
+                .withRequestBody(matchingJsonPath("$.id", equalTo(source + "_" + processInstanceId)))
                 .withHeader("Content-Type", equalTo(APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)));
     }
 
