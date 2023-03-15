@@ -78,4 +78,13 @@ public class DurationExpirationTime implements ExpirationTime {
     public static DurationExpirationTime repeat(long delay, Long repeatInterval, Integer limit, TemporalUnit unit) {
         return new DurationExpirationTime(ZonedDateTime.now().plus(delay, unit), repeatInterval, limit);
     }
+
+    @Override
+    public String toString() {
+        return "DurationExpirationTime{" +
+                "expirationTime=" + expirationTime +
+                ", repeatInterval=" + repeatInterval +
+                ", repeatLimit=" + repeatLimit +
+                '}';
+    }
 }

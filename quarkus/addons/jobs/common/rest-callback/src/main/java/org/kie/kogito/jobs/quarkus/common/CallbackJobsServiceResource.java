@@ -31,6 +31,8 @@ import org.kie.kogito.Application;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.Processes;
 import org.kie.kogito.services.jobs.impl.TriggerJobCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_POST_URI;
 import static org.kie.kogito.jobs.api.JobCallbackResourceDef.JOBS_CALLBACK_URI;
@@ -42,6 +44,8 @@ import static org.kie.kogito.jobs.api.JobCallbackResourceDef.TIMER_ID;
 
 @Path(JOBS_CALLBACK_URI)
 public class CallbackJobsServiceResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CallbackJobsServiceResource.class);
 
     @Inject
     Processes processes;
@@ -56,6 +60,9 @@ public class CallbackJobsServiceResource {
             @PathParam(PROCESS_INSTANCE_ID) String processInstanceId,
             @PathParam(TIMER_ID) String timerId,
             @QueryParam(LIMIT) @DefaultValue(LIMIT_DEFAULT_VALUE) Integer limit) {
+
+        LOGGER.debug("Executing callback request with, processId: {}, processInstanceId: {}, timerId: {}, limit: {}",
+                processId, processInstanceId, timerId, limit);
         if (processId == null || processInstanceId == null) {
             return Response.status(Status.BAD_REQUEST).entity("Process id and Process instance id must be given").build();
         }

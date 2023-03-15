@@ -52,4 +52,11 @@ public class ExactExpirationTime implements ExpirationTime {
     public static ExactExpirationTime now() {
         return new ExactExpirationTime(ZonedDateTime.now());
     }
+
+    @Override
+    public String toString() {
+        return "ExactExpirationTime{" +
+                "expirationTime=" + expirationTime +
+                '}';
+    }
 }

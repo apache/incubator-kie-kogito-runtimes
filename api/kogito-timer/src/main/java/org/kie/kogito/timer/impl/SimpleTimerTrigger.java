@@ -18,13 +18,31 @@ package org.kie.kogito.timer.impl;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.kie.kogito.timer.Trigger;
 
+/**
+ * The SimpleTimerTrigger is designed to work as a "timer", that executes at an initial startTime, and then,
+ * depending on the configuration parameters it might be repeated a given number of times, this last is indicated by
+ * the repeatCount configuration parameter. The initial execution is not considered a repetition. Additionally, an
+ * optional endTime can be provided to configure a time based limit for the executions. If configured, when the endTime
+ * is reached no more execution will be produced independently of the repeatCount value.
+ * e.g:
+ * when
+ * repeatCount == 0, the timer is executed one time at the startTime.
+ * repeatCount == 1, executes two times.
+ * repeatCount == 2, executes three times.
+ * repeatCount == -1, the timer es repeated forever.
+ *
+ * The fireTime for all the subsequent executions after the initial startTime, are calculated by considering the
+ * timer period and the periodUnit.
+ *
+ */
 public class SimpleTimerTrigger implements Trigger {
+
+    public static final int INDEFINITELY = -1;
 
     private static Set<ChronoUnit> acceptedUnits() {
         Set<ChronoUnit> units = new TreeSet<>(Enum::compareTo);
@@ -42,57 +60,87 @@ public class SimpleTimerTrigger implements Trigger {
 
     private long period;
 
-    private ChronoUnit periodUnit;
+    private ChronoUnit periodUnit = ChronoUnit.MILLIS;
 
-    private long repeatLimit;
+    private int repeatCount;
 
     private Date endTime;
 
-    private long repeatCount;
+    private String zoneId;
 
-    private transient long periodInMillis;
+    private int currentRepeatCount;
 
     private Date nextFireTime;
 
-    private String timeOffsetId;
+    private boolean endTimeReached;
+
+    public SimpleTimerTrigger() {
+        // Marshalling constructor.
+    }
 
     /**
      * @param startTime The trigger start time.
      * @param period The period for the calculation of the subsequent executions.
-     * @param periodUnit The time unit in which the period is expressed. For, example, a period 2 ChronoUnit.SECONDS.
-     *        When the periodUnit is null, ChronoUnit.MILLIS are assumed.
-     * @param repeatLimit Number of times the trigger should be repeated according to the configured period.
-     *        When the repeatLimit == 0, the timer is executed only one time at the startTime.
-     * @param endTime An optional value indicating a potential endTime. Independently of the configured repeatLimit,
-     *        a nextFireTime must never be after the endTime.
-     * @param timeOffsetId An optional value indicating an ISO 8601 date-time shift from UTC/Greenwich, e.g. '+04:00'.
-     *        While al the trigger and results and calculations are represented with the instant based
+     * @param periodUnit The time unit in which the period is expressed. For, example, a period of 2 ChronoUnit.SECONDS.
+     * @param repeatCount Number of times the trigger should be repeated according to the configured period.
+     *        repeatCount == 0, the timer is executed one time at the startTime.
+     *        repeatCount == 1, executes two times, at startTime, and at (startTime + 2 seconds).
+     *        repeatCount == 2, executes three times, at startTime, at (startTime + 2 seconds), and at (startTime + 4 seconds)
+     *        repeatCount == -1, the timer is executed forever.
+     *
+     * @param endTime An optional value indicating a potential endTime. Independently of the configured repeatCount,
+     *        a nextFireTime must never be after the endTime. In situations where the trigger reaches the endTime,
+     *        all subsequent invocations of the hasNextFireTime and nextFireTime methods will return null.
+     * @param zoneId An optional value indicating a java.time.ZoneId string representation.
+     *        While all the trigger calculations and returned fire times are represented with the instant based
      *        java.util.Date, this value can be helpful in situations where the creator of the trigger
-     *        wants to register the startTime's and endTime's original local-date time shift in order to
-     *        translate the fireTimes calculate by the trigger to that zone.
+     *        wants to register the startTime's and endTime's original zoneId. This value could be used for example to
+     *        translate the produced fireTimes to the original zone, however, these calculations are outside the scope
+     *        of the trigger. This field must be considered as trigger metadata.
      */
     public SimpleTimerTrigger(Date startTime, long period, ChronoUnit periodUnit,
-            long repeatLimit, Date endTime, String timeOffsetId) {
-        Objects.requireNonNull(startTime, "startTime have a non null value.");
+            int repeatCount, Date endTime, String zoneId) {
+        validateStartTime(startTime);
+        validatePeriod(period);
+        validatePeriodUnit(periodUnit);
+        validateRepeatCount(repeatCount);
+
         this.startTime = startTime;
         this.period = period;
         this.periodUnit = periodUnit;
-        this.repeatLimit = repeatLimit;
+        this.repeatCount = repeatCount;
         this.endTime = endTime;
-        this.timeOffsetId = timeOffsetId;
+        this.zoneId = zoneId;
 
-        this.repeatCount = 0;
-        this.nextFireTime = startTime;
-        setPeriodUnit(periodUnit);
-        setPeriodInMillis();
+        this.currentRepeatCount = repeatCount == INDEFINITELY ? -1 : 0;
+        if (endTime != null && startTime.after(endTime)) {
+            this.nextFireTime = null;
+            this.endTimeReached = true;
+        } else {
+            this.nextFireTime = startTime;
+        }
     }
 
-    private void setPeriodInMillis() {
-        if (periodUnit != null) {
-            this.periodInMillis = periodUnit.getDuration().multipliedBy(period).toMillis();
-        } else {
-            periodInMillis = period;
-        }
+    /**
+     * @param startTime The trigger start time.
+     * @param period The period for the calculation of the subsequent executions.
+     * @param periodUnit The time unit in which the period is expressed. For, example, a period of 2 ChronoUnit.SECONDS.
+     * @param repeatCount Number of times the trigger should be repeated according to the configured period.
+     *        repeatCount == 0, the timer is executed one time at the startTime.
+     *        repeatCount == 1, executes two times, at startTime, and at (startTime + 2 seconds).
+     *        repeatCount == 2, executes three times, at startTime, at (startTime + 2 seconds), and at (startTime + 4 seconds)
+     *        repeatCount == -1, the timer is executed forever.
+     * 
+     * @param zoneId An optional value indicating a java.time.ZoneId string representation.
+     *        While all the trigger calculations and returned fire times are represented with the instant based
+     *        java.util.Date, this value can be helpful in situations where the creator of the trigger
+     *        wants to register the startTime's and endTime's original zoneId. This value could be used for example to
+     *        translate the produced fireTimes to the original zone, however, these calculations are outside the scope
+     *        of the trigger. This field must be considered as trigger metadata.
+     */
+    public SimpleTimerTrigger(Date startTime, long period, ChronoUnit periodUnit,
+            int repeatCount, String zoneId) {
+        this(startTime, period, periodUnit, repeatCount, null, zoneId);
     }
 
     @Override
@@ -106,14 +154,17 @@ public class SimpleTimerTrigger implements Trigger {
             return null;
         }
         final Date current = nextFireTime;
-        repeatCount++;
-        if (repeatCount > repeatLimit) {
+        final Date candidateNextFireTime = new Date(current.getTime() + getPeriodInMillis());
+        if (endTime != null && candidateNextFireTime.after(endTime)) {
+            this.nextFireTime = null;
+            this.endTimeReached = true;
+        } else if (repeatCount == INDEFINITELY) {
+            this.nextFireTime = candidateNextFireTime;
+        } else if (currentRepeatCount == Integer.MAX_VALUE || ((currentRepeatCount + 1) > repeatCount)) {
             this.nextFireTime = null;
         } else {
-            this.nextFireTime = new Date(current.getTime() + periodInMillis);
-            if (endTime != null && nextFireTime.after(endTime)) {
-                this.nextFireTime = null;
-            }
+            this.nextFireTime = candidateNextFireTime;
+            currentRepeatCount++;
         }
         return current;
     }
@@ -123,6 +174,7 @@ public class SimpleTimerTrigger implements Trigger {
     }
 
     public void setStartTime(Date startTime) {
+        validateStartTime(startTime);
         this.startTime = startTime;
     }
 
@@ -131,8 +183,8 @@ public class SimpleTimerTrigger implements Trigger {
     }
 
     public void setPeriod(long period) {
+        validatePeriod(period);
         this.period = period;
-        setPeriodInMillis();
     }
 
     public ChronoUnit getPeriodUnit() {
@@ -140,20 +192,17 @@ public class SimpleTimerTrigger implements Trigger {
     }
 
     public void setPeriodUnit(ChronoUnit periodUnit) {
-        if (periodUnit != null && !ACCEPTED_CHRONO_UNITS.contains(periodUnit)) {
-            throw new IllegalArgumentException("The periodUnit must be one of the following values: " +
-                    ACCEPTED_CHRONO_UNITS + ", but is: " + periodUnit);
-        }
+        validatePeriodUnit(periodUnit);
         this.periodUnit = periodUnit;
-        setPeriodInMillis();
     }
 
-    public long getRepeatLimit() {
-        return repeatLimit;
+    public int getRepeatCount() {
+        return repeatCount;
     }
 
-    public void setRepeatLimit(long repeatLimit) {
-        this.repeatLimit = repeatLimit;
+    public void setRepeatCount(int repeatCount) {
+        validateRepeatCount(repeatCount);
+        this.repeatCount = repeatCount;
     }
 
     public Date getEndTime() {
@@ -164,23 +213,75 @@ public class SimpleTimerTrigger implements Trigger {
         this.endTime = endTime;
     }
 
-    public long getRepeatCount() {
-        return repeatCount;
+    /**
+     * @return true if the endTime for the current trigger was reached.
+     */
+    public boolean isEndTimeReached() {
+        return endTimeReached;
     }
 
-    public void setRepeatCount(long repeatCount) {
-        this.repeatCount = repeatCount;
+    public void setEndTimeReached(boolean endTimeReached) {
+        this.endTimeReached = endTimeReached;
+    }
+
+    public boolean isIndefinitely() {
+        return repeatCount == INDEFINITELY;
+    }
+
+    /**
+     * @return The number of executed repetitions for this timer, or -1 if the timer was configured with the indefinitely
+     *         repeatCount = -1.
+     */
+    public int getCurrentRepeatCount() {
+        return currentRepeatCount;
+    }
+
+    public void setCurrentRepeatCount(int currentRepeatCount) {
+        this.currentRepeatCount = currentRepeatCount;
     }
 
     public void setNextFireTime(Date nextFireTime) {
         this.nextFireTime = nextFireTime;
     }
 
-    public String getTimeOffsetId() {
-        return timeOffsetId;
+    public Date getNextFireTime() {
+        return nextFireTime;
     }
 
-    public void setTimeOffsetId(String timeOffsetId) {
-        this.timeOffsetId = timeOffsetId;
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    private void validateStartTime(Date startTime) {
+        if (startTime == null) {
+            throw new IllegalArgumentException("The startTime must be a non null value.");
+        }
+    }
+
+    private void validatePeriod(long period) {
+        if (period < 0) {
+            throw new IllegalArgumentException("The period must be greater or equal than zero, but is: " + period);
+        }
+    }
+
+    private void validateRepeatCount(int repeatCount) {
+        if (repeatCount < -1) {
+            throw new IllegalArgumentException("The repeatCount must be greater or equal than zero, or -1 to indicate an indefinitely repeatCount, but is: " + repeatCount);
+        }
+    }
+
+    private void validatePeriodUnit(ChronoUnit periodUnit) {
+        if (periodUnit == null || !ACCEPTED_CHRONO_UNITS.contains(periodUnit)) {
+            throw new IllegalArgumentException("The periodUnit must be one of the following values: " +
+                    ACCEPTED_CHRONO_UNITS + ", but is: " + periodUnit);
+        }
+    }
+
+    private long getPeriodInMillis() {
+        return periodUnit.getDuration().multipliedBy(period).toMillis();
     }
 }
