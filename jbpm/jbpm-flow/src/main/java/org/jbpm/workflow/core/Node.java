@@ -16,7 +16,6 @@
 package org.jbpm.workflow.core;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import org.jbpm.process.core.Contextable;
 import org.kie.api.definition.process.Connection;
@@ -58,9 +57,5 @@ public interface Node extends KogitoNode, Contextable, Serializable {
     void setParentContainer(NodeContainer nodeContainer);
 
     void setMetaData(String name, Object value);
-
-    Optional<ExecutionCondition> executionCondition();
-
-    void setExecutionCondition(ExecutionCondition condition);
 
 }

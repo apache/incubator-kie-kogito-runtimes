@@ -17,7 +17,6 @@ package org.jbpm.ruleflow.core.factory;
 
 import org.jbpm.process.core.context.variable.Mappable;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
-import org.jbpm.workflow.core.ExecutionCondition;
 import org.jbpm.workflow.core.Node;
 import org.jbpm.workflow.core.NodeContainer;
 
@@ -51,11 +50,6 @@ public abstract class NodeFactory<T extends NodeFactory<T, P>, P extends RuleFlo
 
     public T name(String name) {
         getNode().setName(name);
-        return (T) this;
-    }
-
-    public T executionCondition(ExecutionCondition condition) {
-        getNode().setExecutionCondition(condition);
         return (T) this;
     }
 

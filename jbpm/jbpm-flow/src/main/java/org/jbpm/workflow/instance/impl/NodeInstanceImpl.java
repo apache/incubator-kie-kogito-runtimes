@@ -224,19 +224,13 @@ public abstract class NodeInstanceImpl implements org.jbpm.workflow.instance.Nod
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
                     .getProcessEventSupport().fireBeforeNodeTriggered(this, kruntime);
         }
-
-        boolean executeNode = ((Node) getNode()).executionCondition().map(c -> c.test(this)).orElse(true);
-        if (executeNode) {
-            try {
-                internalTrigger(from, type);
-            } catch (Exception e) {
-                logger.debug("Node instance causing process instance error in id {}", this.getStringId(), e);
-                captureError(e);
-                // 	stop after capturing error
-                return;
-            }
-        } else {
-            triggerCompleted(Node.CONNECTION_DEFAULT_TYPE, true);
+        try {
+            internalTrigger(from, type);
+        } catch (Exception e) {
+            logger.debug("Node instance causing process instance error in id {}", this.getStringId(), e);
+            captureError(e);
+            // stop after capturing error
+            return;
         }
         if (!hidden) {
             ((InternalProcessRuntime) kruntime.getProcessRuntime())
