@@ -15,16 +15,22 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
+import io.serverlessworkflow.api.defaultdef.DefaultConditionDefinition;
 import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.states.DefaultState;
+import io.serverlessworkflow.api.states.SwitchState;
+import io.serverlessworkflow.api.switchconditions.DataCondition;
 import io.serverlessworkflow.api.transitions.Transition;
 
 public class TransitionBuilder<T> {
 
     private final T container;
-    private Deque<DefaultState> states;
+    private final Deque<DefaultState> states;
+    private SwitchState switchState;
 
     protected TransitionBuilder(T container, Deque<DefaultState> states) {
         this.container = container;
@@ -32,8 +38,32 @@ public class TransitionBuilder<T> {
     }
 
     public TransitionBuilder<T> next(StateBuilder<?, ?> stateBuilder) {
-        addTransition(stateBuilder.build());
+        next(stateBuilder.build());
         return this;
+    }
+
+    public TransitionBuilder<TransitionBuilder<T>> when(String expr) {
+        List<DataCondition> conditions;
+        if (switchState == null) {
+            switchState = StateBuilder.ensureName(new SwitchState().withType(DefaultState.Type.SWITCH));
+            conditions = new ArrayList<>();
+            switchState.withDataConditions(conditions);
+            next(switchState);
+        } else {
+            conditions = switchState.getDataConditions();
+        }
+        DataCondition condition = new DataCondition().withCondition(expr);
+        conditions.add(condition);
+        return new ConditionTransitionBuilder<>(this, states, condition);
+    }
+
+    public TransitionBuilder<T> or() {
+        if (switchState == null) {
+            throw new IllegalArgumentException("or should not be invoked before when");
+        }
+        DefaultConditionDefinition condition = new DefaultConditionDefinition();
+        switchState.setDefaultCondition(condition);
+        return new DefaultConditionTransitionBuilder<>(container, states, condition);
     }
 
     public T end(StateBuilder<?, ?> stateBuilder) {
@@ -41,14 +71,17 @@ public class TransitionBuilder<T> {
     }
 
     public T end(StateBuilder<?, ?> stateBuilder, End end) {
-        addTransition(stateBuilder.build(end));
+        next(stateBuilder.build(end));
         return container;
     }
 
-    private void addTransition(DefaultState state) {
-        DefaultState prevState = states.getLast();
-        prevState.setTransition(new Transition().withNextState(state.getName()));
+    private void next(DefaultState state) {
+        addTransition(state);
         states.add(state);
     }
 
+    protected void addTransition(DefaultState state) {
+        DefaultState prevState = states.getLast();
+        prevState.setTransition(new Transition().withNextState(state.getName()));
+    }
 }

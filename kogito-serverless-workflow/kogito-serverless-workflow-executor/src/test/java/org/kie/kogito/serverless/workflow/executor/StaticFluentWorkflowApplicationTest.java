@@ -20,7 +20,9 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
+import org.kie.kogito.process.Process;
 import org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.HttpMethod;
+import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -38,6 +40,7 @@ import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.forEach;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.inject;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.arrayNode;
+import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.objectNode;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
 
 class StaticFluentWorkflowApplicationTest {
@@ -88,6 +91,25 @@ class StaticFluentWorkflowApplicationTest {
                     .singleton(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(SQUARE)));
             assertThat(application.execute(workflow, Collections.singletonMap("numbers", Arrays.asList(1, 2, 3, 4))).getWorkflowdata().get("result"))
                     .isEqualTo(arrayNode().add(1).add(4).add(9).add(16));
+        }
+    }
+
+    @Test
+    void testSwitch() {
+        final String DOUBLE = "double";
+        final String SQUARE = "square";
+        final String HALF = "half";
+        final String EVEN = "Event result";
+        final String ODD = "Event result";
+        final String MESSAGE = "message";
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("SwitchTest").function(expr(DOUBLE, ".input*=2")).function(expr(SQUARE, ".input*=.input")).function(expr(HALF, ".input/=2"))
+                    .start(operation().action(call(DOUBLE)).action(call(SQUARE)).action(call(HALF)))
+                    .when(".input%2==0").end(inject(objectNode().put(MESSAGE, EVEN)))
+                    .or().end(inject(objectNode().put(MESSAGE, ODD))).build();
+            Process<JsonNodeModel> process = application.process(workflow);
+            assertThat(application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata().get(MESSAGE).asText()).isEqualTo(ODD);
+            assertThat(application.execute(process, Collections.singletonMap("input", 7)).getWorkflowdata().get(MESSAGE).asText()).isEqualTo(EVEN);
         }
     }
 }

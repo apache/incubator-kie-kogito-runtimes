@@ -70,21 +70,20 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
     }
 
     public S build() {
-        ensureName();
-        return state;
+        return ensureName(state);
     }
 
     public S build(End end) {
-        ensureName();
-        state.withEnd(end);
+        ensureName(state).withEnd(end);
         return state;
     }
 
     private static int counter;
 
-    private void ensureName() {
+    protected static <T extends DefaultState> T ensureName(T state) {
         if (state.getName() == null) {
             state.setName(state.getType() + "_" + counter++);
         }
+        return state;
     }
 }

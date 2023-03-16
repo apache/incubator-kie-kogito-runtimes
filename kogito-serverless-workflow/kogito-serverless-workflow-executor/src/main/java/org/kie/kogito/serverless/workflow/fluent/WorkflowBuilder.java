@@ -76,7 +76,7 @@ public class WorkflowBuilder {
 
     public TransitionBuilder<WorkflowBuilder> start(StateBuilder<?, ?> stateBuilder) {
         startState(stateBuilder.build());
-        return new TransitionBuilder<WorkflowBuilder>(this, states);
+        return new TransitionBuilder<>(this, states);
     }
 
     private void startState(DefaultState state) {
@@ -95,7 +95,7 @@ public class WorkflowBuilder {
         return this;
     }
 
-    public static ObjectNode args() {
+    public static ObjectNode objectNode() {
         return mapper.createObjectNode();
     }
 

@@ -21,22 +21,22 @@ import java.util.List;
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.branches.Branch;
 
-public class BranchBuilder {
+public class BranchActionBuilder {
 
     private ParallelStateBuilder parent;
     private Branch branch;
     private List<Action> actions = new ArrayList<>();
 
-    public BranchBuilder(ParallelStateBuilder builder, Branch branch) {
+    public BranchActionBuilder(ParallelStateBuilder builder, Branch branch) {
         this.branch = branch.withActions(actions);
     }
 
-    public BranchBuilder name(String name) {
+    public BranchActionBuilder name(String name) {
         branch.withName(name);
         return this;
     }
 
-    public BranchBuilder action(ActionBuilder action) {
+    public BranchActionBuilder action(ActionBuilder action) {
         actions.add(action.build());
         return this;
     }

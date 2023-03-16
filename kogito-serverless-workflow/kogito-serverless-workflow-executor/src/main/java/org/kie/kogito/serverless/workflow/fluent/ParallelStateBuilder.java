@@ -37,9 +37,9 @@ public class ParallelStateBuilder extends StateBuilder<ParallelStateBuilder, Par
 
     private List<Branch> branches = new ArrayList<>();
 
-    public BranchBuilder branch() {
+    public BranchActionBuilder branch() {
         Branch branch = new Branch();
         branches.add(branch);
-        return new BranchBuilder(this, branch);
+        return new BranchActionBuilder(this, branch);
     }
 }
