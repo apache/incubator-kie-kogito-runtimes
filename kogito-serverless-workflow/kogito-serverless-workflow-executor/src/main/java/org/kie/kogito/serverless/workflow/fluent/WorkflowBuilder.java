@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,8 +28,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
-import io.serverlessworkflow.api.interfaces.State;
 import io.serverlessworkflow.api.start.Start;
+import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.workflow.Constants;
 import io.serverlessworkflow.api.workflow.Functions;
 
@@ -46,11 +47,10 @@ public class WorkflowBuilder {
 
     private Workflow workflow;
     private List<FunctionDefinition> functions = new LinkedList<>();
-    private List<State> states = new LinkedList<>();
+    private Deque<DefaultState> states = new LinkedList<>();
 
     private WorkflowBuilder(String id, String version) {
         this.workflow = new Workflow().withId(id).withVersion(version);
-
     }
 
     public WorkflowBuilder name(String name) {
@@ -78,13 +78,13 @@ public class WorkflowBuilder {
         return new TransitionBuilder<WorkflowBuilder>(this, states);
     }
 
-    private void startState(State state) {
+    private void startState(DefaultState state) {
         states.add(state);
         workflow.withStart(new Start().withStateName(state.getName()));
     }
 
     public Workflow build() {
-        workflow.withStates(states);
+        workflow.setStates((List) states);
         workflow.withFunctions(new Functions(functions));
         return workflow;
     }

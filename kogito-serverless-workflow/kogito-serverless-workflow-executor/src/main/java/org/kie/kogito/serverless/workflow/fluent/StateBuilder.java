@@ -18,7 +18,7 @@ package org.kie.kogito.serverless.workflow.fluent;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.end.End;
-import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.filters.StateDataFilter;
 import io.serverlessworkflow.api.states.DefaultState;
 
 public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends DefaultState> {
@@ -44,14 +44,34 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
         return (T) this;
     }
 
-    public State build() {
+    private StateDataFilter getFilter() {
+        StateDataFilter filter = state.getStateDataFilter();
+        if (filter == null) {
+            filter = new StateDataFilter();
+            state.withStateDataFilter(filter);
+        }
+        return filter;
+    }
+
+    public T inputFilter(String filter) {
+        getFilter().withInput(filter);
+        return (T) this;
+    }
+
+    public T outputFilter(String filter) {
+        getFilter().withOutput(filter);
+        return (T) this;
+    }
+
+    public S build() {
         ensureName();
         return state;
     }
 
-    public State build(End end) {
+    public S build(End end) {
         ensureName();
-        return state.withEnd(end);
+        state.withEnd(end);
+        return state;
     }
 
     private void ensureName() {
@@ -59,5 +79,4 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
             state.setName(state.getType() + "_" + counter++);
         }
     }
-
 }

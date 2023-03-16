@@ -45,6 +45,10 @@ public class FunctionBuilder {
         return new FunctionBuilder(new FunctionDefinition(name).withType(Type.CUSTOM).withOperation("rest:" + method + ":" + uri));
     }
 
+    public static FunctionBuilder expr(String name, String expression) {
+        return new FunctionBuilder(new FunctionDefinition(name).withType(Type.EXPRESSION).withOperation(expression));
+    }
+
     private FunctionBuilder(FunctionDefinition functionDefinition) {
         this.functionDefinition = functionDefinition;
     }

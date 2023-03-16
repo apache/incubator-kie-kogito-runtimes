@@ -31,6 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.functionCall;
+import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.rest;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.inject;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
@@ -60,6 +61,19 @@ class StaticFluentWorkflowApplicationTest {
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata()).isEqualTo(expectedOutput);
         } finally {
             server.stop();
+        }
+    }
+
+    @Test
+    void testExpr() {
+        final String DOUBLE = "double";
+        final String SQUARE = "square";
+        final String HALF = "half";
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("PlayingWithExpression").function(expr(DOUBLE, ".input*=2")).function(expr(SQUARE, ".input*=.input")).function(expr(HALF, ".input/=2"))
+                    .start(operation().action(functionCall(DOUBLE)).action(functionCall(SQUARE)).action(functionCall(HALF)))
+                    .end(operation().outputFilter("{result:.input}")).build();
+            assertThat(application.execute(workflow, Collections.singletonMap("input", 4)).getWorkflowdata().get("result").asInt()).isEqualTo(32);
         }
     }
 }

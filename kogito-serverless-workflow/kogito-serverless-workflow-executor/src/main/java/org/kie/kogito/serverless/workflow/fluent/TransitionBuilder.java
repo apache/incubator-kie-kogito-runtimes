@@ -15,23 +15,24 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
-import java.util.List;
+import java.util.Deque;
 
 import io.serverlessworkflow.api.end.End;
-import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.states.DefaultState;
+import io.serverlessworkflow.api.transitions.Transition;
 
 public class TransitionBuilder<T> {
 
     private final T container;
-    private List<State> states;
+    private Deque<DefaultState> states;
 
-    protected TransitionBuilder(T container, List<State> states) {
+    protected TransitionBuilder(T container, Deque<DefaultState> states) {
         this.container = container;
         this.states = states;
     }
 
     public TransitionBuilder<T> next(StateBuilder<?, ?> stateBuilder) {
-        states.add(stateBuilder.build());
+        addTransition(stateBuilder.build());
         return this;
     }
 
@@ -40,8 +41,14 @@ public class TransitionBuilder<T> {
     }
 
     public T end(StateBuilder<?, ?> stateBuilder, End end) {
-        State state = stateBuilder.build(end);
-        states.add(state);
+        addTransition(stateBuilder.build(end));
         return container;
     }
+
+    private void addTransition(DefaultState state) {
+        DefaultState prevState = states.getLast();
+        prevState.setTransition(new Transition().withNextState(state.getName()));
+        states.add(state);
+    }
+
 }
