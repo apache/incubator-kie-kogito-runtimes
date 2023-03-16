@@ -23,14 +23,20 @@ import io.serverlessworkflow.api.states.DefaultState;
 
 public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends DefaultState> {
 
-    private static int counter;
-
     public static InjectStateBuilder inject(JsonNode data) {
         return new InjectStateBuilder(data);
     }
 
     public static OperationStateBuilder operation() {
         return new OperationStateBuilder();
+    }
+
+    public static ParallelStateBuilder parallel() {
+        return new ParallelStateBuilder();
+    }
+
+    public static ForEachStateBuilder forEach(String inputExpr) {
+        return new ForEachStateBuilder(inputExpr);
     }
 
     protected final S state;
@@ -73,6 +79,8 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
         state.withEnd(end);
         return state;
     }
+
+    private static int counter;
 
     private void ensureName() {
         if (state.getName() == null) {

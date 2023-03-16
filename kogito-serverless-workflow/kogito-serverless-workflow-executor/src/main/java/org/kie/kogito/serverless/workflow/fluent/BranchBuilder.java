@@ -19,20 +19,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.serverlessworkflow.api.actions.Action;
-import io.serverlessworkflow.api.states.DefaultState.Type;
-import io.serverlessworkflow.api.states.OperationState;
+import io.serverlessworkflow.api.branches.Branch;
 
-public class OperationStateBuilder extends StateBuilder<OperationStateBuilder, OperationState> {
+public class BranchBuilder {
 
+    private ParallelStateBuilder parent;
+    private Branch branch;
     private List<Action> actions = new ArrayList<>();
 
-    protected OperationStateBuilder() {
-        super(new OperationState().withType(Type.OPERATION));
-        state.withActions(actions);
+    public BranchBuilder(ParallelStateBuilder builder, Branch branch) {
+        this.branch = branch.withActions(actions);
     }
 
-    public OperationStateBuilder action(ActionBuilder builder) {
-        actions.add(builder.build());
+    public BranchBuilder name(String name) {
+        branch.withName(name);
         return this;
+    }
+
+    public BranchBuilder action(ActionBuilder action) {
+        actions.add(action.build());
+        return this;
+    }
+
+    public ParallelStateBuilder other() {
+        return parent;
     }
 }

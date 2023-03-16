@@ -23,6 +23,7 @@ import org.kie.kogito.jackson.utils.JsonObjectUtils;
 import org.kie.kogito.jackson.utils.ObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.serverlessworkflow.api.Workflow;
@@ -96,6 +97,10 @@ public class WorkflowBuilder {
 
     public static ObjectNode args() {
         return mapper.createObjectNode();
+    }
+
+    public static ArrayNode arrayNode() {
+        return mapper.createArrayNode();
     }
 
 }

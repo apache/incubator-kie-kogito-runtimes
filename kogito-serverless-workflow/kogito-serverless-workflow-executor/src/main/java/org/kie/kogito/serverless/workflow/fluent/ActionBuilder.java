@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import org.kie.kogito.process.Process;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,20 +30,25 @@ public class ActionBuilder {
 
     private Action action;
 
-    public static ActionBuilder functionCall(String functionName) {
-        return functionCall(functionName, NullNode.instance);
+    public static ActionBuilder call(String functionName) {
+        return call(functionName, NullNode.instance);
     }
 
-    public static ActionBuilder functionCall(String functionName, JsonNode args) {
+    public static ActionBuilder call(String functionName, JsonNode args) {
         return new ActionBuilder(new Action().withFunctionRef(new FunctionRef().withRefName(functionName).withArguments(args)));
     }
 
-    public ActionBuilder subprocess(org.kie.kogito.process.Process<JsonNodeModel> subprocess) {
+    public ActionBuilder subprocess(Process<JsonNodeModel> subprocess) {
         return new ActionBuilder(new Action().withSubFlowRef(new SubFlowRef().withWorkflowId(subprocess.id())));
     }
 
     protected ActionBuilder(Action action) {
         this.action = action;
+    }
+
+    public ActionBuilder name(String name) {
+        action.withName(name);
+        return this;
     }
 
     public Action build() {

@@ -15,6 +15,7 @@
  */
 package org.kie.kogito.serverless.workflow.executor;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
@@ -30,11 +31,13 @@ import io.serverlessworkflow.api.Workflow;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.functionCall;
+import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.rest;
+import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.forEach;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.inject;
 import static org.kie.kogito.serverless.workflow.fluent.StateBuilder.operation;
+import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.arrayNode;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
 
 class StaticFluentWorkflowApplicationTest {
@@ -57,7 +60,7 @@ class StaticFluentWorkflowApplicationTest {
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             server.start();
             Workflow workflow = workflow("HelloRest").function(rest(FUNCTION_NAME, HttpMethod.get, "http://localhost:" + server.getOptions().portNumber() + "/name"))
-                    .singleton(operation().action(functionCall(FUNCTION_NAME)));
+                    .singleton(operation().action(call(FUNCTION_NAME)));
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata()).isEqualTo(expectedOutput);
         } finally {
             server.stop();
@@ -71,9 +74,20 @@ class StaticFluentWorkflowApplicationTest {
         final String HALF = "half";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("PlayingWithExpression").function(expr(DOUBLE, ".input*=2")).function(expr(SQUARE, ".input*=.input")).function(expr(HALF, ".input/=2"))
-                    .start(operation().action(functionCall(DOUBLE)).action(functionCall(SQUARE)).action(functionCall(HALF)))
+                    .start(operation().action(call(DOUBLE)).action(call(SQUARE)).action(call(HALF)))
                     .end(operation().outputFilter("{result:.input}")).build();
             assertThat(application.execute(workflow, Collections.singletonMap("input", 4)).getWorkflowdata().get("result").asInt()).isEqualTo(32);
+        }
+    }
+
+    @Test
+    void testForEach() {
+        final String SQUARE = "square";
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("ForEachTest").function(expr(SQUARE, ".input*.input"))
+                    .singleton(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(SQUARE)));
+            assertThat(application.execute(workflow, Collections.singletonMap("numbers", Arrays.asList(1, 2, 3, 4))).getWorkflowdata().get("result"))
+                    .isEqualTo(arrayNode().add(1).add(4).add(9).add(16));
         }
     }
 }

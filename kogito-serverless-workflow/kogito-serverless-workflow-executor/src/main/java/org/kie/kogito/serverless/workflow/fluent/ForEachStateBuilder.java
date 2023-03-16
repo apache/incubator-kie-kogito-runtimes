@@ -20,18 +20,28 @@ import java.util.List;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.states.DefaultState.Type;
-import io.serverlessworkflow.api.states.OperationState;
+import io.serverlessworkflow.api.states.ForEachState;
 
-public class OperationStateBuilder extends StateBuilder<OperationStateBuilder, OperationState> {
+public class ForEachStateBuilder extends StateBuilder<ForEachStateBuilder, ForEachState> {
 
     private List<Action> actions = new ArrayList<>();
 
-    protected OperationStateBuilder() {
-        super(new OperationState().withType(Type.OPERATION));
+    protected ForEachStateBuilder(String inputExpr) {
+        super(new ForEachState().withType(Type.FOREACH).withInputCollection(inputExpr));
         state.withActions(actions);
     }
 
-    public OperationStateBuilder action(ActionBuilder builder) {
+    public ForEachStateBuilder loopVar(String loopVar) {
+        state.withIterationParam(loopVar);
+        return this;
+    }
+
+    public ForEachStateBuilder outputCollection(String outputExpr) {
+        state.withOutputCollection(outputExpr);
+        return this;
+    }
+
+    public ForEachStateBuilder action(ActionBuilder builder) {
         actions.add(builder.build());
         return this;
     }
