@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -97,7 +98,7 @@ public class AbstractProcessInstanceTest {
         processInstance.startFrom(NODE_ID);
 
         verify(nodeInstance).trigger(null, Node.CONNECTION_DEFAULT_TYPE);
-        verify(unitOfWork).intercept(any());
+        verify(unitOfWork, times(2)).intercept(any());
     }
 
     @Test
@@ -114,7 +115,7 @@ public class AbstractProcessInstanceTest {
         RuleFlowProcess process = mock(RuleFlowProcess.class);
         when(wpi.getProcess()).thenReturn(process);
         org.kie.api.definition.process.Node node = mock(org.kie.api.definition.process.Node.class);
-        when(node.getMetaData()).thenReturn(Collections.singletonMap("UniqueId", nodeId));
+        when(node.getNodeUniqueId()).thenReturn(nodeId);
         when(process.getNodesRecursively()).thenReturn(Arrays.asList(node));
 
         NodeInstance nodeInstance = mock(NodeInstance.class);
