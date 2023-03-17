@@ -413,6 +413,8 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         processInstance.setStartDate(new Date());
         processInstance.setState(STATE_ACTIVE);
         getProcessRuntime().getProcessInstanceManager().addProcessInstance(this.processInstance);
+        addToUnitOfWork(pi -> ((MutableProcessInstances<T>) process.instances()).create(id, this));
+
         this.id = processInstance.getStringId();
         addCompletionEventListener();
         if (referenceId != null) {
@@ -435,7 +437,9 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         org.kie.api.definition.process.Node node = rfp.getNodesRecursively()
                 .stream()
-                .filter(ni -> nodeId.equals(ni.getMetaData().get("UniqueId"))).findFirst().orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
+                .filter(ni -> Objects.equals(nodeId, ni.getNodeUniqueId()))
+                .findFirst()
+                .orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
 
         org.kie.api.definition.process.Node parentNode = rfp.getParentNode(node.getId());
 
