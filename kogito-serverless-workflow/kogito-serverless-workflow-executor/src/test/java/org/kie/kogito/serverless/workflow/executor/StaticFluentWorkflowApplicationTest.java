@@ -120,7 +120,9 @@ class StaticFluentWorkflowApplicationTest {
         final String HALF = "half";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("ParallelTest").function(expr(DOUBLE, ".input*2")).function(expr(HALF, ".input/2"))
-                    .singleton(parallel().branch().action(call(DOUBLE).outputFilter(".double")).then().branch().action(call(HALF).outputFilter(".half")).then());
+                    .singleton(parallel()
+                            .newBranch().action(call(DOUBLE).outputFilter(".double")).endBranch()
+                            .newBranch().action(call(HALF).outputFilter(".half")).endBranch());
 
             Process<JsonNodeModel> process = application.process(workflow);
             JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();

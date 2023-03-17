@@ -42,7 +42,7 @@ public class BranchActionBuilder {
         return this;
     }
 
-    public ParallelStateBuilder then() {
+    public ParallelStateBuilder endBranch() {
         return parent;
     }
 }
