@@ -21,12 +21,14 @@ import java.util.function.Function;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
-public class StaticFunctionWorkItemHandler<T> extends WorkflowWorkItemHandler {
+import static org.kogito.workitem.rest.RestWorkItemHandler.CONTENT_DATA;
+
+public class StaticFunctionWorkItemHandler<V, T> extends WorkflowWorkItemHandler {
 
     private final String name;
-    private final Function<Map<String, Object>, T> function;
+    private final Function<V, T> function;
 
-    public StaticFunctionWorkItemHandler(String name, Function<Map<String, Object>, T> function) {
+    public StaticFunctionWorkItemHandler(String name, Function<V, T> function) {
         this.name = name;
         this.function = function;
     }
@@ -38,7 +40,7 @@ public class StaticFunctionWorkItemHandler<T> extends WorkflowWorkItemHandler {
 
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
-        return function.apply(parameters);
+        return parameters.size() == 1 && parameters.containsKey(CONTENT_DATA) ? function.apply((V) parameters.get(CONTENT_DATA))
+                : function.apply((V) parameters);
     }
-
 }

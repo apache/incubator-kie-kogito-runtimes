@@ -52,7 +52,7 @@ public class FunctionBuilder {
         return new FunctionBuilder(new FunctionDefinition(name).withType(Type.EXPRESSION).withOperation(expression));
     }
 
-    public static FunctionBuilder java(String name, Function<Map<String, Object>, ?> function) {
+    public static <T> FunctionBuilder java(String name, Function<T, ?> function) {
         return new FunctionBuilder(new FunctionDefinitionEx(name).withFunction(function).withType(Type.CUSTOM).withOperation(JavaTypeHandler.JAVA_TYPE));
     }
 

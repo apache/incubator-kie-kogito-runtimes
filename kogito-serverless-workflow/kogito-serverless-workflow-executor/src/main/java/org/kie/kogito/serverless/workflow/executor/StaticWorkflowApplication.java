@@ -200,7 +200,7 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
     }
 
     private void registerNeededHandlers(Workflow flow) {
-        Optional<Map<String, Function<Map<String, Object>, ?>>> javaFunctions =
+        Optional<Map<String, Function<?, ?>>> javaFunctions =
                 flow.getExtensions().stream().filter(e -> e.getExtensionId().equals(JavaFunctionExtension.EXTENSION_ID)).map(JavaFunctionExtension.class::cast)
                         .map(JavaFunctionExtension::functions).findAny();
         if (flow.getFunctions() != null && flow.getFunctions().getFunctionDefs() != null) {
@@ -210,9 +210,8 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
                     if (RestTypeHandler.REST_TYPE.equals(type)) {
                         initRestWorkItemHandler();
                     } else if (JavaTypeHandler.JAVA_TYPE.equals(type)) {
-
                         javaFunctions.ifPresent(m -> {
-                            Function<Map<String, Object>, ?> function = m.get(functionDef.getName());
+                            Function<?, ?> function = m.get(functionDef.getName());
                             if (function != null) {
                                 handlers.add(new StaticFunctionWorkItemHandler<>(functionDef.getName(), function));
                             }

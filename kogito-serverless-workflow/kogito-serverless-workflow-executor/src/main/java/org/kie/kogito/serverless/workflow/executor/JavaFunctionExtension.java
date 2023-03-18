@@ -30,9 +30,9 @@ public class JavaFunctionExtension implements Extension {
         return EXTENSION_ID;
     }
 
-    private Map<String, Function<Map<String, Object>, ?>> functions = new HashMap<>();
+    private Map<String, Function<?, ?>> functions = new HashMap<>();
 
-    public Map<String, Function<Map<String, Object>, ?>> functions() {
+    public Map<String, Function<?, ?>> functions() {
         return functions;
     }
 }

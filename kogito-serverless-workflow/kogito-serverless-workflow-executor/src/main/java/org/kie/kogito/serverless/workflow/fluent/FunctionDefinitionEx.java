@@ -15,26 +15,25 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
-import java.util.Map;
 import java.util.function.Function;
 
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
-public class FunctionDefinitionEx extends FunctionDefinition {
+public class FunctionDefinitionEx<T> extends FunctionDefinition {
 
     private static final long serialVersionUID = 1L;
-    private transient Function<Map<String, Object>, ?> function;
+    private transient Function<T, ?> function;
 
     public FunctionDefinitionEx(String name) {
         super(name);
     }
 
-    public FunctionDefinition withFunction(Function<Map<String, Object>, ?> function) {
+    public FunctionDefinition withFunction(Function<T, ?> function) {
         this.function = function;
         return this;
     }
 
-    public Function<Map<String, Object>, ?> getFunction() {
+    public Function<T, ?> getFunction() {
         return function;
     }
 }

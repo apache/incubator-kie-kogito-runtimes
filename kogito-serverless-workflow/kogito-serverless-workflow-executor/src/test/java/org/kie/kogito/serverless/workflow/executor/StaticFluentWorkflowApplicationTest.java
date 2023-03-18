@@ -145,10 +145,10 @@ class StaticFluentWorkflowApplicationTest {
         final String DOUBLE = "double";
         final String HALF = "half";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("Javatest").function(java(DOUBLE, args -> duplicate((Integer) args.get("number")))).function(java(HALF, args -> half((Integer) args.get("number"))))
+            Workflow workflow = workflow("Javatest").function(java(DOUBLE, this::duplicate)).function(java(HALF, this::half))
                     .singleton(parallel()
-                            .newBranch().action(call(DOUBLE, objectNode().put("number", ".input")).outputFilter(".double")).endBranch()
-                            .newBranch().action(call(HALF, objectNode().put("number", ".input")).outputFilter(".half")).endBranch());
+                            .newBranch().action(call(DOUBLE, new TextNode(".input")).outputFilter(".double")).endBranch()
+                            .newBranch().action(call(HALF, new TextNode(".input")).outputFilter(".half")).endBranch());
 
             Process<JsonNodeModel> process = application.process(workflow);
             JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
