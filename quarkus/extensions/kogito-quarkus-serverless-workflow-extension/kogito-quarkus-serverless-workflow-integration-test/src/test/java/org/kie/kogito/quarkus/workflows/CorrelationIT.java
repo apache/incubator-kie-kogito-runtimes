@@ -28,7 +28,6 @@ import org.kie.kogito.event.cloudevents.CloudEventExtensionConstants;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
-import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,6 @@ import static org.kie.kogito.quarkus.workflows.WorkflowTestUtils.getProcessInsta
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(KafkaQuarkusTestResource.class)
-@QuarkusTestResource(PostgreSqlQuarkusTestResource.class)
 public class CorrelationIT {
 
     public static final String USER_ID = "userid";
