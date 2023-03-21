@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -50,7 +51,7 @@ public abstract class WorkItemBuilder {
     /**
      * Implementations should use this method to validate if provided function arguments are suitable
      * In case they are not they might throw an exception to interrupt build procedure or print an informative log
-     * 
+     *
      * @param ref the function reference containing the arguments and the function name
      */
     protected void validateArgs(FunctionRef ref) {
@@ -115,6 +116,10 @@ public abstract class WorkItemBuilder {
     }
 
     private boolean isExpression(Workflow workflow, Object value) {
-        return value instanceof CharSequence && ExpressionHandlerFactory.get(workflow.getExpressionLang(), value.toString()).isValid() || value instanceof JsonNode;
+        if (value instanceof List) {
+            return ((List) value).stream().anyMatch(v -> isExpression(workflow, v));
+        } else {
+            return value instanceof CharSequence && ExpressionHandlerFactory.get(workflow.getExpressionLang(), value.toString()).isValid() || value instanceof JsonNode;
+        }
     }
 }

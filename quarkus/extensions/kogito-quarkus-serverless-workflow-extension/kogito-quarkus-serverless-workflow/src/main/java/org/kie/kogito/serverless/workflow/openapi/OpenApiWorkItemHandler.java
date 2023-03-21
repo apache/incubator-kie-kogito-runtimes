@@ -15,33 +15,38 @@
  */
 package org.kie.kogito.serverless.workflow.openapi;
 
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 
 import org.kie.kogito.event.cloudevents.extension.ProcessMeta;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.restclient.runtime.RestClientBuilderFactory;
 
 public abstract class OpenApiWorkItemHandler<T> extends WorkflowWorkItemHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpenApiWorkItemHandler.class);
+
     @Override
     protected Object internalExecute(KogitoWorkItem workItem, Map<String, Object> parameters) {
         Class<T> clazz = getRestClass();
-        T ref = RestClientBuilderFactory.build(clazz).register(new ClientRequestFilter() {
-            @Override
-            public void filter(ClientRequestContext requestContext) throws IOException {
-                ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v)));
-            }
-        }).build(clazz);
+        LOGGER.debug("OpenAPI parameters size: {}", parameters.size());
+        if (LOGGER.isDebugEnabled()) {
+            parameters.entrySet().forEach(e -> {
+                LOGGER.debug("OpenAPI parameter: {}, value: {}", e.getKey(), e.getValue());
+            });
+        }
+        T ref = RestClientBuilderFactory.build(clazz).register(
+                        (ClientRequestFilter) requestContext -> ProcessMeta.fromKogitoWorkItem(workItem).asMap().forEach((k, v) -> requestContext.getHeaders().put(k, Collections.singletonList(v))))
+                .build(clazz);
         try {
             return internalExecute(ref, parameters);
         } catch (WebApplicationException ex) {

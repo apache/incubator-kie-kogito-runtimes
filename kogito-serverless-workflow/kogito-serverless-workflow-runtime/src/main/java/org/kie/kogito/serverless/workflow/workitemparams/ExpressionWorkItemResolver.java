@@ -49,6 +49,7 @@ public abstract class ExpressionWorkItemResolver<T> implements WorkItemParamReso
     private JsonNode transform(JsonNode node, Object inputModel, KogitoProcessContext context) {
         Expression expr = ExpressionHandlerFactory.get(language, node.asText());
         try {
+            logger.debug("Expression: {}, valid: {}", expression, expr.isValid());
             return expr.isValid() ? expr.eval(inputModel, JsonNode.class, context) : node;
         } catch (Exception ex) {
             logger.info("Error evaluating expression, returning original text {}", node);
