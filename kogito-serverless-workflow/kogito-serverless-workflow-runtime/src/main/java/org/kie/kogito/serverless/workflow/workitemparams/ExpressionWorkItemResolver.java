@@ -34,7 +34,7 @@ public abstract class ExpressionWorkItemResolver<T> implements WorkItemParamReso
 
     protected final String language;
     protected final Object expression;
-    protected final String paramName;
+    private final String paramName;
 
     protected ExpressionWorkItemResolver(String language, Object expression, String paramName) {
         this.language = language;

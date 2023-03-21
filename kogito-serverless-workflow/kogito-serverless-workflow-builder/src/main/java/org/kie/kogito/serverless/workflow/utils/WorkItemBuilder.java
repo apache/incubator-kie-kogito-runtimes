@@ -79,12 +79,13 @@ public abstract class WorkItemBuilder {
             functionsToMap(workflow, functionArgs).forEach((key, value) -> processArg(workflow, key, value, workItemFactory, paramName));
         } else {
             Object object = functionReference(workflow, JsonObjectUtils.simpleToJavaValue(functionArgs));
-            if (isExpression(workflow, object)) {
-                workItemFactory.workParameterFactory(new ExpressionParametersFactorySupplier(workflow.getExpressionLang(), object, paramName))
-                        .workParameterDefinition(RestWorkItemHandler.CONTENT_DATA, getDataType(object, true));
+            boolean isExpr = isExpression(workflow, object);
+            if (isExpr) {
+                workItemFactory.workParameterFactory(new ExpressionParametersFactorySupplier(workflow.getExpressionLang(), object, paramName));
             } else {
-                workItemFactory.workParameter(RestWorkItemHandler.CONTENT_DATA, object).workParameterDefinition(RestWorkItemHandler.CONTENT_DATA, getDataType(object, false));
+                workItemFactory.workParameter(RestWorkItemHandler.CONTENT_DATA, object);
             }
+            workItemFactory.workParameterDefinition(RestWorkItemHandler.CONTENT_DATA, getDataType(object, isExpr));
         }
     }
 
