@@ -26,6 +26,6 @@ public class ObjectResolver extends ExpressionWorkItemResolver<Object> {
 
     @Override
     public Object apply(KogitoWorkItem workItem) {
-        return JsonObjectUtils.simpleToJavaValue(evalExpression(workItem));
+        return JsonObjectUtils.toJavaValue(evalExpression(workItem));
     }
 }
