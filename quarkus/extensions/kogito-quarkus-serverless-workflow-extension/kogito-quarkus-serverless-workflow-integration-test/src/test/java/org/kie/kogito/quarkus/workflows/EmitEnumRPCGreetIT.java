@@ -16,6 +16,7 @@
 package org.kie.kogito.quarkus.workflows;
 
 import org.junit.jupiter.api.Test;
+import org.kie.kogito.testcontainers.quarkus.PostgreSqlQuarkusTestResource;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
@@ -26,6 +27,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTestResource(GrpcServerPortResource.class)
+@QuarkusTestResource(PostgreSqlQuarkusTestResource.class)
 @QuarkusIntegrationTest
 @TestProfile(EmitEnumProfile.class)
 class EmitEnumRPCGreetIT {
