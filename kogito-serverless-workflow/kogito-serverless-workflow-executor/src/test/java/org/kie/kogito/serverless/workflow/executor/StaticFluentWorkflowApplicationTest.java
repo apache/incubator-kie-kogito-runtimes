@@ -59,17 +59,17 @@ class StaticFluentWorkflowApplicationTest {
     }
 
     @RegisterExtension
-    static WireMockExtension wm1 = WireMockExtension.newInstance()
+    static WireMockExtension wm = WireMockExtension.newInstance()
             .options(wireMockConfig().dynamicPort())
             .build();
 
     @Test
     void restInvocation() {
         JsonNode expectedOutput = ObjectMapperFactory.get().createObjectNode().put("name", "Javierito");
-        wm1.stubFor(get("/name").willReturn(aResponse().withStatus(200).withJsonBody(expectedOutput)));
+        wm.stubFor(get("/name").willReturn(aResponse().withStatus(200).withJsonBody(expectedOutput)));
         final String FUNCTION_NAME = "function";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("HelloRest").function(rest(FUNCTION_NAME, HttpMethod.get, "http://localhost:" + wm1.getPort() + "/name"))
+            Workflow workflow = workflow("HelloRest").function(rest(FUNCTION_NAME, HttpMethod.get, "http://localhost:" + wm.getPort() + "/name"))
                     .singleton(operation().action(call(FUNCTION_NAME)));
             assertThat(application.execute(workflow, Collections.emptyMap()).getWorkflowdata()).isEqualTo(expectedOutput);
         }
