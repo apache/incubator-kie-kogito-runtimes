@@ -16,6 +16,7 @@
 package org.kie.kogito.serverless.workflow.actions;
 
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
+import org.kie.kogito.internal.utils.ConversionUtils;
 
 public class SysoutAction extends BaseExpressionAction {
 
@@ -23,7 +24,7 @@ public class SysoutAction extends BaseExpressionAction {
 
     public SysoutAction(String lang, String expr, String inputVar, String level) {
         super(lang, expr, inputVar);
-        logLevel = level != null ? WorkflowLogLevel.valueOf(level) : WorkflowLogLevel.INFO;
+        logLevel = ConversionUtils.isEmpty(level) ? WorkflowLogLevel.INFO : WorkflowLogLevel.valueOf(level);
     }
 
     @Override

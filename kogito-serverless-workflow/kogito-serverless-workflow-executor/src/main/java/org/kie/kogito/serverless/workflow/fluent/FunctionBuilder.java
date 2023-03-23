@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.kie.kogito.serverless.workflow.actions.WorkflowLogLevel;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.types.JavaTypeHandler;
-import org.kie.kogito.serverless.workflow.parser.types.SysOutTypeHandler;
 
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
@@ -61,7 +61,7 @@ public class FunctionBuilder {
     }
 
     public static FunctionBuilder log(String name, WorkflowLogLevel level) {
-        return new FunctionBuilder(new FunctionDefinition(name).withType(Type.CUSTOM).withOperation(SYSOUT_TYPE)).metadata(SysOutTypeHandler.SYSOUT_LEVEL, level.toString());
+        return new FunctionBuilder(new FunctionDefinition(name).withType(Type.CUSTOM).withOperation(SYSOUT_TYPE + FunctionTypeHandlerFactory.CUSTOM_TYPE_SEPARATOR + level));
     }
 
     private FunctionBuilder(FunctionDefinition functionDefinition) {

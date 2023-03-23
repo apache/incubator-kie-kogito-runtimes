@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.parser.types;
 
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.ActionNodeFactory;
+import org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory;
 import org.kie.kogito.serverless.workflow.parser.VariableInfo;
 import org.kie.kogito.serverless.workflow.suppliers.SysoutActionSupplier;
 
@@ -28,7 +29,6 @@ public class SysOutTypeHandler extends ActionTypeHandler {
 
     public static final String SYSOUT_TYPE = "sysout";
     public static final String SYSOUT_TYPE_PARAM = "message";
-    public static final String SYSOUT_LEVEL = "level";
 
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> ActionNodeFactory<T> fillAction(Workflow workflow,
@@ -36,11 +36,8 @@ public class SysOutTypeHandler extends ActionTypeHandler {
             FunctionDefinition functionDef,
             FunctionRef functionRef,
             VariableInfo varInfo) {
-        String logLevel = null;
-        if (functionDef.getMetadata() != null) {
-            logLevel = functionDef.getMetadata().get(SYSOUT_LEVEL);
-        }
-        return node.action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), varInfo.getInputVar(), logLevel));
+        return node.action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), varInfo.getInputVar(),
+                FunctionTypeHandlerFactory.trimCustomOperation(functionDef)));
     }
 
     @Override
