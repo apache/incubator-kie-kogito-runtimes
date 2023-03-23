@@ -103,11 +103,10 @@ public class ProcessCodegen extends AbstractGenerator {
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNExtensionsSemanticModule());
         BPMN_SEMANTIC_MODULES.addSemanticModule(new BPMNDISemanticModule());
 
-        Map<String, WorkflowFormat> extMap = new HashMap<>();
-        extMap.put(".sw.yml", WorkflowFormat.YAML);
-        extMap.put(".sw.yaml", WorkflowFormat.YAML);
-        extMap.put(".sw.json", WorkflowFormat.JSON);
-        SUPPORTED_SW_EXTENSIONS = Collections.unmodifiableMap(extMap);
+        SUPPORTED_SW_EXTENSIONS = Map.of(
+                ".sw.yml", WorkflowFormat.YAML,
+                ".sw.yaml", WorkflowFormat.YAML,
+                ".sw.json", WorkflowFormat.JSON);
     }
 
     private final List<ProcessGenerator> processGenerators = new ArrayList<>();
