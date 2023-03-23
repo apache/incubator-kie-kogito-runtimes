@@ -18,12 +18,16 @@ package org.kie.kogito.serverless.workflow.actions;
 import org.kie.kogito.internal.process.runtime.KogitoProcessContext;
 
 public class SysoutAction extends BaseExpressionAction {
-    public SysoutAction(String lang, String expr, String inputVar) {
+
+    private final WorkflowLogLevel logLevel;
+
+    public SysoutAction(String lang, String expr, String inputVar, String level) {
         super(lang, expr, inputVar);
+        logLevel = level != null ? WorkflowLogLevel.valueOf(level) : WorkflowLogLevel.INFO;
     }
 
     @Override
     public void execute(KogitoProcessContext context) throws Exception {
-        System.out.println(expr.isValid() ? evaluate(context, String.class) : expr);
+        WorkflowLogger.log(logLevel, expr.isValid() ? evaluate(context, String.class) : expr.asString());
     }
 }

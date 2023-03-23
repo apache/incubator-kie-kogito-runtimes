@@ -26,7 +26,9 @@ import io.serverlessworkflow.api.functions.FunctionRef;
 
 public class SysOutTypeHandler extends ActionTypeHandler {
 
-    private static final String SYSOUT_TYPE_PARAM = "message";
+    public static final String SYSOUT_TYPE = "sysout";
+    public static final String SYSOUT_TYPE_PARAM = "message";
+    public static final String SYSOUT_LEVEL = "level";
 
     @Override
     protected <T extends RuleFlowNodeContainerFactory<T, ?>> ActionNodeFactory<T> fillAction(Workflow workflow,
@@ -34,12 +36,16 @@ public class SysOutTypeHandler extends ActionTypeHandler {
             FunctionDefinition functionDef,
             FunctionRef functionRef,
             VariableInfo varInfo) {
-        return node.action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), varInfo.getInputVar()));
+        String logLevel = null;
+        if (functionDef.getMetadata() != null) {
+            logLevel = functionDef.getMetadata().get(SYSOUT_LEVEL);
+        }
+        return node.action(new SysoutActionSupplier(workflow.getExpressionLang(), functionRef.getArguments().get(SYSOUT_TYPE_PARAM).asText(), varInfo.getInputVar(), logLevel));
     }
 
     @Override
     public String type() {
-        return "sysout";
+        return SYSOUT_TYPE;
     }
 
 }
