@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jbpm.process.core.ProcessSupplier;
 import org.jbpm.process.core.timer.DateTimeUtils;
 import org.jbpm.process.core.timer.Timer;
@@ -283,7 +284,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
             if (type.startsWith("processInstanceCompleted:")) {
                 KogitoProcessInstance pi = (KogitoProcessInstance) event;
                 String parentProcessInstanceId = pi.getParentProcessInstanceId();
-                if (!id().equals(pi.getProcessId()) && parentProcessInstanceId != null) {
+                if (!id().equals(pi.getProcessId()) && StringUtils.isNotEmpty(parentProcessInstanceId)) {
                     //checking if parent is present in ProcessInstanceManager (in-memory local transaction)
                     KogitoProcessInstance parentKogitoProcessInstance = services.getProcessInstanceManager().getProcessInstance(parentProcessInstanceId);
                     if (parentKogitoProcessInstance != null) {
@@ -295,6 +296,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                 }
             }
         }
+
         @Override
         public String[] getEventTypes() {
             return new String[0];
