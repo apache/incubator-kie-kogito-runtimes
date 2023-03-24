@@ -50,7 +50,7 @@ import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.arrayNod
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.objectNode;
 import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.workflow;
 
-class StaticFluentWorkflowApplicationTest {
+public class StaticFluentWorkflowApplicationTest {
 
     @Test
     void helloWorld() {
@@ -141,12 +141,29 @@ class StaticFluentWorkflowApplicationTest {
         }
     }
 
-    private int duplicate(int number) {
+    public int duplicate(int number) {
         return number * 2;
     }
 
-    private int half(int number) {
+    public int half(int number) {
         return number / 2;
+    }
+
+    @Test
+    void testService() {
+        final String DOUBLE = "double";
+        final String HALF = "half";
+        try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow workflow = workflow("ServiceTest").function(java(DOUBLE, StaticFluentWorkflowApplicationTest.class.getName(), "duplicate"))
+                    .function(java(HALF, StaticFluentWorkflowApplicationTest.class.getName(), "half"))
+                    .singleton(parallel()
+                            .newBranch().action(call(DOUBLE, new TextNode(".input")).outputFilter(".double")).endBranch()
+                            .newBranch().action(call(HALF, new TextNode(".input")).outputFilter(".half")).endBranch());
+            Process<JsonNodeModel> process = application.process(workflow);
+            JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
+            assertThat(result.get("double").asInt()).isEqualTo(8);
+            assertThat(result.get("half").asInt()).isEqualTo(2);
+        }
     }
 
     @Test
@@ -158,7 +175,6 @@ class StaticFluentWorkflowApplicationTest {
                     .singleton(parallel()
                             .newBranch().action(call(DOUBLE, new TextNode(".input")).outputFilter(".double")).endBranch()
                             .newBranch().action(call(HALF, new TextNode(".input")).outputFilter(".half")).endBranch());
-
             Process<JsonNodeModel> process = application.process(workflow);
             JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
             assertThat(result.get("double").asInt()).isEqualTo(8);
