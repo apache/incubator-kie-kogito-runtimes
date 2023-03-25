@@ -423,6 +423,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
         if (headers != null) {
             this.processInstance.setHeaders(headers);
         }
+
         triggerNode(nodeId);
         unbind(variables, processInstance.getVariables());
         if (processInstance != null) {
@@ -437,7 +438,7 @@ public abstract class AbstractProcessInstance<T extends Model> implements Proces
 
         org.kie.api.definition.process.Node node = rfp.getNodesRecursively()
                 .stream()
-                .filter(ni -> Objects.equals(nodeId, ni.getNodeUniqueId()))
+                .filter(ni -> Objects.equals(nodeId, ni.getNodeUniqueId()) || Objects.equals(nodeId, ni.getName()) || Objects.equals(nodeId, String.valueOf(ni.getId())))
                 .findFirst()
                 .orElseThrow(() -> new NodeNotFoundException(this.id, nodeId));
 

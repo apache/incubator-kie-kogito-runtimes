@@ -138,6 +138,6 @@ public class CorrelationIT {
 
     @Test
     void correlationEventStartFromNodeTest() throws Exception {
-        correlationEventTest("_jbpm-unique-125");//printWaitMessage node
+        correlationEventTest("printWaitMessage");//printWaitMessage node
     }
 }
