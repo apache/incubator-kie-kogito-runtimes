@@ -87,7 +87,7 @@ public class StaticFluentWorkflowApplicationTest {
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("PlayingWithExpression")
                     .start(operation().action(call(expr(DOUBLE, ".input*=2"))).action(call(expr(SQUARE, ".input*=.input"))).action(call(expr(HALF, ".input/=2"))))
-                    .end(operation().outputFilter("{result:.input}")).build();
+                    .end(operation().action(log(WorkflowLogLevel.DEBUG, "Here we are!!!")).outputFilter("{result:.input}")).build();
             assertThat(application.execute(workflow, Collections.singletonMap("input", 4)).getWorkflowdata().get("result").asInt()).isEqualTo(32);
         }
     }
