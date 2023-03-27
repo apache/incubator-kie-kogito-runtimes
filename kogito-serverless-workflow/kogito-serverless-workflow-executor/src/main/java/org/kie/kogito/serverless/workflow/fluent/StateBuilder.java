@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.filters.StateDataFilter;
-import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.states.DefaultState;
 
 public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends DefaultState> {
@@ -44,9 +43,9 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
     }
 
     protected final S state;
-    protected final Collection<FunctionDefinition> functionDefinitions = new ArrayList<>();
+    protected final Collection<FunctionBuilder> functionDefinitions = new ArrayList<>();
 
-    Collection<FunctionDefinition> getFunctions() {
+    Collection<FunctionBuilder> getFunctions() {
         return functionDefinitions;
     }
 

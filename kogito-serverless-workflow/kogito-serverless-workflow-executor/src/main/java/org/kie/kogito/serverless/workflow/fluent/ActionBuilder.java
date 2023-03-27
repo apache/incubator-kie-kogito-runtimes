@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.NullNode;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.filters.ActionDataFilter;
-import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.serverlessworkflow.api.functions.SubFlowRef;
 
@@ -36,9 +35,9 @@ import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.objectNo
 public class ActionBuilder {
 
     private Action action;
-    private Optional<FunctionDefinition> functionDefinition = Optional.empty();
+    private Optional<FunctionBuilder> functionDefinition = Optional.empty();
 
-    final Optional<FunctionDefinition> getFunction() {
+    final Optional<FunctionBuilder> getFunction() {
         return functionDefinition;
     }
 
@@ -51,9 +50,8 @@ public class ActionBuilder {
     }
 
     public static ActionBuilder call(FunctionBuilder functionBuilder, JsonNode args) {
-        FunctionDefinition function = functionBuilder.build();
-        ActionBuilder actionBuilder = call(function.getName(), args);
-        actionBuilder.functionDefinition = Optional.of(function);
+        ActionBuilder actionBuilder = call(functionBuilder.getName(), args);
+        actionBuilder.functionDefinition = Optional.of(functionBuilder);
         return actionBuilder;
     }
 

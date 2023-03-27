@@ -37,7 +37,8 @@ public class TransitionBuilder<T> {
     }
 
     public TransitionBuilder<T> next(StateBuilder<?, ?> stateBuilder) {
-        next(addFunctions(stateBuilder).build());
+        workflow.addFunctions(stateBuilder.getFunctions());
+        next(stateBuilder.build());
         return this;
     }
 
@@ -70,13 +71,9 @@ public class TransitionBuilder<T> {
     }
 
     public T end(StateBuilder<?, ?> stateBuilder, End end) {
-        next(addFunctions(stateBuilder).build(end));
+        workflow.addFunctions(stateBuilder.getFunctions());
+        next(stateBuilder.build(end));
         return container;
-    }
-
-    private StateBuilder<?, ?> addFunctions(StateBuilder<?, ?> builder) {
-        workflow.addFunctions(builder.getFunctions());
-        return builder;
     }
 
     private void next(DefaultState state) {

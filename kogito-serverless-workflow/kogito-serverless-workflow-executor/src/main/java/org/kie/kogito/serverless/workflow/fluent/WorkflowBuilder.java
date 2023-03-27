@@ -133,7 +133,7 @@ public class WorkflowBuilder {
         return states.getLast();
     }
 
-    void addFunctions(Collection<FunctionDefinition> def) {
-        functions.addAll(def);
+    void addFunctions(Collection<FunctionBuilder> functions) {
+        functions.forEach(this::function);
     }
 }
