@@ -85,8 +85,8 @@ public class StaticFluentWorkflowApplicationTest {
         final String SQUARE = "square";
         final String HALF = "half";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("PlayingWithExpression").function(expr(DOUBLE, ".input*=2")).function(expr(SQUARE, ".input*=.input")).function(expr(HALF, ".input/=2"))
-                    .start(operation().action(call(DOUBLE)).action(call(SQUARE)).action(call(HALF)))
+            Workflow workflow = workflow("PlayingWithExpression")
+                    .start(operation().action(call(expr(DOUBLE, ".input*=2"))).action(call(expr(SQUARE, ".input*=.input"))).action(call(expr(HALF, ".input/=2"))))
                     .end(operation().outputFilter("{result:.input}")).build();
             assertThat(application.execute(workflow, Collections.singletonMap("input", 4)).getWorkflowdata().get("result").asInt()).isEqualTo(32);
         }

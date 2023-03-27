@@ -16,7 +16,6 @@
 package org.kie.kogito.serverless.workflow.fluent;
 
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 import io.serverlessworkflow.api.defaultdef.DefaultConditionDefinition;
@@ -29,16 +28,16 @@ import io.serverlessworkflow.api.transitions.Transition;
 public class TransitionBuilder<T> {
 
     private final T container;
-    private final Deque<DefaultState> states;
+    private final WorkflowBuilder workflow;
     private SwitchState switchState;
 
-    protected TransitionBuilder(T container, Deque<DefaultState> states) {
+    protected TransitionBuilder(T container, WorkflowBuilder workflow) {
         this.container = container;
-        this.states = states;
+        this.workflow = workflow;
     }
 
     public TransitionBuilder<T> next(StateBuilder<?, ?> stateBuilder) {
-        next(stateBuilder.build());
+        next(addFunctions(stateBuilder).build());
         return this;
     }
 
@@ -54,7 +53,7 @@ public class TransitionBuilder<T> {
         }
         DataCondition condition = new DataCondition().withCondition(expr);
         conditions.add(condition);
-        return new ConditionTransitionBuilder<>(this, states, condition);
+        return new ConditionTransitionBuilder<>(this, workflow, condition);
     }
 
     public TransitionBuilder<T> or() {
@@ -63,7 +62,7 @@ public class TransitionBuilder<T> {
         }
         DefaultConditionDefinition condition = new DefaultConditionDefinition();
         switchState.setDefaultCondition(condition);
-        return new DefaultConditionTransitionBuilder<>(container, states, condition);
+        return new DefaultConditionTransitionBuilder<>(container, workflow, condition);
     }
 
     public T end(StateBuilder<?, ?> stateBuilder) {
@@ -71,17 +70,22 @@ public class TransitionBuilder<T> {
     }
 
     public T end(StateBuilder<?, ?> stateBuilder, End end) {
-        next(stateBuilder.build(end));
+        next(addFunctions(stateBuilder).build(end));
         return container;
+    }
+
+    private StateBuilder<?, ?> addFunctions(StateBuilder<?, ?> builder) {
+        workflow.addFunctions(builder.getFunctions());
+        return builder;
     }
 
     private void next(DefaultState state) {
         addTransition(state);
-        states.add(state);
+        workflow.addState(state);
     }
 
     protected void addTransition(DefaultState state) {
-        DefaultState prevState = states.getLast();
+        DefaultState prevState = workflow.getLastState();
         prevState.setTransition(new Transition().withNextState(state.getName()));
     }
 }

@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import java.util.Optional;
+
 import org.kie.kogito.process.Process;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
 import org.kie.kogito.serverless.workflow.parser.types.SysOutTypeHandler;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.filters.ActionDataFilter;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.functions.FunctionRef;
 import io.serverlessworkflow.api.functions.SubFlowRef;
 
@@ -32,9 +35,25 @@ import static org.kie.kogito.serverless.workflow.fluent.WorkflowBuilder.objectNo
 public class ActionBuilder {
 
     private Action action;
+    private Optional<FunctionDefinition> functionDefinition = Optional.empty();
+
+    final Optional<FunctionDefinition> getFunction() {
+        return functionDefinition;
+    }
 
     public static ActionBuilder call(String functionName) {
         return call(functionName, NullNode.instance);
+    }
+
+    public static ActionBuilder call(FunctionBuilder functionBuilder) {
+        return call(functionBuilder, NullNode.instance);
+    }
+
+    public static ActionBuilder call(FunctionBuilder functionBuilder, JsonNode args) {
+        FunctionDefinition function = functionBuilder.build();
+        ActionBuilder actionBuilder = call(function.getName(), args);
+        actionBuilder.functionDefinition = Optional.of(function);
+        return actionBuilder;
     }
 
     public static ActionBuilder call(String functionName, JsonNode args) {

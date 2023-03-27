@@ -15,10 +15,14 @@
  */
 package org.kie.kogito.serverless.workflow.fluent;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.end.End;
 import io.serverlessworkflow.api.filters.StateDataFilter;
+import io.serverlessworkflow.api.functions.FunctionDefinition;
 import io.serverlessworkflow.api.states.DefaultState;
 
 public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends DefaultState> {
@@ -40,6 +44,11 @@ public abstract class StateBuilder<T extends StateBuilder<T, S>, S extends Defau
     }
 
     protected final S state;
+    protected final Collection<FunctionDefinition> functionDefinitions = new ArrayList<>();
+
+    Collection<FunctionDefinition> getFunctions() {
+        return functionDefinitions;
+    }
 
     protected StateBuilder(S state) {
         this.state = state;
