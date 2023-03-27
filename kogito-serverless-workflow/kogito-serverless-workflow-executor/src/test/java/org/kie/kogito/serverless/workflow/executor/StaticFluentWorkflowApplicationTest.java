@@ -17,6 +17,7 @@ package org.kie.kogito.serverless.workflow.executor;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -149,20 +150,24 @@ public class StaticFluentWorkflowApplicationTest {
         return number / 2;
     }
 
+    public int multiply(int one, int two) {
+        return one * two;
+    }
+
     @Test
     void testService() {
         final String DOUBLE = "double";
-        final String HALF = "half";
+        final String PRODUCT = "product";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("ServiceTest").function(java(DOUBLE, StaticFluentWorkflowApplicationTest.class.getName(), "duplicate"))
-                    .function(java(HALF, StaticFluentWorkflowApplicationTest.class.getName(), "half"))
+                    .function(java(PRODUCT, StaticFluentWorkflowApplicationTest.class.getName(), "multiply"))
                     .singleton(parallel()
-                            .newBranch().action(call(DOUBLE, new TextNode(".input")).outputFilter(".double")).endBranch()
-                            .newBranch().action(call(HALF, new TextNode(".input")).outputFilter(".half")).endBranch());
+                            .newBranch().action(call(DOUBLE, new TextNode(".one")).outputFilter(".double")).endBranch()
+                            .newBranch().action(call(PRODUCT, objectNode().put("one", ".one").put("two", ".two")).outputFilter(".product")).endBranch());
             Process<JsonNodeModel> process = application.process(workflow);
-            JsonNode result = application.execute(process, Collections.singletonMap("input", 4)).getWorkflowdata();
+            JsonNode result = application.execute(process, Map.of("one", 4, "two", 8)).getWorkflowdata();
             assertThat(result.get("double").asInt()).isEqualTo(8);
-            assertThat(result.get("half").asInt()).isEqualTo(2);
+            assertThat(result.get("product").asInt()).isEqualTo(32);
         }
     }
 
