@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-build</artifactId>
-    <version>1.36.0.Final</version>
+    <version>1.36.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -18,7 +18,7 @@
   </description>
 
   <properties>
-    <version.org.kie>8.36.0.Final</version.org.kie>
+    <version.org.kie>8.36.1-SNAPSHOT</version.org.kie>
   </properties>
 
   <dependencyManagement>
