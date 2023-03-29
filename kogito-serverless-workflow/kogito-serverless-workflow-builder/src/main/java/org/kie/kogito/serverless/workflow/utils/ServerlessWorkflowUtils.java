@@ -196,7 +196,7 @@ public class ServerlessWorkflowUtils {
     }
 
     public static String getForEachVarName(KogitoBuildContext context) {
-        return context.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + "foreach.outputVarName").orElse("_swf_eval_temp");
+        return context.getApplicationProperty(APP_PROPERTIES_BASE + APP_PROPERTIES_STATES_BASE + "foreach.outputVarName").orElse("_foreach_out_eval");
     }
 
     public static Optional<byte[]> processResourceFile(Workflow workflow, ParserContext parserContext, String uriStr) {

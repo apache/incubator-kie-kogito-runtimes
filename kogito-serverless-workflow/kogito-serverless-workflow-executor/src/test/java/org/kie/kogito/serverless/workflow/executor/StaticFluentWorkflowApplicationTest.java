@@ -96,10 +96,10 @@ public class StaticFluentWorkflowApplicationTest {
     void testForEach() {
         final String SQUARE = "square";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
-            Workflow workflow = workflow("ForEachTest").function(expr(SQUARE, ".input*.input"))
-                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(SQUARE))).end().build();
-            assertThat(application.execute(workflow, Collections.singletonMap("numbers", Arrays.asList(1, 2, 3, 4))).getWorkflowdata().get("result"))
-                    .isEqualTo(jsonArray().add(1).add(4).add(9).add(16));
+            Workflow workflow = workflow("ForEachTest")
+                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input"))).action(call(expr("half", "._foreach_out_eval/2")))).end().build();
+            assertThat(application.execute(workflow, Map.of("numbers", Arrays.asList(2, 4, 6, 8))).getWorkflowdata().get("result"))
+                    .isEqualTo(jsonArray().add(2).add(8).add(18).add(32));
         }
     }
 
