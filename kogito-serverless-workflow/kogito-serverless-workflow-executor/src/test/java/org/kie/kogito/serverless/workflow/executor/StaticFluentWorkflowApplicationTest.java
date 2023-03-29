@@ -97,7 +97,11 @@ public class StaticFluentWorkflowApplicationTest {
         final String SQUARE = "square";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("ForEachTest")
+<<<<<<< Upstream, based on main
                     .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input"))).action(call(expr("half", "._foreach_out_eval/2")))).end().build();
+=======
+                    .singleton(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input"))).action(call(expr("half", "._foreach_out_var/2"))));
+>>>>>>> fac2a91 [KOGITO-8928] Rename output var
             assertThat(application.execute(workflow, Map.of("numbers", Arrays.asList(2, 4, 6, 8))).getWorkflowdata().get("result"))
                     .isEqualTo(jsonArray().add(2).add(8).add(18).add(32));
         }
