@@ -26,6 +26,8 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.serverless.workflow.actions.WorkflowLogLevel;
 import org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.HttpMethod;
 import org.kie.kogito.serverless.workflow.models.JsonNodeModel;
+import org.kie.kogito.serverless.workflow.utils.ExpressionHandlerUtils;
+import org.kie.kogito.serverless.workflow.utils.KogitoProcessContextResolver;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -97,11 +99,10 @@ public class StaticFluentWorkflowApplicationTest {
         final String SQUARE = "square";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
             Workflow workflow = workflow("ForEachTest")
-<<<<<<< Upstream, based on main
-                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input"))).action(call(expr("half", "._foreach_out_eval/2")))).end().build();
-=======
-                    .singleton(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input"))).action(call(expr("half", "._foreach_out_var/2"))));
->>>>>>> fac2a91 [KOGITO-8928] Rename output var
+                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input")))
+                            .action(call(expr("half", "$" + ExpressionHandlerUtils.CONTEXT_MAGIC + "."
+                                    + KogitoProcessContextResolver.FOR_EACH_PREV_ACTION_RESULT + "/2"))))
+                    .end().build();
             assertThat(application.execute(workflow, Map.of("numbers", Arrays.asList(2, 4, 6, 8))).getWorkflowdata().get("result"))
                     .isEqualTo(jsonArray().add(2).add(8).add(18).add(32));
         }
