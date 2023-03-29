@@ -69,7 +69,13 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         request.putHeader("Content-Type", APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)
                 .ssl("https".equals(serviceAddress.getScheme()));
 
-        JsonObject body = new JsonObject(createCloudEventWithGeneratedId(cloudEvent, processInstanceId));
+        JsonObject body;
+
+        if (cloudEvent.get("id") == null) {
+            body = new JsonObject(createCloudEventWithGeneratedId(cloudEvent, processInstanceId));
+        } else {
+            body = new JsonObject(new HashMap<>(cloudEvent));
+        }
 
         logger.debug("Sending request with CloudEvent - host: {}, port: {}, path: {}, CloudEvent: {}",
                 serviceAddress.getHost(), serviceAddress.getPort(), path, body);
@@ -79,17 +85,13 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         return responseAsJsonObject(response);
     }
 
-    private static HashMap<String, Object> createCloudEventWithGeneratedId(Map<String, Object> cloudEvent, String processInstanceId) {
-        HashMap<String, Object> modifiableCloudEvent = new HashMap<>(cloudEvent);
-        Object oldIdValue = modifiableCloudEvent.put("id", generateCloudEventId(processInstanceId, cloudEvent.get("source").toString()));
-
-        if (oldIdValue != null) {
-            logger.warn("CloudEvent id should not be set. Ignoring id {}. A generated value will be used instead.", oldIdValue);
-        }
+    private static Map<String, Object> createCloudEventWithGeneratedId(Map<String, Object> cloudEvent, String processInstanceId) {
+        Map<String, Object> modifiableCloudEvent = new HashMap<>(cloudEvent);
+        modifiableCloudEvent.put("id", generateCloudEventId(processInstanceId, cloudEvent.get("source").toString()));
         return modifiableCloudEvent;
     }
 
-    private static String generateCloudEventId(String processInstanceId, String source) {
+    static String generateCloudEventId(String processInstanceId, String source) {
         return source + '_' + processInstanceId;
     }
 
