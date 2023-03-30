@@ -78,8 +78,7 @@ class KogitoAddOnSourceFilesProcessor extends OneOfCapabilityKogitoAddOnProcesso
 
     @BuildStep
     NativeImageResourceBuildItem nativeImageResourceBuildItem(KogitoBuildContextBuildItem ctxBuildItem) throws IOException {
-        List<String> sourceFiles = getSourceFiles(ctxBuildItem.getKogitoBuildContext().getAppPaths().getResourceFiles());
-        return new NativeImageResourceBuildItem(sourceFiles);
+        return new NativeImageResourceBuildItem(getSourceFiles(ctxBuildItem.getKogitoBuildContext().getAppPaths().getResourceFiles()));
     }
 
     private List<String> getSourceFiles(File[] resourcePaths) throws IOException {
