@@ -31,16 +31,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.kie.kogito.resource.exceptions.ExceptionsHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("/management/processes/")
 public final class SourceFilesResource {
 
     private static final ExceptionsHandler EXCEPTIONS_HANDLER = new ExceptionsHandler();
-
-    private static final Logger logger = LoggerFactory.getLogger(SourceFilesResource.class);
 
     SourceFilesProvider sourceFilesProvider;
 
@@ -73,14 +69,11 @@ public final class SourceFilesResource {
     public Response getSourceFileByProcessId(@PathParam("processId") String processId) {
         return sourceFilesProvider.getProcessSourceFile(processId)
                 .map(sourceFile -> {
-                    byte[] contents;
                     try {
-                        contents = sourceFile.readContents();
+                        return Response.ok(sourceFile.readContents()).build();
                     } catch (IOException e) {
-                        logger.debug("Exception while reading contents of " + sourceFile.getUri(), e);
                         return EXCEPTIONS_HANDLER.mapException(e);
                     }
-                    return Response.ok(contents).build();
                 }).orElseGet(() -> Response.status(Response.Status.NOT_FOUND).build());
     }
 
