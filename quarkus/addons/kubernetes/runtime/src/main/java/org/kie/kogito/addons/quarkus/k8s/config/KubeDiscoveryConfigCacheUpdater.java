@@ -63,8 +63,9 @@ class KubeDiscoveryConfigCacheUpdater {
                 return openShiftResourceDiscovery.query(OpenShiftResourceUri.parse(protoAndValues[1]));
             case KNATIVE:
                 String values = protoAndValues[1];
-                int length = values.split("/").length;
-                if (length == 1 || length == 2) {
+                String[] splitValues = values.split("/");
+                if (splitValues.length <= 2) {
+
                     return knativeServiceDiscovery.query(KnativeServiceUri.parse(values));
                 } else {
                     return knativeResourceDiscovery.query(KnativeResourceUri.parse(values));
