@@ -71,7 +71,6 @@ public class ServerlessWorkflowUtils {
     private static final String OPEN_API_PROPERTIES_BASE = "org.kogito.openapi.client.";
 
     public static final String APP_PROPERTIES_FUNCTIONS_BASE = APP_PROPERTIES_BASE + "functions.";
-    private static final String APP_PROPERTIES_STATES_BASE = "states.";
 
     private static final String REGEX_NO_EXT = "[.][^.]+$";
 
