@@ -15,6 +15,12 @@
  */
 package org.kie.kogito.addon.source.files.deployment;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.kie.kogito.addon.source.files.SourceFilesProviderProducer;
 import org.kie.kogito.addon.source.files.SourceFilesRecorder;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
@@ -27,6 +33,7 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 
 class KogitoAddOnSourceFilesProcessor extends OneOfCapabilityKogitoAddOnProcessor {
 
@@ -62,5 +69,14 @@ class KogitoAddOnSourceFilesProcessor extends OneOfCapabilityKogitoAddOnProcesso
 
         kogitoBuildContext.getSourceFileCodegenBindNotifier()
                 .ifPresent(notifier -> notifier.addListeners(processListener, serverlessWorkflowListener));
+    }
+
+    @BuildStep
+    NativeImageResourceBuildItem nativeImageResourceBuildItem(KogitoBuildContextBuildItem ctxBuildItem) {
+        List<Path> resourceFiles = Arrays.stream(ctxBuildItem.getKogitoBuildContext().getAppPaths().getResourceFiles())
+                .map(File::toPath)
+                .collect(Collectors.toList());
+
+        return new NativeImageResourceBuildItem(SourceFilesUtil.getSourceFiles(resourceFiles));
     }
 }
