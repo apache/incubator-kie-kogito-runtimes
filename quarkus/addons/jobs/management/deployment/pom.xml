@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-quarkus-jobs-management-parent</artifactId>
-    <version>1.36.1.Final</version>
+    <version>1.36.2-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-quarkus-jobs-management-deployment</artifactId>
   <name>Kogito Add-Ons Quarkus Jobs Management - Deployment</name>
