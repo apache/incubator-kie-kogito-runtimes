@@ -38,17 +38,7 @@ final class KnativeServiceRegistry {
         this.knativeServiceDiscovery = knativeServiceDiscovery;
     }
 
-    private Optional<URI> addService(String serviceName) {
-        Optional<URI> serviceUrl = knativeServiceDiscovery.query(KnativeServiceUri.parse(serviceName));
-        services.put(serviceName, serviceUrl.orElse(null));
-        return serviceUrl;
-    }
-
     Optional<URI> getServiceAddress(String serviceName) {
-        if (services.containsKey(serviceName)) {
-            return Optional.ofNullable(services.get(serviceName));
-        } else {
-            return addService(serviceName);
-        }
+        return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(KnativeServiceUri.parse(k)).orElse(null)));
     }
 }

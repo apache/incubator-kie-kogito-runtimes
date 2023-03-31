@@ -62,13 +62,15 @@ class KubeDiscoveryConfigCacheUpdater {
             case OPENSHIFT:
                 return openShiftResourceDiscovery.query(OpenShiftResourceUri.parse(protoAndValues[1]));
             case KNATIVE:
-                String values = protoAndValues[1];
-                String[] splitValues = values.split("/");
-                if (splitValues.length <= 2) {
+                String[] splitValues = protoAndValues[1].split("/");
 
-                    return knativeServiceDiscovery.query(KnativeServiceUri.parse(values));
-                } else {
-                    return knativeResourceDiscovery.query(KnativeResourceUri.parse(values));
+                switch (splitValues.length) {
+                    case 1:
+                        return knativeServiceDiscovery.query(new KnativeServiceUri(null, splitValues[0]));
+                    case 2:
+                        return knativeServiceDiscovery.query(new KnativeServiceUri(splitValues[0], splitValues[1]));
+                    default:
+                        return knativeResourceDiscovery.query(KnativeResourceUri.parse(protoAndValues[1]));
                 }
             default:
                 throw new UnsupportedOperationException("Unsupported protocol: " + protocol);

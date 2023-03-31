@@ -75,7 +75,6 @@ public class GVK {
     }
 
     private void validateGivenGVK() {
-        // while https://issues.redhat.com/browse/KOGITO-7373 is not implemented, does not allow empty or invalid gvk
         if (!supportedGKVs.contains(this.getGVK())) {
             throw new IllegalArgumentException("Given GVK is not valid or supported: " + this.getGVK());
         }
