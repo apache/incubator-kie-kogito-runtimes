@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,20 +37,11 @@ final class KubeDiscoveryConfigCache {
 
     Optional<String> get(String configName, String configValue) {
         try {
-            if (isValidURI(configValue)) {
-                String cachedValue = cache.computeIfAbsent(configName, k -> updater.update(configValue).map(URI::toString).orElse(null));
-
-                return Optional.ofNullable(cachedValue);
-            }
+            String cachedValue = cache.computeIfAbsent(configName, k -> updater.update(configValue).map(URI::toString).orElse(null));
+            return Optional.ofNullable(cachedValue);
         } catch (RuntimeException e) {
             logger.error("Service Discovery has failed on property [{}={}]", configName, configValue, e);
         }
         return Optional.ofNullable(configValue);
-    }
-
-    private boolean isValidURI(String value) {
-        return value != null && !value.isBlank() && KubeConstants.SUPPORTED_PROTOCOLS
-                .stream()
-                .anyMatch(protocol -> value.length() > protocol.length() + 1 && value.startsWith(protocol + ":"));
     }
 }

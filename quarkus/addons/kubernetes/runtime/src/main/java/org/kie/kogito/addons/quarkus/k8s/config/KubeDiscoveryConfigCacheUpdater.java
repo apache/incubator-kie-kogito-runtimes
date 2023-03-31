@@ -18,6 +18,7 @@ package org.kie.kogito.addons.quarkus.k8s.config;
 import java.net.URI;
 import java.util.Optional;
 
+import org.kie.kogito.addons.quarkus.k8s.KubernetesProtocol;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.OpenShiftResourceDiscovery;
@@ -47,7 +48,7 @@ class KubeDiscoveryConfigCacheUpdater {
                     .error("the provided URI {} is not valid", rawAddress);
         }
 
-        KubernetesProtocol protocol = KubernetesProtocol.parse(rawAddress);
+        KubernetesProtocol protocol = KubernetesProtocol.from(protoAndValues[0]);
 
         switch (protocol) {
             case VANILLA_KUBERNETES:

@@ -16,7 +16,7 @@
 package org.kie.kogito.addons.quarkus.k8s.config;
 
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
+import org.kie.kogito.addons.quarkus.k8s.KubernetesProtocol;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -25,35 +25,27 @@ class KubernetesProtocolTest {
 
     @Test
     void parseVanillaKubernetes() {
-        assertThat(KubernetesProtocol.parse("kubernetes:whatever"))
+        assertThat(KubernetesProtocol.from("kubernetes"))
                 .isEqualTo(KubernetesProtocol.VANILLA_KUBERNETES);
     }
 
     @Test
     void parseOpenShift() {
-        assertThat(KubernetesProtocol.parse("openshift:whatever"))
+        assertThat(KubernetesProtocol.from("openshift"))
                 .isEqualTo(KubernetesProtocol.OPENSHIFT);
     }
 
     @Test
     void parseKnative() {
-        assertThat(KubernetesProtocol.parse("knative:whatever"))
+        assertThat(KubernetesProtocol.from("knative"))
                 .isEqualTo(KubernetesProtocol.KNATIVE);
     }
 
     @Test
     void parseInvalidProtocol() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> KubernetesProtocol.parse("nonexistent_protocol:whatever"))
+                .isThrownBy(() -> KubernetesProtocol.from("nonexistent_protocol"))
                 .withMessage("The provided protocol [nonexistent_protocol] is not " +
-                        "supported, supported values are " +
-                        KubeConstants.SUPPORTED_PROTOCOLS);
-    }
-
-    @Test
-    void parseInvalidUri() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> KubernetesProtocol.parse("invalid_uri"))
-                .withMessage("The provided uri [invalid_uri] doesn't have a defined protocol");
+                        "supported, supported values are 'kubernetes', 'openshift', and 'knative'");
     }
 }

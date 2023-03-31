@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.addons.quarkus.k8s;
 
-import java.util.List;
-
 public final class KubeConstants {
 
     private KubeConstants() {
@@ -40,7 +38,4 @@ public final class KubeConstants {
     // Custom Query params
     public static final String CUSTOM_PORT_NAME_PROPERTY = "port-name";
     public static final String CUSTOM_RESOURCE_LABEL_PROPERTY = "labels";
-
-    // Supported protocols
-    public static final List<String> SUPPORTED_PROTOCOLS = List.of("openshift", "kubernetes", "knative");
 }
