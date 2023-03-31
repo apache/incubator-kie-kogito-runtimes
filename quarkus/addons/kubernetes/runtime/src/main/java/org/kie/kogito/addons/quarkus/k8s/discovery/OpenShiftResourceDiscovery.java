@@ -50,38 +50,38 @@ public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
         this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
     }
 
-    public Optional<URI> query(OpenShiftResourceUri openShiftResourceUri) {
-        openShiftResourceUri = resolveNamespace(openShiftResourceUri, openShiftClient::getNamespace);
+    public Optional<URI> query(VanillaKubernetesResourceUri resourceUri) {
+        resourceUri = resolveNamespace(resourceUri, openShiftClient::getNamespace);
 
-        String gvk = openShiftResourceUri.getGvk().getGVK()
+        String gvk = resourceUri.getGvk().getGVK()
                 .toLowerCase(Locale.ROOT);
 
         switch (gvk) {
             case KubeConstants.KIND_DEPLOYMENT_CONFIG:
-                return queryDeploymentConfigByName(openShiftResourceUri);
+                return queryDeploymentConfigByName(resourceUri);
 
             case KubeConstants.KIND_ROUTE:
-                return queryRouteByName(openShiftResourceUri);
+                return queryRouteByName(resourceUri);
 
             default:
-                return vanillaKubernetesResourceDiscovery.query(openShiftResourceUri.getVanillaKubernetesResourceUri());
+                return vanillaKubernetesResourceDiscovery.query(resourceUri);
         }
     }
 
-    private OpenShiftResourceUri resolveNamespace(OpenShiftResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
+    private VanillaKubernetesResourceUri resolveNamespace(VanillaKubernetesResourceUri uri, Supplier<String> defaultNamespaceSupplier) {
         if (uri.getNamespace() == null) {
             String defaultNamespace = defaultNamespaceSupplier.get();
 
             logDefaultNamespace(defaultNamespace);
 
-            uri = new OpenShiftResourceUri(uri.getVanillaKubernetesResourceUri().builder()
+            uri = uri.builder()
                     .withNamespace(defaultNamespace)
-                    .build());
+                    .build();
         }
         return uri;
     }
 
-    private Optional<URI> queryDeploymentConfigByName(OpenShiftResourceUri kubeURI) {
+    private Optional<URI> queryDeploymentConfigByName(VanillaKubernetesResourceUri kubeURI) {
         logConnection(openShiftClient, kubeURI.getResourceName());
 
         DeploymentConfig deploymentConfig = openShiftClient.deploymentConfigs()
@@ -97,7 +97,7 @@ public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
         return ServiceUtils.queryServiceByLabelOrSelector(openShiftClient,
                 deploymentConfig.getMetadata().getLabels(),
                 deploymentConfig.getSpec().getSelector(),
-                kubeURI.getVanillaKubernetesResourceUri()).or(() -> {
+                kubeURI).or(() -> {
                     if (deploymentConfig.getStatus().getReplicas() == 1) {
                         logger.debug("No service found for selector label {}, 1 replica found, trying to return podIP.",
                                 deploymentConfig.getSpec().getSelector());
@@ -110,7 +110,7 @@ public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
                                 .findFirst().flatMap(foundRc -> PodUtils.queryPodByOwnerReference(openShiftClient,
                                         foundRc.getMetadata().getUid(),
                                         kubeURI.getNamespace(),
-                                        kubeURI.getVanillaKubernetesResourceUri()))
+                                        kubeURI))
                                 .or(Optional::empty);
 
                     } else if (deploymentConfig.getStatus().getReplicas() > 1) {
@@ -122,7 +122,7 @@ public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
                 });
     }
 
-    private Optional<URI> queryRouteByName(OpenShiftResourceUri kubeURI) {
+    private Optional<URI> queryRouteByName(VanillaKubernetesResourceUri kubeURI) {
         logConnection(openShiftClient, kubeURI.getResourceName());
 
         Route route = openShiftClient.routes()

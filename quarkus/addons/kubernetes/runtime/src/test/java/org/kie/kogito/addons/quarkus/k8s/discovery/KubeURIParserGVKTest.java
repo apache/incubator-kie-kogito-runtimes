@@ -26,7 +26,7 @@ public class KubeURIParserGVKTest {
         Assertions.assertEquals("apps/v1/deployment", address.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-1", address.getResourceName());
 
-        OpenShiftResourceUri url1 = OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfig/default/kogito-app-1");
+        VanillaKubernetesResourceUri url1 = VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfig/default/kogito-app-1");
         Assertions.assertEquals("apps.openshift.io/v1/deploymentconfig", url1.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-1", url1.getResourceName());
 
@@ -58,11 +58,11 @@ public class KubeURIParserGVKTest {
         Assertions.assertEquals("v1/pod", address8.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-1", address8.getResourceName());
 
-        OpenShiftResourceUri url9 = OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentConfig/default/kogito-app-1");
+        VanillaKubernetesResourceUri url9 = VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentConfig/default/kogito-app-1");
         Assertions.assertEquals("apps.openshift.io/v1/deploymentconfig", url9.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-1", url9.getResourceName());
 
-        OpenShiftResourceUri url10 = OpenShiftResourceUri.parse("serving.knative.dev/v1/service/default/knative-app-1");
+        VanillaKubernetesResourceUri url10 = VanillaKubernetesResourceUri.parse("serving.knative.dev/v1/service/default/knative-app-1");
         Assertions.assertEquals("serving.knative.dev/v1/service", url10.getGvk().getGVK());
         Assertions.assertEquals("knative-app-1", url10.getResourceName());
     }
@@ -82,7 +82,7 @@ public class KubeURIParserGVKTest {
         });
 
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
-            OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfigs/default/kogito-app2");
+            VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfigs/default/kogito-app2");
         });
     }
 
@@ -96,11 +96,11 @@ public class KubeURIParserGVKTest {
         Assertions.assertEquals("v1/service", url1.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-2", url1.getResourceName());
 
-        OpenShiftResourceUri url2 = OpenShiftResourceUri.parse("v1/Service/kogito-app-2");
+        VanillaKubernetesResourceUri url2 = VanillaKubernetesResourceUri.parse("v1/Service/kogito-app-2");
         Assertions.assertEquals("v1/service", url2.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-2", url2.getResourceName());
 
-        OpenShiftResourceUri url3 = OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfig/kogito-app-3");
+        VanillaKubernetesResourceUri url3 = VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfig/kogito-app-3");
         Assertions.assertEquals("apps.openshift.io/v1/deploymentconfig", url3.getGvk().getGVK());
         Assertions.assertEquals("kogito-app-3", url3.getResourceName());
 
@@ -113,7 +113,7 @@ public class KubeURIParserGVKTest {
         });
 
         Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
-            OpenShiftResourceUri.parse("apps.openshift.io/deploymentconfig/kogito-app-3");
+            VanillaKubernetesResourceUri.parse("apps.openshift.io/deploymentconfig/kogito-app-3");
         });
     }
 }

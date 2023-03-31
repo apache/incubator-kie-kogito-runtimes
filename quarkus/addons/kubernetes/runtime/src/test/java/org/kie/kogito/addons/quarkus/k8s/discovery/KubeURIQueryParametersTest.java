@@ -42,16 +42,16 @@ public class KubeURIQueryParametersTest {
                 .append("?")
                 .append(KubeConstants.CUSTOM_PORT_NAME_PROPERTY)
                 .append("=").append("my-special-port-knative");
-        var knativeUrl = KnativeResourceUri.parse(knativeKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-knative", knativeUrl.getVanillaKubernetesResourceUri().getCustomPortName());
+        var knativeUrl = VanillaKubernetesResourceUri.parse(knativeKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-knative", knativeUrl.getCustomPortName());
 
         ocpKubeURIBuilder
                 .append("?")
                 .append(KubeConstants.CUSTOM_PORT_NAME_PROPERTY)
                 .append("=")
                 .append("my-special-port-ocp");
-        var ocpUrl = OpenShiftResourceUri.parse(ocpKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getVanillaKubernetesResourceUri().getCustomPortName());
+        var ocpUrl = VanillaKubernetesResourceUri.parse(ocpKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getCustomPortName());
     }
 
     @Test
@@ -78,8 +78,8 @@ public class KubeURIQueryParametersTest {
                 .append("&")
                 .append("=")
                 .append("9001");
-        var knativeUrl = KnativeResourceUri.parse(knativeKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-knative", knativeUrl.getVanillaKubernetesResourceUri().getCustomPortName());
+        var knativeUrl = VanillaKubernetesResourceUri.parse(knativeKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-knative", knativeUrl.getCustomPortName());
 
         ocpKubeURIBuilder
                 .append("?")
@@ -89,8 +89,8 @@ public class KubeURIQueryParametersTest {
                 .append("&")
                 .append("=")
                 .append("9002");
-        var ocpUrl = OpenShiftResourceUri.parse(ocpKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getVanillaKubernetesResourceUri().getCustomPortName());
+        var ocpUrl = VanillaKubernetesResourceUri.parse(ocpKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getCustomPortName());
     }
 
     @Test
@@ -116,8 +116,8 @@ public class KubeURIQueryParametersTest {
                 .append("knative-label")
                 .append("=")
                 .append("my-special-label-knative");
-        var knativeUrl = KnativeResourceUri.parse(knativeKubeURIBuilder.toString());
-        Assertions.assertEquals(Collections.singletonMap("knative-label", "my-special-label-knative"), knativeUrl.getVanillaKubernetesResourceUri().getCustomLabel());
+        var knativeUrl = VanillaKubernetesResourceUri.parse(knativeKubeURIBuilder.toString());
+        Assertions.assertEquals(Collections.singletonMap("knative-label", "my-special-label-knative"), knativeUrl.getCustomLabel());
 
         ocpKubeURIBuilder
                 .append("?")
@@ -126,8 +126,8 @@ public class KubeURIQueryParametersTest {
                 .append("ocp-label")
                 .append("=")
                 .append("my-special-label-ocp");
-        var ocpUrl = OpenShiftResourceUri.parse(ocpKubeURIBuilder.toString());
-        Assertions.assertEquals(Collections.singletonMap("ocp-label", "my-special-label-ocp"), ocpUrl.getVanillaKubernetesResourceUri().getCustomLabel());
+        var ocpUrl = VanillaKubernetesResourceUri.parse(ocpKubeURIBuilder.toString());
+        Assertions.assertEquals(Collections.singletonMap("ocp-label", "my-special-label-ocp"), ocpUrl.getCustomLabel());
     }
 
     @Test
@@ -170,9 +170,9 @@ public class KubeURIQueryParametersTest {
                 .append("=")
                 .append("my-special-label-knative");
         ;
-        var knativeUrl = KnativeResourceUri.parse(knativeKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-knative", knativeUrl.getVanillaKubernetesResourceUri().getCustomPortName());
-        Assertions.assertEquals(Collections.singletonMap("knative-label", "my-special-label-knative"), knativeUrl.getVanillaKubernetesResourceUri().getCustomLabel());
+        var knativeUrl = VanillaKubernetesResourceUri.parse(knativeKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-knative", knativeUrl.getCustomPortName());
+        Assertions.assertEquals(Collections.singletonMap("knative-label", "my-special-label-knative"), knativeUrl.getCustomLabel());
 
         ocpKubeURIBuilder
                 .append("?")
@@ -185,9 +185,9 @@ public class KubeURIQueryParametersTest {
                 .append("ocp-label")
                 .append("=")
                 .append("my-special-label-ocp");
-        var ocpUrl = OpenShiftResourceUri.parse(ocpKubeURIBuilder.toString());
-        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getVanillaKubernetesResourceUri().getCustomPortName());
-        Assertions.assertEquals(Collections.singletonMap("ocp-label", "my-special-label-ocp"), ocpUrl.getVanillaKubernetesResourceUri().getCustomLabel());
+        var ocpUrl = VanillaKubernetesResourceUri.parse(ocpKubeURIBuilder.toString());
+        Assertions.assertEquals("my-special-port-ocp", ocpUrl.getCustomPortName());
+        Assertions.assertEquals(Collections.singletonMap("ocp-label", "my-special-label-ocp"), ocpUrl.getCustomLabel());
     }
 
 }

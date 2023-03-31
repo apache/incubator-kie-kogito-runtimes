@@ -18,12 +18,9 @@ package org.kie.kogito.addons.quarkus.k8s.config;
 import java.net.URI;
 import java.util.Optional;
 
-import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeResourceDiscovery;
-import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeResourceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.OpenShiftResourceDiscovery;
-import org.kie.kogito.addons.quarkus.k8s.discovery.OpenShiftResourceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceUri;
 import org.slf4j.LoggerFactory;
@@ -34,16 +31,12 @@ class KubeDiscoveryConfigCacheUpdater {
 
     private final OpenShiftResourceDiscovery openShiftResourceDiscovery;
 
-    private final KnativeResourceDiscovery knativeResourceDiscovery;
-
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
     KubeDiscoveryConfigCacheUpdater(VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery,
-            OpenShiftResourceDiscovery openShiftResourceDiscovery, KnativeResourceDiscovery knativeResourceDiscovery,
-            KnativeServiceDiscovery knativeServiceDiscovery) {
+            OpenShiftResourceDiscovery openShiftResourceDiscovery, KnativeServiceDiscovery knativeServiceDiscovery) {
         this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
         this.openShiftResourceDiscovery = openShiftResourceDiscovery;
-        this.knativeResourceDiscovery = knativeResourceDiscovery;
         this.knativeServiceDiscovery = knativeServiceDiscovery;
     }
 
@@ -60,7 +53,7 @@ class KubeDiscoveryConfigCacheUpdater {
             case VANILLA_KUBERNETES:
                 return vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(protoAndValues[1]));
             case OPENSHIFT:
-                return openShiftResourceDiscovery.query(OpenShiftResourceUri.parse(protoAndValues[1]));
+                return openShiftResourceDiscovery.query(VanillaKubernetesResourceUri.parse(protoAndValues[1]));
             case KNATIVE:
                 String[] splitValues = protoAndValues[1].split("/");
 
@@ -70,7 +63,7 @@ class KubeDiscoveryConfigCacheUpdater {
                     case 2:
                         return knativeServiceDiscovery.query(new KnativeServiceUri(splitValues[0], splitValues[1]));
                     default:
-                        return knativeResourceDiscovery.query(KnativeResourceUri.parse(protoAndValues[1]));
+                        return vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(protoAndValues[1]));
                 }
             default:
                 throw new UnsupportedOperationException("Unsupported protocol: " + protocol);

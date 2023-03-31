@@ -53,12 +53,12 @@ public class OpenShiftServiceDiscoveryTest {
         deploymentConfig.getMetadata().setName("test");
         mockServer.getOpenshiftClient().resource(deploymentConfig).inNamespace(namespace).createOrReplace();
         assertEquals(Optional.empty(),
-                kubeResourceDiscovery.query(OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/invalid")));
+                kubeResourceDiscovery.query(VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/invalid")));
     }
 
     @Test
     public void testDeploymentConfigWithService() {
-        var kubeURI = OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/example-dc-with-service");
+        var kubeURI = VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/example-dc-with-service");
 
         DeploymentConfig deploymentConfig = mockServer.getOpenshiftClient()
                 .deploymentConfigs()
@@ -78,7 +78,7 @@ public class OpenShiftServiceDiscoveryTest {
 
     @Test
     public void testDeploymentConfigWithoutService() {
-        var kubeURI = OpenShiftResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/example-dc-no-service");
+        var kubeURI = VanillaKubernetesResourceUri.parse("apps.openshift.io/v1/deploymentconfig/" + namespace + "/example-dc-no-service");
 
         DeploymentConfig deploymentConfig = mockServer.getOpenshiftClient()
                 .deploymentConfigs()
@@ -114,12 +114,12 @@ public class OpenShiftServiceDiscoveryTest {
         mockServer.getOpenshiftClient().resource(route).inNamespace(namespace).createOrReplace();
 
         assertEquals(Optional.empty(),
-                kubeResourceDiscovery.query(OpenShiftResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/invalid")));
+                kubeResourceDiscovery.query(VanillaKubernetesResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/invalid")));
     }
 
     @Test
     public void testRoute() {
-        var kubeURI = OpenShiftResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/test-route");
+        var kubeURI = VanillaKubernetesResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/test-route");
 
         Route route = mockServer.getOpenshiftClient()
                 .routes()
@@ -133,7 +133,7 @@ public class OpenShiftServiceDiscoveryTest {
 
     @Test
     public void testRouteTLS() {
-        var kubeURI = OpenShiftResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/test-route-tls");
+        var kubeURI = VanillaKubernetesResourceUri.parse("route.openshift.io/v1/route/" + namespace + "/test-route-tls");
 
         Route route = mockServer.getOpenshiftClient()
                 .routes()

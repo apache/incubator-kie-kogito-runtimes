@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.ServiceUtils;
 
+import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
@@ -130,5 +131,34 @@ public class VanillaKubernetesResourceDiscoveryTest {
 
         Optional<String> url = vanillaKubernetesResourceDiscovery.query(kubeURI).map(URI::toString);
         assertEquals("http://10.10.10.10:80", url.get());
+    }
+
+    @Test
+    public void testNotFoundKnativeService() {
+        KnativeClient knativeClient = mockServer.getClient().adapt(KnativeClient.class);
+        io.fabric8.knative.serving.v1.Service service = knativeClient.services().inNamespace(namespace)
+                .load(this.getClass().getClassLoader().getResourceAsStream("knative/quarkus-greeting.yaml")).get();
+        service.getMetadata().setName("test");
+
+        // ItemWritableOperation#create is deprecated. However, we can't use the new method while Quarkus LTS is not greater than 2.16.
+        knativeClient.services().inNamespace(namespace).create(service);
+
+        assertEquals(Optional.empty(),
+                vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse("serving.knative.dev/v1/Service/" + namespace + "/invalid")));
+    }
+
+    @Test
+    public void testKnativeService() {
+        var kubeURI = VanillaKubernetesResourceUri.parse("serving.knative.dev/v1/Service/" + namespace + "/serverless-workflow-greeting-quarkus");
+
+        KnativeClient knativeClient = mockServer.getClient().adapt(KnativeClient.class);
+        io.fabric8.knative.serving.v1.Service kService = knativeClient.services().inNamespace(namespace)
+                .load(this.getClass().getClassLoader().getResourceAsStream("knative/quarkus-greeting.yaml")).get();
+
+        // ItemWritableOperation#create is deprecated. However, we can't use the new method while Quarkus LTS is not greater than 2.16.
+        knativeClient.services().inNamespace(namespace).create(kService);
+
+        Optional<String> url = vanillaKubernetesResourceDiscovery.query(kubeURI).map(URI::toString);
+        assertEquals("http://serverless-workflow-greeting-quarkus.test.10.99.154.147.sslip.io", url.get());
     }
 }
