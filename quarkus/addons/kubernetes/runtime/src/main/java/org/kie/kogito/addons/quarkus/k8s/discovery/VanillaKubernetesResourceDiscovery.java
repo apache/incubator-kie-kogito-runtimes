@@ -16,14 +16,12 @@
 package org.kie.kogito.addons.quarkus.k8s.discovery;
 
 import java.net.URI;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.DeploymentUtils;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.IngressUtils;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.PodUtils;
@@ -54,27 +52,27 @@ public class VanillaKubernetesResourceDiscovery extends AbstractResourceDiscover
 
         resourceUri = resolveNamespace(resourceUri, kubernetesClient::getNamespace);
 
-        switch (resourceUri.getGvk().getGVK().toLowerCase(Locale.ROOT)) {
-            case KubeConstants.KIND_SERVICE:
+        switch (resourceUri.getGvk()) {
+            case SERVICE:
                 return ServiceUtils.queryServiceByName(kubernetesClient, resourceUri);
 
-            case KubeConstants.KIND_KNATIVE_SERVICE:
+            case KNATIVE_SERVICE:
                 return knativeServiceDiscovery.query(new KnativeServiceUri(resourceUri.getNamespace(), resourceUri.getResourceName()));
 
-            case KubeConstants.KIND_POD:
+            case POD:
                 return PodUtils.queryPodByName(kubernetesClient, resourceUri);
 
-            case KubeConstants.KIND_DEPLOYMENT:
+            case DEPLOYMENT:
                 return DeploymentUtils.queryDeploymentByName(kubernetesClient, resourceUri);
 
-            case KubeConstants.KIND_STATEFUL_SET:
+            case STATEFUL_SET:
                 return StatefulSetUtils.queryStatefulSetByName(kubernetesClient, resourceUri);
 
-            case KubeConstants.KIND_INGRESS:
+            case INGRESS:
                 return IngressUtils.queryIngressByName(kubernetesClient, resourceUri);
 
             default:
-                logger.debug("Resource kind {} is not supported yet.", resourceUri.getGvk().getGVK());
+                logger.debug("Resource kind {} is not supported yet.", resourceUri.getGvk().getValue());
                 return Optional.empty();
         }
     }

@@ -17,7 +17,6 @@ package org.kie.kogito.addons.quarkus.k8s.discovery;
 
 import java.lang.invoke.MethodHandles;
 import java.net.URI;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -53,14 +52,11 @@ public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {
     public Optional<URI> query(VanillaKubernetesResourceUri resourceUri) {
         resourceUri = resolveNamespace(resourceUri, openShiftClient::getNamespace);
 
-        String gvk = resourceUri.getGvk().getGVK()
-                .toLowerCase(Locale.ROOT);
-
-        switch (gvk) {
-            case KubeConstants.KIND_DEPLOYMENT_CONFIG:
+        switch (resourceUri.getGvk()) {
+            case DEPLOYMENT_CONFIG:
                 return queryDeploymentConfigByName(resourceUri);
 
-            case KubeConstants.KIND_ROUTE:
+            case ROUTE:
                 return queryRouteByName(resourceUri);
 
             default:

@@ -118,7 +118,7 @@ public final class VanillaKubernetesResourceUri {
 
             switch (values.length) {
                 case 5:
-                    builder.withGvk(new GVK(values[0], values[1], values[2]));
+                    builder.withGvk(GVK.from(values[0], values[1], values[2]));
                     builder.withNamespace(values[3]);
                     builder.withResourceName(values[4]);
                     break;
@@ -127,17 +127,17 @@ public final class VanillaKubernetesResourceUri {
                     // GVK can be g/v/k or v/k
                     // for now only v1 api version is supported
                     if (values[0].equals("v1")) {
-                        builder.withGvk(new GVK(values[0], values[1]));
+                        builder.withGvk(GVK.from(values[0], values[1]));
                         builder.withNamespace(values[2]);
                     } else {
-                        builder.withGvk(new GVK(values[0], values[1], values[2]));
+                        builder.withGvk(GVK.from(values[0], values[1], values[2]));
                     }
                     builder.withResourceName(values[3]);
                     break;
 
                 case 3:
                     // GVK is only v/k
-                    builder.withGvk(new GVK(values[0], values[1]));
+                    builder.withGvk(GVK.from(values[0], values[1]));
                     builder.withResourceName(values[2]);
                     break;
 

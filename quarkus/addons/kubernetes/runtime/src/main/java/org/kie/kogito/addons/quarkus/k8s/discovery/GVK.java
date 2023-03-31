@@ -16,76 +16,49 @@
 package org.kie.kogito.addons.quarkus.k8s.discovery;
 
 import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 
-import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
+public enum GVK {
 
-public class GVK {
+    DEPLOYMENT("apps/v1/deployment"),
+    DEPLOYMENT_CONFIG("apps.openshift.io/v1/deploymentconfig"),
+    STATEFUL_SET("apps/v1/statefulset"),
+    SERVICE("v1/service"),
+    ROUTE("route.openshift.io/v1/route"),
+    INGRESS("networking.k8s.io/v1/ingress"),
+    POD("v1/pod"),
+    KNATIVE_SERVICE("serving.knative.dev/v1/service");
 
-    private final Optional<String> group;
-    private final String version;
-    private final String kind;
-    private final String apiVersion;
+    private final String value;
 
-    private Set<String> supportedGKVs = Set.of(
-            KubeConstants.KIND_DEPLOYMENT,
-            KubeConstants.KIND_DEPLOYMENT_CONFIG,
-            KubeConstants.KIND_STATEFUL_SET,
-            KubeConstants.KIND_SERVICE,
-            KubeConstants.KIND_ROUTE,
-            KubeConstants.KIND_INGRESS,
-            KubeConstants.KIND_POD,
-            KubeConstants.KIND_KNATIVE_SERVICE);
-
-    public GVK(String group, String version, String kind) {
-        this.group = Optional.of(group.toLowerCase(Locale.ROOT));
-        this.version = version.toLowerCase(Locale.ROOT);
-        this.kind = kind.toLowerCase(Locale.ROOT);
-        this.apiVersion = setApiVersion();
-        validateGivenGVK();
+    GVK(String value) {
+        this.value = value;
     }
 
-    public GVK(String version, String kind) {
-        this.version = version.toLowerCase(Locale.ROOT);
-        this.kind = kind.toLowerCase(Locale.ROOT);
-        this.group = Optional.empty();
-        this.apiVersion = setApiVersion();
-        validateGivenGVK();
+    public String getValue() {
+        return this.value;
     }
 
-    private String setApiVersion() {
-        return this.group.isPresent() ? this.group.get() + "/" + version : version;
+    public static GVK from(String version, String kind) {
+        return from(version + "/" + kind);
     }
 
-    public String getApiVersion() {
-        return apiVersion;
+    public static GVK from(String group, String version, String kind) {
+        return from(group + "/" + version + "/" + kind);
     }
 
-    public String getVersion() {
-        return version;
+    private static String sanitize(String value) {
+        return value.toLowerCase(Locale.ROOT);
     }
 
-    public String getGVK() {
-        return getApiVersion() + "/" + kind;
-    }
+    private static GVK from(String value) {
+        String sanitizedValue = sanitize(value);
 
-    public String getKind() {
-        return kind;
-    }
-
-    private void validateGivenGVK() {
-        if (!supportedGKVs.contains(this.getGVK())) {
-            throw new IllegalArgumentException("Given GVK is not valid or supported: " + this.getGVK());
+        for (GVK gvk : GVK.values()) {
+            if (gvk.value.equals(sanitizedValue)) {
+                return gvk;
+            }
         }
-    }
 
-    @Override
-    public String toString() {
-        return "GVK{" +
-                "group='" + group.orElse("") + '\'' +
-                ", version='" + version + '\'' +
-                ", kind='" + kind + '\'' +
-                '}';
+        throw new IllegalArgumentException("Given GVK is not valid or supported: " + value);
     }
 }
