@@ -83,7 +83,7 @@ public class VanillaKubernetesResourceDiscovery extends AbstractResourceDiscover
 
             logDefaultNamespace(defaultNamespace);
 
-            uri = uri.builder()
+            uri = uri.copyBuilder()
                     .withNamespace(defaultNamespace)
                     .build();
         }

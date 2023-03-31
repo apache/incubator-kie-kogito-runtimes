@@ -87,7 +87,7 @@ public final class VanillaKubernetesResourceUri {
         return vanillaKubernetesResourceUri;
     }
 
-    public Builder builder() {
+    public Builder copyBuilder() {
         return new Builder()
                 .withCustomLabel(customLabel)
                 .withGvk(gvk)
