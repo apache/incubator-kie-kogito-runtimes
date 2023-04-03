@@ -11,8 +11,9 @@
   <description>PostgreSQL based persistence for Kogito</description>
   <properties>
     <path.to.jdbc.addon>../jdbc</path.to.jdbc.addon>
-    <path.to.migration.scripts.from>${path.to.jdbc.addon}/src/main/resources/db/postgresql</path.to.migration.scripts.from>
-    <path.to.migration.scripts.to>src/main/resources/db/migration</path.to.migration.scripts.to>
+    <path.to.script.folder>src/main/resources/db</path.to.script.folder>
+    <path.to.migration.scripts.from>${path.to.jdbc.addon}/${path.to.script.folder}/postgresql</path.to.migration.scripts.from>
+    <path.to.migration.scripts.to>${path.to.script.folder}/migration</path.to.migration.scripts.to>
   </properties>
 
   <dependencies>
@@ -105,7 +106,7 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>${path.to.migration.scripts.to}</directory>
+              <directory>${path.to.script.folder}</directory>
             </fileset>
           </filesets>
         </configuration>
