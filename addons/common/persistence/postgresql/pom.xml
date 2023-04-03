@@ -110,9 +110,7 @@
           </filesets>
         </configuration>
       </plugin>
-<!--  Using maven-dependency-plugin to unpack and copy scripts.
-      There's a limitation to using this plugin as the artifact may not
-      be available while building to unpack the dependency.     -->
+<!--  The cleanest way would be to use the maven-dependency-plugin to unpack and copy scripts from the built artifact `kogito-addons-persistence-jdbc` but there's a limitation to using this only in the `package` phase whereas we need that into the `generate-sources` phase. See also https://issues.apache.org/jira/browse/MDEP-98 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
