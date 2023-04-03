@@ -110,6 +110,9 @@
           </filesets>
         </configuration>
       </plugin>
+<!--  Using maven-dependency-plugin to unpack and copy scripts.
+      There's a limitation to using this plugin as the artifact may not
+      be available while building to unpack the dependency.     -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
