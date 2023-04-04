@@ -56,6 +56,18 @@ class ConfigValueExpanderTest {
                 .isEqualTo(nonExpandableValue);
     }
 
+    @Test
+    void nullShouldBeNonExpandable() {
+        ConfigValueExpander expander = new ConfigValueExpander(new FakeKubeDiscoveryConfigCache("should not be returned"));
+
+        ConfigValue configValue = ConfigValue.builder()
+                .withValue(null)
+                .build();
+
+        assertThat(expander.expand(configValue).getValue())
+                .isNull();
+    }
+
     private static class FakeKubeDiscoveryConfigCache extends KubeDiscoveryConfigCache {
 
         private final String value;

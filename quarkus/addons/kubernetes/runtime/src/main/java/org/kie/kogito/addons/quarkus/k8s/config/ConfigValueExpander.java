@@ -39,7 +39,8 @@ class ConfigValueExpander {
 
     private boolean valueContainsDiscovery(ConfigValue configValue) {
         for (KubernetesProtocol protocol : KubernetesProtocol.values()) {
-            if (configValue.getValue().startsWith(protocol.getValue() + ":")) {
+            String value = configValue.getValue();
+            if (value != null && value.startsWith(protocol.getValue() + ":")) {
                 return true;
             }
         }
