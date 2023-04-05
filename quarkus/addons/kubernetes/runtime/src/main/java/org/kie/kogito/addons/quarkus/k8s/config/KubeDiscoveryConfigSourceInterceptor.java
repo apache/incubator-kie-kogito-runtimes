@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandles;
 
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.OpenShiftResourceDiscovery;
-import org.kie.kogito.addons.quarkus.k8s.discovery.UnavailableOpenShiftResourceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,8 @@ public class KubeDiscoveryConfigSourceInterceptor implements ConfigSourceInterce
         var vanillaKubernetesResourceDiscovery = new VanillaKubernetesResourceDiscovery(kubernetesClient,
                 knativeServiceDiscovery);
 
-        var openShiftResourceDiscovery = kubernetesClient.isAdaptable(OpenShiftClient.class) ? new OpenShiftResourceDiscovery(kubernetesClient.adapt(OpenShiftClient.class),
-                vanillaKubernetesResourceDiscovery) : new UnavailableOpenShiftResourceDiscovery();
+        var openShiftResourceDiscovery = new OpenShiftResourceDiscovery(kubernetesClient.adapt(OpenShiftClient.class),
+                vanillaKubernetesResourceDiscovery);
 
         var kubeDiscoveryConfigCacheUpdater = new KubeDiscoveryConfigCacheUpdater(vanillaKubernetesResourceDiscovery,
                 openShiftResourceDiscovery, knativeServiceDiscovery);
