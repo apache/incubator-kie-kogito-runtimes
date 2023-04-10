@@ -17,7 +17,6 @@
 package org.kie.kogito.process.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
