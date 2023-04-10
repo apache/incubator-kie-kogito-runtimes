@@ -288,7 +288,7 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                     //checking if parent is present in ProcessInstanceManager (in-memory local transaction)
                     KogitoProcessInstance parentKogitoProcessInstance = services.getProcessInstanceManager().getProcessInstance(parentProcessInstanceId);
                     if (parentKogitoProcessInstance != null) {
-                        parentKogitoProcessInstance.unwrap().send(Sig.of(type, event));
+                        parentKogitoProcessInstance.signalEvent(type, event);
                         return;
                     }
                     //if not present ProcessInstanceManager try to signal instance from repository
