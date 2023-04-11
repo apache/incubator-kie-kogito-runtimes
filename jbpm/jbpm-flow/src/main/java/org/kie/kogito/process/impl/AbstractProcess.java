@@ -289,10 +289,10 @@ public abstract class AbstractProcess<T extends Model> implements Process<T>, Pr
                     KogitoProcessInstance parentKogitoProcessInstance = services.getProcessInstanceManager().getProcessInstance(parentProcessInstanceId);
                     if (parentKogitoProcessInstance != null) {
                         parentKogitoProcessInstance.signalEvent(type, event);
-                        return;
+                    } else {
+                        //if not present ProcessInstanceManager try to signal instance from repository
+                        instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
                     }
-                    //if not present ProcessInstanceManager try to signal instance from repository
-                    instances().findById(pi.getParentProcessInstanceId()).ifPresent(p -> p.send(Sig.of(type, event)));
                 }
             }
         }
