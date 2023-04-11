@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.Address;
@@ -132,12 +131,18 @@ public abstract class PersistenceTest {
 
         assertThat(createdPid).isEqualTo(pid);
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(
-                () -> given().contentType(ContentType.JSON)
-                        .when()
-                        .get("/{processId}/{id}", PROCESS_ID, pid)
-                        .then()
-                        .statusCode(404));
+        //signal to continue and complete the process instance
+        given().contentType(ContentType.JSON)
+                .when()
+                .post("/{processId}/{id}/continue", PROCESS_ID, pid)
+                .then()
+                .statusCode(200);
+
+        given().contentType(ContentType.JSON)
+                .when()
+                .get("/{processId}/{id}", PROCESS_ID, pid)
+                .then()
+                .statusCode(404);
     }
 
     @Test
