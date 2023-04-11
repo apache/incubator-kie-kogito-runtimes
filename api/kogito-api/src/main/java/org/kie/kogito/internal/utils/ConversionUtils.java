@@ -160,4 +160,14 @@ public class ConversionUtils {
     public static boolean isEmpty(String value) {
         return Objects.isNull(value) || value.isBlank();
     }
+
+    /**
+     * Check not empty string
+     *
+     * @param value
+     * @return
+     */
+    public static boolean isNotEmpty(String value) {
+        return !isEmpty(value);
+    }
 }
