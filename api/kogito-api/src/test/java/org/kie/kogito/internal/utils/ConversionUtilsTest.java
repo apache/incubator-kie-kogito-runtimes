@@ -26,6 +26,7 @@ class ConversionUtilsTest {
 
     @Test
     void testConvertBoolean() {
+        assertThat(convert("true", Boolean.class)).isTrue();
         assertThat(convert("5", Boolean.class)).isFalse();
     }
 
@@ -36,26 +37,27 @@ class ConversionUtilsTest {
 
     @Test
     void testConvertDouble() {
-        final Double expectedDouble = 10.54d;
-        assertThat(convert("10.54d", Double.class)).isEqualTo(expectedDouble);
+        assertThat(convert("10.54d", Double.class)).isEqualTo(10.54d);
     }
 
     @Test
     void testConvertFloat() {
-        final Float expectedFloat = 10.54f;
-        assertThat(convert("10.54f", Float.class)).isEqualTo(expectedFloat);
+        assertThat(convert("10.54f", Float.class)).isEqualTo(10.54f);
+    }
+
+    @Test
+    void testConvertLong() {
+        assertThat(convert("1000000000", Long.class)).isEqualTo(1000000000L);
     }
 
     @Test
     void testConvertShort() {
-        final short expectedShort = 5;
-        assertThat(convert("5", Short.class)).isEqualTo(expectedShort);
+        assertThat(convert("5", Short.class)).isEqualTo((short) 5);
     }
 
     @Test
     void testConvertByte() {
-        final byte expectedByte = 112;
-        assertThat(convert("112", Byte.class)).isEqualTo(expectedByte);
+        assertThat(convert("112", Byte.class)).isEqualTo((byte) 112);
     }
 
     @Test
