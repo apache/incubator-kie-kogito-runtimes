@@ -15,6 +15,8 @@
  */
 package org.kie.kogito.internal.utils;
 
+import java.util.Objects;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +25,49 @@ import static org.kie.kogito.internal.utils.ConversionUtils.convert;
 import static org.kie.kogito.internal.utils.ConversionUtils.toCamelCase;
 
 class ConversionUtilsTest {
+
+    static class Person {
+        private final String name;
+        private final int age;
+
+        public Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        @Override
+        public String toString() {
+            return name + ";" + age;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(age, name);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            Person other = (Person) obj;
+            return age == other.age && Objects.equals(name, other.name);
+        }
+
+        public static Person convert(String str) {
+            String[] strs = str.split(";");
+            return new Person(strs[0], Integer.parseInt(strs[1]));
+        }
+
+    }
+
+    static class PersonConstructor {
+
+        public PersonConstructor(String str) {
+
+        }
+    }
 
     @Test
     void testConvertBoolean() {
@@ -58,6 +103,14 @@ class ConversionUtilsTest {
     @Test
     void testConvertByte() {
         assertThat(convert("112", Byte.class)).isEqualTo((byte) 112);
+    }
+
+    @Test
+    void testConvertPerson() {
+        Person person = new Person("Javi", 23);
+        String personAsString = person.toString();
+        assertThat(convert(personAsString, Person.class)).isEqualTo(person);
+        assertThat(convert(personAsString, PersonConstructor.class)).isInstanceOf(PersonConstructor.class);
     }
 
     @Test

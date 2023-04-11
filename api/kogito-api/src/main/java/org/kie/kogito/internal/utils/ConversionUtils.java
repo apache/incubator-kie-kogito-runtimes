@@ -20,7 +20,12 @@ import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ConversionUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConversionUtils.class);
 
     private ConversionUtils() {
     }
@@ -47,17 +52,16 @@ public class ConversionUtils {
                 try {
                     return clazz.cast(convert.invoke(null, stringConverter.apply(value)));
                 } catch (ReflectiveOperationException e) {
-                    // see end method
+                    logger.info("Execution of method {} failed. Trying different approach", convert.getName(), e);
                 }
             }
 
             try {
                 return clazz.getConstructor(String.class).newInstance(stringConverter.apply(value));
             } catch (ReflectiveOperationException e) {
-                // see end method
+                logger.info("Cannot use string constructor to perform conversion", e);
             }
         }
-
         throw new IllegalArgumentException(value + " cannot be converted to " + clazz.getName());
     }
 
