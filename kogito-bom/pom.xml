@@ -1274,6 +1274,32 @@
         <classifier>sources</classifier>
       </dependency>
 
+      <!-- custom dashboard -->
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-dashboard</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-dashboard</artifactId>
+        <version>${project.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-dashboard</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-addons-quarkus-dashboard-parent</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Process SVG addon     -->
       <dependency>
         <groupId>org.kie.kogito</groupId>
