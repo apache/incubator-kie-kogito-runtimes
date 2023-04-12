@@ -70,12 +70,6 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-timer</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-pmml-api-dependencies</artifactId>
-    </dependency>
-
     <!-- test -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
