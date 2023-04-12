@@ -21,8 +21,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,12 +38,9 @@ import org.kie.kogito.process.ProcessService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-<<<<<<< Upstream, based on main
 import static org.assertj.core.api.Assertions.assertThat;
-=======
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -95,122 +90,67 @@ class ProcessEventDispatcherTest {
 
     @Test
     void testSigCloudEvent() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
-        ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent<>(new TestEvent("pepe"), DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
-        dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
+        dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent(new TestEvent("pepe"), DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> processInstanceId = ArgumentCaptor.forClass(String.class);
 
         verify(processService, times(1)).signalProcessInstance(Mockito.any(Process.class), processInstanceId.capture(), Mockito.any(Object.class), signal.capture());
 
-<<<<<<< Upstream, based on main
         assertThat(signal.getValue()).isEqualTo("Message-" + DUMMY_TOPIC);
         assertThat(processInstanceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        assertEquals("Message-" + DUMMY_TOPIC, signal.getValue());
-        assertEquals("1", processInstanceId.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testCloudEventNewInstanceWithoutReference() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent<>(new TestEvent("pepe"), DUMMY_TOPIC)).toCompletableFuture().get();
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC)).toCompletableFuture().get();
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
+        dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent(new TestEvent("pepe"), DUMMY_TOPIC)).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
 
         verify(processInstances, never()).findById(any());
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
-        verify(processService, times(1)).signalProcess(eq(process), any(DummyModel.class), signal.capture());
+        verify(processService, times(1)).signalProcess(eq(process), any(TestEvent.class), signal.capture());
 
-<<<<<<< Upstream, based on main
         assertThat(signal.getValue()).isEqualTo(DUMMY_TOPIC);
-        assertThat(referenceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        assertEquals(DUMMY_TOPIC, signal.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testCloudEventNewInstanceWithReference() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent<>(new TestEvent("pepe"), DUMMY_TOPIC, "source", "invalidReference")).toCompletableFuture().get();
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        dispatcher.dispatch(DUMMY_TOPIC, new DummyCloudEvent(new DummyEvent("pepe"), DUMMY_TOPIC, "source", "invalidReference")).toCompletableFuture().get();
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
+        dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent(new TestEvent("pepe"), DUMMY_TOPIC, "source", "invalidReference")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
 
         verify(processInstances, times(1)).findById("invalidReference");
         verify(processService, never()).signalProcessInstance(eq(process), any(), any(), signal.capture());
-        verify(processService, times(1)).signalProcess(eq(process), any(DummyModel.class), signal.capture());
+        verify(processService, times(1)).signalProcess(eq(process), any(TestEvent.class), signal.capture());
 
-<<<<<<< Upstream, based on main
         assertThat(signal.getValue()).isEqualTo(DUMMY_TOPIC);
-        assertThat(referenceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        assertEquals(DUMMY_TOPIC, signal.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testDataEvent() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, DataEventFactory.from(new TestEvent("pepe"))).toCompletableFuture().get();
-
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        dispatcher.dispatch(DUMMY_TOPIC, DataEventFactory.from(new DummyEvent("pepe"))).toCompletableFuture().get();
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
+        dispatcher.dispatch(DUMMY_TOPIC, DataEventFactory.from(new TestEvent("pepe"))).toCompletableFuture().get();
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
-<<<<<<< Upstream, based on main
-        verify(processService, times(1)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), signal.capture(), isNull(), isNull());
-        assertThat(signal.getValue()).isEqualTo(DUMMY_TOPIC);
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        verify(processService, times(1)).signalProcess(eq(process), any(DummyModel.class), signal.capture());
+        verify(processService, times(1)).signalProcess(eq(process), any(TestEvent.class), signal.capture());
         assertEquals(DUMMY_TOPIC, signal.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testIgnoredDataEvent() throws Exception {
         EventDispatcher<Void, Object> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
         final String payload = "{ a = b }";
-<<<<<<< Upstream, based on main
-        ProcessInstance<DummyModel> result = dispatcher.dispatch(DUMMY_TOPIC, DataEventFactory.from(payload)).toCompletableFuture().get();
-        assertThat(result).isNull();
-=======
         dispatcher.dispatch(DUMMY_TOPIC, DataEventFactory.from(payload)).toCompletableFuture().get();
         verify(processService, times(0)).createProcessInstance(eq(process), any(), any(DummyModel.class), any(), any(), isNull(), isNull());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testStringSigCloudEvent() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, String> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
-        ProcessInstance<DummyModel> instance = dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent<>("pepe", DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
-=======
         EventDispatcher<Void, String> dispatcher = new ProcessEventDispatcher<>(process, Optional.empty(), processService, executor, null, o -> o.getData());
-        dispatcher.dispatch(DUMMY_TOPIC, new StringCloudEvent("pepe", DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent("pepe", DUMMY_TOPIC, "source", "1")).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> processInstanceId = ArgumentCaptor.forClass(String.class);
@@ -218,30 +158,15 @@ class ProcessEventDispatcherTest {
 
         verify(processService, times(1)).signalProcessInstance(Mockito.any(Process.class), processInstanceId.capture(), signalObject.capture(), signal.capture());
 
-<<<<<<< Upstream, based on main
         assertThat(signal.getValue()).isEqualTo("Message-" + DUMMY_TOPIC);
         assertThat(signalObject.getValue()).isEqualTo("pepe");
         assertThat(processInstanceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        assertEquals("Message-" + DUMMY_TOPIC, signal.getValue());
-        assertEquals("pepe", signalObject.getValue());
-        assertEquals("1", processInstanceId.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 
     @Test
     void testIgnoredCloudEvent() throws Exception {
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        final TestCloudEvent<TestEvent> payload = new TestCloudEvent<>(new TestEvent("test"), "differentTopic", "differentSource");
-        ProcessInstance<DummyModel> result = dispatcher.dispatch(DUMMY_TOPIC, payload).toCompletableFuture().get();
-        assertThat(result).isNull();
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
-        final DummyCloudEvent payload = new DummyCloudEvent(new DummyEvent("test"), "differentTopic", "differentSource");
-        assertNull(dispatcher.dispatch(DUMMY_TOPIC, payload).toCompletableFuture().get());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, null, o -> o.getData());
+        assertNull(dispatcher.dispatch(DUMMY_TOPIC, new TestCloudEvent(new TestEvent("test"), "differentTopic", "differentSource")).toCompletableFuture().get());
     }
 
     @Test
@@ -251,12 +176,7 @@ class ProcessEventDispatcherTest {
         String userValue = UUID.randomUUID().toString();
         String nameValue = UUID.randomUUID().toString();
 
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, Stream.of(userId, name).collect(Collectors.toSet()),
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, Stream.of(userId, name).collect(Collectors.toSet()),
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
-                o -> o.getData());
+        EventDispatcher<Void, TestEvent> dispatcher = new ProcessEventDispatcher<>(process, modelConverter(), processService, executor, Set.of(userId, name), o -> o.getData());
         TestCloudEvent<TestEvent> event = new TestCloudEvent<>(new TestEvent("pepe"), DUMMY_TOPIC, "source");
         event.addExtensionAttribute(userId, userValue);
         event.addExtensionAttribute(name, nameValue);
@@ -264,23 +184,10 @@ class ProcessEventDispatcherTest {
         dispatcher.dispatch(DUMMY_TOPIC, event).toCompletableFuture().get();
 
         ArgumentCaptor<String> signal = ArgumentCaptor.forClass(String.class);
-
-        verify(processService, times(1)).signalProcess(eq(process), any(DummyModel.class), signal.capture());
-
-<<<<<<< Upstream, based on main
-        assertThat(signal.getValue()).isEqualTo(DUMMY_TOPIC);
-        assertThat(referenceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-
-        CompositeCorrelation correlation = correlationCaptor.getValue();
-        Set<? extends Correlation<?>> correlations = correlation.getValue();
-        assertThat(correlations.contains(new SimpleCorrelation<>(userId, userValue))).isTrue();
-        assertThat(correlations.contains(new SimpleCorrelation<>(name, nameValue))).isTrue();
-        assertThat(correlation.getKey()).isNotEmpty();
         assertThat(correlationService.findByCorrelatedId(processInstance.id())).isEmpty();
-=======
-        assertEquals(DUMMY_TOPIC, signal.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+        verify(processService, times(1)).signalProcess(eq(process), any(TestEvent.class), signal.capture());
+
+        assertThat(signal.getValue()).isEqualTo(DUMMY_TOPIC);
     }
 
     @Test
@@ -294,11 +201,8 @@ class ProcessEventDispatcherTest {
         Set<Correlation<?>> correlations = Set.of(userCorrelation, nameCorrelation);
         CompositeCorrelation compositeCorrelation = new CompositeCorrelation(correlations);
         correlationService.create(compositeCorrelation, "1");
-<<<<<<< Upstream, based on main
-        EventDispatcher<DummyModel, TestEvent> dispatcher =
-=======
-        EventDispatcher<Void, DummyEvent> dispatcher =
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
+
+        EventDispatcher<Void, TestEvent> dispatcher =
                 new ProcessEventDispatcher<>(process, modelConverter(), processService, executor,
                         Set.of(name, userId),
                         o -> o.getData());
@@ -313,13 +217,7 @@ class ProcessEventDispatcherTest {
         verify(correlationService).find(compositeCorrelation);
         verify(processService).signalProcessInstance(Mockito.any(Process.class), processInstanceId.capture(), Mockito.any(Object.class), signal.capture());
 
-<<<<<<< Upstream, based on main
         assertThat(signal.getValue()).isEqualTo("Message-" + DUMMY_TOPIC);
         assertThat(processInstanceId.getValue()).isEqualTo("1");
-        assertThat(processInstance).isEqualTo(instance);
-=======
-        assertEquals("Message-" + DUMMY_TOPIC, signal.getValue());
-        assertEquals("1", processInstanceId.getValue());
->>>>>>> 08d4ca4 [KOGITO-8137] Changing startProcessInstance by signalProcess
     }
 }

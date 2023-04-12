@@ -26,10 +26,12 @@ import org.kie.kogito.event.CloudEventMarshaller;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 
 import static io.restassured.RestAssured.given;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.is;
 
 class AssuredTestUtils {
 
@@ -70,15 +72,35 @@ class AssuredTestUtils {
                         .statusCode(404));
     }
 
+    static void waitForSize(String flowName, int size, Duration atLeast, Duration atMost) {
+        await()
+                .atLeast(atLeast)
+                .atMost(atMost)
+                .untilAsserted(() -> checkSize("startMultipleEvent", size));
+    }
+
+    private static ValidatableResponse checkSize(String flowName, int size) {
+        return given()
+                .log().all()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .get("/" + flowName)
+                .then()
+                .statusCode(200)
+                .body("size()", is(size));
+    }
+
     static CloudEvent buildCloudEvent(String id, String type, CloudEventMarshaller<byte[]> marshaller) {
-        return CloudEventBuilder.v1()
+        CloudEventBuilder ce = CloudEventBuilder.v1()
                 .withId(UUID.randomUUID().toString())
                 .withSource(URI.create(""))
                 .withType(type)
                 .withTime(OffsetDateTime.now())
-                .withExtension("kogitoprocrefid", id)
-                .withData(marshaller.cloudEventDataFactory().apply(Collections.singletonMap(type, "This has been injected by the event")))
-                .build();
+                .withData(marshaller.cloudEventDataFactory().apply(Collections.singletonMap(type, "This has been injected by the event")));
+        if (id != null) {
+            ce.withExtension("kogitoprocrefid", id);
+        }
+        return ce.build();
     }
 
 }

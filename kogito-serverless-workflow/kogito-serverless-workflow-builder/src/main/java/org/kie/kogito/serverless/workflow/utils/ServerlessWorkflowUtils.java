@@ -43,6 +43,7 @@ import org.kie.kogito.serverless.workflow.suppliers.ConfigWorkItemSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javaparser.ast.expr.Expression;
 
 import io.serverlessworkflow.api.Workflow;

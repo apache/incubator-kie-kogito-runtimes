@@ -32,12 +32,13 @@ import io.cloudevents.jackson.JsonFormat;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.ValidatableResponse;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.*;
-import static org.hamcrest.CoreMatchers.is;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.buildCloudEvent;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.startProcess;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.waitForFinish;
+import static org.kie.kogito.quarkus.workflows.AssuredTestUtils.waitForSize;
 
 @QuarkusIntegrationTest
 class EventFlowIT {
@@ -92,38 +93,13 @@ class EventFlowIT {
     }
 
     @Test
-    void testMultipleStartingEvents() {
-        checkSize("startMultipleEvent", 0);
-
+    void testMultipleStartingEvents() throws IOException {
         for (String eventType : new String[] { "startEvent1", "startEvent2", "startEvent3" }) {
-            given()
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .body(generateCloudEvent(null, eventType))
-                    .post("/" + eventType)
-                    .then()
-                    .statusCode(202);
+            sendEvents(null, eventType);
         }
-        await()
-                .atMost(2, SECONDS)
-                .untilAsserted(() -> checkSize("startMultipleEvent", 1));
 
-        await()
-                .atLeast(1, SECONDS)
-                .atMost(5, SECONDS)
-                .with().pollInterval(1, SECONDS)
-                .untilAsserted(() -> checkSize("startMultipleEvent", 0));
-    }
-
-    private ValidatableResponse checkSize(String flowName, int size) {
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .get("/" + flowName)
-                .then()
-                .statusCode(200)
-                .body("size()", is(size));
+        waitForSize("startMultipleEvent", 1, Duration.ofSeconds(0), Duration.ofSeconds(1));
+        waitForSize("startMultipleEvent", 0, Duration.ofSeconds(1), Duration.ofSeconds(5));
     }
 
     @Test
@@ -163,4 +139,5 @@ class EventFlowIT {
         CloudEventMarshaller<byte[]> marshaller = marshallers.getOrDefault(type, defaultMarshaller);
         return marshaller.marshall(buildCloudEvent(id, type, marshaller));
     }
+
 }
