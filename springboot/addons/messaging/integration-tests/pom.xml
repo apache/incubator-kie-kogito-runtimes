@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-springboot-messaging-parent</artifactId>
-    <version>1.37.0-SNAPSHOT</version>
+    <version>1.37.0.Final</version>
   </parent>
   <artifactId>kogito-addons-springboot-messaging-it</artifactId>
   <name>Kogito :: Add-Ons :: Messaging :: Spring Boot (ITs)</name>

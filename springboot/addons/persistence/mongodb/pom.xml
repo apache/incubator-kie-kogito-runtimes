@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-springboot-persistence-parent</artifactId>
-    <version>1.37.0-SNAPSHOT</version>
+    <version>1.37.0.Final</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>Kogito :: Add-Ons :: Persistence MongoDB :: Springboot</name>
