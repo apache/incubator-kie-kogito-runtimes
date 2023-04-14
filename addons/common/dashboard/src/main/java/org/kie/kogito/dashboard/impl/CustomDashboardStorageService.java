@@ -35,16 +35,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.kie.kogito.dashboard.CustomDashboardStorage;
 import org.kie.kogito.dashboard.model.CustomDashboardFilter;
 import org.kie.kogito.dashboard.model.CustomDashboardInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CustomDashboardStorageImpl implements CustomDashboardStorage {
+public class CustomDashboardStorageService {
 
     private static final String CUSTOM_DASHBOARD_STORAGE_PATH = "/dashboards/";
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomDashboardStorageImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomDashboardStorageService.class);
 
     private final Map<String, CustomDashboardInfo> customDashboardInfoMap = new HashMap<>();
 
@@ -53,11 +52,13 @@ public class CustomDashboardStorageImpl implements CustomDashboardStorage {
 
     private Optional<String> storageUrl;
 
-    public CustomDashboardStorageImpl() {
+    public CustomDashboardStorageService(Optional<String> storageUrl) {
+        this.storageUrl = storageUrl;
         start(Thread.currentThread().getContextClassLoader().getResource(CUSTOM_DASHBOARD_STORAGE_PATH));
     }
 
-    public CustomDashboardStorageImpl(final URL classLoaderFormsUrl) {
+    public CustomDashboardStorageService(final URL classLoaderFormsUrl, Optional<String> storageUrl) {
+        this.storageUrl = storageUrl;
         start(classLoaderFormsUrl);
     }
 
@@ -85,7 +86,7 @@ public class CustomDashboardStorageImpl implements CustomDashboardStorage {
             return null;
         }
 
-        File customDashStorageeFolder = new File(storageUrl.orElse(classLoaderCustomDashboardUrl.getFile()));
+        File customDashStorageeFolder = new File(storageUrl != null ? storageUrl.orElse(classLoaderCustomDashboardUrl.getFile()) : classLoaderCustomDashboardUrl.getFile());
 
         if (!customDashStorageeFolder.exists() || !customDashStorageeFolder.isDirectory()) {
             LOGGER.warn("Cannot initialize form storage folder in path '" + customDashStorageeFolder.getPath() + "'");
@@ -99,34 +100,30 @@ public class CustomDashboardStorageImpl implements CustomDashboardStorage {
         return null;
     }
 
-    @Override
-    public int getCustomDashboardFilesCount() {
-        return customDashboardInfoMap.size();
+    public Optional<Integer> getCustomDashboardFilesCount() {
+        return Optional.of(Integer.valueOf(customDashboardInfoMap.size()));
     }
 
-    @Override
-    public Collection<CustomDashboardInfo> getCustomDashboardFiles(CustomDashboardFilter filter) {
+    public Optional<Collection<CustomDashboardInfo>> getCustomDashboardFiles(CustomDashboardFilter filter) {
         if (filter != null && !filter.getNames().isEmpty()) {
-            return customDashboardInfoMap.entrySet().stream()
+            return Optional.of(customDashboardInfoMap.entrySet().stream()
                     .filter(entry -> StringUtils.containsAnyIgnoreCase(entry.getKey(), filter.getNames().toArray(new String[0])))
                     .map(Map.Entry::getValue)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList()));
         } else {
-            return customDashboardInfoMap.values();
+            return Optional.of(customDashboardInfoMap.values());
         }
     }
 
-    @Override
-    public String getCustomDashboardFileContent(String name) throws IOException {
+    public Optional<String> getCustomDashboardFileContent(String name) throws IOException {
         try {
-            return IOUtils.toString(new FileInputStream(customDashboardInfoMap.get(name).getPath()), StandardCharsets.UTF_8);
+            return Optional.of(IOUtils.toString(new FileInputStream(customDashboardInfoMap.get(name).getPath()), StandardCharsets.UTF_8));
         } catch (IOException e) {
             LOGGER.info("custom-dashboard's file {} can not ready, because of {}", customDashboardInfoMap.get(name).getPath(), e.getMessage());
             throw e;
         }
     }
 
-    @Override
     public void updateCustomDashboard(String content) {
 
     }

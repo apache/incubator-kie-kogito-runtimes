@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.kie.kogito.dashboard.impl.CustomDashboardStorageService;
 import org.kie.kogito.dashboard.model.CustomDashboardFilter;
-import org.kie.kogito.service.CustomDashboardStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
