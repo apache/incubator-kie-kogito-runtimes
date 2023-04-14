@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2023 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,18 @@
 package org.kie.kogito.serverless.workflow.utils;
 
 import java.io.File;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 
-import io.serverlessworkflow.api.functions.FunctionDefinition;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.resolveFunctionMetadata;
+import static org.kie.kogito.serverless.workflow.utils.OpenAPIWorkflowUtils.getOpenApiProperty;
 
-public class WorkflowUtilsTest {
+public class OpenServerlessWorkflowUtilsTest {
 
     private static final String TEST_RESOURCES = "src/test/resources";
-
     KogitoBuildContext context;
 
     @BeforeEach
@@ -43,9 +39,8 @@ public class WorkflowUtilsTest {
     }
 
     @Test
-    public void testResolveFunctionMetadata() {
-        FunctionDefinition function = new FunctionDefinition().withName("testfunction1").withMetadata(Collections.singletonMap("testprop1", "customtestprop1val"));
-        assertThat(resolveFunctionMetadata(function, "testprop1", context)).isNotNull().isEqualTo("customtestprop1val");
-        assertThat(resolveFunctionMetadata(function, "testprop2", context)).isNotNull().isEqualTo("testprop2val");
+    public void testResolveOpenAPIMetadata() {
+        assertThat(getOpenApiProperty("testfunction", "base_path", context, String.class, "http://localhost:8080")).isEqualTo("http://localhost:8282");
+        assertThat(getOpenApiProperty("testfunction1", "base_path2", context, Integer.class, 0)).isZero();
     }
 }

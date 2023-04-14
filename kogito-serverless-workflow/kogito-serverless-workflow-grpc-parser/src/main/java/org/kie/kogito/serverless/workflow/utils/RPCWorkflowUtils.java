@@ -15,19 +15,9 @@
  */
 package org.kie.kogito.serverless.workflow.utils;
 
-import org.drools.util.StringUtils;
+public class RPCWorkflowUtils {
 
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getValidIdentifier;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.removeExt;
-
-public class OpenAPIServerlessWorkflowUtils {
-
-    public static String getOpenApiClassName(String fileName, String methodName) {
-        return StringUtils.ucFirst(getValidIdentifier(removeExt(fileName.toLowerCase())) + '_' + methodName);
+    public static String getRPCClassName(String serviceName) {
+        return "RPC_" + serviceName + "_WorkItemHandler";
     }
-
-    public static String getOpenApiWorkItemName(String fileName, String methodName) {
-        return removeExt(fileName) + '_' + methodName;
-    }
-
 }

@@ -62,13 +62,13 @@ import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.buildLoader;
 import static org.kie.kogito.serverless.workflow.io.URIContentLoaderFactory.readAllBytes;
 import static org.kie.kogito.serverless.workflow.parser.handlers.NodeFactoryUtils.fillRest;
+import static org.kie.kogito.serverless.workflow.utils.OpenAPIWorkflowUtils.runtimeOpenApi;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.ACCESS_TOKEN;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY_PREFIX;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.PASSWORD_PROP;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.USER_PROP;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.replaceNonAlphanumeric;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeOpenApi;
 
 public class DescriptorRestOperationHandler implements RestOperationHandler {
 

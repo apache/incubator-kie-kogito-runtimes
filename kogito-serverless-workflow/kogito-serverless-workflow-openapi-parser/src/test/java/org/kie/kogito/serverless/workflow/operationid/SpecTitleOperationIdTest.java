@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.serverless.workflow.utils.OpenAPIServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.utils.OpenAPIWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -49,7 +49,7 @@ class SpecTitleOperationIdTest {
         assertThat(id.getOperation()).isEqualTo("sendRequest");
         assertThat(id.getFileName()).isEqualTo("external-service");
         assertThat(id.getPackageName()).isEqualTo("externalservice");
-        assertThat(OpenAPIServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("external-service_sendRequest");
+        assertThat(OpenAPIWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("external-service_sendRequest");
         assertThat(id.getUri()).hasToString("specs/external-service.yaml");
         assertThat(id.getService()).isNull();
     }
