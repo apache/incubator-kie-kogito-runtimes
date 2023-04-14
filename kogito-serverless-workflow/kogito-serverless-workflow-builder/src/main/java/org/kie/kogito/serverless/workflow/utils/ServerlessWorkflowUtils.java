@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 
 import org.drools.codegen.common.GeneratedFile;
 import org.drools.codegen.common.GeneratedFileType;
-import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.ModelMetaData;
 import org.jbpm.compiler.canonical.VariableDeclarations;
 import org.kie.api.definition.process.WorkflowProcess;
@@ -243,14 +242,6 @@ public class ServerlessWorkflowUtils {
 
     public static String getRPCClassName(String serviceName) {
         return "RPC_" + serviceName + "_WorkItemHandler";
-    }
-
-    public static String getOpenApiClassName(String fileName, String methodName) {
-        return StringUtils.ucFirst(getValidIdentifier(removeExt(fileName.toLowerCase())) + '_' + methodName);
-    }
-
-    public static String getOpenApiWorkItemName(String fileName, String methodName) {
-        return removeExt(fileName) + '_' + methodName;
     }
 
     public static String removeExt(String fileName) {

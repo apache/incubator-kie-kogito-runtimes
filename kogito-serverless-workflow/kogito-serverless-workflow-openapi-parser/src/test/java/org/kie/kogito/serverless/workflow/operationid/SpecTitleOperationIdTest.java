@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
+import org.kie.kogito.serverless.workflow.utils.OpenAPIServerlessWorkflowUtils;
 
 import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
@@ -32,22 +32,24 @@ class SpecTitleOperationIdTest {
 
     private Workflow workflow;
     private FunctionDefinition definition;
+    private WorkflowOperationIdFactory factory;
 
     @BeforeEach
     void setup() {
         workflow = mock(Workflow.class);
         definition = new FunctionDefinition("pepe");
+        factory = WorkflowOperationIdFactoryProvider.getFactory(Optional.of(SpecWorkflowOperationIdFactory.SPEC_PROP_VALUE));
     }
 
     @Test
     void testOperationId() {
         definition.setType(Type.REST);
         definition.setOperation("specs/external-service.yaml#sendRequest");
-        WorkflowOperationId id = WorkflowOperationIdFactoryType.SPEC_TITLE.factory().from(workflow, definition, Optional.empty());
+        WorkflowOperationId id = factory.from(workflow, definition, Optional.empty());
         assertThat(id.getOperation()).isEqualTo("sendRequest");
         assertThat(id.getFileName()).isEqualTo("external-service");
         assertThat(id.getPackageName()).isEqualTo("externalservice");
-        assertThat(ServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("external-service_sendRequest");
+        assertThat(OpenAPIServerlessWorkflowUtils.getOpenApiWorkItemName(id.getFileName(), id.getOperation())).isEqualTo("external-service_sendRequest");
         assertThat(id.getUri()).hasToString("specs/external-service.yaml");
         assertThat(id.getService()).isNull();
     }
