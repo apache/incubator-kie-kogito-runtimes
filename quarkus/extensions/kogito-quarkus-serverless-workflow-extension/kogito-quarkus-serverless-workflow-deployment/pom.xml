@@ -27,6 +27,10 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-grpc-parser</artifactId>
     </dependency> 
+      <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-rest-parser</artifactId>
+    </dependency> 
     <!-- Deployment -->
     <!-- SW Discovery -->
     <dependency>

@@ -220,7 +220,7 @@ public class ServerlessWorkflowUtils {
         return workflow.getExtensions().stream().filter(extensionClass::isInstance).findFirst().map(extensionClass::cast);
     }
 
-    protected static String getValidIdentifier(String name) {
+    public static String getValidIdentifier(String name) {
         return filterString(name, Character::isJavaIdentifierPart, Optional.empty());
     }
 

@@ -14,13 +14,14 @@
   <description>Kogito Serverless Workflow OpenAPI parser</description>
 
   <dependencies>
-    
     <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-openapi-common</artifactId>
     </dependency>
-  
-    
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-rest-parser</artifactId>
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

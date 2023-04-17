@@ -17,7 +17,6 @@ package org.kie.kogito.serverless.workflow.utils;
 
 import java.util.function.Supplier;
 
-import org.drools.util.StringUtils;
 import org.jbpm.compiler.canonical.descriptors.TaskDescriptor;
 import org.jbpm.ruleflow.core.RuleFlowNodeContainerFactory;
 import org.jbpm.ruleflow.core.factory.WorkItemNodeFactory;
@@ -29,35 +28,12 @@ import org.kogito.workitem.rest.RestWorkItemHandler;
 
 import com.github.javaparser.ast.expr.Expression;
 
-import io.serverlessworkflow.api.functions.FunctionDefinition;
-import io.serverlessworkflow.api.functions.FunctionDefinition.Type;
-
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getPropKey;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getValidIdentifier;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.removeExt;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeResolveMetadata;
 
 public class RestAPIWorkflowUtils {
 
     private static final String OPEN_API_PROPERTIES_BASE = "org.kogito.openapi.client.";
-
-    public static String getOpenApiClassName(String fileName, String methodName) {
-        return StringUtils.ucFirst(getValidIdentifier(removeExt(fileName.toLowerCase())) + '_' + methodName);
-    }
-
-    public static String getOpenApiWorkItemName(String fileName, String methodName) {
-        return removeExt(fileName) + '_' + methodName;
-    }
-
-    /**
-     * Checks whether or not the Function definition is an OpenApi operation
-     *
-     * @param function to verify
-     * @return true if the given function refers to an OpenApi operation
-     */
-    public static boolean isOpenApiOperation(FunctionDefinition function) {
-        return function.getType() == Type.REST && function.getOperation() != null && function.getOperation().contains(ServerlessWorkflowUtils.OPERATION_SEPARATOR);
-    }
 
     public static String getOpenApiProperty(String serviceName, String metadataKey, KogitoBuildContext context) {
         return getOpenApiProperty(serviceName, metadataKey, context, String.class, "");
@@ -90,4 +66,6 @@ public class RestAPIWorkflowUtils {
                 .workName(RestWorkItemHandler.REST_TASK_TYPE);
     }
 
+    private RestAPIWorkflowUtils() {
+    }
 }
