@@ -81,9 +81,13 @@
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-runtime</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.kie.kogito</groupId>
       <artifactId>kogito-serverless-workflow-grpc-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-rest-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>

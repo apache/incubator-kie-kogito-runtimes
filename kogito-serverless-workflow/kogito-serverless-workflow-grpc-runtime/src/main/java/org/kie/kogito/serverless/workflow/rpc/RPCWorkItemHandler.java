@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
 import org.kie.kogito.jackson.utils.JsonObjectUtils;
+import org.kie.kogito.serverless.workflow.SWFConstants;
 import org.kie.kogito.serverless.workflow.WorkflowWorkItemHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -54,8 +55,6 @@ import io.grpc.Status;
 import io.grpc.protobuf.ProtoUtils;
 import io.grpc.stub.ClientCalls;
 import io.grpc.stub.StreamObserver;
-
-import static org.kogito.workitem.rest.RestWorkItemHandler.CONTENT_DATA;
 
 public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
 
@@ -152,7 +151,7 @@ public abstract class RPCWorkItemHandler extends WorkflowWorkItemHandler {
         WaitingStreamObserver responseObserver = new WaitingStreamObserver(streamTimeout);
         StreamObserver<Message> requestObserver = streamObserverFunction.apply(responseObserver);
 
-        for (Object messageParam : Objects.requireNonNull((List<Object>) parameters.get(CONTENT_DATA), "Missing streaming call parameter")) {
+        for (Object messageParam : Objects.requireNonNull((List<Object>) parameters.get(SWFConstants.CONTENT_DATA), "Missing streaming call parameter")) {
             try {
                 Message message = RPCConverterFactory.get().buildMessage(messageParam, DynamicMessage.newBuilder(methodDesc.getInputType())).build();
                 requestObserver.onNext(message);

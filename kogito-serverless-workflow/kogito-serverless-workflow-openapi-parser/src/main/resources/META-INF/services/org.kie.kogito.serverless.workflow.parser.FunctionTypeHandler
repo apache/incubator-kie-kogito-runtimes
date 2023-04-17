@@ -1,1 +1,1 @@
-org.kie.kogito.serverless.workflow.parser.types.OpenAPITypeHandler
+org.kie.kogito.serverless.workflow.parser.rest.DescriptorRestOperationHandler

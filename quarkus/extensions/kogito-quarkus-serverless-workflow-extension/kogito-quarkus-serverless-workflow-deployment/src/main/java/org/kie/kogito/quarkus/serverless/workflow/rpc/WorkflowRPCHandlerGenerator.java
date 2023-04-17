@@ -15,8 +15,6 @@
  */
 package org.kie.kogito.quarkus.serverless.workflow.rpc;
 
-import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -47,6 +45,8 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 
 import io.grpc.Channel;
 import io.quarkus.grpc.GrpcClient;
+
+import static com.github.javaparser.StaticJavaParser.parseClassOrInterfaceType;
 
 public class WorkflowRPCHandlerGenerator implements WorkflowHandlerGenerator {
 

@@ -14,17 +14,10 @@
   <description>Kogito Serverless Workflow OpenAPI parser</description>
 
   <dependencies>
-    <dependency>
-      <groupId>io.smallrye</groupId>
-      <artifactId>smallrye-open-api-core</artifactId>
-    </dependency>
+    
     <dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-serverless-workflow-builder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.parser.v3</groupId>
-      <artifactId>swagger-parser</artifactId>
+      <artifactId>kogito-serverless-workflow-openapi-common</artifactId>
     </dependency>
   
     
