@@ -27,7 +27,6 @@ import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstanceReadMode;
 import org.kie.kogito.serialization.process.ProcessInstanceMarshallerService;
-import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.RocksIterator;
@@ -35,25 +34,13 @@ import org.rocksdb.RocksIterator;
 public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     private final Process<T> process;
-    private ProcessInstanceMarshallerService marshaller;
-    private final Options options;
-    private final String dbLocation;
+    private final ProcessInstanceMarshallerService marshaller;
+    private final RocksDB db;
 
-    public RocksDBProcessInstances(Process<T> process, Options options, String dbLocation) {
+    public RocksDBProcessInstances(Process<T> process, RocksDB db) {
         this.process = process;
         marshaller = ProcessInstanceMarshallerService.newBuilder().withDefaultObjectMarshallerStrategies().build();
-        this.options = options;
-        this.dbLocation = dbLocation;
-    }
-
-    @FunctionalInterface
-    private static interface DBFunction<T> {
-        T apply(RocksDB db) throws RocksDBException;
-    }
-
-    @FunctionalInterface
-    private static interface DBConsumer {
-        void accept(RocksDB db) throws RocksDBException;
+        this.db = db;
     }
 
     private class RockSplitIterator extends AbstractSpliterator<ProcessInstance<T>> implements Closeable {
@@ -85,23 +72,27 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     @Override
     public Optional<ProcessInstance<T>> findById(String id, ProcessInstanceReadMode mode) {
-        return executeDBFunction(db -> {
+        try {
             byte[] data = db.get(id.getBytes());
             return data == null ? Optional.empty() : Optional.of(unmarshall(data));
-        });
+        } catch (RocksDBException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     @Override
     public Stream<ProcessInstance<T>> stream(ProcessInstanceReadMode mode) {
-        return executeDBFunction(db -> {
-            RocksDBProcessInstances<T>.RockSplitIterator iterator = new RockSplitIterator(db.newIterator());
-            return StreamSupport.stream(iterator, false).onClose(iterator::close);
-        });
+        RocksDBProcessInstances<T>.RockSplitIterator iterator = new RockSplitIterator(db.newIterator());
+        return StreamSupport.stream(iterator, false).onClose(iterator::close);
     }
 
     @Override
     public boolean exists(String id) {
-        return executeDBFunction(db -> db.get(id.getBytes()) != null);
+        try {
+            return db.get(id.getBytes()) != null;
+        } catch (RocksDBException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     @Override
@@ -111,25 +102,17 @@ public class RocksDBProcessInstances<T> implements MutableProcessInstances<T> {
 
     @Override
     public void update(String id, ProcessInstance<T> instance) {
-        executeDBOperation(db -> db.put(id.getBytes(), marshaller.marshallProcessInstance(instance)));
-    }
-
-    @Override
-    public void remove(String id) {
-        executeDBOperation(db -> db.delete(id.getBytes()));
-    }
-
-    private <R> R executeDBFunction(DBFunction<R> function) {
-        try (final RocksDB db = RocksDB.open(options, dbLocation)) {
-            return function.apply(db);
+        try {
+            db.put(id.getBytes(), marshaller.marshallProcessInstance(instance));
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
-    private void executeDBOperation(DBConsumer function) {
-        try (final RocksDB db = RocksDB.open(options, dbLocation)) {
-            function.accept(db);
+    @Override
+    public void remove(String id) {
+        try {
+            db.delete(id.getBytes());
         } catch (RocksDBException ex) {
             throw new IllegalStateException(ex);
         }

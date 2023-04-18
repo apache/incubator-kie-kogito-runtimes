@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.drools.io.ClassPathResource;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.kie.kogito.process.bpmn2.BpmnProcess;
 import org.kie.kogito.process.bpmn2.BpmnVariables;
 import org.kie.kogito.process.impl.AbstractProcessInstance;
 import org.rocksdb.Options;
+import org.rocksdb.RocksDBException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -52,8 +54,13 @@ class RockDBProcessInstancesTest {
     }
 
     @BeforeEach
-    void setup() {
+    void setup() throws RocksDBException {
         factory = new RocksDBProcessInstancesFactory(options, tempDir.toString());
+    }
+
+    @AfterEach
+    void close() {
+        factory.close();
     }
 
     @AfterAll
@@ -87,7 +94,7 @@ class RockDBProcessInstancesTest {
         pi.create(TEST_ID, mockCreatePi);
 
         assertThat(pi.exists(TEST_ID)).isTrue();
-        try (Stream stream = pi.stream()) {
+        try (Stream<ProcessInstance<?>> stream = pi.stream()) {
             assertThat(stream.count()).isOne();
         }
         assertThat(pi.findById(TEST_ID)).isNotEmpty();
@@ -102,7 +109,7 @@ class RockDBProcessInstancesTest {
         when(mockUpdatePi.id()).thenReturn(TEST_ID);
         pi.remove(TEST_ID);
         assertThat(pi.exists(TEST_ID)).isFalse();
-        try (Stream stream = pi.stream()) {
+        try (Stream<ProcessInstance<?>> stream = pi.stream()) {
             assertThat(stream.count()).isZero();
         }
     }
