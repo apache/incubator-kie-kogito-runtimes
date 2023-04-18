@@ -18,6 +18,7 @@ package org.kie.kogito.persistence.rocksdb;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.drools.io.ClassPathResource;
 import org.jbpm.workflow.instance.WorkflowProcessInstance;
@@ -84,8 +85,13 @@ class RockDBProcessInstancesTest {
         when(mockCreatePi.internalGetProcessInstance()).thenReturn(createPi);
         when(mockCreatePi.id()).thenReturn(TEST_ID);
         pi.create(TEST_ID, mockCreatePi);
+
         assertThat(pi.exists(TEST_ID)).isTrue();
-        assertThat(pi.stream().count()).isOne();
+        try (Stream stream = pi.stream()) {
+            assertThat(stream.count()).isOne();
+        }
+        assertThat(pi.findById(TEST_ID)).isNotEmpty();
+        assertThat(pi.findById("non_existant")).isEmpty();
 
         WorkflowProcessInstance updatePi = ((AbstractProcessInstance<?>) process.createInstance(BpmnVariables.create(Collections.singletonMap("test", "test")))).internalGetProcessInstance();
         updatePi.setId(TEST_ID);
@@ -96,6 +102,8 @@ class RockDBProcessInstancesTest {
         when(mockUpdatePi.id()).thenReturn(TEST_ID);
         pi.remove(TEST_ID);
         assertThat(pi.exists(TEST_ID)).isFalse();
-        assertThat(pi.stream().count()).isZero();
+        try (Stream stream = pi.stream()) {
+            assertThat(stream.count()).isZero();
+        }
     }
 }

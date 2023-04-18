@@ -78,7 +78,7 @@
     <version.org.infinispan>14.0.6.Final</version.org.infinispan>
     <version.org.infinispan.protostream>4.5.1.Final</version.org.infinispan.protostream>
     
-    <version.org.rocksdb>6.6.4</version.org.rocksdb>
+    <version.org.rocksdb>7.10.2</version.org.rocksdb>
     <!-- consider migrating to 3.x JDK 9: https://jakarta.ee/specifications/restful-ws/ -->
     <version.jakarta.ws.rs>2.1.6</version.jakarta.ws.rs>
     <version.org.jboss.resteasy>4.7.7.Final</version.org.jboss.resteasy>
