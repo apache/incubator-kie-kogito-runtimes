@@ -15,6 +15,10 @@
  */
 package org.kie.kogito.persistence.quarkus;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.junit.jupiter.api.Test;
 
@@ -28,25 +32,51 @@ class KogitoAddOnPersistenceJDBCConfigSourceFactoryTest {
 
     @Test
     void getConfigSourcesInternalExistingLocations() {
-        ConfigSource configSource = getConfigSource(POSTGRESQL, "/path/to/locations");
-        assertThat(configSource.getValue(FLYWAY_LOCATIONS)).isEqualTo("/path/to/locations,classpath:/db/postgresql");
+        Set<String> locationsSet = getLocationsSet(getConfigSource(POSTGRESQL, "/path/to/locations", Integer.MAX_VALUE)
+                .getValue(FLYWAY_LOCATIONS));
+
+        assertThat(locationsSet).containsExactlyInAnyOrder("/path/to/locations", "classpath:/db/postgresql");
+    }
+
+    @Test
+    void getConfigSourcesInternalDefaultLocations() {
+        Set<String> locationsSet = getLocationsSet(getConfigSource(POSTGRESQL, "/path/to/locations", Integer.MIN_VALUE)
+                .getValue(FLYWAY_LOCATIONS));
+
+        assertThat(locationsSet).containsOnly("classpath:/db/postgresql");
     }
 
     @Test
     void getConfigSourcesInternalNoExistingLocations() {
-        ConfigSource configSource = getConfigSource(POSTGRESQL, null);
-        assertThat(configSource.getValue(FLYWAY_LOCATIONS)).isEqualTo("classpath:/db/postgresql");
+        Set<String> locationsSet = getLocationsSet(getConfigSource(POSTGRESQL, null, Integer.MAX_VALUE)
+                .getValue(FLYWAY_LOCATIONS));
+
+        assertThat(locationsSet).containsExactlyInAnyOrder("classpath:/db/postgresql");
     }
 
     @Test
     void getConfigSourcesInternalDatabaseNameEmpty() {
-        ConfigSource configSource = getConfigSource(null, "/path/to/locations");
+        ConfigSource configSource = getConfigSource(null, "/path/to/locations", Integer.MAX_VALUE);
         assertThat(configSource.getPropertyNames()).isEmpty();
     }
 
-    private static ConfigSource getConfigSource(String databaseName, String flywayLocationsValue) {
-        Iterable<ConfigSource> configSources = factory.getConfigSourcesInternal(databaseName, flywayLocationsValue);
+    @Test
+    void getConfigSourcesInternalEnsuresNoDuplication() {
+        Set<String> locationsSet = getLocationsSet(getConfigSource(POSTGRESQL, "classpath:/db/postgresql", Integer.MAX_VALUE)
+                .getValue(FLYWAY_LOCATIONS));
+
+        assertThat(locationsSet).containsExactlyInAnyOrder("classpath:/db/postgresql");
+    }
+
+    private static ConfigSource getConfigSource(String databaseName, String flywayLocationsValue,
+            int flywayLocationsConfigSourceOrdinal) {
+        Iterable<ConfigSource> configSources = factory.getConfigSourcesInternal(databaseName, flywayLocationsValue,
+                flywayLocationsConfigSourceOrdinal);
         assertThat(configSources).hasSize(1);
         return configSources.iterator().next();
+    }
+
+    private static Set<String> getLocationsSet(String locations) {
+        return Arrays.stream(locations.split(",")).collect(Collectors.toSet());
     }
 }
