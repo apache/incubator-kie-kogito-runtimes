@@ -32,19 +32,27 @@ import static org.kie.kogito.persistence.quarkus.KogitoAddOnPersistenceJDBCConfi
 public class KogitoAddOnPersistenceJDBCConfigSourceFactory implements ConfigSourceFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(KogitoAddOnPersistenceJDBCConfigSourceFactory.class);
 
-    private static final String FLYWAY_LOCATIONS = "quarkus.flyway.locations";
+    static final String FLYWAY_LOCATIONS = "quarkus.flyway.locations";
     private static final String DATASOURCE_DB_KIND = "quarkus.datasource.db-kind";
     private static final String LOCATION_PREFIX = "classpath:/db/";
-    private static final String POSTGRESQL = "postgresql";
+    static final String POSTGRESQL = "postgresql";
     private static final String ORACLE = "oracle";
     private static final String ANSI = "ansi";
 
     @Override
     public Iterable<ConfigSource> getConfigSources(ConfigSourceContext context) {
+        return getConfigSourcesInternal(context.getValue(DATASOURCE_DB_KIND).getValue(),
+                context.getValue(FLYWAY_LOCATIONS).getValue());
+    }
+
+    Iterable<ConfigSource> getConfigSourcesInternal(String databaseName, String flywayLocationsValue) {
         Map<String, String> configuration = new HashMap<>();
-        final String databaseName = context.getValue(DATASOURCE_DB_KIND).getValue();
         if (databaseName != null) {
-            configuration.put(FLYWAY_LOCATIONS, LOCATION_PREFIX + getDBName(databaseName));
+            if (flywayLocationsValue == null) {
+                configuration.put(FLYWAY_LOCATIONS, LOCATION_PREFIX + getDBName(databaseName));
+            } else {
+                configuration.put(FLYWAY_LOCATIONS, flywayLocationsValue + ',' + LOCATION_PREFIX + getDBName(databaseName));
+            }
         } else {
             LOGGER.warn("Kogito Flyway must have the property \"quarkus.datasource.db-kind\" to be set to initialize process schema.");
         }
