@@ -15,10 +15,7 @@
  */
 package org.kie.kogito.addon.cloudevents.spring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.DefaultKafkaConsumerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,30 +29,18 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @Configuration
 public class SpringKafkaConsumerConfig {
 
-    @Autowired
-    private ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers;
-
-    @Autowired
-    private KafkaProperties properties;
-
-    private static final Logger logger = LoggerFactory.getLogger(SpringKafkaConsumerConfig.class);
-
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
-        logger.info("Creating Default Kafka Consumer Factory");
-
+    public ConsumerFactory<String, String> consumerFactory(KafkaProperties properties, ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
         DefaultKafkaConsumerFactory<String, String> factory = new DefaultKafkaConsumerFactory<>(
-                this.properties.buildConsumerProperties());
-
-        customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
-
+                properties.buildConsumerProperties());
+        customizers.orderedStream().forEach(customizer -> customizer.customize(factory));
         return factory;
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(ConsumerFactory<String, String> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         return factory;
     }
