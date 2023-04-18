@@ -24,7 +24,7 @@ public class WorkflowOperationIdFactoryProvider {
 
     public static final String PROPERTY_NAME = "kogito.sw.operationIdStrategy";
 
-    private static Map<String, WorkflowOperationIdFactory> operationIds = new HashMap<>();
+    private static final Map<String, WorkflowOperationIdFactory> operationIds = new HashMap<>();
 
     static {
         for (WorkflowOperationIdFactory factory : ServiceLoader.load(WorkflowOperationIdFactory.class)) {
@@ -35,7 +35,7 @@ public class WorkflowOperationIdFactoryProvider {
     }
 
     public static WorkflowOperationIdFactory getFactory(Optional<String> propValue) {
-        Optional<WorkflowOperationIdFactory> factory = propValue.map(String::toUpperCase).map(s -> operationIds.get(s));
+        Optional<WorkflowOperationIdFactory> factory = propValue.map(String::toUpperCase).map(operationIds::get);
         return factory.orElse(operationIds.get(FileNameWorkflowOperationIdFactory.FILE_PROP_VALUE));
     }
 

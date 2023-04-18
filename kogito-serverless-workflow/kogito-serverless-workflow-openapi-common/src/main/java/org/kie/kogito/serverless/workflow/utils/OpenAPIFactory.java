@@ -41,7 +41,7 @@ public class OpenAPIFactory {
                 new OpenAPIParser().readContents(new String(readAllBytes(buildLoader(uri, cl, workflow, function.getAuthRef()))), null, null);
         OpenAPI openAPI = result.getOpenAPI();
         if (openAPI == null) {
-            throw new IllegalArgumentException("Problem parsing uri " + uri + "Messages" + result.getMessages());
+            throw new IllegalArgumentException("Problem parsing uri " + uri + " Messages" + result.getMessages());
         }
         logger.debug("OpenAPI parser messages {}", result.getMessages());
         return openAPI;

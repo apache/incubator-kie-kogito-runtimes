@@ -15,12 +15,7 @@
  */
 package org.kogito.workitem.rest.auth;
 
-import org.kogito.workitem.rest.RestWorkItemHandler;
-
 public class PasswordOAuth2AuthDecorator extends OAuth2AuthDecorator {
-
-    public static final String USER = RestWorkItemHandler.USER;
-    public static final String PASSWORD = RestWorkItemHandler.PASSWORD;
 
     public PasswordOAuth2AuthDecorator(String tokenUrl, String refreshUrl) {
         super(new PasswordOAuth2AuthToken(tokenUrl, refreshUrl));

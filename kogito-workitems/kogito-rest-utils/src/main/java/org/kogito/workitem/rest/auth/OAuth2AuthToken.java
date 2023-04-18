@@ -25,6 +25,9 @@ import io.vertx.mutiny.ext.auth.User;
 import io.vertx.mutiny.ext.auth.oauth2.OAuth2Auth;
 
 public abstract class OAuth2AuthToken<T> implements TokenRetriever {
+
+    private static final Map<Object, User> usersCache = new ConcurrentHashMap<>();
+
     private final String tokenUrl;
     private final String refreshUrl;
 
@@ -32,8 +35,6 @@ public abstract class OAuth2AuthToken<T> implements TokenRetriever {
         this.tokenUrl = tokenUrl;
         this.refreshUrl = refreshUrl;
     }
-
-    private static Map<Object, User> usersCache = new ConcurrentHashMap<>();
 
     @Override
     public String getToken(Map<String, Object> parameters) {
