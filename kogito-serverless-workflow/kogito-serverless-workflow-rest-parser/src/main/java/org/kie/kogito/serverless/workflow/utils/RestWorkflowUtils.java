@@ -31,7 +31,7 @@ import com.github.javaparser.ast.expr.Expression;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getPropKey;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.runtimeResolveMetadata;
 
-public class RestAPIWorkflowUtils {
+public class RestWorkflowUtils {
 
     private static final String OPEN_API_PROPERTIES_BASE = "org.kogito.openapi.client.";
 
@@ -66,6 +66,6 @@ public class RestAPIWorkflowUtils {
                 .workName(RestWorkItemHandler.REST_TASK_TYPE);
     }
 
-    private RestAPIWorkflowUtils() {
+    private RestWorkflowUtils() {
     }
 }

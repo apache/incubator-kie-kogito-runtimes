@@ -59,8 +59,8 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 
 import static org.kie.kogito.internal.utils.ConversionUtils.concatPaths;
-import static org.kie.kogito.serverless.workflow.utils.RestAPIWorkflowUtils.fillRest;
-import static org.kie.kogito.serverless.workflow.utils.RestAPIWorkflowUtils.runtimeOpenApi;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.fillRest;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.runtimeOpenApi;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.ACCESS_TOKEN;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY_PREFIX;

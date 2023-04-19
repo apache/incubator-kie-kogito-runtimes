@@ -27,7 +27,7 @@ import io.serverlessworkflow.api.Workflow;
 import io.serverlessworkflow.api.functions.FunctionDefinition;
 
 import static org.kie.kogito.serverless.workflow.parser.FunctionTypeHandlerFactory.trimCustomOperation;
-import static org.kie.kogito.serverless.workflow.utils.RestAPIWorkflowUtils.fillRest;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.fillRest;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.ACCESS_TOKEN;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY;
 import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.API_KEY_PREFIX;

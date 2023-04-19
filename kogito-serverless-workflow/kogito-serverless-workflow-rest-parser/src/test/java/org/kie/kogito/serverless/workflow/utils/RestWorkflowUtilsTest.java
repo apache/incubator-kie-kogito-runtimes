@@ -23,9 +23,9 @@ import org.kie.kogito.codegen.api.context.KogitoBuildContext;
 import org.kie.kogito.codegen.api.context.impl.JavaKogitoBuildContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.serverless.workflow.utils.RestAPIWorkflowUtils.getOpenApiProperty;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.getOpenApiProperty;
 
-public class OpenServerlessWorkflowUtilsTest {
+public class RestWorkflowUtilsTest {
 
     private static final String TEST_RESOURCES = "src/test/resources";
     KogitoBuildContext context;
