@@ -25,6 +25,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +65,12 @@ import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.Plai
 @WithKubernetesTestServer
 class KnativeServerlessWorkflowCustomFunctionTest {
 
-    public static final String UNUSED = "unused";
+    private static final String UNUSED = "unused";
+
+    private static final String SERVICE_NAME = "serverless-workflow-greeting-quarkus";
+
+    private static final String FULL_GVK_SERVICE_NAME = "serving.knative.dev/v1/Service/serverless-workflow-greeting-quarkus";
+
     private static String remoteServiceUrl;
 
     @KubernetesTestServer
@@ -84,7 +91,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @BeforeEach
     void beforeEach() {
-        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "test", "serverless-workflow-greeting-quarkus");
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "test", SERVICE_NAME);
     }
 
     @AfterAll
@@ -160,11 +167,12 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                                 .put("project", "Kogito"))));
     }
 
-    @Test
-    void executeWithEmptyParameters() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithEmptyParameters(String service) {
         mockExecuteWithEmptyParametersEndpoint();
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+        Map<String, Object> metadata = createMetadata(false, service, "/");
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute("unused", metadata, Map.of());
 
@@ -175,15 +183,16 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         assertThat(output).isEqualTo(expected);
     }
 
-    @Test
-    void executeWithParameters() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithParameters(String service) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> parameters = Map.of(
                 "org", "Acme",
                 "project", "Kogito");
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+        Map<String, Object> metadata = createMetadata(false, service, "/");
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters);
 
@@ -196,8 +205,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         assertThat(output).hasToString(expected.toString());
     }
 
-    @Test
-    void executeWithCloudEventWithIdAsPlainJson() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithCloudEventWithIdAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -209,7 +219,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+        Map<String, Object> metadata = createMetadata(false, service, "/");
 
         String processInstanceId = Instant.now().toString();
 
@@ -218,8 +228,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                 .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
     }
 
-    @Test
-    void executeWithCloudEventWithoutIdAsPlainJson() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithCloudEventWithoutIdAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -230,7 +241,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+        Map<String, Object> metadata = createMetadata(false, service, "/");
 
         String processInstanceId = Instant.now().toString();
 
@@ -239,8 +250,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                 .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
     }
 
-    @Test
-    void executeWithCloudEventThatHasOnlyIdMissingAsPlainJson() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithCloudEventThatHasOnlyIdMissingAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -251,7 +263,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/");
+        Map<String, Object> metadata = createMetadata(false, service, "/");
 
         String processInstanceId = Instant.now().toString();
 
@@ -260,8 +272,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                 .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
     }
 
-    @Test
-    void executeCloudEvent() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeCloudEvent(String service) {
         mockExecuteCloudEventWithParametersEndpoint();
 
         String source = "https://localhost:8080";
@@ -275,7 +288,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, "serverless-workflow-greeting-quarkus", "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, service, "/cloud-event");
 
         String processInstanceId = Instant.now().toString();
 
@@ -308,7 +321,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, "serverless-workflow-greeting-quarkus", "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "/cloud-event");
 
         assertThatNoException()
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, cloudEvent));
@@ -330,20 +343,21 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, "serverless-workflow-greeting-quarkus", "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "/cloud-event");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, cloudEvent))
                 .withMessage("Invalid CloudEvent. The following mandatory attributes are missing: source");
     }
 
-    @Test
-    void executeWithQueryParameters() {
+    @ParameterizedTest
+    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    void executeWithQueryParameters(String service) {
         mockExecuteWithQueryParametersEndpoint();
 
         Map<String, Object> parameters = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/hello");
+        Map<String, Object> metadata = createMetadata(false, service, "/hello");
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters);
 
@@ -359,7 +373,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> parameters = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/non_existing_path");
+        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "/non_existing_path");
 
         assertThatCode(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters))
                 .isInstanceOf(WorkItemExecutionException.class)
@@ -373,7 +387,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> payload = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, "serverless-workflow-greeting-quarkus", "/timeout");
+        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "/timeout");
 
         assertThatExceptionOfType(TimeoutException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, payload));

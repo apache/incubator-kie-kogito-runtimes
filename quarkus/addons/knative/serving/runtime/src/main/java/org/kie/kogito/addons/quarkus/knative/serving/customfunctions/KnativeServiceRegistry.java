@@ -25,6 +25,8 @@ import javax.inject.Inject;
 
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceUri;
+import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
+import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceUri;
 
 @ApplicationScoped
 final class KnativeServiceRegistry {
@@ -33,12 +35,25 @@ final class KnativeServiceRegistry {
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
+    private final VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery;
+
     @Inject
-    KnativeServiceRegistry(KnativeServiceDiscovery knativeServiceDiscovery) {
+    KnativeServiceRegistry(KnativeServiceDiscovery knativeServiceDiscovery,
+            VanillaKubernetesResourceDiscovery vanillaKubernetesResourceDiscovery) {
         this.knativeServiceDiscovery = knativeServiceDiscovery;
+        this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
     }
 
     Optional<URI> getServiceAddress(String serviceName) {
-        return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(KnativeServiceUri.parse(k)).orElse(null)));
+        String[] splitServiceName = serviceName.split("/");
+
+        switch (splitServiceName.length) {
+            case 1:
+                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(new KnativeServiceUri(null, serviceName)).orElse(null)));
+            case 2:
+                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1])).orElse(null)));
+            default:
+                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k)).orElse(null)));
+        }
     }
 }
