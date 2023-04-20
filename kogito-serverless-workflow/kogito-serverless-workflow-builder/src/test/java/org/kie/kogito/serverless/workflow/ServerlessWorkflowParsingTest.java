@@ -16,7 +16,6 @@
 package org.kie.kogito.serverless.workflow;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import org.jbpm.ruleflow.core.Metadata;
@@ -678,13 +677,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcessInfo().info();
 
-        // Simplify the following assertions when https://github.com/smallrye/smallrye-open-api/pull/1093 is merged and released
-
-        assertThat(process.getMetaData())
-                .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
-
-        assertThat(process.getMetaData()).containsKey(Metadata.TAGS);
+        assertThat(process.getMetaData()).containsEntry(Metadata.TAGS, annotations);
     }
 
     @Test
@@ -710,8 +703,6 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
         ServerlessWorkflowParser parser = ServerlessWorkflowParser.of(workflow, JavaKogitoBuildContext.builder().build());
         Process process = parser.getProcessInfo().info();
 
-        // Simplify the following assertions when https://github.com/smallrye/smallrye-open-api/pull/1093 is merged and released
-
-        assertThat(process.getMetaData()).containsKey(Metadata.DESCRIPTION);
+        assertThat(process.getMetaData()).containsEntry(Metadata.DESCRIPTION, description);
     }
 }
