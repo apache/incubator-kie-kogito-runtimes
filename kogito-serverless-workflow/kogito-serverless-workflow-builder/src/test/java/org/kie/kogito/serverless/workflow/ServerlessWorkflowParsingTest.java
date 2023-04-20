@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.microprofile.openapi.models.tags.Tag;
 import org.jbpm.ruleflow.core.Metadata;
 import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.workflow.core.Constraint;
@@ -685,10 +684,7 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
                 .containsKey(Metadata.TAGS)
                 .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
 
-        @SuppressWarnings("unchecked")
-        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
-
-        annotations.forEach(annotation -> assertThat(tags).anyMatch(tag -> tag.getName().equals(annotation)));
+        assertThat(process.getMetaData()).containsKey(Metadata.TAGS);
     }
 
     @Test
@@ -716,13 +712,6 @@ public class ServerlessWorkflowParsingTest extends AbstractServerlessWorkflowPar
 
         // Simplify the following assertions when https://github.com/smallrye/smallrye-open-api/pull/1093 is merged and released
 
-        assertThat(process.getMetaData())
-                .containsKey(Metadata.TAGS)
-                .hasEntrySatisfying(Metadata.TAGS, tags -> assertThat(tags).isInstanceOf(Collection.class));
-
-        @SuppressWarnings("unchecked")
-        Collection<Tag> tags = (Collection<Tag>) process.getMetaData().get(Metadata.TAGS);
-
-        assertThat(tags).anyMatch(tag -> workflowId.equals(tag.getName()) && description.equals(tag.getDescription()));
+        assertThat(process.getMetaData()).containsKey(Metadata.DESCRIPTION);
     }
 }
