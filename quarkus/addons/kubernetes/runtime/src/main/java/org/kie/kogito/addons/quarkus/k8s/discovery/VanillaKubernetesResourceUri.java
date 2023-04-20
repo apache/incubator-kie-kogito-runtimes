@@ -117,30 +117,15 @@ public final class VanillaKubernetesResourceUri {
             String[] values = rawUri.split("/");
 
             switch (values.length) {
-                case 5:
-                    builder.withGvk(GVK.from(values[0], values[1], values[2]));
-                    builder.withNamespace(values[3]);
-                    builder.withResourceName(values[4]);
+                case 2:
+                    builder.withGvk(GVK.from(values[0]));
+                    builder.withResourceName(values[1]);
                     break;
-
-                case 4:
-                    // GVK can be g/v/k or v/k
-                    // for now only v1 api version is supported
-                    if (values[0].equals("v1")) {
-                        builder.withGvk(GVK.from(values[0], values[1]));
-                        builder.withNamespace(values[2]);
-                    } else {
-                        builder.withGvk(GVK.from(values[0], values[1], values[2]));
-                    }
-                    builder.withResourceName(values[3]);
-                    break;
-
                 case 3:
-                    // GVK is only v/k
-                    builder.withGvk(GVK.from(values[0], values[1]));
+                    builder.withGvk(GVK.from(values[0]));
+                    builder.withNamespace(values[1]);
                     builder.withResourceName(values[2]);
                     break;
-
                 default:
                     logger.error("rawUri {} is not valid", rawUri);
             }

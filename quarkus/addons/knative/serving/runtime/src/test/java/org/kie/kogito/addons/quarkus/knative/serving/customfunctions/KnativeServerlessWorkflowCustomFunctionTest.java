@@ -57,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.kie.kogito.addons.quarkus.k8s.test.utils.KnativeResourceDiscoveryTestUtil.createServiceIfNotExists;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.CLOUD_EVENT_PROPERTY_NAME;
-import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.PATH_PROPERTY_NAME;
+import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.URI_PROPERTY_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.REQUEST_TIMEOUT_PROPERTY_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.OPERATION_PROPERTY_NAME;
@@ -331,7 +331,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         return Map.of(
                 CLOUD_EVENT_PROPERTY_NAME, isCloudEvent,
                 OPERATION_PROPERTY_NAME, knativeServiceName,
-                PATH_PROPERTY_NAME, path);
+                URI_PROPERTY_NAME, path);
     }
 
     @Test
@@ -394,6 +394,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     private static Stream<Arguments> possibleUriFormats() {
-        return Stream.of(Arguments.of(SERVICE_NAME), Arguments.of("serving.knative.dev/v1/Service/serverless-workflow-greeting-quarkus"));
+        return Stream.of(Arguments.of(SERVICE_NAME), Arguments.of("services.v1.serving.knative.dev/serverless-workflow-greeting-quarkus"));
     }
 }

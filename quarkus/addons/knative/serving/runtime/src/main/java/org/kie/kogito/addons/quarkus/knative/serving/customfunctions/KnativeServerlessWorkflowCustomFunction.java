@@ -37,7 +37,7 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     static final String CLOUD_EVENT_PROPERTY_NAME = "asCloudEvent";
 
-    static final String PATH_PROPERTY_NAME = "path";
+    static final String URI_PROPERTY_NAME = "uri";
 
     private final KnativeServiceRegistry knativeServiceRegistry;
 
@@ -53,7 +53,7 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     JsonNode execute(String processInstanceId, Map<String, Object> metadata, Map<String, Object> arguments) {
         URI serviceAddress = getServiceAddress((String) metadata.get(OPERATION_PROPERTY_NAME));
-        String path = metadata.getOrDefault(PATH_PROPERTY_NAME, "/").toString();
+        String path = metadata.getOrDefault(URI_PROPERTY_NAME, "/").toString();
 
         return knativeServiceRequestClientResolver.resolve(metadata).execute(
                 processInstanceId,

@@ -24,6 +24,7 @@ import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.kogito.addons.quarkus.k8s.discovery.GVK;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
@@ -53,7 +54,11 @@ final class KnativeServiceRegistry {
                 function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(null, serviceName));
                 break;
             case 2:
-                function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1]));
+                if (GVK.isValid(splitServiceName[0])) {
+                    function = k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k));
+                } else {
+                    function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1]));
+                }
                 break;
             default:
                 function = k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k));
