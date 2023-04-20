@@ -56,7 +56,7 @@ class TagResourceGeneratorTest {
         ClassOrInterfaceDeclaration classOrInterfaceDeclaration = compilationUnit.findAll(ClassOrInterfaceDeclaration.class).get(0);
 
         Stream<AnnotationExpr> tagAnnotations = classOrInterfaceDeclaration.getAnnotations().stream()
-                .filter(a -> a.getNameAsString().equals("Tag"));
+                .filter(a -> a.getNameAsString().equals("io.swagger.v3.oas.annotations.tags.Tag"));
 
         assertThat(tagAnnotations).containsExactly(
                 createTagAnnotation("knowledge"),
@@ -97,6 +97,6 @@ class TagResourceGeneratorTest {
 
     private static AnnotationExpr createTagAnnotation(String name) {
         NodeList<MemberValuePair> attributes = new NodeList<>(new MemberValuePair("name", new StringLiteralExpr(name)));
-        return new NormalAnnotationExpr(new Name("Tag"), attributes);
+        return new NormalAnnotationExpr(new Name("io.swagger.v3.oas.annotations.tags.Tag"), attributes);
     }
 }
