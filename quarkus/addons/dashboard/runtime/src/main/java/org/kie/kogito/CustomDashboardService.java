@@ -16,6 +16,9 @@
 
 package org.kie.kogito;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -27,6 +30,7 @@ import javax.ws.rs.core.Response;
 
 import org.kie.kogito.dashboard.impl.CustomDashboardStorageService;
 import org.kie.kogito.dashboard.model.CustomDashboardFilter;
+import org.kie.kogito.dashboard.model.CustomDashboardInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +53,7 @@ public class CustomDashboardService {
     @Produces(MediaType.TEXT_PLAIN)
     public Response getCustomDashboardFilesCount() {
         try {
-            return Response.ok(storage.getCustomDashboardFilesCount()).build();
+            return Response.ok(storage.getCustomDashboardFilesCount().get()).build();
         } catch (Exception e) {
             LOGGER.warn("Error while getting CustomDashboard file count: ", e);
             return Response.status(INTERNAL_SERVER_ERROR.getStatusCode(), "Unexpected error while getting CustomDashboard files count: " + e.getMessage()).build();
@@ -59,9 +63,15 @@ public class CustomDashboardService {
     @GET
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCustomDashboardFiles(@QueryParam("names") CustomDashboardFilter filter) {
+    public Response getCustomDashboardFiles(@QueryParam("names") CustomDashboardFilter filter, @QueryParam("serverURL") String serverUrl) {
         try {
-            return Response.ok(storage.getCustomDashboardFiles(filter)).build();
+            Optional<Collection<CustomDashboardInfo>> optionalCustomDashboardInfos = storage.getCustomDashboardFiles(filter);
+            optionalCustomDashboardInfos.ifPresent(dashboardInfos -> {
+                dashboardInfos.forEach(dashboard -> {
+                    dashboard.setServerUrl(serverUrl);
+                });
+            });
+            return Response.ok(optionalCustomDashboardInfos.get()).build();
         } catch (Exception e) {
             LOGGER.warn("Error while getting CustomDashboard list: ", e);
             return Response.status(INTERNAL_SERVER_ERROR.getStatusCode(), "Unexpected error while getting CustomDashboard files list: " + e.getMessage()).build();
@@ -70,10 +80,10 @@ public class CustomDashboardService {
 
     @GET
     @Path("/{name:\\S+}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     public Response getCustomDashboardFileContent(@PathParam("name") String name) {
         try {
-            return Response.ok(storage.getCustomDashboardFileContent(name)).build();
+            return Response.ok(storage.getCustomDashboardFileContent(name).get()).build();
         } catch (Exception e) {
             LOGGER.warn("Error while getting CustomDashboard file content: ", e);
             return Response.status(INTERNAL_SERVER_ERROR.getStatusCode(), "Unexpected error while getting CustomDashboard file content: " + e.getMessage()).build();

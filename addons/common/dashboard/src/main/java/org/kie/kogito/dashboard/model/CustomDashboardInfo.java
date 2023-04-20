@@ -17,11 +17,21 @@
 package org.kie.kogito.dashboard.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class CustomDashboardInfo {
     String name;
     String path;
     LocalDateTime lastUpdated;
+    String content;
+    String serverUrl;
+
+    public CustomDashboardInfo(String name, String path, LocalDateTime lastUpdated, String content) {
+        this.name = name;
+        this.path = path;
+        this.lastUpdated = lastUpdated;
+        this.content = content;
+    }
 
     public CustomDashboardInfo(String name, String path, LocalDateTime lastUpdated) {
         this.name = name;
@@ -53,24 +63,46 @@ public class CustomDashboardInfo {
         this.lastUpdated = lastUpdated;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof CustomDashboardInfo)) {
             return false;
         }
 
         CustomDashboardInfo that = (CustomDashboardInfo) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) {
+        if (!Objects.equals(name, that.name)) {
             return false;
         }
-        if (path != null ? !path.equals(that.path) : that.path != null) {
+        if (!Objects.equals(path, that.path)) {
             return false;
         }
-        return lastUpdated != null ? lastUpdated.equals(that.lastUpdated) : that.lastUpdated == null;
+        if (!Objects.equals(lastUpdated, that.lastUpdated)) {
+            return false;
+        }
+        if (!Objects.equals(content, that.content)) {
+            return false;
+        }
+        return Objects.equals(serverUrl, that.serverUrl);
     }
 
     @Override
@@ -78,6 +110,8 @@ public class CustomDashboardInfo {
         int result = name != null ? name.hashCode() : 0;
         result = 31 * result + (path != null ? path.hashCode() : 0);
         result = 31 * result + (lastUpdated != null ? lastUpdated.hashCode() : 0);
+        result = 31 * result + (content != null ? content.hashCode() : 0);
+        result = 31 * result + (serverUrl != null ? serverUrl.hashCode() : 0);
         return result;
     }
 

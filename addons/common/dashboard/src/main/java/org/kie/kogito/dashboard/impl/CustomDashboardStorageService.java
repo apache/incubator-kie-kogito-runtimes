@@ -86,7 +86,7 @@ public class CustomDashboardStorageService {
             return null;
         }
 
-        File customDashStorageeFolder = new File(storageUrl != null ? storageUrl.orElse(classLoaderCustomDashboardUrl.getFile()) : classLoaderCustomDashboardUrl.getFile());
+        File customDashStorageeFolder = new File(storageUrl.isPresent() ? storageUrl.orElse(classLoaderCustomDashboardUrl.getFile()) : classLoaderCustomDashboardUrl.getFile());
 
         if (!customDashStorageeFolder.exists() || !customDashStorageeFolder.isDirectory()) {
             LOGGER.warn("Cannot initialize form storage folder in path '" + customDashStorageeFolder.getPath() + "'");
