@@ -47,7 +47,7 @@ jobs:
         env:
           BUILD_MVN_OPTS_CURRENT: '-T 1.5C'
       - name: Junit Report
-        uses: shubhbapna/kogito-pipelines/.ci/actions/action-junit-report@action-junit-report
+        uses: kiegroup/kogito-pipelines/.ci/actions/action-junit-report@main
         if: ${{ always() }}
         with:
           report_paths: '**/*-reports/TEST-*.xml'
