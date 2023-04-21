@@ -20,16 +20,12 @@ import org.kie.kogito.process.ProcessInstancesFactory;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RocksDBProcessInstancesFactory implements ProcessInstancesFactory, AutoCloseable {
 
-    private static final Logger logger = LoggerFactory.getLogger(RocksDBProcessInstancesFactory.class);
     private final RocksDB db;
 
     public RocksDBProcessInstancesFactory(Options options, String dbLocation) throws RocksDBException {
-        logger.info("Opening rocksdb at {}", dbLocation);
         this.db = RocksDB.open(options, dbLocation);
     }
 
