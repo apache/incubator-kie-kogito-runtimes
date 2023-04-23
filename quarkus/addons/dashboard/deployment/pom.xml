@@ -15,5 +15,9 @@
     <groupId>io.quarkus</groupId>
     <artifactId>quarkus-security-deployment</artifactId>
   </dependency>
+  <dependency>
+    <groupId>org.kie.kogito</groupId>
+    <artifactId>kogito-addons-dashboard</artifactId>
+  </dependency>
 </dependencies>
 </project>

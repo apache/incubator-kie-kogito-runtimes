@@ -32,6 +32,7 @@ import org.kie.kogito.dashboard.model.CustomDashboardInfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CustomDashboardStorageTest {
@@ -49,7 +50,12 @@ public class CustomDashboardStorageTest {
     }
 
     @Test
-    public void testGetFormInfoList() {
+    public void testGetCustomDashboardFilesCount() {
+        assertEquals(2, customDashboardStorage.getCustomDashboardFilesCount().get());
+    }
+
+    @Test
+    public void testGetCustomDashboardFiles() {
         Collection<CustomDashboardInfo> customDashboardInfoFilterAll = customDashboardStorage.getCustomDashboardFiles(null).get();
         assertEquals(2, customDashboardInfoFilterAll.size());
 
@@ -66,18 +72,18 @@ public class CustomDashboardStorageTest {
     }
 
     @Test
-    public void testGetFormContent() throws IOException {
+    public void testGetCustomDashboardFileContent() throws IOException {
         String content = customDashboardStorage.getCustomDashboardFileContent(DASHBOARD_NAME).get();
         assertNotNull(content);
     }
 
-    //    @Test
-    //    public void testWrongStoragePath() throws IOException {
-    //        CustomDashboardStorageService storageService = new CustomDashboardStorageService(Optional.of("Wrong-path"));
-    //        try {
-    //            storageService.getCustomDashboardFileContent("age.dash.yaml");
-    //        } catch (Exception e) {
-    //            assertTrue(e instanceof IOException);
-    //        }
-    //    }
+    @Test
+    public void testWrongStoragePath() throws IOException {
+        CustomDashboardStorageService storageService = new CustomDashboardStorageService(Optional.of("Wrong-path"));
+        try {
+            storageService.getCustomDashboardFileContent("age.dash.yaml");
+        } catch (Exception e) {
+            assertTrue(e instanceof NullPointerException);
+        }
+    }
 }

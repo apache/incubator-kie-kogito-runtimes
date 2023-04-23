@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package org.kie.kogito.dashboard;
 
 import java.io.IOException;
@@ -24,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.kogito.dashboard.impl.CustomDashboardStorageService;
 import org.kie.kogito.dashboard.model.CustomDashboardFilter;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -41,7 +39,7 @@ public class CustomDashboardServiceTest {
     }
 
     @Test
-    public void testGetCustomDashboardFilesCount(){
+    public void testGetCustomDashboardFilesCount() {
         customDashboardServiceTest.getCustomDashboardFilesCount();
         verify(customDashboardStorageService).getCustomDashboardFilesCount();
     }

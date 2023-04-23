@@ -25,10 +25,10 @@ import javax.ws.rs.Produces;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.kie.kogito.dashboard.impl.CustomDashboardStorageService;
 
+import static org.kie.kogito.dashboard.impl.CustomDashboardStorageService.PROJECT_CUSTOM_DASHBOARD_STORAGE_PROP;
+
 @ApplicationScoped
 public class CustomDashboardStorageProducer {
-    public static final String PROJECT_CUSTOM_DASHBOARD_STORAGE_PROP = "quarkus.kogito-runtime-tools.custom.dashboard.folder";
-
     CustomDashboardStorageProducer() {
 
     }

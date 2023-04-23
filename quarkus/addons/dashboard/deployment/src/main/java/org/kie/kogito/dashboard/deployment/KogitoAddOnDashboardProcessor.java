@@ -15,12 +15,19 @@
  */
 package org.kie.kogito.dashboard.deployment;
 
+import java.util.Optional;
+
+import org.eclipse.microprofile.config.ConfigProvider;
+
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.pkg.steps.NativeOrNativeSourcesBuild;
+
+import static org.kie.kogito.dashboard.impl.CustomDashboardStorageService.CUSTOM_DASHBOARD_STORAGE_PATH;
+import static org.kie.kogito.dashboard.impl.CustomDashboardStorageService.PROJECT_CUSTOM_DASHBOARD_STORAGE_PROP;
 
 class KogitoAddOnDashboardProcessor {
 
@@ -33,6 +40,14 @@ class KogitoAddOnDashboardProcessor {
 
     @BuildStep(onlyIf = NativeOrNativeSourcesBuild.class)
     public void nativeResources(BuildProducer<NativeImageResourceBuildItem> resource, BuildProducer<NativeImageResourcePatternsBuildItem> resourcePatterns) {
+        resource.produce(new NativeImageResourceBuildItem("org/apache/batik/util/resources/XMLResourceDescriptor.properties"));
+        resourcePatterns.produce(NativeImageResourcePatternsBuildItem.builder().includeGlob(getSourcePath() + "*.dash.yaml").build());
     }
 
+    private String getSourcePath() {
+        Optional<String> storageUrl = ConfigProvider.getConfig()
+                .getOptionalValue(PROJECT_CUSTOM_DASHBOARD_STORAGE_PROP, String.class);
+
+        return storageUrl.orElseGet(() -> Thread.currentThread().getContextClassLoader().getResource(CUSTOM_DASHBOARD_STORAGE_PATH).getPath());
+    }
 }
