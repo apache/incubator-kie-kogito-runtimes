@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.converter;
+package org.kie.kogito.dashboard.converter;
 
 import java.util.Collections;
 import java.util.StringTokenizer;

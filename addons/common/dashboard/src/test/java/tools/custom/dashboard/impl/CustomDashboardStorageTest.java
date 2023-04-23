@@ -70,4 +70,14 @@ public class CustomDashboardStorageTest {
         String content = customDashboardStorage.getCustomDashboardFileContent(DASHBOARD_NAME).get();
         assertNotNull(content);
     }
+
+    //    @Test
+    //    public void testWrongStoragePath() throws IOException {
+    //        CustomDashboardStorageService storageService = new CustomDashboardStorageService(Optional.of("Wrong-path"));
+    //        try {
+    //            storageService.getCustomDashboardFileContent("age.dash.yaml");
+    //        } catch (Exception e) {
+    //            assertTrue(e instanceof IOException);
+    //        }
+    //    }
 }

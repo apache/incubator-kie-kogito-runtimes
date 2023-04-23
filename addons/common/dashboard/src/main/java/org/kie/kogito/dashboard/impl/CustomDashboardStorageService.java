@@ -66,19 +66,10 @@ public class CustomDashboardStorageService {
         start(classLoaderFormsUrl, getCustomDashboardStorageUrl(classLoaderFormsUrl));
     }
 
-    public void setStorageUrl(Optional<String> storageUrl) {
-        this.storageUrl = storageUrl;
-    }
-
     private void start(final URL classLoaderCustomDashboardUrl, final URL customDashStorageUrl) {
-        try {
-            this.classLoaderCustomDashboardUrl = classLoaderCustomDashboardUrl;
-            this.customDashStorageUrl = customDashStorageUrl;
-        } catch (Exception ex) {
-            LOGGER.warn("Couldn't properly initialize CustomDashboardStorageImpl");
-        } finally {
-            init();
-        }
+        this.classLoaderCustomDashboardUrl = classLoaderCustomDashboardUrl;
+        this.customDashStorageUrl = customDashStorageUrl;
+        init();
     }
 
     private URL getCustomDashboardStorageUrl(URL classLoaderCustomDashboardUrl) {
@@ -87,10 +78,6 @@ public class CustomDashboardStorageService {
         }
 
         File customDashStorageeFolder = new File(storageUrl.isPresent() ? storageUrl.orElse(classLoaderCustomDashboardUrl.getFile()) : classLoaderCustomDashboardUrl.getFile());
-
-        if (!customDashStorageeFolder.exists() || !customDashStorageeFolder.isDirectory()) {
-            LOGGER.warn("Cannot initialize form storage folder in path '" + customDashStorageeFolder.getPath() + "'");
-        }
 
         try {
             return customDashStorageeFolder.toURI().toURL();
@@ -122,10 +109,6 @@ public class CustomDashboardStorageService {
             LOGGER.info("custom-dashboard's file {} can not ready, because of {}", customDashboardInfoMap.get(name).getPath(), e.getMessage());
             throw e;
         }
-    }
-
-    public void updateCustomDashboard(String content) {
-
     }
 
     private void init() {

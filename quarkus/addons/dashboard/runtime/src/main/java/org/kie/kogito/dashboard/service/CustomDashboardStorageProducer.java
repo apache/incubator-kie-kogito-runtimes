@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.kogito.service;
+package org.kie.kogito.dashboard.service;
 
 import java.util.Optional;
 
