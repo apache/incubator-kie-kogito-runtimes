@@ -18,11 +18,17 @@ package org.kie.kogito.jobs.api;
 
 import java.time.temporal.ChronoUnit;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import org.kie.kogito.jobs.ProcessInstanceJobDescription;
 import org.kie.kogito.jobs.service.api.TemporalUnit;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
-import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientStringPayloadData;
+import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
 import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
+import org.kie.kogito.jobs.service.api.serlialization.SerializationUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Common definitions for add-ons implementations based on the Jobs Service to Runtime rest callback pattern.
@@ -49,6 +55,22 @@ public class JobCallbackResourceDef {
 
     public static final String JOBS_CALLBACK_POST_URI = "{" + PROCESS_ID + "}/instances/{" + PROCESS_INSTANCE_ID + "}/timers/{" + TIMER_ID + "}";
 
+    public static class JobCallbackPayload {
+        private String correlationId;
+
+        public JobCallbackPayload() {
+            // marshalling constructor.
+        }
+
+        public String getCorrelationId() {
+            return correlationId;
+        }
+
+        public void setCorrelationId(String correlationId) {
+            this.correlationId = correlationId;
+        }
+    }
+
     private JobCallbackResourceDef() {
     }
 
@@ -59,7 +81,7 @@ public class JobCallbackResourceDef {
                 + "/instances/"
                 + description.processInstanceId()
                 + "/timers/"
-                + description.id())
+                + description.timerId())
                 .toString();
     }
 
@@ -72,16 +94,22 @@ public class JobCallbackResourceDef {
                 .build();
     }
 
-    private static HttpRecipient<HttpRecipientStringPayloadData> buildRecipient(ProcessInstanceJobDescription description, String callback) {
+    private static HttpRecipient<HttpRecipientJsonPayloadData> buildRecipient(ProcessInstanceJobDescription description, String callback) {
         return HttpRecipient.builder()
-                .forStringPayload()
+                .forJsonPayload()
+                .payload(HttpRecipientJsonPayloadData.from(buildPayload(description)))
                 .url(callback)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .header(PROCESS_ID, description.processId())
                 .header(PROCESS_INSTANCE_ID, description.processInstanceId())
                 .header(ROOT_PROCESS_ID, description.rootProcessId())
                 .header(ROOT_PROCESS_INSTANCE_ID, description.rootProcessInstanceId())
                 .header(NODE_INSTANCE_ID, description.nodeInstanceId())
                 .build();
+    }
+
+    private static JsonNode buildPayload(ProcessInstanceJobDescription description) {
+        return SerializationUtils.DEFAULT_OBJECT_MAPPER.createObjectNode().put("correlationId", description.id());
     }
 
     private static TimerSchedule buildSchedule(ProcessInstanceJobDescription description) {
