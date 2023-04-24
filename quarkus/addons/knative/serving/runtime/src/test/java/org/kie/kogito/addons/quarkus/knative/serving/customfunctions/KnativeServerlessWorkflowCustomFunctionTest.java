@@ -17,6 +17,7 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -26,7 +27,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -68,8 +70,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     private static final String UNUSED = "unused";
 
     private static final String SERVICE_NAME = "serverless-workflow-greeting-quarkus";
-
-    private static final String FULL_GVK_SERVICE_NAME = "serving.knative.dev/v1/Service/serverless-workflow-greeting-quarkus";
 
     private static String remoteServiceUrl;
 
@@ -168,7 +168,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithEmptyParameters(String service) {
         mockExecuteWithEmptyParametersEndpoint();
 
@@ -184,7 +184,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithParameters(String service) {
         mockExecuteWithParametersEndpoint();
 
@@ -206,7 +206,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithCloudEventWithIdAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
@@ -229,7 +229,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithCloudEventWithoutIdAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
@@ -251,7 +251,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithCloudEventThatHasOnlyIdMissingAsPlainJson(String service) {
         mockExecuteWithParametersEndpoint();
 
@@ -273,7 +273,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeCloudEvent(String service) {
         mockExecuteCloudEventWithParametersEndpoint();
 
@@ -351,7 +351,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { SERVICE_NAME, FULL_GVK_SERVICE_NAME })
+    @MethodSource("possibleUriFormats")
     void executeWithQueryParameters(String service) {
         mockExecuteWithQueryParametersEndpoint();
 
@@ -391,5 +391,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         assertThatExceptionOfType(TimeoutException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, payload));
+    }
+
+    private static Stream<Arguments> possibleUriFormats() {
+        return Stream.of(Arguments.of(SERVICE_NAME), Arguments.of("serving.knative.dev/v1/Service/serverless-workflow-greeting-quarkus"));
     }
 }
