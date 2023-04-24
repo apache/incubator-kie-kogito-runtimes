@@ -842,11 +842,11 @@ public class RuleFlowProcessValidator implements ProcessValidator {
         }
     }
 
-    protected boolean acceptsNoIncomingConnections(org.kie.api.definition.process.Node node) {
+    private boolean acceptsNoIncomingConnections(org.kie.api.definition.process.Node node) {
         return acceptsNoOutgoingConnections(node);
     }
 
-    protected boolean acceptsNoOutgoingConnections(org.kie.api.definition.process.Node node) {
+    private boolean acceptsNoOutgoingConnections(org.kie.api.definition.process.Node node) {
         NodeContainer nodeContainer = ((Node) node).getParentContainer();
         return nodeContainer instanceof DynamicNode ||
                 (nodeContainer instanceof WorkflowProcess && ((WorkflowProcess) nodeContainer).isDynamic());

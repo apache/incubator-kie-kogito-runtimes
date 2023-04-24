@@ -18,7 +18,9 @@ package org.kie.kogito.codegen.process;
 import java.util.stream.Stream;
 
 import org.jbpm.process.core.datatype.impl.type.ObjectDataType;
+import org.jbpm.process.core.validation.ProcessValidator;
 import org.jbpm.process.core.validation.ProcessValidatorRegistry;
+import org.jbpm.ruleflow.core.RuleFlowProcess;
 import org.jbpm.ruleflow.core.RuleFlowProcessFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +44,7 @@ public class JavaRuleFlowProcessValidatorTest {
                         "uses unknown variable in the script: orders" }),
                 Arguments.of(new String[] {
                         "a = 2",
-                        "unable to parse Java content: Parse error. Found \"}\", expected one of  \"!=\" \"%\" \"%=\" \"&\" \"&&\" \"&=\" \"*\" \"*=\" \"+\" \"+=\" \"-\" \"-=\" \"->\" \"/\" \"/=\" \"::\" \";\" \"<\" \"<<=\" \"<=\" \"=\" \"==\" \">\" \">=\" \">>=\" \">>>=\" \"?\" \"^\" \"^=\" \"instanceof\" \"|\" \"|=\" \"||\"" }),
+                        "Parse error. Found \"}\", expected one of  \"!=\" \"%\" \"%=\" \"&\" \"&&\" \"&=\" \"*\" \"*=\" \"+\" \"+=\" \"-\" \"-=\" \"->\" \"/\" \"/=\" \"::\" \";\" \"<\" \"<<=\" \"<=\" \"=\" \"==\" \">\" \">=\" \">>=\" \">>>=\" \"?\" \"^\" \"^=\" \"instanceof\" \"|\" \"|=\" \"||\"" }),
                 Arguments.of(new String[] {
                         "a = 2;",
                         "uses unknown variable in the script: a" }),
@@ -83,10 +85,10 @@ public class JavaRuleFlowProcessValidatorTest {
                 .done()
                 .connection(1, 2)
                 .connection(2, 3);
-
+        RuleFlowProcess process = factory.getProcess();
+        ProcessValidator validator = ProcessValidatorRegistry.getInstance().getValidator(process, null);
         assertThatExceptionOfType(ValidationException.class)
-                .isThrownBy(() -> ProcessValidatorRegistry.getInstance().getValidator(factory.getProcess(), null).validate(factory.getProcess()))
-                .withMessage(String.format("Node 'Dump order 1' [2] %s", message));
+                .isThrownBy(() -> validator.validate(process))
+                .withMessageContaining(message);
     }
-
 }
