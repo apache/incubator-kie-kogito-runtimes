@@ -26,9 +26,10 @@ import org.kie.kogito.jobs.service.api.TemporalUnit;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipient;
 import org.kie.kogito.jobs.service.api.recipient.http.HttpRecipientJsonPayloadData;
 import org.kie.kogito.jobs.service.api.schedule.timer.TimerSchedule;
-import org.kie.kogito.jobs.service.api.serlialization.SerializationUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import static org.kie.kogito.jobs.service.api.serlialization.SerializationUtils.DEFAULT_OBJECT_MAPPER;
 
 /**
  * Common definitions for add-ons implementations based on the Jobs Service to Runtime rest callback pattern.
@@ -60,6 +61,10 @@ public class JobCallbackResourceDef {
 
         public JobCallbackPayload() {
             // marshalling constructor.
+        }
+
+        public JobCallbackPayload(String correlationId) {
+            this.correlationId = correlationId;
         }
 
         public String getCorrelationId() {
@@ -109,7 +114,7 @@ public class JobCallbackResourceDef {
     }
 
     private static JsonNode buildPayload(ProcessInstanceJobDescription description) {
-        return SerializationUtils.DEFAULT_OBJECT_MAPPER.createObjectNode().put("correlationId", description.id());
+        return DEFAULT_OBJECT_MAPPER.valueToTree(new JobCallbackPayload(description.id()));
     }
 
     private static TimerSchedule buildSchedule(ProcessInstanceJobDescription description) {
