@@ -69,7 +69,17 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     private static final String UNUSED = "unused";
 
+    private static final String NAMESPACE = "test";
+
     private static final String SERVICE_NAME = "serverless-workflow-greeting-quarkus";
+
+    private static final String SERVICE_NAME_WITH_NAMESPACE = NAMESPACE + '/' + SERVICE_NAME;
+
+    private static final String GVK = "services.v1.serving.knative.dev";
+
+    private static final String SERVICE_NAME_FULL_GVK = GVK + '/' + SERVICE_NAME;
+
+    private static final String SERVICE_NAME_FULL_GVK_WITH_NAMESPACE = GVK + '/' + SERVICE_NAME_WITH_NAMESPACE;
 
     private static String remoteServiceUrl;
 
@@ -91,7 +101,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @BeforeEach
     void beforeEach() {
-        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", "test", SERVICE_NAME);
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", NAMESPACE, SERVICE_NAME);
     }
 
     @AfterAll
@@ -394,6 +404,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     }
 
     private static Stream<Arguments> possibleUriFormats() {
-        return Stream.of(Arguments.of(SERVICE_NAME), Arguments.of("services.v1.serving.knative.dev/serverless-workflow-greeting-quarkus"));
+        return Stream.of(
+                Arguments.of(SERVICE_NAME),
+                Arguments.of(SERVICE_NAME_WITH_NAMESPACE),
+                Arguments.of(SERVICE_NAME_FULL_GVK),
+                Arguments.of(SERVICE_NAME_FULL_GVK_WITH_NAMESPACE));
     }
 }
