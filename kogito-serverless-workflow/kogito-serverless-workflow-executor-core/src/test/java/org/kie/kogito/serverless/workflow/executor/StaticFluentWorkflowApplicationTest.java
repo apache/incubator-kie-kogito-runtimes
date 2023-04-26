@@ -34,6 +34,7 @@ import io.serverlessworkflow.api.Workflow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.call;
 import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.log;
+import static org.kie.kogito.serverless.workflow.fluent.ActionBuilder.subprocess;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.expr;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.java;
 import static org.kie.kogito.serverless.workflow.fluent.FunctionBuilder.log;
@@ -73,8 +74,10 @@ public class StaticFluentWorkflowApplicationTest {
     void testForEach() {
         final String SQUARE = "square";
         try (StaticWorkflowApplication application = StaticWorkflowApplication.create()) {
+            Workflow subflow = workflow("Square").start(operation().action(call(expr(SQUARE, ".input*.input"))).outputFilter(".response")).end().build();
+
             Workflow workflow = workflow("ForEachTest")
-                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(call(expr(SQUARE, ".input*.input")))
+                    .start(forEach(".numbers").loopVar("input").outputCollection(".result").action(subprocess(application.process(subflow)))
                             .action(call(expr("half", "$" + ExpressionHandlerUtils.CONTEXT_MAGIC + "."
                                     + KogitoProcessContextResolver.FOR_EACH_PREV_ACTION_RESULT + "/2"))))
                     .end().build();
