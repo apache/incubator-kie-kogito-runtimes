@@ -19,6 +19,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -46,14 +47,17 @@ final class KnativeServiceRegistry {
 
     Optional<URI> getServiceAddress(String serviceName) {
         String[] splitServiceName = serviceName.split("/");
-
+        final Function<String, Optional<URI>> function;
         switch (splitServiceName.length) {
             case 1:
-                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(new KnativeServiceUri(null, serviceName)).orElse(null)));
+                function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(null, serviceName));
+                break;
             case 2:
-                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1])).orElse(null)));
+                function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1]));
+                break;
             default:
-                return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k)).orElse(null)));
+                function = k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k));
         }
+        return Optional.ofNullable(services.computeIfAbsent(serviceName, k -> function.apply(k).orElse(null)));
     }
 }
