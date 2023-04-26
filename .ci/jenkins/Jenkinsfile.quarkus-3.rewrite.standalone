@@ -59,6 +59,7 @@ pipeline {
                 script {
                     dir('drools') {
                         githubscm.checkoutIfExists('drools', getGitAuthor(), getBuildBranch(), getBaseAuthor(), getBaseBranch(), true)
+                        getMavenCommand().withProperty('quickly').run('clean install')
                         sh '.ci/environments/update.sh quarkus-3'
                         getMavenCommand().withProperty('quickly').run('clean install')
                     }
