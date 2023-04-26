@@ -37,10 +37,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.URL;
+import static org.kie.kogito.serverless.workflow.utils.RestWorkflowUtils.getOpenApiPrefix;
 
 class OpenAPIWorkflowApplicationTest {
 
-    private static final String URI_PROPERTY = "org.kogito.openapi.client.spec_yaml.base_path";
+    private static final String URI_PROPERTY = getOpenApiPrefix("spec_yaml") + "." + URL;
 
     @RegisterExtension
     static WireMockExtension wm = WireMockExtension.newInstance()

@@ -34,12 +34,12 @@ class StaticRPCWorkItemHandler extends RPCWorkItemHandler {
 
     @Override
     protected Channel getChannel(String file, String service) {
-        return Grpc.newChannelBuilderForAddress(System.getProperty(getPropertyName(file, service, "host"), "localhost"), Integer.getInteger(getPropertyName(file, service, "port"), 50051),
+        return Grpc.newChannelBuilderForAddress(System.getProperty(getPropertyName(service, "host"), "localhost"), Integer.getInteger(getPropertyName(service, "port"), 50051),
                 InsecureChannelCredentials.create()).build();
     }
 
-    private static String getPropertyName(String file, String service, String propName) {
-        return file + "." + service + "." + propName;
+    private static String getPropertyName(String service, String propName) {
+        return service + "." + propName;
     }
 
 }

@@ -38,9 +38,12 @@ class RPCWorkflowApplicationTest {
 
     private static Server server;
 
+    private static final int RPC_PORT = 50053;
+
     @BeforeAll
     static void init() throws IOException {
-        server = GreeterService.buildServer(50051);
+        server = GreeterService.buildServer(RPC_PORT);
+        System.setProperty("Greeter.port", Integer.toString(RPC_PORT));
         server.start();
     }
 
