@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.serverless.workflow.functions;
+package org.kie.kogito.serverless.workflow.executor;
 
-import java.util.function.Function;
+public class StaticRPCRegister implements StaticApplicationRegister {
 
-import io.serverlessworkflow.api.functions.FunctionDefinition;
+    private final StaticRPCWorkItemHandler rpcWorkItemHandler;
 
-public class FunctionDefinitionEx<T, V> extends FunctionDefinition {
-
-    private static final long serialVersionUID = 1L;
-    private transient Function<T, V> function;
-
-    public FunctionDefinitionEx(String name) {
-        super(name);
+    public StaticRPCRegister() {
+        rpcWorkItemHandler = new StaticRPCWorkItemHandler();
     }
 
-    public FunctionDefinition withFunction(Function<T, V> function) {
-        this.function = function;
-        return this;
-    }
-
-    public Function<T, V> getFunction() {
-        return function;
+    @Override
+    public void register(StaticWorkflowApplication application) {
+        application.registerHandler(rpcWorkItemHandler);
     }
 }

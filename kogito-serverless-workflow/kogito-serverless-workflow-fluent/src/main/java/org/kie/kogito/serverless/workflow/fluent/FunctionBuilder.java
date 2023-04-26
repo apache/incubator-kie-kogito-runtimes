@@ -33,7 +33,8 @@ public class FunctionBuilder {
 
     private FunctionDefinition functionDefinition;
 
-    public static enum HttpMethod {
+    @SuppressWarnings("squid:S115")
+    public enum HttpMethod {
         post,
         get,
         put,
@@ -43,7 +44,7 @@ public class FunctionBuilder {
         trace,
         options,
         connect
-    };
+    }
 
     public static FunctionBuilder def(String name, FunctionDefinition.Type type, String operation) {
         return new FunctionBuilder(new FunctionDefinition(name).withType(type).withOperation(operation));
@@ -57,8 +58,8 @@ public class FunctionBuilder {
         return new FunctionBuilder(new FunctionDefinition(name).withType(Type.EXPRESSION).withOperation(expression));
     }
 
-    public static <T> FunctionBuilder java(String name, Function<T, ?> function) {
-        return new FunctionBuilder(new FunctionDefinitionEx<T>(name).withFunction(function).withType(Type.CUSTOM).withOperation("java"));
+    public static <T, V> FunctionBuilder java(String name, Function<T, V> function) {
+        return new FunctionBuilder(new FunctionDefinitionEx<T, V>(name).withFunction(function).withType(Type.CUSTOM).withOperation("java"));
     }
 
     public static FunctionBuilder java(String name, String className, String methodName) {

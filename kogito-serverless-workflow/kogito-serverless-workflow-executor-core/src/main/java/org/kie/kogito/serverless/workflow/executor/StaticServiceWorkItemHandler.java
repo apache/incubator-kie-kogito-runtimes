@@ -62,7 +62,7 @@ public class StaticServiceWorkItemHandler extends WorkflowWorkItemHandler {
         Class<?> clazz = Class.forName(className);
         Object instance = clazz.getConstructor().newInstance();
         ClassLoader cls = Thread.currentThread().getContextClassLoader();
-        Method method = ReflectionUtils.getMethod(cls, clazz, methodName, Stream.of(parameters).map(o -> o.getClass()).map(Class::getName).collect(Collectors.toList()));
+        Method method = ReflectionUtils.getMethod(cls, clazz, methodName, Stream.of(parameters).map(Object::getClass).map(Class::getName).collect(Collectors.toList()));
         return method.invoke(instance, parameters);
     }
 

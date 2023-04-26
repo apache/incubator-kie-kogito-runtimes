@@ -19,7 +19,7 @@
        <groupId>org.kie.kogito</groupId>
        <artifactId>kogito-serverless-workflow-executor-core</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
        <groupId>org.kie.kogito</groupId>
        <artifactId>kogito-serverless-workflow-executor-rest</artifactId>
     </dependency>
