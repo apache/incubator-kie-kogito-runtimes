@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.examples.sw.greeting.GreeterService;
+import org.kie.kogito.serverless.workflow.executor.greeting.GreeterService;
 import org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils;
 import org.kie.kogito.serverless.workflow.utils.WorkflowFormat;
 

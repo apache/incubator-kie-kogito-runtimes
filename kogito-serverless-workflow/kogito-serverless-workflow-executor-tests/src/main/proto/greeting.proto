@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package="org.kie.kogito.examples.sw.greeting";
+option java_package="org.kie.kogito.serverless.workflow.executor.greeting";
 
 import "message.proto";
 

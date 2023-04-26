@@ -36,7 +36,6 @@ public class RPCTypeHandler extends WorkItemTypeHandler {
             FunctionDefinition functionDef) {
         WorkflowOperationId operationId = context.operationIdFactory().from(workflow, functionDef, Optional.of(context));
         return node.workName(RPCWorkflowUtils.getRPCClassName(operationId.getService()))
-                .workName(RPCWorkItemHandler.NAME)
                 .metaData(RPCWorkItemHandler.FILE_PROP, operationId.getFileName())
                 .metaData(RPCWorkItemHandler.SERVICE_PROP, operationId.getService())
                 .metaData(RPCWorkItemHandler.METHOD_PROP, operationId.getOperation());

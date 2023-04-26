@@ -41,7 +41,6 @@ import org.kie.kogito.serverless.workflow.parser.ServerlessWorkflowParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.serverlessworkflow.api.Workflow;
-import io.serverlessworkflow.api.interfaces.Extension;
 
 /**
  * This is the entry point for executing a workflow from a JVM
@@ -63,7 +62,6 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
 
     private final StaticWorkflowProcesses processes = new StaticWorkflowProcesses();
     private Collection<KogitoWorkItemHandler> handlers = new ArrayList<>();
-    private Collection<Extension> extensions = new ArrayList<>();
     private Iterable<StaticApplicationRegister> applicationRegisters;
     private Iterable<StaticWorkflowRegister> workflowRegisters;
 
@@ -155,13 +153,8 @@ public class StaticWorkflowApplication extends StaticApplication implements Auto
         handlers.add(handler);
     }
 
-    public void registerExtension(Extension extension) {
-        extensions.add(extension);
-    }
-
     private Process<JsonNodeModel> createProcess(Workflow workflow) {
         workflowRegisters.forEach(register -> register.register(this, workflow));
-        extensions.forEach(extension -> workflow.getExtensions().add(extension));
         StaticWorkflowProcess process = new StaticWorkflowProcess(this, handlers, ServerlessWorkflowParser
                 .of(workflow, JavaKogitoBuildContext.builder().withApplicationProperties(System.getProperties()).build()).getProcessInfo().info());
         WorkflowProcessImpl workflowProcess = (WorkflowProcessImpl) process.get();

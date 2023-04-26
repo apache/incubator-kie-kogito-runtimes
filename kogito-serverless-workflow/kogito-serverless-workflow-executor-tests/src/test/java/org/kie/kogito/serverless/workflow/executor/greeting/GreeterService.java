@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kie.kogito.examples.sw.greeting;
+package org.kie.kogito.serverless.workflow.executor.greeting;
 
 import java.util.stream.Collectors;
 
@@ -36,7 +36,7 @@ public class GreeterService extends GreeterGrpc.GreeterImplBase {
 
     @Override
     public void sayHelloArray(HelloArrayRequest requests,
-            StreamObserver<org.kie.kogito.examples.sw.greeting.HelloArrayReply> responseObserver) {
+            StreamObserver<HelloArrayReply> responseObserver) {
         responseObserver.onNext(HelloArrayReply.newBuilder().addAllReplies(requests.getRequestsList().stream().map(request -> buildReply(request)).collect(Collectors.toList())).build());
         responseObserver.onCompleted();
     }

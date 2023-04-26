@@ -23,13 +23,16 @@ import io.grpc.InsecureChannelCredentials;
 
 class StaticRPCWorkItemHandler extends RPCWorkItemHandler {
 
-    public StaticRPCWorkItemHandler() {
+    private final String name;
+
+    public StaticRPCWorkItemHandler(String name) {
         super();
+        this.name = name;
     }
 
     @Override
     public String getName() {
-        return RPCWorkItemHandler.NAME;
+        return name;
     }
 
     @Override
@@ -41,5 +44,4 @@ class StaticRPCWorkItemHandler extends RPCWorkItemHandler {
     private static String getPropertyName(String service, String propName) {
         return service + "." + propName;
     }
-
 }
