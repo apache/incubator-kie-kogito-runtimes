@@ -33,7 +33,6 @@ import io.grpc.Server;
 import io.serverlessworkflow.api.Workflow;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kie.kogito.serverless.workflow.utils.ServerlessWorkflowUtils.getWorkflow;
 
 class RPCWorkflowApplicationTest {
 

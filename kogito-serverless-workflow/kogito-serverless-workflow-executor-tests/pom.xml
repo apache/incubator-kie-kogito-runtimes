@@ -27,6 +27,10 @@
       <artifactId>kogito-serverless-workflow-openapi-parser</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>kogito-serverless-workflow-executor-rest</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <scope>test</scope>
@@ -39,6 +43,11 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
