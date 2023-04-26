@@ -3154,12 +3154,12 @@ index 0022f01e9a..505e0768be 100644
  import org.kie.kogito.process.workitem.WorkItemExecutionException;
  
 diff --git a/quarkus/addons/knative/serving/runtime/src/main/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServiceRegistry.java b/quarkus/addons/knative/serving/runtime/src/main/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServiceRegistry.java
-index a3460008e8..35845304c7 100644
+index 88dff7860d..0af6882dbd 100644
 --- a/quarkus/addons/knative/serving/runtime/src/main/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServiceRegistry.java
 +++ b/quarkus/addons/knative/serving/runtime/src/main/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServiceRegistry.java
-@@ -20,8 +20,8 @@ import java.util.Map;
- import java.util.Optional;
+@@ -21,8 +21,8 @@ import java.util.Optional;
  import java.util.concurrent.ConcurrentHashMap;
+ import java.util.function.Function;
  
 -import javax.enterprise.context.ApplicationScoped;
 -import javax.inject.Inject;
@@ -3235,12 +3235,12 @@ index 9d9609c7f1..f1c1626716 100644
  import org.kie.kogito.event.cloudevents.utils.CloudEventUtils;
  import org.slf4j.Logger;
 diff --git a/quarkus/addons/knative/serving/runtime/src/test/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServerlessWorkflowCustomFunctionTest.java b/quarkus/addons/knative/serving/runtime/src/test/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServerlessWorkflowCustomFunctionTest.java
-index 84429a9be8..92193dd103 100644
+index 15cf23aefc..8e277efd86 100644
 --- a/quarkus/addons/knative/serving/runtime/src/test/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServerlessWorkflowCustomFunctionTest.java
 +++ b/quarkus/addons/knative/serving/runtime/src/test/java/org/kie/kogito/addons/quarkus/knative/serving/customfunctions/KnativeServerlessWorkflowCustomFunctionTest.java
-@@ -18,7 +18,7 @@ package org.kie.kogito.addons.quarkus.knative.serving.customfunctions;
- import java.time.Instant;
+@@ -19,7 +19,7 @@ import java.time.Instant;
  import java.util.Map;
+ import java.util.stream.Stream;
  
 -import javax.inject.Inject;
 +import jakarta.inject.Inject;
