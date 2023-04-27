@@ -1289,7 +1289,7 @@ index 75ce0d3134..2d7405236b 100644
  
    <artifactId>process-workitems</artifactId>
 diff --git a/kogito-bom/pom.xml b/kogito-bom/pom.xml
-index 5c339d133b..fa653c6642 100755
+index 67927984ab..355a99330a 100755
 --- a/kogito-bom/pom.xml
 +++ b/kogito-bom/pom.xml
 @@ -7,7 +7,7 @@
@@ -1844,8 +1844,60 @@ index 0ce1ee68fd..683927e755 100644
    </parent>
  
    <artifactId>kogito-serverless-workflow-builder</artifactId>
+diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-executor-core/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-executor-core/pom.xml
+index ee111e741b..704c27ff9e 100644
+--- a/kogito-serverless-workflow/kogito-serverless-workflow-executor-core/pom.xml
++++ b/kogito-serverless-workflow/kogito-serverless-workflow-executor-core/pom.xml
+@@ -6,7 +6,7 @@
+   <parent>
+     <groupId>org.kie.kogito</groupId>
+     <artifactId>kogito-serverless-workflow</artifactId>
+-    <version>2.0.0-SNAPSHOT</version>
++    <version>quarkus-3-SNAPSHOT</version>
+   </parent>
+ 
+   <artifactId>kogito-serverless-workflow-executor-core</artifactId>
+diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-executor-grpc/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-executor-grpc/pom.xml
+index d0fb9e34d8..3c678e819b 100644
+--- a/kogito-serverless-workflow/kogito-serverless-workflow-executor-grpc/pom.xml
++++ b/kogito-serverless-workflow/kogito-serverless-workflow-executor-grpc/pom.xml
+@@ -6,7 +6,7 @@
+   <parent>
+     <groupId>org.kie.kogito</groupId>
+     <artifactId>kogito-serverless-workflow</artifactId>
+-    <version>2.0.0-SNAPSHOT</version>
++    <version>quarkus-3-SNAPSHOT</version>
+   </parent>
+ 
+   <artifactId>kogito-serverless-workflow-executor-grpc</artifactId>
+diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-executor-rest/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-executor-rest/pom.xml
+index 3803e503bb..7994961e51 100644
+--- a/kogito-serverless-workflow/kogito-serverless-workflow-executor-rest/pom.xml
++++ b/kogito-serverless-workflow/kogito-serverless-workflow-executor-rest/pom.xml
+@@ -6,7 +6,7 @@
+   <parent>
+     <groupId>org.kie.kogito</groupId>
+     <artifactId>kogito-serverless-workflow</artifactId>
+-    <version>2.0.0-SNAPSHOT</version>
++    <version>quarkus-3-SNAPSHOT</version>
+   </parent>
+ 
+   <artifactId>kogito-serverless-workflow-executor-rest</artifactId>
+diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-executor-tests/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-executor-tests/pom.xml
+index 565e0e71f0..0d43ac4149 100644
+--- a/kogito-serverless-workflow/kogito-serverless-workflow-executor-tests/pom.xml
++++ b/kogito-serverless-workflow/kogito-serverless-workflow-executor-tests/pom.xml
+@@ -6,7 +6,7 @@
+   <parent>
+     <groupId>org.kie.kogito</groupId>
+     <artifactId>kogito-serverless-workflow</artifactId>
+-    <version>2.0.0-SNAPSHOT</version>
++    <version>quarkus-3-SNAPSHOT</version>
+   </parent>
+ 
+   <artifactId>kogito-serverless-workflow-executor-tests</artifactId>
 diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-executor/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-executor/pom.xml
-index da5093669f..c343fe0c25 100644
+index 26d482a093..66868c9c80 100644
 --- a/kogito-serverless-workflow/kogito-serverless-workflow-executor/pom.xml
 +++ b/kogito-serverless-workflow/kogito-serverless-workflow-executor/pom.xml
 @@ -6,7 +6,7 @@
@@ -1857,6 +1909,19 @@ index da5093669f..c343fe0c25 100644
    </parent>
  
    <artifactId>kogito-serverless-workflow-executor</artifactId>
+diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-fluent/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-fluent/pom.xml
+index 74c49e72b1..4b32f3f85d 100644
+--- a/kogito-serverless-workflow/kogito-serverless-workflow-fluent/pom.xml
++++ b/kogito-serverless-workflow/kogito-serverless-workflow-fluent/pom.xml
+@@ -6,7 +6,7 @@
+   <parent>
+     <groupId>org.kie.kogito</groupId>
+     <artifactId>kogito-serverless-workflow</artifactId>
+-    <version>2.0.0-SNAPSHOT</version>
++    <version>quarkus-3-SNAPSHOT</version>
+   </parent>
+ 
+   <artifactId>kogito-serverless-workflow-fluent</artifactId>
 diff --git a/kogito-serverless-workflow/kogito-serverless-workflow-grpc-parser/pom.xml b/kogito-serverless-workflow/kogito-serverless-workflow-grpc-parser/pom.xml
 index 0942e3972e..e9e8cd353c 100644
 --- a/kogito-serverless-workflow/kogito-serverless-workflow-grpc-parser/pom.xml
@@ -1975,7 +2040,7 @@ index 7aebf4f0d4..7325f363e5 100644
  
    <artifactId>kogito-serverless-workflow-utils</artifactId>
 diff --git a/kogito-serverless-workflow/pom.xml b/kogito-serverless-workflow/pom.xml
-index 19a2b2d5e4..ba3698fbe3 100644
+index 9160907939..50f3d52984 100644
 --- a/kogito-serverless-workflow/pom.xml
 +++ b/kogito-serverless-workflow/pom.xml
 @@ -5,7 +5,7 @@
