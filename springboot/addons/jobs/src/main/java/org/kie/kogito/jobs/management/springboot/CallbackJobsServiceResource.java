@@ -65,11 +65,15 @@ public class CallbackJobsServiceResource {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Process with id " + processId + " not found");
         }
 
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX payload: " + payload);
+
         String correlationId = null;
         if (payload != null && !payload.isBlank()) {
             try {
                 JobCallbackResourceDef.JobCallbackPayload jobPayload = objectMapper.readValue(payload, JobCallbackResourceDef.JobCallbackPayload.class);
                 correlationId = jobPayload.getCorrelationId();
+                System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX correlationId: " + correlationId);
+
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload: " + payload + ". " + e.getMessage());
             }
