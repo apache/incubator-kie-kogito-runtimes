@@ -18,6 +18,7 @@ package org.kie.kogito.addons.quarkus.k8s.discovery;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
@@ -94,6 +95,27 @@ public final class VanillaKubernetesResourceUri {
                 .withNamespace(namespace)
                 .withCustomPortName(customPortName)
                 .withResourceName(resourceName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        VanillaKubernetesResourceUri that = (VanillaKubernetesResourceUri) o;
+        return gvk == that.gvk
+                && Objects.equals(namespace, that.namespace)
+                && Objects.equals(resourceName, that.resourceName)
+                && Objects.equals(customPortName, that.customPortName)
+                && Objects.equals(customLabel, that.customLabel);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gvk, namespace, resourceName, customPortName, customLabel);
     }
 
     public static class Builder {
