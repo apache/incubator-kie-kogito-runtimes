@@ -1,0 +1,87 @@
+{
+  "id": "kogito_9007_event_state_timeouts",
+  "version": "1.0",
+  "name": "KOGITO-9007 Event State Timeouts",
+  "description": "The objective of this sw is to have a reproducer for KOGITO-9007",
+  "start": "PrintStartMessage",
+  "events": [
+    {
+      "name": "kogito_9007_event",
+      "source": "",
+      "type": "kogito_9007_event_type"
+    }
+  ],
+  "functions": [
+    {
+      "name": "systemOut",
+      "type": "custom",
+      "operation": "sysout"
+    }
+  ],
+  "states": [
+    {
+      "name": "PrintStartMessage",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "printSystemOut",
+          "functionRef": {
+            "refName": "systemOut",
+            "arguments": {
+              "message": "${\"kogito_9007_event_state_timeouts: \" + $WORKFLOW.instanceId + \" has started.\"}"
+            }
+          }
+        }
+      ],
+      "transition": "WaitForEvent"
+    },
+    {
+      "name": "WaitForEvent",
+      "type": "event",
+      "onEvents": [
+        {
+          "eventRefs": [
+            "kogito_9007_event"
+          ],
+          "eventDataFilter": {
+            "data": "${ \"The kogito_9007_event has received.\" }",
+            "toStateData": "${ .exitMessage }"
+          },
+          "actions": [
+            {
+              "name": "printAfterEvent",
+              "functionRef": {
+                "refName": "systemOut",
+                "arguments": {
+                  "message": "${\"kogito_9007_event_state_timeouts: \" + $WORKFLOW.instanceId + \" executing actions for kogito_9007_event.\"}"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "timeouts": {
+        "eventTimeout": "PT10S"
+      },
+      "transition": "PrintExitMessage"
+    },
+    {
+      "name": "PrintExitMessage",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "printSystemOut",
+          "functionRef": {
+            "refName": "systemOut",
+            "arguments": {
+              "message": "${\"kogito_9007_event_state_timeouts: \" + \"has finalized.\" }"
+            }
+          }
+        }
+      ],
+      "end": {
+        "terminate": true
+      }
+    }
+  ]
+}
