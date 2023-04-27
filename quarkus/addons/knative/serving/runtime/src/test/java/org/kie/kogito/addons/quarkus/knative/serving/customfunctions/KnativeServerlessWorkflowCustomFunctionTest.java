@@ -57,7 +57,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.kie.kogito.addons.quarkus.k8s.test.utils.KnativeResourceDiscoveryTestUtil.createServiceIfNotExists;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.CLOUD_EVENT_PROPERTY_NAME;
-import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServerlessWorkflowCustomFunction.URI_PROPERTY_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeServiceRequestClient.REQUEST_TIMEOUT_PROPERTY_NAME;
 import static org.kie.kogito.addons.quarkus.knative.serving.customfunctions.KnativeWorkItemHandler.OPERATION_PROPERTY_NAME;
@@ -182,7 +181,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     void executeWithEmptyParameters(String service) {
         mockExecuteWithEmptyParametersEndpoint();
 
-        Map<String, Object> metadata = createMetadata(false, service, "/");
+        Map<String, Object> metadata = createMetadata(service);
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute("unused", metadata, Map.of());
 
@@ -202,7 +201,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                 "org", "Acme",
                 "project", "Kogito");
 
-        Map<String, Object> metadata = createMetadata(false, service, "/");
+        Map<String, Object> metadata = createMetadata(service);
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters);
 
@@ -229,7 +228,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, service, "/");
+        Map<String, Object> metadata = createMetadata(service);
 
         String processInstanceId = Instant.now().toString();
 
@@ -251,7 +250,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, service, "/");
+        Map<String, Object> metadata = createMetadata(service);
 
         String processInstanceId = Instant.now().toString();
 
@@ -273,7 +272,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(false, service, "/");
+        Map<String, Object> metadata = createMetadata(service);
 
         String processInstanceId = Instant.now().toString();
 
@@ -298,7 +297,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, service, "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, service, "cloud-event");
 
         String processInstanceId = Instant.now().toString();
 
@@ -331,17 +330,22 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "cloud-event");
 
         assertThatNoException()
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, cloudEvent));
     }
 
+    private static Map<String, Object> createMetadata(String knativeServiceName) {
+        return Map.of(
+                CLOUD_EVENT_PROPERTY_NAME, false,
+                OPERATION_PROPERTY_NAME, knativeServiceName);
+    }
+
     private static Map<String, Object> createMetadata(boolean isCloudEvent, String knativeServiceName, String path) {
         return Map.of(
                 CLOUD_EVENT_PROPERTY_NAME, isCloudEvent,
-                OPERATION_PROPERTY_NAME, knativeServiceName,
-                URI_PROPERTY_NAME, path);
+                OPERATION_PROPERTY_NAME, knativeServiceName + '#' + path);
     }
 
     @Test
@@ -353,7 +357,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "/cloud-event");
+        Map<String, Object> metadata = createMetadata(true, SERVICE_NAME, "cloud-event");
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, cloudEvent))
@@ -367,7 +371,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> parameters = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, service, "/hello");
+        Map<String, Object> metadata = createMetadata(false, service, "hello");
 
         JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters);
 
@@ -383,7 +387,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> parameters = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "/non_existing_path");
+        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "non_existing_path");
 
         assertThatCode(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, parameters))
                 .isInstanceOf(WorkItemExecutionException.class)
@@ -397,7 +401,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> payload = Map.of();
 
-        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "/timeout");
+        Map<String, Object> metadata = createMetadata(false, SERVICE_NAME, "timeout");
 
         assertThatExceptionOfType(TimeoutException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, metadata, payload));
