@@ -31,7 +31,8 @@ public class ProcessInstanceJobDescription implements JobDescription {
     private final String rootProcessId;
     private final String nodeInstanceId;
 
-    public ProcessInstanceJobDescription(String id,
+    public ProcessInstanceJobDescription(
+            String id,
             String timerId,
             ExpirationTime expirationTime,
             Integer priority,
@@ -40,7 +41,7 @@ public class ProcessInstanceJobDescription implements JobDescription {
             String processId,
             String rootProcessId,
             String nodeInstanceId) {
-        this.id = requireNonNull(id);
+        this.id = id;
         this.timerId = requireNonNull(timerId);
         this.expirationTime = requireNonNull(expirationTime);
         this.priority = requireNonNull(priority);

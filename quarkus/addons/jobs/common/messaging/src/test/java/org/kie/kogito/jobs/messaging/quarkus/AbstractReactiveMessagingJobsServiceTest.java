@@ -274,7 +274,6 @@ public abstract class AbstractReactiveMessagingJobsServiceTest<T extends Abstrac
 
     protected ProcessInstanceJobDescription mockProcessInstanceJobDescription() {
         return ProcessInstanceJobDescription.builder()
-                .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(EXPIRATION_TIME)
                 .priority(PRIORITY)

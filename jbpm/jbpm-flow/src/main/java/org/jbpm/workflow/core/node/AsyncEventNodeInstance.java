@@ -60,7 +60,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
         public void signalEvent(String type, Object event) {
             if (event instanceof TimerInstance) {
                 TimerInstance timerInstance = (TimerInstance) event;
-                if (Objects.equals(getJobId(), timerInstance.getId())) {
+                if (Objects.equals(getStringId(), timerInstance.getTimerId())) {
                     triggerCompleted();
                 }
             }
@@ -97,8 +97,7 @@ public class AsyncEventNodeInstance extends EventNodeInstance {
                     ExpirationTime expirationTime = ExactExpirationTime.of(ZonedDateTime.now().plus(1, ChronoUnit.MILLIS));
                     ProcessInstanceJobDescription jobDescription =
                             ProcessInstanceJobDescription.builder()
-                                    .id(getJobId())
-                                    .timerId("-1")
+                                    .timerId(getStringId())
                                     .expirationTime(expirationTime)
                                     .processInstanceId(instance.getProcessInstance().getStringId())
                                     .rootProcessInstanceId(instance.getProcessInstance().getRootProcessInstanceId())

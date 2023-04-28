@@ -41,45 +41,43 @@ public class LegacyInMemoryJobService extends InMemoryJobService {
     }
 
     @Override
-    public Runnable getSignalProcessInstanceCommand(ProcessInstanceJobDescription description, boolean remove, int limit) {
-        String id = description.id();
+    public Runnable getSignalProcessInstanceCommand(String jobId, ProcessInstanceJobDescription description, boolean remove, int limit) {
         AtomicInteger counter = new AtomicInteger(limit);
         return () -> {
             try {
                 UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                     ProcessInstance pi = processRuntime.getProcessInstance(description.processInstanceId());
                     if (pi != null) {
-                        pi.signalEvent(SIGNAL, TimerInstance.with(description.id(), description.timerId(), counter.decrementAndGet()));
+                        pi.signalEvent(SIGNAL, TimerInstance.with(jobId, description.timerId(), counter.decrementAndGet()));
                         if (counter.get() == 0) {
-                            cancelJob(id, false);
+                            cancelJob(jobId, false);
                         }
                     } else {
                         // since owning process instance does not exist cancel timers
-                        cancelJob(id, false);
+                        cancelJob(jobId, false);
                     }
                     return null;
                 });
-                LOGGER.debug("Job {} completed", id);
+                LOGGER.debug("Job {} completed", jobId);
             } finally {
                 if (remove) {
-                    cancelJob(id);
+                    cancelJob(jobId);
                 }
             }
         };
     }
 
     @Override
-    protected Runnable processJobByDescription(ProcessJobDescription description) {
-        return processCommand(description, true);
+    protected Runnable processJobByDescription(String jobId, ProcessJobDescription description) {
+        return processCommand(jobId, description, true);
     }
 
-    private Runnable processCommand(ProcessJobDescription description, boolean remove) {
-        String id = description.id();
+    private Runnable processCommand(String jobId, ProcessJobDescription description, boolean remove) {
         AtomicInteger counter = new AtomicInteger(description.expirationTime().repeatLimit());
         String processId = description.processId();
         return () -> {
             try {
-                LOGGER.debug("Job {} started", id);
+                LOGGER.debug("Job {} started", jobId);
                 UnitOfWorkExecutor.executeInUnitOfWork(unitOfWorkManager, () -> {
                     KogitoProcessInstance pi = processRuntime.createProcessInstance(processId, null);
                     if (pi != null) {
@@ -88,19 +86,19 @@ public class LegacyInMemoryJobService extends InMemoryJobService {
                     return null;
                 });
                 if (counter.decrementAndGet() == 0) {
-                    cancelJob(id, false);
+                    cancelJob(jobId, false);
                 }
-                LOGGER.debug("Job {} completed", id);
+                LOGGER.debug("Job {} completed", jobId);
             } finally {
                 if (remove) {
-                    cancelJob(id);
+                    cancelJob(jobId);
                 }
             }
         };
     }
 
     @Override
-    protected Runnable repeatableProcessJobByDescription(ProcessJobDescription description) {
-        return processCommand(description, false);
+    protected Runnable repeatableProcessJobByDescription(String jobId, ProcessJobDescription description) {
+        return processCommand(jobId, description, false);
     }
 }

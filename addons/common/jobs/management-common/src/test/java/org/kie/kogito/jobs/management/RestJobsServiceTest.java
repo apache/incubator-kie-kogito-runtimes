@@ -59,7 +59,6 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
     @Test
     void testGetCallbackEndpoint() {
         ProcessInstanceJobDescription description = ProcessInstanceJobDescription.builder()
-                .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(ExactExpirationTime.now())
                 .processInstanceId(PROCESS_INSTANCE_ID)
@@ -91,7 +90,6 @@ public abstract class RestJobsServiceTest<T extends RestJobsService> {
 
     protected ProcessInstanceJobDescription buildProcessInstanceJobDescription() {
         return ProcessInstanceJobDescription.builder()
-                .id(JOB_ID)
                 .timerId(TIMER_ID)
                 .expirationTime(ExactExpirationTime.of(EXPIRATION_TIME))
                 .processInstanceId(PROCESS_INSTANCE_ID)

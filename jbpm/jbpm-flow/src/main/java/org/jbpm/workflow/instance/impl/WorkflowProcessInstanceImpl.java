@@ -552,15 +552,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
 
         TimerInstance timerInstance = createDurationTimer(duration);
         if (useTimerSLATracking()) {
-            registerTimer(timerInstance);
+            timerInstance = registerTimer(timerInstance);
         }
         return timerInstance;
     }
 
     private TimerInstance createDurationTimer(long duration) {
         TimerInstance timerInstance = new TimerInstance();
-        timerInstance.setId(UUID.randomUUID().toString());
-        timerInstance.setTimerId("-1");
+        timerInstance.setTimerId(UUID.randomUUID().toString());
         timerInstance.setDelay(duration);
         timerInstance.setPeriod(0);
         return timerInstance;
@@ -569,14 +568,14 @@ public abstract class WorkflowProcessInstanceImpl extends ProcessInstanceImpl im
     private TimerInstance registerTimer(TimerInstance timerInstance) {
         ProcessInstanceJobDescription description =
                 ProcessInstanceJobDescription.builder()
-                        .id(timerInstance.getId())
                         .timerId(timerInstance.getTimerId())
                         .expirationTime(DurationExpirationTime.after(timerInstance.getDelay()))
                         .processInstanceId(getStringId())
                         .processId(getProcessId())
                         .build();
         JobsService jobsService = InternalProcessRuntime.asKogitoProcessRuntime(getKnowledgeRuntime().getProcessRuntime()).getJobsService();
-        jobsService.scheduleProcessInstanceJob(description);
+        String jobId = jobsService.scheduleProcessInstanceJob(description);
+        timerInstance.setId(jobId);
         return timerInstance;
     }
 

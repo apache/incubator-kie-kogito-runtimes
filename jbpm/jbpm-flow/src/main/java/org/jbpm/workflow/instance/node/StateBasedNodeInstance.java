@@ -86,7 +86,6 @@ public abstract class StateBasedNodeInstance extends ExtendedNodeInstanceImpl im
             for (Timer timer : timers.keySet()) {
                 ProcessInstanceJobDescription jobDescription =
                         ProcessInstanceJobDescription.builder()
-                                .generateId()
                                 .timerId(Long.toString(timer.getId()))
                                 .expirationTime(createTimerInstance(timer))
                                 .processInstanceId(getProcessInstance().getStringId())

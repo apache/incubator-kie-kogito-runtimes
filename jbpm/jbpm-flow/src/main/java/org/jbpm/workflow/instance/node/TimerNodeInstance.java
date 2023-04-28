@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.jbpm.process.instance.InternalProcessRuntime;
 import org.jbpm.workflow.core.Node;
@@ -68,15 +67,13 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
         if (getTimerInstances() == null) {
             addTimerListener();
         }
-        internalSetTimerId(UUID.randomUUID().toString());
         final InternalProcessRuntime processRuntime = (InternalProcessRuntime) getProcessInstance().getKnowledgeRuntime().getProcessRuntime();
         //Deffer the timer scheduling to the end of current UnitOfWork execution chain
         processRuntime.getUnitOfWorkManager().currentUnitOfWork().intercept(
                 new BaseWorkUnit<>(this, instance -> {
                     ProcessInstanceJobDescription jobDescription =
                             ProcessInstanceJobDescription.builder()
-                                    .id(getTimerId())
-                                    .timerId("-1")
+                                    .timerId(getStringId())
                                     .expirationTime(expirationTime)
                                     .processInstanceId(getProcessInstance().getStringId())
                                     .rootProcessInstanceId(getProcessInstance().getRootProcessInstanceId())
@@ -95,7 +92,7 @@ public class TimerNodeInstance extends StateBasedNodeInstance implements EventLi
     public void signalEvent(String type, Object event) {
         if (TIMER_TRIGGERED_EVENT.equals(type)) {
             TimerInstance timer = (TimerInstance) event;
-            if (Objects.equals(timer.getId(), getTimerId())) {
+            if (Objects.equals(timer.getTimerId(), getStringId())) {
                 triggerCompleted(timer.getRepeatLimit() <= 0);
             }
         }

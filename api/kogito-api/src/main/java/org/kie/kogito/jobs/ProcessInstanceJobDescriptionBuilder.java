@@ -15,11 +15,7 @@
  */
 package org.kie.kogito.jobs;
 
-import java.util.UUID;
-
 public class ProcessInstanceJobDescriptionBuilder {
-
-    private String id;
     private String timerId;
     private ExpirationTime expirationTime;
     private Integer priority = ProcessInstanceJobDescription.DEFAULT_PRIORITY;
@@ -28,15 +24,6 @@ public class ProcessInstanceJobDescriptionBuilder {
     private String processId;
     private String rootProcessId;
     private String nodeInstanceId;
-
-    public ProcessInstanceJobDescriptionBuilder id(String id) {
-        this.id = id;
-        return this;
-    }
-
-    public ProcessInstanceJobDescriptionBuilder generateId() {
-        return id(UUID.randomUUID().toString());
-    }
 
     public ProcessInstanceJobDescriptionBuilder timerId(String timerId) {
         this.timerId = timerId;
@@ -79,6 +66,6 @@ public class ProcessInstanceJobDescriptionBuilder {
     }
 
     public ProcessInstanceJobDescription build() {
-        return new ProcessInstanceJobDescription(id, timerId, expirationTime, priority, processInstanceId, rootProcessInstanceId, processId, rootProcessId, nodeInstanceId);
+        return new ProcessInstanceJobDescription(null, timerId, expirationTime, priority, processInstanceId, rootProcessInstanceId, processId, rootProcessId, nodeInstanceId);
     }
 }

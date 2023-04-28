@@ -370,7 +370,11 @@ public class ProtobufProcessInstanceWriter {
     }
 
     private Any buildTimerNodeInstance(TimerNodeInstance nodeInstance) {
-        return Any.pack(TimerNodeInstanceContent.newBuilder().setTimerId(nodeInstance.getTimerId()).build());
+        TimerNodeInstanceContent.Builder builder = TimerNodeInstanceContent.newBuilder();
+        if (nodeInstance.getTimerId() != null) {
+            builder.setTimerId(nodeInstance.getTimerId());
+        }
+        return Any.pack(builder.build());
     }
 
     private Any buildEventNodeInstance() {

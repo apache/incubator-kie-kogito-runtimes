@@ -21,10 +21,12 @@ import java.util.Optional;
 import javax.enterprise.inject.Instance;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.kie.kogito.Application;
+import org.kie.kogito.jobs.api.JobCallbackResourceDef;
 import org.kie.kogito.process.Process;
 import org.kie.kogito.process.ProcessInstance;
 import org.kie.kogito.process.ProcessInstances;
@@ -33,8 +35,6 @@ import org.kie.kogito.uow.UnitOfWork;
 import org.kie.kogito.uow.UnitOfWorkManager;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -54,7 +54,7 @@ class CallbackJobsServiceResourceTest {
     private static final String JOB_ID = "JOB_ID";
     private static final String TIMER_ID = "TIMER_ID";
     private static final int LIMIT = 1;
-    private static final String PAYLOAD = "{\"correlationId\":\"" + JOB_ID + "\"}";
+    private static final JobCallbackResourceDef.JobCallbackPayload PAYLOAD = new JobCallbackResourceDef.JobCallbackPayload(JOB_ID);
 
     @Mock
     private Processes processes;

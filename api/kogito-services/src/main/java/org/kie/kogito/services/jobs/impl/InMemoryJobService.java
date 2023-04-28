@@ -18,6 +18,7 @@ package org.kie.kogito.services.jobs.impl;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -65,33 +66,36 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
     @Override
     public String scheduleProcessJob(ProcessJobDescription description) {
         LOGGER.debug("ScheduleProcessJob: {}", description);
+        String jobId = UUID.randomUUID().toString();
         ScheduledFuture<?> future;
         if (description.expirationTime().repeatInterval() != null) {
-            future = scheduler.scheduleAtFixedRate(repeatableProcessJobByDescription(description), calculateDelay(description), description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
+            future = scheduler.scheduleAtFixedRate(repeatableProcessJobByDescription(jobId, description), calculateDelay(description), description.expirationTime().repeatInterval(),
+                    TimeUnit.MILLISECONDS);
         } else {
-            future = scheduler.schedule(processJobByDescription(description), calculateDelay(description), TimeUnit.MILLISECONDS);
+            future = scheduler.schedule(processJobByDescription(jobId, description), calculateDelay(description), TimeUnit.MILLISECONDS);
         }
-        scheduledJobs.put(description.id(), future);
-        return description.id();
+        scheduledJobs.put(jobId, future);
+        return jobId;
     }
 
     @Override
     public String scheduleProcessInstanceJob(ProcessInstanceJobDescription description) {
         ScheduledFuture<?> future;
+        String jobId = UUID.randomUUID().toString();
         if (description.expirationTime().repeatInterval() != null) {
             future = scheduler.scheduleAtFixedRate(
-                    getSignalProcessInstanceCommand(description, false, description.expirationTime().repeatLimit()),
+                    getSignalProcessInstanceCommand(jobId, description, false, description.expirationTime().repeatLimit()),
                     calculateDelay(description), description.expirationTime().repeatInterval(), TimeUnit.MILLISECONDS);
         } else {
-            future = scheduler.schedule(getSignalProcessInstanceCommand(description, true, 1), calculateDelay(description),
+            future = scheduler.schedule(getSignalProcessInstanceCommand(jobId, description, true, 1), calculateDelay(description),
                     TimeUnit.MILLISECONDS);
         }
-        scheduledJobs.put(description.id(), future);
-        return description.id();
+        scheduledJobs.put(jobId, future);
+        return jobId;
     }
 
-    public Runnable getSignalProcessInstanceCommand(ProcessInstanceJobDescription description, boolean remove, int limit) {
-        return new SignalProcessInstanceOnExpiredTimer(description.id(), description.timerId(), description
+    public Runnable getSignalProcessInstanceCommand(String jobId, ProcessInstanceJobDescription description, boolean remove, int limit) {
+        return new SignalProcessInstanceOnExpiredTimer(jobId, description.timerId(), description
                 .processInstanceId(), description.processId(), remove, limit);
     }
 
@@ -116,12 +120,12 @@ public class InMemoryJobService implements JobsService, AutoCloseable {
         return delay;
     }
 
-    protected Runnable processJobByDescription(ProcessJobDescription description) {
-        return new StartProcessOnExpiredTimer(description.id(), description.process(), true, -1);
+    protected Runnable processJobByDescription(String jobId, ProcessJobDescription description) {
+        return new StartProcessOnExpiredTimer(jobId, description.process(), true, -1);
     }
 
-    protected Runnable repeatableProcessJobByDescription(ProcessJobDescription description) {
-        return new StartProcessOnExpiredTimer(description.id(), description.process(), false, description.expirationTime().repeatLimit());
+    protected Runnable repeatableProcessJobByDescription(String jobId, ProcessJobDescription description) {
+        return new StartProcessOnExpiredTimer(jobId, description.process(), false, description.expirationTime().repeatLimit());
     }
 
     private class SignalProcessInstanceOnExpiredTimer implements Runnable {
