@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-common-parent</artifactId>
-    <version>1.38.0-SNAPSHOT</version>
+    <version>1.38.0.Final</version>
   </parent>
   <artifactId>kogito-addons-marshallers-parent</artifactId>
   <packaging>pom</packaging>
