@@ -27,16 +27,19 @@ jobs:
         include:
           - job_name: kogito-apps
             repository: kogito-apps
-            env_BUILD_MVN_OPTS: "-DskipUI"
+            env_BUILD_MVN_OPTS: "-DskipUI -Dproductized"
           - job_name: kogito-quarkus-examples
             repository: kogito-examples
             env_KOGITO_EXAMPLES_SUBFOLDER_POM: kogito-quarkus-examples/
+            env_BUILD_MVN_OPTS: "-Dproductized"
           - job_name: kogito-springboot-examples
             repository: kogito-examples
             env_KOGITO_EXAMPLES_SUBFOLDER_POM: kogito-springboot-examples/
+            env_BUILD_MVN_OPTS: "-Dproductized"
           - job_name: serverless-workflow-examples
             repository: kogito-examples
             env_KOGITO_EXAMPLES_SUBFOLDER_POM: serverless-workflow-examples/
+            env_BUILD_MVN_OPTS: "-Dproductized"
       fail-fast: false
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.job_name }} (${{ matrix.os }} / Java-${{ matrix.java-version }} / Maven-${{ matrix.maven-version }})
