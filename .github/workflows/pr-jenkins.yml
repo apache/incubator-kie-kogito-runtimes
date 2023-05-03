@@ -51,6 +51,6 @@ jobs:
     - name: DSL tests
       uses: kiegroup/kie-ci/.ci/actions/dsl-tests@main
       with:
-        main-config-file-repo: kiegroup/kie-ci
+        main-config-file-repo: kiegroup/kogito-pipelines
         main-config-file-path: dsl/config/main.yaml
         branch-config-file-repo: kiegroup/kie-ci
