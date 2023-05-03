@@ -268,6 +268,20 @@ public final class CloudEventUtils {
         return bool != null && bool.booleanValue();
     }
 
+    public static void validateCloudEvent(Map<String, Object> cloudEvent) throws InvalidCloudEventException {
+        SpecVersion specVersion = SpecVersion.parse(cloudEvent.getOrDefault(CloudEventV1.SPECVERSION, "1.0").toString());
+        switch (specVersion) {
+            case V1:
+                CloudEventValidatorV1.getInstance().validateCloudEvent(cloudEvent);
+                break;
+            case V03:
+                CloudEventValidatorV03.getInstance().validateCloudEvent(cloudEvent);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported CloudEvents version: " + specVersion);
+        }
+    }
+
     public static List<String> getMissingAttributes(Map<String, Object> cloudEventInfo) {
         String specVersion = cloudEventInfo.getOrDefault(CloudEventV1.SPECVERSION, "1.0").toString();
 
