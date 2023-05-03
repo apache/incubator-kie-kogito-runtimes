@@ -53,4 +53,4 @@ jobs:
       with:
         main-config-file-repo: kiegroup/kogito-pipelines
         main-config-file-path: dsl/config/main.yaml
-        branch-config-file-repo: kiegroup/kie-ci
+        branch-config-file-repo: kiegroup/kogito-pipelines
