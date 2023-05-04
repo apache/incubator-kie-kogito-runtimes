@@ -49,10 +49,7 @@ ${mvn_cmd} org.openrewrite.maven:rewrite-maven-plugin:${rewrite_plugin_version}:
     -DplainTextMasks=**/kmodule.xml
 
 ${mvn_cmd} \
-    -pl :kogito-dependencies-bom \
-    -pl :kogito-build-parent \
-    -pl :kogito-quarkus-bom \
-    -pl :kogito-build-no-bom-parent \
+    -pl :kogito-kie-bom \
     -Dproperty=version.org.kie \
     -DnewVersion=$(echo ${drools_version} | awk -F. -v OFS=. '{$1 += 1 ; print}') \
     -DgenerateBackupPoms=false \
