@@ -30,12 +30,17 @@ echo "Update project with Quarkus version ${quarkus_version}"
 
 set -x
 
-project_version=$(${mvn_cmd} -q -Dexpression=project.version -DforceStdout help:evaluate)
-drools_version=$(${mvn_cmd} -q -pl :kogito-kie-bom -Dexpression=version.org.kie -DforceStdout help:evaluate)
+# Retrieve Drools version used
+drools_version=$(mvn -q -pl :kogito-kie-bom -Dexpression=version.org.kie -DforceStdout help:evaluate)
+# New drools version is based on current drools version and increment the Major => (M+1).m.y
+new_drools_version=$(echo ${drools_version} | awk -F. -v OFS=. '{$1 += 1 ; print}')
 
 # Regenerate quarkus3 recipe
 cd ${script_dir_path}
-curl -Ls https://sh.jbang.dev | bash -s - jbang/CreateQuarkusDroolsMigrationRecipe.java
+curl -Ls https://sh.jbang.dev | \
+    bash -s - jbang/CreateKieQuarkusProjectMigrationRecipe.java \
+        -v version.io.quarkus=${quarkus_version} \
+        -v version.org.kie=${new_drools_version}
 cd -
 
 # Launch Quarkus 3 Openrewrite
@@ -47,14 +52,6 @@ ${mvn_cmd} org.openrewrite.maven:rewrite-maven-plugin:${rewrite_plugin_version}:
     -fae \
     -Dexclusions=**/target \
     -DplainTextMasks=**/kmodule.xml
-
-${mvn_cmd} \
-    -pl :kogito-kie-bom \
-    -Dproperty=version.org.kie \
-    -DnewVersion=$(echo ${drools_version} | awk -F. -v OFS=. '{$1 += 1 ; print}') \
-    -DgenerateBackupPoms=false \
-    -Dmaven.wagon.http.ssl.insecure=true \
-    versions:set-property
 
 # Update dependencies with Quarkus 3 bom
 ${mvn_cmd} \

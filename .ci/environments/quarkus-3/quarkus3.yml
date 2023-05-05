@@ -6,6 +6,10 @@ recipeList:
     newValue: 3.0.0.Final,
     key: version.io.quarkus
   }
+- org.openrewrite.maven.ChangePropertyValue: {
+    newValue: 9.39.0-SNAPSHOT,
+    key: version.org.kie
+  }
 - org.kie.kogito.Quarkus3Migration
 - org.kie.ManagedDependencies
 - io.quarkus.updates.core.quarkus30.UpgradeQuarkiverse
@@ -63,10 +67,6 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.kie.kogito.Quarkus3Migration
 displayName: All Quarkus 3 Migration for Kogito Runtimes project
 recipeList:
-- org.openrewrite.maven.ChangePropertyValue: {
-    key: version.org.kie,
-    newValue: quarkus-3-SNAPSHOT
-  }
 - org.openrewrite.maven.ChangePropertyValue: {
     key: version.org.springframework.boot,
     newValue: 3.0.5
@@ -143,9 +143,6 @@ recipeList:
     newArtifactId: infinispan-client-hotrod-jakarta
   }
 ---
-name: org.kie.ManagedDependencies
-description: Update all managed dependencies based on dependency updates from Quarkus.
-type: specs.openrewrite.org/v1beta/recipe
 recipeList:
 - org.openrewrite.maven.ChangeManagedDependencyGroupIdAndArtifactId: {
     oldGroupId: javax.activation,
@@ -531,6 +528,9 @@ recipeList:
     newArtifactId: keycloak-admin-client-jakarta
   }
 displayName: Update Managed Dependencies
+name: org.kie.ManagedDependencies
+description: Update all managed dependencies based on dependency updates from Quarkus.
+type: specs.openrewrite.org/v1beta/recipe
 ---
 type: specs.openrewrite.org/v1beta/recipe
 name: io.quarkus.updates.core.quarkus30.UpgradeQuarkiverse
