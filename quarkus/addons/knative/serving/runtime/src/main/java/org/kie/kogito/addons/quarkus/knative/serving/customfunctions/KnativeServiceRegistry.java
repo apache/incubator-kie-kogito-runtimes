@@ -28,11 +28,12 @@ import org.kie.kogito.addons.quarkus.k8s.discovery.GVK;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.KnativeServiceUri;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
+import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceUri;
 
 @ApplicationScoped
 final class KnativeServiceRegistry {
 
-    private final Map<KnativeServiceRegistryKey, URI> services = new ConcurrentHashMap<>();
+    private final Map<String, URI> services = new ConcurrentHashMap<>();
 
     private final KnativeServiceDiscovery knativeServiceDiscovery;
 
@@ -45,23 +46,18 @@ final class KnativeServiceRegistry {
         this.vanillaKubernetesResourceDiscovery = vanillaKubernetesResourceDiscovery;
     }
 
-    Optional<URI> getServiceAddress(KnativeServiceRegistryKey key) {
-        String[] splitServiceName = key.getServiceName().split("/");
-        final Function<KnativeServiceRegistryKey, Optional<URI>> function;
-        switch (splitServiceName.length) {
-            case 1:
-                function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(k.getNamespace(), k.getServiceName()));
-                break;
-            case 2:
-                if (GVK.isValid(splitServiceName[0])) {
-                    function = k -> vanillaKubernetesResourceDiscovery.query(k.toVanillaKubernetesUri());
-                } else {
-                    function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitServiceName[0], splitServiceName[1]));
-                }
-                break;
-            default:
-                function = k -> vanillaKubernetesResourceDiscovery.query(k.toVanillaKubernetesUri());
+    Optional<URI> getServiceAddress(String key) {
+        String[] splitKey = key.split("/");
+        Function<String, Optional<URI>> function;
+
+        if (splitKey.length == 1) {
+            function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(null, k));
+        } else if (GVK.isValid(splitKey[0])) {
+            function = k -> vanillaKubernetesResourceDiscovery.query(VanillaKubernetesResourceUri.parse(k));
+        } else {
+            function = k -> knativeServiceDiscovery.query(new KnativeServiceUri(splitKey[0], splitKey[1]));
         }
+
         return Optional.ofNullable(services.computeIfAbsent(key, k -> function.apply(k).orElse(null)));
     }
 }

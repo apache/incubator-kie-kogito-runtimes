@@ -45,8 +45,10 @@ final class KnativeServerlessWorkflowCustomFunction {
 
     }
 
-    JsonNode execute(String processInstanceId, Operation operation, Map<String, Object> arguments) {
-        URI serviceAddress = getServiceAddress(operation);
+    JsonNode execute(String processInstanceId, String operationString, Map<String, Object> arguments) {
+        URI serviceAddress = getServiceAddress(operationString);
+
+        Operation operation = Operation.parse(operationString);
 
         return knativeServiceRequestClientResolver.resolve(operation).execute(
                 processInstanceId,
@@ -55,10 +57,11 @@ final class KnativeServerlessWorkflowCustomFunction {
                 arguments);
     }
 
-    private URI getServiceAddress(Operation operation) {
-        var knativeServiceRegistryKey = new KnativeServiceRegistryKey(operation.getNamespace(), operation.getService());
-        return knativeServiceRegistry.getServiceAddress(knativeServiceRegistryKey)
-                .orElseThrow(() -> new WorkItemExecutionException("The Knative service '" + knativeServiceRegistryKey
+    private URI getServiceAddress(String operation) {
+        String service = operation.split("\\?")[0];
+
+        return knativeServiceRegistry.getServiceAddress(service)
+                .orElseThrow(() -> new WorkItemExecutionException("The Knative service '" + service
                         + "' could not be found."));
     }
 }

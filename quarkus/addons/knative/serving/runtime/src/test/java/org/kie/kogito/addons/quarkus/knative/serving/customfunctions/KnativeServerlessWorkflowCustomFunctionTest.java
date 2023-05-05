@@ -68,11 +68,15 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     private static final String NAMESPACE = "test";
 
-    private static final String SERVICE_NAME = "serverless-workflow-greeting-quarkus";
+    private static final String SERVICENAME = "serverless-workflow-greeting-quarkus";
+
+    private static final String NAMESPACE_SERVICENAME = NAMESPACE + '/' + SERVICENAME;
 
     private static final String GVK = "services.v1.serving.knative.dev";
 
-    private static final String SERVICE_NAME_FULL_GVK = GVK + '/' + SERVICE_NAME;
+    private static final String GVK_SERVICENAME = GVK + '/' + SERVICENAME;
+
+    private static final String GVK_NAMESPACE_SERVICENAME = GVK + '/' + NAMESPACE_SERVICENAME;
 
     private static final String CLOUD_EVENT_PATH = "/cloud-event";
 
@@ -96,7 +100,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @BeforeEach
     void beforeEach() {
-        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", NAMESPACE, SERVICE_NAME);
+        createServiceIfNotExists(mockServer, remoteServiceUrl, "knative/quarkus-greeting.yaml", NAMESPACE, SERVICENAME);
     }
 
     @AfterAll
@@ -174,10 +178,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithEmptyParameters(Operation.Builder operationBuilder) {
+    void executeWithEmptyParameters(String operation) {
         mockExecuteWithEmptyParametersEndpoint();
 
-        JsonNode output = knativeServerlessWorkflowCustomFunction.execute("unused", operationBuilder.build(), Map.of());
+        JsonNode output = knativeServerlessWorkflowCustomFunction.execute("unused", operation, Map.of());
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
                 .put("org", "Acme")
@@ -188,14 +192,14 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithParameters(Operation.Builder operationBuilder) {
+    void executeWithParameters(String operation) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> parameters = Map.of(
                 "org", "Acme",
                 "project", "Kogito");
 
-        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, operationBuilder.build(), parameters);
+        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, parameters);
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
                 .put("message", "Kogito is awesome!")
@@ -208,7 +212,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithCloudEventWithIdAsPlainJson(Operation.Builder operationBuilder) {
+    void executeWithCloudEventWithIdAsPlainJson(String operation) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -222,8 +226,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         String processInstanceId = Instant.now().toString();
 
-        Operation operation = operationBuilder.build();
-
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(processInstanceId, operation, cloudEvent))
                 .withMessage(CLOUDEVENT_SENT_AS_PLAIN_JSON_ERROR_MESSAGE);
@@ -231,7 +233,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithCloudEventWithoutIdAsPlainJson(Operation.Builder operationBuilder) {
+    void executeWithCloudEventWithoutIdAsPlainJson(String operation) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -242,8 +244,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Operation operation = operationBuilder.build();
-
         String processInstanceId = Instant.now().toString();
 
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -253,7 +253,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithCloudEventThatHasOnlyIdMissingAsPlainJson(Operation.Builder operationBuilder) {
+    void executeWithCloudEventThatHasOnlyIdMissingAsPlainJson(String operation) {
         mockExecuteWithParametersEndpoint();
 
         Map<String, Object> cloudEvent = Map.of(
@@ -264,8 +264,6 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Operation operation = operationBuilder.build();
-
         String processInstanceId = Instant.now().toString();
 
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -275,7 +273,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeCloudEvent(Operation.Builder operationBuilder) {
+    void executeCloudEvent(String operation) {
         mockExecuteCloudEventWithParametersEndpoint();
 
         String source = "https://localhost:8080";
@@ -289,13 +287,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Operation operation = operationBuilder.withIsCloudEvent(true)
-                .withPath(CLOUD_EVENT_PATH)
-                .build();
-
         String processInstanceId = Instant.now().toString();
 
-        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(processInstanceId, operation, cloudEvent);
+        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(
+                processInstanceId, operation + "?asCloudEvent=true&path=" + CLOUD_EVENT_PATH, cloudEvent);
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
                 .put("message", "CloudEvents are awesome!")
@@ -324,11 +319,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Operation operation = Operation.builder()
-                .withService(SERVICE_NAME)
-                .withIsCloudEvent(true)
-                .withPath(CLOUD_EVENT_PATH)
-                .build();
+        String operation = SERVICENAME + "?asCloudEvent=true&path=" + CLOUD_EVENT_PATH;
 
         assertThatNoException()
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, cloudEvent));
@@ -343,11 +334,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
                         "org", "Acme",
                         "project", "Kogito"));
 
-        Operation operation = Operation.builder()
-                .withService(SERVICE_NAME)
-                .withIsCloudEvent(true)
-                .withPath(CLOUD_EVENT_PATH)
-                .build();
+        String operation = SERVICENAME + "?asCloudEvent=true&path=" + CLOUD_EVENT_PATH;
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, cloudEvent))
@@ -356,12 +343,10 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     @ParameterizedTest
     @MethodSource("possibleUriFormats")
-    void executeWithQueryParameters(Operation.Builder operationBuilder) {
+    void executeWithQueryParameters(String operation) {
         mockExecuteWithQueryParametersEndpoint();
 
-        operationBuilder.withPath("/hello");
-
-        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, operationBuilder.build(), Map.of());
+        JsonNode output = knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation + "?path=/hello", Map.of());
 
         JsonNode expected = JsonNodeFactory.instance.objectNode()
                 .put("message", "Hello Kogito");
@@ -375,10 +360,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> parameters = Map.of();
 
-        Operation operation = Operation.builder()
-                .withService(SERVICE_NAME)
-                .withPath("/non_existing_path")
-                .build();
+        String operation = SERVICENAME + "?path=/non_existing_path";
 
         assertThatCode(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, parameters))
                 .isInstanceOf(WorkItemExecutionException.class)
@@ -392,10 +374,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         Map<String, Object> payload = Map.of();
 
-        Operation operation = Operation.builder()
-                .withService(SERVICE_NAME)
-                .withPath("/timeout")
-                .build();
+        String operation = SERVICENAME + "?path=/timeout";
 
         assertThatExceptionOfType(TimeoutException.class)
                 .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, payload));
@@ -403,9 +382,9 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
     private static Stream<Arguments> possibleUriFormats() {
         return Stream.of(
-                Arguments.of(Operation.builder().withService(SERVICE_NAME)),
-                Arguments.of(Operation.builder().withService(SERVICE_NAME).withNamespace(NAMESPACE)),
-                Arguments.of(Operation.builder().withService(SERVICE_NAME_FULL_GVK)),
-                Arguments.of(Operation.builder().withService(SERVICE_NAME_FULL_GVK).withNamespace(NAMESPACE)));
+                Arguments.of(SERVICENAME),
+                Arguments.of(NAMESPACE_SERVICENAME),
+                Arguments.of(GVK_SERVICENAME),
+                Arguments.of(GVK_NAMESPACE_SERVICENAME));
     }
 }
