@@ -88,9 +88,6 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
         Map<String, Object> modifiableCloudEvent = new HashMap<>(cloudEvent);
         Object source = cloudEvent.get("source");
         if (source == null) {
-            CloudEventUtils.validateCloudEvent(cloudEvent);
-
-            // CloudEventUtils#validateCloudEvent will throw exception. This line will never be reached.
             throw new IllegalArgumentException("Invalid CloudEvent: Attribute source is mandatory.");
         }
         modifiableCloudEvent.put(ID, generateCloudEventId(processInstanceId, source.toString()));

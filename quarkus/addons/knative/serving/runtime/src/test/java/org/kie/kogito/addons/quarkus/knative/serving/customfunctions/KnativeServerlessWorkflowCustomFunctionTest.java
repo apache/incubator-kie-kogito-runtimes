@@ -330,7 +330,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
     void executeWithInvalidCloudEvent() {
         Map<String, Object> cloudEvent = Map.of(
                 CloudEventV1.SPECVERSION, SpecVersion.V1.toString(),
-                "type", "org.kie.kogito.test",
+                "source", "https://localhost:8080",
                 "data", Map.of(
                         "org", "Acme",
                         "project", "Kogito"));
