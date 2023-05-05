@@ -529,7 +529,7 @@ index aa06497e9f..633ee84f50 100644
        </dependency>
        <dependency>
 diff --git a/kogito-build/kogito-kie-bom/pom.xml b/kogito-build/kogito-kie-bom/pom.xml
-index 8abcd45354..31b7020647 100644
+index 8abcd45354..bffa9ba738 100644
 --- a/kogito-build/kogito-kie-bom/pom.xml
 +++ b/kogito-build/kogito-kie-bom/pom.xml
 @@ -18,7 +18,7 @@
@@ -537,7 +537,7 @@ index 8abcd45354..31b7020647 100644
  
    <properties>
 -    <version.org.kie>8.39.0-SNAPSHOT</version.org.kie>
-+    <version.org.kie>quarkus-3-SNAPSHOT</version.org.kie>
++    <version.org.kie>9.39.0-SNAPSHOT</version.org.kie>
    </properties>
  
    <dependencyManagement>
