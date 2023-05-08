@@ -20,9 +20,6 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.kie.kogito.addons.quarkus.k8s.KubeConstants;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.PodUtils;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.ServiceUtils;
@@ -33,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.client.OpenShiftClient;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class OpenShiftResourceDiscovery extends AbstractResourceDiscovery {

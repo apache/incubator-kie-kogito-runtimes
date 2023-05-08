@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.kie.kogito</groupId>
     <artifactId>kogito-addons-springboot-parent</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>quarkus-3-SNAPSHOT</version>
   </parent>
   <artifactId>kogito-addons-springboot-jobs-management</artifactId>
   <name>Kogito :: Add-Ons :: Jobs :: Management SprintBoot Addon</name>
@@ -33,8 +33,8 @@
       <artifactId>kogito-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

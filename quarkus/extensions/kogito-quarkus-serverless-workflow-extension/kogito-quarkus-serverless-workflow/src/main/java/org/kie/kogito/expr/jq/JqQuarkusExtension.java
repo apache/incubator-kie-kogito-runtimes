@@ -15,11 +15,10 @@
  */
 package org.kie.kogito.expr.jq;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.quarkus.runtime.Startup;
-
+import jakarta.annotation.PostConstruct;
 import net.thisptr.jackson.jq.Scope;
 
 @Startup

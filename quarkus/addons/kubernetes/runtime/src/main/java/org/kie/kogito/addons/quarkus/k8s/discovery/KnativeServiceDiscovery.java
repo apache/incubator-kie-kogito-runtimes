@@ -18,14 +18,14 @@ package org.kie.kogito.addons.quarkus.k8s.discovery;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.fabric8.knative.client.KnativeClient;
 import io.fabric8.knative.serving.v1.Service;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class KnativeServiceDiscovery extends AbstractResourceDiscovery {

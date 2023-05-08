@@ -5,7 +5,7 @@
   <parent>
     <artifactId>kogito-addons-springboot-parent</artifactId>
     <groupId>org.kie.kogito</groupId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>quarkus-3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,8 +13,8 @@
   <name>Kogito :: Add-Ons :: Spring Boot :: Kubernetes</name>
 
   <properties>
-    <!-- Fabric8 aligned with Spring Cloud. See: https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-kubernetes-fabric8-autoconfig/2.1.1 -->
-    <version.io.fabric8>5.10.2</version.io.fabric8>
+    <!-- Fabric8 aligned with Spring Cloud. See: https://github.com/spring-cloud/spring-cloud-kubernetes/blob/main/spring-cloud-kubernetes-dependencies/pom.xml#L36 -->
+    <version.io.fabric8>6.2.0</version.io.fabric8>
   </properties>
 
   <dependencyManagement>
@@ -59,11 +59,6 @@
     <dependency>
       <groupId>io.fabric8</groupId>
       <artifactId>kubernetes-server-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>knative-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

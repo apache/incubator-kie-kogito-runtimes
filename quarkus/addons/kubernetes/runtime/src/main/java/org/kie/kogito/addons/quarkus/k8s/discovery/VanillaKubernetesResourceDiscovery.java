@@ -19,9 +19,6 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.DeploymentUtils;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.IngressUtils;
 import org.kie.kogito.addons.quarkus.k8s.discovery.utils.PodUtils;
@@ -31,6 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.fabric8.kubernetes.client.KubernetesClient;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class VanillaKubernetesResourceDiscovery extends AbstractResourceDiscovery {

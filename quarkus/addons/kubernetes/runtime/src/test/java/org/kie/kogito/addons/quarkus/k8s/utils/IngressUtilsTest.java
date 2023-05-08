@@ -18,8 +18,6 @@ package org.kie.kogito.addons.quarkus.k8s.utils;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceDiscovery;
 import org.kie.kogito.addons.quarkus.k8s.discovery.VanillaKubernetesResourceUri;
@@ -30,6 +28,8 @@ import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.kubernetes.client.KubernetesTestServer;
 import io.quarkus.test.kubernetes.client.WithKubernetesTestServer;
+
+import jakarta.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -53,7 +53,7 @@ public class IngressUtilsTest {
         Ingress ingress = mockServer.getClient()
                 .network().v1().ingresses()
                 .inNamespace(namespace)
-                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-ip.yaml")).get();
+                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-ip.yaml")).item();
         mockServer.getClient().resource(ingress).inNamespace(namespace).createOrReplace();
 
         assertEquals(Optional.empty(),
@@ -65,7 +65,7 @@ public class IngressUtilsTest {
         var kubeURI = VanillaKubernetesResourceUri.parse("networking.k8s.io/v1/ingress/" + namespace + "/process-quarkus-ingress");
 
         Ingress ingress = mockServer.getClient().network().v1().ingresses().inNamespace(namespace)
-                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-ip.yaml")).get();
+                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-ip.yaml")).item();
 
         mockServer.getClient().resource(ingress).inNamespace(namespace).createOrReplace();
 
@@ -78,7 +78,7 @@ public class IngressUtilsTest {
         var kubeURI = VanillaKubernetesResourceUri.parse("networking.k8s.io/v1/ingress/" + namespace + "/hello-app-ingress-tls");
 
         Ingress ingress = mockServer.getClient().network().v1().ingresses().inNamespace(namespace)
-                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-tls-and-host.yaml")).get();
+                .load(this.getClass().getClassLoader().getResourceAsStream("ingress/ingress-with-tls-and-host.yaml")).item();
 
         mockServer.getClient().resource(ingress).inNamespace(namespace).createOrReplace();
 

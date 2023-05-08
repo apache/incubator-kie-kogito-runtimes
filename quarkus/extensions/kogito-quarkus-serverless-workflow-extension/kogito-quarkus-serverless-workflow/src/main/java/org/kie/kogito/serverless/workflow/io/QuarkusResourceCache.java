@@ -18,12 +18,12 @@ package org.kie.kogito.serverless.workflow.io;
 import java.net.URI;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import io.quarkus.cache.Cache;
 import io.quarkus.cache.CacheName;
 import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
 
 @Startup
 public class QuarkusResourceCache {
