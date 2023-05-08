@@ -302,7 +302,7 @@ class KnativeServerlessWorkflowCustomFunctionTest {
         assertThat(output).hasToString(expected.toString());
 
         wireMockServer.verify(postRequestedFor(urlEqualTo(CLOUD_EVENT_PATH))
-                .withRequestBody(matchingJsonPath("$.id", equalTo(source + "_" + processInstanceId)))
+                .withRequestBody(matchingJsonPath("$.id", equalTo("42")))
                 .withHeader("Content-Type", equalTo(APPLICATION_CLOUDEVENTS_JSON_CHARSET_UTF_8)));
     }
 
@@ -337,9 +337,8 @@ class KnativeServerlessWorkflowCustomFunctionTest {
 
         String operation = SERVICENAME + "?asCloudEvent=true&path=" + CLOUD_EVENT_PATH;
 
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, cloudEvent))
-                .withMessage("Invalid CloudEvent. The following mandatory attributes are missing: source");
+        assertThatExceptionOfType(InvalidCloudEventException.class)
+                .isThrownBy(() -> knativeServerlessWorkflowCustomFunction.execute(UNUSED, operation, cloudEvent));
     }
 
     @ParameterizedTest
