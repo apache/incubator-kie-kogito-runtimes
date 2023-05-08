@@ -91,23 +91,6 @@ public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessIn
             doc.put("variables", new Document(data.getVariables()));
         }
 
-        if (data.getNodeInstances() != null) {
-            doc.put("nodeInstances",
-                    data.getNodeInstances().stream().map(ni -> {
-                        Document niDoc = new Document();
-                        niDoc.put("id", ni.getId());
-                        niDoc.put("nodeId", ni.getNodeId());
-                        niDoc.put("nodeDefinitionId", ni.getNodeDefinitionId());
-                        niDoc.put("nodeName", ni.getNodeName());
-                        niDoc.put("nodeType", ni.getNodeType());
-                        niDoc.put("triggerTime", ni.getTriggerTime());
-                        if (ni.getLeaveTime() != null) {
-                            niDoc.put("leaveTime", ni.getLeaveTime());
-                        }
-                        return niDoc;
-                    }).collect(Collectors.toSet()));
-        }
-
         if (data.getError() != null) {
             Document eDoc = new Document();
             eDoc.put("errorMessage", data.getError().getErrorMessage());

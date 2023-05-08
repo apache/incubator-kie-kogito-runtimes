@@ -16,18 +16,29 @@
 package org.kie.kogito.event.process;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NodeInstanceEventBody {
 
+    private String processInstanceId;
+    private String connectionNodeInstanceId;
     private String id;
     private String nodeId;
     private String nodeDefinitionId;
     private String nodeName;
     private String nodeType;
-    private Date triggerTime;
-    private Date leaveTime;
+    private Date eventTime;
+    private Integer eventType;
+    private Integer exitType;
+    private Map<String, Object> data;
 
     private NodeInstanceEventBody() {
+        this.data = new HashMap<>();
+    }
+
+    public String getProcessInstanceId() {
+        return processInstanceId;
     }
 
     public String getId() {
@@ -50,17 +61,32 @@ public class NodeInstanceEventBody {
         return nodeType;
     }
 
-    public Date getTriggerTime() {
-        return triggerTime;
+    public Date getEventTime() {
+        return eventTime;
     }
 
-    public Date getLeaveTime() {
-        return leaveTime;
+    public Integer getExitType() {
+        return exitType;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public Integer getEventType() {
+        return eventType;
+    }
+
+    public String getConnectionNodeInstanceId() {
+        return connectionNodeInstanceId;
     }
 
     @Override
     public String toString() {
-        return "NodeInstance [id=" + id + ", nodeId=" + nodeId + ", nodeName=" + nodeName + ", nodeType=" + nodeType + ", triggerTime=" + triggerTime + ", leaveTime=" + leaveTime + "]";
+        return "NodeInstanceEventBody [processInstanceId=" + processInstanceId + ", connectionNodeInstanceId="
+                + connectionNodeInstanceId + ", id=" + id + ", nodeId=" + nodeId + ", nodeDefinitionId="
+                + nodeDefinitionId + ", nodeName=" + nodeName + ", nodeType=" + nodeType + ", eventTime=" + eventTime
+                + ", eventType=" + eventType + ", exitType=" + exitType + ", data=" + data + "]";
     }
 
     @Override
@@ -104,6 +130,11 @@ public class NodeInstanceEventBody {
             this.instance = instance;
         }
 
+        public Builder processInstanceId(String processInstanceId) {
+            instance.processInstanceId = processInstanceId;
+            return this;
+        }
+
         public Builder id(String id) {
             instance.id = id;
             return this;
@@ -129,13 +160,28 @@ public class NodeInstanceEventBody {
             return this;
         }
 
-        public Builder triggerTime(Date triggerTime) {
-            instance.triggerTime = triggerTime;
+        public Builder data(String name, Object value) {
+            instance.data.put(name, value);
             return this;
         }
 
-        public Builder leaveTime(Date leaveTime) {
-            instance.leaveTime = leaveTime;
+        public Builder eventType(Integer eventType) {
+            instance.eventType = eventType;
+            return this;
+        }
+
+        public Builder eventTime(Date eventTime) {
+            instance.eventTime = eventTime;
+            return this;
+        }
+
+        public Builder exitType(Integer exitType) {
+            instance.exitType = exitType;
+            return this;
+        }
+
+        public Builder connectionNodeInstanceId(String connectionNodeInstanceId) {
+            instance.connectionNodeInstanceId = connectionNodeInstanceId;
             return this;
         }
 

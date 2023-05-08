@@ -58,6 +58,17 @@ public class DataIndexEventPublisher implements EventPublisher {
 
         LOGGER.debug("Sending event to data index: {}", event);
         switch (event.getType()) {
+            case "NodeInstanceEvent":
+                webClient.postAbs(dataIndexUrl.get() + "/nodes")
+                .expect(ResponsePredicate.SC_ACCEPTED)
+                .sendJson(event, result -> {
+                    if (result.failed()) {
+                        LOGGER.error("Failed to send message to Data Index", result.cause());
+                    } else {
+                        LOGGER.debug("Event published to Data Index");
+                    }
+                });
+                break;
             case "ProcessInstanceEvent":
                 webClient.postAbs(dataIndexUrl.get() + "/processes")
                         .expect(ResponsePredicate.SC_ACCEPTED)

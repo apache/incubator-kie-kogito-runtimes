@@ -274,7 +274,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
     }
 
     @Override
-    public void cancel() {
+    public void cancel(CancelType cancelType) {
         InternalKogitoWorkItem item = getWorkItem();
         if (item != null && item.getState() != COMPLETED && item.getState() != ABORTED) {
             try {
@@ -292,7 +292,7 @@ public class WorkItemNodeInstance extends StateBasedNodeInstance implements Even
                 processInstance.setState(STATE_ABORTED);
             }
         }
-        super.cancel();
+        super.cancel(cancelType);
     }
 
     @Override

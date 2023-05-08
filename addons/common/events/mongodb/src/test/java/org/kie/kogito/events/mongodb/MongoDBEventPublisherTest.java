@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.DataEvent;
+import org.kie.kogito.event.process.NodeInstanceDataEvent;
 import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
 import org.kie.kogito.event.process.VariableInstanceDataEvent;
@@ -106,6 +107,11 @@ class MongoDBEventPublisherTest {
         protected String variablesEventsCollection() {
             return "testVCollection";
         }
+
+        @Override
+        protected String nodeInstanceEventsCollection() {
+            return "testNICollection";
+        }
     };
 
     @BeforeEach
@@ -141,10 +147,11 @@ class MongoDBEventPublisherTest {
         publisher.configure();
         verify(mongoClient).getDatabase(eq("testDB"));
         verify(mongoDatabase).getCollection(eq("testPICollection"), eq(ProcessInstanceDataEvent.class));
+        verify(mongoDatabase).getCollection(eq("testNICollection"), eq(NodeInstanceDataEvent.class));
         verify(mongoDatabase).getCollection(eq("testTECollection"), eq(UserTaskInstanceDataEvent.class));
         verify(mongoDatabase).getCollection(eq("testVCollection"), eq(VariableInstanceDataEvent.class));
         verify(mongoDatabase).withCodecRegistry(any(CodecRegistry.class));
-        verify(mongoCollection, times(3)).withCodecRegistry(any(CodecRegistry.class));
+        verify(mongoCollection, times(4)).withCodecRegistry(any(CodecRegistry.class));
     }
 
     @Test

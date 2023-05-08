@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class KafkaEventPublisher implements EventPublisher {
 
+    private static final String NI_TOPIC_NAME = "kogito-nodeinstances-events";
     private static final String PI_TOPIC_NAME = "kogito-processinstances-events";
     private static final String UI_TOPIC_NAME = "kogito-usertaskinstances-events";
     private static final String VI_TOPIC_NAME = "kogito-variables-events";
@@ -47,6 +48,9 @@ public class KafkaEventPublisher implements EventPublisher {
     @Autowired
     private KafkaTemplate<String, String> eventsEmitter;
 
+    @Value("${kogito.events.nodeinstances.enabled:true}")
+    private boolean nodeInstancesEvents;
+
     @Value("${kogito.events.processinstances.enabled:true}")
     private boolean processInstancesEvents;
 
@@ -59,6 +63,11 @@ public class KafkaEventPublisher implements EventPublisher {
     @Override
     public void publish(DataEvent<?> event) {
         switch (event.getType()) {
+            case "NodeInstanceEvent":
+                if (nodeInstancesEvents) {
+                    publishToTopic(event, NI_TOPIC_NAME);
+                }
+                break;
             case "ProcessInstanceEvent":
                 if (processInstancesEvents) {
                     publishToTopic(event, PI_TOPIC_NAME);

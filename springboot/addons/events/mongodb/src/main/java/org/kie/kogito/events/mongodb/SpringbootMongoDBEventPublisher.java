@@ -49,6 +49,9 @@ public class SpringbootMongoDBEventPublisher extends MongoDBEventPublisher {
     @Value("${kogito.events.processinstances.collection:kogitoprocessinstancesevents}")
     String springProcessInstancesEventsCollectionName;
 
+    @Value("${kogito.events.processinstances.collection:kogitonodeinstancesevents}")
+    String springNodeInstancesEventsCollectionName;
+
     @Value("${kogito.events.usertasks.collection:kogitousertaskinstancesevents}")
     String springUserTasksEventsCollectionName;
 
@@ -103,5 +106,10 @@ public class SpringbootMongoDBEventPublisher extends MongoDBEventPublisher {
     @Override
     protected String variablesEventsCollection() {
         return this.springVariablesEventsCollectionName;
+    }
+
+    @Override
+    protected String nodeInstanceEventsCollection() {
+        return this.springNodeInstancesEventsCollectionName;
     }
 }

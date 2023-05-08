@@ -16,12 +16,9 @@
 
 package org.kie.kogito.events.mongodb.codec;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.bson.BsonReader;
 import org.bson.BsonString;
@@ -32,9 +29,8 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.MilestoneEventBody;
-import org.kie.kogito.event.process.ProcessErrorEventBody;
-import org.kie.kogito.event.process.ProcessInstanceDataEvent;
+import org.kie.kogito.event.process.NodeInstanceDataEvent;
+import org.kie.kogito.event.process.NodeInstanceEventBody;
 import org.kie.kogito.event.process.ProcessInstanceEventBody;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
@@ -48,20 +44,20 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-class ProcessInstanceDataEventCodecTest {
+class NodeInstanceDataEventCodecTest {
 
-    private ProcessInstanceDataEventCodec codec;
+    private NodeInstanceDataEventCodec codec;
 
-    private ProcessInstanceDataEvent event;
+    private NodeInstanceDataEvent event;
 
     @BeforeEach
     void setUp() {
-        codec = new ProcessInstanceDataEventCodec();
+        codec = new NodeInstanceDataEventCodec();
 
         String source = "testSource";
         String kogitoAddons = "testKogitoAddons";
 
-        Map<String, String> metaData = new HashMap<>();
+        Map<String, Object> metaData = new HashMap<>();
         metaData.put(ProcessInstanceEventBody.ID_META_DATA, "testKogitoProcessInstanceId");
         metaData.put(ProcessInstanceEventBody.VERSION_META_DATA, "testKogitoProcessInstanceVersion");
         metaData.put(ProcessInstanceEventBody.ROOT_ID_META_DATA, "testKogitoRootProcessInstanceId");
@@ -71,34 +67,21 @@ class ProcessInstanceDataEventCodecTest {
         metaData.put(ProcessInstanceEventBody.PARENT_ID_META_DATA, "testKogitoParentProcessInstanceId");
         metaData.put(ProcessInstanceEventBody.STATE_META_DATA, "testKogitoProcessInstanceState");
 
-        ProcessInstanceEventBody body = ProcessInstanceEventBody.create()
+        NodeInstanceEventBody body = NodeInstanceEventBody.create()
                 .id("testId")
-                .version("testVersion")
-                .parentInstanceId("testKogitoParentProcessInstanceId")
-                .rootInstanceId("testKogitoRootProcessInstanceId")
-                .processId("testKogitoProcessId")
-                .processType("testKogitoProcessType")
-                .rootProcessId("testKogitoRootProcessId")
-                .processName("testProcessName")
-                .startDate(new Date())
-                .endDate(new Date())
-                .state(1)
-                .businessKey("testBusinessKey")
-                .error(ProcessErrorEventBody.create()
-                        .errorMessage("testErrorMessage")
-                        .nodeDefinitionId("testNodeDefinitionId")
-                        .build())
-                .variables(Collections.singletonMap("testVariableKey", "testVariableValue"))
-                .roles("testRole")
-                .milestones(Collections.singleton(
-                        MilestoneEventBody.create()
-                                .id("testId")
-                                .name("testName")
-                                .status("testStatus")
-                                .build()))
+                .processInstanceId("testProcessInstanceId")
+                .connectionNodeInstanceId("connectionNodeInstanceId")
+                .eventTime(new Date())
+                .eventType(1)
+                .exitType(3)
+                .data("test", 2)
+                .nodeDefinitionId("testNodeDefinitionId")
+                .nodeId("testNodeId")
+                .nodeName("testNodeName")
+                .nodeType("testNodeType")
                 .build();
 
-        event = new ProcessInstanceDataEvent(source, kogitoAddons, metaData, body);
+        event = new NodeInstanceDataEvent(source, kogitoAddons, metaData, body);
     }
 
     @Test
@@ -157,32 +140,21 @@ class ProcessInstanceDataEventCodecTest {
                     .containsEntry("kogitoStartFromNode", event.getKogitoStartFromNode());
 
             assertThat(((Document) doc.get("data"))).containsEntry("id", event.getData().getId())
-                    .containsEntry("version", event.getData().getVersion())
-                    .containsEntry("parentInstanceId", event.getData().getParentInstanceId())
-                    .containsEntry("rootInstanceId", event.getData().getRootInstanceId())
-                    .containsEntry("processId", event.getData().getProcessId())
-                    .containsEntry("rootProcessId", event.getData().getRootProcessId())
-                    .containsEntry("processName", event.getData().getProcessName())
-                    .containsEntry("startDate", event.getData().getStartDate())
-                    .containsEntry("endDate", event.getData().getEndDate())
-                    .containsEntry("state", event.getData().getState())
-                    .containsEntry("businessKey", event.getData().getBusinessKey())
-                    .containsEntry("roles", event.getData().getRoles())
-                    .containsEntry("variables", new Document(event.getData().getVariables()));
-            Document error = new Document().append("errorMessage", event.getData().getError().getErrorMessage())
-                    .append("nodeDefinitionId", event.getData().getError().getNodeDefinitionId());
-            assertThat(((Document) doc.get("data"))).containsEntry("error", error);
-
-            MilestoneEventBody mi = event.getData().getMilestones().iterator().next();
-            Document milestone = new Document().append("id", mi.getId()).append("name", mi.getName()).append("status", mi.getStatus());
-            Set<Document> milestones = new HashSet<>();
-            milestones.add(milestone);
-            assertThat(((Document) doc.get("data"))).containsEntry("milestones", milestones);
+                    .containsEntry("processInstanceId", event.getData().getProcessInstanceId())
+                    .containsEntry("connectionNodeInstanceId", event.getData().getConnectionNodeInstanceId())
+                    .containsEntry("id", event.getData().getId())
+                    .containsEntry("nodeId", event.getData().getNodeId())
+                    .containsEntry("nodeDefinitionId", event.getData().getNodeDefinitionId())
+                    .containsEntry("nodeName", event.getData().getNodeName())
+                    .containsEntry("nodeType", event.getData().getNodeType())
+                    .containsEntry("eventTime", event.getData().getEventTime())
+                    .containsEntry("eventType", event.getData().getEventType())
+                    .containsEntry("exitType", event.getData().getExitType());
         }
     }
 
     @Test
     void getEncoderClass() {
-        assertThat(codec.getEncoderClass()).isEqualTo(ProcessInstanceDataEvent.class);
+        assertThat(codec.getEncoderClass()).isEqualTo(NodeInstanceDataEvent.class);
     }
 }

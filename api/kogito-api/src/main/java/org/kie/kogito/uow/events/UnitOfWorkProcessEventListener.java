@@ -46,7 +46,7 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void beforeProcessStarted(ProcessStartedEvent event) {
-        intercept(event);
+
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void beforeProcessCompleted(ProcessCompletedEvent event) {
-        intercept(event);
+
     }
 
     @Override
@@ -71,12 +71,12 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void afterNodeTriggered(ProcessNodeTriggeredEvent event) {
-        intercept(event);
+
     }
 
     @Override
     public void beforeNodeLeft(ProcessNodeLeftEvent event) {
-        intercept(event);
+
     }
 
     @Override
@@ -86,7 +86,7 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void beforeVariableChanged(ProcessVariableChangedEvent event) {
-        intercept(event);
+
     }
 
     @Override
@@ -101,12 +101,12 @@ public class UnitOfWorkProcessEventListener extends DefaultKogitoProcessEventLis
 
     @Override
     public void afterSLAViolated(SLAViolatedEvent event) {
-        intercept(event);
+
     }
 
     @Override
     public void beforeWorkItemTransition(ProcessWorkItemTransitionEvent event) {
-        intercept(event);
+
     }
 
     @Override

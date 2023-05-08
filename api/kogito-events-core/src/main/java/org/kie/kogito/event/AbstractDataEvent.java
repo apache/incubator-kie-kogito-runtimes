@@ -506,7 +506,7 @@ public abstract class AbstractDataEvent<T> implements DataEvent<T> {
 
     @Override
     public String toString() {
-        return "AbstractDataEvent{" +
+        return getClass().getSimpleName() + " {" +
                 "specVersion=" + specVersion +
                 ", id='" + id + '\'' +
                 ", source=" + source +

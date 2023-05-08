@@ -18,7 +18,6 @@ package org.kie.kogito.event.process;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,8 +46,6 @@ public class ProcessInstanceEventBody {
     private Integer state;
 
     private String businessKey;
-
-    private Set<NodeInstanceEventBody> nodeInstances = new LinkedHashSet<>();
 
     private Map<String, Object> variables;
 
@@ -113,10 +110,6 @@ public class ProcessInstanceEventBody {
         return error;
     }
 
-    public Set<NodeInstanceEventBody> getNodeInstances() {
-        return nodeInstances;
-    }
-
     public Map<String, Object> getVariables() {
         return variables;
     }
@@ -161,7 +154,6 @@ public class ProcessInstanceEventBody {
                 ", endDate=" + endDate +
                 ", state=" + state +
                 ", businessKey='" + businessKey + '\'' +
-                ", nodeInstances=" + nodeInstances +
                 ", variables=" + variables +
                 ", error=" + error +
                 ", roles=" + roles +
@@ -266,13 +258,8 @@ public class ProcessInstanceEventBody {
             return this;
         }
 
-        public Builder nodeInstance(NodeInstanceEventBody nodeInstance) {
-            instance.nodeInstances.add(nodeInstance);
-            return this;
-        }
-
         public Builder variables(Map<String, Object> variables) {
-            instance.variables = variables;
+            instance.variables = new HashMap<>(variables);
             return this;
         }
 

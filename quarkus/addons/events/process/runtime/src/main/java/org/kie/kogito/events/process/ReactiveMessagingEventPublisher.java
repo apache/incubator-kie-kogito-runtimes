@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Singleton
 public class ReactiveMessagingEventPublisher implements EventPublisher {
+    private static final String NI_TOPIC_NAME = "kogito-nodeinstances-events";
     private static final String PI_TOPIC_NAME = "kogito-processinstances-events";
     private static final String UI_TOPIC_NAME = "kogito-usertaskinstances-events";
     private static final String VI_TOPIC_NAME = "kogito-variables-events";
@@ -42,6 +43,10 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     @Inject
     ObjectMapper json;
 
+    @Inject
+    @Channel(NI_TOPIC_NAME)
+    Emitter<String> nodeInstancesEventsEmitter;
+    
     @Inject
     @Channel(PI_TOPIC_NAME)
     Emitter<String> processInstancesEventsEmitter;
@@ -53,6 +58,10 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     @Inject
     @Channel(VI_TOPIC_NAME)
     Emitter<String> variablesEventsEmitter;
+
+    @Inject
+    @ConfigProperty(name = "kogito.events.nodeinstances.enabled")
+    Optional<Boolean> nodeInstancesEvents;
 
     @Inject
     @ConfigProperty(name = "kogito.events.processinstances.enabled")
@@ -69,6 +78,11 @@ public class ReactiveMessagingEventPublisher implements EventPublisher {
     @Override
     public void publish(DataEvent<?> event) {
         switch (event.getType()) {
+            case "NodeInstanceEvent":
+                if (nodeInstancesEvents.orElse(true)) {
+                    publishToTopic(event, nodeInstancesEventsEmitter, NI_TOPIC_NAME);
+                }
+                break;
             case "ProcessInstanceEvent":
                 if (processInstancesEvents.orElse(true)) {
                     publishToTopic(event, processInstancesEventsEmitter, PI_TOPIC_NAME);

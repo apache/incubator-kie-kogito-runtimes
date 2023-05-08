@@ -55,6 +55,10 @@ public class QuarkusMongoDBEventPublisher extends MongoDBEventPublisher {
     String quarkusProcessInstancesEventsCollectionName;
 
     @Inject
+    @ConfigProperty(name = "kogito.events.nodeinstances.collection", defaultValue = "kogitonodeinstancesevents")
+    String quarkusNodeInstancesEventsCollectionName;
+
+    @Inject
     @ConfigProperty(name = "kogito.events.usertasks.collection", defaultValue = "kogitousertaskinstancesevents")
     String quarkusUserTasksEventsCollectionName;
 
@@ -110,5 +114,10 @@ public class QuarkusMongoDBEventPublisher extends MongoDBEventPublisher {
     @Override
     protected String variablesEventsCollection() {
         return this.quarkusVariablesEventsCollectionName;
+    }
+
+    @Override
+    protected String nodeInstanceEventsCollection() {
+        return this.quarkusNodeInstancesEventsCollectionName;
     }
 }
