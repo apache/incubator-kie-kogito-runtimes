@@ -26,31 +26,31 @@ import org.bson.Document;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.kie.kogito.event.process.VariableInstanceDataEvent;
-import org.kie.kogito.event.process.VariableInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceVariableEventBody;
 
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.codec;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.encodeDataEvent;
 
-public class VariableInstanceDataEventCodec implements CollectibleCodec<VariableInstanceDataEvent> {
+public class VariableInstanceDataEventCodec implements CollectibleCodec<ProcessInstanceVariableDataEvent> {
 
     @Override
-    public VariableInstanceDataEvent generateIdIfAbsentFromDocument(VariableInstanceDataEvent variableInstanceDataEvent) {
+    public ProcessInstanceVariableDataEvent generateIdIfAbsentFromDocument(ProcessInstanceVariableDataEvent variableInstanceDataEvent) {
         return variableInstanceDataEvent;
     }
 
     @Override
-    public boolean documentHasId(VariableInstanceDataEvent variableInstanceDataEvent) {
+    public boolean documentHasId(ProcessInstanceVariableDataEvent variableInstanceDataEvent) {
         return variableInstanceDataEvent.getId() != null;
     }
 
     @Override
-    public BsonValue getDocumentId(VariableInstanceDataEvent variableInstanceDataEvent) {
+    public BsonValue getDocumentId(ProcessInstanceVariableDataEvent variableInstanceDataEvent) {
         return new BsonString(variableInstanceDataEvent.getId());
     }
 
     @Override
-    public VariableInstanceDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public ProcessInstanceVariableDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         // The events persist in an outbox collection
         // The events are deleted immediately (in the same transaction)
         // "decode" is not supposed to take place in any scenario
@@ -58,7 +58,7 @@ public class VariableInstanceDataEventCodec implements CollectibleCodec<Variable
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, VariableInstanceDataEvent variableInstanceDataEvent, EncoderContext encoderContext) {
+    public void encode(BsonWriter bsonWriter, ProcessInstanceVariableDataEvent variableInstanceDataEvent, EncoderContext encoderContext) {
         Document doc = new Document();
         encodeDataEvent(doc, variableInstanceDataEvent);
         doc.put("kogitoVariableName", variableInstanceDataEvent.getKogitoVariableName());
@@ -66,25 +66,19 @@ public class VariableInstanceDataEventCodec implements CollectibleCodec<Variable
         codec().encode(bsonWriter, doc, encoderContext);
     }
 
-    private Document encodeData(VariableInstanceEventBody data) {
+    private Document encodeData(ProcessInstanceVariableEventBody data) {
         Document doc = new Document();
         doc.put("variableName", data.getVariableName());
         doc.put("variableValue", data.getVariableValue());
-        doc.put("variablePreviousValue", data.getVariablePreviousValue());
-        doc.put("changeDate", data.getChangeDate());
-        doc.put("changedByNodeId", data.getChangedByNodeId());
-        doc.put("changedByNodeName", data.getChangedByNodeName());
-        doc.put("changedByNodeType", data.getChangedByNodeType());
-        doc.put("identity", data.getIdentity());
+        doc.put("eventDate", data.getEventDate());
         doc.put("processInstanceId", data.getProcessInstanceId());
-        doc.put("rootProcessInstanceId", data.getRootProcessInstanceId());
         doc.put("processId", data.getProcessId());
-        doc.put("rootProcessId", data.getRootProcessId());
+        doc.put("identity", data.getEventUser());
         return doc;
     }
 
     @Override
-    public Class<VariableInstanceDataEvent> getEncoderClass() {
-        return VariableInstanceDataEvent.class;
+    public Class<ProcessInstanceVariableDataEvent> getEncoderClass() {
+        return ProcessInstanceVariableDataEvent.class;
     }
 }
