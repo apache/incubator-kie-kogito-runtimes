@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jbpm.process.instance.impl.humantask.BaseHumanTaskLifeCycle;
-import org.jbpm.process.instance.impl.humantask.HumanTaskWorkItemImpl;
+import org.jbpm.process.instance.impl.humantask.InternalHumanTaskWorkItem;
 import org.jbpm.process.instance.impl.workitem.Active;
 import org.jbpm.process.instance.impl.workitem.Complete;
 import org.kie.kogito.internal.process.runtime.KogitoWorkItem;
@@ -52,7 +52,7 @@ public class PredictionAwareHumanTaskLifeCycle extends BaseHumanTaskLifeCycle {
             throw new InvalidLifeCyclePhaseException(transition.phase());
         }
 
-        HumanTaskWorkItemImpl humanTaskWorkItem = (HumanTaskWorkItemImpl) workItem;
+        InternalHumanTaskWorkItem humanTaskWorkItem = (InternalHumanTaskWorkItem) workItem;
         if (targetPhase.id().equals(Active.ID)) {
 
             PredictionOutcome outcome = predictionService.predict(workItem, workItem.getParameters());

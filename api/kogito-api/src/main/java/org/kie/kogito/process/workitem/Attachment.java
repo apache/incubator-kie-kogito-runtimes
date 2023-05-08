@@ -35,4 +35,10 @@ public class Attachment extends TaskMetaEntity<String, URI> {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public Attachment clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return (Attachment) super.clone();
+    }
 }

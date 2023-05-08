@@ -18,8 +18,6 @@
  */
 package org.kie.kogito.events.mongodb.codec;
 
-import java.util.stream.Collectors;
-
 import org.bson.BsonReader;
 import org.bson.BsonString;
 import org.bson.BsonValue;
@@ -28,31 +26,31 @@ import org.bson.Document;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.kie.kogito.event.process.ProcessInstanceDataEvent;
-import org.kie.kogito.event.process.ProcessInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceStateEventBody;
 
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.codec;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.encodeDataEvent;
 
-public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessInstanceDataEvent> {
+public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessInstanceStateDataEvent> {
 
     @Override
-    public ProcessInstanceDataEvent generateIdIfAbsentFromDocument(ProcessInstanceDataEvent processInstanceDataEvent) {
+    public ProcessInstanceStateDataEvent generateIdIfAbsentFromDocument(ProcessInstanceStateDataEvent processInstanceDataEvent) {
         return processInstanceDataEvent;
     }
 
     @Override
-    public boolean documentHasId(ProcessInstanceDataEvent processInstanceDataEvent) {
+    public boolean documentHasId(ProcessInstanceStateDataEvent processInstanceDataEvent) {
         return processInstanceDataEvent.getId() != null;
     }
 
     @Override
-    public BsonValue getDocumentId(ProcessInstanceDataEvent processInstanceDataEvent) {
+    public BsonValue getDocumentId(ProcessInstanceStateDataEvent processInstanceDataEvent) {
         return new BsonString(processInstanceDataEvent.getId());
     }
 
     @Override
-    public ProcessInstanceDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public ProcessInstanceStateDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         // The events persist in an outbox collection
         // The events are deleted immediately (in the same transaction)
         // "decode" is not supposed to take place in any scenario
@@ -60,7 +58,7 @@ public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessIn
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, ProcessInstanceDataEvent processInstanceDataEvent, EncoderContext encoderContext) {
+    public void encode(BsonWriter bsonWriter, ProcessInstanceStateDataEvent processInstanceDataEvent, EncoderContext encoderContext) {
         Document doc = new Document();
         encodeDataEvent(doc, processInstanceDataEvent);
         doc.put("kogitoProcessType", processInstanceDataEvent.getKogitoProcessType());
@@ -74,67 +72,27 @@ public class ProcessInstanceDataEventCodec implements CollectibleCodec<ProcessIn
         codec().encode(bsonWriter, doc, encoderContext);
     }
 
-    private Document encodeData(ProcessInstanceEventBody data) {
+    private Document encodeData(ProcessInstanceStateEventBody data) {
         Document doc = new Document();
-        doc.put("id", data.getId());
-        doc.put("version", data.getVersion());
+        doc.put("id", data.getProcessInstanceId());
+        doc.put("version", data.getProcessVersion());
         doc.put("parentInstanceId", data.getParentInstanceId());
-        doc.put("rootInstanceId", data.getRootInstanceId());
+        doc.put("rootInstanceId", data.getRootProcessInstanceId());
         doc.put("processId", data.getProcessId());
         doc.put("processType", data.getProcessType());
         doc.put("rootProcessId", data.getRootProcessId());
         doc.put("processName", data.getProcessName());
-        doc.put("startDate", data.getStartDate());
-        doc.put("endDate", data.getEndDate());
+        doc.put("eventDate", data.getEventDate());
         doc.put("state", data.getState());
         doc.put("businessKey", data.getBusinessKey());
         doc.put("roles", data.getRoles());
-        doc.put("identity", data.getIdentity());
-
-        if (data.getVariables() != null) {
-            doc.put("variables", new Document(data.getVariables()));
-        }
-
-        if (data.getNodeInstances() != null) {
-            doc.put("nodeInstances",
-                    data.getNodeInstances().stream().map(ni -> {
-                        Document niDoc = new Document();
-                        niDoc.put("id", ni.getId());
-                        niDoc.put("nodeId", ni.getNodeId());
-                        niDoc.put("nodeDefinitionId", ni.getNodeDefinitionId());
-                        niDoc.put("nodeName", ni.getNodeName());
-                        niDoc.put("nodeType", ni.getNodeType());
-                        niDoc.put("triggerTime", ni.getTriggerTime());
-                        if (ni.getLeaveTime() != null) {
-                            niDoc.put("leaveTime", ni.getLeaveTime());
-                        }
-                        return niDoc;
-                    }).collect(Collectors.toSet()));
-        }
-
-        if (data.getError() != null) {
-            Document eDoc = new Document();
-            eDoc.put("errorMessage", data.getError().getErrorMessage());
-            eDoc.put("nodeDefinitionId", data.getError().getNodeDefinitionId());
-            doc.put("error", eDoc);
-        }
-
-        if (data.getMilestones() != null) {
-            doc.put("milestones",
-                    data.getMilestones().stream().map(m -> {
-                        Document mDoc = new Document();
-                        mDoc.put("id", m.getId());
-                        mDoc.put("name", m.getName());
-                        mDoc.put("status", m.getStatus());
-                        return mDoc;
-                    }).collect(Collectors.toSet()));
-        }
+        doc.put("identity", data.getEventUser());
 
         return doc;
     }
 
     @Override
-    public Class<ProcessInstanceDataEvent> getEncoderClass() {
-        return ProcessInstanceDataEvent.class;
+    public Class<ProcessInstanceStateDataEvent> getEncoderClass() {
+        return ProcessInstanceStateDataEvent.class;
     }
 }

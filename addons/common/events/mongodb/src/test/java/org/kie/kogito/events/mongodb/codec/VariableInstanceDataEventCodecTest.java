@@ -31,16 +31,16 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.ProcessInstanceEventBody;
-import org.kie.kogito.event.process.VariableInstanceDataEvent;
-import org.kie.kogito.event.process.VariableInstanceEventBody;
+import org.kie.kogito.event.process.ProcessInstanceEventMetadata;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceVariableEventBody;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.ID;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -50,7 +50,7 @@ class VariableInstanceDataEventCodecTest {
 
     private VariableInstanceDataEventCodec codec;
 
-    private VariableInstanceDataEvent event;
+    private ProcessInstanceVariableDataEvent event;
 
     @BeforeEach
     void setUp() {
@@ -59,29 +59,23 @@ class VariableInstanceDataEventCodecTest {
         String source = "testSource";
         String kogitoAddons = "testKogitoAddons";
 
-        Map<String, String> metaData = new HashMap<>();
-        metaData.put(ProcessInstanceEventBody.ID_META_DATA, "testKogitoProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.VERSION_META_DATA, "testKogitoProcessInstanceVersion");
-        metaData.put(ProcessInstanceEventBody.ROOT_ID_META_DATA, "testKogitoRootProcessInstanceId");
-        metaData.put(ProcessInstanceEventBody.PROCESS_ID_META_DATA, "testKogitoProcessId");
-        metaData.put(ProcessInstanceEventBody.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
+        Map<String, Object> metaData = new HashMap<>();
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_INSTANCE_ID_META_DATA, "testKogitoProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_VERSION_META_DATA, "testKogitoProcessInstanceVersion");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_INSTANCE_ID_META_DATA, "testKogitoRootProcessInstanceId");
+        metaData.put(ProcessInstanceEventMetadata.PROCESS_ID_META_DATA, "testKogitoProcessId");
+        metaData.put(ProcessInstanceEventMetadata.ROOT_PROCESS_ID_META_DATA, "testKogitoRootProcessId");
 
-        VariableInstanceEventBody body = VariableInstanceEventBody.create()
-                .changeDate(new Date())
-                .changedByNodeId("testChangedByNodeId")
-                .changedByNodeName("testChangedByNodeName")
-                .changedByNodeType("testChangedByNodeType")
-                .identity("testChangedByUser")
+        ProcessInstanceVariableEventBody body = ProcessInstanceVariableEventBody.create()
+                .eventDate(new Date())
+                //.changedByNodeName("testChangedByNodeName")
                 .processId("testKogitoProcessId")
                 .processInstanceId("testKogitoProcessInstanceId")
-                .rootProcessId("testKogitoRootProcessId")
-                .rootProcessInstanceId("testKogitoRootProcessInstanceId")
                 .variableName("testVariableName")
-                .variablePreviousValue("testVariablePreviousValue")
                 .variableValue("testVariableValue")
                 .build();
 
-        event = new VariableInstanceDataEvent(source, kogitoAddons, "identity", metaData, body);
+        event = new ProcessInstanceVariableDataEvent(source, kogitoAddons, "identity", metaData, body);
     }
 
     @Test
@@ -137,22 +131,15 @@ class VariableInstanceDataEventCodecTest {
 
             assertThat(((Document) doc.get("data"))).containsEntry("variableName", event.getData().getVariableName())
                     .containsEntry("variableValue", event.getData().getVariableValue())
-                    .containsEntry("variablePreviousValue", event.getData().getVariablePreviousValue())
-                    .containsEntry("changeDate", event.getData().getChangeDate())
-                    .containsEntry("changedByNodeId", event.getData().getChangedByNodeId())
-                    .containsEntry("changedByNodeName", event.getData().getChangedByNodeName())
-                    .containsEntry("changedByNodeType", event.getData().getChangedByNodeType())
-                    .containsEntry("identity", event.getData().getIdentity())
+                    .containsEntry("eventDate", event.getData().getEventDate())
                     .containsEntry("processInstanceId", event.getData().getProcessInstanceId())
-                    .containsEntry("rootProcessInstanceId", event.getData().getRootProcessInstanceId())
                     .containsEntry("processId", event.getData().getProcessId())
-                    .containsEntry("rootProcessId", event.getData().getRootProcessId())
-                    .containsEntry("identity", event.getData().getIdentity());
+                    .containsEntry("identity", event.getData().getEventUser());
         }
     }
 
     @Test
     void getEncoderClass() {
-        assertThat(codec.getEncoderClass()).isEqualTo(VariableInstanceDataEvent.class);
+        assertThat(codec.getEncoderClass()).isEqualTo(ProcessInstanceVariableDataEvent.class);
     }
 }

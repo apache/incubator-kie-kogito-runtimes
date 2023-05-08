@@ -98,7 +98,7 @@ public class BaseHumanTaskLifeCycle implements LifeCycle<Map<String, Object>> {
     public Map<String, Object> transitionTo(KogitoWorkItem workItem, KogitoWorkItemManager manager, Transition<Map<String, Object>> transition) {
         logger.debug("Transition method invoked for work item {} to transition to {}, currently in phase {} and status {}", workItem.getStringId(), transition.phase(), workItem.getPhaseId(),
                 workItem.getPhaseStatus());
-        HumanTaskWorkItemImpl humanTaskWorkItem = (HumanTaskWorkItemImpl) workItem;
+        InternalHumanTaskWorkItem humanTaskWorkItem = (InternalHumanTaskWorkItem) workItem;
 
         LifeCyclePhase targetPhase = phases.get(transition.phase());
         if (targetPhase == null) {

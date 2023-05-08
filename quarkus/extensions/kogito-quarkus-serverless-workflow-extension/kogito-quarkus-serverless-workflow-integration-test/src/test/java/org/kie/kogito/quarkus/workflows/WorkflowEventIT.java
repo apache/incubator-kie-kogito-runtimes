@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kie.kogito.event.process.ProcessDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceDataEvent;
 import org.kie.kogito.test.quarkus.QuarkusTestProperty;
 import org.kie.kogito.test.quarkus.kafka.KafkaTestClient;
 import org.kie.kogito.testcontainers.quarkus.KafkaQuarkusTestResource;
@@ -80,7 +80,7 @@ public class WorkflowEventIT {
         kafkaClient.consume(Set.of(KOGITO_PROCESSINSTANCES_EVENTS), s -> {
             LOGGER.info("Received from kafka: {}", s);
             try {
-                ProcessDataEvent event = mapper.readValue(s, ProcessDataEvent.class);
+                ProcessInstanceDataEvent event = mapper.readValue(s, ProcessInstanceDataEvent.class);
                 Map data = (Map) event.getData();
                 if ("secure".equals(data.get("processId"))) {
                     if (event.getType().equals("ProcessInstanceEvent")) {

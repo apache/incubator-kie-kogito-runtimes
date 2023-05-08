@@ -18,8 +18,6 @@
  */
 package org.kie.kogito.events.mongodb.codec;
 
-import java.util.stream.Collectors;
-
 import org.bson.BsonReader;
 import org.bson.BsonString;
 import org.bson.BsonValue;
@@ -28,31 +26,31 @@ import org.bson.Document;
 import org.bson.codecs.CollectibleCodec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
-import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
-import org.kie.kogito.event.process.UserTaskInstanceEventBody;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateEventBody;
 
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.codec;
 import static org.kie.kogito.events.mongodb.codec.CodecUtils.encodeDataEvent;
 
-public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTaskInstanceDataEvent> {
+public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTaskInstanceStateDataEvent> {
 
     @Override
-    public UserTaskInstanceDataEvent generateIdIfAbsentFromDocument(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
+    public UserTaskInstanceStateDataEvent generateIdIfAbsentFromDocument(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
         return userTaskInstanceDataEvent;
     }
 
     @Override
-    public boolean documentHasId(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
+    public boolean documentHasId(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
         return userTaskInstanceDataEvent.getId() != null;
     }
 
     @Override
-    public BsonValue getDocumentId(UserTaskInstanceDataEvent userTaskInstanceDataEvent) {
+    public BsonValue getDocumentId(UserTaskInstanceStateDataEvent userTaskInstanceDataEvent) {
         return new BsonString(userTaskInstanceDataEvent.getId());
     }
 
     @Override
-    public UserTaskInstanceDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
+    public UserTaskInstanceStateDataEvent decode(BsonReader bsonReader, DecoderContext decoderContext) {
         // The events persist in an outbox collection
         // The events are deleted immediately (in the same transaction)
         // "decode" is not supposed to take place in any scenario
@@ -60,69 +58,32 @@ public class UserTaskInstanceDataEventCodec implements CollectibleCodec<UserTask
     }
 
     @Override
-    public void encode(BsonWriter bsonWriter, UserTaskInstanceDataEvent userTaskInstanceDataEvent, EncoderContext encoderContext) {
+    public void encode(BsonWriter bsonWriter, UserTaskInstanceStateDataEvent userTaskInstanceDataEvent, EncoderContext encoderContext) {
         Document doc = new Document();
         encodeDataEvent(doc, userTaskInstanceDataEvent);
-        doc.put("kogitoUserTaskinstanceId", userTaskInstanceDataEvent.getKogitoUserTaskinstanceId());
-        doc.put("kogitoUserTaskinstanceState", userTaskInstanceDataEvent.getKogitoUserTaskinstanceState());
+        doc.put("kogitoUserTaskinstanceId", userTaskInstanceDataEvent.getKogitoUserTaskInstanceId());
+        doc.put("kogitoUserTaskinstanceState", userTaskInstanceDataEvent.getKogitoUserTaskInstanceState());
         doc.put("data", encodeData(userTaskInstanceDataEvent.getData()));
         codec().encode(bsonWriter, doc, encoderContext);
     }
 
-    private Document encodeData(UserTaskInstanceEventBody data) {
+    private Document encodeData(UserTaskInstanceStateEventBody data) {
         Document doc = new Document();
-        doc.put("id", data.getId());
-        doc.put("taskName", data.getTaskName());
-        doc.put("taskDescription", data.getTaskDescription());
-        doc.put("taskPriority", data.getTaskPriority());
-        doc.put("referenceName", data.getReferenceName());
-        doc.put("startDate", data.getStartDate());
-        doc.put("completeDate", data.getCompleteDate());
+        doc.put("id", data.getUserTaskInstanceId());
+        doc.put("taskName", data.getUserTaskName());
+        doc.put("taskDescription", data.getUserTaskDescription());
+        doc.put("taskPriority", data.getUserTaskPriority());
+        doc.put("referenceName", data.getUserTaskReferenceName());
+        doc.put("eventDate", data.getEventDate());
         doc.put("state", data.getState());
         doc.put("actualOwner", data.getActualOwner());
-        doc.put("potentialUsers", data.getPotentialUsers());
-        doc.put("potentialGroups", data.getPotentialGroups());
-        doc.put("excludedUsers", data.getExcludedUsers());
-        doc.put("adminUsers", data.getAdminUsers());
-        doc.put("adminGroups", data.getAdminGroups());
-        doc.put("inputs", new Document(data.getInputs()));
-        doc.put("outputs", new Document(data.getOutputs()));
         doc.put("processInstanceId", data.getProcessInstanceId());
-        doc.put("rootProcessInstanceId", data.getRootProcessInstanceId());
-        doc.put("processId", data.getProcessId());
-        doc.put("rootProcessId", data.getRootProcessId());
-        doc.put("identity", data.getIdentity());
-
-        if (data.getComments() != null) {
-            doc.put("comments",
-                    data.getComments().stream().map(c -> {
-                        Document cDoc = new Document();
-                        cDoc.put("id", c.getId());
-                        cDoc.put("content", c.getContent());
-                        cDoc.put("updatedAt", c.getUpdatedAt());
-                        cDoc.put("updatedBy", c.getUpdatedBy());
-                        return cDoc;
-                    }).collect(Collectors.toSet()));
-        }
-
-        if (data.getAttachments() != null) {
-            doc.put("attachments",
-                    data.getAttachments().stream().map(a -> {
-                        Document aDoc = new Document();
-                        aDoc.put("id", a.getId());
-                        aDoc.put("content", a.getContent());
-                        aDoc.put("updatedAt", a.getUpdatedAt());
-                        aDoc.put("updatedBy", a.getUpdatedBy());
-                        aDoc.put("name", a.getName());
-                        return aDoc;
-                    }).collect(Collectors.toSet()));
-        }
-
+        doc.put("identity", data.getEventUser());
         return doc;
     }
 
     @Override
-    public Class<UserTaskInstanceDataEvent> getEncoderClass() {
-        return UserTaskInstanceDataEvent.class;
+    public Class<UserTaskInstanceStateDataEvent> getEncoderClass() {
+        return UserTaskInstanceStateDataEvent.class;
     }
 }

@@ -26,9 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kie.kogito.event.AbstractDataEvent;
 import org.kie.kogito.event.DataEvent;
-import org.kie.kogito.event.process.ProcessInstanceDataEvent;
-import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
-import org.kie.kogito.event.process.VariableInstanceDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 import org.kie.kogito.mongodb.transaction.AbstractTransactionManager;
 
 import com.mongodb.client.ClientSession;
@@ -39,7 +38,7 @@ import com.mongodb.client.model.Filters;
 
 import static org.kie.kogito.events.mongodb.MongoDBEventPublisher.ID;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,11 +54,9 @@ class MongoDBEventPublisherTest {
 
     private MongoCollection mongoCollection;
 
-    private ProcessInstanceDataEvent processInstanceDataEvent;
+    private ProcessInstanceStateDataEvent processInstanceDataEvent;
 
-    private UserTaskInstanceDataEvent userTaskInstanceDataEvent;
-
-    private VariableInstanceDataEvent variableInstanceDataEvent;
+    private UserTaskInstanceStateDataEvent userTaskInstanceDataEvent;
 
     private AbstractDataEvent<?> event;
 
@@ -85,11 +82,6 @@ class MongoDBEventPublisherTest {
         }
 
         @Override
-        protected boolean variablesEvents() {
-            return true;
-        }
-
-        @Override
         protected String eventsDatabaseName() {
             return "testDB";
         }
@@ -104,10 +96,6 @@ class MongoDBEventPublisherTest {
             return "testTECollection";
         }
 
-        @Override
-        protected String variablesEventsCollection() {
-            return "testVCollection";
-        }
     };
 
     @BeforeEach
@@ -122,17 +110,13 @@ class MongoDBEventPublisherTest {
 
         transactionManager = mock(AbstractTransactionManager.class);
 
-        processInstanceDataEvent = mock(ProcessInstanceDataEvent.class);
+        processInstanceDataEvent = mock(ProcessInstanceStateDataEvent.class);
         when(processInstanceDataEvent.getType()).thenReturn("ProcessInstanceEvent");
         when(processInstanceDataEvent.getId()).thenReturn("testProcessInstanceEvent");
 
-        userTaskInstanceDataEvent = mock(UserTaskInstanceDataEvent.class);
+        userTaskInstanceDataEvent = mock(UserTaskInstanceStateDataEvent.class);
         when(userTaskInstanceDataEvent.getType()).thenReturn("UserTaskInstanceEvent");
         when(userTaskInstanceDataEvent.getId()).thenReturn("testUserTaskInstanceEvent");
-
-        variableInstanceDataEvent = mock(VariableInstanceDataEvent.class);
-        when(variableInstanceDataEvent.getType()).thenReturn("VariableInstanceEvent");
-        when(variableInstanceDataEvent.getId()).thenReturn("testVariableInstanceEvent");
 
         event = mock(AbstractDataEvent.class);
         when(event.getType()).thenReturn("test");
@@ -142,11 +126,10 @@ class MongoDBEventPublisherTest {
     void configure() {
         publisher.configure();
         verify(mongoClient).getDatabase(eq("testDB"));
-        verify(mongoDatabase).getCollection(eq("testPICollection"), eq(ProcessInstanceDataEvent.class));
-        verify(mongoDatabase).getCollection(eq("testTECollection"), eq(UserTaskInstanceDataEvent.class));
-        verify(mongoDatabase).getCollection(eq("testVCollection"), eq(VariableInstanceDataEvent.class));
+        verify(mongoDatabase).getCollection(eq("testPICollection"), eq(ProcessInstanceStateDataEvent.class));
+        verify(mongoDatabase).getCollection(eq("testTECollection"), eq(UserTaskInstanceStateDataEvent.class));
         verify(mongoDatabase).withCodecRegistry(any(CodecRegistry.class));
-        verify(mongoCollection, times(3)).withCodecRegistry(any(CodecRegistry.class));
+        verify(mongoCollection, times(2)).withCodecRegistry(any(CodecRegistry.class));
     }
 
     @Test
@@ -161,13 +144,9 @@ class MongoDBEventPublisherTest {
         verify(mongoCollection).insertOne(eq(userTaskInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(Filters.eq(ID, "testUserTaskInstanceEvent")));
 
-        publisher.publish(variableInstanceDataEvent);
-        verify(mongoCollection).insertOne(eq(variableInstanceDataEvent));
-        verify(mongoCollection).deleteOne(eq(Filters.eq(ID, "testVariableInstanceEvent")));
-
         publisher.publish(event);
-        verify(mongoCollection, times(3)).insertOne(any());
-        verify(mongoCollection, times(3)).deleteOne(any());
+        verify(mongoCollection, times(2)).insertOne(any());
+        verify(mongoCollection, times(2)).deleteOne(any());
     }
 
     @Test
@@ -186,13 +165,9 @@ class MongoDBEventPublisherTest {
         verify(mongoCollection).insertOne(eq(clientSession), eq(userTaskInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(clientSession), eq(Filters.eq(ID, "testUserTaskInstanceEvent")));
 
-        publisher.publish(variableInstanceDataEvent);
-        verify(mongoCollection).insertOne(eq(clientSession), eq(variableInstanceDataEvent));
-        verify(mongoCollection).deleteOne(eq(clientSession), eq(Filters.eq(ID, "testVariableInstanceEvent")));
-
         publisher.publish(event);
-        verify(mongoCollection, times(3)).insertOne(eq(clientSession), any(AbstractDataEvent.class));
-        verify(mongoCollection, times(3)).deleteOne(eq(clientSession), any());
+        verify(mongoCollection, times(2)).insertOne(eq(clientSession), any(AbstractDataEvent.class));
+        verify(mongoCollection, times(2)).deleteOne(eq(clientSession), any());
     }
 
     @Test
@@ -202,13 +177,12 @@ class MongoDBEventPublisherTest {
         List<DataEvent<?>> events = new ArrayList<>();
         events.add(processInstanceDataEvent);
         events.add(userTaskInstanceDataEvent);
-        events.add(variableInstanceDataEvent);
         events.add(event);
 
         publisher.publish(events);
 
-        verify(mongoCollection, times(3)).insertOne(any());
-        verify(mongoCollection, times(3)).deleteOne(any());
+        verify(mongoCollection, times(2)).insertOne(any());
+        verify(mongoCollection, times(2)).deleteOne(any());
 
         verify(mongoCollection).insertOne(eq(processInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(Filters.eq(ID, "testProcessInstanceEvent")));
@@ -216,8 +190,6 @@ class MongoDBEventPublisherTest {
         verify(mongoCollection).insertOne(eq(userTaskInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(Filters.eq(ID, "testUserTaskInstanceEvent")));
 
-        verify(mongoCollection).insertOne(eq(variableInstanceDataEvent));
-        verify(mongoCollection).deleteOne(eq(Filters.eq(ID, "testVariableInstanceEvent")));
     }
 
     @Test
@@ -231,13 +203,12 @@ class MongoDBEventPublisherTest {
         List<DataEvent<?>> events = new ArrayList<>();
         events.add(processInstanceDataEvent);
         events.add(userTaskInstanceDataEvent);
-        events.add(variableInstanceDataEvent);
         events.add(event);
 
         publisher.publish(events);
 
-        verify(mongoCollection, times(3)).insertOne(eq(clientSession), any(AbstractDataEvent.class));
-        verify(mongoCollection, times(3)).deleteOne(eq(clientSession), any());
+        verify(mongoCollection, times(2)).insertOne(eq(clientSession), any(AbstractDataEvent.class));
+        verify(mongoCollection, times(2)).deleteOne(eq(clientSession), any());
 
         verify(mongoCollection).insertOne(eq(clientSession), eq(processInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(clientSession), eq(Filters.eq(ID, "testProcessInstanceEvent")));
@@ -245,7 +216,5 @@ class MongoDBEventPublisherTest {
         verify(mongoCollection).insertOne(eq(clientSession), eq(userTaskInstanceDataEvent));
         verify(mongoCollection).deleteOne(eq(clientSession), eq(Filters.eq(ID, "testUserTaskInstanceEvent")));
 
-        verify(mongoCollection).insertOne(eq(clientSession), eq(variableInstanceDataEvent));
-        verify(mongoCollection).deleteOne(eq(clientSession), eq(Filters.eq(ID, "testVariableInstanceEvent")));
     }
 }
