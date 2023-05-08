@@ -60,7 +60,11 @@ public class DataIndexEventPublisher implements EventPublisher {
 
         LOGGER.debug("Sending event to data index: {}", event);
         switch (event.getType()) {
-            case "ProcessInstanceEvent":
+            case "ProcessInstanceErrorDataEvent":
+            case "ProcessInstanceNodeDataEvent":
+            case "ProcessInstanceSLADataEvent":
+            case "ProcessInstanceStateDataEvent":
+            case "ProcessInstanceVariableDataEvent":
                 webClient.postAbs(dataIndexUrl.get() + "/processes")
                         .expect(ResponsePredicate.SC_ACCEPTED)
                         .sendJson(event, result -> {
@@ -71,7 +75,12 @@ public class DataIndexEventPublisher implements EventPublisher {
                             }
                         });
                 break;
-            case "UserTaskInstanceEvent":
+            case "UserTaskInstanceAssignmentDataEvent":
+            case "UserTaskInstanceAttachmentDataEvent":
+            case "UserTaskInstanceCommentDataEvent":
+            case "UserTaskInstanceDeadlineDataEvent":
+            case "UserTaskInstanceStateDataEvent":
+            case "UserTaskInstanceVariableDataEvent":
                 webClient.postAbs(dataIndexUrl.get() + "/tasks")
                         .expect(ResponsePredicate.SC_ACCEPTED)
                         .sendJson(event, result -> {

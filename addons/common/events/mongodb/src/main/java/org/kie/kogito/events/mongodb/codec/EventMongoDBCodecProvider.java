@@ -21,9 +21,9 @@ package org.kie.kogito.events.mongodb.codec;
 import org.bson.codecs.Codec;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.kie.kogito.event.process.ProcessInstanceDataEvent;
-import org.kie.kogito.event.process.UserTaskInstanceDataEvent;
-import org.kie.kogito.event.process.VariableInstanceDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceStateDataEvent;
+import org.kie.kogito.event.process.ProcessInstanceVariableDataEvent;
+import org.kie.kogito.event.usertask.UserTaskInstanceStateDataEvent;
 
 public class EventMongoDBCodecProvider implements CodecProvider {
 
@@ -34,13 +34,13 @@ public class EventMongoDBCodecProvider implements CodecProvider {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Codec<T> get(Class<T> aClass, CodecRegistry codecRegistry) {
-        if (aClass == ProcessInstanceDataEvent.class) {
+        if (aClass == ProcessInstanceStateDataEvent.class) {
             return (Codec<T>) PROCESS_INSTANCE_DATA_EVENT_CODEC;
         }
-        if (aClass == UserTaskInstanceDataEvent.class) {
+        if (aClass == UserTaskInstanceStateDataEvent.class) {
             return (Codec<T>) USER_TASK_INSTANCE_DATA_EVENT_CODEC;
         }
-        if (aClass == VariableInstanceDataEvent.class) {
+        if (aClass == ProcessInstanceVariableDataEvent.class) {
             return (Codec<T>) VARIABLE_INSTANCE_DATA_EVENT_CODEC;
         }
         return null;
