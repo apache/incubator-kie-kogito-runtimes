@@ -13,9 +13,9 @@
   <bpmn2:itemDefinition id="__D63BF8F7-0F6B-4889-9F96-04E1F710DEA6_NotStartedNotifyInputXItem" structureRef="Object"/>
   <bpmn2:itemDefinition id="__D63BF8F7-0F6B-4889-9F96-04E1F710DEA6_NotCompletedNotifyInputXItem" structureRef="Object"/>
   <bpmn2:collaboration id="_FB531A5C-1649-4F80-9F43-3D53D502EAE2" name="Default Collaboration">
-    <bpmn2:participant id="_4246C6D2-2548-4CCA-A63B-B52AC113F437" name="Pool Participant" processRef="Kogito9007BoundaryTimerEvent"/>
+    <bpmn2:participant id="_4246C6D2-2548-4CCA-A63B-B52AC113F437" name="Pool Participant" processRef="MultipleTimerInstancesBoundaryTimerEvent"/>
   </bpmn2:collaboration>
-  <bpmn2:process id="Kogito9007BoundaryTimerEvent" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="Kogito9007BoundaryTimerEvent" isExecutable="true" processType="Public">
+  <bpmn2:process id="MultipleTimerInstancesBoundaryTimerEvent" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="MultipleTimerInstancesBoundaryTimerEvent" isExecutable="true" processType="Public">
     <bpmn2:sequenceFlow id="_638ECD05-BFB2-4CDF-B517-FBBDAA364B9E" sourceRef="_047C4181-1503-4A6B-A3B4-ECA82E6524AA" targetRef="_64A50D8D-8741-4F77-9A97-38F28FD6D447"/>
     <bpmn2:sequenceFlow id="_8F723F32-429A-4133-AD88-E64BB0AB10DA" sourceRef="_415F8A44-E59D-48B1-8998-2B3DB85C9E53" targetRef="_047C4181-1503-4A6B-A3B4-ECA82E6524AA"/>
     <bpmn2:sequenceFlow id="_DE5805E3-F291-4D85-8824-94F9D1F0C42B" sourceRef="_D63BF8F7-0F6B-4889-9F96-04E1F710DEA6" targetRef="_22F3979A-AEA9-4B67-8221-4E9A225DFD85"/>
@@ -32,7 +32,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>_8F723F32-429A-4133-AD88-E64BB0AB10DA</bpmn2:incoming>
       <bpmn2:outgoing>_638ECD05-BFB2-4CDF-B517-FBBDAA364B9E</bpmn2:outgoing>
-      <bpmn2:script>System.out.println("Kogito9007BoundaryTimerEvent.Script2: " + java.time.ZonedDateTime.now());</bpmn2:script>
+      <bpmn2:script>System.out.println("MultipleTimerInstancesBoundaryTimerEvent.Script2: " + java.time.ZonedDateTime.now());</bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:endEvent id="_22F3979A-AEA9-4B67-8221-4E9A225DFD85">
       <bpmn2:incoming>_DE5805E3-F291-4D85-8824-94F9D1F0C42B</bpmn2:incoming>
@@ -85,7 +85,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>_F1255546-39EF-4F6C-BB2E-452B342F3D1B</bpmn2:incoming>
       <bpmn2:outgoing>_167ECDC4-16E2-434B-A2D8-40926EE4E8C7</bpmn2:outgoing>
-      <bpmn2:script>System.out.println("Kogito9007BoundaryTimerEvent.Script1: " + java.time.ZonedDateTime.now());</bpmn2:script>
+      <bpmn2:script>System.out.println("MultipleTimerInstancesBoundaryTimerEvent.Script1: " + java.time.ZonedDateTime.now());</bpmn2:script>
     </bpmn2:scriptTask>
     <bpmn2:startEvent id="_A2723166-5057-4199-B4A5-61C25D0A50A9">
       <bpmn2:outgoing>_F1255546-39EF-4F6C-BB2E-452B342F3D1B</bpmn2:outgoing>
@@ -98,7 +98,7 @@
     </bpmn2:boundaryEvent>
   </bpmn2:process>
   <bpmndi:BPMNDiagram>
-    <bpmndi:BPMNPlane bpmnElement="Kogito9007BoundaryTimerEvent">
+    <bpmndi:BPMNPlane bpmnElement="MultipleTimerInstancesBoundaryTimerEvent">
       <bpmndi:BPMNShape id="shape__A2723166-5057-4199-B4A5-61C25D0A50A9" bpmnElement="_A2723166-5057-4199-B4A5-61C25D0A50A9">
         <dc:Bounds height="56" width="56" x="166" y="144"/>
       </bpmndi:BPMNShape>

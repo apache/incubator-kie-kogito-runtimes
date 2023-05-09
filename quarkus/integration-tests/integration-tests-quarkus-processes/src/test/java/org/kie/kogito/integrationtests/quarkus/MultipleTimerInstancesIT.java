@@ -24,24 +24,24 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProc
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstanceAndGetId;
 
 @QuarkusIntegrationTest
-class Kogito9007IT {
+class MultipleTimerInstancesIT {
 
-    private static final String KOGITO_9007_BOUNDARY_TIMER_EVENT_URL = "/Kogito9007BoundaryTimerEvent";
-    private static final String KOGITO_9007_BOUNDARY_TIMER_EVENT_URL_GET_BY_ID_URL = KOGITO_9007_BOUNDARY_TIMER_EVENT_URL + "/{id}";
-    private static final String KOGITO_9007_TIMER_EVENT_URL = "/Kogito9007TimerEvent";
-    private static final String KOGITO_9007_TIMER_EVENT_URL_GET_BY_ID_URL = KOGITO_9007_TIMER_EVENT_URL + "/{id}";
+    private static final String MULTIPLE_TIMER_INSTANCES_BOUNDARY_TIMER_EVENT = "/MultipleTimerInstancesBoundaryTimerEvent";
+    private static final String MULTIPLE_TIMER_INSTANCES_BOUNDARY_TIMER_EVENT_URL_GET_BY_ID_URL = MULTIPLE_TIMER_INSTANCES_BOUNDARY_TIMER_EVENT + "/{id}";
+    private static final String MULTIPLE_TIMER_INSTANCES_TIMER_EVENT = "/MultipleTimerInstancesTimerEvent";
+    private static final String MULTIPLE_TIMER_INSTANCES_TIMER_EVENT_URL_GET_BY_ID_URL = MULTIPLE_TIMER_INSTANCES_TIMER_EVENT + "/{id}";
     private static final String EMPTY_DATA = "{}";
     private static final int AT_LEAST_SECONDS = 1;
     private static final int AT_MOST_SECONDS = 120;
 
     @Test
     void boundaryTimerEvent() {
-        executeInstancesAndEnsureTermination(KOGITO_9007_BOUNDARY_TIMER_EVENT_URL, KOGITO_9007_BOUNDARY_TIMER_EVENT_URL_GET_BY_ID_URL);
+        executeInstancesAndEnsureTermination(MULTIPLE_TIMER_INSTANCES_BOUNDARY_TIMER_EVENT, MULTIPLE_TIMER_INSTANCES_BOUNDARY_TIMER_EVENT_URL_GET_BY_ID_URL);
     }
 
     @Test
     void timerEvent() {
-        executeInstancesAndEnsureTermination(KOGITO_9007_TIMER_EVENT_URL, KOGITO_9007_TIMER_EVENT_URL_GET_BY_ID_URL);
+        executeInstancesAndEnsureTermination(MULTIPLE_TIMER_INSTANCES_TIMER_EVENT, MULTIPLE_TIMER_INSTANCES_TIMER_EVENT_URL_GET_BY_ID_URL);
     }
 
     private static void executeInstancesAndEnsureTermination(String processUrl, String processGetByIdQuery) {

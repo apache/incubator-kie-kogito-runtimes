@@ -24,10 +24,10 @@ import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.assertProc
 import static org.kie.kogito.test.utils.ProcessInstancesRESTTestUtils.newProcessInstanceAndGetId;
 
 @QuarkusIntegrationTest
-class Kogito9007IT {
+class MultipleTimerInstancesIT {
 
-    private static final String KOGITO_9007_EVENT_STATE_TIMEOUTS_URL = "/kogito_9007_event_state_timeouts";
-    private static final String KOGITO_9007_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL = KOGITO_9007_EVENT_STATE_TIMEOUTS_URL + "/{id}";
+    private static final String MULTIPLE_TIMER_INSTANCES_EVENT_STATE_TIMEOUTS = "/multiple_timer_instances_event_state_timeouts";
+    private static final String MULTIPLE_TIMER_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL = MULTIPLE_TIMER_INSTANCES_EVENT_STATE_TIMEOUTS + "/{id}";
     private static final String EMPTY_WORKFLOW_DATA = "{\"workflowdata\" : \"\"}";
     private static final int AT_LEAST_SECONDS = 1;
     private static final int AT_MOST_SECONDS = 120;
@@ -35,13 +35,13 @@ class Kogito9007IT {
     @Test
     void eventStateTimeouts() {
         // Start 3 simultaneous instances.
-        String processInstanceId1 = newProcessInstanceAndGetId(KOGITO_9007_EVENT_STATE_TIMEOUTS_URL, EMPTY_WORKFLOW_DATA);
-        String processInstanceId2 = newProcessInstanceAndGetId(KOGITO_9007_EVENT_STATE_TIMEOUTS_URL, EMPTY_WORKFLOW_DATA);
-        String processInstanceId3 = newProcessInstanceAndGetId(KOGITO_9007_EVENT_STATE_TIMEOUTS_URL, EMPTY_WORKFLOW_DATA);
+        String processInstanceId1 = newProcessInstanceAndGetId(MULTIPLE_TIMER_INSTANCES_EVENT_STATE_TIMEOUTS, EMPTY_WORKFLOW_DATA);
+        String processInstanceId2 = newProcessInstanceAndGetId(MULTIPLE_TIMER_INSTANCES_EVENT_STATE_TIMEOUTS, EMPTY_WORKFLOW_DATA);
+        String processInstanceId3 = newProcessInstanceAndGetId(MULTIPLE_TIMER_INSTANCES_EVENT_STATE_TIMEOUTS, EMPTY_WORKFLOW_DATA);
 
         // The three instances must finish in a period of time, otherwise the issue is still present.
-        assertProcessInstanceHasFinished(KOGITO_9007_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId1, AT_LEAST_SECONDS, AT_MOST_SECONDS);
-        assertProcessInstanceHasFinished(KOGITO_9007_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId2, AT_LEAST_SECONDS, AT_MOST_SECONDS);
-        assertProcessInstanceHasFinished(KOGITO_9007_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId3, AT_LEAST_SECONDS, AT_MOST_SECONDS);
+        assertProcessInstanceHasFinished(MULTIPLE_TIMER_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId1, AT_LEAST_SECONDS, AT_MOST_SECONDS);
+        assertProcessInstanceHasFinished(MULTIPLE_TIMER_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId2, AT_LEAST_SECONDS, AT_MOST_SECONDS);
+        assertProcessInstanceHasFinished(MULTIPLE_TIMER_EVENT_STATE_TIMEOUTS_GET_BY_ID_URL, processInstanceId3, AT_LEAST_SECONDS, AT_MOST_SECONDS);
     }
 }

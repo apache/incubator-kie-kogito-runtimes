@@ -230,7 +230,7 @@
                     <include>switch-state-event-condition-timeouts-transition.sw.json</include>
                     <include>switch-state-event-condition-timeouts-transition2.sw.json</include>
                     <include>switch-state-event-condition-timeouts-end.sw.json</include>
-                    <include>kogito-9007-event-state-timeouts.sw.json</include>
+                    <include>multiple-timer-instances-event-state-timeouts.sw.json</include>
                   </includes>
                 </resource>
                 <resource>
