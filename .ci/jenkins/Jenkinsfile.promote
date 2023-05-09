@@ -1,6 +1,6 @@
 import org.jenkinsci.plugins.workflow.libs.Library
-@Library('jenkins-pipeline-shared-libraries')_
-
+//@Library('jenkins-pipeline-shared-libraries')_
+@Library('mbiarnes_test_libraries')_
 import org.kie.jenkins.MavenCommand
 
 deployProperties = [:]
@@ -8,7 +8,8 @@ pipelineProperties = [:]
 
 pipeline {
     agent {
-        label 'kie-rhel7 && !built-in'
+        // label 'kie-rhel7 && !built-in'
+        label 'kie-rhel8-priority && !built-in'
     }
 
     tools {
@@ -39,7 +40,7 @@ pipeline {
                 script {
                     cleanWs()
 
-                    if (params.DISPLAY_NAME != '') {
+                    /*if (params.DISPLAY_NAME != '') {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
@@ -50,7 +51,7 @@ pipeline {
                         assert getProjectVersion()
                         assert getDroolsVersion()
                         assert getBuildBranch() == util.getReleaseBranchFromVersion(getProjectVersion())
-                    }
+                    }*/
                 }
             }
         }
@@ -64,15 +65,40 @@ pipeline {
                         checkoutRepo()
                         mergeAndPush(getDeployPrLink())
                         tagLatest()
-                        if(githubscm.isReleaseExist(getGitTag(), getGitAuthorCredsID())) {
-                            githubscm.deleteRelease(getGitTag(), getGitAuthorCredsID())
-                        }
-                        githubscm.createRelease(getGitTag(), getBuildBranch(), "Release ${getGitTag()}", getGitAuthorCredsID())
                     }
                 }
             }
         }
-        stage('Set next snapshot version') {
+        stage('Create release + notes') {
+            when {
+                expression { return isRelease() }
+            }
+            steps {
+                script {
+                    dir(getRepoName()) {
+                        checkoutRepo()
+                        // needed to syncronize tags 
+                        sh "git fetch --tags -f"
+                        if(githubscm.isReleaseExist(getGitTag(), getGitAuthorCredsID())) {
+                            githubscm.deleteRelease(getGitTag(), getGitAuthorCredsID())
+                        }
+                        // Create release notes file
+                        sh """
+                            #!/bin/bash
+                            echo "Release Notes" > ${getReleaseNotesFile()}
+                            echo "" >> ${getReleaseNotesFile()}
+                            git log --pretty='%s' ${getPreviousTag()}..HEAD | sed -e '/KOGITO/!d'| sed -e 's/\\[//g' -e 's/\\]//g' -e 's/\\://g' | sed -r 's/(KOGITO-[0-9]*)( .*)/\\[\\1\\](https\\:\\/\\/issues\\.redhat\\.com\\/browse\\/\\1)\\2/g' >> ${getReleaseNotesFile()}
+                            echo "" >> ${getReleaseNotesFile()}
+                            echo "*****************************************************" >> ${getReleaseNotesFile()}
+                            echo "" >> ${getReleaseNotesFile()} 
+                            cat ${getReleaseNotesFile()}
+                        """
+                        githubscm.createReleaseWithReleaseNotes(getGitTag(), getBuildBranch(), getReleaseNotesFile(), getGitAuthorCredsID())
+                    }
+                }
+            }
+        }
+        /*stage('Set next snapshot version') {
             when {
                 expression { return isRelease() }
             }
@@ -103,17 +129,17 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
     }
     post {
         unsuccessful {
             sendNotification()
         }
-        cleanup {
+        /*cleanup {
             script {
                 util.cleanNode('docker')
             }
-        }
+        }*/
     }
 }
 
@@ -228,6 +254,11 @@ String getSnapshotBranch() {
     return "${getSnapshotVersion().toLowerCase()}-${env.BOT_BRANCH_HASH}"
 }
 
+String getReleaseNotesFile(){
+    RELEASE_NOTES__FILE="RELEASE_NOTES_${getGitTag()}"
+    return RELEASE_NOTES__FILE
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Git
 //////////////////////////////////////////////////////////////////////////////
@@ -251,6 +282,12 @@ void tagLatest() {
         githubscm.tagLocalAndRemoteRepository('origin', getGitTag(), getGitAuthorCredsID(), env.BUILD_TAG, true)
     }
 }
+
+String getPreviousTag(){
+    PREVIOUS_TAG = sh(script: "git describe --abbrev=0 --tags \$(git rev-list --tags --skip=1  --max-count=1)", returnStdout: true).trim()
+    return PREVIOUS_TAG
+}
+
 
 void prepareForPR() {
     checkoutRepo()
