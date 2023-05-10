@@ -28,6 +28,8 @@
     <module>events</module>
     <module>marshallers</module>
     <module>camel</module>
+    <module>fabric8-kubernetes-service-catalog</module>
+    <module>kubernetes-service-catalog</module>
   </modules>
 
   <profiles>

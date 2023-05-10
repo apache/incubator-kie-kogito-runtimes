@@ -21,6 +21,9 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesProtocol;
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalog;
+import org.kie.kogito.addons.k8s.resource.catalog.KubernetesServiceCatalogKey;
 import org.kie.kogito.process.workitem.WorkItemExecutionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,14 +36,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 @ApplicationScoped
 final class KnativeServerlessWorkflowCustomFunction {
 
-    private final KnativeServiceRegistry knativeServiceRegistry;
+    private final KubernetesServiceCatalog kubernetesServiceCatalog;
 
     private final KnativeServiceRequestClientResolver knativeServiceRequestClientResolver;
 
     @Inject
-    KnativeServerlessWorkflowCustomFunction(KnativeServiceRegistry knativeServiceRegistry,
+    KnativeServerlessWorkflowCustomFunction(KubernetesServiceCatalog kubernetesServiceCatalog,
             KnativeServiceRequestClientResolver knativeServiceRequestClientResolver) {
-        this.knativeServiceRegistry = knativeServiceRegistry;
+        this.kubernetesServiceCatalog = kubernetesServiceCatalog;
         this.knativeServiceRequestClientResolver = knativeServiceRequestClientResolver;
 
     }
@@ -60,7 +63,7 @@ final class KnativeServerlessWorkflowCustomFunction {
     private URI getServiceAddress(String operation) {
         String service = operation.split("\\?")[0];
 
-        return knativeServiceRegistry.getServiceAddress(service)
+        return kubernetesServiceCatalog.getServiceAddress(new KubernetesServiceCatalogKey(KubernetesProtocol.KNATIVE, service))
                 .orElseThrow(() -> new WorkItemExecutionException("The Knative service '" + service
                         + "' could not be found."));
     }
