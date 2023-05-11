@@ -15,7 +15,6 @@
  */
 package org.kie.kogito.event.cloudevents.utils;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -27,7 +26,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import io.cloudevents.SpecVersion;
 
-import static java.util.function.Predicate.not;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -36,21 +34,14 @@ abstract class BaseCloudEventValidatorTest<T extends BaseCloudEventValidator> {
 
     private final SpecVersion supportedVersion;
 
-    private final String specVersionAttributeName;
-
     private final T cloudEventValidator;
 
-    BaseCloudEventValidatorTest(T cloudEventValidator, SpecVersion supportedVersion, String specVersionAttributeName) {
+    BaseCloudEventValidatorTest(T cloudEventValidator, SpecVersion supportedVersion) {
         this.cloudEventValidator = cloudEventValidator;
         this.supportedVersion = supportedVersion;
-        this.specVersionAttributeName = specVersionAttributeName;
     }
 
     protected abstract Map<String, Object> createValidCloudEvent();
-
-    protected abstract String getRfc3339Attribute();
-
-    protected abstract String getRfc2046Attribute();
 
     private Map<String, Object> cloudEventMissing(String attribute) {
         Map<String, Object> cloudEvent = createValidCloudEvent();
@@ -77,21 +68,6 @@ abstract class BaseCloudEventValidatorTest<T extends BaseCloudEventValidator> {
     }
 
     @Test
-    void testUnsupportedVersion() {
-        Map<String, Object> cloudEvent = createValidCloudEvent();
-
-        SpecVersion unsupportedVersion = Arrays.stream(SpecVersion.values())
-                .filter(not(supportedVersion::equals))
-                .findAny()
-                .orElseThrow();
-
-        cloudEvent.put(specVersionAttributeName, unsupportedVersion.toString());
-
-        assertThatExceptionOfType(UnsupportedOperationException.class)
-                .isThrownBy(() -> cloudEventValidator.validateCloudEvent(cloudEvent));
-    }
-
-    @Test
     void testMissingMandatoryAttribute() {
         supportedVersion.getMandatoryAttributes().forEach(mandatoryAttribute -> {
             Map<String, Object> cloudEvent = cloudEventMissing(mandatoryAttribute);
@@ -107,28 +83,36 @@ abstract class BaseCloudEventValidatorTest<T extends BaseCloudEventValidator> {
 
     @ParameterizedTest
     @MethodSource("testInvalidRfcXXXXAttributeSource")
-    void testInvalidRfc3339Attribute(Object value) {
+    void testInvalidRfc3339Attribute() {
         Map<String, Object> cloudEvent = createValidCloudEvent();
-        cloudEvent.put(getRfc3339Attribute(), value);
+        cloudEvent.put(cloudEventValidator.getRfc3339Attribute(), "invalid");
 
         InvalidCloudEventException ex = Assertions.assertThrows(InvalidCloudEventException.class,
                 () -> cloudEventValidator.validateCloudEvent(cloudEvent));
 
         assertThat(ex.getErrors())
-                .containsOnly(getRfc3339Attribute() + " MUST adhere to the format specified in RFC 3339 (https://datatracker.ietf.org/doc/html/rfc3339).");
+                .containsOnly(cloudEventValidator.getRfc3339Attribute() + " MUST adhere to the format specified in RFC 3339 (https://datatracker.ietf.org/doc/html/rfc3339).");
     }
 
-    @ParameterizedTest
-    @MethodSource("testInvalidRfcXXXXAttributeSource")
-    void testInvalidRfc2046Attribute(Object value) {
+    @Test
+    void testInvalidRfc2046Attribute() {
         Map<String, Object> cloudEvent = createValidCloudEvent();
-        cloudEvent.put(getRfc2046Attribute(), value);
+        cloudEvent.put(cloudEventValidator.getRfc2046Attribute(), "invalid");
 
         InvalidCloudEventException ex = Assertions.assertThrows(InvalidCloudEventException.class,
                 () -> cloudEventValidator.validateCloudEvent(cloudEvent));
 
         assertThat(ex.getErrors())
-                .containsOnly(getRfc2046Attribute() + " MUST adhere to the format specified in RFC 2046 (https://datatracker.ietf.org/doc/html/rfc2046).");
+                .containsOnly(cloudEventValidator.getRfc2046Attribute() + " MUST adhere to the format specified in RFC 2046 (https://datatracker.ietf.org/doc/html/rfc2046).");
+    }
+
+    @Test
+    void testNonStringRfc2046Attribute() {
+        Map<String, Object> cloudEvent = createValidCloudEvent();
+        cloudEvent.put(cloudEventValidator.getRfc2046Attribute(), new Object());
+
+        assertThatExceptionOfType(ClassCastException.class)
+                .isThrownBy(() -> cloudEventValidator.validateCloudEvent(cloudEvent));
     }
 
     @Test

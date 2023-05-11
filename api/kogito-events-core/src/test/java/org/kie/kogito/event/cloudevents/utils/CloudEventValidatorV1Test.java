@@ -31,7 +31,7 @@ import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
 class CloudEventValidatorV1Test extends BaseCloudEventValidatorTest<CloudEventValidatorV1> {
 
     CloudEventValidatorV1Test() {
-        super(CloudEventValidatorV1.getInstance(), SpecVersion.V1, SPECVERSION);
+        super(CloudEventValidatorV1.getInstance(), SpecVersion.V1);
     }
 
     @Override
@@ -45,15 +45,5 @@ class CloudEventValidatorV1Test extends BaseCloudEventValidatorTest<CloudEventVa
         cloudEvent.put(TIME, "2023-05-03T12:34:56Z");
         cloudEvent.put(DATA, "{\"foo\":\"bar\"}");
         return cloudEvent;
-    }
-
-    @Override
-    protected String getRfc3339Attribute() {
-        return TIME;
-    }
-
-    @Override
-    protected String getRfc2046Attribute() {
-        return DATACONTENTTYPE;
     }
 }

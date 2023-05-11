@@ -74,7 +74,7 @@ class CloudEventKnativeServiceRequestClientTest {
 
         client.sendRequest(processInstanceId, URI.create(wireMockServer.baseUrl()), "/cloud-event", cloudEvent);
 
-        String expectedCloudEventId = CloudEventKnativeServiceRequestClient.generateCloudEventId(processInstanceId, source);
+        String expectedCloudEventId = CloudEventKnativeServiceRequestClient.generateCloudEventId(processInstanceId, cloudEvent);
 
         wireMockServer.verify(postRequestedFor(urlEqualTo("/cloud-event"))
                 .withRequestBody(matchingJsonPath("$.id", equalTo(expectedCloudEventId)))

@@ -85,17 +85,17 @@ class CloudEventKnativeServiceRequestClient extends KnativeServiceRequestClient 
     }
 
     private static Map<String, Object> createCloudEventWithGeneratedId(Map<String, Object> cloudEvent, String processInstanceId) {
-        Map<String, Object> modifiableCloudEvent = new HashMap<>(cloudEvent);
-        Object source = cloudEvent.get("source");
-        if (source == null) {
-            throw new IllegalArgumentException("Invalid CloudEvent: Attribute source is mandatory.");
-        }
-        modifiableCloudEvent.put(ID, generateCloudEventId(processInstanceId, source.toString()));
+        Map<String, Object> modifiableCloudEvent = ensureModifiable(cloudEvent);
+        modifiableCloudEvent.put(ID, generateCloudEventId(processInstanceId, cloudEvent));
         return modifiableCloudEvent;
     }
 
-    static String generateCloudEventId(String processInstanceId, String source) {
-        return source + '_' + processInstanceId;
+    private static Map<String, Object> ensureModifiable(Map<String, Object> map) {
+        return map instanceof HashMap ? map : new HashMap<>(map);
+    }
+
+    static String generateCloudEventId(String processInstanceId, Map<String, Object> cloudEvent) {
+        return processInstanceId + "_" + cloudEvent.hashCode();
     }
 
     @PreDestroy

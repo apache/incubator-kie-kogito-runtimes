@@ -18,55 +18,42 @@ package org.kie.kogito.event.cloudevents.utils;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import io.cloudevents.SpecVersion;
-
-import static io.cloudevents.core.v1.CloudEventV1.DATACONTENTTYPE;
-import static io.cloudevents.core.v1.CloudEventV1.TIME;
 
 abstract class BaseCloudEventValidator {
 
-    private final String specVersionAttributeName;
+    private static final Pattern RFCC2046 = Pattern.compile("^[a-zA-Z]+/[a-zA-Z]+(?:[+\\-.][a-zA-Z0-9]+){0,10}$");
 
-    private final SpecVersion supportedSpecVersion;
+    protected abstract String getRfc3339Attribute();
 
-    BaseCloudEventValidator(String specVersionAttributeName, SpecVersion supportedSpecVersion) {
-        this.specVersionAttributeName = specVersionAttributeName;
-        this.supportedSpecVersion = supportedSpecVersion;
-    }
+    protected abstract String getRfc2046Attribute();
 
     final void validateCloudEvent(Map<String, Object> cloudEvent) throws InvalidCloudEventException {
-        Object specVersion = cloudEvent.get(specVersionAttributeName);
+        List<String> errors = new ArrayList<>();
 
-        if (specVersion == null) {
-            throw new InvalidCloudEventException(List.of("Missing mandatory attribute: " + specVersionAttributeName));
+        CloudEventUtils.getMissingAttributes(cloudEvent)
+                .forEach(missingAttribute -> errors.add("Missing mandatory attribute: " + missingAttribute));
+
+        validateNonEmptyAttributes(cloudEvent, errors);
+
+        validateRfc2046Attributes(cloudEvent, errors);
+
+        validateRfc3339Attributes(cloudEvent, errors);
+
+        if (!errors.isEmpty()) {
+            throw new InvalidCloudEventException(errors);
         }
+    }
 
-        if (specVersion.toString().equals(supportedSpecVersion.toString())) {
-            List<String> errors = new ArrayList<>();
-
-            CloudEventUtils.getMissingAttributes(cloudEvent)
-                    .forEach(missingAttribute -> errors.add("Missing mandatory attribute: " + missingAttribute));
-
-            errors.addAll(validateNonEmptyAttributes(cloudEvent));
-
-            errors.addAll(validateRfc2046Attributes(cloudEvent));
-
-            errors.addAll(validateRfc3339Attributes(cloudEvent));
-
-            if (!errors.isEmpty()) {
-                throw new InvalidCloudEventException(errors);
-            }
-        } else {
-            throw new UnsupportedOperationException(
-                    "Invalid CloudEvents specification version: " + specVersion + ". "
-                            + CloudEventValidatorV03.class.getName() + " supports only CloudEvents " + supportedSpecVersion);
+    private static void validateAttribute(Map<String, Object> cloudEvent, String attribute, Predicate<Object> validation, String message, Collection<String> errors) {
+        Object value = cloudEvent.get(attribute);
+        if (value != null && validation.test(value)) {
+            errors.add(attribute + message);
         }
     }
 
@@ -74,15 +61,30 @@ abstract class BaseCloudEventValidator {
      * Validates attributes that must adhere to the format specified in <a href="https://datatracker.ietf.org/doc/html/rfc3339">RFC 3339</a>.
      *
      * @param cloudEvent the CloudEvent
-     * @return a {@link List} of errors
+     * @param errors the error list where the found errors should be put
      */
-    private static List<String> validateRfc3339Attributes(Map<String, Object> cloudEvent) {
-        return Stream.of(TIME)
-                .filter(attribute -> {
-                    Object value = cloudEvent.get(attribute);
-                    return value != null && !isRfc3339Value(value);
-                }).map(attribute -> attribute + " MUST adhere to the format specified in RFC 3339 (https://datatracker.ietf.org/doc/html/rfc3339).")
-                .collect(Collectors.toList());
+    private void validateRfc3339Attributes(Map<String, Object> cloudEvent, List<String> errors) {
+        validateAttribute(
+                cloudEvent,
+                getRfc3339Attribute(),
+                value -> !isRfc3339Value(value),
+                " MUST adhere to the format specified in RFC 3339 (https://datatracker.ietf.org/doc/html/rfc3339).",
+                errors);
+    }
+
+    /**
+     * Validates attributes that must adhere to the format specified in <a href="https://datatracker.ietf.org/doc/html/rfc2046">RFC 2046</a>.
+     *
+     * @param cloudEvent the CloudEvent
+     * @param errors the error list where the found errors should be put
+     */
+    private void validateRfc2046Attributes(Map<String, Object> cloudEvent, List<String> errors) {
+        validateAttribute(
+                cloudEvent,
+                getRfc2046Attribute(),
+                value -> !isRfc2046Value((String) value),
+                " MUST adhere to the format specified in RFC 2046 (https://datatracker.ietf.org/doc/html/rfc2046).",
+                errors);
     }
 
     private static boolean isRfc3339Value(Object value) {
@@ -98,35 +100,18 @@ abstract class BaseCloudEventValidator {
         return false;
     }
 
-    /**
-     * Validates attributes that must adhere to the format specified in <a href="https://datatracker.ietf.org/doc/html/rfc2046">RFC 2046</a>.
-     *
-     * @param cloudEvent the CloudEvent
-     * @return a {@link List} of errors
-     */
-    private List<String> validateRfc2046Attributes(Map<String, Object> cloudEvent) {
-        return Stream.of(DATACONTENTTYPE)
-                .filter(attribute -> {
-                    Object value = cloudEvent.get(attribute);
-                    return value != null && !isRfc2046Value(value);
-                }).map(attribute -> attribute + " MUST adhere to the format specified in RFC 2046 (https://datatracker.ietf.org/doc/html/rfc2046).")
-                .collect(Collectors.toList());
-    }
-
-    private static boolean isRfc2046Value(Object value) {
-        if (value instanceof String) {
-            Pattern pattern = Pattern.compile("^[a-zA-Z]+/[a-zA-Z]+(?:[+\\-.][a-zA-Z0-9]+){0,10}$");
-            Matcher matcher = pattern.matcher((String) value);
+    private static boolean isRfc2046Value(String value) {
+        if (value != null) {
+            Matcher matcher = RFCC2046.matcher(value);
             return matcher.matches();
         }
         return false;
     }
 
-    private List<String> validateNonEmptyAttributes(Map<String, Object> cloudEvent) {
-        return getNonEmptyAttributes().stream()
-                .filter(attribute -> "".equals(cloudEvent.get(attribute)))
-                .map(attribute -> attribute + " must be a non-empty String.")
-                .collect(Collectors.toList());
+    private void validateNonEmptyAttributes(Map<String, Object> cloudEvent, List<String> errors) {
+        for (String attribute : getNonEmptyAttributes()) {
+            validateAttribute(cloudEvent, attribute, ""::equals, " must be a non-empty String.", errors);
+        }
     }
 
     protected abstract List<String> getNonEmptyAttributes();

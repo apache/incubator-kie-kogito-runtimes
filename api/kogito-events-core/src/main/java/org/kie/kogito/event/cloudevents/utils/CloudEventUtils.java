@@ -269,7 +269,7 @@ public final class CloudEventUtils {
     }
 
     public static void validateCloudEvent(Map<String, Object> cloudEvent) throws InvalidCloudEventException {
-        SpecVersion specVersion = SpecVersion.parse(cloudEvent.getOrDefault(CloudEventV1.SPECVERSION, "1.0").toString());
+        SpecVersion specVersion = SpecVersion.parse(String.valueOf(cloudEvent.get(CloudEventV1.SPECVERSION)));
         switch (specVersion) {
             case V1:
                 CloudEventValidatorV1.getInstance().validateCloudEvent(cloudEvent);

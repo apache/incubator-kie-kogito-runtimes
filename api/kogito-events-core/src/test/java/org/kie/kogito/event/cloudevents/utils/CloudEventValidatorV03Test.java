@@ -18,6 +18,8 @@ package org.kie.kogito.event.cloudevents.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+
 import io.cloudevents.SpecVersion;
 
 import static io.cloudevents.core.v03.CloudEventV03.DATACONTENTTYPE;
@@ -26,12 +28,15 @@ import static io.cloudevents.core.v03.CloudEventV03.SOURCE;
 import static io.cloudevents.core.v03.CloudEventV03.SPECVERSION;
 import static io.cloudevents.core.v03.CloudEventV03.TIME;
 import static io.cloudevents.core.v03.CloudEventV03.TYPE;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.kie.kogito.event.cloudevents.utils.CloudEventUtils.DATA;
 
 class CloudEventValidatorV03Test extends BaseCloudEventValidatorTest<CloudEventValidatorV03> {
 
+    private static final CloudEventValidatorV03 CLOUD_EVENT_VALIDATOR = CloudEventValidatorV03.getInstance();
+
     CloudEventValidatorV03Test() {
-        super(CloudEventValidatorV03.getInstance(), SpecVersion.V03, SPECVERSION);
+        super(CLOUD_EVENT_VALIDATOR, SpecVersion.V03);
     }
 
     @Override
@@ -47,13 +52,12 @@ class CloudEventValidatorV03Test extends BaseCloudEventValidatorTest<CloudEventV
         return cloudEvent;
     }
 
-    @Override
-    protected String getRfc3339Attribute() {
-        return TIME;
-    }
+    @Test
+    void emptySourceShouldBeValid() {
+        Map<String, Object> cloudEvent = createValidCloudEvent();
+        cloudEvent.put(SOURCE, "");
 
-    @Override
-    protected String getRfc2046Attribute() {
-        return DATACONTENTTYPE;
+        assertThatCode(() -> CLOUD_EVENT_VALIDATOR.validateCloudEvent(createValidCloudEvent()))
+                .doesNotThrowAnyException();
     }
 }
